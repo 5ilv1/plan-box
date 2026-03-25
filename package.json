@@ -5,12 +5,22 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "import-ce2": "npx tsx lib/scripts/importCE2.ts"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.78.0",
+    "@supabase/ssr": "^0.9.0",
+    "@supabase/supabase-js": "^2.99.1",
+    "@types/qrcode": "^1.5.6",
+    "ical.js": "^2.2.1",
     "next": "16.1.6",
+    "openai": "^6.29.0",
+    "pg": "^8.20.0",
+    "qrcode": "^1.5.4",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "react-pdf": "^10.4.1"
   },
   "devDependencies": {
     "@types/node": "^20",
