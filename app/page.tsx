@@ -84,9 +84,7 @@ export default function Accueil() {
       {/* Lien Repetibox discret */}
       <div style={{ marginTop: 40, textAlign: "center" }}>
         <a
-          href={process.env.NEXT_PUBLIC_REPETIBOX_URL || "https://leitner-app-kohl.vercel.app"}
-          target="_blank"
-          rel="noopener noreferrer"
+          href="/api/sso/redirect-repetibox"
           style={{ fontSize: 13, color: "var(--text-secondary)" }}
         >
           Aller sur Repetibox →
