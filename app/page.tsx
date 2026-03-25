@@ -71,7 +71,7 @@ export default function Accueil() {
         }}
       >
         <Link href="/eleve" className="btn-primary" style={{ justifyContent: "center", padding: "18px 24px", fontSize: 16, borderRadius: 12 }}>
-          <img src="/planbox-mascotte.png" alt="" width={22} height={22} style={{ objectFit: "contain" }} />
+          <span className="ms" style={{ fontSize: 22 }}>backpack</span>
           Je suis élève
         </Link>
 
