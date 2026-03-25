@@ -71,12 +71,12 @@ export default function Accueil() {
         }}
       >
         <Link href="/eleve" className="btn-primary" style={{ justifyContent: "center", padding: "18px 24px", fontSize: 16, borderRadius: 12 }}>
-          <span style={{ fontSize: 22 }}>🎒</span>
+          <img src="/planbox-mascotte.png" alt="" width={22} height={22} style={{ objectFit: "contain" }} />
           Je suis élève
         </Link>
 
         <Link href="/enseignant" className="btn-secondary" style={{ justifyContent: "center", padding: "18px 24px", fontSize: 16, borderRadius: 12 }}>
-          <span style={{ fontSize: 22 }}>👩‍🏫</span>
+          <span className="ms" style={{ fontSize: 22 }}>school</span>
           Je suis enseignant
         </Link>
       </div>

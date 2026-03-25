@@ -75,18 +75,10 @@ export default function ConnexionEleve() {
         <div style={{ textAlign: "center", marginBottom: 28 }}>
           <div
             style={{
-              width: 56,
-              height: 56,
-              borderRadius: 14,
-              backgroundColor: "var(--primary-pale)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 28,
               margin: "0 auto 14px",
             }}
           >
-            <img src="/planbox-mascotte.png" alt="Plan Box" width={48} height={48} style={{ objectFit: "contain" }} />
+            <img src="/planbox-mascotte.png" alt="Plan Box" width={56} height={56} style={{ objectFit: "contain" }} />
           </div>
           <h1 style={{ fontSize: 22, fontWeight: 700, color: "var(--text)" }}>
             Espace élève
