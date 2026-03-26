@@ -192,7 +192,7 @@ export default function LectureEleve({ titre, texte, questions, onTermine }: Pro
             onClick={(e) => e.stopPropagation()}
             style={{
               background: "white", borderRadius: 20,
-              width: "100%", maxWidth: 680, maxHeight: "80vh",
+              width: "100%", maxWidth: 900, maxHeight: "85vh",
               display: "flex", flexDirection: "column",
               boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
               overflow: "hidden",
