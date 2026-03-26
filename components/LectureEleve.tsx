@@ -40,6 +40,7 @@ export default function LectureEleve({ titre, texte, questions, onTermine }: Pro
   const [score, setScore] = useState(0);
   const [reponsesLog, setReponsesLog] = useState<{ id: number; reponse: string; correcte: boolean }[]>([]);
   const [animDir, setAnimDir] = useState<"in" | "out" | null>(null);
+  const [showTexte, setShowTexte] = useState(false);
 
   const shuffledQuestions = useMemo(() => shuffleArray(questions), [questions]);
   const current = shuffledQuestions[currentIndex];
@@ -142,22 +143,111 @@ export default function LectureEleve({ titre, texte, questions, onTermine }: Pro
   // ── Phase QCM (cartes stackées) ──
   return (
     <div style={{ padding: "0.5rem 0" }}>
-      {/* Progression */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
-        <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text-secondary)" }}>
+      {/* Progression + bouton revoir */}
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, gap: 8 }}>
+        <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>
           Question {currentIndex + 1} / {total}
         </span>
-        <div style={{ flex: 1, maxWidth: 200, height: 6, background: "var(--border)", borderRadius: 999, marginLeft: 12 }}>
+        <div style={{ flex: 1, maxWidth: 200, height: 6, background: "var(--border)", borderRadius: 999 }}>
           <div style={{
             height: "100%", borderRadius: 999, background: "#7C3AED",
             width: `${((currentIndex + 1) / total) * 100}%`,
             transition: "width 0.3s",
           }} />
         </div>
-        <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#16A34A", marginLeft: 12 }}>
+        <span style={{ fontSize: "0.8125rem", fontWeight: 700, color: "#16A34A" }}>
           {score} ✓
         </span>
+        <button
+          onClick={() => setShowTexte(true)}
+          style={{
+            display: "flex", alignItems: "center", gap: 4,
+            padding: "6px 12px", borderRadius: 8,
+            background: "rgba(124,58,237,0.08)", border: "1px solid rgba(124,58,237,0.2)",
+            color: "#7C3AED", fontWeight: 700, fontSize: "0.75rem",
+            cursor: "pointer", whiteSpace: "nowrap",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            transition: "all 0.15s",
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(124,58,237,0.15)")}
+          onMouseLeave={(e) => (e.currentTarget.style.background = "rgba(124,58,237,0.08)")}
+        >
+          <span className="ms" style={{ fontSize: 16 }}>auto_stories</span>
+          Revoir le texte
+        </button>
       </div>
+
+      {/* Modale revoir le texte */}
+      {showTexte && (
+        <div
+          onClick={() => setShowTexte(false)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 9999,
+            background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 20, animation: "fadeIn 0.2s ease",
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white", borderRadius: 20,
+              width: "100%", maxWidth: 680, maxHeight: "80vh",
+              display: "flex", flexDirection: "column",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
+              overflow: "hidden",
+            }}
+          >
+            {/* Header modale */}
+            <div style={{
+              padding: "16px 24px", borderBottom: "1px solid var(--border)",
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+            }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span className="ms" style={{ fontSize: 22, color: "#7C3AED" }}>auto_stories</span>
+                <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "1.125rem", margin: 0 }}>
+                  {titre}
+                </h3>
+              </div>
+              <button
+                onClick={() => setShowTexte(false)}
+                style={{
+                  width: 36, height: 36, borderRadius: "50%",
+                  background: "var(--bg, #F3F4F6)", border: "none",
+                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+                  transition: "background 0.15s",
+                }}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "#E5E7EB")}
+                onMouseLeave={(e) => (e.currentTarget.style.background = "var(--bg, #F3F4F6)")}
+              >
+                <span className="ms" style={{ fontSize: 20, color: "var(--text-secondary)" }}>close</span>
+              </button>
+            </div>
+            {/* Texte */}
+            <div style={{
+              padding: "20px 24px", overflowY: "auto", flex: 1,
+              fontSize: "1rem", lineHeight: 2, whiteSpace: "pre-wrap",
+              color: "var(--text)",
+            }}>
+              {texte}
+            </div>
+            {/* Footer */}
+            <div style={{ padding: "12px 24px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
+              <button
+                onClick={() => setShowTexte(false)}
+                style={{
+                  padding: "10px 28px", borderRadius: 999,
+                  background: "#7C3AED", color: "white", border: "none",
+                  fontWeight: 700, fontSize: "0.875rem", cursor: "pointer",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}
+              >
+                Retour aux questions
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Pile de cartes */}
       <div style={{ position: "relative", minHeight: 320, perspective: 1000 }}>
