@@ -508,7 +508,9 @@ export default function PageActivite() {
             fontWeight: 800, letterSpacing: -0.5,
             color: "var(--pb-on-surface)", marginBottom: 8,
           }}>
-            {bloc.titre}
+            {bloc.type === "ecriture" && (bloc.contenu as any)?.mode === "semaine"
+              ? "Atelier d\u2019écriture"
+              : bloc.titre}
             <span
               className="ms"
               style={{
@@ -524,6 +526,14 @@ export default function PageActivite() {
               {typeIcon}
             </span>
           </h1>
+          {bloc.type === "ecriture" && (bloc.contenu as any)?.mode === "semaine" && (bloc.contenu as any)?.sujet && (
+            <p style={{
+              color: "var(--pb-on-surface)", fontWeight: 600, fontSize: "clamp(0.9375rem, 3vw, 1.125rem)",
+              lineHeight: 1.5, marginBottom: 4, fontStyle: "italic",
+            }}>
+              {(bloc.contenu as any).sujet}
+            </p>
+          )}
           <p style={{ color: "var(--pb-on-surface-variant)", fontWeight: 500, fontSize: 14, letterSpacing: "0.02em", lineHeight: 1.6 }}>
             {typeSubtitle}
           </p>
