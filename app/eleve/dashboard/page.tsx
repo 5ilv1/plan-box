@@ -421,9 +421,11 @@ export default function DashboardEleve() {
   const aujourd_hui_label = new Date().toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long",
   });
-  const nbFaitAujourd_hui = blocsAujourdhui.filter((b) => b.statut === "fait").length;
-  const pctJour = blocsAujourdhui.length > 0
-    ? Math.round((nbFaitAujourd_hui / blocsAujourdhui.length) * 100)
+  const hasDailyProblem = dailyProblem !== null;
+  const totalTaches = blocsAujourdhui.length + (hasDailyProblem ? 1 : 0);
+  const nbFaitAujourd_hui = blocsAujourdhui.filter((b) => b.statut === "fait").length + (hasDailyProblem && dailyProblemSolved ? 1 : 0);
+  const pctJour = totalTaches > 0
+    ? Math.round((nbFaitAujourd_hui / totalTaches) * 100)
     : 0;
 
   // Map statut PB par chapitre_id
@@ -551,13 +553,13 @@ export default function DashboardEleve() {
                 Bonjour, {session?.prenom}
               </h1>
               <p className="eleve-hero-sub">
-                {blocsAujourdhui.length > 0
-                  ? `${nbFaitAujourd_hui} sur ${blocsAujourdhui.length} tâches complétées aujourd'hui`
+                {totalTaches > 0
+                  ? `${nbFaitAujourd_hui} sur ${totalTaches} tâches complétées aujourd'hui`
                   : "Rien à faire aujourd'hui — bravo !"}
               </p>
 
               {/* Barre de progression jour */}
-              {blocsAujourdhui.length > 0 && (
+              {totalTaches > 0 && (
                 <div style={{ marginTop: 20 }}>
                   <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, opacity: 0.8, marginBottom: 6 }}>
                     <span>Progression du jour</span>
@@ -833,18 +835,18 @@ export default function DashboardEleve() {
                   <p className="pb-section-sub">
                     {blocsAujourdhui.length === 0
                       ? "Rien à faire — bravo !"
-                      : `${nbFaitAujourd_hui}/${blocsAujourdhui.length} tâches complétées`}
+                      : `${nbFaitAujourd_hui}/${totalTaches} tâches complétées`}
                   </p>
                 </div>
-                {blocsAujourdhui.length > 0 && (
+                {totalTaches > 0 && (
                   <span style={{
                     marginLeft: "auto",
-                    background: nbFaitAujourd_hui === blocsAujourdhui.length ? "#dcfce7" : "rgba(0,80,212,0.1)",
-                    color: nbFaitAujourd_hui === blocsAujourdhui.length ? "#166534" : "var(--pb-primary)",
+                    background: nbFaitAujourd_hui === totalTaches ? "#dcfce7" : "rgba(0,80,212,0.1)",
+                    color: nbFaitAujourd_hui === totalTaches ? "#166534" : "var(--pb-primary)",
                     fontWeight: 800, fontSize: 13, padding: "4px 14px", borderRadius: 999,
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                   }}>
-                    {nbFaitAujourd_hui === blocsAujourdhui.length ? "✓ Tout fait !" : `${blocsAujourdhui.length - nbFaitAujourd_hui} restant${blocsAujourdhui.length - nbFaitAujourd_hui > 1 ? "s" : ""}`}
+                    {nbFaitAujourd_hui === totalTaches ? "✓ Tout fait !" : `${totalTaches - nbFaitAujourd_hui} restant${totalTaches - nbFaitAujourd_hui > 1 ? "s" : ""}`}
                   </span>
                 )}
               </div>
