@@ -971,6 +971,7 @@ export default function DashboardEleve() {
                       texte_a_trous:  { label: "Texte à trous",    color: "#0E7490", bg: "rgba(14,116,144,0.08)" },
                       analyse_phrase: { label: "Analyse de phrase", color: "#6D28D9", bg: "rgba(109,40,217,0.08)" },
                       classement: { label: "Classement", color: "#0369A1", bg: "rgba(3,105,161,0.08)" },
+                      lecture: { label: "Lecture", color: "#7C3AED", bg: "rgba(124,58,237,0.08)" },
                     };
                     const DESC: Record<string, string> = {
                       exercice:      "Entraîne-toi sur les notions du cours.",
@@ -985,8 +986,9 @@ export default function DashboardEleve() {
                       texte_a_trous:  "Complète les mots manquants.",
                       analyse_phrase: "Identifie les fonctions grammaticales.",
                       classement: "Classe les éléments dans les bonnes catégories.",
+                      lecture: "Lis le texte puis réponds aux questions.",
                     };
-                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement"];
+                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "lecture"];
                     const tousBlocs = [
                       ...groupesEnLigne.flatMap(([, { blocs }]) => blocs),
                       ...blocsEnLigneLibres,

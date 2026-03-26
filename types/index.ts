@@ -118,6 +118,21 @@ export interface ClassementIA {
   items: ClassementItem[];
 }
 
+// --- Lecture + QCM ---
+
+export interface LectureQuestion {
+  id: number;
+  question: string;
+  choix: string[];
+  reponse: number; // index de la bonne réponse dans choix[]
+}
+
+export interface LectureIA {
+  titre: string;
+  texte: string;
+  questions: LectureQuestion[];
+}
+
 // --- Analyse de phrase ---
 
 export type FonctionGram = "Sujet" | "Verbe" | "COD" | "COI" | "CC Lieu" | "CC Temps" | "CC Manière" | "Attribut";
@@ -295,7 +310,8 @@ export type TypeBloc =
   | "ecriture"
   | "texte_a_trous"
   | "analyse_phrase"
-  | "classement";
+  | "classement"
+  | "lecture";
 
 export type SousTypeRessource =
   | "video"
@@ -414,6 +430,7 @@ export const TYPE_BLOC_CONFIG: Record<
   texte_a_trous:  { icone: "text_fields", libelle: "Texte à trous",    couleur: "#0E7490" },
   analyse_phrase: { icone: "schema",      libelle: "Analyse de phrase", couleur: "#6D28D9" },
   classement:     { icone: "category",    libelle: "Classement",        couleur: "#0369A1" },
+  lecture:         { icone: "auto_stories", libelle: "Lecture",          couleur: "#7C3AED" },
 };
 
 export const STATUT_BLOC_CONFIG: Record<

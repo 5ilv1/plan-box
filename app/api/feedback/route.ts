@@ -117,6 +117,7 @@ export async function GET(req: Request) {
         ?? contenu?.trous?.map((t: any, i: number) => ({ id: i + 1, enonce: `Trou : ______`, reponse_attendue: t.mot }))
         ?? contenu?.phrases?.flatMap((ph: any, pi: number) => ph.groupes?.map((g: any, gi: number) => ({ id: pi * 10 + gi + 1, enonce: `"${g.mots}" dans : ${ph.texte?.substring(0, 50)}...`, reponse_attendue: g.fonction })) ?? [])
         ?? contenu?.calculs?.map((c: any) => ({ id: c.id, enonce: c.enonce, reponse_attendue: String(c.reponse) }))
+        ?? (contenu?.questions && contenu?.texte && !contenu?.calculs ? contenu.questions.map((q: any) => ({ id: q.id, enonce: q.question, reponse_attendue: q.choix?.[q.reponse] ?? '' })) : null)
         ?? (contenu?.categories?.length > 0 ? contenu.items?.map((it: any, i: number) => ({ id: i + 1, enonce: it.texte, reponse_attendue: it.categorie })) : null)
         ?? contenu?.qcm?.map((q: any, i: number) => ({ id: i + 1, enonce: q.question, reponse_attendue: q.options?.[q.reponse_correcte] ?? "?" }))
         ?? null,

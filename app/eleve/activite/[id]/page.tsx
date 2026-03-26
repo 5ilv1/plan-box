@@ -15,6 +15,7 @@ import AtelierEcriture from "@/components/AtelierEcriture";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import ClassementEleve from "@/components/ClassementEleve";
+import LectureEleve from "@/components/LectureEleve";
 import { FonctionGram } from "@/types";
 import dynamic from "next/dynamic";
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
@@ -43,6 +44,7 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
   if (type === "texte_a_trous") return { label: "Texte à trous", tagClass: "primary", icon: "text_fields", subtitle: "Complète les mots manquants dans le texte" };
   if (type === "analyse_phrase") return { label: "Analyse de phrase", tagClass: "secondary", icon: "schema", subtitle: "Identifie les fonctions des groupes de mots" };
   if (type === "classement") return { label: "Classement", tagClass: "primary", icon: "category", subtitle: "Classe les éléments dans les bonnes catégories" };
+  if (type === "lecture") return { label: "Lecture", tagClass: "secondary", icon: "auto_stories", subtitle: "Lis le texte puis réponds aux questions" };
   if (type === "ressource") {
     const st = ressource?.sous_type ?? (ressource?.taches?.[0]?.sous_type);
     if (st === "video")              return { label: "Vidéo", tagClass: "secondary", icon: "play_circle", subtitle: "Regarde attentivement la vidéo" };
@@ -333,6 +335,7 @@ export default function PageActivite() {
   const texteATrous = bloc.type === "texte_a_trous" ? (bloc.contenu as unknown as { titre: string; consigne: string; texte_complet: string; trous: { position: number; mot: string; indice?: string }[] }) : null;
   const analysePhrase = bloc.type === "analyse_phrase" ? (bloc.contenu as unknown as { titre: string; consigne: string; phrases: { texte: string; groupes: { mots: string; fonction: FonctionGram; debut: number; fin: number }[] }[]; fonctionsActives: FonctionGram[] }) : null;
   const classementData = bloc.type === "classement" ? (bloc.contenu as unknown as { titre: string; consigne: string; categories: string[]; items: { texte: string; categorie: string }[] }) : null;
+  const lectureData = bloc.type === "lecture" ? (bloc.contenu as unknown as { titre: string; texte: string; questions: { id: number; question: string; choix: string[]; reponse: number }[] }) : null;
   const ressource  = bloc.type === "ressource" ? (bloc.contenu as unknown as RessourceIA) : null;
   const dictee     = bloc.type === "dictee" ? (bloc.contenu as unknown as DicteeContenu) : null;
   const mots       = bloc.type === "mots" ? (bloc.contenu as unknown as MotsContenu) : null;
@@ -696,6 +699,28 @@ export default function PageActivite() {
               </div>
             )}
 
+            {/* ── Lecture ── */}
+            {lectureData && (etat as string) === "en_cours" && (
+              <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
+                <LectureEleve
+                  titre={lectureData.titre}
+                  texte={lectureData.texte}
+                  questions={lectureData.questions}
+                  onTermine={(score, repEleve) => {
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                  }}
+                />
+              </div>
+            )}
+            {lectureData && (etat as string) === "termine" && (
+              <div className="pb-card" style={{ textAlign: "center", padding: "32px 24px" }}>
+                <span className="ms" style={{ fontSize: 48, color: "#16A34A" }}>check_circle</span>
+                <p style={{ fontWeight: 800, fontSize: 20, color: "#16A34A", marginTop: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Lecture terminée !
+                </p>
+              </div>
+            )}
+
             {/* ── Fichier de maths ── */}
             {fichierMaths && (
               <div className="pb-card" style={{ textAlign: "center", padding: "56px 32px" }}>
@@ -817,7 +842,7 @@ export default function PageActivite() {
             ) : null}
 
             {/* Fallback */}
-            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && (
+            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !lectureData && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && (
               <div className="pb-card" style={{ textAlign: "center", padding: "48px 32px" }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
                 <p style={{ color: "var(--pb-on-surface-variant)", marginBottom: 28 }}>
