@@ -186,7 +186,7 @@ export default function FeedbackView() {
       )}
 
       {/* ── Tableau par exercice ── */}
-      {exercices.length === 0 ? (
+      {exercices.length === 0 && problemesDuJour.length === 0 ? (
         <div style={{ textAlign: "center", padding: "3rem", color: "var(--pb-on-surface-variant)" }}>
           <span className="ms" style={{ fontSize: 48, display: "block", marginBottom: 12, opacity: 0.3 }}>assessment</span>
           <p style={{ fontWeight: 600 }}>Aucun exercice cette semaine</p>
@@ -279,6 +279,72 @@ export default function FeedbackView() {
                   </tr>
                 );
               })}
+
+              {/* ── Entrée Problème du jour ── */}
+              {problemesDuJour.length > 0 && (() => {
+                const solved = problemesDuJour.filter((p) => p.solved).length;
+                const total = problemesDuJour.length;
+                const pct = total > 0 ? Math.round((solved / total) * 100) : 0;
+                const isSelected = selectedExo?.type === "probleme_jour";
+                const fakeExo: ExerciceFeedback = {
+                  cle: "probleme_jour",
+                  type: "probleme_jour",
+                  titre: "Problème du jour",
+                  groupes: [],
+                  dateAssignation: "",
+                  total,
+                  faits: solved,
+                  enCours: total - solved,
+                  enRetard: 0,
+                  scoreMoyen: pct,
+                  eleves: [],
+                };
+
+                return (
+                  <tr
+                    onClick={() => setSelectedExo(isSelected ? null : fakeExo)}
+                    style={{
+                      borderBottom: "1px solid var(--pb-outline-variant, #eee)",
+                      cursor: "pointer",
+                      background: isSelected ? "rgba(245,158,11,0.06)" : "transparent",
+                      transition: "background 0.15s",
+                    }}
+                    onMouseEnter={(e) => { if (!isSelected) e.currentTarget.style.background = "rgba(245,158,11,0.04)"; }}
+                    onMouseLeave={(e) => { if (!isSelected) e.currentTarget.style.background = isSelected ? "rgba(245,158,11,0.06)" : "transparent"; }}
+                  >
+                    <td style={{ padding: "12px", fontWeight: 600, color: "var(--pb-on-surface)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span className="ms" style={{ fontSize: 18, color: "#F59E0B" }}>calculate</span>
+                        Problème du jour
+                      </div>
+                    </td>
+                    <td style={{ padding: "12px" }}>
+                      <span style={{
+                        fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+                        padding: "3px 10px", borderRadius: 999,
+                        background: "rgba(245,158,11,0.12)", color: "#D97706",
+                      }}>Maths</span>
+                    </td>
+                    <td style={{ padding: "12px", fontSize: 12, color: "var(--pb-on-surface-variant)" }}>Tous</td>
+                    <td style={{ padding: "12px", textAlign: "center" }}>
+                      <span style={{ fontWeight: 700, color: pct >= 70 ? "#16A34A" : pct >= 40 ? "#D97706" : "#DC2626" }}>
+                        {solved}/{total}
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px", textAlign: "center" }}>
+                      <span style={{ fontWeight: 700, color: pct >= 70 ? "#16A34A" : pct >= 40 ? "#D97706" : "#DC2626" }}>
+                        {pct}%
+                      </span>
+                    </td>
+                    <td style={{ padding: "12px", textAlign: "center" }}>—</td>
+                    <td style={{ padding: "12px", textAlign: "center" }}>
+                      <span className="ms" style={{ fontSize: 18, color: "var(--pb-outline-variant)" }}>
+                        {isSelected ? "expand_less" : "expand_more"}
+                      </span>
+                    </td>
+                  </tr>
+                );
+              })()}
             </tbody>
           </table>
         </div>
