@@ -34,7 +34,7 @@ export default function AtelierEcriturePage() {
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push("/enseignant"); return; }
+      if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
       fetch("/api/ecriture/textes-finaux")
         .then(r => r.json())
         .then(data => {

@@ -29,6 +29,8 @@ export default function ConnexionEnseignant() {
       return;
     }
 
+    // Marquer cet onglet comme espace enseignant (protège contre le conflit de session avec l'onglet élève)
+    try { sessionStorage.setItem("pb_role", "enseignant"); } catch {}
     router.push("/enseignant/dashboard");
   }
 

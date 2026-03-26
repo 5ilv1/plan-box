@@ -54,7 +54,7 @@ export default function PageGroupes() {
   useEffect(() => {
     async function charger() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/enseignant"); return; }
+      if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
       await recharger();
     }
     charger();

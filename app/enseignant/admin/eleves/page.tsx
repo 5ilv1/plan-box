@@ -144,7 +144,7 @@ export default function PageAdminEleves() {
   // ── Init ──────────────────────────────────────────────────────────────────
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) { router.push("/enseignant"); return; }
+      if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
       charger();
     });
   }, []);

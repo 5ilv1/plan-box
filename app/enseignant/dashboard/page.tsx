@@ -279,7 +279,14 @@ export default function DashboardEnseignant() {
   useEffect(() => {
     async function charger() {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) { router.push("/enseignant"); return; }
+      if (!user) {
+        // Si cet onglet est marqué enseignant (sessionStorage), ne pas rediriger
+        // car c'est probablement un conflit avec l'onglet élève
+        const role = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null;
+        if (role === "enseignant") return; // Garder le contenu en cache
+        router.push("/enseignant");
+        return;
+      }
 
       const { data: notifsData } = await supabase
         .from("notifications")

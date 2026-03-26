@@ -70,7 +70,7 @@ export default function DailyProblemTeacher() {
 
   useEffect(() => {
     supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) { router.push("/enseignant"); return; }
+      if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
       try {
         const res = await fetch("/api/daily-problem/teacher");
         if (!res.ok) { router.push("/enseignant"); return; }

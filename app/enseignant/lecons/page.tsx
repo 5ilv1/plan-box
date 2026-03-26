@@ -91,7 +91,7 @@ export default function BanqueLecons() {
   /* ── Auth + chargement initial ── */
   const charger = useCallback(async () => {
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { router.push("/enseignant"); return; }
+    if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
 
     const [resLecons, resMatieres] = await Promise.all([
       fetch("/api/banque-lecons"),
