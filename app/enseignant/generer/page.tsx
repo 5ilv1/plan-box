@@ -14,7 +14,7 @@ import {
   RessourceIA,
   DicteeIAGroupee,
   DicteeContenu,
-  MotsContenu,
+  MotDict,
   BanqueExercice,
 } from "@/types";
 import { genererCarteCalcul, TemplateCalcul, Operation } from "@/lib/calcul";
@@ -237,10 +237,19 @@ function PageGenererInner() {
             )
           : undefined;
 
+        // Passer toutes les phrases déjà utilisées pour éviter les répétitions
+        const phrasesDejaUtilisees = resultats.flatMap((r) =>
+          r.niveaux.flatMap((n) => n.phrases.map((ph: { texte: string }) => ph.texte))
+        );
+
         const res = await fetch("/api/generer-dictee", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ ...params, ...(motsImposer ? { motsImposer } : {}) }),
+          body: JSON.stringify({
+            ...params,
+            ...(motsImposer ? { motsImposer } : {}),
+            ...(phrasesDejaUtilisees.length > 0 ? { phrasesDejaUtilisees } : {}),
+          }),
         });
         const json = await res.json();
         if (!res.ok || json.erreur) {
@@ -772,9 +781,42 @@ function PageGenererInner() {
     const pbEleveIds = elevesResolus.filter((e) => e.eleve_id).map((e) => e.eleve_id!);
     const rbEleveIds2 = elevesResolus.filter((e) => e.repetibox_eleve_id != null).map((e) => e.repetibox_eleve_id!);
 
+    // ── Bloc mots du LUNDI : tous les mots uniques de toute la semaine ─────────
+    const dateLundi = new Date(params.dateAssignation + "T12:00:00").toISOString().split("T")[0];
+    const motsUniquesSet = new Set<string>();
+    const motsUniques: MotDict[] = [];
+    for (const dr of dicteeResultats) {
+      for (const niv of dr.niveaux) {
+        for (const m of (niv.mots ?? [])) {
+          if (!motsUniquesSet.has(m.mot.toLowerCase())) {
+            motsUniquesSet.add(m.mot.toLowerCase());
+            motsUniques.push(m);
+          }
+        }
+      }
+    }
+    const lignesMotsLundi: Record<string, unknown>[] = elevesResolus.map((eleve) => ({
+      eleve_id: eleve.eleve_id ?? null,
+      repetibox_eleve_id: eleve.repetibox_eleve_id ?? null,
+      titre: `Mots — ${params.theme}`,
+      type: "mots",
+      contenu: { mots: motsUniques, titre_dictee: params.theme, mots_semaine: true, batch_id: batchId },
+      date_assignation: dateLundi,
+      date_limite: null,
+      periodicite: "semaine",
+      statut: "a_faire",
+      chapitre_id: null,
+      groupe_label: groupeLabelDictee,
+    }));
+    if (lignesMotsLundi.length > 0) {
+      const { error: eMots } = await supabase.from("plan_travail").insert(lignesMotsLundi);
+      if (eMots) console.error("[plan_travail] INSERT mots lundi:", eMots.message);
+    }
+
     for (let d = 0; d < dicteeResultats.length; d++) {
       const dicteeResultat = dicteeResultats[d];
-      const dateD = ajouterJoursTravailles(new Date(params.dateAssignation), d)
+      // d=0 → mardi (lundi est réservé aux mots), d=1 → jeudi, d=2 → vendredi…
+      const dateD = ajouterJoursTravailles(new Date(params.dateAssignation + "T12:00:00"), d + 1)
         .toISOString().split("T")[0];
 
       // ── 1. Sauvegarder les 4 niveaux dans `dictees` en un seul INSERT batch ──
@@ -798,6 +840,13 @@ function PageGenererInner() {
         setErreur(`Erreur sauvegarde dictée ${d + 1} : ${eDictee.message}`);
         setChargementDictee(false);
         return;
+      }
+
+      // ── Vendredi bilan : sauvegardé dans la bibliothèque mais pas affecté aux élèves ──
+      const estBilanVendredi = d === dicteeResultats.length - 1 && dicteeResultats.length >= 3;
+      if (estBilanVendredi) {
+        setProgressDictee({ fait: d + 1, total: dicteeResultats.length });
+        continue; // on saute l'étape plan_travail
       }
 
       // ── 2. Vérifier les doublons en 2 requêtes parallèles ──────────────────
@@ -856,39 +905,20 @@ function PageGenererInner() {
           mots: niv.mots,
           dictee_parent_id: parentId,
         };
-        const contenuMots: MotsContenu = {
-          mots: niv.mots,
-          titre_dictee: dicteeResultat.titre,
-        };
 
-        lignesPlanTravail.push(
-          {
-            eleve_id: eleve.eleve_id,
-            repetibox_eleve_id: eleve.repetibox_eleve_id,
-            titre: dicteeResultat.titre,
-            type: "dictee",
-            contenu: contenuDictee,
-            date_assignation: dateD,
-            date_limite: params.dateLimite || null,
-            periodicite: params.periodicite ?? "jour",
-            statut: "a_faire",
-            chapitre_id: null,
-            groupe_label: groupeLabelDictee,
-          },
-          {
-            eleve_id: eleve.eleve_id,
-            repetibox_eleve_id: eleve.repetibox_eleve_id,
-            titre: `Mots — ${dicteeResultat.titre}`,
-            type: "mots",
-            contenu: contenuMots,
-            date_assignation: dateD,
-            date_limite: params.dateLimite || null,
-            periodicite: params.periodicite ?? "jour",
-            statut: "a_faire",
-            chapitre_id: null,
-            groupe_label: groupeLabelDictee,
-          }
-        );
+        lignesPlanTravail.push({
+          eleve_id: eleve.eleve_id,
+          repetibox_eleve_id: eleve.repetibox_eleve_id,
+          titre: dicteeResultat.titre,
+          type: "dictee",
+          contenu: contenuDictee,
+          date_assignation: dateD,
+          date_limite: null,
+          periodicite: "semaine",
+          statut: "a_faire",
+          chapitre_id: null,
+          groupe_label: groupeLabelDictee,
+        });
       }
 
       // ── 4. INSERT groupé pour tous les élèves ──────────────────────────────
@@ -1429,15 +1459,42 @@ function PageGenererInner() {
                   }}
                 />
                 {generationAudioEnCours && (
-                  <div style={{ textAlign: "center", padding: "24px 20px", background: "#F0FDF4", borderRadius: 12, marginTop: 16 }}>
-                    <p style={{ fontWeight: 700, marginBottom: 12, fontSize: 15 }}>🎙️ Génération des audios en cours…</p>
-                    <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-start", margin: "0 auto", width: "fit-content" }}>
-                      {progressAudio.map((p, i) => (
-                        <span key={i} style={{ fontSize: 13, color: p.fait ? "#065F46" : "var(--text-secondary)" }}>
-                          {p.label} {p.fait ? "✅" : "⏳"}
-                        </span>
-                      ))}
+                  <div style={{
+                    position: "fixed", inset: 0, zIndex: 1000,
+                    background: "rgba(0,0,0,0.45)",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <div style={{
+                      background: "white", borderRadius: 20, padding: "36px 40px",
+                      textAlign: "center", maxWidth: 320, width: "90%",
+                      boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+                    }}>
+                      {/* Spinner */}
+                      <div style={{
+                        width: 56, height: 56, margin: "0 auto 20px",
+                        borderRadius: "50%",
+                        border: "5px solid #D1FAE5",
+                        borderTopColor: "#059669",
+                        animation: "spin 0.9s linear infinite",
+                      }} />
+                      <p style={{ fontWeight: 700, fontSize: 16, margin: "0 0 8px", color: "var(--text)" }}>
+                        Génération des audios…
+                      </p>
+                      {/* Commentaire sur l'étape en cours */}
+                      {(() => {
+                        const enCours = progressAudio.find(p => !p.fait);
+                        const fait = progressAudio.filter(p => p.fait).length;
+                        const total = progressAudio.length;
+                        return (
+                          <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
+                            {enCours
+                              ? <>🎙️ En cours : <strong>{enCours.label}</strong><br />{fait}/{total} fichiers générés</>
+                              : "Finalisation…"}
+                          </p>
+                        );
+                      })()}
                     </div>
+                    <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
                   </div>
                 )}
               </div>

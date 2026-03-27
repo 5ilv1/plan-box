@@ -134,6 +134,11 @@ export default function MotsPlayer({ mots, onTermine }: Props) {
             background: "var(--primary-pale)", borderRadius: 16, padding: "32px 48px",
             display: "inline-block", marginBottom: 12, letterSpacing: 2,
           }}>
+            {motActuel.pronom && (
+              <span style={{ fontWeight: 400, color: "var(--text-secondary)", fontSize: 28, marginRight: 8 }}>
+                {motActuel.pronom}
+              </span>
+            )}
             {motActuel.mot}
           </div>
           <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
@@ -148,7 +153,9 @@ export default function MotsPlayer({ mots, onTermine }: Props) {
           <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 8 }}>
             Définition : <em>{motActuel.definition}</em>
           </p>
-          <p style={{ fontWeight: 600, marginBottom: 16 }}>Comment s&apos;écrit ce mot ?</p>
+          <p style={{ fontWeight: 600, marginBottom: 16 }}>
+            Comment s&apos;écrit{motActuel.pronom ? <> <span style={{ color: "var(--primary)" }}>{motActuel.pronom} …</span></> : " ce mot"} ?
+          </p>
 
           <input
             ref={inputRef}
@@ -186,13 +193,20 @@ export default function MotsPlayer({ mots, onTermine }: Props) {
                 Tu as écrit : <strong style={{ color: "var(--error)" }}>{saisie || "(vide)"}</strong>
               </p>
               <p style={{ fontSize: 14 }}>
-                La bonne orthographe : <strong style={{ color: "var(--success)", fontSize: 20, letterSpacing: 1 }}>{motActuel.mot}</strong>
+                La bonne orthographe :{" "}
+                {motActuel.pronom && (
+                  <span style={{ color: "var(--text-secondary)", fontSize: 16, marginRight: 4 }}>{motActuel.pronom}</span>
+                )}
+                <strong style={{ color: "var(--success)", fontSize: 20, letterSpacing: 1 }}>{motActuel.mot}</strong>
               </p>
             </div>
           )}
 
           {correct && (
             <div style={{ fontSize: 20, fontWeight: 800, letterSpacing: 2, marginBottom: 16, color: "var(--success)" }}>
+              {motActuel.pronom && (
+                <span style={{ fontWeight: 400, fontSize: 16, marginRight: 6 }}>{motActuel.pronom}</span>
+              )}
               {motActuel.mot}
             </div>
           )}

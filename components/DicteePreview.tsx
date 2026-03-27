@@ -206,9 +206,9 @@ export default function DicteePreview({ niveaux, chargement, onValider, onRegene
           </div>
 
           {/* Points travaillés */}
-          {niveauActif.points_travailles.length > 0 && (
+          {(niveauActif.points_travailles ?? []).length > 0 && (
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-              {niveauActif.points_travailles.map((pt) => (
+              {(niveauActif.points_travailles ?? []).map((pt) => (
                 <span key={pt} style={{
                   fontSize: 11, padding: "3px 10px", borderRadius: 20,
                   background: "#EDE9FE", color: "#5B21B6", fontWeight: 600,

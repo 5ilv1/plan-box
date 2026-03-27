@@ -10,6 +10,7 @@ import CalcMentalStack from "@/components/CalcMentalStack";
 import ExerciceStack from "@/components/ExerciceStack";
 import DicteePlayer from "@/components/DicteePlayer";
 import MotsPlayer from "@/components/MotsPlayer";
+import DicteeMotsEleve from "@/components/DicteeMotsEleve";
 import QCMPlayer from "@/components/QCMPlayer";
 import AtelierEcriture from "@/components/AtelierEcriture";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
@@ -37,7 +38,7 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
   if (type === "exercice")       return { label: "Exercice", tagClass: "primary", icon: "edit_note", subtitle: "Lis bien les consignes et réponds aux questions" };
   if (type === "calcul_mental")  return { label: "Calcul mental", tagClass: "primary", icon: "calculate", subtitle: "Calcule de tête le plus vite possible" };
   if (type === "dictee")         return { label: "Dictée", tagClass: "secondary", icon: "headphones", subtitle: "Écoute bien attentivement et écris ce que tu entends dans ton cahier" };
-  if (type === "mots")           return { label: "Vocabulaire", tagClass: "secondary", icon: "spellcheck", subtitle: "Apprends et retiens les mots importants" };
+  if (type === "mots")           return { label: "Mots de la dictée", tagClass: "secondary", icon: "spellcheck", subtitle: "Lis et apprends les mots importants de la semaine" };
   if (type === "fichier_maths")  return { label: "Fichier de maths", tagClass: "primary", icon: "menu_book", subtitle: "Ouvre ton fichier et fais les exercices demandés" };
   if (type === "lecon_copier")   return { label: "Leçon à copier", tagClass: "secondary", icon: "book_2", subtitle: "Copie la leçon soigneusement dans ton cahier" };
   if (type === "ecriture")       return { label: "Écriture créative", tagClass: "secondary", icon: "edit_note", subtitle: "Laisse parler ton imagination" };
@@ -571,14 +572,22 @@ export default function PageActivite() {
             {/* ── Mots ── */}
             {mots && (
               <div className="pb-card">
-                <MotsPlayer
-                  mots={mots.mots ?? []}
-                  onTermine={(score, total) => {
-                    const pct = total > 0 ? (score / total) * 100 : 0;
-                    const statut: StatutBloc = pct >= 80 ? "fait" : "en_cours";
-                    marquerFait(undefined, statut).then(() => setEtat("termine"));
-                  }}
-                />
+                {(bloc.contenu as any)?.mots_semaine ? (
+                  <DicteeMotsEleve
+                    mots={mots.mots ?? []}
+                    theme={mots.titre_dictee ?? ""}
+                    onTermine={() => marquerFait().then(() => setEtat("termine"))}
+                  />
+                ) : (
+                  <MotsPlayer
+                    mots={mots.mots ?? []}
+                    onTermine={(score, total) => {
+                      const pct = total > 0 ? (score / total) * 100 : 0;
+                      const statut: StatutBloc = pct >= 80 ? "fait" : "en_cours";
+                      marquerFait(undefined, statut).then(() => setEtat("termine"));
+                    }}
+                  />
+                )}
               </div>
             )}
 

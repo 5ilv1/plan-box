@@ -95,9 +95,9 @@ export default function EnseignantLayout({ children }: Props) {
 
         {/* Boutons principaux */}
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-          <Link href="/enseignant/admin/planning" style={{ textDecoration: "none" }}>
+          <Link href="/enseignant/nouvelle-semaine" style={{ textDecoration: "none" }}>
             <button className="ens-sidebar-btn" type="button">
-              <span className="ms" style={{ fontSize: 20 }}>add</span>
+              <span className="ms" style={{ fontSize: 20 }}>date_range</span>
               <span>Nouvelle semaine</span>
             </button>
           </Link>

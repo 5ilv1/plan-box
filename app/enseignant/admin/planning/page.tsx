@@ -455,6 +455,18 @@ export default function PageAdminPlanning() {
     const nbTotal = g.blocs.length;
     const nomsEleves = g.blocs.map((b) => b.eleve_info?.prenom ?? "?").slice(0, 3).join(", ");
     const surplus = nbTotal > 3 ? ` +${nbTotal - 3}` : "";
+
+    async function supprimerGroupe(e: React.MouseEvent) {
+      e.stopPropagation();
+      if (!confirm(`Supprimer "${g.titre}" pour tous les élèves ?`)) return;
+      await fetch("/api/admin/supprimer-bloc-planning", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: g.type, titre: g.titre, date: g.date_assignation }),
+      });
+      charger();
+    }
+
     return (
       <div
         onPointerDown={(e) => onPointerDown(e, g)}
@@ -462,9 +474,28 @@ export default function PageAdminPlanning() {
           background: conf.bg, border: `1.5px solid ${conf.border}`, borderRadius: 8,
           padding: "7px 10px", cursor: isDragging ? "grabbing" : "grab",
           opacity: isDragging ? 0.35 : 1, userSelect: "none", touchAction: "none",
-          transition: "opacity 0.12s",
+          transition: "opacity 0.12s", position: "relative",
         }}
       >
+        {/* Croix suppression */}
+        <button
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={supprimerGroupe}
+          title="Supprimer ce bloc"
+          style={{
+            position: "absolute", top: -6, right: -6,
+            width: 18, height: 18, borderRadius: "50%",
+            background: "#DC2626", border: "2px solid white",
+            cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+            boxShadow: "0 1px 4px rgba(0,0,0,0.2)", padding: 0,
+            transition: "transform 0.15s",
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = "scale(1.2)"; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = "scale(1)"; }}
+        >
+          <span className="ms" style={{ fontSize: 11, color: "white", lineHeight: 1 }}>close</span>
+        </button>
+
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
           <span className="ms" style={{ fontSize: 11 }}>{ICONES_TYPE[g.type] ?? "push_pin"}</span>
           <span style={{
@@ -601,7 +632,7 @@ export default function PageAdminPlanning() {
           {chargement ? (
             <div style={{ textAlign: "center", padding: 60, color: "var(--text-secondary)" }}>Chargement…</div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(180px, 1fr))", gap: 10, minWidth: 900 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 10, minWidth: 900 }}>
               {joursSemaine.map(({ nom, date, iso, groupes, nbBlocs }) => {
                 const isToday  = iso === todayISO;
                 const isTarget = dropHighlight === iso;

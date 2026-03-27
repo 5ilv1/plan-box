@@ -38,7 +38,13 @@ CREATE TABLE IF NOT EXISTS plan_travail (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   eleve_id         uuid NOT NULL REFERENCES eleves(id) ON DELETE CASCADE,
   titre            text NOT NULL,
-  type             text NOT NULL CHECK (type IN ('exercice','calcul_mental','mots','dictee','media','eval','libre')),
+  type             text NOT NULL CHECK (type IN ('exercice','calcul_mental','mots','dictee','media','eval','libre','ressource','repetibox','fichier_maths','lecon_copier','ecriture','texte_a_trous','analyse_phrase','classement','lecture')),
+  -- NOTE: si la contrainte actuelle en DB n'inclut pas tous ces types, exécuter :
+  -- ALTER TABLE plan_travail DROP CONSTRAINT IF EXISTS plan_travail_type_check;
+  -- ALTER TABLE plan_travail ADD CONSTRAINT plan_travail_type_check
+  --   CHECK (type IN ('exercice','calcul_mental','mots','dictee','media','eval','libre',
+  --                    'ressource','repetibox','fichier_maths','lecon_copier','ecriture',
+  --                    'texte_a_trous','analyse_phrase','classement','lecture'));
   contenu          jsonb,
   date_assignation date NOT NULL DEFAULT CURRENT_DATE,
   date_limite      date,

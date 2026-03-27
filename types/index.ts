@@ -182,6 +182,7 @@ export interface PhraseDict {
 export interface MotDict {
   mot: string;
   definition: string;
+  pronom?: string; // pronom personnel pour les verbes conjugués (ex: "ils" pour "aideront")
 }
 
 export interface NiveauDict {
@@ -417,7 +418,7 @@ export const TYPE_BLOC_CONFIG: Record<
 > = {
   exercice:      { icone: "edit_note",    libelle: "Exercice",      couleur: "#2563EB" },
   calcul_mental: { icone: "calculate",    libelle: "Calcul mental", couleur: "#7C3AED" },
-  mots:          { icone: "abc",          libelle: "Mots",          couleur: "#0369A1" },
+  mots:          { icone: "spellcheck",   libelle: "Mots de la dictée", couleur: "#D97706" },
   dictee:        { icone: "headphones",   libelle: "Dictée",        couleur: "#D97706" },
   media:         { icone: "play_circle",  libelle: "Média",         couleur: "#059669" },
   eval:          { icone: "quiz",         libelle: "Évaluation",    couleur: "#DC2626" },

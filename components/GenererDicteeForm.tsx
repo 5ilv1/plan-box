@@ -4,23 +4,22 @@ import { useState } from "react";
 import { AssignationSelecteur, DifficulteNiveau, ParamsDictee } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
 
-function semaineCourante(): string {
-  const d = new Date();
-  const jan4 = new Date(d.getFullYear(), 0, 4);
-  const startOfWeek1 = new Date(jan4);
-  startOfWeek1.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7));
-  const diff = (d.getTime() - startOfWeek1.getTime()) / (7 * 24 * 3600 * 1000);
-  const week = Math.floor(diff) + 1;
-  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
+// Retourne le lundi de la semaine contenant une date ISO
+function getLundiDeSemaine(dateStr: string): string {
+  const d = new Date(dateStr + "T12:00:00");
+  const jour = d.getDay(); // 0=dim, 1=lun…6=sam
+  const offset = jour === 0 ? -6 : 1 - jour;
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().split("T")[0];
 }
 
-function lundiDeSemaine(semaine: string): string {
-  const [annee, w] = semaine.split("-W");
-  const numSemaine = parseInt(w, 10);
-  const jan4 = new Date(parseInt(annee, 10), 0, 4);
-  const lundi = new Date(jan4);
-  lundi.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7) + (numSemaine - 1) * 7);
-  return lundi.toISOString().split("T")[0];
+// Retourne le prochain lundi (ou lundi suivant si on est déjà après lundi de cette semaine)
+function getProchainLundi(): string {
+  const d = new Date();
+  const jour = d.getDay();
+  const offset = jour === 0 ? 1 : jour === 1 ? 7 : 8 - jour;
+  d.setDate(d.getDate() + offset);
+  return d.toISOString().split("T")[0];
 }
 
 const TEMPS_VERBAUX = [
@@ -50,7 +49,7 @@ interface Props {
 
 export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
   const [theme, setTheme] = useState("");
-  const [nbDictees, setNbDictees] = useState<1 | 2 | 3 | 4>(2);
+  const [nbDictees, setNbDictees] = useState<1 | 2 | 3 | 4>(3);
   const [difficulteParNiveau, setDifficulteParNiveau] = useState<Record<1|2|3|4, DifficulteNiveau>>({
     1: "standard",
     2: "standard",
@@ -60,10 +59,7 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
   const [tempsVerbaux, setTempsVerbaux] = useState<string[]>(["imparfait"]);
   const [pointsGram, setPointsGram] = useState<string[]>(["accords sujet/verbe"]);
   const [assignation, setAssignation] = useState<AssignationSelecteur>(ASSIGNATION_VIDE);
-  const [periodicite, setPeriodicite] = useState<"jour" | "semaine">("jour");
-  const [dateAssignation, setDateAssignation] = useState(new Date().toISOString().split("T")[0]);
-  const [semaineAssignation, setSemaineAssignation] = useState(semaineCourante());
-  const [dateLimite, setDateLimite] = useState("");
+  const [lundiDemarrage, setLundiDemarrage] = useState(getProchainLundi());
 
   function toggle<T extends string>(arr: T[], val: T, set: (v: T[]) => void) {
     set(arr.includes(val) ? arr.filter((x) => x !== val) : [...arr, val]);
@@ -76,7 +72,6 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
       alert("Veuillez sélectionner au moins un groupe ou un élève.");
       return;
     }
-    const dateFinale = periodicite === "semaine" ? lundiDeSemaine(semaineAssignation) : dateAssignation;
     onGenerer({
       type: "dictee",
       theme: theme.trim(),
@@ -85,9 +80,9 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
       nbDictees,
       difficulteParNiveau,
       assignation,
-      dateAssignation: dateFinale,
-      dateLimite,
-      periodicite,
+      dateAssignation: lundiDemarrage,
+      dateLimite: "",
+      periodicite: "semaine",
     });
   }
 
@@ -129,11 +124,12 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
             </button>
           ))}
         </div>
-        {nbDictees > 1 && (
-          <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 6 }}>
-            Les dictées seront espacées de 2 jours (ex. mardi + jeudi), même liste de mots, textes progressivement plus difficiles.
-          </p>
-        )}
+        <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 6 }}>
+          {nbDictees === 1 && "Mardi uniquement."}
+          {nbDictees === 2 && "Mardi (entraînement) + Jeudi (entraînement). Mêmes mots, textes progressifs."}
+          {nbDictees === 3 && "Mardi + Jeudi (élèves) · Vendredi = dictée bilan générée pour l'enseignant, non affectée aux élèves."}
+          {nbDictees === 4 && "Mardi + Jeudi + Vendredi (élèves) · Samedi = bilan enseignant uniquement."}
+        </p>
       </div>
 
       {/* Difficulté par niveau d'étoiles */}
@@ -272,47 +268,19 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
 
       {/* Planification */}
       <div style={{ marginTop: 16 }}>
-        <label className="form-label">Planification</label>
-        <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-          {(["jour", "semaine"] as const).map((p) => (
-            <button
-              key={p}
-              type="button"
-              onClick={() => setPeriodicite(p)}
-              style={{
-                padding: "7px 16px", borderRadius: 20, fontSize: 13, cursor: "pointer",
-                fontWeight: periodicite === p ? 700 : 500,
-                background: periodicite === p ? "var(--primary)" : "white",
-                color: periodicite === p ? "white" : "var(--text-secondary)",
-                border: periodicite === p ? "none" : "1px solid var(--border)",
-              }}
-            >
-              {p === "jour" ? "📅 Jour précis" : "📆 Toute la semaine"}
-            </button>
-          ))}
-        </div>
-
-        <div className="grid-2">
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">
-              {periodicite === "jour" ? "Date de la 1ère dictée" : "Semaine d'assignation"}
-            </label>
-            {periodicite === "jour" ? (
-              <input type="date" className="form-input" value={dateAssignation}
-                onChange={(e) => setDateAssignation(e.target.value)} required />
-            ) : (
-              <input type="week" className="form-input" value={semaineAssignation}
-                onChange={(e) => setSemaineAssignation(e.target.value)} required />
-            )}
-          </div>
-          <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">
-              Date limite <span className="text-secondary">(optionnel)</span>
-            </label>
-            <input type="date" className="form-input" value={dateLimite}
-              onChange={(e) => setDateLimite(e.target.value)} />
-          </div>
-        </div>
+        <label className="form-label">Lundi de démarrage</label>
+        <input
+          type="date"
+          className="form-input"
+          value={lundiDemarrage}
+          onChange={(e) => {
+            if (e.target.value) setLundiDemarrage(getLundiDeSemaine(e.target.value));
+          }}
+          required
+        />
+        <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 6 }}>
+          Les blocs seront créés pour le lundi (mots), mardi et jeudi (entraînement) de cette semaine.
+        </p>
       </div>
 
       <button

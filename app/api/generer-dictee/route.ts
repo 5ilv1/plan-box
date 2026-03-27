@@ -3,8 +3,10 @@ import Anthropic from "@anthropic-ai/sdk";
 import { ParamsDictee, MotDict } from "@/types";
 
 // motsImposer : mots déjà générés par la 1ère dictée, à réutiliser pour les suivantes
+// phrasesDejaUtilisees : phrases des dictées précédentes, INTERDITES de réutilisation
 interface ParamsDicteeAvecMots extends ParamsDictee {
   motsImposer?: Record<number, MotDict[]>; // etoiles → liste de mots
+  phrasesDejaUtilisees?: string[];          // phrases à ne pas reproduire
 }
 
 function buildPrompt(p: ParamsDicteeAvecMots): string {
@@ -20,6 +22,11 @@ function buildPrompt(p: ParamsDicteeAvecMots): string {
 ${blocsMotsImposer}
 Tu dois utiliser EXACTEMENT ces mots dans le champ "mots" de chaque niveau (ne pas en ajouter, ne pas en retirer, ne pas changer les définitions).
 Crée des phrases NOUVELLES et DIFFÉRENTES qui font naturellement apparaître ces mots.\n`
+    : "";
+
+  const instructionPhrases = p.phrasesDejaUtilisees && p.phrasesDejaUtilisees.length > 0
+    ? `\nPHRASES INTERDITES — ces phrases ont déjà été utilisées dans une dictée précédente de cette semaine. Tu ne peux en reproduire AUCUNE, même partiellement ou légèrement modifiée. Chaque phrase de ta réponse doit être ENTIÈREMENT NOUVELLE, avec une construction syntaxique et un contenu différents :
+${p.phrasesDejaUtilisees.map((ph, i) => `${i + 1}. ${ph}`).join("\n")}\n`
     : "";
 
   // Description des phrases attendues selon la difficulté d'UN niveau
@@ -74,7 +81,7 @@ Tu génères un ensemble complet de 4 dictées différenciées sur le thème : $
 Temps verbaux à inclure : ${p.tempsVerbaux.join(", ")}.
 Points grammaticaux à travailler : ${p.pointsGrammaticaux.join(", ")}.
 Difficultés par niveau : ⭐ ${diffParNiv[1]} | ⭐⭐ ${diffParNiv[2]} | ⭐⭐⭐ ${diffParNiv[3]} | ⭐⭐⭐⭐ ${diffParNiv[4]}.
-${instructionMots}
+${instructionMots}${instructionPhrases}
 RÈGLE FONDAMENTALE D'EMBOÎTEMENT :
 Les phrases du niveau ⭐ doivent être présentes MOT POUR MOT dans les niveaux supérieurs.
 Les phrases de ⭐⭐ doivent être présentes MOT POUR MOT dans ⭐⭐⭐ et ⭐⭐⭐⭐.
@@ -96,7 +103,8 @@ Format attendu :
         { "id": 3, "texte": "Phrase 3." }
       ],
       "mots": [
-        { "mot": "automne", "definition": "La saison entre l'été et l'hiver" }
+        { "mot": "automne", "definition": "La saison entre l'été et l'hiver" },
+        { "mot": "aideront", "definition": "Verbe aider au futur, 3e personne du pluriel", "pronom": "ils" }
       ],
       "points_travailles": ["accords sujet/verbe", "imparfait"]
     },
@@ -108,7 +116,8 @@ Format attendu :
 
 ${contraintes}
 Au moins 2 groupes nominaux avec accord adjectif/déterminant par dictée.
-Le champ "texte" doit contenir toutes les phrases du niveau séparées par des espaces (texte continu).`;
+Le champ "texte" doit contenir toutes les phrases du niveau séparées par des espaces (texte continu).
+Pour les mots qui sont des verbes conjugués, ajoute impérativement le champ "pronom" avec le pronom personnel sujet correspondant (ex: "je", "tu", "il", "elle", "nous", "vous", "ils", "elles", "on"). Pour les noms, adjectifs ou adverbes, n'inclus pas le champ "pronom".`;
 }
 
 export async function POST(req: NextRequest) {

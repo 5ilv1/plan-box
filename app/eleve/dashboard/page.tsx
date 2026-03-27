@@ -42,7 +42,7 @@ function iconeMatiere(matiere?: string | null): string {
 const TYPE_BLOC_MS: Record<string, { icon: string; color: string; bg: string }> = {
   exercice:      { icon: "edit_note",    color: "#2563EB", bg: "rgba(37,99,235,0.1)" },
   calcul_mental: { icon: "calculate",    color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
-  mots:          { icon: "abc",          color: "#0369A1", bg: "rgba(3,105,161,0.1)" },
+  mots:          { icon: "spellcheck",   color: "#D97706", bg: "rgba(217,119,6,0.1)" },
   dictee:        { icon: "headphones",   color: "#D97706", bg: "rgba(217,119,6,0.1)" },
   media:         { icon: "play_circle",  color: "#059669", bg: "rgba(5,150,105,0.1)" },
   eval:          { icon: "quiz",         color: "#DC2626", bg: "rgba(220,38,38,0.1)" },
@@ -963,7 +963,7 @@ export default function DashboardEleve() {
                     const CAT: Record<string, { label: string; color: string; bg: string }> = {
                       exercice:      { label: "Exercice",        color: "#2563EB", bg: "rgba(37,99,235,0.08)" },
                       calcul_mental: { label: "Calcul mental",   color: "#7C3AED", bg: "rgba(124,58,237,0.08)" },
-                      mots:          { label: "Vocabulaire",     color: "#D97706", bg: "rgba(217,119,6,0.08)" },
+                      mots:          { label: "Mots de la dictée", color: "#D97706", bg: "rgba(217,119,6,0.08)" },
                       eval:          { label: "Évaluation",      color: "#DC2626", bg: "rgba(220,38,38,0.08)" },
                       ressource:     { label: "Ressource",       color: "#0891B2", bg: "rgba(8,145,178,0.08)" },
                       libre:         { label: "Activité libre",  color: "#6B7280", bg: "rgba(107,114,128,0.08)" },
@@ -978,7 +978,7 @@ export default function DashboardEleve() {
                     const DESC: Record<string, string> = {
                       exercice:      "Entraîne-toi sur les notions du cours.",
                       calcul_mental: "Entraîne ta rapidité de calcul.",
-                      mots:          "Apprends de nouveaux termes essentiels.",
+                      mots:          "Lis et apprends les mots de la dictée.",
                       eval:          "Évalue tes connaissances.",
                       ressource:     "Consulte la ressource en ligne.",
                       libre:         "Activité libre à réaliser.",

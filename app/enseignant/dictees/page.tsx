@@ -206,6 +206,9 @@ export default function PageDictees() {
   const [batches, setBatches] = useState<Batch[]>([]);
   const [chargement, setChargement] = useState(true);
   const [erreurChargement, setErreurChargement] = useState("");
+  const [groupesPB, setGroupesPB] = useState<{ id: string; nom: string }[]>([]);
+  const [affectationEnCours, setAffectationEnCours] = useState<string | null>(null);
+  const [semaineAffectation, setSemaineAffectation] = useState<Record<string, string>>({});
 
   // Vue active : tableau des mots ou bibliothèque
   const [vue, setVue] = useState<"tableau" | "bibliotheque">("bibliotheque");
@@ -225,7 +228,15 @@ export default function PageDictees() {
   // Lecture TTS en cours — clé : batchId
   const [lecture, setLecture] = useState<Record<string, boolean>>({});
 
-  useEffect(() => { charger(); }, []);
+  useEffect(() => {
+    charger();
+    fetch("/api/admin/groupes").then((r) => r.json())
+      .then((data) => {
+        const grps = Array.isArray(data) ? data : data.groupes ?? [];
+        setGroupesPB(grps.map((g: any) => ({ id: g.id, nom: g.nom })));
+      })
+      .catch(() => {});
+  }, []);
 
   async function charger() {
     setChargement(true);
@@ -295,6 +306,159 @@ export default function PageDictees() {
 
   function toutDeselectionner() {
     setSemainesSelectionnees(new Set());
+  }
+
+  // Calcule le lundi de la semaine contenant une date ISO (YYYY-MM-DD)
+  function getLundiDeSemaine(dateStr: string): string {
+    const d = new Date(dateStr + "T12:00:00");
+    const day = d.getDay(); // 0=dim, 1=lun, ..., 6=sam
+    const diff = day === 0 ? -6 : 1 - day;
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().split("T")[0];
+  }
+
+  // Retourne le lundi suivant (ou le lundi de la semaine prochaine si on est déjà après lundi)
+  function getProchainLundi(): string {
+    const d = new Date();
+    const day = d.getDay(); // 0=dim, 1=lun
+    const diff = day === 0 ? 1 : day === 1 ? 7 : 8 - day;
+    d.setDate(d.getDate() + diff);
+    return d.toISOString().split("T")[0];
+  }
+
+  // Offsets des jours depuis lundi : Lundi=0, Mardi=1, Jeudi=3, Vendredi=4 (pas de mercredi)
+  const JOURS_OFFSETS = [0, 1, 3, 4];
+
+  async function affecterDictee(batch: Batch) {
+    if (groupesPB.length === 0) {
+      alert("Aucun groupe trouvé. Vérifiez que votre classe contient des groupes.");
+      return;
+    }
+
+    const lundi = semaineAffectation[batch.batchId] || getProchainLundi();
+    const nbJours = Math.min(batch.jours.length, JOURS_LABELS.length);
+
+    if (nbJours === 0) {
+      alert("Ce batch ne contient aucune dictée.");
+      return;
+    }
+
+    const lundiDate = new Date(lundi + "T00:00:00");
+    const joursDates = JOURS_OFFSETS.slice(0, nbJours).map((offset) => {
+      const d = new Date(lundiDate);
+      d.setDate(d.getDate() + offset);
+      return d.toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+    });
+
+    const JOURS_DESC = ["Lundi : dictée de mots", "Mardi : dictée d'entraînement", "Jeudi : dictée d'entraînement", "Vendredi : dictée bilan (en classe)"];
+    if (!confirm(
+      `Affecter "${batch.theme}" à toute la classe ?\n\n` +
+      joursDates.map((d, i) => `${JOURS_DESC[i] ?? JOURS_LABELS[i]} — ${d}`).join("\n") +
+      `\n\nSemaine du ${new Date(lundi + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}`
+    )) return;
+
+    setAffectationEnCours(batch.batchId);
+
+    try {
+      // Collecter tous les mots uniques du premier jour (toutes les étoiles)
+      const premierJour = batch.jours[0];
+      const motsUniques: { mot: string; definition: string }[] = [];
+      const motsSeen = new Set<string>();
+      if (premierJour) {
+        for (const niv of premierJour.niveaux) {
+          for (const m of (niv.mots ?? [])) {
+            const key = m.mot.toLowerCase().trim();
+            if (!motsSeen.has(key)) {
+              motsSeen.add(key);
+              motsUniques.push({ mot: m.mot, definition: m.definition });
+            }
+          }
+        }
+      }
+
+      const assignation = {
+        groupeIds: groupesPB.map((g) => g.id),
+        eleveUids: [],
+        groupeNoms: groupesPB.map((g) => g.nom),
+      };
+
+      // Lundi : mots de la semaine (premier parent_id)
+      // Mardi : dictée d'entraînement (deuxième parent_id)
+      // Jeudi : dictée d'entraînement (troisième parent_id)
+      // Vendredi : dictée bilan (en classe, pas de bloc élève)
+      const blocs: { type: string; titre: string; jour: number; contenu: Record<string, unknown>; assignation: typeof assignation }[] = [];
+
+      // Lundi — Mots
+      if (batch.jours[0]) {
+        blocs.push({
+          type: "mots",
+          titre: `${batch.theme} — Mots`,
+          jour: JOURS_OFFSETS[0], // 0 = lundi
+          contenu: {
+            dictee_parent_id: batch.jours[0].parentId,
+            batch_id: batch.batchId,
+            theme: batch.theme,
+            mots_semaine: true,
+            mots: motsUniques,
+            titre_dictee: batch.theme,
+          },
+          assignation,
+        });
+      }
+
+      // Mardi — Dictée d'entraînement (2e parent)
+      if (batch.jours[1]) {
+        blocs.push({
+          type: "dictee",
+          titre: `${batch.theme} — Mardi`,
+          jour: JOURS_OFFSETS[1], // 1 = mardi
+          contenu: {
+            dictee_parent_id: batch.jours[1].parentId,
+            batch_id: batch.batchId,
+            theme: batch.theme,
+          },
+          assignation,
+        });
+      }
+
+      // Jeudi — Dictée d'entraînement (3e parent)
+      if (batch.jours[2]) {
+        blocs.push({
+          type: "dictee",
+          titre: `${batch.theme} — Jeudi`,
+          jour: JOURS_OFFSETS[2], // 3 = jeudi
+          contenu: {
+            dictee_parent_id: batch.jours[2].parentId,
+            batch_id: batch.batchId,
+            theme: batch.theme,
+          },
+          assignation,
+        });
+      }
+
+      // Vendredi — Dictée bilan : pas de bloc élève (l'enseignant gère en classe)
+
+      const res = await fetch("/api/planifier-semaine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lundi, blocs }),
+      });
+
+      const json = await res.json();
+
+      if (!res.ok || json.error) {
+        alert(`Erreur : ${json.error ?? "Affectation échouée."}`);
+      } else {
+        const msg = json.totalSkipped > 0
+          ? `Dictées affectées (${json.totalInserted} créées, ${json.totalSkipped} déjà existantes).`
+          : `Dictées affectées avec succès (${json.totalInserted} blocs créés).`;
+        alert(msg);
+      }
+    } catch (err) {
+      alert("Erreur réseau lors de l'affectation.");
+    } finally {
+      setAffectationEnCours(null);
+    }
   }
 
   async function supprimerBatch(batch: Batch) {
@@ -604,6 +768,33 @@ export default function PageDictees() {
 
                       {/* Actions */}
                       <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                        {/* Sélecteur lundi de démarrage + bouton Affecter */}
+                        <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                          <span style={{ fontSize: 11, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>Début :</span>
+                          <input
+                            type="date"
+                            value={semaineAffectation[bid] || getProchainLundi()}
+                            onChange={(e) => {
+                              const lundi = getLundiDeSemaine(e.target.value);
+                              setSemaineAffectation((prev) => ({ ...prev, [bid]: lundi }));
+                            }}
+                            style={{
+                              padding: "4px 8px", fontSize: 12, borderRadius: 6,
+                              border: "1px solid var(--border)", background: "white",
+                              cursor: "pointer", width: 130,
+                            }}
+                            title="Lundi de démarrage de la semaine"
+                          />
+                        </div>
+                        <button
+                          onClick={(e) => { e.stopPropagation(); affecterDictee(batch); }}
+                          disabled={affectationEnCours === bid}
+                          className="btn-primary"
+                          style={{ padding: "4px 12px", fontSize: 13, borderRadius: 6, opacity: affectationEnCours === bid ? 0.6 : 1 }}
+                          title="Affecter à toute la classe (Lundi : mots, Mardi et Jeudi : dictées, Vendredi : bilan en classe)"
+                        >
+                          {affectationEnCours === bid ? "Envoi…" : "Affecter"}
+                        </button>
                         <button
                           onClick={() => genererPDF(batch)}
                           className="btn-secondary"
