@@ -24,6 +24,8 @@ export interface CalcMentalIA {
   modeles?: Record<string, unknown>[];
   nb_calculs?: number;
   operations?: string[];
+  genere_par_ia?: boolean;
+  consignes_speciales?: string;
 }
 
 // Sélection d'assignation multi-cible (groupes + élèves individuels)
@@ -59,6 +61,8 @@ export interface ParamsCalcMental {
   table: string;
   nbCalculs: number;
   difficulte: "facile" | "moyen" | "difficile";
+  consignesSpeciales?: string; // Contrainte libre générée par IA (ex: "a+b+c avec a+c=100")
+  titrePersonnalise?: string;  // Titre optionnel affiché dans le plan de travail
   assignation: AssignationSelecteur;
   dateAssignation: string;
   dateLimite: string;

@@ -203,9 +203,43 @@ function PageGenererInner() {
       return;
     }
 
-    // ── Calcul mental : génération locale, sans IA ──────────────────────
+    // ── Calcul mental ────────────────────────────────────────────────────
     if (params.type === "calcul_mental") {
-      const { modeles, nbCalculs } = buildModeles(params as ParamsCalcMental);
+      const p = params as ParamsCalcMental;
+
+      // Chemin IA : consignes spéciales (structure libre)
+      if (p.consignesSpeciales?.trim()) {
+        const res = await fetch("/api/generer-calcul-mental-ia", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            consignes: p.consignesSpeciales,
+            nbCalculs: p.nbCalculs,
+            niveauNom: p.niveauNom,
+          }),
+        });
+        const json = await res.json();
+        if (!res.ok || json.erreur) {
+          setErreur(json.erreur ?? "Erreur lors de la génération.");
+          setEtape("formulaire");
+          return;
+        }
+        const c: ContenuPreview = {
+          type: "calcul_mental",
+          data: {
+            calculs: json.calculs,
+            nb_calculs: p.nbCalculs,
+            operations: p.operations,
+            genere_par_ia: true,
+          },
+        };
+        setContenu(c);
+        setEtape("apercu");
+        return;
+      }
+
+      // Chemin local : templates classiques
+      const { modeles, nbCalculs } = buildModeles(p);
       const aperçuCalculs = genererDepuisModeles(modeles, nbCalculs);
       const c: ContenuPreview = {
         type: "calcul_mental",
@@ -213,7 +247,7 @@ function PageGenererInner() {
           calculs: aperçuCalculs,
           modeles: modeles as unknown as Record<string, unknown>[],
           nb_calculs: nbCalculs,
-          operations: (params as any).operations,
+          operations: p.operations,
         },
       };
       setContenu(c);
@@ -579,12 +613,13 @@ function PageGenererInner() {
         operations: (contenuFinal.data as any).operations ?? (paramsEnCours as any).operations,
       };
     } else {
-      // Ancien format IA — on stocke les calculs fixes
+      // Format IA (calculs fixes, ex: calculs malins avec contrainte)
       contenuJsonb = {
         ...contenuFinal.data,
         nb_calculs: (contenuFinal.data.calculs ?? []).length,
         operations: (paramsEnCours as { operations?: string[] }).operations,
         genere_par_ia: true,
+        consignes_speciales: (paramsEnCours as ParamsCalcMental).consignesSpeciales ?? undefined,
       };
     }
 
@@ -601,6 +636,10 @@ function PageGenererInner() {
         ? (contenuFinal.data as ClassementData).titre
         : contenuFinal.type === "lecture"
         ? (contenuFinal.data as LectureData).titre
+        : (paramsEnCours as ParamsCalcMental).titrePersonnalise?.trim()
+        ? (paramsEnCours as ParamsCalcMental).titrePersonnalise!
+        : (paramsEnCours as ParamsCalcMental).consignesSpeciales?.trim()
+        ? `Calcul malin — ${(paramsEnCours as ParamsCalcMental).consignesSpeciales!.slice(0, 50)}`
         : `Calcul mental — ${(paramsEnCours as { operations?: string[] }).operations?.join(", ")}`;
 
     const chapitreId = (paramsEnCours as { chapitreId?: string | null }).chapitreId ?? null;

@@ -51,6 +51,8 @@ export default function GenererCalcMentalForm({
   const [table, setTable] = useState("");
   const [nbCalculs, setNbCalculs] = useState(10);
   const [difficulte, setDifficulte] = useState<"facile" | "moyen" | "difficile">("moyen");
+  const [consignesSpeciales, setConsignesSpeciales] = useState("");
+  const [titrePersonnalise, setTitrePersonnalise] = useState("");
   const [assignation, setAssignation] = useState<AssignationSelecteur>(ASSIGNATION_VIDE);
   const [periodicite, setPeriodicite] = useState<"jour" | "semaine">("jour");
   const [dateAssignation, setDateAssignation] = useState(new Date().toISOString().split("T")[0]);
@@ -79,6 +81,8 @@ export default function GenererCalcMentalForm({
       table,
       nbCalculs,
       difficulte,
+      consignesSpeciales: consignesSpeciales.trim() || undefined,
+      titrePersonnalise: titrePersonnalise.trim() || undefined,
       assignation,
       dateAssignation: dateFinale,
       dateLimite,
@@ -167,6 +171,44 @@ export default function GenererCalcMentalForm({
           value={table}
           onChange={(e) => setTable(e.target.value)}
           placeholder="Ex. table de 7"
+        />
+      </div>
+
+      {/* Consignes spéciales IA */}
+      <div className="form-group">
+        <label className="form-label">
+          Consignes spéciales{" "}
+          <span style={{ fontSize: 11, background: "#EDE9FE", color: "#7C3AED", borderRadius: 6, padding: "2px 7px", fontWeight: 600 }}>
+            ✦ IA
+          </span>{" "}
+          <span className="text-secondary">(optionnel)</span>
+        </label>
+        <textarea
+          className="form-input"
+          value={consignesSpeciales}
+          onChange={(e) => setConsignesSpeciales(e.target.value)}
+          rows={3}
+          placeholder={"Ex. calcul malin du type a+b+c avec a+b ou b+c ou a+c = 100\nEx. doubles et moitiés de nombres ronds"}
+          style={{ resize: "vertical", fontFamily: "var(--font)", fontSize: 14 }}
+        />
+        {consignesSpeciales.trim() && (
+          <p style={{ fontSize: 12, color: "#7C3AED", marginTop: 4 }}>
+            Les calculs seront générés par l&apos;IA selon cette contrainte (les opérations et la difficulté sont ignorées).
+          </p>
+        )}
+      </div>
+
+      {/* Titre personnalisé */}
+      <div className="form-group">
+        <label className="form-label">
+          Titre <span className="text-secondary">(optionnel)</span>
+        </label>
+        <input
+          type="text"
+          className="form-input"
+          value={titrePersonnalise}
+          onChange={(e) => setTitrePersonnalise(e.target.value)}
+          placeholder="Ex. Calculs malins — compléments à 100"
         />
       </div>
 
