@@ -24,9 +24,42 @@ Tu dois utiliser EXACTEMENT ces mots dans le champ "mots" de chaque niveau (ne p
 Crée des phrases NOUVELLES et DIFFÉRENTES qui font naturellement apparaître ces mots.\n`
     : "";
 
+  // Extraire tous les n-grammes (4+ mots consécutifs) des phrases déjà utilisées
+  function extraireNgrammes(phrases: string[]): string[] {
+    const ngrams = new Set<string>();
+    for (const phrase of phrases) {
+      const mots = phrase.toLowerCase().replace(/[.,;:!?«»""]/g, "").split(/\s+/).filter(Boolean);
+      for (let n = 4; n <= Math.min(mots.length, 8); n++) {
+        for (let i = 0; i <= mots.length - n; i++) {
+          ngrams.add(mots.slice(i, i + n).join(" "));
+        }
+      }
+    }
+    return Array.from(ngrams).slice(0, 60); // limiter pour ne pas exploser le prompt
+  }
+
   const instructionPhrases = p.phrasesDejaUtilisees && p.phrasesDejaUtilisees.length > 0
-    ? `\nPHRASES INTERDITES — ces phrases ont déjà été utilisées dans une dictée précédente de cette semaine. Tu ne peux en reproduire AUCUNE, même partiellement ou légèrement modifiée. Chaque phrase de ta réponse doit être ENTIÈREMENT NOUVELLE, avec une construction syntaxique et un contenu différents :
-${p.phrasesDejaUtilisees.map((ph, i) => `${i + 1}. ${ph}`).join("\n")}\n`
+    ? (() => {
+        const ngrams = extraireNgrammes(p.phrasesDejaUtilisees);
+        const ngramsStr = ngrams.length > 0
+          ? `\nSéquences de mots INTERDITES (4+ mots consécutifs extraits des phrases précédentes — tu ne peux PAS les utiliser même dans un contexte légèrement différent) :\n${ngrams.map((g) => `"${g}"`).join(" / ")}\n`
+          : "";
+        return `\nPHRASES INTERDITES — RÈGLE ABSOLUE :
+Ces phrases ont déjà été utilisées dans une dictée précédente de cette semaine :
+${p.phrasesDejaUtilisees.map((ph, i) => `${i + 1}. ${ph}`).join("\n")}
+${ngramsStr}
+Les violations suivantes sont INTERDITES :
+❌ Reproduire une phrase telle quelle
+❌ Changer seulement le temps verbal (ex : "Zeus règnera sur les dieux" → "Zeus régnait sur les dieux")
+❌ Changer seulement un adjectif, un déterminant ou un mot isolé
+❌ Reprendre le même sujet + même verbe + même complément, même reformulés
+❌ Utiliser une des séquences de mots interdites listées ci-dessus
+
+✅ Chaque nouvelle phrase DOIT :
+- Parler d'un personnage, d'une action, d'un lieu ou d'un moment DIFFÉRENT de toutes les phrases précédentes
+- Avoir une structure syntaxique distincte (varier les constructions : circonstanciel en tête / relative / subordonnée / coordination…)
+- Introduire un contenu entièrement nouveau, pas encore évoqué\n`;
+      })()
     : "";
 
   // Description des phrases attendues selon la difficulté d'UN niveau
@@ -82,6 +115,9 @@ Temps verbaux à inclure : ${p.tempsVerbaux.join(", ")}.
 Points grammaticaux à travailler : ${p.pointsGrammaticaux.join(", ")}.
 Difficultés par niveau : ⭐ ${diffParNiv[1]} | ⭐⭐ ${diffParNiv[2]} | ⭐⭐⭐ ${diffParNiv[3]} | ⭐⭐⭐⭐ ${diffParNiv[4]}.
 ${instructionMots}${instructionPhrases}
+DIVERSITÉ OBLIGATOIRE DES PHRASES :
+Chaque phrase doit explorer un aspect DISTINCT du thème. Par exemple, pour un thème sur la mythologie grecque, une phrase parle d'un dieu, une autre d'un héros, une autre d'un lieu sacré, une autre d'une bataille, etc. Aucune phrase ne doit être une simple variation syntaxique d'une autre (même sujet + même idée = INTERDIT).
+
 RÈGLE FONDAMENTALE D'EMBOÎTEMENT :
 Les phrases du niveau ⭐ doivent être présentes MOT POUR MOT dans les niveaux supérieurs.
 Les phrases de ⭐⭐ doivent être présentes MOT POUR MOT dans ⭐⭐⭐ et ⭐⭐⭐⭐.
@@ -132,7 +168,7 @@ export async function POST(req: NextRequest) {
     const prompt = buildPrompt(params);
 
     const message = await client.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-sonnet-4-6",
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });

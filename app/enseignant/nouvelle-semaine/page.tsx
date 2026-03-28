@@ -10,6 +10,7 @@ import GenererExerciceForm from "@/components/GenererExerciceForm";
 import GenererTexteATrousForm from "@/components/GenererTexteATrousForm";
 import GenererClassementForm from "@/components/GenererClassementForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
+import GenererLectureForm from "@/components/GenererLectureForm";
 
 // ── Types ──
 
@@ -114,6 +115,10 @@ export default function NouvelleSemainePage() {
   const [exoGenChargement, setExoGenChargement] = useState(false);
   const [exoGenErreur, setExoGenErreur] = useState("");
   const [modalBanqueId, setModalBanqueId] = useState("");
+  // Formulaire inline ressource (dans le générateur IA)
+  const [ressourceForm, setRessourceForm] = useState<{ sous_type: string; url: string; description: string; titre: string }>({ sous_type: "podcast", url: "", description: "", titre: "" });
+  // Formulaire inline écriture (dans le générateur IA)
+  const [ecritureTheme, setEcritureTheme] = useState<{ sujet: string; contrainte: string } | null>(null);
   const [dictees, setDictees] = useState<{ id: string; titre: string; theme: string; dictee_parent_id: string | null; batch_id: string | null; niveau_etoiles: number }[]>([]);
   const [dicteesBatches, setDicteesBatches] = useState<{ batchId: string; theme: string; nbJours: number; parentIds: string[] }[]>([]);
   const [modalDicteeBatchId, setModalDicteeBatchId] = useState("");
@@ -447,16 +452,14 @@ export default function NouvelleSemainePage() {
         case "dictee":
           if (modalDicteeId) contenu.dictee_id = modalDicteeId;
           break;
-        case "ressource":
-          contenu.url = modalUrl;
-          contenu.description = modalContenu;
-          break;
-        case "ecriture":
-          contenu.description = modalContenu;
-          break;
         default:
           contenu.description = modalContenu;
           break;
+      }
+
+      // Pour les types interactifs + lecture + ressource + écriture : enregistrer le banque_id
+      if (modalBanqueId) {
+        contenu.banque_id = modalBanqueId;
       }
 
       // Assignation
@@ -533,6 +536,21 @@ export default function NouvelleSemainePage() {
           return { texte: texteComplet, groupes };
         });
         contenuData = { titre: "Analyse grammaticale", consigne: "Identifie les fonctions des groupes de mots.", phrases };
+      }
+      // ── Ressource : pas d'IA, contenu direct depuis le formulaire ──
+      else if (type === "ressource") {
+        contenuData = {
+          taches: [{ sous_type: params.sous_type ?? "podcast", url: params.url ?? "", texte: params.description ?? "", label: params.description ?? "" }],
+          matiere: params.matiere ?? undefined,
+        };
+      }
+      // ── Écriture : génération via l'API thème écriture ──
+      else if (type === "ecriture") {
+        const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false }) });
+        const json = await res.json();
+        if (!res.ok || json.erreur) { setExoGenErreur(json.erreur ?? "Erreur lors de la génération."); setExoGenChargement(false); return; }
+        contenuData = { sujet: json.sujet, contrainte: json.contrainte };
+        if (!params.titre) params = { ...params, titre: json.sujet?.slice(0, 60) ?? "Thème d'écriture" };
       }
       // ── Mode IA ──
       else {
@@ -1012,7 +1030,7 @@ export default function NouvelleSemainePage() {
         {modalBloc && (() => {
           const cfg = TYPE_BLOC_CONFIG[modalBloc.type];
           const t = modalBloc.type;
-          const isExoType = ["exercice", "texte_a_trous", "analyse_phrase", "classement", "lecture"].includes(t);
+          const isExoType = ["exercice", "texte_a_trous", "analyse_phrase", "classement", "lecture", "ressource", "ecriture"].includes(t);
 
           return (
             <div
@@ -1209,60 +1227,11 @@ export default function NouvelleSemainePage() {
                     </>
                   )}
 
-                  {/* Podcast / Ressource → URL + description */}
-                  {t === "ressource" && (
-                    <>
-                      <div>
-                        <label style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)", display: "block", marginBottom: 6 }}>
-                          URL de la ressource
-                        </label>
-                        <input
-                          className="form-input"
-                          type="url"
-                          value={modalUrl}
-                          onChange={(e) => setModalUrl(e.target.value)}
-                          placeholder="https://..."
-                          style={{ marginBottom: 0 }}
-                        />
-                      </div>
-                      <div>
-                        <label style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)", display: "block", marginBottom: 6 }}>
-                          Description (optionnel)
-                        </label>
-                        <textarea
-                          className="form-input"
-                          value={modalContenu}
-                          onChange={(e) => setModalContenu(e.target.value)}
-                          placeholder="Décris ce que les élèves doivent faire..."
-                          rows={2}
-                          style={{ marginBottom: 0, resize: "vertical" }}
-                        />
-                      </div>
-                    </>
-                  )}
-
-                  {/* Écriture → Description du thème */}
-                  {t === "ecriture" && (
-                    <div>
-                      <label style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)", display: "block", marginBottom: 6 }}>
-                        Thème d&apos;écriture
-                      </label>
-                      <textarea
-                        className="form-input"
-                        value={modalContenu}
-                        onChange={(e) => setModalContenu(e.target.value)}
-                        placeholder="Ex : Raconte l'histoire d'un animal qui parle..."
-                        rows={3}
-                        style={{ marginBottom: 0, resize: "vertical" }}
-                      />
-                    </div>
-                  )}
-
-                  {/* Exercices interactifs → Banque ou Générateur IA */}
+                  {/* Exercices interactifs + lecture + ressource + écriture → Banque ou Générateur IA */}
                   {isExoType && (
                     <div>
                       <label style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)", display: "block", marginBottom: 8 }}>
-                        Contenu de l&apos;exercice
+                        {t === "ressource" ? "Ressource" : t === "ecriture" ? "Thème d'écriture" : t === "lecture" ? "Texte de lecture" : "Contenu de l'exercice"}
                       </label>
                       {modalBanqueId ? (
                         <div style={{
@@ -1294,12 +1263,17 @@ export default function NouvelleSemainePage() {
                             Choisir dans la banque
                           </button>
                           <button
-                            onClick={() => { setExoGenErreur(""); setShowExoGenerateur(true); }}
+                            onClick={() => {
+                              setExoGenErreur("");
+                              setEcritureTheme(null);
+                              setRessourceForm({ sous_type: "podcast", url: "", description: "", titre: "" });
+                              setShowExoGenerateur(true);
+                            }}
                             className="pb-btn"
                             style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", borderRadius: 10, width: "100%" }}
                           >
                             <span className="ms" style={{ fontSize: 18, color: "#7C3AED" }}>auto_awesome</span>
-                            Créer avec l&apos;IA
+                            {t === "ressource" ? "Configurer une ressource" : t === "ecriture" ? "Générer un thème avec l'IA" : "Créer avec l'IA"}
                           </button>
                         </div>
                       )}
@@ -1715,6 +1689,116 @@ export default function NouvelleSemainePage() {
                       onGenerer={(p) => genererEtSauvegarder({ ...p, type: "analyse_phrase" })}
                       chargement={exoGenChargement}
                     />
+                  )}
+                  {typeBloc === "lecture" && (
+                    <GenererLectureForm
+                      onGenerer={(p) => genererEtSauvegarder({ ...p, type: "lecture" })}
+                      chargement={exoGenChargement}
+                    />
+                  )}
+
+                  {/* Ressource (podcast, vidéo, exercice en ligne) */}
+                  {typeBloc === "ressource" && (
+                    <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", gap: 16 }}>
+                      <div className="form-group">
+                        <label className="form-label">Type de ressource</label>
+                        <select className="form-input" value={ressourceForm.sous_type} onChange={(e) => setRessourceForm((f) => ({ ...f, sous_type: e.target.value }))}>
+                          <option value="podcast">🎙️ Podcast</option>
+                          <option value="video">🎬 Vidéo</option>
+                          <option value="exercice_en_ligne">💻 Exercice en ligne</option>
+                          <option value="exercice_papier">📄 Exercice papier</option>
+                        </select>
+                      </div>
+                      <div className="form-group">
+                        <label className="form-label">Titre <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span></label>
+                        <input className="form-input" value={ressourceForm.titre} onChange={(e) => setRessourceForm((f) => ({ ...f, titre: e.target.value }))} placeholder="Ex : Podcast sur les volcans" />
+                      </div>
+                      {ressourceForm.sous_type !== "exercice_papier" && (
+                        <div className="form-group">
+                          <label className="form-label">URL de la ressource</label>
+                          <input className="form-input" type="url" value={ressourceForm.url} onChange={(e) => setRessourceForm((f) => ({ ...f, url: e.target.value }))} placeholder="https://..." />
+                        </div>
+                      )}
+                      <div className="form-group">
+                        <label className="form-label">Consigne pour les élèves <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span></label>
+                        <textarea className="form-input" rows={3} value={ressourceForm.description} onChange={(e) => setRessourceForm((f) => ({ ...f, description: e.target.value }))} placeholder="Ex : Écoute le podcast et note 3 idées principales." style={{ resize: "vertical" }} />
+                      </div>
+                      <button
+                        className="btn-primary"
+                        disabled={exoGenChargement || (!ressourceForm.url && ressourceForm.sous_type !== "exercice_papier")}
+                        onClick={() => genererEtSauvegarder({ type: "ressource", ...ressourceForm })}
+                        style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 20px", borderRadius: 10 }}
+                      >
+                        <span className="ms" style={{ fontSize: 18 }}>save</span>
+                        Enregistrer dans la banque
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Écriture : génération IA d'un thème */}
+                  {typeBloc === "ecriture" && (
+                    <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", gap: 16 }}>
+                      {ecritureTheme ? (
+                        <>
+                          <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: 12, padding: "16px 18px" }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: "#D97706", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Thème généré</div>
+                            <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", margin: "0 0 8px" }}>{ecritureTheme.sujet}</p>
+                            <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0, fontStyle: "italic" }}>Contrainte : {ecritureTheme.contrainte}</p>
+                          </div>
+                          <div style={{ display: "flex", gap: 8 }}>
+                            <button
+                              className="btn-primary"
+                              disabled={exoGenChargement}
+                              onClick={() => genererEtSauvegarder({ type: "ecriture", titre: ecritureTheme.sujet.slice(0, 60) })}
+                              style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", borderRadius: 10 }}
+                            >
+                              <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
+                              Utiliser ce thème
+                            </button>
+                            <button
+                              className="pb-btn"
+                              disabled={exoGenChargement}
+                              onClick={async () => {
+                                setExoGenChargement(true);
+                                try {
+                                  const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true }) });
+                                  const json = await res.json();
+                                  if (json.sujet) setEcritureTheme({ sujet: json.sujet, contrainte: json.contrainte });
+                                } finally { setExoGenChargement(false); }
+                              }}
+                              style={{ padding: "12px 16px", borderRadius: 10, display: "flex", alignItems: "center", gap: 6 }}
+                            >
+                              <span className="ms" style={{ fontSize: 16, color: "#7C3AED" }}>refresh</span>
+                              Autre
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <div style={{ textAlign: "center", padding: "32px 0" }}>
+                          <span className="ms" style={{ fontSize: 48, display: "block", marginBottom: 12, color: "#7C3AED" }}>draw</span>
+                          <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 20 }}>L&apos;IA va générer un thème d&apos;écriture adapté à votre classe.</p>
+                          <button
+                            className="btn-primary"
+                            disabled={exoGenChargement}
+                            onClick={async () => {
+                              setExoGenChargement(true);
+                              setExoGenErreur("");
+                              try {
+                                const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false }) });
+                                const json = await res.json();
+                                if (json.sujet) setEcritureTheme({ sujet: json.sujet, contrainte: json.contrainte });
+                                else setExoGenErreur(json.erreur ?? "Erreur lors de la génération.");
+                              } catch { setExoGenErreur("Erreur réseau."); }
+                              finally { setExoGenChargement(false); }
+                            }}
+                            style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", borderRadius: 10 }}
+                          >
+                            <span className="ms" style={{ fontSize: 20 }}>auto_awesome</span>
+                            Générer un thème avec l&apos;IA
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>

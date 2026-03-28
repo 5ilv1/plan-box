@@ -50,8 +50,9 @@ const NIVEAUX = [
   { etoiles: 4 as const, label: "N4", long: "CM2+" },
 ];
 
-// Labels des jours travaillés (lundi, mardi, jeudi, vendredi — pas de mercredi)
-const JOURS_LABELS = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
+// Labels des jours de dictée : le lundi est "dictée de mots" (géré séparément),
+// les dictées audio commencent le mardi ; le vendredi est dicté par l'enseignant (pas d'audio élève)
+const JOURS_LABELS = ["Mardi", "Jeudi", "Vendredi"];
 
 const NB_SEMAINES_PAR_PERIODE = 6;
 
@@ -79,7 +80,7 @@ function imprimerHTML(html: string) {
 // ─── Génération PDF (fenêtre print) ───────────────────────────────────────────
 
 function genererPDF(batch: Batch) {
-  const JOURS_NOMS_PDF = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
+  const JOURS_NOMS_PDF = ["Mardi", "Jeudi", "Vendredi"];
   const NIVEAUX_LABELS: Record<number, string> = {
     1: "⭐", 2: "⭐⭐", 3: "⭐⭐⭐", 4: "⭐⭐⭐⭐",
   };
@@ -139,7 +140,7 @@ function genererPDF(batch: Batch) {
 // ─── Génération PDF à trous (1 page par jour, tous niveaux) ──────────────────
 
 function genererPDFTrous(batch: Batch) {
-  const JOURS_NOMS_PDF = ["Lundi", "Mardi", "Jeudi", "Vendredi"];
+  const JOURS_NOMS_PDF = ["Mardi", "Jeudi", "Vendredi"];
   const NIVEAUX_LABELS: Record<number, string> = {
     1: "⭐", 2: "⭐⭐", 3: "⭐⭐⭐", 4: "⭐⭐⭐⭐",
   };
@@ -741,6 +742,8 @@ export default function PageDictees() {
                 }
 
                 const nbJours = batch.jours.length;
+                // Le dernier jour = Vendredi (dictée bilan) : l'enseignant dicte en classe, pas d'audio élève
+                const isVendredi = jourActifIdx === nbJours - 1;
                 const titreSemaine = `Semaine ${numSemaine} — ${batch.jours[0]?.titre ?? batch.theme}`;
 
                 return (
@@ -883,21 +886,35 @@ export default function PageDictees() {
                         {niv && (
                           <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
                             <audio id={`audio-${bid}-${ongletActif}`} style={{ display: "none" }} />
-                            <button
-                              onClick={jouer}
-                              title={enLecture ? "Arrêter" : "Écouter"}
-                              disabled={!niv?.audio_complet_url}
-                              style={{
-                                flexShrink: 0, width: 52, height: 52, borderRadius: "50%",
-                                background: enLecture ? "#DC2626" : "var(--primary)",
-                                color: "white", border: "none", cursor: niv?.audio_complet_url ? "pointer" : "not-allowed",
-                                fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center",
-                                boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-                                opacity: niv?.audio_complet_url ? 1 : 0.4,
-                              }}
-                            >
-                              {enLecture ? "⏹" : "▶"}
-                            </button>
+                            {isVendredi ? (
+                              /* Vendredi = dictée bilan dictée par l'enseignant en classe → pas d'audio */
+                              <div
+                                title="Dictée bilan — l'enseignant dicte en classe"
+                                style={{
+                                  flexShrink: 0, width: 52, height: 52, borderRadius: "50%",
+                                  background: "#F3F4F6", display: "flex", alignItems: "center", justifyContent: "center",
+                                  fontSize: 22,
+                                }}
+                              >
+                                🏫
+                              </div>
+                            ) : (
+                              <button
+                                onClick={jouer}
+                                title={enLecture ? "Arrêter" : "Écouter"}
+                                disabled={!niv?.audio_complet_url}
+                                style={{
+                                  flexShrink: 0, width: 52, height: 52, borderRadius: "50%",
+                                  background: enLecture ? "#DC2626" : "var(--primary)",
+                                  color: "white", border: "none", cursor: niv?.audio_complet_url ? "pointer" : "not-allowed",
+                                  fontSize: 20, display: "flex", alignItems: "center", justifyContent: "center",
+                                  boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                  opacity: niv?.audio_complet_url ? 1 : 0.4,
+                                }}
+                              >
+                                {enLecture ? "⏹" : "▶"}
+                              </button>
+                            )}
 
                             <div style={{ flex: 1 }}>
                               {(niv.phrases ?? []).map((p, i) => (

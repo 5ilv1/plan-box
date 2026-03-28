@@ -339,6 +339,51 @@ export default function PageActivite() {
   const lectureData = bloc.type === "lecture" ? (bloc.contenu as unknown as { titre: string; texte: string; questions: { id: number; question: string; choix: string[]; reponse: number }[] }) : null;
   const ressource  = bloc.type === "ressource" ? (bloc.contenu as unknown as RessourceIA) : null;
   const dictee     = bloc.type === "dictee" ? (bloc.contenu as unknown as DicteeContenu) : null;
+
+  // ── Noms propres à noter (non présents dans les mots à apprendre) ──
+  // Mots fonctionnels français pouvant débuter une phrase sans être des noms propres
+  const MOTS_FONCTIONNELS_FR = new Set([
+    "le","la","les","l","un","une","des","du","au","aux","de","d","à",
+    "en","sur","sous","dans","par","pour","avec","sans","chez","entre","vers",
+    "depuis","pendant","avant","après","dès","lors","jusqu",
+    "il","elle","ils","elles","on","nous","vous","tu","je","j","me","te","se","y",
+    "ce","cet","cette","ces","mon","ma","mes","ton","ta","tes","son","sa","ses",
+    "notre","votre","leur","nos","vos","leurs",
+    "mais","ou","et","donc","or","ni","car","que","qu","qui","dont","où",
+    "quand","lorsque","comme","si","parce","puisque","tandis","alors","ainsi",
+    "cependant","pourtant","néanmoins","toutefois","ensuite","puis","enfin",
+    "comment","pourquoi","quel","quelle","quels","quelles",
+    "tout","tous","toute","toutes","chaque","plusieurs","certains","certaines",
+    "aucun","aucune","nul","nulle",
+    "hier","aujourd","demain","maintenant","soudain","parfois","souvent","jamais",
+    "encore","longtemps","autrefois","bientôt","partout","là","ici",
+    "plus","moins","très","bien","mal","beaucoup","peu","trop","assez","aussi","même",
+  ]);
+
+  const nomsPropres: string[] = (() => {
+    if (!dictee?.phrases?.length) return [];
+    const motsConnus = new Set((dictee.mots ?? []).map((m) => m.mot.toLowerCase()));
+    const candidats = new Set<string>();
+
+    for (const phrase of dictee.phrases) {
+      const mots_phrase = phrase.texte
+        .replace(/[.,;:!?«»""''\-–—]/g, " ")
+        .split(/\s+/)
+        .filter(Boolean);
+      for (let i = 0; i < mots_phrase.length; i++) {
+        const word = mots_phrase[i];
+        if (word.length <= 1) continue;
+        if (!/^[A-ZÀÂÄÉÈÊËÎÏÔÙÛÜŒÆ]/.test(word)) continue;
+        // Premier mot : exclure si mot fonctionnel connu (article, pronom, conjonction…)
+        if (i === 0 && MOTS_FONCTIONNELS_FR.has(word.toLowerCase())) continue;
+        candidats.add(word);
+      }
+    }
+
+    return Array.from(candidats)
+      .filter((w) => !motsConnus.has(w.toLowerCase()))
+      .sort((a, b) => a.localeCompare(b, "fr"));
+  })();
   const mots       = bloc.type === "mots" ? (bloc.contenu as unknown as MotsContenu) : null;
   const fichierMaths = bloc.type === "fichier_maths"
     ? (bloc.contenu as unknown as { numero_page: number; niveau: string })
@@ -871,6 +916,53 @@ export default function PageActivite() {
           {/* ── Aside (infos chapitre + conseils) — visible sur desktop si layout 2 col ── */}
           {(dictee || ressource) && (dictee || bloc.chapitres) && (
             <aside style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+              {/* ── Noms propres à noter — dictée uniquement ── */}
+              {dictee && nomsPropres.length > 0 && (
+                <div style={{
+                  background: "#FFFBEB",
+                  border: "1.5px solid #FDE68A",
+                  borderRadius: 24,
+                  padding: "20px 22px",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <div style={{
+                      width: 38, height: 38, borderRadius: 10,
+                      background: "rgba(217,119,6,0.12)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      flexShrink: 0,
+                    }}>
+                      <span className="ms" style={{ fontSize: 20, color: "#D97706" }}>edit_note</span>
+                    </div>
+                    <h4 style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontWeight: 700, fontSize: 14,
+                      color: "#92400E", margin: 0,
+                    }}>
+                      À noter au tableau
+                    </h4>
+                  </div>
+                  <p style={{ fontSize: 12, color: "#78350F", margin: "0 0 12px", lineHeight: 1.5 }}>
+                    Ces noms propres figurent dans la dictée. Écris-les correctement.
+                  </p>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                    {nomsPropres.map((nom) => (
+                      <span key={nom} style={{
+                        background: "white",
+                        border: "1.5px solid #FCD34D",
+                        borderRadius: 8,
+                        padding: "5px 12px",
+                        fontSize: 14,
+                        fontWeight: 700,
+                        color: "#92400E",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      }}>
+                        {nom}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Conseils de relecture — dictée uniquement */}
               {dictee && (

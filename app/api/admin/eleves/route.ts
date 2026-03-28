@@ -109,6 +109,71 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ ok: true, id: userId }, { status: 201 });
 }
 
+// ── Helper : réaffecte les dictées en attente au bon niveau après changement d'étoiles ──
+async function mettreAJourDicteesEleve(
+  admin: ReturnType<typeof createAdminClient>,
+  eleve_id: string | null,
+  repetibox_eleve_id: number | null,
+  nouveauNiveau: 1 | 2 | 3 | 4
+) {
+  // 1. Trouver tous les blocs dictée non encore faits
+  const q = admin
+    .from("plan_travail")
+    .select("id, contenu")
+    .eq("type", "dictee")
+    .eq("statut", "a_faire");
+
+  const { data: blocs } = eleve_id
+    ? await q.eq("eleve_id", eleve_id)
+    : await q.eq("repetibox_eleve_id", repetibox_eleve_id!);
+
+  if (!blocs || blocs.length === 0) return;
+
+  // 2. Collecter les dictee_parent_id uniques
+  const parentIds = [
+    ...new Set(
+      blocs
+        .map((b) => (b.contenu as Record<string, unknown>)?.dictee_parent_id as string | undefined)
+        .filter(Boolean) as string[]
+    ),
+  ];
+  if (parentIds.length === 0) return;
+
+  // 3. Charger les niveaux correspondants depuis la table dictees
+  const { data: dicteeRows } = await admin
+    .from("dictees")
+    .select("dictee_parent_id, niveau_etoiles, texte, phrases, mots, points_travailles, audio_complet_url, audio_phrases_urls")
+    .in("dictee_parent_id", parentIds)
+    .eq("niveau_etoiles", nouveauNiveau);
+
+  if (!dicteeRows || dicteeRows.length === 0) return;
+
+  const dicteeParParent = new Map(dicteeRows.map((d: any) => [d.dictee_parent_id, d]));
+
+  // 4. Mettre à jour chaque bloc avec le contenu du bon niveau
+  await Promise.all(
+    blocs.map((bloc) => {
+      const ancienContenu = bloc.contenu as Record<string, unknown>;
+      const parentId = ancienContenu?.dictee_parent_id as string | undefined;
+      if (!parentId) return Promise.resolve();
+      const nouvelleDictee = dicteeParParent.get(parentId);
+      if (!nouvelleDictee) return Promise.resolve(); // niveau non disponible, on garde l'ancien
+      return admin.from("plan_travail").update({
+        contenu: {
+          ...ancienContenu,
+          niveau_etoiles: nouveauNiveau,
+          texte: nouvelleDictee.texte,
+          phrases: nouvelleDictee.phrases,
+          mots: nouvelleDictee.mots,
+          points_travailles: nouvelleDictee.points_travailles,
+          audio_complet_url: nouvelleDictee.audio_complet_url ?? ancienContenu.audio_complet_url,
+          audio_phrases_urls: nouvelleDictee.audio_phrases_urls ?? ancienContenu.audio_phrases_urls,
+        },
+      }).eq("id", bloc.id);
+    })
+  );
+}
+
 // PATCH /api/admin/eleves
 // Met à jour un élève PB (champs) ou un élève RB (meta + groupes)
 export async function PATCH(req: NextRequest) {
@@ -138,6 +203,11 @@ export async function PATCH(req: NextRequest) {
       if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
     }
 
+    // Réaffecter les dictées en attente si le niveau d'étoiles a changé
+    if (typeof body.niveau_etoiles === "number" && [1, 2, 3, 4].includes(body.niveau_etoiles)) {
+      await mettreAJourDicteesEleve(admin, id, null, body.niveau_etoiles as 1 | 2 | 3 | 4);
+    }
+
     // Mise à jour groupes
     if (Array.isArray(groupeIds)) {
       await admin.from("eleve_groupe").delete().eq("planbox_eleve_id", id);
@@ -162,6 +232,11 @@ export async function PATCH(req: NextRequest) {
         niveau_etoiles,
         updated_at: new Date().toISOString(),
       });
+
+      // Réaffecter les dictées en attente si le niveau d'étoiles a changé
+      if (typeof niveau_etoiles === "number" && [1, 2, 3, 4].includes(niveau_etoiles)) {
+        await mettreAJourDicteesEleve(admin, null, rbId, niveau_etoiles as 1 | 2 | 3 | 4);
+      }
     }
 
     // Mise à jour groupes
