@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
-const client = new Anthropic();
+const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 // POST /api/generer-calcul-mental-ia
 // Génère des calculs mentaux via l'IA à partir d'une consigne libre (contrainte structurelle)
