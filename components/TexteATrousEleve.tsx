@@ -148,7 +148,7 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
                     {trou.mot}
                   </span>
                 ) : (
-                  <span style={{ position: "relative", display: "inline-block" }}>
+                  <span style={{ position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "center", verticalAlign: "middle" }}>
                     <input
                       ref={(el) => { inputRefs.current[i] = el; }}
                       type="text"
@@ -179,7 +179,17 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
                         if (!estIncorrect) { e.currentTarget.style.borderStyle = "dashed"; }
                       }}
                     />
-                    {/* Indice pour les mots incorrects */}
+                    {/* Indice toujours visible sous la case */}
+                    {trou.indice && !estCorrect && (
+                      <span style={{
+                        fontSize: "0.6rem", color: "#0E7490", fontStyle: "italic",
+                        marginTop: 1, lineHeight: 1, whiteSpace: "nowrap",
+                        opacity: 0.8,
+                      }}>
+                        {trou.indice}
+                      </span>
+                    )}
+                    {/* Aide supplémentaire après erreur */}
                     {estIncorrect && trou.indice && tentative <= 2 && (
                       <div style={{
                         position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)",

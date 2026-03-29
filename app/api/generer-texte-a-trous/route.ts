@@ -24,7 +24,7 @@ RÈGLES STRICTES :
 - VARIE les thèmes : aventure, nature, voyage, animaux exotiques, sport, espace, cuisine, histoire, mer, montagne... NE PAS toujours utiliser l'école, Marie, ou des prénoms classiques
 - Masque entre 6 et 12 mots en fonction de l'objectif pédagogique
 - Les mots masqués doivent être pertinents par rapport à l'objectif
-- Chaque trou DOIT avoir un indice pédagogique court et utile
+- Chaque trou DOIT avoir un indice. Si l'objectif porte sur la CONJUGAISON, l'indice DOIT être l'infinitif du verbe (ex : "explorer", "avancer"). Pour les autres objectifs, l'indice est une aide courte et utile.
 - Le texte_complet DOIT être grammaticalement PARFAIT — aucune faute d'orthographe, de grammaire ou de conjugaison
 - VÉRIFIE chaque phrase avant de répondre : sujet-verbe accordés, homophones corrects, ponctuation correcte
 - Vocabulaire adapté au niveau ${niveau}
