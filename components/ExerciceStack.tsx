@@ -15,6 +15,8 @@ interface ExerciceStackProps {
   onComplete: (reponses: { id: number; reponse: string; correcte: boolean | null }[], score: number, total: number) => void;
 }
 
+const SEUIL_REUSSITE = 70; // % de bonnes réponses pour considérer l'exercice réussi
+
 export default function ExerciceStack({ consigne, questions, onComplete }: ExerciceStackProps) {
   const [index, setIndex] = useState(0);
   const [reponse, setReponse] = useState("");
@@ -88,23 +90,23 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
       <div style={{ padding: "24px 0" }}>
         <div style={{
           padding: "28px 24px",
-          background: pct >= 70 ? "#F0FDF4" : "#FFF7ED",
-          border: `2px solid ${pct >= 70 ? "#86EFAC" : "#FCD34D"}`,
+          background: pct >= SEUIL_REUSSITE ? "#F0FDF4" : "#FFF7ED",
+          border: `2px solid ${pct >= SEUIL_REUSSITE ? "#86EFAC" : "#FCD34D"}`,
           borderRadius: "1.5rem",
           textAlign: "center",
           marginBottom: 20,
         }}>
           <div style={{ marginBottom: 8 }}>
-            <span className="ms" style={{ fontSize: 48, color: pct >= 70 ? "#16A34A" : "#D97706" }}>
-              {pct === 100 ? "emoji_events" : pct >= 70 ? "celebration" : "fitness_center"}
+            <span className="ms" style={{ fontSize: 48, color: pct >= SEUIL_REUSSITE ? "#16A34A" : "#D97706" }}>
+              {pct === 100 ? "emoji_events" : pct >= SEUIL_REUSSITE ? "celebration" : "fitness_center"}
             </span>
           </div>
-          <div style={{ fontSize: 36, fontWeight: 900, color: pct >= 70 ? "#16A34A" : "#D97706", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          <div style={{ fontSize: 36, fontWeight: 900, color: pct >= SEUIL_REUSSITE ? "#16A34A" : "#D97706", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
             {score} / {questionsShuffled.length}
           </div>
           <div style={{ fontSize: 14, color: "var(--pb-on-surface-variant, #555)", marginTop: 6 }}>
             {pct === 100 ? "Parfait ! Toutes les bonnes réponses !" :
-              pct >= 70 ? `Bravo, ${pct}% de bonnes réponses !` :
+              pct >= SEUIL_REUSSITE ? `Bravo, ${pct}% de bonnes réponses !` :
               `${pct}% — Continue de t'entraîner !`}
           </div>
         </div>

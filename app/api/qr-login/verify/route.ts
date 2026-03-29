@@ -67,6 +67,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Impossible d'établir la session." }, { status: 500 });
   }
 
+  // 5. Invalider le token QR après usage (sécurité : usage unique)
+  await admin.from("qr_tokens").delete().eq("token", token);
+
   return NextResponse.json({
     accessToken: otpData.session.access_token,
     refreshToken: otpData.session.refresh_token,

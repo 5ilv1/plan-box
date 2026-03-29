@@ -93,11 +93,12 @@ export async function GET(req: NextRequest) {
 }
 
 // PATCH /api/admin/planning
-// Mode 1 : { blocId, date_assignation } → déplace le bloc (drag & drop)
-// Mode 2 : { blocId, titre, contenu }  → modifie le contenu d'un bloc
+// Mode 1 : { blocId, date_assignation }              → déplace le bloc (drag & drop)
+// Mode 2 : { blocId, titre, contenu }                → modifie le contenu d'un bloc
+// Mode 3 : { blocId, date_assignation, groupe_label } → modifie date + groupe depuis le modal
 export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const { blocId, date_assignation, titre, contenu } = body ?? {};
+  const { blocId, date_assignation, groupe_label, titre, contenu } = body ?? {};
 
   if (!blocId) {
     return NextResponse.json({ erreur: "blocId requis" }, { status: 400 });
@@ -116,7 +117,7 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  // Mode déplacement (drag & drop)
+  // Mode déplacement / réaffectation
   if (!date_assignation) {
     return NextResponse.json({ erreur: "date_assignation ou titre/contenu requis" }, { status: 400 });
   }
@@ -124,9 +125,12 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ erreur: "Format date invalide (YYYY-MM-DD)" }, { status: 400 });
   }
 
+  const champs: Record<string, unknown> = { date_assignation };
+  if (groupe_label !== undefined) champs.groupe_label = groupe_label;
+
   const { error } = await admin
     .from("plan_travail")
-    .update({ date_assignation })
+    .update(champs)
     .eq("id", blocId);
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });

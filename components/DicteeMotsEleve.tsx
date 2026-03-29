@@ -25,6 +25,15 @@ export default function DicteeMotsEleve({ mots, theme, onTermine }: Props) {
   const [indexMot, setIndexMot] = useState(0);
   const [lu, setLu] = useState(false); // l'élève a-t-il écouté le mot courant ?
 
+  // Guard : liste vide
+  if (!mots || mots.length === 0) {
+    return (
+      <div style={{ textAlign: "center", padding: "32px 20px", color: "var(--text-secondary)" }}>
+        Aucun mot à réviser pour cette dictée.
+      </div>
+    );
+  }
+
   const motCourant = mots[indexMot];
   const total = mots.length;
   const estDernier = indexMot === total - 1;

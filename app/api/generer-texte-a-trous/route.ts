@@ -55,9 +55,9 @@ ${description ? `Consigne de l'enseignant : ${description}` : ""}
 THÈME IMPOSÉ : ${theme} — tu DOIS utiliser ce thème précis, sans le changer.
 
 RÈGLES STRICTES :
-- Écris un texte de 4 à 8 phrases, cohérent, intéressant et ORIGINAL sur le thème imposé
+- Écris un texte de 6 à 10 phrases, cohérent, intéressant et ORIGINAL sur le thème imposé
 - NE PAS utiliser un thème différent du thème imposé ci-dessus
-- Masque entre 6 et 12 mots en fonction de l'objectif pédagogique
+- Masque EXACTEMENT 10 mots — ni plus, ni moins
 - Les mots masqués doivent être pertinents par rapport à l'objectif
 - Chaque trou DOIT avoir un indice. RÈGLE ABSOLUE : si l'objectif porte sur la CONJUGAISON, l'indice est UNIQUEMENT l'infinitif du verbe, rien d'autre (ex : "explorer", "avancer", "bondir"). PAS de mention de personne, sujet ou temps dans l'indice. Pour les autres objectifs (orthographe, vocabulaire…), l'indice est une aide courte.
 - Le texte_complet DOIT être grammaticalement PARFAIT — aucune faute d'orthographe, de grammaire ou de conjugaison
@@ -168,6 +168,11 @@ RÈGLE HOMOPHONES : Si l'objectif porte sur des homophones (et/est/es, a/à, son
 
     // Filtrer les trous dont la position est toujours invalide
     resultat.trous = resultat.trous.filter((t: any) => t.position >= 0 && t.position < mots.length && t.mot.length > 0);
+
+    // Log si l'IA n'a pas respecté exactement 10 trous
+    if (resultat.trous.length !== 10) {
+      console.warn(`[generer-texte-a-trous] ${resultat.trous.length} trous générés au lieu de 10`);
+    }
 
     return NextResponse.json({ resultat });
   } catch (err: unknown) {

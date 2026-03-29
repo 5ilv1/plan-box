@@ -241,6 +241,7 @@ export default function PageDictees() {
 
   async function charger() {
     setChargement(true);
+    setErreurChargement(""); // Réinitialiser l'erreur à chaque tentative
     const { data, error } = await supabase
       .from("dictees")
       .select("*")

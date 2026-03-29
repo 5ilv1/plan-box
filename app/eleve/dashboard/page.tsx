@@ -122,7 +122,7 @@ export default function DashboardEleve() {
     const lundi = new Date(aujourd_hui);
     lundi.setDate(aujourd_hui.getDate() - ((jourSemaine + 6) % 7));
     const fin = new Date(lundi);
-    fin.setDate(lundi.getDate() + 13);
+    fin.setDate(lundi.getDate() + 6);
     return {
       debut: lundi.toISOString().split("T")[0],
       fin:   fin.toISOString().split("T")[0],
@@ -183,8 +183,9 @@ export default function DashboardEleve() {
     supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
 
     const blocs = (blocsWeek ?? []) as PlanTravail[];
+    // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
     setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-    setBlocsSemaine(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation !== aujourd_hui));
+    setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
     setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
 
     const podcasts = ((podcastData ?? []) as any[])
@@ -237,8 +238,9 @@ export default function DashboardEleve() {
     const { debut, fin } = getBornesSemaine();
 
     const blocsWeek = blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin);
+    // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
     setBlocsAujourdhui(blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-    setBlocsSemaine(blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation !== aujourd_hui));
+    setBlocsSemaine(blocsWeek.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
 
     const blocsExos = blocs.filter((b) => ["exercice", "calcul_mental", "eval"].includes(b.type) && b.chapitre_id);
     setProgressionExos(groupParChapitre(blocsExos));

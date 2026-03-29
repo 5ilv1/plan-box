@@ -136,12 +136,24 @@ export default function BanqueLecons() {
     setUpload(true);
     setErreurForm("");
     try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await fetch("/api/upload-lecon", { method: "POST", body: fd });
-      const json = await res.json();
-      if (!res.ok) { setErreurForm(`❌ Upload échoué : ${json.error}`); return; }
-      setModalForm((prev) => prev ? { ...prev, url: json.url, nomFichier: json.nom ?? file.name } : prev);
+      // Étape 1 : obtenir l'URL signée (évite la limite 4 MB serverless)
+      const presignRes = await fetch("/api/upload-lecon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: file.name, contentType: file.type }),
+      });
+      const presignJson = await presignRes.json();
+      if (!presignRes.ok) { setErreurForm(`❌ Upload échoué : ${presignJson.error}`); return; }
+
+      // Étape 2 : upload direct vers Supabase Storage via URL signée
+      const { error: uploadError } = await supabase.storage
+        .from("lecons")
+        .uploadToSignedUrl(presignJson.path, presignJson.token, file, {
+          contentType: file.type || "application/pdf",
+        });
+      if (uploadError) { setErreurForm(`❌ Upload échoué : ${uploadError.message}`); return; }
+
+      setModalForm((prev) => prev ? { ...prev, url: presignJson.publicUrl, nomFichier: file.name } : prev);
     } finally {
       setUpload(false);
     }
@@ -186,11 +198,12 @@ export default function BanqueLecons() {
     setEnSuppression(id);
     try {
       const lecon = lecons.find((l) => l.id === id);
-      await fetch("/api/banque-lecons", {
+      const res = await fetch("/api/banque-lecons", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ id }),
       });
+      if (!res.ok) return; // Ne pas modifier le state si l'API échoue
       setLecons((prev) => prev.filter((l) => l.id !== id));
       if (lecon?.url) {
         setAffectationsParUrl((prev) => { const next = { ...prev }; delete next[lecon.url]; return next; });

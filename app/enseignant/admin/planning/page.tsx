@@ -98,11 +98,11 @@ function getPremierCaseMois(d: Date): Date {
 
 const DRAG_THRESHOLD = 6;
 
-// Regroupe les blocs d'un même jour par (titre, type)
+// Regroupe les blocs du même jour par (titre, type, date)
 function grouperBlocs(blocs: BlocPlanning[]): GroupeBloc[] {
   const map = new Map<string, GroupeBloc>();
   for (const b of blocs) {
-    const key = `${b.titre ?? ""}||${b.type}`;
+    const key = `${b.date_assignation}||${b.titre ?? ""}||${b.type}`;
     if (!map.has(key)) {
       map.set(key, {
         key,
@@ -152,6 +152,13 @@ export default function PageAdminPlanning() {
     { id: number; enonce: string; reponse_attendue: string }[]
   >([]);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
+
+  // Réaffectation (date + groupe)
+  const [editReaffect, setEditReaffect]         = useState(false);
+  const [reaffectDate, setReaffectDate]         = useState("");
+  const [reaffectGroupe, setReaffectGroupe]     = useState("");
+  const [enReaffectation, setEnReaffectation]   = useState(false);
+
   const [niveauDicteePreview, setNiveauDicteePreview] = useState<number>(1);
   const [dicteesNiveaux, setDicteesNiveaux] = useState<Record<number, { texte: string; mots: { mot: string; definition?: string }[] }>>({});
 
@@ -388,11 +395,48 @@ export default function PageAdminPlanning() {
     setEditQuestions((prev) => [...prev, { id: newId, enonce: "", reponse_attendue: "" }]);
   }
 
+  function ouvrirReaffectation() {
+    if (!detail) return;
+    setReaffectDate(detail.date_assignation);
+    setReaffectGroupe(detail.blocs[0]?.groupe_label ?? "");
+    setEditReaffect(true);
+  }
+
+  async function sauvegarderReaffectation() {
+    if (!detail || !reaffectDate) return;
+    setEnReaffectation(true);
+    try {
+      await Promise.all(detail.blocs.map((b) =>
+        fetch("/api/admin/planning", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            blocId: b.id,
+            date_assignation: reaffectDate,
+            groupe_label: reaffectGroupe || null,
+          }),
+        })
+      ));
+      const updatedBlocs = detail.blocs.map((b) => ({
+        ...b,
+        date_assignation: reaffectDate,
+        groupe_label: reaffectGroupe || null,
+      }));
+      setDetail({ ...detail, date_assignation: reaffectDate, blocs: updatedBlocs });
+      setEditReaffect(false);
+      fermerDrawer();
+      charger(); // Recharge tout le planning pour prendre en compte le déplacement
+    } finally {
+      setEnReaffectation(false);
+    }
+  }
+
   function fermerDrawer() {
     setDetail(null);
     setASupprimer(null);
     setSupprimerBanqueConfirm(false);
     setEditMode(false);
+    setEditReaffect(false);
   }
 
   // ── Données calculées ─────────────────────────────────────────────────────────
@@ -1097,9 +1141,69 @@ export default function PageAdminPlanning() {
 
                 {/* ── Affectation : groupe ou élèves ── */}
                 <div style={{ marginBottom: 16 }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
-                    Affecté à
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                      Affecté à
+                    </span>
+                    {!editReaffect && (
+                      <button
+                        onClick={ouvrirReaffectation}
+                        style={{ fontSize: 11, fontWeight: 600, color: "var(--primary)", background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 3, padding: "2px 6px", borderRadius: 6 }}
+                      >
+                        <span className="ms" style={{ fontSize: 14 }}>edit</span> Modifier
+                      </button>
+                    )}
                   </div>
+
+                  {/* ── Formulaire réaffectation ── */}
+                  {editReaffect && (
+                    <div style={{ background: "#EEF0FE", borderRadius: 10, padding: "12px 14px", marginBottom: 10, border: "1.5px solid #AAB7FA" }}>
+                      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#1642A3", display: "block", marginBottom: 4 }}>Date d'affectation</label>
+                          <input
+                            type="date"
+                            className="form-input"
+                            value={reaffectDate}
+                            onChange={(e) => setReaffectDate(e.target.value)}
+                            style={{ fontSize: 13, padding: "6px 10px" }}
+                          />
+                        </div>
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 700, color: "#1642A3", display: "block", marginBottom: 4 }}>Groupe</label>
+                          <select
+                            className="form-input"
+                            value={reaffectGroupe}
+                            onChange={(e) => setReaffectGroupe(e.target.value)}
+                            style={{ fontSize: 13, padding: "6px 10px" }}
+                          >
+                            <option value="">— Individuel (sans groupe) —</option>
+                            {groupesFiltres.map((g) => (
+                              <option key={g.id} value={g.nom}>{g.nom}</option>
+                            ))}
+                          </select>
+                        </div>
+                        <div style={{ display: "flex", gap: 8 }}>
+                          <button
+                            onClick={sauvegarderReaffectation}
+                            disabled={enReaffectation || !reaffectDate}
+                            className="btn-primary"
+                            style={{ flex: 1, fontSize: 13, padding: "8px 0" }}
+                          >
+                            {enReaffectation ? "Sauvegarde…" : "✅ Confirmer"}
+                          </button>
+                          <button
+                            onClick={() => setEditReaffect(false)}
+                            className="btn-ghost"
+                            style={{ fontSize: 13, padding: "8px 14px" }}
+                          >
+                            Annuler
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {(() => {
                     const groupMap = new Map<string, typeof detail.blocs>();
                     const individuels: typeof detail.blocs = [];
