@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { createClient } from "@/lib/supabase";
 
 type Etat = "chargement" | "redirection" | "erreur";
 
@@ -31,9 +32,21 @@ export default function PageQRLogin() {
         return;
       }
 
+      // Injecter la session directement — pas de redirect PKCE
+      const supabase = createClient();
+      const { error: sessionError } = await supabase.auth.setSession({
+        access_token: json.accessToken,
+        refresh_token: json.refreshToken,
+      });
+
+      if (sessionError) {
+        setMessageErreur("Erreur d'authentification. Réessaie.");
+        setEtat("erreur");
+        return;
+      }
+
       setEtat("redirection");
-      // Rediriger vers le magic link — Supabase gère la session et redirige vers /eleve/dashboard
-      window.location.href = json.actionLink;
+      router.replace("/eleve/dashboard");
     }
 
     verifier();
@@ -87,7 +100,6 @@ export default function PageQRLogin() {
     );
   }
 
-  // Erreur
   return (
     <div
       style={{
