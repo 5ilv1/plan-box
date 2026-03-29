@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Utilisateur introuvable." }, { status: 404 });
   }
 
-  const redirectTo = `${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/eleve/dashboard`;
+  const origin = new URL(req.url).origin;
+  const redirectTo = `${origin}/eleve/dashboard`;
 
   // Générer un magic link à usage unique
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
