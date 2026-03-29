@@ -25,58 +25,61 @@ export function useEleveSession() {
   const [chargement, setChargement] = useState(true);
 
   useEffect(() => {
-    async function detecter() {
-      const supabase = createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+    const supabase = createClient();
 
-      if (user) {
-        // 1. Plan Box natif — chercher dans la table "eleves"
-        const { data: e } = await supabase
-          .from("eleves")
-          .select("prenom, nom")
-          .eq("id", user.id)
-          .maybeSingle();
+    async function resoudreUser(user: import("@supabase/supabase-js").User) {
+      // 1. Plan Box natif — chercher dans la table "eleves"
+      const { data: e } = await supabase
+        .from("eleves")
+        .select("prenom, nom")
+        .eq("id", user.id)
+        .maybeSingle();
 
-        if (e) {
+      if (e) {
+        setSession({
+          id: user.id,
+          prenom: e.prenom as string,
+          nom: e.nom as string,
+          source: "planbox",
+        });
+        setChargement(false);
+        return;
+      }
+
+      // 2. Repetibox migré — email au format identifiant@planbox.local
+      if (user.email?.endsWith("@planbox.local")) {
+        const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
+        if (res.ok) {
+          const json = await res.json();
           setSession({
-            id: user.id,
-            prenom: e.prenom as string,
-            nom: e.nom as string,
-            source: "planbox",
+            id: String(json.id),
+            prenom: json.prenom as string,
+            nom: json.nom as string,
+            source: "repetibox",
           });
           setChargement(false);
           return;
         }
-
-        // 2. Repetibox migré — email au format identifiant@planbox.local
-        if (user.email?.endsWith("@planbox.local")) {
-          const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
-          if (res.ok) {
-            const json = await res.json();
-            setSession({
-              id: String(json.id),
-              prenom: json.prenom as string,
-              nom: json.nom as string,
-              source: "repetibox",
-            });
-            setChargement(false);
-            return;
-          }
-        }
       }
 
-      // Utilisateur authentifié Supabase mais non reconnu dans aucune table :
-      // on le déconnecte pour éviter la boucle de redirection entre /eleve et /eleve/dashboard
-      if (user) {
-        await supabase.auth.signOut();
-      }
+      // Authentifié mais non reconnu → déconnecter pour éviter la boucle
+      await supabase.auth.signOut();
       setSession(null);
       setChargement(false);
     }
 
-    detecter();
+    // onAuthStateChange capte à la fois la session existante (INITIAL_SESSION)
+    // et la session établie depuis le hash du magic link (SIGNED_IN)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, authSession) => {
+      if (authSession?.user) {
+        await resoudreUser(authSession.user);
+      } else {
+        setSession(null);
+        setChargement(false);
+      }
+    });
+
+    return () => subscription.unsubscribe();
   }, []);
 
   async function effacerSession() {
