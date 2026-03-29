@@ -153,7 +153,12 @@ Format attendu :
 ${contraintes}
 Au moins 2 groupes nominaux avec accord adjectif/déterminant par dictée.
 Le champ "texte" doit contenir toutes les phrases du niveau séparées par des espaces (texte continu).
-Pour les mots qui sont des verbes conjugués, ajoute impérativement le champ "pronom" avec le pronom personnel sujet correspondant (ex: "je", "tu", "il", "elle", "nous", "vous", "ils", "elles", "on"). Pour les noms, adjectifs ou adverbes, n'inclus pas le champ "pronom".`;
+
+RÈGLE ABSOLUE SUR LES MOTS À APPRENDRE :
+- Les mots peuvent être : des noms, des adjectifs, des adverbes, ou des verbes conjugués.
+- Si le mot est un VERBE CONJUGUÉ (ex: "a mis", "sont partis", "mangera", "prenaient") : tu DOIS OBLIGATOIREMENT ajouter le champ "pronom" avec le pronom personnel sujet (ex: "il", "elle", "ils", "elles", "nous", "vous", "tu", "je", "on"). JAMAIS mettre un verbe conjugué sans son pronom. Le mot affiché à l'élève sera "pronom + mot" (ex: "il a mis", "elles sont parties").
+- Si le mot est un NOM, ADJECTIF ou ADVERBE : ne pas inclure le champ "pronom".
+- Exemples corrects : { "mot": "a mis", "definition": "Verbe mettre au passé composé, 3e personne du singulier", "pronom": "il" } / { "mot": "rapidement", "definition": "De façon rapide" } / { "mot": "feuillage", "definition": "Ensemble des feuilles d'un arbre" }`;
 }
 
 export async function POST(req: NextRequest) {
