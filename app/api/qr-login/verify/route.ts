@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
   }
 
   const origin = new URL(req.url).origin;
-  const redirectTo = `${origin}/eleve/dashboard`;
+  const redirectTo = `${origin}/auth/callback?next=/eleve/dashboard`;
 
   // Générer un magic link à usage unique
   const { data: linkData, error: linkError } = await admin.auth.admin.generateLink({
