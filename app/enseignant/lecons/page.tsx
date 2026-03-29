@@ -268,16 +268,29 @@ export default function BanqueLecons() {
     for (const { i } of aTraiter) {
       const item = lotFichiers[i];
 
-      // Upload fichier
+      // Upload fichier — via URL signée Supabase (évite la limite 4 MB serverless)
       setLotFichiers((prev) => prev.map((it, idx) => idx === i ? { ...it, etat: "upload" } : it));
-      const fd = new FormData();
-      fd.append("file", item.file);
-      const uploadRes = await fetch("/api/upload-lecon", { method: "POST", body: fd });
-      const uploadJson = await uploadRes.json();
-      if (!uploadRes.ok) {
+      const presignRes = await fetch("/api/upload-lecon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: item.file.name, contentType: item.file.type }),
+      });
+      const presignJson = await presignRes.json();
+      if (!presignRes.ok) {
         setLotFichiers((prev) => prev.map((it, idx) => idx === i ? { ...it, etat: "erreur" } : it));
         continue;
       }
+      const supabase = createClient();
+      const { error: uploadError } = await supabase.storage
+        .from("lecons")
+        .uploadToSignedUrl(presignJson.path, presignJson.token, item.file, {
+          contentType: item.file.type || "application/pdf",
+        });
+      if (uploadError) {
+        setLotFichiers((prev) => prev.map((it, idx) => idx === i ? { ...it, etat: "erreur" } : it));
+        continue;
+      }
+      const uploadJson = { url: presignJson.publicUrl };
 
       // Sauvegarder en BDD
       setLotFichiers((prev) => prev.map((it, idx) => idx === i ? { ...it, etat: "sauvegarde" } : it));
