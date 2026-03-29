@@ -3,6 +3,38 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
+const THEMES = [
+  "une expédition en Antarctique",
+  "la vie sous-marine au fond de l'océan",
+  "un marché coloré en Afrique de l'Ouest",
+  "une course cycliste dans les Alpes",
+  "la construction d'une fusée spatiale",
+  "une journée dans une boulangerie artisanale",
+  "un tournoi de jeux d'échecs",
+  "la migration des oiseaux en automne",
+  "un chantier archéologique en Égypte",
+  "la vie des castors dans une rivière",
+  "un festival de musique traditionnel",
+  "la récolte du miel par un apiculteur",
+  "une tempête en haute mer sur un voilier",
+  "la fabrication du chocolat",
+  "un campement nomade dans le désert",
+  "une compétition de natation synchronisée",
+  "la découverte d'une grotte préhistorique",
+  "un marché de Noël en Alsace",
+  "la vie quotidienne d'un berger en montagne",
+  "un laboratoire scientifique qui étudie les volcans",
+  "une traversée des Pyrénées à cheval",
+  "la pêche traditionnelle en Bretagne",
+  "un atelier de poterie au Japon",
+  "la migration des gnous en Afrique",
+  "une école de cirque",
+];
+
+function piocherTheme(): string {
+  return THEMES[Math.floor(Math.random() * THEMES.length)];
+}
+
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -12,16 +44,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ erreur: "Précise l'objectif ou la description." }, { status: 400 });
     }
 
+    const theme = piocherTheme();
+
     const systemPrompt = `Tu es un enseignant de cycle 3 (CE2/CM1/CM2) expert en français qui crée des exercices de type "texte à trous".
 
 Génère un texte adapté au niveau ${niveau} avec des mots manquants à compléter par l'élève.
 
 Objectif pédagogique : ${objectif || "à déterminer selon la description"}
 ${description ? `Consigne de l'enseignant : ${description}` : ""}
+THÈME IMPOSÉ : ${theme} — tu DOIS utiliser ce thème précis, sans le changer.
 
 RÈGLES STRICTES :
-- Écris un texte de 4 à 8 phrases, cohérent, intéressant et ORIGINAL
-- VARIE les thèmes : aventure, nature, voyage, animaux exotiques, sport, espace, cuisine, histoire, mer, montagne... NE PAS toujours utiliser l'école, Marie, ou des prénoms classiques
+- Écris un texte de 4 à 8 phrases, cohérent, intéressant et ORIGINAL sur le thème imposé
+- NE PAS utiliser un thème différent du thème imposé ci-dessus
 - Masque entre 6 et 12 mots en fonction de l'objectif pédagogique
 - Les mots masqués doivent être pertinents par rapport à l'objectif
 - Chaque trou DOIT avoir un indice. RÈGLE ABSOLUE : si l'objectif porte sur la CONJUGAISON, l'indice est UNIQUEMENT l'infinitif du verbe, rien d'autre (ex : "explorer", "avancer", "bondir"). PAS de mention de personne, sujet ou temps dans l'indice. Pour les autres objectifs (orthographe, vocabulaire…), l'indice est une aide courte.
