@@ -806,6 +806,7 @@ function PageGenererInner() {
     // b) Pour chaque dictée générée : sauvegarder + créer plan_travail
     // Un batchId unique regroupe toutes les dictées de la semaine
     const batchId = crypto.randomUUID();
+    let vendrediParentId: string | null = null; // parentId du vendredi bilan (pas d'audio)
 
     // Label groupe/classe pour les dictées
     const groupeLabelDictee: string | null = (() => {
@@ -881,9 +882,10 @@ function PageGenererInner() {
         return;
       }
 
-      // ── Vendredi bilan : sauvegardé dans la bibliothèque mais pas affecté aux élèves ──
+      // ── Vendredi bilan : sauvegardé dans la bibliothèque mais pas affecté aux élèves, et pas d'audio ──
       const estBilanVendredi = d === dicteeResultats.length - 1 && dicteeResultats.length >= 3;
       if (estBilanVendredi) {
+        vendrediParentId = parentId;
         setProgressDictee({ fait: d + 1, total: dicteeResultats.length });
         continue; // on saute l'étape plan_travail
       }
@@ -975,11 +977,15 @@ function PageGenererInner() {
 
     // ── Génération audio TTS (après sauvegarde BDD) ──────────────────────────
     setGenerationAudioEnCours(true);
-    // Re-fetch les IDs par batch_id
-    const { data: dicteesGenerees } = await supabase
+    // Re-fetch les IDs par batch_id, en excluant le vendredi (dictée bilan — l'enseignant dicte en classe)
+    let audioQuery = supabase
       .from("dictees")
       .select("id, niveau_etoiles, texte, phrases, dictee_parent_id")
       .eq("batch_id", batchId);
+    if (vendrediParentId) {
+      audioQuery = audioQuery.neq("dictee_parent_id", vendrediParentId);
+    }
+    const { data: dicteesGenerees } = await audioQuery;
 
     if (dicteesGenerees && dicteesGenerees.length > 0) {
       const labelsNiveaux: Record<number, string> = { 1: "⭐ CE2", 2: "⭐⭐ CM1", 3: "⭐⭐⭐ CM2", 4: "⭐⭐⭐⭐ CM2+" };
