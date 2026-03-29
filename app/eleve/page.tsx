@@ -15,10 +15,11 @@ export default function ConnexionEleve() {
   const [verification, setVerification] = useState(true);
 
   // Redirection automatique si déjà connecté
+  // getSession() lit depuis le cache local (instantané), pas d'appel réseau
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (user) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
         router.replace("/eleve/dashboard");
       } else {
         setVerification(false);
