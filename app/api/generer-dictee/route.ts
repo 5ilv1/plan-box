@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { ParamsDictee } from "@/types";
 
+export const maxDuration = 120; // 2 minutes — génération 3 jours × 4 niveaux peut être longue
+
 function buildPrompt(p: ParamsDictee): string {
   const diffParNiv = p.difficulteParNiveau ?? { 1: "standard", 2: "standard", 3: "exigeant", 4: "exigeant" };
 
@@ -170,7 +172,8 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ resultat });
   } catch (err) {
-    console.error("Erreur génération dictée:", err);
-    return NextResponse.json({ erreur: "Échec de la génération. Réessaie." }, { status: 500 });
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Erreur génération dictée:", msg);
+    return NextResponse.json({ erreur: `Échec de la génération : ${msg}` }, { status: 500 });
   }
 }
