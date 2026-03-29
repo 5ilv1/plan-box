@@ -490,8 +490,11 @@ export default function PageDictees() {
       ? batches.filter((b) => semainesSelectionnees.has(b.batchId))
       : batches;
     const label = niveauInfo.label;
+    const titreMots = selection.length === 1
+      ? `Mots à apprendre – ${selection[0].theme}`
+      : "Mots à apprendre";
     let html = `<!DOCTYPE html>
-<html lang="fr"><head><meta charset="utf-8"><title>Mots de dictée</title>
+<html lang="fr"><head><meta charset="utf-8"><title>${titreMots}</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, sans-serif; font-size: 11pt; padding: 20mm 18mm; }
@@ -502,7 +505,7 @@ export default function PageDictees() {
   td:first-child { font-weight: bold; white-space: nowrap; width: 90pt; }
   tr:nth-child(even) td { background: #F9FAFB; }
 </style></head><body>
-<h1>Mots de dictée</h1>
+<h1>${titreMots}</h1>
 <table><thead><tr><th>${label}</th><th></th></tr></thead><tbody>\n`;
     selection.forEach((batch) => {
       const numSemaine = batches.indexOf(batch) + 1;
