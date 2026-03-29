@@ -2123,3 +2123,46 @@ input[type="number"] {
   color: var(--pb-primary);
   text-decoration: underline;
 }
+
+/* ── Page titles ── */
+.ens-page-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--pb-on-surface);
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+/* ── Bouton enseignant ── */
+.ens-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 0.75rem;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.ens-btn.primary {
+  background: var(--ens-primary, #0050D4);
+  color: white;
+}
+.ens-btn.primary:hover {
+  background: var(--ens-primary-dim, #003EA8);
+}
+.ens-btn.primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.ens-btn.ghost {
+  background: var(--ens-surface-container, #E7E6FF);
+  color: var(--ens-primary, #0050D4);
+}
+.ens-btn.ghost:hover {
+  background: var(--ens-surface-container-high, #E0E0FF);
+}

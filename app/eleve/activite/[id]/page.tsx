@@ -23,7 +23,8 @@ const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false }
 
 type EtatActivite = "chargement" | "en_cours" | "termine" | "erreur";
 
-const SEUIL_REUSSITE = 90;
+const SEUIL_REUSSITE = 80;   // ≥ 80% → exercice réussi
+const SEUIL_REAFFECT  = 60;   // < 60% → réaffectation le prochain jour d'école
 
 interface ReponseQuestion {
   id: number;
@@ -78,6 +79,10 @@ export default function PageActivite() {
 
   const premiereInputRef = useRef<HTMLInputElement>(null);
 
+  // Suivi des tentatives
+  const [nbTentatives, setNbTentatives] = useState(0);
+  const [reaffectInfo, setReaffectInfo] = useState<{ dateProchainJour: string } | null>(null);
+
   useEffect(() => {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
@@ -123,6 +128,9 @@ export default function PageActivite() {
         exercice.questions.map((q: QuestionExercice) => ({ id: q.id, reponse: "", correcte: null }))
       );
     }
+    // Reprendre le compteur de tentatives depuis la DB
+    const contenuExistant = data.contenu as Record<string, unknown> | null;
+    setNbTentatives((contenuExistant?.nb_tentatives as number) ?? 0);
     setEtat("en_cours");
   }
 
@@ -175,14 +183,31 @@ export default function PageActivite() {
   // ── URL PDF pour leçon à copier (PDF.js le charge directement) ──────────────
   const leconUrl = bloc?.type === "lecon_copier" ? (bloc.contenu as any)?.url as string : null;
 
-  async function marquerFait(score?: { bon: number; total: number }, statut: StatutBloc = "fait", reponsesEleve?: { id: number; reponse: string; correcte: boolean | null }[]) {
+  async function marquerFait(
+    score?: { bon: number; total: number },
+    statut: StatutBloc = "fait",
+    reponsesEleve?: { id: number; reponse: string; correcte: boolean | null }[],
+    tentativesCourantes?: number,
+  ) {
     if (!bloc) return;
-    let contenuMaj = bloc.contenu;
+    const tentatives = (tentativesCourantes ?? 0) + 1;
+    const contenuActuel = (bloc.contenu ?? {}) as Record<string, unknown>;
+
+    let contenuMaj: Record<string, unknown> = {
+      ...contenuActuel,
+      nb_tentatives: tentatives,
+    };
+
     if (score) {
       contenuMaj = { ...contenuMaj, score_eleve: score.bon, score_total: score.total };
+      // Premier score — enregistré une seule fois
+      if (tentatives === 1) {
+        contenuMaj.premier_score = score.bon;
+        contenuMaj.premier_score_total = score.total;
+      }
     }
     if (reponsesEleve) {
-      contenuMaj = { ...contenuMaj, reponses_eleve: reponsesEleve }  as typeof contenuMaj;
+      contenuMaj = { ...contenuMaj, reponses_eleve: reponsesEleve };
     }
 
     if (session?.source === "repetibox") {
@@ -236,6 +261,7 @@ export default function PageActivite() {
     setSoumis(false);
     setScoreExercice(null);
     setEvalMessage(null);
+    setReaffectInfo(null);
     setEtat("en_cours");
   }
 
@@ -253,13 +279,16 @@ export default function PageActivite() {
     const bon = reponsesVerifiees.filter((r) => r.correcte).length;
     const total = reponsesVerifiees.length;
     const pct = Math.round((bon / total) * 100);
-    const statut: StatutBloc = pct >= SEUIL_REUSSITE ? "fait" : "en_cours";
+    // Statut toujours "fait" dès la première soumission
+    const statut: StatutBloc = "fait";
+    const nouvTentatives = nbTentatives + 1;
+    setNbTentatives(nouvTentatives);
 
     setReponses(reponsesVerifiees);
     setSoumis(true);
     setScoreExercice({ bon, total });
 
-    await marquerFait({ bon, total }, statut, reponsesVerifiees.map(r => ({ id: r.id, reponse: r.reponse, correcte: r.correcte })));
+    await marquerFait({ bon, total }, statut, reponsesVerifiees.map(r => ({ id: r.id, reponse: r.reponse, correcte: r.correcte })), nbTentatives);
 
     if (bloc.type === "eval") {
       const questionsRatees = reponsesVerifiees
@@ -270,14 +299,37 @@ export default function PageActivite() {
         })
         .filter((c) => c.recto && c.verso);
       await validerProgressionChapitre(bon, total, questionsRatees);
-      if (statut === "fait") {
+      if (pct >= SEUIL_REUSSITE) {
         setEvalMessage("🏆 Chapitre validé ! Félicitations !");
       } else {
         setEvalMessage("📚 Score insuffisant. Révise sur Repetibox — tu pourras réessayer demain !");
       }
-    } else if (statut === "fait" && bloc.chapitre_id) {
+    } else if (pct >= SEUIL_REUSSITE && bloc.chapitre_id) {
       const { evalDeclenche, message } = await verifierProgression();
       if (evalDeclenche) setEvalMessage(message);
+    }
+
+    // Réaffectation si score trop faible
+    if (pct < SEUIL_REAFFECT && session) {
+      try {
+        const res = await fetch("/api/reaffecter-exercice", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            blocId: bloc.id,
+            eleveId: session.source === "planbox" ? session.id : null,
+            eleveRbId: session.source === "repetibox" ? parseInt(session.id, 10) : null,
+            score: bon,
+            scoreTotal: total,
+          }),
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.reaffecte) {
+            setReaffectInfo({ dateProchainJour: json.dateProchainJour });
+          }
+        }
+      } catch { /* silencieux */ }
     }
 
     setEtat("termine");
@@ -285,13 +337,37 @@ export default function PageActivite() {
 
   async function onCalcMentalComplete(bon: number, total: number, repEleve?: { id: number; reponse: string; correcte: boolean | null }[]) {
     const pct = Math.round((bon / total) * 100);
-    const statut: StatutBloc = pct >= SEUIL_REUSSITE ? "fait" : "en_cours";
+    const nouvTentatives = nbTentatives + 1;
+    setNbTentatives(nouvTentatives);
     setScoreCalcul({ bon, total });
-    await marquerFait({ bon, total }, statut, repEleve);
-    if (statut === "fait" && bloc?.chapitre_id) {
+    await marquerFait({ bon, total }, "fait", repEleve, nbTentatives);
+
+    if (pct >= SEUIL_REUSSITE && bloc?.chapitre_id) {
       const { evalDeclenche, message } = await verifierProgression();
       if (evalDeclenche) setEvalMessage(message);
     }
+
+    // Réaffectation si score trop faible
+    if (pct < SEUIL_REAFFECT && session) {
+      try {
+        const res = await fetch("/api/reaffecter-exercice", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            blocId: bloc?.id,
+            eleveId: session.source === "planbox" ? session.id : null,
+            eleveRbId: session.source === "repetibox" ? parseInt(session.id, 10) : null,
+            score: bon,
+            scoreTotal: total,
+          }),
+        });
+        if (res.ok) {
+          const json = await res.json();
+          if (json.reaffecte) setReaffectInfo({ dateProchainJour: json.dateProchainJour });
+        }
+      } catch { /* silencieux */ }
+    }
+
     setEtat("termine");
   }
 
@@ -444,7 +520,9 @@ export default function PageActivite() {
                 <p style={{ fontSize: 16, color: "var(--pb-on-surface-variant)", marginBottom: 24 }}>
                   {reussi
                     ? (bloc.type === "eval" ? "Excellent ! Chapitre validé !" : "Bravo, exercice réussi !")
-                    : `Score insuffisant (${pct}% — seuil : ${SEUIL_REUSSITE}%). Entraîne-toi encore !`}
+                    : pct !== null && pct < SEUIL_REAFFECT
+                      ? "Score trop faible. Ne t'inquiète pas, tu auras une nouvelle chance !"
+                      : `Continue à t'entraîner ! (${pct}% — objectif : ${SEUIL_REUSSITE}%)`}
                 </p>
 
                 {evalMessage && (
@@ -463,14 +541,38 @@ export default function PageActivite() {
                   </div>
                 )}
 
-                {!reussi && (
+                {reaffectInfo && (
+                  <div style={{
+                    background: "rgba(112,42,225,0.06)",
+                    border: "1.5px solid rgba(112,42,225,0.2)",
+                    borderRadius: "1rem",
+                    padding: "14px 18px",
+                    marginBottom: 20,
+                    fontSize: 14,
+                    color: "var(--pb-secondary)",
+                    fontWeight: 600,
+                    textAlign: "left",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    gap: 10,
+                  }}>
+                    <span className="ms" style={{ fontSize: 20, flexShrink: 0 }}>event_available</span>
+                    <span>
+                      Cet exercice a été réaffecté dans ton planning pour le{" "}
+                      <strong>{new Date(reaffectInfo.dateProchainJour + "T12:00:00Z").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</strong>.
+                      Bonne chance ! 🔄
+                    </span>
+                  </div>
+                )}
+
+                {!reussi && !reaffectInfo && (
                   <button
                     className="pb-btn surface"
                     onClick={recommencer}
                     style={{ marginBottom: 16, width: "100%" }}
                   >
                     <span className="ms" style={{ fontSize: 18 }}>refresh</span>
-                    Refaire l'exercice
+                    Réessayer maintenant
                   </button>
                 )}
               </>

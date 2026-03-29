@@ -496,6 +496,10 @@ export default function DashboardEleve() {
             <a href="#aujourd-hui" className="eleve-nav-link active">Aujourd'hui</a>
             <a href="#chapitres" className="eleve-nav-link">Mes chapitres</a>
             <a href="#a-venir" className="eleve-nav-link">À venir</a>
+            <Link href="/eleve/bilan" className="eleve-nav-link" style={{ display: "flex", alignItems: "center", gap: 4 }}>
+              <span className="ms" style={{ fontSize: 16 }}>bar_chart</span>
+              Mon bilan
+            </Link>
           </div>
 
           <div className="eleve-nav-actions">
@@ -1008,6 +1012,14 @@ export default function DashboardEleve() {
                           const desc = chapNom ?? DESC[b.type] ?? "";
                           const isEcritureSemaine = b.type === "ecriture" && (b.contenu as any)?.mode === "semaine";
                           const peutCommencer = (TYPES_INTERACTIFS.includes(b.type) || isEcritureSemaine) && b.contenu;
+                          // Score précédent et badge 2e chance
+                          const contenuBloc = (b.contenu as Record<string, unknown>) ?? {};
+                          const scorePrecedent = contenuBloc.score_eleve as number | undefined;
+                          const scorePrecedentTotal = contenuBloc.score_total as number | undefined;
+                          const estReaffectation = !!(contenuBloc.reaffectation || contenuBloc.source_bloc_id);
+                          const pctPrecedent = (scorePrecedent !== undefined && scorePrecedentTotal)
+                            ? Math.round((scorePrecedent / scorePrecedentTotal) * 100)
+                            : null;
                           return (
                             <div
                               key={b.id}
@@ -1033,7 +1045,7 @@ export default function DashboardEleve() {
                               {/* Header : badge + icône */}
                               <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
                                 <div style={{ flex: 1, minWidth: 0 }}>
-                                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                                  <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
                                     <span style={{
                                       fontSize: 10, fontWeight: 700, letterSpacing: "0.07em",
                                       textTransform: "uppercase", padding: "4px 12px",
@@ -1042,6 +1054,16 @@ export default function DashboardEleve() {
                                     }}>
                                       {cat.label}
                                     </span>
+                                    {estReaffectation && (
+                                      <span style={{
+                                        fontSize: 10, fontWeight: 700, padding: "4px 10px",
+                                        borderRadius: 999, background: "rgba(112,42,225,0.1)", color: "#702AE1",
+                                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                                        display: "flex", alignItems: "center", gap: 4,
+                                      }}>
+                                        🔄 2e chance
+                                      </span>
+                                    )}
                                   </div>
                                   <div style={{
                                     fontSize: 17, fontWeight: 800,
@@ -1054,6 +1076,17 @@ export default function DashboardEleve() {
                                   <div style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", lineHeight: 1.5 }}>
                                     {desc}
                                   </div>
+                                  {/* Score précédent (si déjà tenté) */}
+                                  {!estFait && pctPrecedent !== null && (
+                                    <div style={{
+                                      marginTop: 8, fontSize: 12, fontWeight: 600,
+                                      color: pctPrecedent >= 80 ? "#16A34A" : pctPrecedent >= 60 ? "#D97706" : "#DC2626",
+                                      display: "flex", alignItems: "center", gap: 4,
+                                    }}>
+                                      <span className="ms" style={{ fontSize: 14 }}>history</span>
+                                      Dernier score : {scorePrecedent}/{scorePrecedentTotal} ({pctPrecedent}%)
+                                    </div>
+                                  )}
                                 </div>
                                 <span className="ms" style={{ fontSize: 22, color: `${cat.color}66`, flexShrink: 0, marginLeft: 10 }}>
                                   {ms.icon}
@@ -1069,7 +1102,7 @@ export default function DashboardEleve() {
                                       className="pb-btn primary"
                                       style={{ padding: "10px 20px", fontSize: 14, borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 }}
                                     >
-                                      Commencer →
+                                      {pctPrecedent !== null ? "Réessayer →" : "Commencer →"}
                                     </Link>
                                   </div>
                                 ) : (
