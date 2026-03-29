@@ -97,16 +97,25 @@ IMPORTANT — Pour réduire la taille du JSON :
 - Les "mots" sont COMMUNS aux 3 jours : définis-les UNE SEULE FOIS dans "mots_communs", pas dans chaque jour.
 - Utilise des définitions courtes (5 mots max).
 
+RÈGLE CRITIQUE SUR LE CHAMP "pronom" DANS mots_communs :
+Pour CHAQUE verbe conjugué dans mots_communs, tu DOIS OBLIGATOIREMENT inclure le champ "pronom".
+Sans pronom, un verbe conjugué est inutilisable pédagogiquement.
+Exemples : "a mangé" → pronom "il", "sont partis" → pronom "ils", "brillaient" → pronom "elles"
+Les noms, adjectifs et adverbes n'ont PAS de pronom.
+Vérification : avant de fermer le JSON, relis chaque mot de mots_communs et ajoute "pronom" si c'est un verbe conjugué.
+
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
 Format :
 {
   "titre": "Titre commun aux 3 jours",
   "mots_communs": {
     "1": [
-      { "mot": "a visité", "definition": "Verbe visiter, passé composé, 3e sg.", "pronom": "elle" },
-      { "mot": "marché", "definition": "Lieu d'achat et de vente" }
+      { "mot": "a mangé", "definition": "Verbe manger, passé composé, 3e sg.", "pronom": "il" },
+      { "mot": "brillaient", "definition": "Verbe briller, imparfait, 3e pl.", "pronom": "elles" },
+      { "mot": "marché", "definition": "Lieu d'achat et de vente" },
+      { "mot": "animé", "definition": "Plein de vie et d'agitation" }
     ],
-    "2": [...mots niveau 2 (inclut les mots du niveau 1)...],
+    "2": [...mots niveau 2 (inclut les mots du niveau 1 + nouveaux)...],
     "3": [...mots niveau 3...],
     "4": [...mots niveau 4...]
   },

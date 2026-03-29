@@ -363,7 +363,7 @@ export default function PageDictees() {
     try {
       // Collecter tous les mots uniques du premier jour (toutes les étoiles)
       const premierJour = batch.jours[0];
-      const motsUniques: { mot: string; definition: string }[] = [];
+      const motsUniques: { mot: string; definition: string; pronom?: string }[] = [];
       const motsSeen = new Set<string>();
       if (premierJour) {
         for (const niv of premierJour.niveaux) {
@@ -371,7 +371,7 @@ export default function PageDictees() {
             const key = m.mot.toLowerCase().trim();
             if (!motsSeen.has(key)) {
               motsSeen.add(key);
-              motsUniques.push({ mot: m.mot, definition: m.definition });
+              motsUniques.push({ mot: m.mot, definition: m.definition, pronom: m.pronom });
             }
           }
         }
@@ -507,7 +507,7 @@ export default function PageDictees() {
     selection.forEach((batch) => {
       const numSemaine = batches.indexOf(batch) + 1;
       const niv = batch.jours[0]?.niveaux.find((n) => n.niveau_etoiles === niveauActif);
-      const motsTxt = (niv?.mots ?? []).map((m) => m.mot).join(" – ") || "—";
+      const motsTxt = (niv?.mots ?? []).map((m) => m.pronom ? `${m.pronom} ${m.mot}` : m.mot).join(" – ") || "—";
       html += `<tr><td>Semaine ${numSemaine}</td><td>${motsTxt}</td></tr>\n`;
     });
     html += `</tbody></table></body></html>`;
@@ -652,7 +652,7 @@ export default function PageDictees() {
                       const coche = semainesSelectionnees.has(batch.batchId);
                       const niv = batch.jours[0]?.niveaux.find((n) => n.niveau_etoiles === niveauActif);
                       const mots = niv?.mots ?? [];
-                      const motsTxt = mots.map((m) => m.mot).join(" – ");
+                      const motsTxt = mots.map((m) => m.pronom ? `${m.pronom} ${m.mot}` : m.mot).join(" – ");
 
                       return (
                         <tr
@@ -952,6 +952,9 @@ export default function PageDictees() {
                                     padding: "6px 12px", borderRadius: 8,
                                     background: "var(--bg)", border: "1px solid var(--border)", fontSize: 13,
                                   }}>
+                                    {m.pronom && (
+                                      <span style={{ color: "var(--text-secondary)", marginRight: 4 }}>{m.pronom}</span>
+                                    )}
                                     <strong>{m.mot}</strong>
                                     {m.definition && (
                                       <span style={{ color: "var(--text-secondary)", marginLeft: 6 }}>— {m.definition}</span>
