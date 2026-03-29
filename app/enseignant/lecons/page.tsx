@@ -36,6 +36,21 @@ interface LotItem {
   etat: EtatLot;
 }
 
+/* ── Tri par numéro de leçon (H1, G2, F10…) puis alphabétique ── */
+function numLecon(titre: string): number {
+  const m = titre.match(/^[A-Za-z]+(\d+)/);
+  return m ? parseInt(m[1], 10) : Infinity;
+}
+function trierLecons<T extends { matiere: string; titre: string }>(liste: T[]): T[] {
+  return [...liste].sort((a, b) => {
+    const matCmp = a.matiere.localeCompare(b.matiere, "fr");
+    if (matCmp !== 0) return matCmp;
+    const nA = numLecon(a.titre), nB = numLecon(b.titre);
+    if (nA !== nB) return nA - nB;
+    return a.titre.localeCompare(b.titre, "fr");
+  });
+}
+
 export default function BanqueLecons() {
   const router = useRouter();
   const supabase = createClient();
@@ -106,22 +121,6 @@ export default function BanqueLecons() {
   }, [router, supabase]);
 
   useEffect(() => { charger(); }, [charger]);
-
-  /* ── Tri par numéro de leçon (H1, H2, H10…) puis alphabétique ── */
-  function numLecon(titre: string): number {
-    // Extrait le numéro après n'importe quel préfixe lettres (H1, G2, F10, EMC3…)
-    const m = titre.match(/^[A-Za-z]+(\d+)/);
-    return m ? parseInt(m[1], 10) : Infinity;
-  }
-  function trierLecons<T extends { matiere: string; titre: string }>(liste: T[]): T[] {
-    return [...liste].sort((a, b) => {
-      const matCmp = a.matiere.localeCompare(b.matiere, "fr");
-      if (matCmp !== 0) return matCmp;
-      const nA = numLecon(a.titre), nB = numLecon(b.titre);
-      if (nA !== nB) return nA - nB;
-      return a.titre.localeCompare(b.titre, "fr");
-    });
-  }
 
   /* ── Leçons filtrées ── */
   const leconsFiltrees = trierLecons(lecons.filter((l) => {
