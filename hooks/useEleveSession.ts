@@ -68,14 +68,30 @@ export function useEleveSession() {
       setChargement(false);
     }
 
-    // onAuthStateChange capte à la fois la session existante (INITIAL_SESSION)
-    // et la session établie depuis le hash du magic link (SIGNED_IN)
+    // Écouter uniquement les événements pertinents :
+    // INITIAL_SESSION → état initial au montage
+    // SIGNED_IN       → nouvelle connexion (QR, magic link)
+    // SIGNED_OUT      → déconnexion
+    // TOKEN_REFRESHED est ignoré pour éviter de rappeler resoudreUser inutilement
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, authSession) => {
-      if (authSession?.user) {
-        await resoudreUser(authSession.user);
-      } else {
+      if (event === "SIGNED_OUT") {
         setSession(null);
         setChargement(false);
+        return;
+      }
+
+      if (event === "INITIAL_SESSION") {
+        if (authSession?.user) {
+          await resoudreUser(authSession.user);
+        } else {
+          setSession(null);
+          setChargement(false);
+        }
+        return;
+      }
+
+      if (event === "SIGNED_IN" && authSession?.user) {
+        await resoudreUser(authSession.user);
       }
     });
 
