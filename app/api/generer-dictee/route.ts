@@ -35,30 +35,55 @@ Crée des phrases NOUVELLES et DIFFÉRENTES qui font naturellement apparaître c
         }
       }
     }
-    return Array.from(ngrams).slice(0, 60); // limiter pour ne pas exploser le prompt
+    return Array.from(ngrams).slice(0, 60);
+  }
+
+  // Extraire les mots-clés significatifs (noms, adjectifs, verbes) pour interdire le champ lexical
+  function extraireMotsCles(phrases: string[]): string[] {
+    const STOPWORDS = new Set([
+      "le","la","les","l","un","une","des","du","de","d","au","aux",
+      "et","ou","mais","donc","or","ni","car","que","qui","dont","où","quand","comme","si","parce","lorsque",
+      "il","elle","ils","elles","on","nous","vous","tu","je","j","se","y","me","te",
+      "ce","cet","cette","ces","son","sa","ses","mon","ma","mes","ton","ta","tes","leur","leurs","nos","vos",
+      "à","en","sur","sous","dans","par","pour","avec","sans","chez","vers","entre","lors","pendant","après","avant",
+      "a","est","sont","ont","été","avoir","être","fait","mis","pris","vu",
+      "plus","très","aussi","même","bien","tout","tous","toute","toutes","peu","trop","assez",
+      "là","ici","alors","ainsi","encore","déjà","jamais","toujours","souvent",
+      "que","qu","ne","pas","plus","rien","personne",
+    ]);
+    const mots = new Set<string>();
+    for (const phrase of phrases) {
+      phrase.toLowerCase()
+        .replace(/[.,;:!?«»""''\-–—]/g, " ")
+        .split(/\s+/)
+        .filter(m => m.length > 3 && !STOPWORDS.has(m))
+        .forEach(m => mots.add(m));
+    }
+    return Array.from(mots).slice(0, 40);
   }
 
   const instructionPhrases = p.phrasesDejaUtilisees && p.phrasesDejaUtilisees.length > 0
     ? (() => {
         const ngrams = extraireNgrammes(p.phrasesDejaUtilisees);
+        const motsCles = extraireMotsCles(p.phrasesDejaUtilisees);
         const ngramsStr = ngrams.length > 0
-          ? `\nSéquences de mots INTERDITES (4+ mots consécutifs extraits des phrases précédentes — tu ne peux PAS les utiliser même dans un contexte légèrement différent) :\n${ngrams.map((g) => `"${g}"`).join(" / ")}\n`
+          ? `\nSéquences INTERDITES (4+ mots consécutifs) :\n${ngrams.map((g) => `"${g}"`).join(" / ")}\n`
           : "";
-        return `\nPHRASES INTERDITES — RÈGLE ABSOLUE :
-Ces phrases ont déjà été utilisées dans une dictée précédente de cette semaine :
+        const lexiqueStr = motsCles.length > 0
+          ? `\nCHAMP LEXICAL INTERDIT — ces mots ET leurs synonymes proches ne peuvent PAS apparaître dans les nouvelles phrases :\n${motsCles.join(", ")}\n`
+          : "";
+        return `\nPHRASES DÉJÀ UTILISÉES — INTERDICTION ABSOLUE DE RÉUTILISATION :
 ${p.phrasesDejaUtilisees.map((ph, i) => `${i + 1}. ${ph}`).join("\n")}
-${ngramsStr}
-Les violations suivantes sont INTERDITES :
-❌ Reproduire une phrase telle quelle
-❌ Changer seulement le temps verbal (ex : "Zeus règnera sur les dieux" → "Zeus régnait sur les dieux")
-❌ Changer seulement un adjectif, un déterminant ou un mot isolé
-❌ Reprendre le même sujet + même verbe + même complément, même reformulés
-❌ Utiliser une des séquences de mots interdites listées ci-dessus
+${ngramsStr}${lexiqueStr}
+VIOLATIONS STRICTEMENT INTERDITES :
+❌ Reproduire ou paraphraser une phrase existante
+❌ Changer seulement un nom propre, un adjectif, un objet ou un lieu (ex: "sac bleu" → "cartable bleu" = INTERDIT)
+❌ Réutiliser la même structure syntaxique (ex: "Ce matin-là, X a mis son Y" apparaît déjà → structure INTERDITE)
+❌ Mettre en scène le même type de moment ou d'action (ex: arrivée à l'école, couloirs, professeur bienveillant = déjà traités)
+❌ Réutiliser les mots du champ lexical interdit ci-dessus
 
-✅ Chaque nouvelle phrase DOIT :
-- Parler d'un personnage, d'une action, d'un lieu ou d'un moment DIFFÉRENT de toutes les phrases précédentes
-- Avoir une structure syntaxique distincte (varier les constructions : circonstanciel en tête / relative / subordonnée / coordination…)
-- Introduire un contenu entièrement nouveau, pas encore évoqué\n`;
+SCÈNE OBLIGATOIREMENT NOUVELLE :
+Identifie le ou les moments décrits dans les phrases précédentes. Ta dictée doit se situer dans un MOMENT ENTIÈREMENT DIFFÉRENT (autre heure de la journée, autre lieu, autre action, autres personnages). Par exemple : si les dictées précédentes montrent l'arrivée le matin et les couloirs, parle d'un cours, d'une récréation avec des jeux précis, du repas à la cantine, du trajet du retour, d'une rencontre spécifique, etc.\n`;
       })()
     : "";
 
