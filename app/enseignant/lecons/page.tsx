@@ -107,13 +107,29 @@ export default function BanqueLecons() {
 
   useEffect(() => { charger(); }, [charger]);
 
+  /* ── Tri par numéro de leçon (H1, H2, H10…) puis alphabétique ── */
+  function numLecon(titre: string): number {
+    // Extrait le numéro après n'importe quel préfixe lettres (H1, G2, F10, EMC3…)
+    const m = titre.match(/^[A-Za-z]+(\d+)/);
+    return m ? parseInt(m[1], 10) : Infinity;
+  }
+  function trierLecons<T extends { matiere: string; titre: string }>(liste: T[]): T[] {
+    return [...liste].sort((a, b) => {
+      const matCmp = a.matiere.localeCompare(b.matiere, "fr");
+      if (matCmp !== 0) return matCmp;
+      const nA = numLecon(a.titre), nB = numLecon(b.titre);
+      if (nA !== nB) return nA - nB;
+      return a.titre.localeCompare(b.titre, "fr");
+    });
+  }
+
   /* ── Leçons filtrées ── */
-  const leconsFiltrees = lecons.filter((l) => {
+  const leconsFiltrees = trierLecons(lecons.filter((l) => {
     const matOk  = filtreMatiere === "toutes" || l.matiere === filtreMatiere;
     const anneeOk = filtreAnnee === 0 || l.annee === filtreAnnee;
     const rechOk = recherche.trim() === "" || l.titre.toLowerCase().includes(recherche.toLowerCase());
     return matOk && anneeOk && rechOk;
-  });
+  }));
 
   /* ── Upload PDF ── */
   async function uploadFichier(file: File) {
@@ -158,9 +174,7 @@ export default function BanqueLecons() {
       if (modalForm.id) {
         setLecons((prev) => prev.map((l) => l.id === modalForm.id ? { ...l, ...json.lecon } : l));
       } else {
-        setLecons((prev) => [...prev, json.lecon].sort((a, b) =>
-          a.matiere.localeCompare(b.matiere) || a.titre.localeCompare(b.titre)
-        ));
+        setLecons((prev) => trierLecons([...prev, json.lecon]));
       }
       setModalForm(null);
     } finally {
@@ -306,9 +320,7 @@ export default function BanqueLecons() {
       }
 
       setLotFichiers((prev) => prev.map((it, idx) => idx === i ? { ...it, etat: "done" } : it));
-      setLecons((prev) => [...prev, saveJson.lecon].sort((a, b) =>
-        a.matiere.localeCompare(b.matiere) || a.titre.localeCompare(b.titre)
-      ));
+      setLecons((prev) => trierLecons([...prev, saveJson.lecon]));
     }
     setLotEnCours(false);
   }
