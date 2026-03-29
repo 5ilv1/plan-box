@@ -92,42 +92,37 @@ ${contraintes}
 Au moins 2 groupes nominaux avec accord adjectif/déterminant par jour et par niveau.
 Le champ "texte" contient toutes les phrases du niveau séparées par des espaces.
 
+IMPORTANT — Pour réduire la taille du JSON, n'inclus PAS le champ "texte" dans les niveaux. Il sera reconstruit automatiquement.
+
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
 Format :
 {
   "titre": "Titre commun aux 3 jours",
   "jours": [
     {
-      "scene": "Description courte de la scène du Mardi (2-3 mots)",
+      "scene": "Scène du Mardi (3-5 mots)",
       "niveaux": [
         {
           "etoiles": 1,
           "label": "CE2",
-          "texte": "Texte complet.",
           "phrases": [
             { "id": 1, "texte": "Phrase 1." },
             { "id": 2, "texte": "Phrase 2." },
             { "id": 3, "texte": "Phrase 3." }
           ],
           "mots": [
-            { "mot": "a visité", "definition": "Verbe visiter au passé composé, 3e personne du singulier", "pronom": "elle" },
-            { "mot": "marché", "definition": "Lieu où l'on achète des marchandises" }
+            { "mot": "a visité", "definition": "Verbe visiter au passé composé, 3e pers. sg.", "pronom": "elle" },
+            { "mot": "marché", "definition": "Lieu d'achat et de vente" }
           ],
           "points_travailles": ["accord sujet-verbe", "passé composé"]
         },
-        { "etoiles": 2, "label": "CM1", "texte": "...", "phrases": [...], "mots": [...], "points_travailles": [...] },
-        { "etoiles": 3, "label": "CM2", "texte": "...", "phrases": [...], "mots": [...], "points_travailles": [...] },
-        { "etoiles": 4, "label": "CM2 renforcé", "texte": "...", "phrases": [...], "mots": [...], "points_travailles": [...] }
+        { "etoiles": 2, "label": "CM1", "phrases": [...], "mots": [...], "points_travailles": [...] },
+        { "etoiles": 3, "label": "CM2", "phrases": [...], "mots": [...], "points_travailles": [...] },
+        { "etoiles": 4, "label": "CM2 renforcé", "phrases": [...], "mots": [...], "points_travailles": [...] }
       ]
     },
-    {
-      "scene": "Description courte de la scène du Jeudi",
-      "niveaux": [...]
-    },
-    {
-      "scene": "Description courte de la scène du Vendredi",
-      "niveaux": [...]
-    }
+    { "scene": "Scène du Jeudi", "niveaux": [...] },
+    { "scene": "Scène du Vendredi", "niveaux": [...] }
   ]
 }`;
 }
@@ -158,14 +153,20 @@ export async function POST(req: NextRequest) {
 
     const resultat = JSON.parse(json);
 
-    // Sécurité : forcer les mots du jour 1 sur tous les jours (vocabulaire commun)
+    // Post-traitement : reconstruire "texte" + forcer mots communs
     if (Array.isArray(resultat.jours) && resultat.jours.length > 0) {
+      // Mots du jour 1 → appliqués à tous les jours
       const motsJour0: Record<number, unknown[]> = Object.fromEntries(
         (resultat.jours[0].niveaux ?? []).map((n: { etoiles: number; mots: unknown[] }) => [n.etoiles, n.mots ?? []])
       );
-      for (let j = 1; j < resultat.jours.length; j++) {
-        for (const niv of resultat.jours[j].niveaux ?? []) {
-          niv.mots = motsJour0[niv.etoiles] ?? niv.mots;
+      for (const jour of resultat.jours) {
+        for (const niv of jour.niveaux ?? []) {
+          // Reconstruire texte depuis les phrases
+          if (!niv.texte && Array.isArray(niv.phrases)) {
+            niv.texte = niv.phrases.map((ph: { texte: string }) => ph.texte).join(" ");
+          }
+          // Forcer les mots du jour 1
+          niv.mots = motsJour0[niv.etoiles] ?? niv.mots ?? [];
         }
       }
     }
