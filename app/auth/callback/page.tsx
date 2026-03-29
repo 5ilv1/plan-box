@@ -33,16 +33,26 @@ export default function AuthCallback() {
     }
 
     // Implicit flow : Supabase place les tokens dans le hash
-    // createBrowserClient les détecte automatiquement via onAuthStateChange
+    // createBrowserClient les détecte automatiquement et déclenche SIGNED_IN
+    // IMPORTANT : ne pas réagir à INITIAL_SESSION(null) — les hash tokens arrivent après
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if ((event === "SIGNED_IN" || event === "INITIAL_SESSION") && session) {
+      if (session && (event === "SIGNED_IN" || event === "TOKEN_REFRESHED" || event === "INITIAL_SESSION")) {
         router.replace(next);
-      } else if (event === "INITIAL_SESSION" && !session) {
-        router.replace("/eleve?erreur=qr");
       }
+      // Pas de redirection d'erreur ici — le timeout s'en charge
     });
 
-    return () => subscription.unsubscribe();
+    // Timeout de sécurité : si aucune session après 8s, aller à la page de connexion
+    const timer = setTimeout(() => {
+      supabase.auth.getSession().then(({ data: { session: s } }) => {
+        if (!s) router.replace("/eleve?erreur=qr");
+      });
+    }, 8000);
+
+    return () => {
+      subscription.unsubscribe();
+      clearTimeout(timer);
+    };
   }, [router]);
 
   return (
