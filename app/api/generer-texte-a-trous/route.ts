@@ -38,13 +38,13 @@ function piocherTheme(): string {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { niveau, objectif, description, pdfBase64 } = body;
+    const { niveau, objectif, description, pdfBase64, theme: themeEnseignant } = body;
 
     if (!objectif && !description) {
       return NextResponse.json({ erreur: "Précise l'objectif ou la description." }, { status: 400 });
     }
 
-    const theme = piocherTheme();
+    const theme = themeEnseignant?.trim() || piocherTheme();
 
     const systemPrompt = `Tu es un enseignant de cycle 3 (CE2/CM1/CM2) expert en français qui crée des exercices de type "texte à trous".
 

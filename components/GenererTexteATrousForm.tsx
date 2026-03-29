@@ -44,6 +44,7 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
   const [niveau, setNiveau] = useState(dv?.niveau ?? "CM1");
   const [objectif, setObjectif] = useState(dv?.objectif ?? "");
   const [description, setDescription] = useState(dv?.description ?? "");
+  const [theme, setTheme] = useState(dv?.theme ?? "");
   const [texteManuel, setTexteManuel] = useState(dv?.texteManuel ?? "");
   const [matiere, setMatiere] = useState(dv?.matiere ?? "Français");
   const [pdfModele, setPdfModele] = useState<{ name: string; base64: string } | null>(null);
@@ -117,6 +118,7 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
       matiere,
       objectif,
       description,
+      theme: theme.trim() || undefined,
       texteManuel: mode === "manuel" ? texteManuel : undefined,
       pdfBase64: pdfModele?.base64,
       chapitreId: chapitreId || undefined,
@@ -200,6 +202,18 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
               placeholder='Ex : "Complète avec les homophones a/à/as" ou "Conjugue les verbes au passé composé"'
               rows={3}
               style={{ resize: "vertical" }}
+            />
+          </div>
+
+          {/* Thème (optionnel) */}
+          <div className="form-group">
+            <label className="form-label">Thème du texte <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel — sinon choisi aléatoirement)</span></label>
+            <input
+              className="form-input"
+              type="text"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              placeholder="Ex : la vie sous-marine, un marché africain, la montagne…"
             />
           </div>
 
