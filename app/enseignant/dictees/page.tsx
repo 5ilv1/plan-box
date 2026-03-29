@@ -510,7 +510,7 @@ export default function PageDictees() {
     selection.forEach((batch) => {
       const numSemaine = batches.indexOf(batch) + 1;
       const niv = batch.jours[0]?.niveaux.find((n) => n.niveau_etoiles === niveauActif);
-      const motsTxt = (niv?.mots ?? []).map((m) => m.pronom ? `${m.pronom} ${m.mot}` : m.mot).join(" – ") || "—";
+      const motsTxt = (niv?.mots ?? []).map((m) => m.mot).join(" – ") || "—";
       html += `<tr><td>Semaine ${numSemaine}</td><td>${motsTxt}</td></tr>\n`;
     });
     html += `</tbody></table></body></html>`;
@@ -955,9 +955,6 @@ export default function PageDictees() {
                                     padding: "6px 12px", borderRadius: 8,
                                     background: "var(--bg)", border: "1px solid var(--border)", fontSize: 13,
                                   }}>
-                                    {m.pronom && (
-                                      <span style={{ color: "var(--text-secondary)", marginRight: 4 }}>{m.pronom}</span>
-                                    )}
                                     <strong>{m.mot}</strong>
                                     {m.definition && (
                                       <span style={{ color: "var(--text-secondary)", marginLeft: 6 }}>— {m.definition}</span>
