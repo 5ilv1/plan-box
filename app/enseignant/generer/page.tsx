@@ -255,46 +255,32 @@ function PageGenererInner() {
       return;
     }
 
-    // ── Dictée : N appels IA pour N dictées différentes ─────────────────
+    // ── Dictée : 1 seul appel IA qui génère les 3 jours (Mardi/Jeudi/Vendredi) ──
     if (params.type === "dictee") {
-      const p = params as ParamsDictee;
-      const nb = p.nbDictees ?? 1;
-      setProgressDictee({ fait: 0, total: nb });
-      const resultats: DicteeIAGroupee[] = [];
+      setProgressDictee({ fait: 0, total: 1 });
 
-      for (let i = 0; i < nb; i++) {
-        // À partir de la 2ème dictée, imposer les mots de la 1ère
-        // pour que toute la semaine travaille le même vocabulaire
-        const motsImposer = i > 0
-          ? Object.fromEntries(
-              resultats[0].niveaux.map((n) => [n.etoiles, n.mots])
-            )
-          : undefined;
-
-        // Passer toutes les phrases déjà utilisées pour éviter les répétitions
-        const phrasesDejaUtilisees = resultats.flatMap((r) =>
-          r.niveaux.flatMap((n) => n.phrases.map((ph: { texte: string }) => ph.texte))
-        );
-
-        const res = await fetch("/api/generer-dictee", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            ...params,
-            ...(motsImposer ? { motsImposer } : {}),
-            ...(phrasesDejaUtilisees.length > 0 ? { phrasesDejaUtilisees } : {}),
-          }),
-        });
-        const json = await res.json();
-        if (!res.ok || json.erreur) {
-          setErreur(json.erreur ?? "Erreur lors de la génération de la dictée.");
-          setEtape("formulaire");
-          return;
-        }
-        resultats.push(json.resultat as DicteeIAGroupee);
-        setProgressDictee({ fait: i + 1, total: nb });
+      const res = await fetch("/api/generer-dictee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+      const json = await res.json();
+      if (!res.ok || json.erreur) {
+        setErreur(json.erreur ?? "Erreur lors de la génération de la dictée.");
+        setEtape("formulaire");
+        return;
       }
 
+      // Le résultat contient { titre, jours: [{ scene, niveaux }, ...] }
+      const resultat = json.resultat;
+      const resultats: DicteeIAGroupee[] = (resultat.jours ?? []).map(
+        (j: { scene?: string; niveaux: DicteeIAGroupee["niveaux"] }) => ({
+          titre: resultat.titre,
+          niveaux: j.niveaux,
+        })
+      );
+
+      setProgressDictee({ fait: 1, total: 1 });
       setDicteeResultats(resultats);
       setDicteePreviewIdx(0);
       setEtape("apercu");
