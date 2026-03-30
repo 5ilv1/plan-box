@@ -142,138 +142,146 @@ export default function DashboardEleve() {
 
   // ── Chargement Plan Box ─────────────────────────────────────────────────────
   async function chargerPB(eleveId: string) {
-    const aujourd_hui = new Date().toISOString().split("T")[0];
-    const { debut, fin } = getBornesSemaine();
+    try {
+      const aujourd_hui = new Date().toISOString().split("T")[0];
+      const { debut, fin } = getBornesSemaine();
 
-    const [
-      { data: eleveData },
-      { data: progressionsData },
-      { data: blocsWeek },
-      { data: blocsExos },
-      { data: podcastData },
-      { data: notifsData },
-    ] = await Promise.all([
-      supabase.from("eleves").select("niveaux(nom), repetibox_eleve_id").eq("id", eleveId).single(),
-      supabase.from("pb_progression").select("*, chapitres(*)").eq("eleve_id", eleveId).order("updated_at", { ascending: false }),
-      supabase.from("plan_travail").select("*, chapitres(*)")
-        .eq("eleve_id", eleveId)
-        .gte("date_assignation", debut)
-        .lte("date_assignation", fin)
-        .order("created_at", { ascending: true }),
-      supabase.from("plan_travail").select("id, type, statut, chapitre_id, chapitres(titre)")
-        .eq("eleve_id", eleveId)
-        .in("type", ["exercice", "calcul_mental", "eval"])
-        .not("chapitre_id", "is", null),
-      supabase.from("plan_travail").select("id, titre, contenu")
-        .eq("eleve_id", eleveId)
-        .eq("type", "ressource")
-        .order("date_assignation", { ascending: false })
-        .limit(10),
-      supabase.from("notifications").select("*")
-        .eq("eleve_id", eleveId)
-        .eq("lu", false)
-        .order("created_at", { ascending: false })
-        .limit(10),
-    ]);
+      const [
+        { data: eleveData },
+        { data: progressionsData },
+        { data: blocsWeek },
+        { data: blocsExos },
+        { data: podcastData },
+        { data: notifsData },
+      ] = await Promise.all([
+        supabase.from("eleves").select("niveaux(nom), repetibox_eleve_id").eq("id", eleveId).single(),
+        supabase.from("pb_progression").select("*, chapitres(*)").eq("eleve_id", eleveId).order("updated_at", { ascending: false }),
+        supabase.from("plan_travail").select("*, chapitres(*)")
+          .eq("eleve_id", eleveId)
+          .gte("date_assignation", debut)
+          .lte("date_assignation", fin)
+          .order("created_at", { ascending: true }),
+        supabase.from("plan_travail").select("id, type, statut, chapitre_id, chapitres(titre)")
+          .eq("eleve_id", eleveId)
+          .in("type", ["exercice", "calcul_mental", "eval"])
+          .not("chapitre_id", "is", null),
+        supabase.from("plan_travail").select("id, titre, contenu")
+          .eq("eleve_id", eleveId)
+          .eq("type", "ressource")
+          .order("date_assignation", { ascending: false })
+          .limit(10),
+        supabase.from("notifications").select("*")
+          .eq("eleve_id", eleveId)
+          .eq("lu", false)
+          .order("created_at", { ascending: false })
+          .limit(10),
+      ]);
 
-    if (eleveData) setNiveauNom((eleveData as any).niveaux?.nom ?? "");
-    setProgressionsPB((progressionsData ?? []) as ProgressionComplete[]);
-    setNotifications((notifsData ?? []) as Notification[]);
+      if (eleveData) setNiveauNom((eleveData as any).niveaux?.nom ?? "");
+      setProgressionsPB((progressionsData ?? []) as ProgressionComplete[]);
+      setNotifications((notifsData ?? []) as Notification[]);
 
-    supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
+      supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
 
-    const blocs = (blocsWeek ?? []) as PlanTravail[];
-    // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
-    setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-    setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
-    setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
+      const blocs = (blocsWeek ?? []) as PlanTravail[];
+      // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
+      setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
+      setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
+      setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
 
-    const podcasts = ((podcastData ?? []) as any[])
-      .filter((b) => b.contenu?.qcm_id)
-      .slice(0, 4)
-      .map((b) => ({ id: b.id, titre: b.titre, qcm_id: b.contenu.qcm_id as string }));
-    setPodcastsQcm(podcasts);
+      const podcasts = ((podcastData ?? []) as any[])
+        .filter((b) => b.contenu?.qcm_id)
+        .slice(0, 4)
+        .map((b) => ({ id: b.id, titre: b.titre, qcm_id: b.contenu.qcm_id as string }));
+      setPodcastsQcm(podcasts);
 
-    setChargementDonnees(false);
+      const rbId = (eleveData as any)?.repetibox_eleve_id;
+      if (rbId) setRbEleveId(rbId);
+      if (rbId) {
+        fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`)
+          .then((r) => r.json())
+          .then((json) => setChapitresRB(json.chapitres ?? []))
+          .catch(() => {});
+      }
 
-    const rbId = (eleveData as any)?.repetibox_eleve_id;
-    if (rbId) setRbEleveId(rbId);
-    if (rbId) {
-      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`)
+      // Problème du jour
+      fetch("/api/daily-problem")
         .then((r) => r.json())
-        .then((json) => setChapitresRB(json.chapitres ?? []))
-        .catch(() => {});
-    }
-
-    // Problème du jour
-    fetch("/api/daily-problem")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.id && !json.noSchool) {
-          setDailyProblem(json);
-          // Priorité : statut serveur (validation enseignant) > localStorage
-          if (json.serverAttempt?.solved) {
-            setDailyProblemSolved(true);
-          } else {
-            const saved = localStorage.getItem(`dpd_${eleveId}_${new Date().toISOString().split("T")[0]}`);
-            if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
+        .then((json) => {
+          if (json.id && !json.noSchool) {
+            setDailyProblem(json);
+            // Priorité : statut serveur (validation enseignant) > localStorage
+            if (json.serverAttempt?.solved) {
+              setDailyProblemSolved(true);
+            } else {
+              const saved = localStorage.getItem(`dpd_${eleveId}_${new Date().toISOString().split("T")[0]}`);
+              if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
+            }
           }
-        }
-      })
-      .catch(() => {});
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.error("[chargerPB]", err);
+    } finally {
+      setChargementDonnees(false);
+    }
   }
 
   // ── Chargement Repetibox ────────────────────────────────────────────────────
   async function chargerRB(rbId: number) {
-    supabase.from("eleves_planbox_meta").upsert(
-      { repetibox_eleve_id: rbId, derniere_connexion: new Date().toISOString() },
-      { onConflict: "repetibox_eleve_id" }
-    );
+    try {
+      supabase.from("eleves_planbox_meta").upsert(
+        { repetibox_eleve_id: rbId, derniere_connexion: new Date().toISOString() },
+        { onConflict: "repetibox_eleve_id" }
+      );
 
-    const res = await fetch(`/api/mon-plan-travail?rb=${rbId}`);
-    const json = await res.json();
-    const blocs: PlanTravail[] = json.blocs ?? [];
+      const res = await fetch(`/api/mon-plan-travail?rb=${rbId}`);
+      const json = await res.json();
+      const blocs: PlanTravail[] = json.blocs ?? [];
 
-    const aujourd_hui = new Date().toISOString().split("T")[0];
-    const { debut, fin } = getBornesSemaine();
+      const aujourd_hui = new Date().toISOString().split("T")[0];
+      const { debut, fin } = getBornesSemaine();
 
-    const blocsWeek = blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin);
-    // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
-    setBlocsAujourdhui(blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-    setBlocsSemaine(blocsWeek.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
+      const blocsWeek = blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin);
+      // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
+      setBlocsAujourdhui(blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
+      setBlocsSemaine(blocsWeek.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
 
-    const blocsExos = blocs.filter((b) => ["exercice", "calcul_mental", "eval"].includes(b.type) && b.chapitre_id);
-    setProgressionExos(groupParChapitre(blocsExos));
+      const blocsExos = blocs.filter((b) => ["exercice", "calcul_mental", "eval"].includes(b.type) && b.chapitre_id);
+      setProgressionExos(groupParChapitre(blocsExos));
 
-    const podcastsRB = blocs
-      .filter((b) => b.type === "ressource" && (b.contenu as any)?.qcm_id)
-      .slice(0, 4)
-      .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
-    setPodcastsQcm(podcastsRB);
+      const podcastsRB = blocs
+        .filter((b) => b.type === "ressource" && (b.contenu as any)?.qcm_id)
+        .slice(0, 4)
+        .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
+      setPodcastsQcm(podcastsRB);
 
-    fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`)
-      .then((r) => r.json())
-      .then((json) => setChapitresRB(json.chapitres ?? []))
-      .catch(() => {});
+      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`)
+        .then((r) => r.json())
+        .then((json) => setChapitresRB(json.chapitres ?? []))
+        .catch(() => {});
 
-    // Problème du jour
-    fetch("/api/daily-problem")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.id && !json.noSchool) {
-          setDailyProblem(json);
-          // Priorité : statut serveur (validation enseignant) > localStorage
-          if (json.serverAttempt?.solved) {
-            setDailyProblemSolved(true);
-          } else {
-            const saved = localStorage.getItem(`dpd_${rbId}_${new Date().toISOString().split("T")[0]}`);
-            if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
+      // Problème du jour
+      fetch("/api/daily-problem")
+        .then((r) => r.json())
+        .then((json) => {
+          if (json.id && !json.noSchool) {
+            setDailyProblem(json);
+            // Priorité : statut serveur (validation enseignant) > localStorage
+            if (json.serverAttempt?.solved) {
+              setDailyProblemSolved(true);
+            } else {
+              const saved = localStorage.getItem(`dpd_${rbId}_${new Date().toISOString().split("T")[0]}`);
+              if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
+            }
           }
-        }
-      })
-      .catch(() => {});
-
-    setChargementDonnees(false);
+        })
+        .catch(() => {});
+    } catch (err) {
+      console.error("[chargerRB]", err);
+    } finally {
+      setChargementDonnees(false);
+    }
   }
 
   // ── Rafraîchissement silencieux des blocs (polling 30s) ─────────────────────
@@ -309,7 +317,7 @@ export default function DashboardEleve() {
       }
 
       const nouvsAujourd = blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui);
-      const nouvsSemaine = blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation !== aujourd_hui);
+      const nouvsSemaine = blocsWeek.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui);
 
       setBlocsAujourdhui((prev) => sigBlocs(nouvsAujourd) !== sigBlocs(prev) ? nouvsAujourd : prev);
       setBlocsSemaine((prev) => sigBlocs(nouvsSemaine) !== sigBlocs(prev) ? nouvsSemaine : prev);
@@ -321,6 +329,18 @@ export default function DashboardEleve() {
     if (chargementDonnees) return;
     const interval = setInterval(rafraichirBlocs, 30_000);
     return () => clearInterval(interval);
+  }, [chargementDonnees, rafraichirBlocs]);
+
+  // Rafraîchissement immédiat quand l'élève revient sur la page (après un exercice)
+  useEffect(() => {
+    if (chargementDonnees) return;
+    function handleVisibilityChange() {
+      if (document.visibilityState === "visible") {
+        rafraichirBlocs();
+      }
+    }
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
   }, [chargementDonnees, rafraichirBlocs]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
