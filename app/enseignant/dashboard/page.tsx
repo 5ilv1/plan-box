@@ -98,7 +98,11 @@ function WidgetThemeEcriture() {
         body: JSON.stringify({ theme_id: themeJour.id }),
       });
       const data = await res.json();
-      if (data?.ok) setThemeJour((prev) => prev ? { ...prev, affecte: true } : prev);
+      if (data?.deja_planifie) {
+        alert("Des blocs écriture sont déjà planifiés pour cette période (via la page Nouvelle semaine). Le thème n'a pas été affecté pour éviter les doublons.");
+      } else if (data?.ok) {
+        setThemeJour((prev) => prev ? { ...prev, affecte: true } : prev);
+      }
     } finally {
       setEnAffectation(false);
     }

@@ -27,6 +27,36 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, nb_eleves: 0, deja_affecte: true });
     }
 
+    // 2b. Vérifier s'il existe déjà des blocs écriture (planifiés à l'avance)
+    const modeCheck = (theme as any).mode ?? "jour";
+    if (modeCheck === "semaine") {
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMonday);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      const { count } = await supabase
+        .from("plan_travail")
+        .select("id", { count: "exact", head: true })
+        .eq("type", "ecriture")
+        .gte("date_assignation", monday.toISOString().split("T")[0])
+        .lte("date_assignation", sunday.toISOString().split("T")[0]);
+      if ((count ?? 0) > 0) {
+        return NextResponse.json({ ok: true, nb_eleves: 0, deja_planifie: true });
+      }
+    } else {
+      const { count } = await supabase
+        .from("plan_travail")
+        .select("id", { count: "exact", head: true })
+        .eq("type", "ecriture")
+        .eq("date_assignation", today);
+      if ((count ?? 0) > 0) {
+        return NextResponse.json({ ok: true, nb_eleves: 0, deja_planifie: true });
+      }
+    }
+
     // 3a. Tous les membres de tous les groupes
     const { data: liaisons, error: errLiaisons } = await supabase
       .from("eleve_groupe")
