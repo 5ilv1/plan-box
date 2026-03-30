@@ -142,8 +142,8 @@ export async function POST(req: Request) {
     const vusPB = new Set<string>();
     const blocs = [];
     const titreBloc = mode === "semaine"
-      ? `Atelier d'écriture — ${theme.sujet}`.substring(0, 60)
-      : `Écriture — ${theme.sujet}`.substring(0, 50);
+      ? "Atelier écriture — Thème de la semaine"
+      : "Atelier écriture — Thème du jour";
 
     for (const liaison of liaisons as { planbox_eleve_id: string | null; repetibox_eleve_id: number | null; groupe_id: string }[]) {
       const niveauNom = nomGroupe.get(liaison.groupe_id) ?? "";

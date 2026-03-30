@@ -53,9 +53,10 @@ export async function POST(req: Request) {
     const vusRB = new Set<number>();
     const vusPB = new Set<string>();
     const blocsAPlanTravail = [];
-    const titreBloc = (theme as any).mode === "semaine"
-      ? `Atelier d'écriture — ${theme.sujet}`.substring(0, 60)
-      : "Thème du jour";
+    const themeMode = (theme as any).mode ?? "jour";
+    const titreBloc = themeMode === "semaine"
+      ? "Atelier écriture — Thème de la semaine"
+      : "Atelier écriture — Thème du jour";
 
     for (const liaison of liaisons as { planbox_eleve_id: string | null; repetibox_eleve_id: number | null; groupe_id: string }[]) {
       const niveauNom = nomGroupe.get(liaison.groupe_id) ?? "";
@@ -208,9 +209,9 @@ export async function PATCH(req: Request) {
           const vusRB = new Set<number>();
           const vusPB = new Set<string>();
           const blocsAPlanTravail: any[] = [];
-          const titreBloc = (theme as any).mode === "semaine"
-      ? `Atelier d'écriture — ${theme.sujet}`.substring(0, 60)
-      : "Thème du jour";
+          const titreBloc = theme.mode === "semaine"
+            ? "Atelier écriture — Thème de la semaine"
+            : "Atelier écriture — Thème du jour";
 
           for (const liaison of liaisons as any[]) {
             const niveauNom = nomGroupe.get(liaison.groupe_id) ?? "";
@@ -293,7 +294,10 @@ export async function PATCH(req: Request) {
           else if (niveauNom === "CM1" || niveauNom === "CM2") contraintefinale += " · Au moins 5 lignes";
 
           const nouveauSujet = sujet ?? (bloc.contenu?.sujet as string) ?? "";
-          const titreBloc = `Écriture — ${nouveauSujet}`.substring(0, 50);
+          const modeBloc = (bloc.contenu?.mode as string) ?? "jour";
+          const titreBloc = modeBloc === "semaine"
+            ? "Atelier écriture — Thème de la semaine"
+            : "Atelier écriture — Thème du jour";
 
           await supabase
             .from("plan_travail")
