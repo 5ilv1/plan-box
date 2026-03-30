@@ -552,7 +552,7 @@ export default function NouvelleSemainePage() {
       // ── Écriture : génération via l'API thème écriture ──
       else if (type === "ecriture") {
         const mode = params.ecritureMode ?? "jour";
-        const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false, mode }) });
+        const res = await fetch("/api/generer-theme-ecriture-libre", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode }) });
         const json = await res.json();
         if (!res.ok || json.erreur) { setExoGenErreur(json.erreur ?? "Erreur lors de la génération."); setExoGenChargement(false); return; }
         contenuData = {
@@ -1842,7 +1842,7 @@ export default function NouvelleSemainePage() {
                               onClick={async () => {
                                 setExoGenChargement(true);
                                 try {
-                                  const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true, mode: ecritureMode }) });
+                                  const res = await fetch("/api/generer-theme-ecriture-libre", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: ecritureMode }) });
                                   const json = await res.json();
                                   if (json.sujet) setEcritureTheme({ sujet: json.sujet, contrainte: json.contrainte });
                                 } finally { setExoGenChargement(false); }
@@ -1866,7 +1866,7 @@ export default function NouvelleSemainePage() {
                               setExoGenChargement(true);
                               setExoGenErreur("");
                               try {
-                                const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false, mode: ecritureMode }) });
+                                const res = await fetch("/api/generer-theme-ecriture-libre", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ mode: ecritureMode }) });
                                 const json = await res.json();
                                 if (json.sujet) setEcritureTheme({ sujet: json.sujet, contrainte: json.contrainte });
                                 else setExoGenErreur(json.erreur ?? "Erreur lors de la génération.");
