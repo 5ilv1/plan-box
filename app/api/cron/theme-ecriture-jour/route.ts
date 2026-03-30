@@ -20,7 +20,7 @@ export async function GET(req: Request) {
     .limit(1)
     .maybeSingle();
 
-  const modeActuel = dernierTheme?.mode ?? "jour";
+  const modeActuel = (dernierTheme?.mode as "jour" | "semaine") ?? "jour";
 
   // Mode semaine : ne générer que le lundi
   if (modeActuel === "semaine" && jour !== 1) {
@@ -29,18 +29,14 @@ export async function GET(req: Request) {
 
   const base = process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3002";
 
+  // Générer avec le mode courant pour obtenir un thème adapté
   const theme = await fetch(`${base}/api/generer-theme-ecriture`, {
     method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ force: true, mode: modeActuel }),
   }).then((r) => r.json());
 
-  // Appliquer le même mode que le dernier thème
-  if (modeActuel === "semaine") {
-    await supabase
-      .from("themes_ecriture")
-      .update({ mode: "semaine" })
-      .eq("id", theme.id);
-  }
-
+  // Affecter à tous les élèves
   await fetch(`${base}/api/affecter-theme-ecriture`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },

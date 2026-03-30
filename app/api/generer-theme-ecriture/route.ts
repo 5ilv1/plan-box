@@ -16,27 +16,14 @@
  * CREATE INDEX IF NOT EXISTS themes_ecriture_date_idx ON themes_ecriture (date DESC);
  */
 
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt } from "@/lib/ecriture-types";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
-// Option A : rotation déterministe sur 10 types
-const TYPES_ECRITURE = [
-  "récit à la 1re personne",
-  "lettre",
-  "description détaillée",
-  "point de vue d'un objet ou d'un animal",
-  "dialogue à inventer",
-  "texte d'opinion argumenté",
-  "suite de récit",
-  "texte humoristique",
-  "récit à la 3e personne",
-  "texte imaginaire ou fantastique léger",
-];
-
-async function genererOuRecupererTheme(force: boolean) {
+async function genererOuRecupererTheme(force: boolean, modeForce?: "jour" | "semaine") {
   const supabase = createAdminClient();
   const today = new Date().toISOString().split("T")[0];
 
@@ -79,7 +66,11 @@ async function genererOuRecupererTheme(force: boolean) {
     await supabase.from("themes_ecriture").delete().eq("date", today);
   }
 
-  // Option A + B : compter le total + récupérer les 50 derniers (sujet + type)
+  // Déterminer le mode à utiliser
+  const mode = modeForce ?? "jour";
+  const typesListe = mode === "semaine" ? TYPES_SEMAINE : TYPES_JOUR;
+
+  // Compter le total + récupérer les 50 derniers (sujet + type)
   const [{ count }, { data: derniers }] = await Promise.all([
     supabase.from("themes_ecriture").select("*", { count: "exact", head: true }),
     supabase
@@ -89,11 +80,11 @@ async function genererOuRecupererTheme(force: boolean) {
       .limit(50),
   ]);
 
-  // Option A : type imposé par rotation déterministe
+  // Type imposé par rotation déterministe sur la liste du mode
   const total = count ?? 0;
-  const typeImpose = TYPES_ECRITURE[total % TYPES_ECRITURE.length];
+  const typeImpose = typesListe[total % typesListe.length];
 
-  // Option B : types utilisés récemment (pour contexte)
+  // Types utilisés récemment (pour contexte)
   const derniersTypes = (derniers ?? [])
     .slice(0, 6)
     .map((t: { type_ecriture: string | null }) => t.type_ecriture)
@@ -104,34 +95,7 @@ async function genererOuRecupererTheme(force: boolean) {
     .map((t: { sujet: string }) => `- ${t.sujet}`)
     .join("\n");
 
-  const systemPrompt = `Tu génères des sujets d'écriture créative variés pour des élèves de CE2/CM1/CM2 (7-11 ans) dans une école primaire française.
-
-▶ TYPE D'ÉCRITURE IMPOSÉ : « ${typeImpose} »
-Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.
-${derniersTypes ? `Types utilisés récemment (déjà vus, ne pas répéter) : ${derniersTypes}` : ""}
-
-Sujets déjà utilisés — NE PAS reproduire ces thèmes ni des thèmes similaires :
-${listeSujets || "(aucun)"}
-
-RÈGLES STRICTES SUR LA LANGUE :
-- Soigne ABSOLUMENT les accords en genre et en nombre : "ta grand-mère" (féminin), "ton grand-père" (masculin), "tes parents", etc. Aucune faute d'accord n'est tolérée.
-- Langue française irréprochable : pas de fautes d'orthographe, de conjugaison ni de syntaxe.
-
-RÈGLES STRICTES SUR LA FORME :
-- INTERDIT de commencer par "Tu découvres", "Tu te réveilles", "Tu trouves", "Imagine que", "Si tu"
-- Varier les structures : impératif ("Raconte...", "Décris...", "Écris..."), question ("Quel est le meilleur moment..."), situation directe ("Un matin, le facteur apporte un colis énorme..."), dialogue ("Ton meilleur ami te dit que...")
-
-RÈGLES STRICTES SUR LE FOND :
-- Thèmes : quotidien de l'école, famille, sport, nature, animaux réels, métiers, souvenirs, inventions, voyages, émotions
-- ÉVITER : mondes magiques avec portes secrètes, pouvoirs surnaturels, trésors cachés, formules magiques
-- Le sujet doit partir d'une situation concrète et réaliste ou légèrement décalée
-
-Génère UN nouveau sujet d'écriture avec :
-- Un sujet : 1 ou 2 phrases maximum. Plante le décor en 1 phrase (adapté au type « ${typeImpose} »), puis termine OBLIGATOIREMENT par une question courte ou une invitation directe à écrire.
-- Une contrainte stylistique ou narrative concrète adaptée au type « ${typeImpose} » (sans mentionner le nombre de lignes)
-
-Réponds UNIQUEMENT en JSON sans backticks :
-{"sujet": "...", "contrainte": "..."}`;
+  const systemPrompt = buildSystemPrompt(mode, typeImpose, derniersTypes, listeSujets);
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-5",
@@ -153,6 +117,7 @@ Réponds UNIQUEMENT en JSON sans backticks :
       type_ecriture: typeImpose,
       afficher_contrainte: true,
       affecte: false,
+      mode,
     })
     .select("id, sujet, contrainte, affecte, afficher_contrainte, mode")
     .single();
@@ -164,9 +129,10 @@ Réponds UNIQUEMENT en JSON sans backticks :
   return NextResponse.json(inserted);
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    return await genererOuRecupererTheme(false);
+    const mode = req.nextUrl.searchParams.get("mode") as "jour" | "semaine" | null;
+    return await genererOuRecupererTheme(false, mode ?? undefined);
   } catch (err) {
     console.error("[generer-theme-ecriture GET]", err);
     return NextResponse.json({ erreur: "Erreur serveur" }, { status: 500 });
@@ -177,7 +143,8 @@ export async function POST(req: Request) {
   try {
     const body = await req.json().catch(() => ({}));
     const force = body?.force === true;
-    return await genererOuRecupererTheme(force);
+    const mode = body?.mode as "jour" | "semaine" | undefined;
+    return await genererOuRecupererTheme(force, mode);
   } catch (err) {
     console.error("[generer-theme-ecriture POST]", err);
     return NextResponse.json({ erreur: "Erreur serveur" }, { status: 500 });

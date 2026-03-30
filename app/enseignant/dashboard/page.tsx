@@ -48,21 +48,35 @@ function WidgetThemeEcriture() {
   }
 
   async function changerMode(mode: "jour" | "semaine") {
+    if (modeEcriture === mode) return;
     setModeEcriture(mode);
-    if (themeJour) {
-      await fetch("/api/affecter-theme-ecriture", {
-        method: "PATCH",
+    setEnGeneration(true);
+    try {
+      // Régénérer un thème adapté au nouveau mode
+      const res = await fetch("/api/reinitialiser-theme-ecriture", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ theme_id: themeJour.id, mode }),
+        body: JSON.stringify({ mode }),
       });
-      setThemeJour((prev) => prev ? { ...prev, mode } : prev);
+      const data = await res.json();
+      if (data?.ok && data.theme) {
+        setThemeJour({ ...data.theme, affecte: true });
+        setAvecContrainte(data.theme.afficher_contrainte ?? true);
+        setModeEdition(false);
+      }
+    } finally {
+      setEnGeneration(false);
     }
   }
 
   async function regenerer() {
     setEnGeneration(true);
     try {
-      const res = await fetch("/api/reinitialiser-theme-ecriture", { method: "POST" });
+      const res = await fetch("/api/reinitialiser-theme-ecriture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: modeEcriture }),
+      });
       const data = await res.json();
       if (data?.ok && data.theme) {
         setThemeJour({ ...data.theme, affecte: true });

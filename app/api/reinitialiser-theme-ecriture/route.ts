@@ -1,47 +1,69 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt } from "@/lib/ecriture-types";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
-// Option A : rotation déterministe sur 10 types
-const TYPES_ECRITURE = [
-  "récit à la 1re personne",
-  "lettre",
-  "description détaillée",
-  "point de vue d'un objet ou d'un animal",
-  "dialogue à inventer",
-  "texte d'opinion argumenté",
-  "suite de récit",
-  "texte humoristique",
-  "récit à la 3e personne",
-  "texte imaginaire ou fantastique léger",
-];
-
 // POST /api/reinitialiser-theme-ecriture
+// Body optionnel : { mode: "jour" | "semaine" }
 // 1. Supprime les plan_travail du jour de type "ecriture"
 // 2. Supprime le themes_ecriture du jour
-// 3. Génère un nouveau thème via Claude (rotation déterministe du type)
+// 3. Génère un nouveau thème via Claude (adapté au mode)
 // 4. Affecte automatiquement à tous les élèves
-export async function POST() {
+export async function POST(req: Request) {
   try {
     const supabase = createAdminClient();
     const today = new Date().toISOString().split("T")[0];
 
-    // ── 1. Supprimer les blocs plan_travail du jour ───────────────────────
-    await supabase
-      .from("plan_travail")
-      .delete()
-      .eq("type", "ecriture")
-      .eq("date_assignation", today);
+    // Lire le mode demandé (sinon reprendre le dernier mode utilisé)
+    const body = await req.json().catch(() => ({}));
+    let mode: "jour" | "semaine" = body?.mode ?? "jour";
 
-    // ── 2. Supprimer le thème du jour ─────────────────────────────────────
+    // Si pas de mode explicite, reprendre le dernier mode du thème existant
+    if (!body?.mode) {
+      const { data: dernierTheme } = await supabase
+        .from("themes_ecriture")
+        .select("mode")
+        .order("date", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      if (dernierTheme?.mode) mode = dernierTheme.mode;
+    }
+
+    // ── 1. Supprimer les blocs plan_travail de la semaine ────────────────
+    // En mode semaine, supprimer tous les blocs de la semaine ; en mode jour, seulement ceux du jour
+    if (mode === "semaine") {
+      const now = new Date();
+      const day = now.getDay();
+      const diffToMonday = day === 0 ? -6 : 1 - day;
+      const monday = new Date(now);
+      monday.setDate(now.getDate() + diffToMonday);
+      const sunday = new Date(monday);
+      sunday.setDate(monday.getDate() + 6);
+      await supabase
+        .from("plan_travail")
+        .delete()
+        .eq("type", "ecriture")
+        .gte("date_assignation", monday.toISOString().split("T")[0])
+        .lte("date_assignation", sunday.toISOString().split("T")[0]);
+    } else {
+      await supabase
+        .from("plan_travail")
+        .delete()
+        .eq("type", "ecriture")
+        .eq("date_assignation", today);
+    }
+
+    // ── 2. Supprimer le thème du jour ────────────────────────────────────
     await supabase
       .from("themes_ecriture")
       .delete()
       .eq("date", today);
 
-    // ── 3. Compter le total + récupérer les 50 derniers (Option A + B) ───
+    // ── 3. Compter le total + récupérer les 50 derniers ─────────────────
+    const typesListe = mode === "semaine" ? TYPES_SEMAINE : TYPES_JOUR;
+
     const [{ count }, { data: derniers }] = await Promise.all([
       supabase.from("themes_ecriture").select("*", { count: "exact", head: true }),
       supabase
@@ -51,11 +73,9 @@ export async function POST() {
         .limit(50),
     ]);
 
-    // Option A : type imposé par rotation déterministe
     const total = count ?? 0;
-    const typeImpose = TYPES_ECRITURE[total % TYPES_ECRITURE.length];
+    const typeImpose = typesListe[total % typesListe.length];
 
-    // Option B : types utilisés récemment (pour contexte)
     const derniersTypes = (derniers ?? [])
       .slice(0, 6)
       .map((t: { type_ecriture: string | null }) => t.type_ecriture)
@@ -66,38 +86,13 @@ export async function POST() {
       .map((t: { sujet: string }) => `- ${t.sujet}`)
       .join("\n");
 
-    // ── 4. Générer un nouveau thème ───────────────────────────────────────
+    // ── 4. Générer un nouveau thème ──────────────────────────────────────
+    const systemPrompt = buildSystemPrompt(mode, typeImpose, derniersTypes, listeSujets);
+
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-5",
       max_tokens: 300,
-      system: `Tu génères des sujets d'écriture créative variés pour des élèves de CE2/CM1/CM2 (7-11 ans) dans une école primaire française.
-
-▶ TYPE D'ÉCRITURE IMPOSÉ : « ${typeImpose} »
-Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.
-${derniersTypes ? `Types utilisés récemment (déjà vus, ne pas répéter) : ${derniersTypes}` : ""}
-
-Sujets déjà utilisés — NE PAS reproduire ces thèmes ni des thèmes similaires :
-${listeSujets || "(aucun)"}
-
-RÈGLES STRICTES SUR LA LANGUE :
-- Soigne ABSOLUMENT les accords en genre et en nombre : "ta grand-mère" (féminin), "ton grand-père" (masculin), "tes parents", etc. Aucune faute d'accord n'est tolérée.
-- Langue française irréprochable : pas de fautes d'orthographe, de conjugaison ni de syntaxe.
-
-RÈGLES STRICTES SUR LA FORME :
-- INTERDIT de commencer par "Tu découvres", "Tu te réveilles", "Tu trouves", "Imagine que", "Si tu"
-- Varier les structures : impératif ("Raconte...", "Décris...", "Écris..."), question ("Quel est le meilleur moment..."), situation directe ("Un matin, le facteur apporte un colis énorme..."), dialogue ("Ton meilleur ami te dit que...")
-
-RÈGLES STRICTES SUR LE FOND :
-- Thèmes : quotidien de l'école, famille, sport, nature, animaux réels, métiers, souvenirs, inventions, voyages, émotions
-- ÉVITER : mondes magiques avec portes secrètes, pouvoirs surnaturels, trésors cachés, formules magiques
-- Le sujet doit partir d'une situation concrète et réaliste ou légèrement décalée
-
-Génère UN nouveau sujet d'écriture avec :
-- Un sujet : 1 ou 2 phrases maximum. Plante le décor en 1 phrase (adapté au type « ${typeImpose} »), puis termine OBLIGATOIREMENT par une question courte ou une invitation directe à écrire.
-- Une contrainte stylistique ou narrative concrète adaptée au type « ${typeImpose} » (sans mentionner le nombre de lignes)
-
-Réponds UNIQUEMENT en JSON sans backticks :
-{"sujet": "...", "contrainte": "..."}`,
+      system: systemPrompt,
       messages: [{ role: "user", content: "Génère un nouveau sujet d'écriture." }],
     });
 
@@ -107,15 +102,23 @@ Réponds UNIQUEMENT en JSON sans backticks :
 
     const { data: theme, error: errInsert } = await supabase
       .from("themes_ecriture")
-      .insert({ date: today, sujet: parsed.sujet, contrainte: parsed.contrainte, type_ecriture: typeImpose, afficher_contrainte: true, affecte: false })
-      .select("id, sujet, contrainte, affecte, afficher_contrainte")
+      .insert({
+        date: today,
+        sujet: parsed.sujet,
+        contrainte: parsed.contrainte,
+        type_ecriture: typeImpose,
+        afficher_contrainte: true,
+        affecte: false,
+        mode,
+      })
+      .select("id, sujet, contrainte, affecte, afficher_contrainte, mode")
       .single();
 
     if (errInsert || !theme) {
       return NextResponse.json({ erreur: errInsert?.message ?? "Insertion échouée" }, { status: 500 });
     }
 
-    // ── 5. Récupérer tous les élèves via eleve_groupe ─────────────────────
+    // ── 5. Récupérer tous les élèves via eleve_groupe ────────────────────
     const { data: liaisons } = await supabase
       .from("eleve_groupe")
       .select("planbox_eleve_id, repetibox_eleve_id, groupe_id");
@@ -134,11 +137,13 @@ Réponds UNIQUEMENT en JSON sans backticks :
       (groupes ?? []).map((g: { id: string; nom: string }) => [g.id, g.nom])
     );
 
-    // ── 6. Construire et insérer les blocs plan_travail ───────────────────
+    // ── 6. Construire et insérer les blocs plan_travail ──────────────────
     const vusRB = new Set<number>();
     const vusPB = new Set<string>();
     const blocs = [];
-    const titreBloc = `Écriture — ${theme.sujet}`.substring(0, 50);
+    const titreBloc = mode === "semaine"
+      ? `Atelier d'écriture — ${theme.sujet}`.substring(0, 60)
+      : `Écriture — ${theme.sujet}`.substring(0, 50);
 
     for (const liaison of liaisons as { planbox_eleve_id: string | null; repetibox_eleve_id: number | null; groupe_id: string }[]) {
       const niveauNom = nomGroupe.get(liaison.groupe_id) ?? "";
@@ -146,14 +151,41 @@ Réponds UNIQUEMENT en JSON sans backticks :
       if (niveauNom === "CE2") contrainte += " · Au moins 3 lignes";
       else if (niveauNom === "CM1" || niveauNom === "CM2") contrainte += " · Au moins 5 lignes";
 
-      const contenu = { sujet: theme.sujet, contrainte, instructions: "Écris ton texte sur ton cahier d'écrivain.", afficher_contrainte: true };
+      const contenu: Record<string, unknown> = {
+        sujet: theme.sujet,
+        contrainte,
+        instructions: mode === "semaine"
+          ? "Atelier d'écriture sur 4 jours : J1 Premier jet · J2 Correction · J3 Correction · J4 Finalisation"
+          : "Écris ton texte sur ton cahier d'écrivain.",
+        afficher_contrainte: true,
+        mode,
+      };
+      if (mode === "semaine") {
+        contenu.texte_jour1 = "";
+        contenu.texte_jour2 = "";
+        contenu.texte_jour3 = "";
+        contenu.texte_final = "";
+        contenu.erreurs_jour2 = [];
+        contenu.erreurs_jour3 = [];
+        contenu.erreurs_jour4 = [];
+      }
+
+      const blocBase = {
+        type: "ecriture",
+        titre: titreBloc,
+        contenu,
+        date_assignation: today,
+        statut: "a_faire" as const,
+        chapitre_id: null,
+        periodicite: mode === "semaine" ? "semaine" : "jour",
+      };
 
       if (liaison.repetibox_eleve_id && !vusRB.has(liaison.repetibox_eleve_id)) {
         vusRB.add(liaison.repetibox_eleve_id);
-        blocs.push({ type: "ecriture", titre: titreBloc, contenu, date_assignation: today, statut: "a_faire", eleve_id: null, repetibox_eleve_id: liaison.repetibox_eleve_id, chapitre_id: null });
+        blocs.push({ ...blocBase, eleve_id: null, repetibox_eleve_id: liaison.repetibox_eleve_id });
       } else if (liaison.planbox_eleve_id && !vusPB.has(liaison.planbox_eleve_id)) {
         vusPB.add(liaison.planbox_eleve_id);
-        blocs.push({ type: "ecriture", titre: titreBloc, contenu, date_assignation: today, statut: "a_faire", eleve_id: liaison.planbox_eleve_id, repetibox_eleve_id: null, chapitre_id: null });
+        blocs.push({ ...blocBase, eleve_id: liaison.planbox_eleve_id, repetibox_eleve_id: null });
       }
     }
 
@@ -164,7 +196,7 @@ Réponds UNIQUEMENT en JSON sans backticks :
     await supabase.from("themes_ecriture").update({ affecte: true }).eq("id", theme.id);
     await supabase.from("banque_ressources").insert({
       titre: theme.sujet, sous_type: "ecriture",
-      contenu: { sujet: theme.sujet, contrainte: theme.contrainte, date: today },
+      contenu: { sujet: theme.sujet, contrainte: theme.contrainte, date: today, mode },
     });
 
     return NextResponse.json({ ok: true, theme: { ...theme, affecte: true }, nb_eleves: blocs.length });
