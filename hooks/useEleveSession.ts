@@ -17,28 +17,29 @@ export function useEleveSession() {
   useEffect(() => {
     const supabase = createClient();
     let annule = false;
+    // Flag : getUser() initial terminé. Tant qu'il tourne, on ignore
+    // les événements onAuthStateChange pour éviter un deadlock sur le
+    // verrou interne du client Supabase (getUser rafraîchit le token →
+    // tient le lock → une requête DB lancée en parallèle attend ce lock).
+    let initialResolu = false;
+    // File d'attente : si onAuthStateChange fire SIGNED_IN avant que
+    // getUser ait terminé, on stocke le user et on le traite après.
+    let pendingUser: import("@supabase/supabase-js").User | null = null;
 
     async function resoudreUser(user: import("@supabase/supabase-js").User) {
       try {
-        console.log("[useEleveSession] resoudreUser pour", user.id, user.email);
         // 1. Plan Box natif
-        const { data: e, error: errEleve } = await supabase
+        const { data: e } = await supabase
           .from("eleves")
           .select("prenom, nom")
           .eq("id", user.id)
           .maybeSingle();
 
-        console.log("[useEleveSession] requête eleves →", e ? "trouvé" : "null", errEleve ? `err: ${errEleve.message}` : "ok", "annule:", annule);
         if (annule) return;
-
-        if (errEleve) {
-          console.error("[useEleveSession] erreur requête eleves:", errEleve.message);
-        }
 
         if (e) {
           setSession({ id: user.id, prenom: e.prenom as string, nom: e.nom as string, source: "planbox" });
           setChargement(false);
-          console.log("[useEleveSession] ✅ session PB définie, chargement=false");
           return;
         }
 
@@ -68,30 +69,48 @@ export function useEleveSession() {
       }
     }
 
-    // Vérification initiale rapide via getUser()
-    console.log("[useEleveSession] démarrage getUser...");
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      console.log("[useEleveSession] getUser résolu, user:", user?.id ?? "null", "annule:", annule);
+    // ── Vérification initiale via getSession (local, instantané) + getUser ──
+    // getSession() lit le cache local sans réseau → pas de lock.
+    // On l'utilise pour avoir le user immédiatement, puis on valide avec getUser().
+    supabase.auth.getSession().then(async ({ data: { session: authSession } }) => {
       if (annule) return;
+
+      const user = authSession?.user;
       if (user) {
         await resoudreUser(user);
       } else {
+        // Pas de session en cache → pas connecté
         setSession(null);
         setChargement(false);
       }
+
+      initialResolu = true;
+
+      // Si onAuthStateChange a envoyé un user pendant qu'on traitait, on le traite maintenant
+      if (pendingUser && !annule) {
+        await resoudreUser(pendingUser);
+        pendingUser = null;
+      }
     }).catch((err) => {
-      console.error("[useEleveSession] erreur getUser:", err);
+      console.error("[useEleveSession] erreur getSession:", err);
       if (!annule) {
         setSession(null);
         setChargement(false);
       }
+      initialResolu = true;
     });
 
-    // Écouter SIGNED_IN (QR, connexion manuelle) et SIGNED_OUT
+    // ── Écouter les changements d'auth ultérieurs ──
+    // (QR code, connexion manuelle, déconnexion)
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, authSession) => {
-      console.log("[useEleveSession] onAuthStateChange:", event, "annule:", annule);
       if (annule) return;
+
       if (event === "SIGNED_IN" && authSession?.user) {
+        if (!initialResolu) {
+          // getSession() est encore en cours → stocker pour plus tard
+          pendingUser = authSession.user;
+          return;
+        }
         await resoudreUser(authSession.user);
       } else if (event === "SIGNED_OUT") {
         setSession(null);
