@@ -67,14 +67,21 @@ export async function POST(req: Request) {
     // Créer un bloc par élève
     const groupeLabel = (bloc.assignation?.groupeNoms ?? []).join(", ") || "Toute la classe";
 
+    // Déterminer la periodicite : "semaine" si le contenu le demande, sinon "jour"
+    const contenu = bloc.contenu ?? {};
+    const periodicite = contenu._periodicite === "semaine" ? "semaine" : "jour";
+    // Nettoyer le champ interne _periodicite avant insertion
+    const contenuClean = { ...contenu };
+    delete contenuClean._periodicite;
+
     for (const eleve of uniqueEleves) {
       inserts.push({
         type: bloc.type,
         titre: bloc.titre,
         statut: "a_faire",
         date_assignation: dateAssignation,
-        periodicite: "jour",
-        contenu: bloc.contenu ?? {},
+        periodicite,
+        contenu: contenuClean,
         chapitre_id: bloc.chapitreId ?? null,
         eleve_id: eleve.eleve_id,
         repetibox_eleve_id: eleve.repetibox_eleve_id,

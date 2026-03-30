@@ -116,8 +116,9 @@ export default function NouvelleSemainePage() {
   const [exoGenErreur, setExoGenErreur] = useState("");
   const [modalBanqueId, setModalBanqueId] = useState("");
   // Formulaire inline ressource (dans le générateur IA)
-  const [ressourceForm, setRessourceForm] = useState<{ sous_type: string; url: string; description: string; titre: string }>({ sous_type: "podcast", url: "", description: "", titre: "" });
+  const [ressourceForm, setRessourceForm] = useState<{ sous_type: string; url: string; description: string; titre: string; periodicite: "jour" | "semaine" }>({ sous_type: "podcast", url: "", description: "", titre: "", periodicite: "jour" });
   // Formulaire inline écriture (dans le générateur IA)
+  const [ecritureMode, setEcritureMode] = useState<"jour" | "semaine">("jour");
   const [ecritureTheme, setEcritureTheme] = useState<{ sujet: string; contrainte: string } | null>(null);
   const [dictees, setDictees] = useState<{ id: string; titre: string; theme: string; dictee_parent_id: string | null; batch_id: string | null; niveau_etoiles: number }[]>([]);
   const [dicteesBatches, setDicteesBatches] = useState<{ batchId: string; theme: string; nbJours: number; parentIds: string[] }[]>([]);
@@ -543,14 +544,41 @@ export default function NouvelleSemainePage() {
           taches: [{ sous_type: params.sous_type ?? "podcast", url: params.url ?? "", texte: params.description ?? "", label: params.description ?? "" }],
           matiere: params.matiere ?? undefined,
         };
+        // Stocker la periodicite pour que le bloc soit visible toute la semaine si "semaine"
+        if (params.periodicite === "semaine") {
+          contenuData._periodicite = "semaine";
+        }
       }
       // ── Écriture : génération via l'API thème écriture ──
       else if (type === "ecriture") {
-        const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false }) });
+        const mode = params.ecritureMode ?? "jour";
+        const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false, mode }) });
         const json = await res.json();
         if (!res.ok || json.erreur) { setExoGenErreur(json.erreur ?? "Erreur lors de la génération."); setExoGenChargement(false); return; }
-        contenuData = { sujet: json.sujet, contrainte: json.contrainte };
-        if (!params.titre) params = { ...params, titre: json.sujet?.slice(0, 60) ?? "Thème d'écriture" };
+        contenuData = {
+          sujet: json.sujet,
+          contrainte: json.contrainte,
+          mode,
+          afficher_contrainte: true,
+          instructions: mode === "semaine"
+            ? "Atelier d'écriture sur 4 jours : J1 Premier jet · J2 Correction · J3 Correction · J4 Finalisation"
+            : "Écris ton texte sur ton cahier d'écrivain.",
+        };
+        if (mode === "semaine") {
+          contenuData.texte_jour1 = "";
+          contenuData.texte_jour2 = "";
+          contenuData.texte_jour3 = "";
+          contenuData.texte_final = "";
+          contenuData.erreurs_jour2 = [];
+          contenuData.erreurs_jour3 = [];
+          contenuData.erreurs_jour4 = [];
+          contenuData._periodicite = "semaine";
+        }
+        if (!params.titre) {
+          params = { ...params, titre: mode === "semaine"
+            ? "Atelier écriture — Thème de la semaine"
+            : "Atelier écriture — Thème du jour" };
+        }
       }
       // ── Mode IA ──
       else {
@@ -1266,7 +1294,7 @@ export default function NouvelleSemainePage() {
                             onClick={() => {
                               setExoGenErreur("");
                               setEcritureTheme(null);
-                              setRessourceForm({ sous_type: "podcast", url: "", description: "", titre: "" });
+                              setRessourceForm({ sous_type: "podcast", url: "", description: "", titre: "", periodicite: "jour" });
                               setShowExoGenerateur(true);
                             }}
                             className="pb-btn"
@@ -1709,6 +1737,31 @@ export default function NouvelleSemainePage() {
                           <option value="exercice_papier">📄 Exercice papier</option>
                         </select>
                       </div>
+                      {/* Toggle jour / semaine */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Durée :</span>
+                        <div style={{ display: "flex", gap: 2, background: "rgba(147,51,234,0.1)", borderRadius: 10, padding: 3 }}>
+                          {(["jour", "semaine"] as const).map((m) => (
+                            <button
+                              key={m}
+                              onClick={() => setRessourceForm((f) => ({ ...f, periodicite: m }))}
+                              style={{
+                                padding: "5px 14px", borderRadius: 8, fontSize: 12, fontWeight: 700,
+                                border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                                background: ressourceForm.periodicite === m ? "#9333EA" : "transparent",
+                                color: ressourceForm.periodicite === m ? "white" : "#9333EA",
+                              }}
+                            >
+                              {m === "jour" ? "Un jour" : "Toute la semaine"}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      {ressourceForm.periodicite === "semaine" && (
+                        <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0 }}>
+                          Le bloc sera visible toute la semaine dans le plan de travail des élèves.
+                        </p>
+                      )}
                       <div className="form-group">
                         <label className="form-label">Titre <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span></label>
                         <input className="form-input" value={ressourceForm.titre} onChange={(e) => setRessourceForm((f) => ({ ...f, titre: e.target.value }))} placeholder="Ex : Podcast sur les volcans" />
@@ -1730,7 +1783,7 @@ export default function NouvelleSemainePage() {
                         style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px 20px", borderRadius: 10 }}
                       >
                         <span className="ms" style={{ fontSize: 18 }}>save</span>
-                        Enregistrer dans la banque
+                        Enregistrer
                       </button>
                     </div>
                   )}
@@ -1738,10 +1791,38 @@ export default function NouvelleSemainePage() {
                   {/* Écriture : génération IA d'un thème */}
                   {typeBloc === "ecriture" && (
                     <div style={{ padding: "20px 0", display: "flex", flexDirection: "column", gap: 16 }}>
+                      {/* Toggle jour / semaine */}
+                      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <span style={{ fontSize: 13, fontWeight: 600, color: "var(--text-secondary)" }}>Mode :</span>
+                        <div style={{ display: "flex", gap: 2, background: "rgba(124,58,237,0.1)", borderRadius: 10, padding: 3 }}>
+                          {(["jour", "semaine"] as const).map((m) => (
+                            <button
+                              key={m}
+                              onClick={() => { setEcritureMode(m); setEcritureTheme(null); }}
+                              style={{
+                                padding: "6px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                                border: "none", cursor: "pointer", fontFamily: "inherit", transition: "all 0.15s",
+                                background: ecritureMode === m ? "#7C3AED" : "transparent",
+                                color: ecritureMode === m ? "white" : "#7C3AED",
+                              }}
+                            >
+                              {m === "jour" ? "✏️ Écrit du jour" : "📖 Atelier semaine"}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
+                        {ecritureMode === "jour"
+                          ? "Écrit court de quelques lignes, ancré dans le quotidien (description, portrait, observation…). Visible uniquement le jour assigné."
+                          : "Projet d'écriture sur 4 jours (premier jet → corrections → finalisation). Thème d'imagination (récit, conte, aventure…). Visible toute la semaine."}
+                      </p>
+
                       {ecritureTheme ? (
                         <>
-                          <div style={{ background: "#FFF7ED", border: "1px solid #FED7AA", borderRadius: 12, padding: "16px 18px" }}>
-                            <div style={{ fontSize: 12, fontWeight: 700, color: "#D97706", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>Thème généré</div>
+                          <div style={{ background: ecritureMode === "semaine" ? "#F3E8FF" : "#FFF7ED", border: `1px solid ${ecritureMode === "semaine" ? "#DDD6FE" : "#FED7AA"}`, borderRadius: 12, padding: "16px 18px" }}>
+                            <div style={{ fontSize: 12, fontWeight: 700, color: ecritureMode === "semaine" ? "#7C3AED" : "#D97706", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 8 }}>
+                              {ecritureMode === "semaine" ? "Thème de la semaine" : "Thème du jour"}
+                            </div>
                             <p style={{ fontSize: 14, fontWeight: 600, color: "var(--text)", margin: "0 0 8px" }}>{ecritureTheme.sujet}</p>
                             <p style={{ fontSize: 13, color: "var(--text-secondary)", margin: 0, fontStyle: "italic" }}>Contrainte : {ecritureTheme.contrainte}</p>
                           </div>
@@ -1749,7 +1830,7 @@ export default function NouvelleSemainePage() {
                             <button
                               className="btn-primary"
                               disabled={exoGenChargement}
-                              onClick={() => genererEtSauvegarder({ type: "ecriture", titre: ecritureTheme.sujet.slice(0, 60) })}
+                              onClick={() => genererEtSauvegarder({ type: "ecriture", ecritureMode })}
                               style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8, padding: "12px", borderRadius: 10 }}
                             >
                               <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
@@ -1761,7 +1842,7 @@ export default function NouvelleSemainePage() {
                               onClick={async () => {
                                 setExoGenChargement(true);
                                 try {
-                                  const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true }) });
+                                  const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: true, mode: ecritureMode }) });
                                   const json = await res.json();
                                   if (json.sujet) setEcritureTheme({ sujet: json.sujet, contrainte: json.contrainte });
                                 } finally { setExoGenChargement(false); }
@@ -1774,9 +1855,10 @@ export default function NouvelleSemainePage() {
                           </div>
                         </>
                       ) : (
-                        <div style={{ textAlign: "center", padding: "32px 0" }}>
-                          <span className="ms" style={{ fontSize: 48, display: "block", marginBottom: 12, color: "#7C3AED" }}>draw</span>
-                          <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 20 }}>L&apos;IA va générer un thème d&apos;écriture adapté à votre classe.</p>
+                        <div style={{ textAlign: "center", padding: "24px 0" }}>
+                          <span className="ms" style={{ fontSize: 48, display: "block", marginBottom: 12, color: "#7C3AED" }}>
+                            {ecritureMode === "semaine" ? "auto_stories" : "draw"}
+                          </span>
                           <button
                             className="btn-primary"
                             disabled={exoGenChargement}
@@ -1784,7 +1866,7 @@ export default function NouvelleSemainePage() {
                               setExoGenChargement(true);
                               setExoGenErreur("");
                               try {
-                                const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false }) });
+                                const res = await fetch("/api/generer-theme-ecriture", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ force: false, mode: ecritureMode }) });
                                 const json = await res.json();
                                 if (json.sujet) setEcritureTheme({ sujet: json.sujet, contrainte: json.contrainte });
                                 else setExoGenErreur(json.erreur ?? "Erreur lors de la génération.");
@@ -1794,7 +1876,7 @@ export default function NouvelleSemainePage() {
                             style={{ display: "inline-flex", alignItems: "center", gap: 8, padding: "12px 24px", borderRadius: 10 }}
                           >
                             <span className="ms" style={{ fontSize: 20 }}>auto_awesome</span>
-                            Générer un thème avec l&apos;IA
+                            Générer un thème {ecritureMode === "semaine" ? "de la semaine" : "du jour"}
                           </button>
                         </div>
                       )}
