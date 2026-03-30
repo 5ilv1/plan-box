@@ -131,6 +131,7 @@ export default function DashboardEleve() {
 
   // ── Déclenchement selon source ──────────────────────────────────────────────
   useEffect(() => {
+    console.log("[dashboard] useEffect → chargementSession:", chargementSession, "session:", session?.id ?? "null", "source:", session?.source ?? "-");
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
     if (session.source === "repetibox") {
