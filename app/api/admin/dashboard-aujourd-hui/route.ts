@@ -13,11 +13,36 @@ export async function GET() {
   const today = new Date().toISOString().split("T")[0];
   const debutJour = `${today}T00:00:00.000Z`;
 
-  const { data: ptData, error } = await admin
-    .from("plan_travail")
-    .select("id, type, titre, statut, date_assignation, date_limite, periodicite, eleve_id, repetibox_eleve_id, chapitre_id, groupe_label")
-    .eq("date_assignation", today)
-    .order("created_at");
+  // Bornes de la semaine (lundi → dimanche) pour les blocs periodicite=semaine
+  const now = new Date();
+  const day = now.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  const mondayStr = monday.toISOString().split("T")[0];
+  const sundayStr = sunday.toISOString().split("T")[0];
+
+  // Blocs du jour + blocs semaine (periodicite=semaine) de la semaine courante
+  const [{ data: ptToday, error: err1 }, { data: ptSemaine, error: err2 }] = await Promise.all([
+    admin
+      .from("plan_travail")
+      .select("id, type, titre, statut, date_assignation, date_limite, periodicite, eleve_id, repetibox_eleve_id, chapitre_id, groupe_label")
+      .eq("date_assignation", today)
+      .order("created_at"),
+    admin
+      .from("plan_travail")
+      .select("id, type, titre, statut, date_assignation, date_limite, periodicite, eleve_id, repetibox_eleve_id, chapitre_id, groupe_label")
+      .eq("periodicite", "semaine")
+      .neq("date_assignation", today)
+      .gte("date_assignation", mondayStr)
+      .lte("date_assignation", sundayStr)
+      .order("created_at"),
+  ]);
+
+  const error = err1 || err2;
+  const ptData = [...(ptToday ?? []), ...(ptSemaine ?? [])];
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 

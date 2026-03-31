@@ -22,6 +22,34 @@ export async function POST(req: Request) {
     groupeMap.get(ge.groupe_id)!.push(ge);
   }
 
+  // ── Résoudre le contenu des blocs avec banque_id ───────────────────────
+  // Pour les blocs écriture / exercice / ressource, le contenu réel est dans banque_exercices
+  const banqueIds = blocs
+    .map((b: any) => b.contenu?.banque_id)
+    .filter(Boolean) as string[];
+
+  const banqueMap = new Map<string, Record<string, unknown>>();
+  if (banqueIds.length > 0) {
+    const uniqueIds = [...new Set(banqueIds)];
+    const { data: banqueData } = await admin
+      .from("banque_exercices")
+      .select("id, contenu")
+      .in("id", uniqueIds);
+    for (const ex of banqueData ?? []) {
+      if (ex.contenu) banqueMap.set(ex.id, ex.contenu as Record<string, unknown>);
+    }
+  }
+
+  // ── Résoudre les noms de groupes (pour adapter la contrainte écriture) ──
+  const tousGroupeIds = [...new Set(
+    blocs.flatMap((b: any) => b.assignation?.groupeIds ?? [])
+  )];
+  const groupeNomMap = new Map<string, string>();
+  if (tousGroupeIds.length > 0) {
+    const { data: grpData } = await admin.from("groupes").select("id, nom").in("id", tousGroupeIds);
+    for (const g of grpData ?? []) groupeNomMap.set(g.id, g.nom);
+  }
+
   const inserts: any[] = [];
   let created = 0;
 
@@ -68,20 +96,55 @@ export async function POST(req: Request) {
     const groupeLabel = (bloc.assignation?.groupeNoms ?? []).join(", ") || "Toute la classe";
 
     // Déterminer la periodicite : "semaine" si le contenu le demande, sinon "jour"
-    const contenu = bloc.contenu ?? {};
-    const periodicite = contenu._periodicite === "semaine" ? "semaine" : "jour";
-    // Nettoyer le champ interne _periodicite avant insertion
-    const contenuClean = { ...contenu };
-    delete contenuClean._periodicite;
+    const contenuBrut = bloc.contenu ?? {};
+    const periodicite = contenuBrut._periodicite === "semaine" ? "semaine" : "jour";
+
+    // Résoudre le contenu de la banque si présent
+    const banqueId = contenuBrut.banque_id as string | undefined;
+    const contenuBanque = banqueId ? banqueMap.get(banqueId) : undefined;
+
+    // Fusionner : contenu banque (complet) + champs du bloc (sauf _periodicite)
+    const contenuBase = contenuBanque
+      ? { ...contenuBanque, ...contenuBrut }
+      : { ...contenuBrut };
+    delete contenuBase._periodicite;
+
+    // Pour les blocs écriture : adapter la contrainte par niveau de groupe
+    const isEcriture = bloc.type === "ecriture";
+    const contrainteBase = isEcriture
+      ? ((contenuBase.contrainte as string) ?? "").replace(/ · Au moins \d+ lignes$/, "").trim()
+      : "";
 
     for (const eleve of uniqueEleves) {
+      let contenuFinal = contenuBase;
+
+      // Adapter la contrainte écriture par niveau (CE2 → 3 lignes, CM1/CM2 → 5 lignes)
+      if (isEcriture && contrainteBase) {
+        // Trouver le groupe de cet élève pour déterminer le niveau
+        let niveauNom = "";
+        for (const gid of (bloc.assignation?.groupeIds ?? [])) {
+          const membres = groupeMap.get(gid) ?? [];
+          const match = membres.find((m) =>
+            (eleve.eleve_id && m.planbox_eleve_id === eleve.eleve_id) ||
+            (eleve.repetibox_eleve_id && m.repetibox_eleve_id === eleve.repetibox_eleve_id)
+          );
+          if (match) { niveauNom = groupeNomMap.get(gid) ?? ""; break; }
+        }
+
+        let contraintefinale = contrainteBase;
+        if (niveauNom === "CE2") contraintefinale += " · Au moins 3 lignes";
+        else if (niveauNom === "CM1" || niveauNom === "CM2") contraintefinale += " · Au moins 5 lignes";
+
+        contenuFinal = { ...contenuBase, contrainte: contraintefinale };
+      }
+
       inserts.push({
         type: bloc.type,
         titre: bloc.titre,
         statut: "a_faire",
         date_assignation: dateAssignation,
         periodicite,
-        contenu: contenuClean,
+        contenu: contenuFinal,
         chapitre_id: bloc.chapitreId ?? null,
         eleve_id: eleve.eleve_id,
         repetibox_eleve_id: eleve.repetibox_eleve_id,

@@ -294,30 +294,70 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ ok: true, mode_changed: true });
     }
 
-    // Mettre à jour les plan_travail du jour pour type=ecriture
-    const { data: blocs } = await supabase
+    // Mettre à jour les blocs écriture de la période concernée
+    // Mode semaine → chercher sur toute la semaine ; mode jour → uniquement aujourd'hui
+    const { data: themeData } = await supabase
+      .from("themes_ecriture")
+      .select("mode")
+      .eq("id", theme_id)
+      .single();
+    const themeModePatch = (themeData?.mode as string) ?? "jour";
+
+    let blocsQuery = supabase
       .from("plan_travail")
-      .select("id, contenu, eleve_id")
-      .eq("type", "ecriture")
-      .eq("date_assignation", today)
-      .returns<{ id: string; contenu: Record<string, unknown>; eleve_id: string }[]>();
+      .select("id, contenu, eleve_id, repetibox_eleve_id")
+      .eq("type", "ecriture");
+
+    if (themeModePatch === "semaine") {
+      const now = new Date();
+      const dayPatch = now.getDay();
+      const diffMon = dayPatch === 0 ? -6 : 1 - dayPatch;
+      const monPatch = new Date(now);
+      monPatch.setDate(now.getDate() + diffMon);
+      const sunPatch = new Date(monPatch);
+      sunPatch.setDate(monPatch.getDate() + 6);
+      blocsQuery = blocsQuery
+        .gte("date_assignation", monPatch.toISOString().split("T")[0])
+        .lte("date_assignation", sunPatch.toISOString().split("T")[0]);
+    } else {
+      blocsQuery = blocsQuery.eq("date_assignation", today);
+    }
+
+    const { data: blocs } = await blocsQuery
+      .returns<{ id: string; contenu: Record<string, unknown>; eleve_id: string | null; repetibox_eleve_id: number | null }[]>();
 
     if (blocs && blocs.length > 0) {
       if (sujet !== undefined || contrainte !== undefined) {
-        // Récupérer les niveaux des élèves pour adapter la contrainte
-        const eleveIds = blocs.map((b) => b.eleve_id);
-        const { data: eleves } = await supabase
-          .from("eleves")
-          .select("id, niveaux(nom)")
-          .in("id", eleveIds)
-          .returns<{ id: string; niveaux: { nom: string } | null }[]>();
+        // Récupérer les niveaux via eleve_groupe → groupes (couvre PB et RB)
+        const pbIds = [...new Set(blocs.map((b) => b.eleve_id).filter(Boolean))] as string[];
+        const rbIds = [...new Set(blocs.map((b) => b.repetibox_eleve_id).filter((id): id is number => id != null))];
 
-        const niveauParEleve = new Map(
-          (eleves ?? []).map((e) => [e.id, e.niveaux?.nom ?? ""])
+        const { data: liaisons } = await supabase
+          .from("eleve_groupe")
+          .select("planbox_eleve_id, repetibox_eleve_id, groupe_id");
+
+        const groupeIds = [...new Set((liaisons ?? []).map((l: any) => l.groupe_id))];
+        const { data: groupes } = await supabase
+          .from("groupes")
+          .select("id, nom")
+          .in("id", groupeIds);
+        const nomGroupe = new Map<string, string>(
+          (groupes ?? []).map((g: { id: string; nom: string }) => [g.id, g.nom])
         );
 
+        // Map PB id → niveau, RB id → niveau
+        const niveauParPB = new Map<string, string>();
+        const niveauParRB = new Map<number, string>();
+        for (const l of (liaisons ?? []) as { planbox_eleve_id: string | null; repetibox_eleve_id: number | null; groupe_id: string }[]) {
+          const nom = nomGroupe.get(l.groupe_id) ?? "";
+          if (l.planbox_eleve_id) niveauParPB.set(l.planbox_eleve_id, nom);
+          if (l.repetibox_eleve_id) niveauParRB.set(l.repetibox_eleve_id, nom);
+        }
+
         for (const bloc of blocs) {
-          const niveauNom = niveauParEleve.get(bloc.eleve_id) ?? "";
+          const niveauNom = bloc.eleve_id
+            ? (niveauParPB.get(bloc.eleve_id) ?? "")
+            : (bloc.repetibox_eleve_id ? (niveauParRB.get(bloc.repetibox_eleve_id) ?? "") : "");
           let contraintefinale = contrainte ?? (bloc.contenu?.contrainte as string) ?? "";
           contraintefinale = contraintefinale.replace(/ · Au moins \d+ lignes$/, "").trim();
           if (niveauNom === "CE2") contraintefinale += " · Au moins 3 lignes";

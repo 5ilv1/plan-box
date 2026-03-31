@@ -36,6 +36,9 @@ async function genererOuRecupererTheme(force: boolean, modeForce?: "jour" | "sem
     const monday = new Date(now);
     monday.setDate(now.getDate() + diffToMonday);
     const mondayStr = monday.toISOString().split("T")[0];
+    const sundayDate = new Date(monday);
+    sundayDate.setDate(monday.getDate() + 6);
+    const sundayStr = sundayDate.toISOString().split("T")[0];
 
     const { data: themeSemaine } = await supabase
       .from("themes_ecriture")
@@ -60,6 +63,31 @@ async function genererOuRecupererTheme(force: boolean, modeForce?: "jour" | "sem
 
     if (existant) {
       return NextResponse.json(existant);
+    }
+
+    // Fallback : vérifier si des blocs écriture ont été planifiés (via Nouvelle semaine)
+    // D'abord chercher des blocs semaine cette semaine
+    const { data: blocPlanifie } = await supabase
+      .from("plan_travail")
+      .select("id, contenu, periodicite")
+      .eq("type", "ecriture")
+      .gte("date_assignation", mondayStr)
+      .lte("date_assignation", sundayStr)
+      .limit(1)
+      .maybeSingle();
+
+    if (blocPlanifie && blocPlanifie.contenu) {
+      const c = blocPlanifie.contenu as Record<string, unknown>;
+      const modePlanifie = (c.mode as string) ?? (blocPlanifie.periodicite === "semaine" ? "semaine" : "jour");
+      return NextResponse.json({
+        id: null,
+        sujet: c.sujet ?? "",
+        contrainte: (c.contrainte as string ?? "").replace(/ · Au moins \d+ lignes$/, "").trim(),
+        affecte: true,
+        afficher_contrainte: c.afficher_contrainte ?? true,
+        mode: modePlanifie,
+        planifie: true,
+      });
     }
   } else {
     // force: true → supprimer l'existant pour pouvoir réinsérer
