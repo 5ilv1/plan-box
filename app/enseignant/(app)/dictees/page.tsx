@@ -542,6 +542,43 @@ export default function PageDictees() {
     await charger();
   }
 
+  function imprimerTousNiveaux() {
+    const selection = nbSelectionnees > 0
+      ? batches.filter((b) => semainesSelectionnees.has(b.batchId))
+      : batches;
+    let html = `<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><title>Mots à apprendre – Tous niveaux</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 11pt; padding: 14mm 16mm; }
+  h1 { text-align: center; font-size: 14pt; margin-bottom: 12pt; color: #1e3a5f; }
+  h2 { font-size: 12pt; margin: 16pt 0 6pt; color: #374151; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 10pt; }
+  th { background: #D1D5DB; padding: 6pt 10pt; border: 1px solid #9CA3AF; text-align: left; font-size: 11pt; }
+  td { padding: 7pt 10pt; border: 1px solid #E5E7EB; font-size: 10pt; line-height: 1.5; }
+  td:first-child { font-weight: bold; white-space: nowrap; width: 80pt; }
+  tr:nth-child(even) td { background: #F9FAFB; }
+  .page-break { page-break-before: always; }
+  @media print { body { padding: 10mm; } }
+</style></head><body>\n`;
+
+    NIVEAUX.forEach((niv, nivIdx) => {
+      if (nivIdx > 0) html += `<div class="page-break"></div>\n`;
+      html += `<h1>Mots à apprendre – ${niv.label} (${niv.long})</h1>\n`;
+      html += `<table><thead><tr><th>${niv.long}</th><th></th></tr></thead><tbody>\n`;
+      selection.forEach((batch) => {
+        const numSemaine = batches.indexOf(batch) + 1;
+        const n = batch.jours[0]?.niveaux.find((x) => x.niveau_etoiles === niv.etoiles);
+        const motsTxt = (n?.mots ?? []).map((m) => m.mot).join(" – ") || "—";
+        html += `<tr><td>Semaine ${numSemaine}</td><td>${motsTxt}</td></tr>\n`;
+      });
+      html += `</tbody></table>\n`;
+    });
+
+    html += `</body></html>`;
+    imprimerHTML(html);
+  }
+
   function imprimerTableauMots() {
     const selection = nbSelectionnees > 0
       ? batches.filter((b) => semainesSelectionnees.has(b.batchId))
@@ -673,13 +710,20 @@ export default function PageDictees() {
                   </button>
                 </div>
 
-                {/* Bouton imprimer */}
+                {/* Boutons imprimer */}
                 <button
                   onClick={imprimerTableauMots}
                   className="btn-secondary"
                   style={{ fontSize: 13, padding: "6px 14px", borderRadius: 6 }}
                 >
-                  {nbSelectionnees > 0 ? `Imprimer la sélection (${nbSelectionnees})` : "Imprimer tout"}
+                  {nbSelectionnees > 0 ? `Imprimer ${niveauInfo.long} (${nbSelectionnees})` : `Imprimer ${niveauInfo.long}`}
+                </button>
+                <button
+                  onClick={imprimerTousNiveaux}
+                  className="btn-primary"
+                  style={{ fontSize: 13, padding: "6px 14px", borderRadius: 6 }}
+                >
+                  {nbSelectionnees > 0 ? `Imprimer tous niveaux (${nbSelectionnees})` : "Imprimer tous niveaux"}
                 </button>
               </div>
 
