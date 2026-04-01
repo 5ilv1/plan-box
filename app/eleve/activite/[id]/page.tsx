@@ -18,6 +18,7 @@ import TexteATrousEleve from "@/components/TexteATrousEleve";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import ClassementEleve from "@/components/ClassementEleve";
 import LectureEleve from "@/components/LectureEleve";
+import DicteeCorrection from "@/components/DicteeCorrection";
 import { FonctionGram } from "@/types";
 import dynamic from "next/dynamic";
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
@@ -624,7 +625,17 @@ export default function PageActivite() {
               </div>
             )}
 
-            <Link href="/eleve/dashboard" className="pb-btn primary" style={{ width: "100%" }}>
+            {/* Correction dictée par photo */}
+            {bloc.type === "dictee" && (
+              <div style={{ textAlign: "left" }}>
+                <DicteeCorrection
+                  blocId={bloc.id.toString()}
+                  onFermer={() => router.push("/eleve/dashboard")}
+                />
+              </div>
+            )}
+
+            <Link href="/eleve/dashboard" className="pb-btn primary" style={{ width: "100%", marginTop: bloc.type === "dictee" ? 16 : 0 }}>
               <span className="ms" style={{ fontSize: 18 }}>home</span>
               Retour au tableau de bord
             </Link>

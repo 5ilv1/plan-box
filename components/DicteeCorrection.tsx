@@ -1,0 +1,340 @@
+"use client";
+
+import { useRef, useState } from "react";
+
+interface Erreur {
+  mot_eleve: string;
+  type_erreur: string;
+  indice: string;
+}
+
+interface ResultatCorrection {
+  transcription: string;
+  nb_mots_corrects: number;
+  nb_mots_total: number;
+  erreurs: Erreur[];
+}
+
+interface Props {
+  blocId: string;
+  onFermer: () => void;
+}
+
+const TYPE_ERREUR_LABELS: Record<string, { label: string; icon: string; color: string }> = {
+  lettre_muette:      { label: "Lettre muette",   icon: "visibility_off", color: "#D97706" },
+  accord_sujet_verbe: { label: "Accord S/V",      icon: "link",           color: "#DC2626" },
+  accord_adjectif:    { label: "Accord adjectif",  icon: "tune",           color: "#DC2626" },
+  conjugaison:        { label: "Conjugaison",      icon: "schedule",       color: "#7C3AED" },
+  homophone:          { label: "Homophone",        icon: "swap_horiz",     color: "#2563EB" },
+  mot_oublie:         { label: "Mot oublié",       icon: "add_circle",     color: "#059669" },
+  orthographe:        { label: "Orthographe",      icon: "spellcheck",     color: "#D97706" },
+  majuscule:          { label: "Majuscule",        icon: "format_size",    color: "#6B7280" },
+  ponctuation:        { label: "Ponctuation",      icon: "more_horiz",     color: "#6B7280" },
+  autre:              { label: "Autre",            icon: "help_outline",   color: "#6B7280" },
+};
+
+export default function DicteeCorrection({ blocId, onFermer }: Props) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [chargement, setChargement] = useState(false);
+  const [resultat, setResultat] = useState<ResultatCorrection | null>(null);
+  const [erreur, setErreur] = useState<string | null>(null);
+
+  function ouvrirCamera() {
+    inputRef.current?.click();
+  }
+
+  function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Preview
+    const url = URL.createObjectURL(file);
+    setPreviewUrl(url);
+
+    // Convertir en base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      setImageBase64(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+
+    setResultat(null);
+    setErreur(null);
+  }
+
+  function annulerPhoto() {
+    setPreviewUrl(null);
+    setImageBase64(null);
+    setResultat(null);
+    setErreur(null);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  async function envoyer() {
+    if (!imageBase64) return;
+    setChargement(true);
+    setErreur(null);
+
+    try {
+      const res = await fetch("/api/corriger-dictee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ image: imageBase64, bloc_id: blocId }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Erreur lors de l'analyse");
+      }
+
+      const data: ResultatCorrection = await res.json();
+      setResultat(data);
+    } catch (err: unknown) {
+      setErreur(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setChargement(false);
+    }
+  }
+
+  const pct = resultat
+    ? Math.round((resultat.nb_mots_corrects / resultat.nb_mots_total) * 100)
+    : null;
+
+  return (
+    <div style={{ marginTop: 24 }}>
+      {/* Input caché */}
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        onChange={onPhoto}
+        style={{ display: "none" }}
+      />
+
+      {/* ── Pas encore de photo ── */}
+      {!previewUrl && !resultat && (
+        <button
+          onClick={ouvrirCamera}
+          style={{
+            width: "100%",
+            padding: "20px 24px",
+            borderRadius: "1.25rem",
+            border: "2px dashed rgba(0,80,212,0.3)",
+            background: "rgba(0,80,212,0.04)",
+            cursor: "pointer",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 8,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}
+        >
+          <span className="ms" style={{ fontSize: 40, color: "var(--pb-primary)" }}>photo_camera</span>
+          <span style={{ fontSize: 15, fontWeight: 700, color: "var(--pb-primary)" }}>
+            Prendre en photo ma dictée
+          </span>
+          <span style={{ fontSize: 13, color: "var(--pb-on-surface-variant)" }}>
+            Prends ta dictée en photo pour vérifier tes erreurs
+          </span>
+        </button>
+      )}
+
+      {/* ── Preview photo ── */}
+      {previewUrl && !resultat && (
+        <div>
+          <div style={{
+            borderRadius: "1rem",
+            overflow: "hidden",
+            marginBottom: 16,
+            border: "1px solid rgba(0,0,0,0.08)",
+          }}>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={previewUrl}
+              alt="Photo de la dictée"
+              style={{ width: "100%", display: "block" }}
+            />
+          </div>
+
+          <div style={{ display: "flex", gap: 10 }}>
+            <button
+              onClick={annulerPhoto}
+              disabled={chargement}
+              className="pb-btn surface"
+              style={{ flex: 1 }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>close</span>
+              Reprendre
+            </button>
+            <button
+              onClick={envoyer}
+              disabled={chargement}
+              className="pb-btn primary"
+              style={{ flex: 2 }}
+            >
+              {chargement ? (
+                <>
+                  <span className="ms spin" style={{ fontSize: 18 }}>progress_activity</span>
+                  Analyse en cours…
+                </>
+              ) : (
+                <>
+                  <span className="ms" style={{ fontSize: 18 }}>auto_fix_high</span>
+                  Vérifier ma dictée
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Erreur ── */}
+      {erreur && (
+        <div style={{
+          marginTop: 16,
+          padding: "12px 16px",
+          borderRadius: "0.75rem",
+          background: "#fef2f2",
+          border: "1px solid #fecaca",
+          color: "#dc2626",
+          fontSize: 14,
+        }}>
+          {erreur}
+        </div>
+      )}
+
+      {/* ── Résultat ── */}
+      {resultat && (
+        <div>
+          {/* Score global */}
+          <div style={{
+            textAlign: "center",
+            padding: "24px 16px",
+            marginBottom: 20,
+            borderRadius: "1.25rem",
+            background: pct! >= 80
+              ? "linear-gradient(135deg, #dcfce7, #bbf7d0)"
+              : pct! >= 50
+                ? "linear-gradient(135deg, #fef9c3, #fde68a)"
+                : "linear-gradient(135deg, #fee2e2, #fecaca)",
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 8 }}>
+              {pct! >= 80 ? "🎉" : pct! >= 50 ? "💪" : "📝"}
+            </div>
+            <div style={{
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              fontSize: 28,
+              fontWeight: 900,
+              color: pct! >= 80 ? "#166534" : pct! >= 50 ? "#854d0e" : "#991b1b",
+            }}>
+              {resultat.nb_mots_corrects} / {resultat.nb_mots_total} mots justes
+            </div>
+            <p style={{
+              fontSize: 14,
+              marginTop: 4,
+              color: pct! >= 80 ? "#166534" : pct! >= 50 ? "#854d0e" : "#991b1b",
+              opacity: 0.8,
+            }}>
+              {resultat.erreurs.length === 0
+                ? "Parfait, aucune erreur !"
+                : `${resultat.erreurs.length} erreur${resultat.erreurs.length > 1 ? "s" : ""} à corriger — lis les indices ci-dessous`}
+            </p>
+          </div>
+
+          {/* Liste des indices */}
+          {resultat.erreurs.length > 0 && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <h3 style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 16,
+                fontWeight: 700,
+                color: "var(--pb-on-surface)",
+                margin: 0,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+              }}>
+                <span className="ms" style={{ fontSize: 20, color: "var(--pb-primary)" }}>lightbulb</span>
+                Indices pour te corriger
+              </h3>
+
+              {resultat.erreurs.map((err, i) => {
+                const config = TYPE_ERREUR_LABELS[err.type_erreur] || TYPE_ERREUR_LABELS.autre;
+                return (
+                  <div
+                    key={i}
+                    style={{
+                      padding: "14px 16px",
+                      borderRadius: "1rem",
+                      background: "var(--pb-surface-container, #f5f5f5)",
+                      borderLeft: `4px solid ${config.color}`,
+                    }}
+                  >
+                    <div style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 8,
+                      marginBottom: 6,
+                    }}>
+                      <span className="ms" style={{ fontSize: 18, color: config.color }}>
+                        {config.icon}
+                      </span>
+                      <span style={{
+                        fontSize: 13,
+                        fontWeight: 700,
+                        color: config.color,
+                        textTransform: "uppercase",
+                        letterSpacing: 0.5,
+                      }}>
+                        {config.label}
+                      </span>
+                      <span style={{
+                        fontSize: 14,
+                        fontWeight: 600,
+                        color: "var(--pb-on-surface)",
+                        marginLeft: "auto",
+                      }}>
+                        « {err.mot_eleve} »
+                      </span>
+                    </div>
+                    <p style={{
+                      fontSize: 14,
+                      color: "var(--pb-on-surface-variant)",
+                      margin: 0,
+                      lineHeight: 1.5,
+                    }}>
+                      💡 {err.indice}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Actions */}
+          <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
+            <button
+              onClick={() => { annulerPhoto(); setResultat(null); }}
+              className="pb-btn surface"
+              style={{ flex: 1 }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>photo_camera</span>
+              Reprendre une photo
+            </button>
+            <button
+              onClick={onFermer}
+              className="pb-btn primary"
+              style={{ flex: 1 }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>check</span>
+              Terminer
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
