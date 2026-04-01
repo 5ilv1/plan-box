@@ -30,6 +30,8 @@ const TYPE_ERREUR_LABELS: Record<string, { label: string; icon: string; color: s
   orthographe:        { label: "Orthographe",      icon: "spellcheck",     color: "#D97706" },
   majuscule:          { label: "Majuscule",        icon: "format_size",    color: "#6B7280" },
   ponctuation:        { label: "Ponctuation",      icon: "more_horiz",     color: "#6B7280" },
+  accent:             { label: "Accent",           icon: "font_download",  color: "#D97706" },
+  lettre_doublee:     { label: "Lettre doublée",   icon: "looks_two",      color: "#D97706" },
   autre:              { label: "Autre",            icon: "help_outline",   color: "#6B7280" },
 };
 

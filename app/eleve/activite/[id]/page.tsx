@@ -625,8 +625,8 @@ export default function PageActivite() {
               </div>
             )}
 
-            {/* Correction dictée par photo */}
-            {bloc.type === "dictee" && (
+            {/* Correction dictée / mots par photo (uniquement mots du lundi = mots_semaine, pas les révisions tapées sur tablette) */}
+            {(bloc.type === "dictee" || (bloc.type === "mots" && !!(bloc.contenu as Record<string, unknown>)?.mots_semaine)) && (
               <div style={{ textAlign: "left" }}>
                 <DicteeCorrection
                   blocId={bloc.id.toString()}
@@ -635,7 +635,7 @@ export default function PageActivite() {
               </div>
             )}
 
-            <Link href="/eleve/dashboard" className="pb-btn primary" style={{ width: "100%", marginTop: bloc.type === "dictee" ? 16 : 0 }}>
+            <Link href="/eleve/dashboard" className="pb-btn primary" style={{ width: "100%", marginTop: (bloc.type === "dictee" || bloc.type === "mots") ? 16 : 0 }}>
               <span className="ms" style={{ fontSize: 18 }}>home</span>
               Retour au tableau de bord
             </Link>

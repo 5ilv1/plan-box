@@ -31,15 +31,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Bloc introuvable" }, { status: 404 });
   }
 
-  if (bloc.type !== "dictee") {
-    return NextResponse.json({ error: "Ce bloc n'est pas une dictée" }, { status: 400 });
+  if (bloc.type !== "dictee" && bloc.type !== "mots") {
+    return NextResponse.json({ error: "Ce bloc n'est pas une dictée ou une liste de mots" }, { status: 400 });
   }
 
-  const contenu = bloc.contenu as { texte?: string; phrases?: { id: number; texte: string }[] };
-  const texteAttendu = contenu.texte || contenu.phrases?.map((p) => p.texte).join(" ") || "";
+  const contenu = bloc.contenu as {
+    texte?: string;
+    phrases?: { id: number; texte: string }[];
+    mots?: { mot: string; definition: string; pronom?: string }[];
+  };
+
+  const estMots = bloc.type === "mots";
+  const texteAttendu = estMots
+    ? (contenu.mots ?? []).map((m) => m.pronom ? `${m.pronom} ${m.mot}` : m.mot).join("\n")
+    : contenu.texte || contenu.phrases?.map((p) => p.texte).join(" ") || "";
 
   if (!texteAttendu) {
-    return NextResponse.json({ error: "Texte de la dictée introuvable" }, { status: 400 });
+    return NextResponse.json({ error: "Contenu de référence introuvable" }, { status: 400 });
   }
 
   // Extraire le base64 et le media type depuis chaque data-url
@@ -62,7 +70,8 @@ export async function POST(req: NextRequest) {
   const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
   const nbPages = imageBlocks.length;
-  const prompt = `Tu es un enseignant bienveillant qui corrige la dictée d'un élève de primaire (CE2-CM2).
+
+  const promptDictee = `Tu es un enseignant bienveillant qui corrige la dictée d'un élève de primaire (CE2-CM2).
 
 TEXTE ATTENDU DE LA DICTÉE :
 """
@@ -85,7 +94,31 @@ Types d'indices selon l'erreur :
 - Mot oublié → "Relis ta phrase entre « X » et « Y » : il manque un petit mot."
 - Orthographe lexicale → "Ce mot est difficile ! Il fait partie de ta liste de mots. Essaie de t'en souvenir."
 - Majuscule → "En début de phrase ou pour un nom propre, quelle lettre faut-il ?"
-- Ponctuation → "Vérifie la ponctuation à la fin de ta phrase."
+- Ponctuation → "Vérifie la ponctuation à la fin de ta phrase."`;
+
+  const promptMots = `Tu es un enseignant bienveillant qui corrige la dictée de mots d'un élève de primaire (CE2-CM2).
+
+LISTE DES MOTS ATTENDUS (un par ligne) :
+"""
+${texteAttendu}
+"""
+
+L'élève a écrit ces mots sur son cahier. ${nbPages > 1 ? `Voici les ${nbPages} pages.` : "Voici la photo de ce qu'il a écrit."}
+
+CONSIGNES :
+1. Transcris exactement les mots que l'élève a écrits (avec ses erreurs).
+2. Compare chaque mot avec la liste attendue et identifie chaque erreur d'orthographe.
+3. Pour chaque erreur, donne un INDICE pédagogique qui met l'élève sur la voie SANS donner la réponse.
+4. Si un mot de la liste est absent (oublié), signale-le aussi.
+
+Types d'indices :
+- Lettre muette → "Essaie de mettre ce mot au féminin (ou au pluriel) pour entendre la lettre cachée."
+- Accent manquant/mauvais → "Ce mot a un accent. Écoute bien la voyelle : est-ce un accent aigu, grave ou circonflexe ?"
+- Lettre doublée → "Ce mot a une consonne doublée. Écoute bien le son au milieu du mot."
+- Orthographe lexicale → "Ce mot est dans ta liste. Ferme les yeux, essaie de le visualiser lettre par lettre."
+- Mot oublié → "Il manque un mot dans ta liste ! Relis les mots que tu devais apprendre."`;
+
+  const promptFin = `
 
 Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
 {
@@ -96,11 +129,13 @@ Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
     {
       "mot_eleve": "ce que l'élève a écrit",
       "mot_attendu": "ce qui était attendu (pour usage interne, ne sera PAS montré à l'élève)",
-      "type_erreur": "lettre_muette|accord_sujet_verbe|accord_adjectif|conjugaison|homophone|mot_oublie|orthographe|majuscule|ponctuation|autre",
+      "type_erreur": "lettre_muette|accord_sujet_verbe|accord_adjectif|conjugaison|homophone|mot_oublie|orthographe|majuscule|ponctuation|accent|lettre_doublee|autre",
       "indice": "l'indice pédagogique bienveillant"
     }
   ]
 }`;
+
+  const prompt = (estMots ? promptMots : promptDictee) + promptFin;
 
   try {
     const response = await anthropic.messages.create({
