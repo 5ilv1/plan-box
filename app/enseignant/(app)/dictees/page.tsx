@@ -43,10 +43,10 @@ interface Batch {
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 const NIVEAUX = [
-  { etoiles: 1 as const, label: "N1", long: "CE2" },
-  { etoiles: 2 as const, label: "N2", long: "CM1" },
-  { etoiles: 3 as const, label: "N3", long: "CM2" },
-  { etoiles: 4 as const, label: "N4", long: "CM2+" },
+  { etoiles: 1 as const, label: "⭐", long: "CE2" },
+  { etoiles: 2 as const, label: "⭐⭐", long: "CM1" },
+  { etoiles: 3 as const, label: "⭐⭐⭐", long: "CM2" },
+  { etoiles: 4 as const, label: "⭐⭐⭐⭐", long: "CM2+" },
 ];
 
 // Labels des jours de dictée : le lundi est "dictée de mots" (géré séparément),
