@@ -1580,8 +1580,8 @@ function PageGenererInner() {
                       <div style={{
                         width: 56, height: 56, margin: "0 auto 20px",
                         borderRadius: "50%",
-                        border: "5px solid #D1FAE5",
-                        borderTopColor: "#059669",
+                        border: "5px solid var(--primary-mid)",
+                        borderTopColor: "var(--primary)",
                         animation: "spin 0.9s linear infinite",
                       }} />
                       <p style={{ fontWeight: 700, fontSize: 16, margin: "0 0 8px", color: "var(--text)" }}>
