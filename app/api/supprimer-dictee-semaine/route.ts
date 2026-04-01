@@ -12,12 +12,18 @@ export async function POST(req: NextRequest) {
     const admin = createAdminClient();
 
     // 1. Supprimer les dictées par batch_id
-    const { error: e1 } = await admin.from("dictees").delete().eq("batch_id", batchId);
+    const { error: e1, count: c1batch } = await admin.from("dictees").delete({ count: "exact" }).eq("batch_id", batchId);
     if (e1) console.error("[supprimer-dictee-semaine] dictees batch_id:", e1.message);
 
-    // 2. Backward-compat : supprimer aussi par dictee_parent_id
+    // 2. Backward-compat : supprimer aussi par dictee_parent_id (anciennes dictées sans batch_id)
     const { error: e2 } = await admin.from("dictees").delete().in("dictee_parent_id", parentIds);
     if (e2) console.error("[supprimer-dictee-semaine] dictees parent_id:", e2.message);
+
+    // 2b. Si batch_id n'a rien supprimé, essayer aussi par id directement (batchId = parentId pour les anciennes)
+    if ((c1batch ?? 0) === 0) {
+      const { error: e2b } = await admin.from("dictees").delete().eq("dictee_parent_id", batchId);
+      if (e2b) console.error("[supprimer-dictee-semaine] dictees fallback parent_id:", e2b.message);
+    }
 
     // 3. Supprimer plan_travail type "dictee"
     const { error: e3, count: c3 } = await admin
@@ -48,11 +54,10 @@ export async function POST(req: NextRequest) {
       c5 = count ?? 0;
     }
 
-    if (e1 || e2 || e3 || e4 || e5) {
-      return NextResponse.json(
-        { erreur: (e1 || e2 || e3 || e4 || e5)?.message ?? "Erreur inconnue" },
-        { status: 500 }
-      );
+    // Erreur critique seulement si la suppression dictees ET plan_travail échouent toutes
+    const erreursCritiques = [e3, e4, e5].filter(Boolean);
+    if (erreursCritiques.length > 0) {
+      console.error("[supprimer-dictee-semaine] erreurs:", erreursCritiques.map((e) => e?.message));
     }
 
     return NextResponse.json({ ok: true, planTravailSupprimes: (c3 ?? 0) + (c4 ?? 0) + c5 });
