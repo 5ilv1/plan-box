@@ -386,7 +386,7 @@ export default function NouvelleSemainePage() {
           newBlocs.push({
             id: uid(),
             type: "mots" as TypeBloc,
-            titre: `${titre} — Mots`,
+            titre: `Mots — ${titre}`,
             jour: 0, // lundi
             assignation,
             contenu: {
@@ -418,6 +418,23 @@ export default function NouvelleSemainePage() {
           });
         }
 
+        // Mardi — Révision des mots
+        newBlocs.push({
+          id: uid(),
+          type: "mots" as TypeBloc,
+          titre: `Révision mots — ${titre}`,
+          jour: 1, // mardi
+          assignation,
+          contenu: {
+            batch_id: batch.batchId,
+            theme: batch.theme,
+            mots: motsUniques,
+            titre_dictee: batch.theme,
+            revision: true,
+          },
+          chapitreId: modalChapitreId || undefined,
+        });
+
         // Jeudi — Dictée d'entraînement (troisième parent)
         if (batch.parentIds[2]) {
           newBlocs.push({
@@ -435,6 +452,24 @@ export default function NouvelleSemainePage() {
           });
         }
 
+        // Jeudi — Révision des mots (conditionnel : score mardi < 80%)
+        newBlocs.push({
+          id: uid(),
+          type: "mots" as TypeBloc,
+          titre: `Révision mots — ${titre}`,
+          jour: 3, // jeudi
+          assignation,
+          contenu: {
+            batch_id: batch.batchId,
+            theme: batch.theme,
+            mots: motsUniques,
+            titre_dictee: batch.theme,
+            revision: true,
+            condition: { source_titre: `Révision mots — ${titre}`, source_jour: "mardi", seuil_pct: 80 },
+          },
+          chapitreId: modalChapitreId || undefined,
+        });
+
         // Vendredi — Dictée bilan : pas de bloc élève (en classe)
 
         return [...without, ...newBlocs];
@@ -444,7 +479,6 @@ export default function NouvelleSemainePage() {
     }
 
     // Cas spécial écriture semaine : 4 blocs (J1 lundi, J2 mardi, J3 jeudi, J4 vendredi)
-    console.log("[sauverModale] écriture check:", { type: modalBloc.type, modalPeriodicite, modalBanqueId });
     if (modalBloc.type === "ecriture" && modalPeriodicite === "semaine" && modalBanqueId) {
       const assignation: AssignationSelecteur = modalAssignation === "classe"
         ? { groupeIds: groupesPB.map((g) => g.id), eleveUids: [], groupeNoms: groupesPB.map((g) => g.nom) }

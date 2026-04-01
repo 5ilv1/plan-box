@@ -50,6 +50,87 @@ export async function POST(req: Request) {
     for (const g of grpData ?? []) groupeNomMap.set(g.id, g.nom);
   }
 
+  // ── Résoudre le contenu complet des dictées (depuis la table `dictees`) ──
+  const dicteeParentIds = blocs
+    .filter((b: any) => (b.type === "dictee" || b.type === "mots") && b.contenu?.dictee_parent_id)
+    .map((b: any) => b.contenu.dictee_parent_id as string);
+
+  // Map: dictee_parent_id → { niveau_etoiles → contenu complet }
+  const dicteeContentMap = new Map<string, Map<number, {
+    titre: string; texte: string; phrases: any[]; mots: any[];
+    audio_complet_url: string | null; audio_phrases_urls: { id: number; url: string | null }[];
+    niveau_etoiles: number;
+  }>>();
+
+  if (dicteeParentIds.length > 0) {
+    const uniqueParentIds = [...new Set(dicteeParentIds)];
+    const { data: dicteesData } = await admin
+      .from("dictees")
+      .select("dictee_parent_id, niveau_etoiles, titre, texte, phrases, mots, audio_complet_url, audio_phrases_urls")
+      .in("dictee_parent_id", uniqueParentIds);
+    for (const d of dicteesData ?? []) {
+      if (!dicteeContentMap.has(d.dictee_parent_id)) {
+        dicteeContentMap.set(d.dictee_parent_id, new Map());
+      }
+      dicteeContentMap.get(d.dictee_parent_id)!.set(d.niveau_etoiles, {
+        titre: d.titre,
+        texte: d.texte,
+        phrases: d.phrases ?? [],
+        mots: d.mots ?? [],
+        audio_complet_url: d.audio_complet_url ?? null,
+        audio_phrases_urls: d.audio_phrases_urls ?? [],
+        niveau_etoiles: d.niveau_etoiles,
+      });
+    }
+  }
+
+  // ── Résoudre le niveau étoiles de chaque élève (PB + RB) ──
+  const isDicteePresent = dicteeParentIds.length > 0;
+  const niveauParEleve = new Map<string, number>(); // eleve_id | "rb_X" → étoiles
+
+  if (isDicteePresent) {
+    // Récupérer tous les eleve_ids et rb_ids des groupes concernés
+    const tousGroupeIdsDictee = [...new Set(
+      blocs
+        .filter((b: any) => b.type === "dictee" && b.contenu?.dictee_parent_id)
+        .flatMap((b: any) => b.assignation?.groupeIds ?? [])
+    )];
+
+    const pbIds: string[] = [];
+    const rbIds: number[] = [];
+    for (const gid of tousGroupeIdsDictee) {
+      const membres = groupeMap.get(gid) ?? [];
+      for (const m of membres) {
+        if (m.planbox_eleve_id) pbIds.push(m.planbox_eleve_id);
+        if (m.repetibox_eleve_id) rbIds.push(m.repetibox_eleve_id);
+      }
+    }
+
+    // PB: niveau_etoiles direct ou via niveaux.nom
+    if (pbIds.length > 0) {
+      const { data: pbData } = await admin
+        .from("eleves")
+        .select("id, niveau_etoiles, niveaux(nom)")
+        .in("id", [...new Set(pbIds)]);
+      for (const e of (pbData ?? []) as any[]) {
+        const etoiles = e.niveau_etoiles
+          ?? (e.niveaux?.nom === "CE2" ? 1 : e.niveaux?.nom === "CM1" ? 2 : e.niveaux?.nom === "CM2" ? 3 : 2);
+        niveauParEleve.set(e.id, etoiles);
+      }
+    }
+
+    // RB: via eleves_planbox_meta
+    if (rbIds.length > 0) {
+      const { data: rbData } = await admin
+        .from("eleves_planbox_meta")
+        .select("repetibox_eleve_id, niveau_etoiles")
+        .in("repetibox_eleve_id", [...new Set(rbIds)]);
+      for (const m of (rbData ?? []) as any[]) {
+        if (m.niveau_etoiles) niveauParEleve.set(`rb_${m.repetibox_eleve_id}`, m.niveau_etoiles);
+      }
+    }
+  }
+
   const inserts: any[] = [];
   let created = 0;
 
@@ -96,8 +177,10 @@ export async function POST(req: Request) {
     const groupeLabel = (bloc.assignation?.groupeNoms ?? []).join(", ") || "Toute la classe";
 
     // Déterminer la periodicite : "semaine" si le contenu le demande, sinon "jour"
+    // Les dictées sont toujours "semaine"
     const contenuBrut = bloc.contenu ?? {};
-    const periodicite = contenuBrut._periodicite === "semaine" ? "semaine" : "jour";
+    const isDictee = bloc.type === "dictee" || bloc.type === "mots";
+    const periodicite = isDictee ? "semaine" : (contenuBrut._periodicite === "semaine" ? "semaine" : "jour");
 
     // Résoudre le contenu de la banque si présent
     const banqueId = contenuBrut.banque_id as string | undefined;
@@ -115,8 +198,33 @@ export async function POST(req: Request) {
       ? ((contenuBase.contrainte as string) ?? "").replace(/ · Au moins \d+ lignes$/, "").trim()
       : "";
 
+    // Pour les blocs dictée avec dictee_parent_id : résoudre le contenu complet
+    const dicteeParentId = contenuBrut.dictee_parent_id as string | undefined;
+    const dicteeNiveaux = dicteeParentId ? dicteeContentMap.get(dicteeParentId) : undefined;
+
     for (const eleve of uniqueEleves) {
-      let contenuFinal = contenuBase;
+      let contenuFinal: Record<string, unknown> = contenuBase;
+
+      // ── Dictée : personnaliser par niveau étoiles de l'élève ──
+      if (isDictee && bloc.type === "dictee" && dicteeNiveaux && dicteeNiveaux.size > 0) {
+        const eleveKey = eleve.eleve_id ?? `rb_${eleve.repetibox_eleve_id}`;
+        const etoiles = niveauParEleve.get(eleveKey) ?? 2;
+        const nivContenu = dicteeNiveaux.get(etoiles) ?? dicteeNiveaux.values().next().value;
+
+        if (nivContenu) {
+          contenuFinal = {
+            niveau_etoiles: nivContenu.niveau_etoiles,
+            titre: nivContenu.titre,
+            texte: nivContenu.texte,
+            phrases: nivContenu.phrases,
+            mots: nivContenu.mots,
+            audio_complet_url: nivContenu.audio_complet_url,
+            audio_phrases_urls: nivContenu.audio_phrases_urls,
+            dictee_parent_id: dicteeParentId,
+            batch_id: contenuBrut.batch_id,
+          };
+        }
+      }
 
       // Adapter la contrainte écriture par niveau (CE2 → 3 lignes, CM1/CM2 → 5 lignes)
       if (isEcriture && contrainteBase) {

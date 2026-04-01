@@ -834,8 +834,15 @@ function PageGenererInner() {
       groupe_label: groupeLabelDictee,
     }));
     if (lignesMotsLundi.length > 0) {
-      const { error: eMots } = await supabase.from("plan_travail").insert(lignesMotsLundi);
-      if (eMots) console.error("[plan_travail] INSERT mots lundi:", eMots.message);
+      const resMots = await fetch("/api/insert-plan-travail-batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lignes: lignesMotsLundi }),
+      });
+      if (!resMots.ok) {
+        const errData = await resMots.json().catch(() => ({}));
+        console.error("[plan_travail] INSERT mots lundi:", errData.error);
+      }
     }
 
     for (let d = 0; d < dicteeResultats.length; d++) {
@@ -947,18 +954,86 @@ function PageGenererInner() {
         });
       }
 
-      // ── 4. INSERT groupé pour tous les élèves ──────────────────────────────
+      // ── 4. INSERT groupé pour tous les élèves (via API admin pour bypass RLS) ──
       if (lignesPlanTravail.length > 0) {
-        const { error: ePt } = await supabase.from("plan_travail").insert(lignesPlanTravail);
-        if (ePt) {
-          console.error(`[plan_travail] INSERT batch dictée ${d + 1} :`, ePt.message);
-          setErreur(`Erreur assignation dictée ${d + 1} : ${ePt.message}`);
+        const resPt = await fetch("/api/insert-plan-travail-batch", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ lignes: lignesPlanTravail }),
+        });
+        if (!resPt.ok) {
+          const errData = await resPt.json().catch(() => ({}));
+          console.error(`[plan_travail] INSERT batch dictée ${d + 1} :`, errData.error);
+          setErreur(`Erreur assignation dictée ${d + 1} : ${errData.error ?? "Erreur serveur"}`);
           setChargementDictee(false);
           return;
         }
-        console.log(`[plan_travail] INSERT batch OK — dictée ${d + 1}, ${lignesPlanTravail.length} lignes`);
+        const jsonPt = await resPt.json();
+        console.log(`[plan_travail] INSERT batch OK — dictée ${d + 1}, ${jsonPt.nb} lignes`);
       }
     } // fin boucle dicteeResultats
+
+    // ── Blocs RÉVISION MOTS : mardi (toujours) + jeudi (conditionnel si < 80%) ──
+    const dateMardi = ajouterJoursTravailles(new Date(params.dateAssignation + "T12:00:00"), 1).toISOString().split("T")[0];
+    const dateJeudi = ajouterJoursTravailles(new Date(params.dateAssignation + "T12:00:00"), 2).toISOString().split("T")[0];
+    const titreRevision = `Révision mots — ${params.theme}`;
+
+    const contenuRevisionBase = {
+      batch_id: batchId,
+      theme: params.theme,
+      mots: motsUniques,
+      titre_dictee: params.theme,
+      revision: true,
+    };
+
+    // Mardi — toujours
+    const lignesRevisionMardi = elevesResolus.map((eleve) => ({
+      eleve_id: eleve.eleve_id ?? null,
+      repetibox_eleve_id: eleve.repetibox_eleve_id ?? null,
+      titre: titreRevision,
+      type: "mots",
+      contenu: contenuRevisionBase,
+      date_assignation: dateMardi,
+      date_limite: null,
+      periodicite: "semaine",
+      statut: "a_faire",
+      chapitre_id: null,
+      groupe_label: groupeLabelDictee,
+    }));
+
+    // Jeudi — conditionnel (score mardi < 80%)
+    const lignesRevisionJeudi = elevesResolus.map((eleve) => ({
+      eleve_id: eleve.eleve_id ?? null,
+      repetibox_eleve_id: eleve.repetibox_eleve_id ?? null,
+      titre: titreRevision,
+      type: "mots",
+      contenu: {
+        ...contenuRevisionBase,
+        condition: { source_titre: titreRevision, source_jour: "mardi", seuil_pct: 80 },
+      },
+      date_assignation: dateJeudi,
+      date_limite: null,
+      periodicite: "semaine",
+      statut: "a_faire",
+      chapitre_id: null,
+      groupe_label: groupeLabelDictee,
+    }));
+
+    const lignesRevision = [...lignesRevisionMardi, ...lignesRevisionJeudi];
+    if (lignesRevision.length > 0) {
+      const resRev = await fetch("/api/insert-plan-travail-batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lignes: lignesRevision }),
+      });
+      if (!resRev.ok) {
+        const errData = await resRev.json().catch(() => ({}));
+        console.error("[plan_travail] INSERT révision mots:", errData.error);
+      } else {
+        const jsonRev = await resRev.json();
+        console.log(`[plan_travail] INSERT révision mots OK — ${jsonRev.nb} lignes`);
+      }
+    }
 
     // ── Génération audio TTS (après sauvegarde BDD) ──────────────────────────
     setGenerationAudioEnCours(true);

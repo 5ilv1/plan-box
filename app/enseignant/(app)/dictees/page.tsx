@@ -393,7 +393,7 @@ export default function PageDictees() {
       if (batch.jours[0]) {
         blocs.push({
           type: "mots",
-          titre: `${batch.theme} — Mots`,
+          titre: `Mots — ${batch.theme}`,
           jour: JOURS_OFFSETS[0], // 0 = lundi
           contenu: {
             dictee_parent_id: batch.jours[0].parentId,
@@ -411,7 +411,7 @@ export default function PageDictees() {
       if (batch.jours[1]) {
         blocs.push({
           type: "dictee",
-          titre: `${batch.theme} — Mardi`,
+          titre: batch.jours[1].titre,
           jour: JOURS_OFFSETS[1], // 1 = mardi
           contenu: {
             dictee_parent_id: batch.jours[1].parentId,
@@ -422,11 +422,26 @@ export default function PageDictees() {
         });
       }
 
+      // Mardi — Révision des mots
+      blocs.push({
+        type: "mots",
+        titre: `Révision mots — ${batch.theme}`,
+        jour: JOURS_OFFSETS[1], // 1 = mardi
+        contenu: {
+          batch_id: batch.batchId,
+          theme: batch.theme,
+          mots: motsUniques,
+          titre_dictee: batch.theme,
+          revision: true,
+        },
+        assignation,
+      });
+
       // Jeudi — Dictée d'entraînement (3e parent)
       if (batch.jours[2]) {
         blocs.push({
           type: "dictee",
-          titre: `${batch.theme} — Jeudi`,
+          titre: batch.jours[2].titre,
           jour: JOURS_OFFSETS[2], // 3 = jeudi
           contenu: {
             dictee_parent_id: batch.jours[2].parentId,
@@ -436,6 +451,22 @@ export default function PageDictees() {
           assignation,
         });
       }
+
+      // Jeudi — Révision des mots (conditionnel : score mardi < 80%)
+      blocs.push({
+        type: "mots",
+        titre: `Révision mots — ${batch.theme}`,
+        jour: JOURS_OFFSETS[2], // 3 = jeudi
+        contenu: {
+          batch_id: batch.batchId,
+          theme: batch.theme,
+          mots: motsUniques,
+          titre_dictee: batch.theme,
+          revision: true,
+          condition: { source_titre: `Révision mots — ${batch.theme}`, source_jour: "mardi", seuil_pct: 80 },
+        },
+        assignation,
+      });
 
       // Vendredi — Dictée bilan : pas de bloc élève (l'enseignant gère en classe)
 

@@ -11,6 +11,7 @@ import ExerciceStack from "@/components/ExerciceStack";
 import DicteePlayer from "@/components/DicteePlayer";
 import MotsPlayer from "@/components/MotsPlayer";
 import DicteeMotsEleve from "@/components/DicteeMotsEleve";
+import MotsRevision from "@/components/MotsRevision";
 import QCMPlayer from "@/components/QCMPlayer";
 import AtelierEcriture from "@/components/AtelierEcriture";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
@@ -719,7 +720,15 @@ export default function PageActivite() {
             {/* ── Mots ── */}
             {mots && (
               <div className="pb-card">
-                {(bloc.contenu as any)?.mots_semaine ? (
+                {(bloc.contenu as any)?.revision ? (
+                  <MotsRevision
+                    mots={mots.mots ?? []}
+                    theme={mots.titre_dictee ?? ""}
+                    onTermine={(score) => {
+                      marquerFait(score).then(() => setEtat("termine"));
+                    }}
+                  />
+                ) : (bloc.contenu as any)?.mots_semaine ? (
                   <DicteeMotsEleve
                     mots={mots.mots ?? []}
                     theme={mots.titre_dictee ?? ""}

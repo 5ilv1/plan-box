@@ -89,6 +89,38 @@ function NotifBanniere({ notif, onDismiss }: { notif: Notification; onDismiss: (
   return <NotifCard notif={notif} onMarquerLu={onDismiss} />;
 }
 
+/**
+ * Filtre les blocs conditionnels (ex: révision mots jeudi si score mardi < 80%)
+ * Un bloc avec `contenu.condition` n'est affiché que si la condition n'est PAS remplie
+ * (= le score source est < seuil, donc l'élève a besoin de réviser)
+ */
+function filtrerBlocsConditionnels(blocs: PlanTravail[]): PlanTravail[] {
+  // Collecter les scores des blocs déjà terminés
+  const scoreParTitre = new Map<string, number>(); // titre → pourcentage
+  for (const b of blocs) {
+    if (b.statut === "fait" && b.contenu) {
+      const c = b.contenu as Record<string, unknown>;
+      const scoreEleve = c.score_eleve as number | undefined;
+      const scoreTotal = c.score_total as number | undefined;
+      if (scoreEleve != null && scoreTotal != null && scoreTotal > 0) {
+        const pct = Math.round((scoreEleve / scoreTotal) * 100);
+        // Garder le score le plus récent par titre
+        scoreParTitre.set(b.titre, pct);
+      }
+    }
+  }
+
+  return blocs.filter((b) => {
+    const condition = (b.contenu as Record<string, unknown>)?.condition as
+      { source_titre: string; source_jour: string; seuil_pct: number } | undefined;
+    if (!condition) return true; // pas de condition → toujours affiché
+
+    const scoreMardi = scoreParTitre.get(condition.source_titre);
+    if (scoreMardi == null) return true; // pas encore fait → afficher (l'élève doit pouvoir le faire)
+    return scoreMardi < condition.seuil_pct; // afficher seulement si score insuffisant
+  });
+}
+
 // ─── Composant principal ─────────────────────────────────────────────────────
 
 export default function DashboardEleve() {
@@ -183,7 +215,7 @@ export default function DashboardEleve() {
 
       supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
 
-      const blocs = (blocsWeek ?? []) as PlanTravail[];
+      const blocs = filtrerBlocsConditionnels((blocsWeek ?? []) as PlanTravail[]);
       // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
       setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
       setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
@@ -242,10 +274,10 @@ export default function DashboardEleve() {
       const aujourd_hui = new Date().toISOString().split("T")[0];
       const { debut, fin } = getBornesSemaine();
 
-      const blocsWeek = blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin);
+      const blocsWeekFiltered = filtrerBlocsConditionnels(blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin));
       // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
-      setBlocsAujourdhui(blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-      setBlocsSemaine(blocsWeek.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
+      setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
+      setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
 
       const blocsExos = blocs.filter((b) => ["exercice", "calcul_mental", "eval"].includes(b.type) && b.chapitre_id);
       setProgressionExos(groupParChapitre(blocsExos));
@@ -316,8 +348,9 @@ export default function DashboardEleve() {
         blocsWeek = (data ?? []) as PlanTravail[];
       }
 
-      const nouvsAujourd = blocsWeek.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui);
-      const nouvsSemaine = blocsWeek.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui);
+      const blocsFiltered = filtrerBlocsConditionnels(blocsWeek);
+      const nouvsAujourd = blocsFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui);
+      const nouvsSemaine = blocsFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui);
 
       setBlocsAujourdhui((prev) => sigBlocs(nouvsAujourd) !== sigBlocs(prev) ? nouvsAujourd : prev);
       setBlocsSemaine((prev) => sigBlocs(nouvsSemaine) !== sigBlocs(prev) ? nouvsSemaine : prev);
