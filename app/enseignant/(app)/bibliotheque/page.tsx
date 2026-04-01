@@ -149,6 +149,8 @@ export default function PageBibliotheque() {
   const [enAffectFM, setEnAffectFM]           = useState(false);
   const [messageFM,  setMessageFM]            = useState("");
   const [moisFM, setMoisFM]                   = useState<Date>(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
+  const [dragFM, setDragFM]                   = useState<{ date: string; groupe: string; page: number } | null>(null);
+  const [dropTargetFM, setDropTargetFM]       = useState<string | null>(null);
 
   /* ── Thèmes d'écriture ── */
   const [themesEcriture,  setThemesEcriture]  = useState<{ id: string; date: string; sujet: string; contrainte: string; affecte: boolean }[]>([]);
@@ -573,6 +575,64 @@ export default function PageBibliotheque() {
 
   // Couleurs par groupe (rotation)
   const couleursFM = ["#0050d4", "#702ae1", "#0F766E", "#D97706", "#DC2626"];
+  // Index couleur par nom de groupe
+  const couleurGroupe = (nom: string) => {
+    const idx = groupesFM.findIndex((g) => g.nom === nom);
+    return couleursFM[idx >= 0 ? idx % couleursFM.length : 0];
+  };
+
+  async function deplacerBlocFM(item: { date: string; groupe: string; page: number }, nouvelleDate: string) {
+    if (item.date === nouvelleDate) return;
+    // Optimistic update
+    setHistoriqueFM((prev) =>
+      prev.map((h) =>
+        h.date === item.date && h.groupe === item.groupe && h.page === item.page
+          ? { ...h, date: nouvelleDate }
+          : h
+      )
+    );
+    try {
+      const res = await fetch("/api/fichier-maths-bloc", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: item.date, groupe: item.groupe, page: item.page, nouvelleDate }),
+      });
+      if (!res.ok) {
+        // Revert
+        setHistoriqueFM((prev) =>
+          prev.map((h) =>
+            h.date === nouvelleDate && h.groupe === item.groupe && h.page === item.page
+              ? { ...h, date: item.date }
+              : h
+          )
+        );
+        setMessageFM("❌ Erreur lors du déplacement.");
+      }
+    } catch {
+      setMessageFM("❌ Erreur réseau lors du déplacement.");
+    }
+  }
+
+  async function supprimerBlocFM(item: { date: string; groupe: string; page: number }) {
+    if (!confirm(`Supprimer la page ${item.page} (${item.groupe}) du ${new Date(item.date + "T12:00:00").toLocaleDateString("fr-FR")} ?`)) return;
+    // Optimistic update
+    setHistoriqueFM((prev) => prev.filter((h) => !(h.date === item.date && h.groupe === item.groupe && h.page === item.page)));
+    try {
+      const res = await fetch("/api/fichier-maths-bloc", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date: item.date, groupe: item.groupe }),
+      });
+      if (!res.ok) {
+        // Revert — recharger l'historique
+        const r = await fetch("/api/affecter-fichier-maths");
+        if (r.ok) { const j = await r.json(); setHistoriqueFM(j.historique ?? []); }
+        setMessageFM("❌ Erreur lors de la suppression.");
+      }
+    } catch {
+      setMessageFM("❌ Erreur réseau lors de la suppression.");
+    }
+  }
 
   async function initSemainesFM() {
     const [resGroupes, resHisto] = await Promise.all([
@@ -1207,20 +1267,38 @@ export default function PageBibliotheque() {
                         return (
                           <div
                             key={iso}
+                            onDragOver={(e) => {
+                              if (!dragFM || estWeekend || !dansMois) return;
+                              e.preventDefault();
+                              e.dataTransfer.dropEffect = "move";
+                              setDropTargetFM(iso);
+                            }}
+                            onDragLeave={() => setDropTargetFM(null)}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              setDropTargetFM(null);
+                              if (dragFM && dansMois && !estWeekend) {
+                                deplacerBlocFM(dragFM, iso);
+                                setDragFM(null);
+                              }
+                            }}
                             style={{
                               minHeight: 90,
-                              border: "1px solid var(--border)",
+                              border: dropTargetFM === iso ? "2px dashed var(--primary)" : "1px solid var(--border)",
                               borderRadius: 0,
                               padding: "4px 6px",
-                              background: !dansMois
-                                ? "#f9f9fb"
-                                : estWeekend
-                                  ? "#f5f3f0"
-                                  : estAuj
-                                    ? "rgba(0, 80, 212, 0.04)"
-                                    : "white",
+                              background: dropTargetFM === iso
+                                ? "rgba(0, 80, 212, 0.08)"
+                                : !dansMois
+                                  ? "#f9f9fb"
+                                  : estWeekend
+                                    ? "#f5f3f0"
+                                    : estAuj
+                                      ? "rgba(0, 80, 212, 0.04)"
+                                      : "white",
                               opacity: dansMois ? 1 : 0.4,
                               position: "relative",
+                              transition: "background 0.15s, border 0.15s",
                             }}
                           >
                             {/* Numéro du jour */}
@@ -1239,20 +1317,47 @@ export default function PageBibliotheque() {
                               {new Date(iso + "T12:00:00").getDate()}
                             </div>
 
-                            {/* Badges historique (déjà affecté) */}
+                            {/* Badges historique (déjà affecté) — draggable + supprimable */}
                             {histoJour.map((h, hi) => (
-                              <div key={hi} style={{
-                                display: "flex", alignItems: "center", gap: 3,
-                                fontSize: 10, fontWeight: 700, marginBottom: 2,
-                                color: h.couleur, opacity: 0.7,
-                              }}>
+                              <div
+                                key={hi}
+                                draggable
+                                onDragStart={(e) => {
+                                  setDragFM({ date: iso, groupe: h.groupe.nom, page: h.page });
+                                  e.dataTransfer.effectAllowed = "move";
+                                  e.dataTransfer.setData("text/plain", `${iso}|${h.groupe.nom}|${h.page}`);
+                                }}
+                                onDragEnd={() => setDragFM(null)}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 2,
+                                  fontSize: 10, fontWeight: 700, marginBottom: 2,
+                                  color: h.couleur,
+                                  background: `${h.couleur}15`,
+                                  borderRadius: 4, padding: "1px 4px",
+                                  cursor: "grab",
+                                  opacity: dragFM?.date === iso && dragFM?.groupe === h.groupe.nom ? 0.4 : 1,
+                                  transition: "opacity 0.15s",
+                                }}
+                                title={`${h.groupe.nom} — p.${h.page} — Glisser pour déplacer`}
+                              >
                                 <span style={{
-                                  width: 6, height: 6, borderRadius: 2,
+                                  width: 5, height: 5, borderRadius: 2,
                                   background: h.couleur, display: "inline-block", flexShrink: 0,
                                 }} />
-                                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
                                   p.{h.page}
                                 </span>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); supprimerBlocFM({ date: iso, groupe: h.groupe.nom, page: h.page }); }}
+                                  style={{
+                                    background: "none", border: "none", cursor: "pointer",
+                                    padding: 0, lineHeight: 1, fontSize: 10, color: h.couleur,
+                                    opacity: 0.5, marginLeft: 2, flexShrink: 0,
+                                  }}
+                                  title="Supprimer"
+                                >
+                                  ×
+                                </button>
                               </div>
                             ))}
 
