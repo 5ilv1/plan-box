@@ -192,6 +192,8 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    console.log(`[generer-dictee] nbDictees demandé: ${params.nbDictees ?? 3}, jours retournés: ${(resultat.jours ?? []).length}, niveaux par jour: ${(resultat.jours ?? []).map((j: any) => (j.niveaux ?? []).length).join(",")}, mots_communs keys: ${Object.keys(resultat.mots_communs ?? {}).join(",")}`);
+
     return NextResponse.json({ resultat });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
