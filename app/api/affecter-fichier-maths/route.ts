@@ -18,27 +18,27 @@ export async function GET() {
 
   // Dédoublonnage : une ligne par (date, groupe)
   const seen = new Set<string>();
-  const lignes: { date: string; groupe: string; page: number }[] = [];
-  const evals: string[] = []; // dates avec évaluation
+  const lignes: { date: string; groupe: string; page: number; eval?: boolean }[] = [];
 
   for (const row of (data ?? []) as {
     date_assignation: string;
     groupe_label: string | null;
     contenu: { numero_page?: number; eval?: boolean } | null;
   }[]) {
-    // Entrée évaluation (pas d'élève, contenu.eval = true)
-    if (row.contenu?.eval) {
-      if (!evals.includes(row.date_assignation)) evals.push(row.date_assignation);
-      continue;
-    }
+    const isEval = !!row.contenu?.eval;
     const page = row.contenu?.numero_page ?? 0;
-    const key = `${row.date_assignation}__${row.groupe_label}`;
+    const key = `${row.date_assignation}__${row.groupe_label}__${isEval ? "eval" : page}`;
     if (seen.has(key)) continue;
     seen.add(key);
-    lignes.push({ date: row.date_assignation, groupe: row.groupe_label ?? "", page });
+    lignes.push({
+      date: row.date_assignation,
+      groupe: row.groupe_label ?? "",
+      page,
+      ...(isEval ? { eval: true } : {}),
+    });
   }
 
-  return NextResponse.json({ historique: lignes, evals });
+  return NextResponse.json({ historique: lignes });
 }
 
 // POST /api/affecter-fichier-maths
@@ -57,50 +57,50 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { jours, evals } = body as {
+  const { jours } = body as {
     jours: Array<{
       dateAssignation: string;
-      groupes: Array<{ groupeId: string; groupeNom: string; page: number | null }>;
+      groupes: Array<{ groupeId: string; groupeNom: string; page: number | null; eval?: boolean }>;
     }>;
-    evals?: string[]; // dates d'évaluation (enseignant-only, pas visible élève)
   };
 
-  if (!Array.isArray(jours) && !Array.isArray(evals)) {
-    return NextResponse.json({ erreur: "jours[] ou evals[] requis" }, { status: 400 });
+  if (!Array.isArray(jours)) {
+    return NextResponse.json({ erreur: "jours[] requis" }, { status: 400 });
   }
 
   const admin = createAdminClient();
 
-  // Collecte des groupeIds à résoudre
+  // Collecte des groupeIds à résoudre (seulement ceux avec page, pas les evals)
   const groupeIdsNeeded = new Set<string>();
+  let hasAnyEntry = false;
   for (const jour of jours) {
     for (const g of jour.groupes) {
-      if (g.page != null) groupeIdsNeeded.add(g.groupeId);
+      if (g.eval) { hasAnyEntry = true; continue; }
+      if (g.page != null) { groupeIdsNeeded.add(g.groupeId); hasAnyEntry = true; }
     }
   }
 
-  if (groupeIdsNeeded.size === 0) {
+  if (!hasAnyEntry) {
     return NextResponse.json({ ok: true, nb: 0, message: "Aucun groupe avec une page renseignée." });
   }
 
-  // Récupère les membres de ces groupes en une seule requête
-  const { data: liaisons, error: liaisonsErr } = await admin
-    .from("eleve_groupe")
-    .select("groupe_id, planbox_eleve_id, repetibox_eleve_id")
-    .in("groupe_id", Array.from(groupeIdsNeeded));
-
-  if (liaisonsErr) return NextResponse.json({ erreur: liaisonsErr.message }, { status: 500 });
+  // Récupère les membres de ces groupes en une seule requête (sauf si aucun groupe avec page)
+  let liaisons: { groupe_id: string; planbox_eleve_id: string | null; repetibox_eleve_id: number | null }[] = [];
+  if (groupeIdsNeeded.size > 0) {
+    const { data, error: liaisonsErr } = await admin
+      .from("eleve_groupe")
+      .select("groupe_id, planbox_eleve_id, repetibox_eleve_id")
+      .in("groupe_id", Array.from(groupeIdsNeeded));
+    if (liaisonsErr) return NextResponse.json({ erreur: liaisonsErr.message }, { status: 500 });
+    liaisons = (data ?? []) as typeof liaisons;
+  }
 
   // Index : groupeId → liste de membres
   const membresByGroupe = new Map<
     string,
     Array<{ planbox_eleve_id: string | null; repetibox_eleve_id: number | null }>
   >();
-  for (const l of (liaisons ?? []) as {
-    groupe_id: string;
-    planbox_eleve_id: string | null;
-    repetibox_eleve_id: number | null;
-  }[]) {
+  for (const l of liaisons) {
     if (!membresByGroupe.has(l.groupe_id)) membresByGroupe.set(l.groupe_id, []);
     membresByGroupe.get(l.groupe_id)!.push({
       planbox_eleve_id: l.planbox_eleve_id,
@@ -110,9 +110,29 @@ export async function POST(req: NextRequest) {
 
   // Construit les lignes plan_travail
   const lignes: Record<string, unknown>[] = [];
+  let evalCount = 0;
 
   for (const jour of jours) {
     for (const groupe of jour.groupes) {
+      // Eval entry: enseignant-only marker, no student assignment
+      if (groupe.eval) {
+        lignes.push({
+          type: "fichier_maths",
+          titre: "Évaluation",
+          contenu: { eval: true },
+          statut: "a_faire",
+          date_assignation: jour.dateAssignation,
+          date_limite: null,
+          periodicite: "jour",
+          groupe_label: groupe.groupeNom,
+          eleve_id: null,
+          repetibox_eleve_id: null,
+          chapitre_id: null,
+        });
+        evalCount++;
+        continue;
+      }
+
       if (groupe.page == null) continue;
 
       const membres = membresByGroupe.get(groupe.groupeId) ?? [];
@@ -134,38 +154,16 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  // Insérer les évals (marqueurs enseignant-only, sans élève)
-  if (Array.isArray(evals) && evals.length > 0) {
-    const evalLignes = evals.map((date) => ({
-      type: "fichier_maths",
-      titre: "Évaluation",
-      contenu: { eval: true },
-      statut: "a_faire",
-      date_assignation: date,
-      date_limite: null,
-      periodicite: "jour",
-      groupe_label: null,
-      eleve_id: null,
-      repetibox_eleve_id: null,
-      chapitre_id: null,
-    }));
-    const { error: evalErr } = await admin.from("plan_travail").insert(evalLignes);
-    if (evalErr) console.error("[affecter-fichier-maths] eval insert error:", evalErr.message);
-  }
-
-  if (lignes.length === 0 && (!evals || evals.length === 0)) {
+  if (lignes.length === 0) {
     return NextResponse.json({
       ok: true, nb: 0,
       message: "Aucun groupe avec une page renseignée.",
     });
   }
 
-  if (lignes.length > 0) {
-    const { error: insertErr } = await admin.from("plan_travail").insert(lignes);
-    if (insertErr) return NextResponse.json({ erreur: insertErr.message }, { status: 500 });
-  }
+  const { error: insertErr } = await admin.from("plan_travail").insert(lignes);
+  if (insertErr) return NextResponse.json({ erreur: insertErr.message }, { status: 500 });
 
-  const totalInserted = lignes.length + (evals?.length ?? 0);
-  console.log(`[affecter-fichier-maths] ${lignes.length} blocs + ${evals?.length ?? 0} évals insérés`);
-  return NextResponse.json({ ok: true, nb: totalInserted });
+  console.log(`[affecter-fichier-maths] ${lignes.length - evalCount} blocs + ${evalCount} évals insérés`);
+  return NextResponse.json({ ok: true, nb: lignes.length });
 }

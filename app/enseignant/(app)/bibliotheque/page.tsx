@@ -143,16 +143,14 @@ export default function PageBibliotheque() {
   const [affectationsRes, setAffectationsRes] = useState<Map<string, AssignationResume[]>>(new Map());
 
   /* ── Fichier de maths ── */
-  const [historiqueFM, setHistoriqueFM] = useState<{ date: string; groupe: string; page: number }[]>([]);
+  const [historiqueFM, setHistoriqueFM] = useState<{ date: string; groupe: string; page: number; eval?: boolean }[]>([]);
   const [semainesFM, setSemainesFM]           = useState<SemaineFM[]>([]);
   const [groupesFM,  setGroupesFM]            = useState<{ id: string; nom: string }[]>([]);
   const [enAffectFM, setEnAffectFM]           = useState(false);
   const [messageFM,  setMessageFM]            = useState("");
   const [moisFM, setMoisFM]                   = useState<Date>(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
-  const [dragFM, setDragFM]                   = useState<{ date: string; groupe?: string; page?: number; eval?: boolean } | null>(null);
+  const [dragFM, setDragFM]                   = useState<{ date: string; groupe: string; page?: number; eval?: boolean } | null>(null);
   const [dropTargetFM, setDropTargetFM]       = useState<string | null>(null);
-  const [evalsFM, setEvalsFM]                 = useState<string[]>([]); // dates d'évaluation (DB)
-  const [newEvalsFM, setNewEvalsFM]           = useState<Set<string>>(new Set()); // nouvelles évals à affecter
 
   /* ── Thèmes d'écriture ── */
   const [themesEcriture,  setThemesEcriture]  = useState<{ id: string; date: string; sujet: string; contrainte: string; affecte: boolean }[]>([]);
@@ -570,9 +568,9 @@ export default function PageBibliotheque() {
   }
 
   // Map historique par "date|groupe" pour affichage rapide
-  const histoMapFM = new Map<string, number>();
+  const histoMapFM = new Map<string, { page: number; eval?: boolean }>();
   for (const h of historiqueFM) {
-    histoMapFM.set(`${h.date}|${h.groupe}`, h.page);
+    histoMapFM.set(`${h.date}|${h.groupe}`, { page: h.page, eval: h.eval });
   }
 
   // Couleurs par groupe (rotation)
@@ -583,28 +581,12 @@ export default function PageBibliotheque() {
     return couleursFM[idx >= 0 ? idx % couleursFM.length : 0];
   };
 
-  async function deplacerBlocFM(item: { date: string; groupe?: string; page?: number; eval?: boolean }, nouvelleDate: string) {
+  async function deplacerBlocFM(item: { date: string; groupe: string; page?: number; eval?: boolean }, nouvelleDate: string) {
     if (item.date === nouvelleDate) return;
-    if (item.eval) {
-      // Déplacer une éval
-      setEvalsFM((prev) => prev.map((d) => d === item.date ? nouvelleDate : d));
-      try {
-        const res = await fetch("/api/fichier-maths-bloc", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ date: item.date, nouvelleDate, eval: true }),
-        });
-        if (!res.ok) {
-          setEvalsFM((prev) => prev.map((d) => d === nouvelleDate ? item.date : d));
-          setMessageFM("❌ Erreur lors du déplacement.");
-        }
-      } catch { setMessageFM("❌ Erreur réseau."); }
-      return;
-    }
-    // Déplacer un bloc page
+    // Optimistic update
     setHistoriqueFM((prev) =>
       prev.map((h) =>
-        h.date === item.date && h.groupe === item.groupe && h.page === item.page
+        h.date === item.date && h.groupe === item.groupe && (item.eval ? h.eval : h.page === item.page)
           ? { ...h, date: nouvelleDate }
           : h
       )
@@ -613,12 +595,13 @@ export default function PageBibliotheque() {
       const res = await fetch("/api/fichier-maths-bloc", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: item.date, groupe: item.groupe, page: item.page, nouvelleDate }),
+        body: JSON.stringify({ date: item.date, groupe: item.groupe, nouvelleDate, ...(item.eval ? { eval: true } : {}) }),
       });
       if (!res.ok) {
+        // Rollback
         setHistoriqueFM((prev) =>
           prev.map((h) =>
-            h.date === nouvelleDate && h.groupe === item.groupe && h.page === item.page
+            h.date === nouvelleDate && h.groupe === item.groupe && (item.eval ? h.eval : h.page === item.page)
               ? { ...h, date: item.date }
               : h
           )
@@ -628,46 +611,24 @@ export default function PageBibliotheque() {
     } catch { setMessageFM("❌ Erreur réseau."); }
   }
 
-  async function supprimerBlocFM(item: { date: string; groupe: string; page: number }) {
-    if (!confirm(`Supprimer la page ${item.page} (${item.groupe}) du ${new Date(item.date + "T12:00:00").toLocaleDateString("fr-FR")} ?`)) return;
-    setHistoriqueFM((prev) => prev.filter((h) => !(h.date === item.date && h.groupe === item.groupe && h.page === item.page)));
+  async function supprimerBlocFM(item: { date: string; groupe: string; page?: number; eval?: boolean }) {
+    const label = item.eval
+      ? `l'évaluation (${item.groupe}) du ${new Date(item.date + "T12:00:00").toLocaleDateString("fr-FR")}`
+      : `la page ${item.page} (${item.groupe}) du ${new Date(item.date + "T12:00:00").toLocaleDateString("fr-FR")}`;
+    if (!confirm(`Supprimer ${label} ?`)) return;
+    setHistoriqueFM((prev) => prev.filter((h) => !(h.date === item.date && h.groupe === item.groupe && (item.eval ? h.eval : h.page === item.page))));
     try {
       const res = await fetch("/api/fichier-maths-bloc", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: item.date, groupe: item.groupe }),
+        body: JSON.stringify({ date: item.date, groupe: item.groupe, ...(item.eval ? { eval: true } : {}) }),
       });
       if (!res.ok) {
         const r = await fetch("/api/affecter-fichier-maths");
-        if (r.ok) { const j = await r.json(); setHistoriqueFM(j.historique ?? []); setEvalsFM(j.evals ?? []); }
+        if (r.ok) { const j = await r.json(); setHistoriqueFM(j.historique ?? []); }
         setMessageFM("❌ Erreur lors de la suppression.");
       }
     } catch { setMessageFM("❌ Erreur réseau."); }
-  }
-
-  async function supprimerEvalFM(date: string) {
-    if (!confirm(`Supprimer l'évaluation du ${new Date(date + "T12:00:00").toLocaleDateString("fr-FR")} ?`)) return;
-    setEvalsFM((prev) => prev.filter((d) => d !== date));
-    try {
-      const res = await fetch("/api/fichier-maths-bloc", {
-        method: "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date, eval: true }),
-      });
-      if (!res.ok) {
-        const r = await fetch("/api/affecter-fichier-maths");
-        if (r.ok) { const j = await r.json(); setEvalsFM(j.evals ?? []); }
-        setMessageFM("❌ Erreur lors de la suppression.");
-      }
-    } catch { setMessageFM("❌ Erreur réseau."); }
-  }
-
-  function toggleNewEval(iso: string) {
-    setNewEvalsFM((prev) => {
-      const next = new Set(prev);
-      if (next.has(iso)) next.delete(iso); else next.add(iso);
-      return next;
-    });
   }
 
   async function initSemainesFM() {
@@ -686,23 +647,24 @@ export default function PageBibliotheque() {
     if (resHisto.ok) {
       const json = await resHisto.json();
       setHistoriqueFM(json.historique ?? []);
-      setEvalsFM(json.evals ?? []);
     }
   }
 
   async function affecterFichierMaths() {
+    const isEvalValue = (v: string) => /^[eé]val/i.test(v.trim());
+
     const jours = semainesFM
       .filter((s) => groupesFM.some((g) => s.pages[g.id]?.trim()))
       .map((s) => ({
         dateAssignation: s.dateAssignation,
-        groupes: groupesFM.map((g) => ({
-          groupeId: g.id,
-          groupeNom: g.nom,
-          page: s.pages[g.id] ? parseInt(s.pages[g.id], 10) : null,
-        })),
+        groupes: groupesFM.map((g) => {
+          const val = s.pages[g.id]?.trim() ?? "";
+          if (!val) return { groupeId: g.id, groupeNom: g.nom, page: null };
+          if (isEvalValue(val)) return { groupeId: g.id, groupeNom: g.nom, page: null, eval: true };
+          const num = parseInt(val, 10);
+          return { groupeId: g.id, groupeNom: g.nom, page: isNaN(num) ? null : num };
+        }),
       }));
-
-    const evalsToSend = Array.from(newEvalsFM);
 
     setEnAffectFM(true);
     setMessageFM("");
@@ -710,21 +672,19 @@ export default function PageBibliotheque() {
       const res = await fetch("/api/affecter-fichier-maths", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jours, evals: evalsToSend }),
+        body: JSON.stringify({ jours }),
       });
       const json = await res.json();
       if (!res.ok) {
         setMessageFM(` Erreur : ${json.erreur}`);
-      } else if (json.nb === 0 && evalsToSend.length === 0) {
+      } else if (json.nb === 0) {
         setMessageFM("Aucun bloc créé. Vérifie que les niveaux ont des élèves.");
       } else {
         setMessageFM(`${json.nb} bloc(s) affectés avec succès !`);
         setSemainesFM([]);
-        setNewEvalsFM(new Set());
         // Rafraîchir l'historique
         fetch("/api/affecter-fichier-maths").then(r => r.json()).then(j => {
           setHistoriqueFM(j.historique ?? []);
-          setEvalsFM(j.evals ?? []);
         });
       }
     } catch {
@@ -1302,9 +1262,9 @@ export default function PageBibliotheque() {
 
                         // Historique pour ce jour
                         const histoJour = groupesFM.map((g, gi) => {
-                          const page = histoMapFM.get(`${iso}|${g.nom}`);
-                          return page ? { groupe: g, page, couleur: couleursFM[gi % couleursFM.length] } : null;
-                        }).filter(Boolean) as { groupe: { id: string; nom: string }; page: number; couleur: string }[];
+                          const entry = histoMapFM.get(`${iso}|${g.nom}`);
+                          return entry ? { groupe: g, page: entry.page, eval: entry.eval, couleur: couleursFM[gi % couleursFM.length] } : null;
+                        }).filter(Boolean) as { groupe: { id: string; nom: string }; page: number; eval?: boolean; couleur: string }[];
 
                         // Valeurs saisies non encore affectées
                         const aSaisie = semFM && groupesFM.some((g) => semFM.pages[g.id]?.trim());
@@ -1362,107 +1322,58 @@ export default function PageBibliotheque() {
                               {new Date(iso + "T12:00:00").getDate()}
                             </div>
 
-                            {/* Badge ÉVALUATION (DB) */}
-                            {evalsFM.includes(iso) && (
-                              <div
-                                draggable
-                                onDragStart={(e) => {
-                                  setDragFM({ date: iso, eval: true });
-                                  e.dataTransfer.effectAllowed = "move";
-                                  e.dataTransfer.setData("text/plain", `EVAL|${iso}`);
-                                }}
-                                onDragEnd={() => setDragFM(null)}
-                                style={{
-                                  display: "flex", alignItems: "center", gap: 3,
-                                  fontSize: 10, fontWeight: 800, marginBottom: 3,
-                                  color: "white", background: "#DC2626",
-                                  borderRadius: 4, padding: "2px 6px",
-                                  cursor: "grab", letterSpacing: "0.04em",
-                                  opacity: dragFM?.eval && dragFM?.date === iso ? 0.4 : 1,
-                                }}
-                                title="Évaluation — Glisser pour déplacer"
-                              >
-                                <span className="ms" style={{ fontSize: 11 }}>quiz</span>
-                                ÉVAL
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); supprimerEvalFM(iso); }}
-                                  style={{
-                                    background: "none", border: "none", cursor: "pointer",
-                                    padding: 0, lineHeight: 1, fontSize: 11, color: "white",
-                                    opacity: 0.7, marginLeft: "auto",
-                                  }}
-                                  title="Supprimer l'évaluation"
-                                >×</button>
-                              </div>
-                            )}
-
-                            {/* Badge ÉVAL nouvelle (pas encore affectée) */}
-                            {newEvalsFM.has(iso) && !evalsFM.includes(iso) && (
-                              <div
-                                style={{
-                                  display: "flex", alignItems: "center", gap: 3,
-                                  fontSize: 10, fontWeight: 800, marginBottom: 3,
-                                  color: "#DC2626", background: "#FEE2E2",
-                                  borderRadius: 4, padding: "2px 6px",
-                                  border: "1.5px dashed #DC2626", letterSpacing: "0.04em",
-                                }}
-                              >
-                                <span className="ms" style={{ fontSize: 11 }}>quiz</span>
-                                ÉVAL
-                                <button
-                                  onClick={() => toggleNewEval(iso)}
-                                  style={{
-                                    background: "none", border: "none", cursor: "pointer",
-                                    padding: 0, lineHeight: 1, fontSize: 11, color: "#DC2626",
-                                    opacity: 0.7, marginLeft: "auto",
-                                  }}
-                                >×</button>
-                              </div>
-                            )}
-
                             {/* Badges historique (déjà affecté) — draggable + supprimable */}
-                            {histoJour.map((h, hi) => (
-                              <div
-                                key={hi}
-                                draggable
-                                onDragStart={(e) => {
-                                  setDragFM({ date: iso, groupe: h.groupe.nom, page: h.page });
-                                  e.dataTransfer.effectAllowed = "move";
-                                  e.dataTransfer.setData("text/plain", `${iso}|${h.groupe.nom}|${h.page}`);
-                                }}
-                                onDragEnd={() => setDragFM(null)}
-                                style={{
-                                  display: "flex", alignItems: "center", gap: 2,
-                                  fontSize: 10, fontWeight: 700, marginBottom: 2,
-                                  color: h.couleur,
-                                  background: `${h.couleur}15`,
-                                  borderRadius: 4, padding: "1px 4px",
-                                  cursor: "grab",
-                                  opacity: dragFM?.date === iso && dragFM?.groupe === h.groupe.nom ? 0.4 : 1,
-                                  transition: "opacity 0.15s",
-                                }}
-                                title={`${h.groupe.nom} — p.${h.page} — Glisser pour déplacer`}
-                              >
-                                <span style={{
-                                  width: 5, height: 5, borderRadius: 2,
-                                  background: h.couleur, display: "inline-block", flexShrink: 0,
-                                }} />
-                                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-                                  p.{h.page}
-                                </span>
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); supprimerBlocFM({ date: iso, groupe: h.groupe.nom, page: h.page }); }}
-                                  style={{
-                                    background: "none", border: "none", cursor: "pointer",
-                                    padding: 0, lineHeight: 1, fontSize: 10, color: h.couleur,
-                                    opacity: 0.5, marginLeft: 2, flexShrink: 0,
+                            {histoJour.map((h, hi) => {
+                              const isEval = !!h.eval;
+                              const badgeColor = isEval ? "#DC2626" : h.couleur;
+                              return (
+                                <div
+                                  key={hi}
+                                  draggable
+                                  onDragStart={(e) => {
+                                    setDragFM({ date: iso, groupe: h.groupe.nom, ...(isEval ? { eval: true } : { page: h.page }) });
+                                    e.dataTransfer.effectAllowed = "move";
+                                    e.dataTransfer.setData("text/plain", `${iso}|${h.groupe.nom}|${isEval ? "eval" : h.page}`);
                                   }}
-                                  title="Supprimer"
+                                  onDragEnd={() => setDragFM(null)}
+                                  style={{
+                                    display: "flex", alignItems: "center", gap: 2,
+                                    fontSize: 10, fontWeight: isEval ? 800 : 700, marginBottom: 2,
+                                    color: isEval ? "white" : badgeColor,
+                                    background: isEval ? "#DC2626" : `${badgeColor}15`,
+                                    borderRadius: 4, padding: isEval ? "2px 6px" : "1px 4px",
+                                    cursor: "grab",
+                                    letterSpacing: isEval ? "0.04em" : undefined,
+                                    opacity: dragFM?.date === iso && dragFM?.groupe === h.groupe.nom ? 0.4 : 1,
+                                    transition: "opacity 0.15s",
+                                  }}
+                                  title={isEval ? `${h.groupe.nom} — ÉVAL — Glisser pour déplacer` : `${h.groupe.nom} — p.${h.page} — Glisser pour déplacer`}
                                 >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
+                                  {isEval ? (
+                                    <span className="ms" style={{ fontSize: 11 }}>quiz</span>
+                                  ) : (
+                                    <span style={{
+                                      width: 5, height: 5, borderRadius: 2,
+                                      background: badgeColor, display: "inline-block", flexShrink: 0,
+                                    }} />
+                                  )}
+                                  <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+                                    {isEval ? `ÉVAL ${h.groupe.nom}` : `p.${h.page}`}
+                                  </span>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); supprimerBlocFM({ date: iso, groupe: h.groupe.nom, ...(isEval ? { eval: true } : { page: h.page }) }); }}
+                                    style={{
+                                      background: "none", border: "none", cursor: "pointer",
+                                      padding: 0, lineHeight: 1, fontSize: 10, color: isEval ? "white" : badgeColor,
+                                      opacity: isEval ? 0.7 : 0.5, marginLeft: 2, flexShrink: 0,
+                                    }}
+                                    title="Supprimer"
+                                  >
+                                    ×
+                                  </button>
+                                </div>
+                              );
+                            })}
 
                             {/* Inputs saisie (jours ouvrés du mois en cours) */}
                             {dansMois && !estWeekend && (
@@ -1472,12 +1383,12 @@ export default function PageBibliotheque() {
                                   const dejaAffecte = histoMapFM.has(`${iso}|${g.nom}`);
                                   if (dejaAffecte) return null;
                                   const val = semFM?.pages[g.id] ?? "";
+                                  const isEvalVal = /^[eé]val/i.test(val.trim());
+                                  const baseColor = couleursFM[gi % couleursFM.length];
                                   return (
                                     <input
                                       key={g.id}
-                                      type="number"
-                                      min={1}
-                                      max={999}
+                                      type="text"
                                       placeholder={g.nom.substring(0, 4)}
                                       value={val}
                                       onChange={(e) => setPageFM(iso, g.id, e.target.value)}
@@ -1485,38 +1396,19 @@ export default function PageBibliotheque() {
                                         width: "100%",
                                         fontSize: 11,
                                         padding: "2px 4px",
-                                        border: `1.5px solid ${val ? couleursFM[gi % couleursFM.length] : "var(--border)"}`,
+                                        border: `1.5px solid ${isEvalVal ? "#DC2626" : val ? baseColor : "var(--border)"}`,
                                         borderRadius: 4,
                                         textAlign: "center",
-                                        background: val ? `${couleursFM[gi % couleursFM.length]}10` : "white",
-                                        color: couleursFM[gi % couleursFM.length],
+                                        background: isEvalVal ? "#FEE2E2" : val ? `${baseColor}10` : "white",
+                                        color: isEvalVal ? "#DC2626" : baseColor,
                                         fontWeight: val ? 700 : 400,
                                         outline: "none",
                                         marginBottom: 0,
                                       }}
-                                      title={`${g.nom} — ${new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}`}
+                                      title={`${g.nom} — ${new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })} — Entrez un n° de page ou "eval"`}
                                     />
                                   );
                                 })}
-                                {/* Bouton toggle ÉVAL */}
-                                {!evalsFM.includes(iso) && !newEvalsFM.has(iso) && (
-                                  <button
-                                    onClick={() => toggleNewEval(iso)}
-                                    style={{
-                                      width: "100%", fontSize: 9, fontWeight: 700,
-                                      padding: "1px 0", marginTop: 1,
-                                      background: "none", border: "1px dashed #EF444480",
-                                      borderRadius: 3, color: "#EF4444", cursor: "pointer",
-                                      letterSpacing: "0.04em", opacity: 0.5,
-                                      transition: "opacity 0.15s",
-                                    }}
-                                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
-                                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
-                                    title="Ajouter une évaluation ce jour"
-                                  >
-                                    ÉVAL
-                                  </button>
-                                )}
                               </div>
                             )}
                           </div>
@@ -1527,7 +1419,7 @@ export default function PageBibliotheque() {
 
                   {/* Bouton affecter */}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: 20, gap: 12 }}>
-                    {(semainesFM.some((s) => groupesFM.some((g) => s.pages[g.id]?.trim())) || newEvalsFM.size > 0) && (
+                    {semainesFM.some((s) => groupesFM.some((g) => s.pages[g.id]?.trim())) && (
                       <>
                         <button
                           className="btn-ghost"

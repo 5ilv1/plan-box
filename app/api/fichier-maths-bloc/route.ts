@@ -8,16 +8,15 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { date, groupe, page, nouvelleDate, eval: isEval } = body as {
+  const { date, groupe, nouvelleDate, eval: isEval } = body as {
     date: string;
     groupe?: string;
-    page?: number;
     nouvelleDate: string;
     eval?: boolean;
   };
 
-  if (!date || !nouvelleDate) {
-    return NextResponse.json({ erreur: "Champs requis: date, nouvelleDate" }, { status: 400 });
+  if (!date || !nouvelleDate || !groupe) {
+    return NextResponse.json({ erreur: "Champs requis: date, groupe, nouvelleDate" }, { status: 400 });
   }
 
   const admin = createAdminClient();
@@ -26,13 +25,11 @@ export async function PATCH(req: NextRequest) {
     .from("plan_travail")
     .update({ date_assignation: nouvelleDate })
     .eq("type", "fichier_maths")
-    .eq("date_assignation", date);
+    .eq("date_assignation", date)
+    .eq("groupe_label", groupe);
 
   if (isEval) {
-    query = query.is("groupe_label", null);
-  } else {
-    if (!groupe) return NextResponse.json({ erreur: "Champ requis: groupe (ou eval: true)" }, { status: 400 });
-    query = query.eq("groupe_label", groupe);
+    query = query.contains("contenu", { eval: true });
   }
 
   const { data, error } = await query.select("id");
@@ -51,8 +48,8 @@ export async function DELETE(req: NextRequest) {
 
   const { date, groupe, eval: isEval } = body as { date: string; groupe?: string; eval?: boolean };
 
-  if (!date) {
-    return NextResponse.json({ erreur: "Champ requis: date" }, { status: 400 });
+  if (!date || !groupe) {
+    return NextResponse.json({ erreur: "Champs requis: date, groupe" }, { status: 400 });
   }
 
   const admin = createAdminClient();
@@ -61,14 +58,11 @@ export async function DELETE(req: NextRequest) {
     .from("plan_travail")
     .delete()
     .eq("type", "fichier_maths")
-    .eq("date_assignation", date);
+    .eq("date_assignation", date)
+    .eq("groupe_label", groupe);
 
   if (isEval) {
-    // Supprimer l'évaluation (pas de groupe, contenu->eval = true)
-    query = query.is("groupe_label", null);
-  } else {
-    if (!groupe) return NextResponse.json({ erreur: "Champ requis: groupe (ou eval: true)" }, { status: 400 });
-    query = query.eq("groupe_label", groupe);
+    query = query.contains("contenu", { eval: true });
   }
 
   const { data, error } = await query.select("id");
