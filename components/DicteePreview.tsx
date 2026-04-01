@@ -25,7 +25,7 @@ export default function DicteePreview({ niveaux, chargement, onValider, onRegene
   const communsIds = niveauInferieur
     ? phrasesCommunes(niveauActif.phrases, niveauInferieur.phrases)
     : new Set<number>();
-  const motsNiveauInferieur = new Set(niveauInferieur?.mots.map((m) => m.mot) ?? []);
+  const motsNiveauInferieur = new Set((niveauInferieur?.mots ?? []).filter((m) => m?.mot).map((m) => m.mot));
 
   function commencerEdition(etoiles: number, phrase: PhraseDict) {
     setPhraseEnEdition({ etoiles, id: phrase.id });
@@ -185,7 +185,7 @@ export default function DicteePreview({ niveaux, chargement, onValider, onRegene
               MOTS À APPRENDRE ({niveauActif.mots.length} mots)
             </div>
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-              {niveauActif.mots.map((m) => {
+              {(niveauActif.mots ?? []).filter((m) => m?.mot).map((m) => {
                 const nouveau = !motsNiveauInferieur.has(m.mot);
                 return (
                   <div key={m.mot} style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 14 }}>

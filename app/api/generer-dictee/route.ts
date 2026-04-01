@@ -174,8 +174,15 @@ export async function POST(req: NextRequest) {
     const labelsNiveau: Record<number, string> = { 1: "CE2", 2: "CM1", 3: "CM2", 4: "CM2 renforcé" };
     for (const jour of resultat.jours ?? []) {
       for (const niv of jour.niveaux ?? []) {
-        // Injecter les mots communs
-        niv.mots = motsCom[String(niv.etoiles)] ?? motsCom[niv.etoiles] ?? [];
+        // Injecter les mots communs (ne pas écraser si déjà présents et mots_communs absent)
+        const motsCommuns = motsCom[String(niv.etoiles)] ?? motsCom[niv.etoiles];
+        if (motsCommuns) {
+          niv.mots = motsCommuns;
+        } else if (!Array.isArray(niv.mots)) {
+          niv.mots = [];
+        }
+        // Sécuriser : filtrer les mots sans champ "mot"
+        niv.mots = (niv.mots as { mot?: string }[]).filter((m) => m && typeof m.mot === "string");
         // Reconstruire texte depuis les phrases
         if (Array.isArray(niv.phrases)) {
           niv.texte = niv.phrases.map((ph: { texte: string }) => ph.texte).join(" ");
