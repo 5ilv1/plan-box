@@ -172,6 +172,13 @@ export async function POST(req: NextRequest) {
     // Post-traitement : injecter mots_communs + reconstruire texte dans chaque niveau
     const motsCom = resultat.mots_communs ?? {};
     const labelsNiveau: Record<number, string> = { 1: "CE2", 2: "CM1", 3: "CM2", 4: "CM2 renforcé" };
+
+    // Log brut pour debug
+    const premierJour = (resultat.jours ?? [])[0];
+    const premierNiv = premierJour?.niveaux?.[0];
+    console.log(`[generer-dictee] nbDictees: ${params.nbDictees ?? 3}, jours: ${(resultat.jours ?? []).length}, mots_communs keys: ${Object.keys(motsCom).join(",")}`);
+    console.log(`[generer-dictee] premier niveau phrases brutes:`, JSON.stringify(premierNiv?.phrases?.slice(0, 2)));
+
     for (const jour of resultat.jours ?? []) {
       for (const niv of jour.niveaux ?? []) {
         // Injecter les mots communs (ne pas écraser si déjà présents et mots_communs absent)
@@ -183,16 +190,22 @@ export async function POST(req: NextRequest) {
         }
         // Sécuriser : filtrer les mots sans champ "mot"
         niv.mots = (niv.mots as { mot?: string }[]).filter((m) => m && typeof m.mot === "string");
-        // Reconstruire texte depuis les phrases
+
+        // Normaliser les phrases : accepter "texte", "text", ou string directe
         if (Array.isArray(niv.phrases)) {
+          niv.phrases = niv.phrases.map((ph: any, idx: number) => {
+            if (typeof ph === "string") return { id: idx + 1, texte: ph };
+            return {
+              id: ph.id ?? idx + 1,
+              texte: ph.texte ?? ph.text ?? ph.phrase ?? "",
+            };
+          });
           niv.texte = niv.phrases.map((ph: { texte: string }) => ph.texte).join(" ");
         }
         // Ajouter le label si absent
         if (!niv.label) niv.label = labelsNiveau[niv.etoiles] ?? `Niveau ${niv.etoiles}`;
       }
     }
-
-    console.log(`[generer-dictee] nbDictees demandé: ${params.nbDictees ?? 3}, jours retournés: ${(resultat.jours ?? []).length}, niveaux par jour: ${(resultat.jours ?? []).map((j: any) => (j.niveaux ?? []).length).join(",")}, mots_communs keys: ${Object.keys(resultat.mots_communs ?? {}).join(",")}`);
 
     return NextResponse.json({ resultat });
   } catch (err) {

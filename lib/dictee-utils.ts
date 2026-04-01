@@ -2,7 +2,7 @@ import { MotDict, PhraseDict } from "@/types";
 
 // Normalise une chaîne : minuscules, sans accents, sans ponctuation de fin
 export function normalise(s: string): string {
-  return s
+  return (s ?? "")
     .toLowerCase()
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
