@@ -554,7 +554,7 @@ export default function PageBibliotheque() {
       const jourS = d.getDay();
       jours.push({
         date: d,
-        iso: d.toISOString().split("T")[0],
+        iso: `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`,
         dansMois: d.getMonth() === mois,
         estWeekend: jourS === 0 || jourS === 6,
       });
@@ -1190,7 +1190,8 @@ export default function PageBibliotheque() {
                       display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0,
                     }}>
                       {buildCalendrierFM().map(({ iso, dansMois, estWeekend }) => {
-                        const aujourdhui = new Date().toISOString().split("T")[0];
+                        const _auj = new Date();
+                        const aujourdhui = `${_auj.getFullYear()}-${String(_auj.getMonth() + 1).padStart(2, "0")}-${String(_auj.getDate()).padStart(2, "0")}`;
                         const estAuj = iso === aujourdhui;
                         const semFM = semainesFM.find((s) => s.dateAssignation === iso);
 
