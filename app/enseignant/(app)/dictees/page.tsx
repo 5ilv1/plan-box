@@ -500,11 +500,12 @@ export default function PageDictees() {
     const parentIds = batch.jours.map((j) => j.parentId);
     const titres = [...new Set(batch.jours.map((j) => j.titre))];
     const titresMots = titres.map((t) => `Mots — ${t}`);
+    const titresRevision = [`Révision mots — ${batch.theme}`];
 
     const res = await fetch("/api/supprimer-dictee-semaine", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ batchId: batch.batchId, parentIds, titres, titresMots }),
+      body: JSON.stringify({ batchId: batch.batchId, parentIds, titres, titresMots, titresRevision }),
     });
     const json = await res.json();
 
