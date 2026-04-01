@@ -57,6 +57,13 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
     4: "exigeant",
   });
   const [tempsVerbaux, setTempsVerbaux] = useState<string[]>(["imparfait"]);
+  const [tempsParNiveau, setTempsParNiveau] = useState(false);
+  const [tempsVerbauxParNiveau, setTempsVerbauxParNiveau] = useState<Record<1|2|3|4, string[]>>({
+    1: ["imparfait"],
+    2: ["imparfait"],
+    3: ["imparfait"],
+    4: ["imparfait"],
+  });
   const [pointsGram, setPointsGram] = useState<string[]>(["accords sujet/verbe"]);
   const [assignation, setAssignation] = useState<AssignationSelecteur>(ASSIGNATION_VIDE);
   const [lundiDemarrage, setLundiDemarrage] = useState(getProchainLundi());
@@ -75,10 +82,11 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
     onGenerer({
       type: "dictee",
       theme: theme.trim(),
-      tempsVerbaux,
+      tempsVerbaux: tempsParNiveau ? [] : tempsVerbaux,
       pointsGrammaticaux: pointsGram,
       nbDictees,
       difficulteParNiveau,
+      ...(tempsParNiveau ? { tempsVerbauxParNiveau } : {}),
       assignation,
       dateAssignation: lundiDemarrage,
       dateLimite: "",
@@ -208,28 +216,109 @@ export default function GenererDicteeForm({ onGenerer, chargement }: Props) {
 
       {/* Temps verbaux */}
       <div className="form-group">
-        <label className="form-label">Temps verbaux à travailler</label>
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
-          {TEMPS_VERBAUX.map(({ label, value }) => {
-            const actif = tempsVerbaux.includes(value);
-            return (
-              <button
-                key={value}
-                type="button"
-                onClick={() => toggle(tempsVerbaux, value, setTempsVerbaux)}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+          <label className="form-label" style={{ margin: 0 }}>Temps verbaux à travailler</label>
+          <button
+            type="button"
+            onClick={() => {
+              if (!tempsParNiveau) {
+                // Pré-remplir avec les temps communs actuels
+                setTempsVerbauxParNiveau({
+                  1: [...tempsVerbaux],
+                  2: [...tempsVerbaux],
+                  3: [...tempsVerbaux],
+                  4: [...tempsVerbaux],
+                });
+              }
+              setTempsParNiveau(!tempsParNiveau);
+            }}
+            style={{
+              padding: "4px 10px", borderRadius: 6, fontSize: 11, cursor: "pointer",
+              fontWeight: 600,
+              background: tempsParNiveau ? "var(--primary-pale)" : "white",
+              color: tempsParNiveau ? "var(--primary)" : "var(--text-secondary)",
+              border: `1.5px solid ${tempsParNiveau ? "var(--primary)" : "var(--border)"}`,
+            }}
+          >
+            {tempsParNiveau ? "✓ Par niveau" : "Différencier par niveau"}
+          </button>
+        </div>
+
+        {!tempsParNiveau ? (
+          /* Mode commun — temps identiques pour tous les niveaux */
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+            {TEMPS_VERBAUX.map(({ label, value }) => {
+              const actif = tempsVerbaux.includes(value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => toggle(tempsVerbaux, value, setTempsVerbaux)}
+                  style={{
+                    padding: "7px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer",
+                    fontWeight: actif ? 700 : 500,
+                    background: actif ? "var(--primary-pale)" : "white",
+                    color: actif ? "var(--primary)" : "var(--text-secondary)",
+                    border: `1.5px solid ${actif ? "var(--primary)" : "var(--border)"}`,
+                  }}
+                >
+                  {label}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          /* Mode par niveau — temps différents selon ⭐ */
+          <div style={{ border: "1px solid var(--border)", borderRadius: 10, overflow: "hidden" }}>
+            {([
+              { etoiles: 1 as const, label: "⭐ CE2" },
+              { etoiles: 2 as const, label: "⭐⭐ CM1" },
+              { etoiles: 3 as const, label: "⭐⭐⭐ CM2" },
+              { etoiles: 4 as const, label: "⭐⭐⭐⭐ CM2+" },
+            ]).map(({ etoiles, label }, idx) => (
+              <div
+                key={etoiles}
                 style={{
-                  padding: "7px 14px", borderRadius: 8, fontSize: 13, cursor: "pointer",
-                  fontWeight: actif ? 700 : 500,
-                  background: actif ? "var(--primary-pale)" : "white",
-                  color: actif ? "var(--primary)" : "var(--text-secondary)",
-                  border: `1.5px solid ${actif ? "var(--primary)" : "var(--border)"}`,
+                  padding: "10px 12px",
+                  borderBottom: idx < 3 ? "1px solid var(--border)" : "none",
+                  background: "white",
                 }}
               >
-                {label}
-              </button>
-            );
-          })}
-        </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 6 }}>
+                  {label}
+                </div>
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {TEMPS_VERBAUX.map(({ label: tLabel, value }) => {
+                    const actif = tempsVerbauxParNiveau[etoiles].includes(value);
+                    return (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => {
+                          setTempsVerbauxParNiveau((prev) => ({
+                            ...prev,
+                            [etoiles]: actif
+                              ? prev[etoiles].filter((v) => v !== value)
+                              : [...prev[etoiles], value],
+                          }));
+                        }}
+                        style={{
+                          padding: "5px 10px", borderRadius: 6, fontSize: 12, cursor: "pointer",
+                          fontWeight: actif ? 700 : 400,
+                          background: actif ? "var(--primary-pale)" : "transparent",
+                          color: actif ? "var(--primary)" : "var(--text-secondary)",
+                          border: `1.5px solid ${actif ? "var(--primary)" : "var(--border)"}`,
+                        }}
+                      >
+                        {tLabel}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* Points grammaticaux */}

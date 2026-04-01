@@ -231,6 +231,8 @@ export interface ParamsDictee {
   nbDictees: 1 | 2 | 3 | 4;
   // Difficulté indépendante par niveau d'étoiles
   difficulteParNiveau: Record<1 | 2 | 3 | 4, DifficulteNiveau>;
+  // Temps verbaux indépendants par niveau d'étoiles (optionnel — si absent, tempsVerbaux commun)
+  tempsVerbauxParNiveau?: Record<1 | 2 | 3 | 4, string[]>;
   assignation: AssignationSelecteur;
   dateAssignation: string;
   dateLimite: string;

@@ -48,9 +48,19 @@ function buildPrompt(p: ParamsDictee): string {
     descNiveau(diffParNiv[4], 4, 3),
   ].join("\n");
 
+  const tempsParNiv = p.tempsVerbauxParNiveau;
+  const tempsSection = tempsParNiv
+    ? `Temps verbaux PAR NIVEAU (chaque niveau utilise ses propres temps) :
+  - ⭐ CE2 : ${tempsParNiv[1]?.join(", ") || "présent"}
+  - ⭐⭐ CM1 : ${tempsParNiv[2]?.join(", ") || "présent"}
+  - ⭐⭐⭐ CM2 : ${tempsParNiv[3]?.join(", ") || "présent"}
+  - ⭐⭐⭐⭐ CM2+ : ${tempsParNiv[4]?.join(", ") || "présent"}
+IMPORTANT : Les phrases du niveau ⭐ peuvent utiliser un temps différent des niveaux supérieurs. Les phrases emboîtées qui sont reprises d'un niveau inférieur gardent leur temps d'origine.`
+    : `Temps verbaux : ${p.tempsVerbaux.join(", ")}.`;
+
   return `Tu es un professeur des écoles expert en France, spécialisé en français primaire (CE2/CM1/CM2).
 Génère 3 dictées d'entraînement différenciées (Mardi, Jeudi, Vendredi) sur le thème : ${p.theme}.
-Temps verbaux : ${p.tempsVerbaux.join(", ")}.
+${tempsSection}
 Points grammaticaux : ${p.pointsGrammaticaux.join(", ")}.
 Difficultés : ⭐ ${diffParNiv[1]} | ⭐⭐ ${diffParNiv[2]} | ⭐⭐⭐ ${diffParNiv[3]} | ⭐⭐⭐⭐ ${diffParNiv[4]}.
 

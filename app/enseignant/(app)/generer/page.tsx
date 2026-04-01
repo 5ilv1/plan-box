@@ -862,7 +862,9 @@ function PageGenererInner() {
         phrases: niv.phrases,
         mots: niv.mots,
         points_travailles: niv.points_travailles,
-        temps_verbaux: params.tempsVerbaux,
+        temps_verbaux: params.tempsVerbauxParNiveau
+          ? params.tempsVerbauxParNiveau[niv.etoiles as 1|2|3|4] ?? params.tempsVerbaux
+          : params.tempsVerbaux,
         niveau_etoiles: niv.etoiles,
         created_at: new Date().toISOString(),
       }));
