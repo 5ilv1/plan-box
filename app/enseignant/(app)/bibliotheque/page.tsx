@@ -148,6 +148,7 @@ export default function PageBibliotheque() {
   const [groupesFM,  setGroupesFM]            = useState<{ id: string; nom: string }[]>([]);
   const [enAffectFM, setEnAffectFM]           = useState(false);
   const [messageFM,  setMessageFM]            = useState("");
+  const [moisFM, setMoisFM]                   = useState<Date>(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
 
   /* ── Thèmes d'écriture ── */
   const [themesEcriture,  setThemesEcriture]  = useState<{ id: string; date: string; sujet: string; contrainte: string; affecte: boolean }[]>([]);
@@ -498,11 +499,6 @@ export default function PageBibliotheque() {
   }
 
   /* ── Fichier de maths : helpers ── */
-  function jourDe(offsetJours: number): string {
-    const d = new Date();
-    d.setDate(d.getDate() + offsetJours);
-    return d.toISOString().split("T")[0];
-  }
 
   function nouveauJourFM(dateAssignation: string, grps?: { id: string; nom: string }[]): SemaineFM {
     const pages: Record<string, string> = {};
@@ -510,22 +506,75 @@ export default function PageBibliotheque() {
     return { id: crypto.randomUUID(), dateAssignation, pages };
   }
 
-  function ajouterSemaineFM() {
+  // Assure qu'un SemaineFM existe pour une date donnée, sinon le crée
+  function getOrCreateFM(iso: string): SemaineFM {
+    const existant = semainesFM.find((s) => s.dateAssignation === iso);
+    if (existant) return existant;
+    const nouveau = nouveauJourFM(iso);
+    setSemainesFM((prev) => [...prev, nouveau]);
+    return nouveau;
+  }
+
+  function setPageFM(iso: string, groupeId: string, value: string) {
     setSemainesFM((prev) => {
-      const dernier = prev[prev.length - 1];
-      const prochainJour = dernier
-        ? (() => {
-            const d = new Date(dernier.dateAssignation);
-            d.setDate(d.getDate() + 1);
-            return d.toISOString().split("T")[0];
-          })()
-        : jourDe(0);
-      return [...prev, nouveauJourFM(prochainJour)];
+      const existe = prev.find((s) => s.dateAssignation === iso);
+      if (existe) {
+        return prev.map((s) =>
+          s.dateAssignation === iso
+            ? { ...s, pages: { ...s.pages, [groupeId]: value } }
+            : s
+        );
+      }
+      // Créer un nouveau jour
+      const pages: Record<string, string> = {};
+      groupesFM.forEach((g) => { pages[g.id] = ""; });
+      pages[groupeId] = value;
+      return [...prev, { id: crypto.randomUUID(), dateAssignation: iso, pages }];
     });
   }
 
+  // Construit la grille calendrier pour le mois affiché
+  function buildCalendrierFM(): { date: Date; iso: string; dansMois: boolean; estWeekend: boolean }[] {
+    const annee = moisFM.getFullYear();
+    const mois = moisFM.getMonth();
+    const premierJour = new Date(annee, mois, 1);
+    const dernierJour = new Date(annee, mois + 1, 0);
+
+    // Trouver le lundi avant ou au début du mois
+    let debut = new Date(premierJour);
+    const jourSemaine = debut.getDay(); // 0=dim
+    const offsetLundi = jourSemaine === 0 ? -6 : 1 - jourSemaine;
+    debut.setDate(debut.getDate() + offsetLundi);
+
+    const jours: { date: Date; iso: string; dansMois: boolean; estWeekend: boolean }[] = [];
+    const cursor = new Date(debut);
+    // 6 semaines max pour couvrir tout le mois
+    while (jours.length < 42) {
+      const d = new Date(cursor);
+      const jourS = d.getDay();
+      jours.push({
+        date: d,
+        iso: d.toISOString().split("T")[0],
+        dansMois: d.getMonth() === mois,
+        estWeekend: jourS === 0 || jourS === 6,
+      });
+      cursor.setDate(cursor.getDate() + 1);
+      // Arrêter après le dernier jour du mois si on a complété la semaine
+      if (d > dernierJour && jourS === 0) break;
+    }
+    return jours;
+  }
+
+  // Map historique par "date|groupe" pour affichage rapide
+  const histoMapFM = new Map<string, number>();
+  for (const h of historiqueFM) {
+    histoMapFM.set(`${h.date}|${h.groupe}`, h.page);
+  }
+
+  // Couleurs par groupe (rotation)
+  const couleursFM = ["#0050d4", "#702ae1", "#0F766E", "#D97706", "#DC2626"];
+
   async function initSemainesFM() {
-    // Charge les groupes + historique en parallèle si pas encore fait
     const [resGroupes, resHisto] = await Promise.all([
       groupesFM.length === 0 ? fetch("/api/admin/groupes") : Promise.resolve(null),
       fetch("/api/affecter-fichier-maths"),
@@ -541,14 +590,6 @@ export default function PageBibliotheque() {
     if (resHisto.ok) {
       const json = await resHisto.json();
       setHistoriqueFM(json.historique ?? []);
-    }
-
-    if (semainesFM.length === 0) {
-      setSemainesFM([
-        nouveauJourFM(jourDe(0), grps),
-        nouveauJourFM(jourDe(1), grps),
-        nouveauJourFM(jourDe(2), grps),
-      ]);
     }
   }
 
@@ -1066,160 +1107,232 @@ export default function PageBibliotheque() {
           {/* ════════════════ ONGLET FICHIER DE MATHS ════════════════ */}
           {onglet === "fichier_maths" && (
             <div>
-              <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 20 }}>
-                Planifiez les pages du fichier de maths par niveau sur plusieurs semaines.
-                Laissez une case vide pour ne pas affecter ce niveau cette semaine-là.
-              </p>
-
-              {/* En-tête colonnes niveaux */}
-              {groupesFM.length > 0 && semainesFM.length > 0 && (
-                <div style={{ overflowX: "auto" }}>
-                  <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
-                    <thead>
-                      <tr>
-                        <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700, borderBottom: "2px solid var(--border)", minWidth: 140 }}>
-                          Date
-                        </th>
-                        {groupesFM.map((g) => (
-                          <th key={g.id} style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, borderBottom: "2px solid var(--border)", minWidth: 100 }}>
-                            {g.nom}
-                          </th>
-                        ))}
-                        <th style={{ width: 40, borderBottom: "2px solid var(--border)" }} />
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {semainesFM.map((sem, idx) => (
-                        <tr key={sem.id} style={{ background: idx % 2 === 0 ? "white" : "var(--primary-pale)" }}>
-                          {/* Date */}
-                          <td style={{ padding: "8px 12px" }}>
-                            <input
-                              type="date"
-                              className="form-input"
-                              value={sem.dateAssignation}
-                              onChange={(e) =>
-                                setSemainesFM((prev) =>
-                                  prev.map((s) => s.id === sem.id ? { ...s, dateAssignation: e.target.value } : s)
-                                )
-                              }
-                              style={{ fontSize: 13, marginBottom: 0, padding: "4px 8px" }}
-                            />
-                          </td>
-                          {/* Page par groupe */}
-                          {groupesFM.map((g) => (
-                            <td key={g.id} style={{ padding: "8px 12px", textAlign: "center" }}>
-                              <input
-                                type="number"
-                                min={1}
-                                max={999}
-                                className="form-input"
-                                placeholder="—"
-                                value={sem.pages[g.id] ?? ""}
-                                onChange={(e) =>
-                                  setSemainesFM((prev) =>
-                                    prev.map((s) =>
-                                      s.id === sem.id
-                                        ? { ...s, pages: { ...s.pages, [g.id]: e.target.value } }
-                                        : s
-                                    )
-                                  )
-                                }
-                                style={{ fontSize: 14, textAlign: "center", marginBottom: 0, padding: "4px 8px", width: 72 }}
-                              />
-                            </td>
-                          ))}
-                          {/* Supprimer ligne */}
-                          <td style={{ padding: "8px 6px", textAlign: "center" }}>
-                            <button
-                              className="btn-ghost"
-                              onClick={() => setSemainesFM((prev) => prev.filter((s) => s.id !== sem.id))}
-                              style={{ padding: "2px 8px", fontSize: 13, color: "var(--text-secondary)" }}
-                              title="Supprimer cette semaine"
-                            >
-                              <span className="ms" style={{ fontSize: 16 }}>delete</span>
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-
-              {/* Boutons action */}
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: 16, gap: 12 }}>
-                <button
-                  className="btn-secondary"
-                  onClick={ajouterSemaineFM}
-                  style={{ fontSize: 14 }}
-                >
-                  + Ajouter un jour
-                </button>
-
-                {semainesFM.length > 0 && (
-                  <button
-                    className="btn-primary"
-                    onClick={affecterFichierMaths}
-                    disabled={enAffectFM}
-                    style={{ fontSize: 14 }}
-                  >
-                    {enAffectFM ? "Affectation en cours…" : <><span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>straighten</span> Affecter le fichier de maths</>}
-                  </button>
-                )}
-              </div>
-
-              {/* Message retour */}
-              {messageFM && (
-                <div style={{
-                  marginTop: 12, padding: "10px 16px", borderRadius: 8, fontSize: 14,
-                  background: messageFM.includes("succès") ? "#D1FAE5" : messageFM.includes("Aucun bloc") ? "#FEF9C3" : "#FEE2E2",
-                  color: messageFM.includes("succès") ? "#065F46" : messageFM.includes("Aucun bloc") ? "#713F12" : "#991B1B",
-                }}>
-                  {messageFM}
-                </div>
-              )}
-
-              {groupesFM.length === 0 && (
+              {groupesFM.length === 0 ? (
                 <div style={{ textAlign: "center", padding: 40, color: "var(--text-secondary)" }}>
                   Aucun groupe configuré. Créez d&apos;abord des groupes dans la section Admin.
                 </div>
-              )}
-
-              {/* ── Historique des affectations ── */}
-              {historiqueFM.length > 0 && (
-                <div style={{ marginTop: 32 }}>
-                  <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "var(--text)" }}>
-                    <span className="ms" style={{ fontSize: 14, verticalAlign: "middle" }}>assignment</span> Historique des affectations
-                  </h3>
-                  <div style={{ overflowX: "auto" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-                      <thead>
-                        <tr style={{ borderBottom: "2px solid var(--border)" }}>
-                          <th style={{ textAlign: "left", padding: "6px 12px", fontWeight: 700, color: "var(--text-secondary)" }}>Date</th>
-                          <th style={{ textAlign: "left", padding: "6px 12px", fontWeight: 700, color: "var(--text-secondary)" }}>Groupe</th>
-                          <th style={{ textAlign: "center", padding: "6px 12px", fontWeight: 700, color: "var(--text-secondary)" }}>Page</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {historiqueFM.map((h, i) => (
-                          <tr key={i} style={{ borderBottom: "1px solid var(--border)", background: i % 2 === 0 ? "white" : "var(--primary-pale)" }}>
-                            <td style={{ padding: "6px 12px", color: "var(--text)" }}>
-                              {new Date(h.date + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "short", day: "2-digit", month: "short" })}
-                            </td>
-                            <td style={{ padding: "6px 12px", color: "var(--text)" }}>
-                              <span style={{ fontWeight: 600 }}>{h.groupe}</span>
-                            </td>
-                            <td style={{ padding: "6px 12px", textAlign: "center" }}>
-                              <span style={{ background: "var(--primary)", color: "white", fontWeight: 700, fontSize: 12, padding: "2px 10px", borderRadius: 999 }}>
-                                p. {h.page}
-                              </span>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+              ) : (
+                <>
+                  {/* Légende groupes */}
+                  <div style={{ display: "flex", gap: 12, marginBottom: 16, flexWrap: "wrap", alignItems: "center" }}>
+                    <span style={{ fontSize: 13, color: "var(--text-secondary)", fontWeight: 600 }}>Niveaux :</span>
+                    {groupesFM.map((g, i) => (
+                      <span key={g.id} style={{
+                        display: "inline-flex", alignItems: "center", gap: 6,
+                        fontSize: 13, fontWeight: 600, color: couleursFM[i % couleursFM.length],
+                      }}>
+                        <span style={{
+                          width: 10, height: 10, borderRadius: 3,
+                          background: couleursFM[i % couleursFM.length],
+                          display: "inline-block",
+                        }} />
+                        {g.nom}
+                      </span>
+                    ))}
                   </div>
-                </div>
+
+                  {/* Navigation mois */}
+                  <div style={{
+                    display: "flex", alignItems: "center", justifyContent: "space-between",
+                    marginBottom: 16, padding: "8px 0",
+                  }}>
+                    <button
+                      className="btn-ghost"
+                      onClick={() => setMoisFM((prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}
+                      style={{ padding: "6px 12px", fontSize: 14 }}
+                    >
+                      <span className="ms" style={{ fontSize: 18 }}>chevron_left</span>
+                    </button>
+                    <h3 style={{
+                      fontSize: 16, fontWeight: 700, textTransform: "capitalize",
+                      color: "var(--text)", margin: 0,
+                    }}>
+                      {moisFM.toLocaleDateString("fr-FR", { month: "long", year: "numeric" })}
+                    </h3>
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        className="btn-ghost"
+                        onClick={() => { const d = new Date(); setMoisFM(new Date(d.getFullYear(), d.getMonth(), 1)); }}
+                        style={{ padding: "4px 10px", fontSize: 12, fontWeight: 600, border: "1px solid var(--border)", borderRadius: 6 }}
+                      >
+                        Aujourd&apos;hui
+                      </button>
+                      <button
+                        className="btn-ghost"
+                        onClick={() => setMoisFM((prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}
+                        style={{ padding: "6px 12px", fontSize: 14 }}
+                      >
+                        <span className="ms" style={{ fontSize: 18 }}>chevron_right</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Grille calendrier */}
+                  <div style={{ overflowX: "auto" }}>
+                    {/* En-têtes jours de la semaine */}
+                    <div style={{
+                      display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0,
+                      borderBottom: "2px solid var(--border)", marginBottom: 0,
+                    }}>
+                      {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((j) => (
+                        <div key={j} style={{
+                          textAlign: "center", padding: "8px 4px", fontSize: 12, fontWeight: 700,
+                          color: (j === "Sam" || j === "Dim") ? "var(--text-secondary)" : "var(--text)",
+                          textTransform: "uppercase", letterSpacing: "0.05em",
+                        }}>
+                          {j}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Cellules du calendrier */}
+                    <div style={{
+                      display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 0,
+                    }}>
+                      {buildCalendrierFM().map(({ iso, dansMois, estWeekend }) => {
+                        const aujourdhui = new Date().toISOString().split("T")[0];
+                        const estAuj = iso === aujourdhui;
+                        const semFM = semainesFM.find((s) => s.dateAssignation === iso);
+
+                        // Historique pour ce jour
+                        const histoJour = groupesFM.map((g, gi) => {
+                          const page = histoMapFM.get(`${iso}|${g.nom}`);
+                          return page ? { groupe: g, page, couleur: couleursFM[gi % couleursFM.length] } : null;
+                        }).filter(Boolean) as { groupe: { id: string; nom: string }; page: number; couleur: string }[];
+
+                        // Valeurs saisies non encore affectées
+                        const aSaisie = semFM && groupesFM.some((g) => semFM.pages[g.id]?.trim());
+
+                        return (
+                          <div
+                            key={iso}
+                            style={{
+                              minHeight: 90,
+                              border: "1px solid var(--border)",
+                              borderRadius: 0,
+                              padding: "4px 6px",
+                              background: !dansMois
+                                ? "#f9f9fb"
+                                : estWeekend
+                                  ? "#f5f3f0"
+                                  : estAuj
+                                    ? "rgba(0, 80, 212, 0.04)"
+                                    : "white",
+                              opacity: dansMois ? 1 : 0.4,
+                              position: "relative",
+                            }}
+                          >
+                            {/* Numéro du jour */}
+                            <div style={{
+                              fontSize: 12, fontWeight: estAuj ? 800 : 600,
+                              color: estAuj ? "var(--primary)" : "var(--text)",
+                              marginBottom: 4,
+                              display: "flex", alignItems: "center", gap: 4,
+                            }}>
+                              {estAuj && (
+                                <span style={{
+                                  width: 6, height: 6, borderRadius: "50%",
+                                  background: "var(--primary)", display: "inline-block",
+                                }} />
+                              )}
+                              {new Date(iso + "T12:00:00").getDate()}
+                            </div>
+
+                            {/* Badges historique (déjà affecté) */}
+                            {histoJour.map((h, hi) => (
+                              <div key={hi} style={{
+                                display: "flex", alignItems: "center", gap: 3,
+                                fontSize: 10, fontWeight: 700, marginBottom: 2,
+                                color: h.couleur, opacity: 0.7,
+                              }}>
+                                <span style={{
+                                  width: 6, height: 6, borderRadius: 2,
+                                  background: h.couleur, display: "inline-block", flexShrink: 0,
+                                }} />
+                                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                  p.{h.page}
+                                </span>
+                              </div>
+                            ))}
+
+                            {/* Inputs saisie (jours ouvrés du mois en cours) */}
+                            {dansMois && !estWeekend && (
+                              <div style={{ display: "flex", flexDirection: "column", gap: 2, marginTop: 2 }}>
+                                {groupesFM.map((g, gi) => {
+                                  // Ne pas afficher l'input si déjà dans l'historique
+                                  const dejaAffecte = histoMapFM.has(`${iso}|${g.nom}`);
+                                  if (dejaAffecte) return null;
+                                  const val = semFM?.pages[g.id] ?? "";
+                                  return (
+                                    <input
+                                      key={g.id}
+                                      type="number"
+                                      min={1}
+                                      max={999}
+                                      placeholder={g.nom.substring(0, 4)}
+                                      value={val}
+                                      onChange={(e) => setPageFM(iso, g.id, e.target.value)}
+                                      style={{
+                                        width: "100%",
+                                        fontSize: 11,
+                                        padding: "2px 4px",
+                                        border: `1.5px solid ${val ? couleursFM[gi % couleursFM.length] : "var(--border)"}`,
+                                        borderRadius: 4,
+                                        textAlign: "center",
+                                        background: val ? `${couleursFM[gi % couleursFM.length]}10` : "white",
+                                        color: couleursFM[gi % couleursFM.length],
+                                        fontWeight: val ? 700 : 400,
+                                        outline: "none",
+                                        marginBottom: 0,
+                                      }}
+                                      title={`${g.nom} — ${new Date(iso + "T12:00:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}`}
+                                    />
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Bouton affecter */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: 20, gap: 12 }}>
+                    {semainesFM.some((s) => groupesFM.some((g) => s.pages[g.id]?.trim())) && (
+                      <>
+                        <button
+                          className="btn-ghost"
+                          onClick={() => setSemainesFM([])}
+                          style={{ fontSize: 13, color: "var(--text-secondary)" }}
+                        >
+                          Tout effacer
+                        </button>
+                        <button
+                          className="btn-primary"
+                          onClick={affecterFichierMaths}
+                          disabled={enAffectFM}
+                          style={{ fontSize: 14 }}
+                        >
+                          {enAffectFM ? "Affectation en cours…" : (
+                            <><span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>straighten</span> Affecter le fichier de maths</>
+                          )}
+                        </button>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Message retour */}
+                  {messageFM && (
+                    <div style={{
+                      marginTop: 12, padding: "10px 16px", borderRadius: 8, fontSize: 14,
+                      background: messageFM.includes("succès") ? "#D1FAE5" : messageFM.includes("Aucun bloc") ? "#FEF9C3" : "#FEE2E2",
+                      color: messageFM.includes("succès") ? "#065F46" : messageFM.includes("Aucun bloc") ? "#713F12" : "#991B1B",
+                    }}>
+                      {messageFM}
+                    </div>
+                  )}
+                </>
               )}
             </div>
           )}
