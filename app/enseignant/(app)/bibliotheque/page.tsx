@@ -149,8 +149,10 @@ export default function PageBibliotheque() {
   const [enAffectFM, setEnAffectFM]           = useState(false);
   const [messageFM,  setMessageFM]            = useState("");
   const [moisFM, setMoisFM]                   = useState<Date>(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
-  const [dragFM, setDragFM]                   = useState<{ date: string; groupe: string; page: number } | null>(null);
+  const [dragFM, setDragFM]                   = useState<{ date: string; groupe?: string; page?: number; eval?: boolean } | null>(null);
   const [dropTargetFM, setDropTargetFM]       = useState<string | null>(null);
+  const [evalsFM, setEvalsFM]                 = useState<string[]>([]); // dates d'évaluation (DB)
+  const [newEvalsFM, setNewEvalsFM]           = useState<Set<string>>(new Set()); // nouvelles évals à affecter
 
   /* ── Thèmes d'écriture ── */
   const [themesEcriture,  setThemesEcriture]  = useState<{ id: string; date: string; sujet: string; contrainte: string; affecte: boolean }[]>([]);
@@ -581,9 +583,25 @@ export default function PageBibliotheque() {
     return couleursFM[idx >= 0 ? idx % couleursFM.length : 0];
   };
 
-  async function deplacerBlocFM(item: { date: string; groupe: string; page: number }, nouvelleDate: string) {
+  async function deplacerBlocFM(item: { date: string; groupe?: string; page?: number; eval?: boolean }, nouvelleDate: string) {
     if (item.date === nouvelleDate) return;
-    // Optimistic update
+    if (item.eval) {
+      // Déplacer une éval
+      setEvalsFM((prev) => prev.map((d) => d === item.date ? nouvelleDate : d));
+      try {
+        const res = await fetch("/api/fichier-maths-bloc", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ date: item.date, nouvelleDate, eval: true }),
+        });
+        if (!res.ok) {
+          setEvalsFM((prev) => prev.map((d) => d === nouvelleDate ? item.date : d));
+          setMessageFM("❌ Erreur lors du déplacement.");
+        }
+      } catch { setMessageFM("❌ Erreur réseau."); }
+      return;
+    }
+    // Déplacer un bloc page
     setHistoriqueFM((prev) =>
       prev.map((h) =>
         h.date === item.date && h.groupe === item.groupe && h.page === item.page
@@ -598,7 +616,6 @@ export default function PageBibliotheque() {
         body: JSON.stringify({ date: item.date, groupe: item.groupe, page: item.page, nouvelleDate }),
       });
       if (!res.ok) {
-        // Revert
         setHistoriqueFM((prev) =>
           prev.map((h) =>
             h.date === nouvelleDate && h.groupe === item.groupe && h.page === item.page
@@ -608,14 +625,11 @@ export default function PageBibliotheque() {
         );
         setMessageFM("❌ Erreur lors du déplacement.");
       }
-    } catch {
-      setMessageFM("❌ Erreur réseau lors du déplacement.");
-    }
+    } catch { setMessageFM("❌ Erreur réseau."); }
   }
 
   async function supprimerBlocFM(item: { date: string; groupe: string; page: number }) {
     if (!confirm(`Supprimer la page ${item.page} (${item.groupe}) du ${new Date(item.date + "T12:00:00").toLocaleDateString("fr-FR")} ?`)) return;
-    // Optimistic update
     setHistoriqueFM((prev) => prev.filter((h) => !(h.date === item.date && h.groupe === item.groupe && h.page === item.page)));
     try {
       const res = await fetch("/api/fichier-maths-bloc", {
@@ -624,14 +638,36 @@ export default function PageBibliotheque() {
         body: JSON.stringify({ date: item.date, groupe: item.groupe }),
       });
       if (!res.ok) {
-        // Revert — recharger l'historique
         const r = await fetch("/api/affecter-fichier-maths");
-        if (r.ok) { const j = await r.json(); setHistoriqueFM(j.historique ?? []); }
+        if (r.ok) { const j = await r.json(); setHistoriqueFM(j.historique ?? []); setEvalsFM(j.evals ?? []); }
         setMessageFM("❌ Erreur lors de la suppression.");
       }
-    } catch {
-      setMessageFM("❌ Erreur réseau lors de la suppression.");
-    }
+    } catch { setMessageFM("❌ Erreur réseau."); }
+  }
+
+  async function supprimerEvalFM(date: string) {
+    if (!confirm(`Supprimer l'évaluation du ${new Date(date + "T12:00:00").toLocaleDateString("fr-FR")} ?`)) return;
+    setEvalsFM((prev) => prev.filter((d) => d !== date));
+    try {
+      const res = await fetch("/api/fichier-maths-bloc", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, eval: true }),
+      });
+      if (!res.ok) {
+        const r = await fetch("/api/affecter-fichier-maths");
+        if (r.ok) { const j = await r.json(); setEvalsFM(j.evals ?? []); }
+        setMessageFM("❌ Erreur lors de la suppression.");
+      }
+    } catch { setMessageFM("❌ Erreur réseau."); }
+  }
+
+  function toggleNewEval(iso: string) {
+    setNewEvalsFM((prev) => {
+      const next = new Set(prev);
+      if (next.has(iso)) next.delete(iso); else next.add(iso);
+      return next;
+    });
   }
 
   async function initSemainesFM() {
@@ -650,18 +686,23 @@ export default function PageBibliotheque() {
     if (resHisto.ok) {
       const json = await resHisto.json();
       setHistoriqueFM(json.historique ?? []);
+      setEvalsFM(json.evals ?? []);
     }
   }
 
   async function affecterFichierMaths() {
-    const jours = semainesFM.map((s) => ({
-      dateAssignation: s.dateAssignation,
-      groupes: groupesFM.map((g) => ({
-        groupeId: g.id,
-        groupeNom: g.nom,
-        page: s.pages[g.id] ? parseInt(s.pages[g.id], 10) : null,
-      })),
-    }));
+    const jours = semainesFM
+      .filter((s) => groupesFM.some((g) => s.pages[g.id]?.trim()))
+      .map((s) => ({
+        dateAssignation: s.dateAssignation,
+        groupes: groupesFM.map((g) => ({
+          groupeId: g.id,
+          groupeNom: g.nom,
+          page: s.pages[g.id] ? parseInt(s.pages[g.id], 10) : null,
+        })),
+      }));
+
+    const evalsToSend = Array.from(newEvalsFM);
 
     setEnAffectFM(true);
     setMessageFM("");
@@ -669,18 +710,22 @@ export default function PageBibliotheque() {
       const res = await fetch("/api/affecter-fichier-maths", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ jours }),
+        body: JSON.stringify({ jours, evals: evalsToSend }),
       });
       const json = await res.json();
       if (!res.ok) {
         setMessageFM(` Erreur : ${json.erreur}`);
-      } else if (json.nb === 0) {
+      } else if (json.nb === 0 && evalsToSend.length === 0) {
         setMessageFM("Aucun bloc créé. Vérifie que les niveaux ont des élèves.");
       } else {
         setMessageFM(`${json.nb} bloc(s) affectés avec succès !`);
         setSemainesFM([]);
+        setNewEvalsFM(new Set());
         // Rafraîchir l'historique
-        fetch("/api/affecter-fichier-maths").then(r => r.json()).then(j => setHistoriqueFM(j.historique ?? []));
+        fetch("/api/affecter-fichier-maths").then(r => r.json()).then(j => {
+          setHistoriqueFM(j.historique ?? []);
+          setEvalsFM(j.evals ?? []);
+        });
       }
     } catch {
       setMessageFM("❌ Erreur réseau.");
@@ -1317,6 +1362,64 @@ export default function PageBibliotheque() {
                               {new Date(iso + "T12:00:00").getDate()}
                             </div>
 
+                            {/* Badge ÉVALUATION (DB) */}
+                            {evalsFM.includes(iso) && (
+                              <div
+                                draggable
+                                onDragStart={(e) => {
+                                  setDragFM({ date: iso, eval: true });
+                                  e.dataTransfer.effectAllowed = "move";
+                                  e.dataTransfer.setData("text/plain", `EVAL|${iso}`);
+                                }}
+                                onDragEnd={() => setDragFM(null)}
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 3,
+                                  fontSize: 10, fontWeight: 800, marginBottom: 3,
+                                  color: "white", background: "#DC2626",
+                                  borderRadius: 4, padding: "2px 6px",
+                                  cursor: "grab", letterSpacing: "0.04em",
+                                  opacity: dragFM?.eval && dragFM?.date === iso ? 0.4 : 1,
+                                }}
+                                title="Évaluation — Glisser pour déplacer"
+                              >
+                                <span className="ms" style={{ fontSize: 11 }}>quiz</span>
+                                ÉVAL
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); supprimerEvalFM(iso); }}
+                                  style={{
+                                    background: "none", border: "none", cursor: "pointer",
+                                    padding: 0, lineHeight: 1, fontSize: 11, color: "white",
+                                    opacity: 0.7, marginLeft: "auto",
+                                  }}
+                                  title="Supprimer l'évaluation"
+                                >×</button>
+                              </div>
+                            )}
+
+                            {/* Badge ÉVAL nouvelle (pas encore affectée) */}
+                            {newEvalsFM.has(iso) && !evalsFM.includes(iso) && (
+                              <div
+                                style={{
+                                  display: "flex", alignItems: "center", gap: 3,
+                                  fontSize: 10, fontWeight: 800, marginBottom: 3,
+                                  color: "#DC2626", background: "#FEE2E2",
+                                  borderRadius: 4, padding: "2px 6px",
+                                  border: "1.5px dashed #DC2626", letterSpacing: "0.04em",
+                                }}
+                              >
+                                <span className="ms" style={{ fontSize: 11 }}>quiz</span>
+                                ÉVAL
+                                <button
+                                  onClick={() => toggleNewEval(iso)}
+                                  style={{
+                                    background: "none", border: "none", cursor: "pointer",
+                                    padding: 0, lineHeight: 1, fontSize: 11, color: "#DC2626",
+                                    opacity: 0.7, marginLeft: "auto",
+                                  }}
+                                >×</button>
+                              </div>
+                            )}
+
                             {/* Badges historique (déjà affecté) — draggable + supprimable */}
                             {histoJour.map((h, hi) => (
                               <div
@@ -1395,6 +1498,25 @@ export default function PageBibliotheque() {
                                     />
                                   );
                                 })}
+                                {/* Bouton toggle ÉVAL */}
+                                {!evalsFM.includes(iso) && !newEvalsFM.has(iso) && (
+                                  <button
+                                    onClick={() => toggleNewEval(iso)}
+                                    style={{
+                                      width: "100%", fontSize: 9, fontWeight: 700,
+                                      padding: "1px 0", marginTop: 1,
+                                      background: "none", border: "1px dashed #EF444480",
+                                      borderRadius: 3, color: "#EF4444", cursor: "pointer",
+                                      letterSpacing: "0.04em", opacity: 0.5,
+                                      transition: "opacity 0.15s",
+                                    }}
+                                    onMouseEnter={(e) => (e.currentTarget.style.opacity = "1")}
+                                    onMouseLeave={(e) => (e.currentTarget.style.opacity = "0.5")}
+                                    title="Ajouter une évaluation ce jour"
+                                  >
+                                    ÉVAL
+                                  </button>
+                                )}
                               </div>
                             )}
                           </div>
@@ -1405,7 +1527,7 @@ export default function PageBibliotheque() {
 
                   {/* Bouton affecter */}
                   <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", marginTop: 20, gap: 12 }}>
-                    {semainesFM.some((s) => groupesFM.some((g) => s.pages[g.id]?.trim())) && (
+                    {(semainesFM.some((s) => groupesFM.some((g) => s.pages[g.id]?.trim())) || newEvalsFM.size > 0) && (
                       <>
                         <button
                           className="btn-ghost"

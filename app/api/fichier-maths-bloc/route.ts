@@ -8,34 +8,36 @@ export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { date, groupe, page, nouvelleDate } = body as {
+  const { date, groupe, page, nouvelleDate, eval: isEval } = body as {
     date: string;
-    groupe: string;
-    page: number;
+    groupe?: string;
+    page?: number;
     nouvelleDate: string;
+    eval?: boolean;
   };
 
-  if (!date || !groupe || !page || !nouvelleDate) {
-    return NextResponse.json({ erreur: "Champs requis: date, groupe, page, nouvelleDate" }, { status: 400 });
+  if (!date || !nouvelleDate) {
+    return NextResponse.json({ erreur: "Champs requis: date, nouvelleDate" }, { status: 400 });
   }
 
   const admin = createAdminClient();
 
-  // Met à jour tous les blocs de ce groupe/page/date
-  const { data, error } = await admin
+  let query = admin
     .from("plan_travail")
     .update({ date_assignation: nouvelleDate })
     .eq("type", "fichier_maths")
-    .eq("date_assignation", date)
-    .eq("groupe_label", groupe)
-    .select("id");
+    .eq("date_assignation", date);
+
+  if (isEval) {
+    query = query.is("groupe_label", null);
+  } else {
+    if (!groupe) return NextResponse.json({ erreur: "Champ requis: groupe (ou eval: true)" }, { status: 400 });
+    query = query.eq("groupe_label", groupe);
+  }
+
+  const { data, error } = await query.select("id");
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
-
-  // Vérifier que les blocs mis à jour correspondent bien à la bonne page
-  // (cas rare de 2 pages différentes le même jour pour le même groupe)
-  // On filtre par contenu->numero_page mais Supabase ne permet pas facilement
-  // de filtrer par JSON imbriqué dans un update, donc on le fait en 2 étapes si nécessaire
 
   return NextResponse.json({ ok: true, nb: data?.length ?? 0 });
 }
@@ -47,21 +49,29 @@ export async function DELETE(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { date, groupe } = body as { date: string; groupe: string };
+  const { date, groupe, eval: isEval } = body as { date: string; groupe?: string; eval?: boolean };
 
-  if (!date || !groupe) {
-    return NextResponse.json({ erreur: "Champs requis: date, groupe" }, { status: 400 });
+  if (!date) {
+    return NextResponse.json({ erreur: "Champ requis: date" }, { status: 400 });
   }
 
   const admin = createAdminClient();
 
-  const { data, error } = await admin
+  let query = admin
     .from("plan_travail")
     .delete()
     .eq("type", "fichier_maths")
-    .eq("date_assignation", date)
-    .eq("groupe_label", groupe)
-    .select("id");
+    .eq("date_assignation", date);
+
+  if (isEval) {
+    // Supprimer l'évaluation (pas de groupe, contenu->eval = true)
+    query = query.is("groupe_label", null);
+  } else {
+    if (!groupe) return NextResponse.json({ erreur: "Champ requis: groupe (ou eval: true)" }, { status: 400 });
+    query = query.eq("groupe_label", groupe);
+  }
+
+  const { data, error } = await query.select("id");
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
 

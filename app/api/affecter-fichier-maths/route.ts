@@ -19,12 +19,18 @@ export async function GET() {
   // Dédoublonnage : une ligne par (date, groupe)
   const seen = new Set<string>();
   const lignes: { date: string; groupe: string; page: number }[] = [];
+  const evals: string[] = []; // dates avec évaluation
 
   for (const row of (data ?? []) as {
     date_assignation: string;
     groupe_label: string | null;
-    contenu: { numero_page?: number } | null;
+    contenu: { numero_page?: number; eval?: boolean } | null;
   }[]) {
+    // Entrée évaluation (pas d'élève, contenu.eval = true)
+    if (row.contenu?.eval) {
+      if (!evals.includes(row.date_assignation)) evals.push(row.date_assignation);
+      continue;
+    }
     const page = row.contenu?.numero_page ?? 0;
     const key = `${row.date_assignation}__${row.groupe_label}`;
     if (seen.has(key)) continue;
@@ -32,7 +38,7 @@ export async function GET() {
     lignes.push({ date: row.date_assignation, groupe: row.groupe_label ?? "", page });
   }
 
-  return NextResponse.json({ historique: lignes });
+  return NextResponse.json({ historique: lignes, evals });
 }
 
 // POST /api/affecter-fichier-maths
@@ -51,15 +57,16 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { jours } = body as {
+  const { jours, evals } = body as {
     jours: Array<{
       dateAssignation: string;
       groupes: Array<{ groupeId: string; groupeNom: string; page: number | null }>;
     }>;
+    evals?: string[]; // dates d'évaluation (enseignant-only, pas visible élève)
   };
 
-  if (!Array.isArray(jours) || jours.length === 0) {
-    return NextResponse.json({ erreur: "jours[] requis" }, { status: 400 });
+  if (!Array.isArray(jours) && !Array.isArray(evals)) {
+    return NextResponse.json({ erreur: "jours[] ou evals[] requis" }, { status: 400 });
   }
 
   const admin = createAdminClient();
@@ -127,16 +134,38 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  if (lignes.length === 0) {
+  // Insérer les évals (marqueurs enseignant-only, sans élève)
+  if (Array.isArray(evals) && evals.length > 0) {
+    const evalLignes = evals.map((date) => ({
+      type: "fichier_maths",
+      titre: "Évaluation",
+      contenu: { eval: true },
+      statut: "a_faire",
+      date_assignation: date,
+      date_limite: null,
+      periodicite: "jour",
+      groupe_label: null,
+      eleve_id: null,
+      repetibox_eleve_id: null,
+      chapitre_id: null,
+    }));
+    const { error: evalErr } = await admin.from("plan_travail").insert(evalLignes);
+    if (evalErr) console.error("[affecter-fichier-maths] eval insert error:", evalErr.message);
+  }
+
+  if (lignes.length === 0 && (!evals || evals.length === 0)) {
     return NextResponse.json({
       ok: true, nb: 0,
-      message: "Aucun élève trouvé dans les groupes renseignés.",
+      message: "Aucun groupe avec une page renseignée.",
     });
   }
 
-  const { error: insertErr } = await admin.from("plan_travail").insert(lignes);
-  if (insertErr) return NextResponse.json({ erreur: insertErr.message }, { status: 500 });
+  if (lignes.length > 0) {
+    const { error: insertErr } = await admin.from("plan_travail").insert(lignes);
+    if (insertErr) return NextResponse.json({ erreur: insertErr.message }, { status: 500 });
+  }
 
-  console.log(`[affecter-fichier-maths] ${lignes.length} blocs insérés`);
-  return NextResponse.json({ ok: true, nb: lignes.length });
+  const totalInserted = lignes.length + (evals?.length ?? 0);
+  console.log(`[affecter-fichier-maths] ${lignes.length} blocs + ${evals?.length ?? 0} évals insérés`);
+  return NextResponse.json({ ok: true, nb: totalInserted });
 }
