@@ -6,14 +6,17 @@ export const maxDuration = 60;
 
 /**
  * POST /api/corriger-dictee
- * Body: { image: string (base64 data-url), bloc_id: string }
- * Retourne: { transcription, erreurs: [{ mot_eleve, position, type_erreur, indice }] }
+ * Body: { images: string[] (base64 data-urls), bloc_id: string }
+ *   ou  { image: string (base64 data-url), bloc_id: string } pour rétro-compat
+ * Retourne: { transcription, erreurs: [{ mot_eleve, type_erreur, indice }] }
  */
 export async function POST(req: NextRequest) {
-  const { image, bloc_id } = await req.json();
+  const body = await req.json();
+  const bloc_id = body.bloc_id;
+  const imageList: string[] = body.images ?? (body.image ? [body.image] : []);
 
-  if (!image || !bloc_id) {
-    return NextResponse.json({ error: "image et bloc_id requis" }, { status: 400 });
+  if (imageList.length === 0 || !bloc_id) {
+    return NextResponse.json({ error: "image(s) et bloc_id requis" }, { status: 400 });
   }
 
   // Récupérer le bloc plan_travail pour obtenir le texte attendu
@@ -39,16 +42,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Texte de la dictée introuvable" }, { status: 400 });
   }
 
-  // Extraire le base64 et le media type depuis le data-url
-  const match = image.match(/^data:(image\/\w+);base64,(.+)$/);
-  if (!match) {
-    return NextResponse.json({ error: "Format image invalide (data-url base64 attendu)" }, { status: 400 });
+  // Extraire le base64 et le media type depuis chaque data-url
+  const imageBlocks: { type: "image"; source: { type: "base64"; media_type: "image/jpeg" | "image/png" | "image/webp" | "image/gif"; data: string } }[] = [];
+  for (const img of imageList) {
+    const match = img.match(/^data:(image\/\w+);base64,(.+)$/);
+    if (!match) {
+      return NextResponse.json({ error: "Format image invalide (data-url base64 attendu)" }, { status: 400 });
+    }
+    imageBlocks.push({
+      type: "image",
+      source: {
+        type: "base64",
+        media_type: match[1] as "image/jpeg" | "image/png" | "image/webp" | "image/gif",
+        data: match[2],
+      },
+    });
   }
-  const mediaType = match[1] as "image/jpeg" | "image/png" | "image/webp" | "image/gif";
-  const imageData = match[2];
 
   const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
+  const nbPages = imageBlocks.length;
   const prompt = `Tu es un enseignant bienveillant qui corrige la dictée d'un élève de primaire (CE2-CM2).
 
 TEXTE ATTENDU DE LA DICTÉE :
@@ -56,7 +69,7 @@ TEXTE ATTENDU DE LA DICTÉE :
 ${texteAttendu}
 """
 
-L'élève a écrit sa dictée sur son cahier. Voici la photo de ce qu'il a écrit.
+L'élève a écrit sa dictée sur son cahier. ${nbPages > 1 ? `Voici les ${nbPages} pages de sa dictée.` : "Voici la photo de ce qu'il a écrit."}
 
 CONSIGNES :
 1. Transcris exactement ce que l'élève a écrit (avec ses erreurs).
@@ -97,14 +110,7 @@ Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
         {
           role: "user",
           content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: mediaType,
-                data: imageData,
-              },
-            },
+            ...imageBlocks,
             {
               type: "text",
               text: prompt,

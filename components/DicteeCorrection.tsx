@@ -35,8 +35,7 @@ const TYPE_ERREUR_LABELS: Record<string, { label: string; icon: string; color: s
 
 export default function DicteeCorrection({ blocId, onFermer }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<{ url: string; base64: string }[]>([]);
   const [chargement, setChargement] = useState(false);
   const [resultat, setResultat] = useState<ResultatCorrection | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
@@ -49,31 +48,33 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Preview
     const url = URL.createObjectURL(file);
-    setPreviewUrl(url);
-
-    // Convertir en base64
     const reader = new FileReader();
     reader.onload = () => {
-      setImageBase64(reader.result as string);
+      setPhotos((prev) => [...prev, { url, base64: reader.result as string }]);
     };
     reader.readAsDataURL(file);
 
     setResultat(null);
     setErreur(null);
+    if (inputRef.current) inputRef.current.value = "";
   }
 
-  function annulerPhoto() {
-    setPreviewUrl(null);
-    setImageBase64(null);
+  function supprimerPhoto(index: number) {
+    setPhotos((prev) => prev.filter((_, i) => i !== index));
+    setResultat(null);
+    setErreur(null);
+  }
+
+  function annulerTout() {
+    setPhotos([]);
     setResultat(null);
     setErreur(null);
     if (inputRef.current) inputRef.current.value = "";
   }
 
   async function envoyer() {
-    if (!imageBase64) return;
+    if (photos.length === 0) return;
     setChargement(true);
     setErreur(null);
 
@@ -81,7 +82,10 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
       const res = await fetch("/api/corriger-dictee", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: imageBase64, bloc_id: blocId }),
+        body: JSON.stringify({
+          images: photos.map((p) => p.base64),
+          bloc_id: blocId,
+        }),
       });
 
       if (!res.ok) {
@@ -115,7 +119,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
       />
 
       {/* ── Pas encore de photo ── */}
-      {!previewUrl && !resultat && (
+      {photos.length === 0 && !resultat && (
         <button
           onClick={ouvrirCamera}
           style={{
@@ -142,26 +146,63 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
         </button>
       )}
 
-      {/* ── Preview photo ── */}
-      {previewUrl && !resultat && (
+      {/* ── Preview photos ── */}
+      {photos.length > 0 && !resultat && (
         <div>
-          <div style={{
-            borderRadius: "1rem",
-            overflow: "hidden",
-            marginBottom: 16,
-            border: "1px solid rgba(0,0,0,0.08)",
-          }}>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={previewUrl}
-              alt="Photo de la dictée"
-              style={{ width: "100%", display: "block" }}
-            />
+          <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
+            {photos.map((photo, i) => (
+              <div key={i} style={{ flex: 1, position: "relative" }}>
+                <div style={{
+                  borderRadius: "1rem",
+                  overflow: "hidden",
+                  border: "1px solid rgba(0,0,0,0.08)",
+                }}>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={photo.url}
+                    alt={`Page ${i + 1}`}
+                    style={{ width: "100%", display: "block" }}
+                  />
+                </div>
+                <button
+                  onClick={() => supprimerPhoto(i)}
+                  disabled={chargement}
+                  style={{
+                    position: "absolute", top: 6, right: 6,
+                    width: 28, height: 28, borderRadius: "50%",
+                    background: "rgba(0,0,0,0.6)", border: "none",
+                    color: "white", cursor: "pointer",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 16 }}>close</span>
+                </button>
+                <div style={{
+                  position: "absolute", bottom: 6, left: 6,
+                  background: "rgba(0,0,0,0.6)", color: "white",
+                  borderRadius: 8, padding: "2px 8px",
+                  fontSize: 12, fontWeight: 700,
+                }}>
+                  Page {i + 1}
+                </div>
+              </div>
+            ))}
           </div>
 
           <div style={{ display: "flex", gap: 10 }}>
+            {photos.length < 2 && (
+              <button
+                onClick={ouvrirCamera}
+                disabled={chargement}
+                className="pb-btn surface"
+                style={{ flex: 1 }}
+              >
+                <span className="ms" style={{ fontSize: 18 }}>add_photo_alternate</span>
+                Page 2
+              </button>
+            )}
             <button
-              onClick={annulerPhoto}
+              onClick={annulerTout}
               disabled={chargement}
               className="pb-btn surface"
               style={{ flex: 1 }}
@@ -317,7 +358,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
           {/* Actions */}
           <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
             <button
-              onClick={() => { annulerPhoto(); setResultat(null); }}
+              onClick={() => { annulerTout(); setResultat(null); }}
               className="pb-btn surface"
               style={{ flex: 1 }}
             >
