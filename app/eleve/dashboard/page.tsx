@@ -446,7 +446,8 @@ export default function DashboardEleve() {
 
   async function deconnecter() {
     await effacerSession();
-    router.push("/eleve");
+    // window.location pour forcer un rechargement complet (reset état React + cache Supabase)
+    window.location.href = "/eleve";
   }
 
   // ── Écran de chargement ─────────────────────────────────────────────────────

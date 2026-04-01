@@ -126,7 +126,15 @@ export function useEleveSession() {
 
   async function effacerSession() {
     const supabase = createClient();
-    await supabase.auth.signOut();
+    // signOut peut parfois pendre (lock interne, réseau) → timeout 3s
+    try {
+      await Promise.race([
+        supabase.auth.signOut(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("signOut timeout")), 3000)),
+      ]);
+    } catch (err) {
+      console.warn("[effacerSession] signOut échoué ou timeout:", err);
+    }
     setSession(null);
   }
 
