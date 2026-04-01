@@ -287,6 +287,31 @@ export default function PageDictees() {
     for (const b of liste) initOnglets[b.batchId] = 2;
     setBatchOnglet(initOnglets);
 
+    // Récupérer les dates d'affectation réelles depuis plan_travail
+    // On cherche le lundi (date la plus ancienne par batch_id) pour chaque batch
+    const batchIds = liste.map((b) => b.batchId);
+    if (batchIds.length > 0) {
+      const { data: ptData } = await supabase
+        .from("plan_travail")
+        .select("contenu, date_assignation")
+        .in("type", ["dictee", "mots"])
+        .order("date_assignation", { ascending: true });
+
+      if (ptData && ptData.length > 0) {
+        const datesMap: Record<string, string> = {};
+        for (const row of ptData as { contenu: { batch_id?: string } | null; date_assignation: string }[]) {
+          const bid = row.contenu?.batch_id;
+          if (bid && batchIds.includes(bid) && !datesMap[bid]) {
+            // Première date (la plus ancienne) = le lundi de la semaine
+            datesMap[bid] = getLundiDeSemaine(row.date_assignation);
+          }
+        }
+        if (Object.keys(datesMap).length > 0) {
+          setSemaineAffectation((prev) => ({ ...prev, ...datesMap }));
+        }
+      }
+    }
+
     setChargement(false);
   }
 
