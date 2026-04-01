@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
       for (const m of membres) {
         lignes.push({
           type: "fichier_maths",
-          titre: `Fichier de maths — Page ${groupe.page}`,
+          titre: `Fichier de Maths P${groupe.page}`,
           contenu: { numero_page: groupe.page, niveau: groupe.groupeNom },
           statut: "a_faire",
           date_assignation: jour.dateAssignation,

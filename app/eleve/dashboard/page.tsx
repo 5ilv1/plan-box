@@ -934,7 +934,7 @@ export default function DashboardEleve() {
                           const estFait = b.statut === "fait";
                           const page = (b.contenu as any)?.numero_page;
                           const sousTitre = b.type === "fichier_maths"
-                            ? `Mathématiques${page ? ` • Page ${page}` : ""}`
+                            ? `Mathématiques${page ? ` • p.${page}` : ""}`
                             : b.type === "lecon_copier"
                             ? "À copier sur ton cahier"
                             : b.type === "ecriture"
@@ -978,7 +978,7 @@ export default function DashboardEleve() {
                                   textDecoration: estFait ? "line-through" : "none",
                                   marginBottom: 3,
                                 }}>
-                                  {b.type === "dictee" ? `Dictée — ${b.titre}` : b.type === "lecon_copier" ? `Leçon — ${b.titre}` : b.type === "ecriture" ? `Écriture — ${b.titre.replace("Écriture — ", "")}` : b.titre}
+                                  {b.type === "dictee" ? `Dictée — ${b.titre}` : b.type === "lecon_copier" ? `Leçon — ${b.titre}` : b.type === "ecriture" ? `Écriture — ${b.titre.replace("Écriture — ", "")}` : b.type === "fichier_maths" ? (page ? `Fichier de Maths P${page}` : b.titre) : b.titre}
                                 </div>
                                 <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
                                   {sousTitre}
