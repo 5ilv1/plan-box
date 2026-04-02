@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 type ExerciceType = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement";
 
