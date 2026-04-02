@@ -849,62 +849,7 @@ export default function DashboardEleve() {
               </Link>
             )}
 
-            {/* Chapitres — parcours progressif */}
-            {chapitresAssignes.length > 0 && (
-              <div className="pb-card" style={{ padding: "20px" }}>
-                <p className="pb-section-title" style={{ fontSize: 16, marginBottom: 14 }}>📚 Mes chapitres</p>
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {chapitresAssignes.map((ch) => (
-                    <Link
-                      key={ch.id}
-                      href={`/eleve/chapitre/${ch.id}`}
-                      style={{
-                        display: "block", textDecoration: "none", color: "inherit",
-                        padding: "14px 16px", borderRadius: 14,
-                        background: ch.tousValides
-                          ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
-                          : "var(--pb-surface-container, #f5f5f5)",
-                        border: ch.tousValides
-                          ? "1.5px solid rgba(34,197,94,0.3)"
-                          : "1px solid var(--pb-outline-variant, #e5e5e5)",
-                        transition: "all 0.2s",
-                      }}
-                    >
-                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                          <span className="ms" style={{ fontSize: 20, color: ch.tousValides ? "#22C55E" : "var(--pb-primary)" }}>
-                            {ch.tousValides ? "verified" : iconeMatiere(ch.matiere)}
-                          </span>
-                          <span style={{ fontSize: 14, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)" }}>
-                            {ch.titre}
-                          </span>
-                        </div>
-                        <span style={{ fontSize: 12, fontWeight: 700, color: ch.tousValides ? "#22C55E" : "var(--pb-on-surface-variant)" }}>
-                          {ch.nbValides}/{ch.nbExercices}
-                        </span>
-                      </div>
-                      <div style={{ height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 100, overflow: "hidden" }}>
-                        <div style={{
-                          width: `${ch.pourcentage}%`, height: "100%",
-                          background: ch.tousValides ? "#22C55E" : "var(--pb-primary)",
-                          borderRadius: 100, transition: "width 0.5s ease",
-                        }} />
-                      </div>
-                      {!ch.tousValides && ch.exerciceEnCoursOrdre != null && (
-                        <div style={{ fontSize: 12, color: "var(--pb-primary)", fontWeight: 600, marginTop: 6 }}>
-                          ▶ Exercice {ch.exerciceEnCoursOrdre} · Continuer →
-                        </div>
-                      )}
-                      {ch.tousValides && (
-                        <div style={{ fontSize: 12, color: "#22C55E", fontWeight: 600, marginTop: 6 }}>
-                          ✅ Tous les exercices validés · Évaluation disponible
-                        </div>
-                      )}
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+{/* Chapitres progressifs déplacés dans "À faire en ligne" */}
 
             {/* Podcasts / QCM */}
             {podcastsQcm.length > 0 && (
@@ -1055,7 +1000,7 @@ export default function DashboardEleve() {
                 const groupesEnLigne = groupesChapitres
                   .map(([id, info]) => [id, { ...info, blocs: info.blocs.filter((b) => !isPapier(b)) }] as [string, { titre: string; matiere: string | null; blocs: PlanTravail[] }])
                   .filter(([, info]) => info.blocs.length > 0);
-                const totalEnLigne = groupesEnLigne.reduce((s, [, { blocs }]) => s + blocs.length, 0) + blocsEnLigneLibres.length + (chapitresRB.length > 0 && urlRB ? 1 : 0);
+                const totalEnLigne = groupesEnLigne.reduce((s, [, { blocs }]) => s + blocs.length, 0) + blocsEnLigneLibres.length + (chapitresRB.length > 0 && urlRB ? 1 : 0) + chapitresAssignes.length;
                 return (
               <>
               {/* ─ Header ─ */}
@@ -1173,7 +1118,7 @@ export default function DashboardEleve() {
                   )}
 
                   {/* ══ À faire en ligne ══ */}
-                  {(groupesEnLigne.length > 0 || blocsEnLigneLibres.length > 0 || (chapitresRB.length > 0 && urlRB) || dailyProblem) && (
+                  {(groupesEnLigne.length > 0 || blocsEnLigneLibres.length > 0 || (chapitresRB.length > 0 && urlRB) || dailyProblem || chapitresAssignes.length > 0) && (
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <span className="ms" style={{ fontSize: 18, color: "var(--pb-on-surface-variant)" }}>computer</span>
@@ -1415,6 +1360,105 @@ export default function DashboardEleve() {
                       </div>
                     );
                   })()}
+
+                  {/* ══ Chapitres progressifs ══ */}
+                  {chapitresAssignes.map((ch) => (
+                    <Link
+                      key={`chap-${ch.id}`}
+                      href={`/eleve/chapitre/${ch.id}`}
+                      className="pb-card"
+                      style={{
+                        display: "flex", flexDirection: "column",
+                        padding: "20px 22px",
+                        borderLeft: `4px solid ${ch.tousValides ? "#22C55E" : "#7C3AED"}`,
+                        textDecoration: "none", color: "inherit",
+                        opacity: ch.tousValides ? 0.65 : 1,
+                        minHeight: 130,
+                        position: "relative",
+                        overflow: "hidden",
+                      }}
+                    >
+                      {/* Cercle déco */}
+                      <div style={{
+                        position: "absolute", bottom: -30, right: -30,
+                        width: 100, height: 100, borderRadius: "50%",
+                        background: ch.tousValides ? "rgba(34,197,94,0.08)" : "rgba(124,58,237,0.08)",
+                        pointerEvents: "none",
+                      }} />
+
+                      {/* Header */}
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 12, flexWrap: "wrap" }}>
+                            <span style={{
+                              fontSize: 10, fontWeight: 700, letterSpacing: "0.07em",
+                              textTransform: "uppercase", padding: "4px 12px",
+                              borderRadius: 999,
+                              background: ch.tousValides ? "rgba(34,197,94,0.08)" : "rgba(124,58,237,0.08)",
+                              color: ch.tousValides ? "#22C55E" : "#7C3AED",
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            }}>
+                              Parcours
+                            </span>
+                          </div>
+                          <div style={{
+                            fontWeight: 800, fontSize: 15,
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            color: "var(--pb-on-surface)",
+                          }}>
+                            {ch.titre}
+                          </div>
+                          <div style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginTop: 4 }}>
+                            {ch.tousValides
+                              ? "✅ Tous les exercices validés · Évaluation disponible"
+                              : ch.exerciceEnCoursOrdre != null
+                                ? `Exercice ${ch.exerciceEnCoursOrdre} sur ${ch.nbExercices}`
+                                : `${ch.nbExercices} exercice${ch.nbExercices > 1 ? "s" : ""}`}
+                          </div>
+                        </div>
+                        <div style={{
+                          width: 44, height: 44, borderRadius: 12,
+                          background: ch.tousValides ? "rgba(34,197,94,0.1)" : "rgba(124,58,237,0.1)",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          flexShrink: 0,
+                        }}>
+                          <span className="ms" style={{ fontSize: 24, color: ch.tousValides ? "#22C55E" : "#7C3AED" }}>
+                            {ch.tousValides ? "verified" : "menu_book"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Barre de progression */}
+                      <div style={{ marginTop: "auto" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: ch.tousValides ? "#22C55E" : "#7C3AED" }}>
+                            {ch.nbValides}/{ch.nbExercices} validé{ch.nbValides > 1 ? "s" : ""}
+                          </span>
+                          <span style={{ fontSize: 12, fontWeight: 700, color: ch.tousValides ? "#22C55E" : "#7C3AED" }}>
+                            {ch.pourcentage}%
+                          </span>
+                        </div>
+                        <div style={{ height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 100, overflow: "hidden" }}>
+                          <div style={{
+                            width: `${ch.pourcentage}%`, height: "100%",
+                            background: ch.tousValides ? "#22C55E" : "#7C3AED",
+                            borderRadius: 100, transition: "width 0.5s ease",
+                          }} />
+                        </div>
+                      </div>
+
+                      {/* CTA */}
+                      {!ch.tousValides && (
+                        <span className="pb-btn primary-fill" style={{
+                          fontSize: 13, padding: "8px 20px", borderRadius: 999,
+                          alignSelf: "flex-start", marginTop: 14,
+                          background: "#7C3AED", color: "#fff",
+                        }}>
+                          Continuer →
+                        </span>
+                      )}
+                    </Link>
+                  ))}
 
                   {/* Bloc Repetibox (dans en ligne) */}
                   {chapitresRB.length > 0 && urlRB && (
