@@ -91,12 +91,13 @@ function getRegles(type: ExerciceType): string {
 - Varier les structures (ex. "3 × ? = 21" parfois)`;
     case "texte_a_trous":
       return `${base}
-- Génère UN SEUL texte d'au moins 5 phrases avec exactement le nombre de trous demandé
+- Génère UN SEUL texte d'au moins 8 phrases avec exactement le nombre de trous demandé
 - Le nombre d'items = le nombre de trous dans le texte unique (PAS le nombre de textes)
-- Le texte doit être cohérent, fluide et intéressant comme une petite histoire ou un paragraphe documentaire
-- Les mots à deviner doivent être des mots clés liés au chapitre
-- Fournir des indices utiles mais pas trop évidents
-- Les trous doivent être répartis dans tout le texte`;
+- Le texte doit être cohérent, fluide et intéressant comme une petite histoire
+- CRITIQUE : chaque mot dans "trous" DOIT apparaître EXACTEMENT tel quel dans "texte_complet" (même orthographe, même conjugaison)
+- CRITIQUE : vérifie chaque conjugaison avant de répondre. Par exemple "escalader" au futur 3e pers. sing. = "escaladera", PAS "escaladers" ni "escalera"
+- Fournir des indices utiles mais pas trop évidents (ex: "verbe [infinitif] au futur, [personne]")
+- Les trous doivent être répartis dans tout le texte, pas concentrés au début`;
     case "qcm":
       return `${base}
 - Exactement 4 options par question
