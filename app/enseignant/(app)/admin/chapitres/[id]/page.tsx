@@ -298,18 +298,25 @@ export default function PageChapitreDetail() {
         body: JSON.stringify({
           chapitre_id: chapitreId,
           type: ex.type,
-          contexte: ex.titre,
-          nb_questions: 10,
+          contexte: [
+            ex.titre,
+            // Conserver la consigne existante pour ne pas la perdre à la régénération
+            ...(Array.isArray(ex.contenu) && ex.contenu[0]?.consigne ? [`Consigne : ${ex.contenu[0].consigne}`] : []),
+            ...(typeof ex.contenu?.consigne === "string" && ex.contenu.consigne ? [`Consigne : ${ex.contenu.consigne}`] : []),
+          ].filter(Boolean).join(". "),
+          nb_questions: ex.nb_questions || 10,
         }),
       });
       const json = await res.json();
       if (json.contenu) {
+        const updates: Record<string, unknown> = { id: ex.id, contenu: json.contenu };
+        if (json.titre) updates.titre = json.titre;
         await fetch("/api/chapitres/exercices", {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ id: ex.id, contenu: json.contenu }),
+          body: JSON.stringify(updates),
         });
-        setExercices((prev) => prev.map((e) => e.id === ex.id ? { ...e, contenu: json.contenu } : e));
+        setExercices((prev) => prev.map((e) => e.id === ex.id ? { ...e, contenu: json.contenu, ...(json.titre ? { titre: json.titre } : {}) } : e));
       }
     } catch {
       alert("Erreur lors de la régénération");
