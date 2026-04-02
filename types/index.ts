@@ -318,7 +318,8 @@ export type TypeBloc =
   | "texte_a_trous"
   | "analyse_phrase"
   | "classement"
-  | "lecture";
+  | "lecture"
+  | "ceinture_multiplication";
 
 export type SousTypeRessource =
   | "video"
@@ -438,6 +439,7 @@ export const TYPE_BLOC_CONFIG: Record<
   analyse_phrase: { icone: "schema",      libelle: "Analyse de phrase", couleur: "#6D28D9" },
   classement:     { icone: "category",    libelle: "Classement",        couleur: "#0369A1" },
   lecture:         { icone: "auto_stories", libelle: "Lecture",          couleur: "#7C3AED" },
+  ceinture_multiplication: { icone: "military_tech", libelle: "Ceintures de multiplications", couleur: "#F59E0B" },
 };
 
 export const STATUT_BLOC_CONFIG: Record<

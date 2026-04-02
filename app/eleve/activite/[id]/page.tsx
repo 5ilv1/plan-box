@@ -19,6 +19,7 @@ import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import ClassementEleve from "@/components/ClassementEleve";
 import LectureEleve from "@/components/LectureEleve";
 import DicteeCorrection from "@/components/DicteeCorrection";
+import CeintureMultiplication from "@/components/CeintureMultiplication";
 import { FonctionGram } from "@/types";
 import dynamic from "next/dynamic";
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
@@ -49,6 +50,7 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
   if (type === "analyse_phrase") return { label: "Analyse de phrase", tagClass: "secondary", icon: "schema", subtitle: "Identifie les fonctions des groupes de mots" };
   if (type === "classement") return { label: "Classement", tagClass: "primary", icon: "category", subtitle: "Classe les éléments dans les bonnes catégories" };
   if (type === "lecture") return { label: "Lecture", tagClass: "secondary", icon: "auto_stories", subtitle: "Lis le texte puis réponds aux questions" };
+  if (type === "ceinture_multiplication") return { label: "Ceintures de multiplications", tagClass: "primary", icon: "military_tech", subtitle: "Entraîne-toi et passe tes ceintures !" };
   if (type === "ressource") {
     const st = ressource?.sous_type ?? (ressource?.taches?.[0]?.sous_type);
     if (st === "video")              return { label: "Vidéo", tagClass: "secondary", icon: "play_circle", subtitle: "Regarde attentivement la vidéo" };
@@ -88,6 +90,19 @@ export default function PageActivite() {
   useEffect(() => {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
+    // Route spéciale ceintures — pas de plan_travail
+    if (id === "ceinture") {
+      setBloc({
+        id: "ceinture",
+        type: "ceinture_multiplication",
+        titre: "Ceintures de multiplications",
+        statut: "a_faire",
+        contenu: {},
+        date_assignation: new Date().toISOString().split("T")[0],
+      } as unknown as PlanTravail);
+      setEtat("pret");
+      return;
+    }
     if (session.source === "repetibox") {
       chargerRB(parseInt(session.id, 10));
     } else {
@@ -897,6 +912,21 @@ export default function PageActivite() {
               </div>
             )}
 
+            {/* ── Ceintures de multiplications ── */}
+            {bloc.type === "ceinture_multiplication" && (
+              <div className="pb-card" style={{ padding: "24px 20px" }}>
+                <CeintureMultiplication
+                  eleveId={session?.source === "planbox" ? session.id : undefined}
+                  repetiboxEleveId={session?.source === "repetibox" ? parseInt(session.id, 10) : undefined}
+                  onTermine={(score) => {
+                    if (id !== "ceinture") {
+                      marquerFait(score, score.bon / score.total >= 0.9 ? "fait" : "en_cours");
+                    }
+                  }}
+                />
+              </div>
+            )}
+
             {/* ── Fichier de maths ── */}
             {fichierMaths && (
               <div className="pb-card" style={{ textAlign: "center", padding: "56px 32px" }}>
@@ -1018,7 +1048,7 @@ export default function PageActivite() {
             ) : null}
 
             {/* Fallback */}
-            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !lectureData && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && (
+            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !lectureData && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && bloc.type !== "ceinture_multiplication" && (
               <div className="pb-card" style={{ textAlign: "center", padding: "48px 32px" }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
                 <p style={{ color: "var(--pb-on-surface-variant)", marginBottom: 28 }}>

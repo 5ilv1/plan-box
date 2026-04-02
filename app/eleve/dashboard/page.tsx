@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import { PlanTravail, Progression, Chapitre, Notification, TYPE_BLOC_CONFIG } from "@/types";
+import { CEINTURES } from "@/lib/ceintures";
 import ActivityCard from "@/components/ActivityCard";
 import NotifCard from "@/components/NotifCard";
 
@@ -51,6 +52,7 @@ const TYPE_BLOC_MS: Record<string, { icon: string; color: string; bg: string }> 
   repetibox:     { icon: "style",         color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
   fichier_maths: { icon: "square_foot",  color: "#0F766E", bg: "rgba(15,118,110,0.1)" },
   ecriture:      { icon: "edit_note",    color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
+  ceinture_multiplication: { icon: "military_tech", color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
 };
 
 function groupParChapitre(blocs: PlanTravail[]): ProgressionChapitre[] {
@@ -140,6 +142,8 @@ export default function DashboardEleve() {
   const [accordeonsOuverts, setAccordeonsOuverts]   = useState<Set<string>>(new Set());
   const [rbEleveId, setRbEleveId]                   = useState<number | null>(null);
   const [chargementRbBtn, setChargementRbBtn]        = useState(false);
+  const [ceintureActive, setCeintureActive]           = useState(false);
+  const [ceintureInfo, setCeintureInfo]               = useState<{ index: number; nom: string; couleur: string } | null>(null);
   const [dailyProblem, setDailyProblem]               = useState<{ id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null>(null);
   const [dailyProblemSolved, setDailyProblemSolved]    = useState(false);
 
@@ -236,6 +240,24 @@ export default function DashboardEleve() {
           .catch(() => {});
       }
 
+      // Ceintures de multiplications — vérifier si activé pour cet élève
+      const ceintureParam = rbId ? `rb_id=${rbId}` : `eleve_id=${eleveId}`;
+      fetch(`/api/ceinture-active?${ceintureParam}`)
+        .then((r) => r.json())
+        .then((d) => {
+          setCeintureActive(d.actif === true);
+          if (d.actif) {
+            fetch(`/api/ceinture-progression?${ceintureParam}`)
+              .then((r) => r.json())
+              .then((p) => {
+                const c = CEINTURES[p.ceinture_index ?? 0];
+                if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
+              })
+              .catch(() => {});
+          }
+        })
+        .catch(() => {});
+
       // Problème du jour
       fetch("/api/daily-problem")
         .then((r) => r.json())
@@ -291,6 +313,23 @@ export default function DashboardEleve() {
       fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`)
         .then((r) => r.json())
         .then((json) => setChapitresRB(json.chapitres ?? []))
+        .catch(() => {});
+
+      // Ceintures de multiplications
+      fetch(`/api/ceinture-active?rb_id=${rbId}`)
+        .then((r) => r.json())
+        .then((d) => {
+          setCeintureActive(d.actif === true);
+          if (d.actif) {
+            fetch(`/api/ceinture-progression?rb_id=${rbId}`)
+              .then((r) => r.json())
+              .then((p) => {
+                const c = CEINTURES[p.ceinture_index ?? 0];
+                if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
+              })
+              .catch(() => {});
+          }
+        })
         .catch(() => {});
 
       // Problème du jour
@@ -736,6 +775,54 @@ export default function DashboardEleve() {
               </div>
             )}
 
+            {/* Ceintures de multiplications */}
+            {ceintureActive && (
+              <Link
+                href="/eleve/activite/ceinture"
+                className="pb-card"
+                style={{
+                  display: "block", textDecoration: "none", color: "inherit",
+                  background: "linear-gradient(135deg, #FFF7ED, #FEF3C7)",
+                  border: "1.5px solid rgba(245,158,11,0.25)",
+                  padding: "20px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <span className="ms" style={{ fontSize: 28, color: "#F59E0B" }}>military_tech</span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#92400E" }}>
+                      Ceintures de multiplications
+                    </div>
+                    <div style={{ fontSize: 12, color: "#B45309" }}>
+                      Entraîne-toi sur les tables !
+                    </div>
+                  </div>
+                </div>
+                {ceintureInfo && (
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                    <div style={{
+                      width: 14, height: 14, borderRadius: "50%",
+                      background: ceintureInfo.couleur,
+                      border: "2px solid rgba(255,255,255,0.6)",
+                      boxShadow: `0 0 0 1px ${ceintureInfo.couleur}40`,
+                      flexShrink: 0,
+                    }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: ceintureInfo.couleur, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      Ceinture {ceintureInfo.nom}
+                    </span>
+                  </div>
+                )}
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "#F59E0B", color: "white", padding: "8px 18px",
+                  borderRadius: 999, fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}>
+                  S'entraîner →
+                </div>
+              </Link>
+            )}
+
             {/* Podcasts / QCM */}
             {podcastsQcm.length > 0 && (
               <div className="pb-card">
@@ -1034,6 +1121,7 @@ export default function DashboardEleve() {
                       analyse_phrase: { label: "Analyse de phrase", color: "#6D28D9", bg: "rgba(109,40,217,0.08)" },
                       classement: { label: "Classement", color: "#0369A1", bg: "rgba(3,105,161,0.08)" },
                       lecture: { label: "Lecture", color: "#7C3AED", bg: "rgba(124,58,237,0.08)" },
+                      ceinture_multiplication: { label: "Ceintures", color: "#F59E0B", bg: "rgba(245,158,11,0.08)" },
                     };
                     const DESC: Record<string, string> = {
                       exercice:      "Entraîne-toi sur les notions du cours.",
@@ -1049,8 +1137,9 @@ export default function DashboardEleve() {
                       analyse_phrase: "Identifie les fonctions grammaticales.",
                       classement: "Classe les éléments dans les bonnes catégories.",
                       lecture: "Lis le texte puis réponds aux questions.",
+                      ceinture_multiplication: "Entraîne-toi sur les tables de multiplication.",
                     };
-                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "lecture"];
+                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "lecture", "ceinture_multiplication"];
                     const tousBlocs = [
                       ...groupesEnLigne.flatMap(([, { blocs }]) => blocs),
                       ...blocsEnLigneLibres,

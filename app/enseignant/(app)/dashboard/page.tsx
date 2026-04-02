@@ -9,8 +9,9 @@ import AujourdhuiSection from "@/components/dashboard/AujourdhuiSection";
 import ProgrammeJourView from "@/components/dashboard/ProgrammeJourView";
 import ProgressionElevesView from "@/components/dashboard/ProgressionElevesView";
 import FeedbackView from "@/components/dashboard/FeedbackView";
+import CeinturesView from "@/components/dashboard/CeinturesView";
 
-type TabSidebar = "blocs" | "eleves" | "feedback";
+type TabSidebar = "blocs" | "eleves" | "feedback" | "ceintures";
 
 interface ThemeEcriture {
   id: string | null;
@@ -301,6 +302,74 @@ function WidgetThemeEcriture() {
   );
 }
 
+function WidgetCeintures() {
+  const [config, setConfig] = useState<{ id: string; nom: string; actif: boolean }[]>([]);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      fetch(`/api/ceinture-config?enseignant_id=${data.user.id}`)
+        .then((r) => r.json())
+        .then((d) => setConfig(d.groupes ?? []))
+        .catch(() => {});
+    });
+  }, []);
+
+  async function toggle(groupeId: string, actif: boolean) {
+    setConfig((prev) => prev.map((g) => g.id === groupeId ? { ...g, actif } : g));
+    await fetch("/api/ceinture-config", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ groupe_id: groupeId, actif }),
+    });
+  }
+
+  if (config.length === 0) return null;
+
+  return (
+    <div style={{
+      background: "linear-gradient(135deg, #F59E0B08, #F59E0B14)",
+      border: "1.5px solid rgba(245,158,11,0.2)",
+      borderRadius: 20,
+      padding: "16px 20px",
+      marginBottom: 20,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span className="ms" style={{ fontSize: 18, color: "#F59E0B" }}>military_tech</span>
+        <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B45309" }}>
+          Ceintures de multiplications
+        </span>
+      </div>
+      <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+        {config.map((g) => (
+          <button
+            key={g.id}
+            onClick={() => toggle(g.id, !g.actif)}
+            style={{
+              padding: "8px 16px", borderRadius: 999, fontSize: 13,
+              fontWeight: 600, cursor: "pointer", border: "none",
+              background: g.actif ? "#F59E0B" : "var(--pb-surface-container, #f0f0f0)",
+              color: g.actif ? "white" : "var(--pb-on-surface-variant)",
+              display: "flex", alignItems: "center", gap: 6,
+              transition: "all 0.2s",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            <span className="ms" style={{ fontSize: 16 }}>
+              {g.actif ? "check_circle" : "radio_button_unchecked"}
+            </span>
+            {g.nom}
+          </button>
+        ))}
+      </div>
+      <p style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", marginTop: 10, marginBottom: 0 }}>
+        Les élèves des groupes activés verront un entraînement quotidien sur les tables de multiplication.
+      </p>
+    </div>
+  );
+}
+
 export default function DashboardEnseignant() {
   const router = useRouter();
   const supabase = createClient();
@@ -369,6 +438,7 @@ export default function DashboardEnseignant() {
           { key: "blocs" as const, label: "Programme du jour" },
           { key: "feedback" as const, label: "Feedback" },
           { key: "eleves" as const, label: "Progression élèves" },
+          { key: "ceintures" as const, label: "Ceintures" },
         ]).map(({ key, label }) => (
           <button
             key={key}
@@ -387,6 +457,7 @@ export default function DashboardEnseignant() {
           <div>
             <h3 className="ens-section-title">Programme du jour</h3>
             <WidgetThemeEcriture />
+            <WidgetCeintures />
             <ProgrammeJourView />
           </div>
 
@@ -427,6 +498,7 @@ export default function DashboardEnseignant() {
 
       {activeTab === "feedback" && <FeedbackView />}
       {activeTab === "eleves" && <ProgressionElevesView />}
+      {activeTab === "ceintures" && <CeinturesView />}
     </>
   );
 }

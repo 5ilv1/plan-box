@@ -45,6 +45,16 @@ export default function PageBilanEleve() {
   const [data, setData] = useState<BilanData | null>(null);
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState("");
+  const [ceintureData, setCeintureData] = useState<{
+    actif: boolean;
+    ceintureIndex: number;
+    nbObtenues: number;
+    nbTotal: number;
+    nbEntrainements: number;
+    tempsMoyenSec: number;
+    dernierScore: { bon: number; total: number } | null;
+    ceintures: { index: number; nom: string; couleur: string; obtenue: boolean; dateObtention: string | null; enCours: boolean }[];
+  } | null>(null);
 
   useEffect(() => {
     if (chargementSession) return;
@@ -65,6 +75,15 @@ export default function PageBilanEleve() {
       if (!res.ok) throw new Error("Erreur serveur");
       const json = await res.json();
       setData(json);
+
+      // Ceintures
+      const ceintureParam = session!.source === "planbox"
+        ? `eleve_id=${session!.id}`
+        : `rb_id=${session!.id}`;
+      fetch(`/api/ceinture-bilan?${ceintureParam}`)
+        .then((r) => r.json())
+        .then((d) => { if (d.actif) setCeintureData(d); })
+        .catch(() => {});
     } catch {
       setErreur("Impossible de charger ton bilan.");
     }
@@ -410,6 +429,130 @@ export default function PageBilanEleve() {
                     </div>
                   ))}
                 </div>
+              </div>
+            )}
+
+            {/* ── Ceintures de multiplications ── */}
+            {ceintureData && (
+              <div style={{ borderRadius: "0.875rem", padding: 20, background: "linear-gradient(135deg, #FFF7ED, #FEF3C7)", border: "1.5px solid rgba(245,158,11,0.25)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16 }}>
+                  <span className="ms" style={{ fontSize: 22, color: "#F59E0B" }}>military_tech</span>
+                  <span style={{ fontSize: 14, fontWeight: 800, color: "#92400E", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    Ceintures de multiplications
+                  </span>
+                  <span style={{ marginLeft: "auto", fontSize: 13, fontWeight: 700, color: "#B45309" }}>
+                    {ceintureData.nbObtenues} / {ceintureData.nbTotal}
+                  </span>
+                </div>
+
+                {/* Barre de ceintures */}
+                <div style={{ display: "flex", gap: 6, marginBottom: 16, flexWrap: "wrap", justifyContent: "center" }}>
+                  {ceintureData.ceintures.map((c) => (
+                    <div
+                      key={c.index}
+                      title={`Ceinture ${c.nom}${c.obtenue ? " ✓" : c.enCours ? " (en cours)" : ""}`}
+                      style={{
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 3,
+                        opacity: c.obtenue || c.enCours ? 1 : 0.35,
+                      }}
+                    >
+                      <div style={{
+                        width: c.enCours ? 28 : 22, height: c.enCours ? 28 : 22,
+                        borderRadius: "50%",
+                        background: c.obtenue || c.enCours ? c.couleur : "#D1D5DB",
+                        border: c.enCours ? "3px solid #F59E0B" : c.obtenue ? "2px solid white" : "2px solid #E5E7EB",
+                        boxShadow: c.enCours ? "0 0 8px rgba(245,158,11,0.5)" : c.obtenue ? `0 1px 3px ${c.couleur}40` : "none",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        transition: "all 0.2s",
+                      }}>
+                        {c.obtenue && (
+                          <span className="ms" style={{ fontSize: 12, color: "white" }}>check</span>
+                        )}
+                      </div>
+                      <span style={{
+                        fontSize: 8, fontWeight: c.enCours ? 800 : 600,
+                        color: c.enCours ? "#92400E" : c.obtenue ? "#374151" : "#9CA3AF",
+                        textAlign: "center", lineHeight: 1.1, maxWidth: 40,
+                      }}>
+                        {c.nom}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Ceinture en cours */}
+                {ceintureData.ceintures[ceintureData.ceintureIndex] && (
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 10, padding: "10px 14px",
+                    background: "rgba(255,255,255,0.7)", borderRadius: 12, marginBottom: 14,
+                  }}>
+                    <div style={{
+                      width: 20, height: 20, borderRadius: "50%",
+                      background: ceintureData.ceintures[ceintureData.ceintureIndex].couleur,
+                      border: "2px solid white",
+                      boxShadow: `0 0 0 2px ${ceintureData.ceintures[ceintureData.ceintureIndex].couleur}40`,
+                      flexShrink: 0,
+                    }} />
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#374151", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      En cours : Ceinture {ceintureData.ceintures[ceintureData.ceintureIndex].nom}
+                    </span>
+                    {ceintureData.dernierScore && (
+                      <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 600, color: "#6B7280" }}>
+                        Dernier : {ceintureData.dernierScore.bon}/{ceintureData.dernierScore.total}
+                      </span>
+                    )}
+                  </div>
+                )}
+
+                {/* Stats */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10 }}>
+                  <div style={{ textAlign: "center", padding: "10px 6px", background: "rgba(255,255,255,0.6)", borderRadius: 10 }}>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#92400E", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      {ceintureData.nbObtenues}
+                    </div>
+                    <div style={{ fontSize: 10, color: "#B45309", fontWeight: 600 }}>ceintures obtenues</div>
+                  </div>
+                  <div style={{ textAlign: "center", padding: "10px 6px", background: "rgba(255,255,255,0.6)", borderRadius: 10 }}>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#92400E", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      {ceintureData.nbEntrainements}
+                    </div>
+                    <div style={{ fontSize: 10, color: "#B45309", fontWeight: 600 }}>entraînements</div>
+                  </div>
+                  <div style={{ textAlign: "center", padding: "10px 6px", background: "rgba(255,255,255,0.6)", borderRadius: 10 }}>
+                    <div style={{ fontSize: 22, fontWeight: 800, color: "#92400E", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                      {ceintureData.tempsMoyenSec}s
+                    </div>
+                    <div style={{ fontSize: 10, color: "#B45309", fontWeight: 600 }}>temps moyen</div>
+                  </div>
+                </div>
+
+                {/* Historique des ceintures obtenues */}
+                {ceintureData.ceintures.some((c) => c.obtenue) && (
+                  <div style={{ marginTop: 14 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "#92400E", marginBottom: 8 }}>Historique</div>
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      {ceintureData.ceintures.filter((c) => c.obtenue).map((c) => (
+                        <div key={c.index} style={{
+                          display: "flex", alignItems: "center", gap: 8, padding: "6px 10px",
+                          background: "rgba(255,255,255,0.5)", borderRadius: 8,
+                        }}>
+                          <div style={{
+                            width: 12, height: 12, borderRadius: "50%",
+                            background: c.couleur, flexShrink: 0,
+                          }} />
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "#374151", flex: 1 }}>
+                            Ceinture {c.nom}
+                          </span>
+                          {c.dateObtention && (
+                            <span style={{ fontSize: 11, color: "#9CA3AF" }}>
+                              {new Date(c.dateObtention).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             )}
 
