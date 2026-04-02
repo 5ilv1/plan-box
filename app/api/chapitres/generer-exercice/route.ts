@@ -157,12 +157,30 @@ export async function POST(req: NextRequest) {
     const format = getFormatPourType(type as ExerciceType);
     const regles = getRegles(type as ExerciceType);
 
+    // Thèmes variés pour diversifier les textes générés
+    const THEMES = [
+      "une sortie scolaire au musée", "une journée à la ferme", "une compétition sportive",
+      "la préparation d'un spectacle de fin d'année", "une enquête de détective à l'école",
+      "un voyage en train vers la mer", "une journée de marché avec les grands-parents",
+      "la construction d'une cabane dans le jardin", "une aventure dans la forêt",
+      "un anniversaire surprise", "une journée de neige à la montagne",
+      "un projet de jardinage à l'école", "une visite chez un artisan boulanger",
+      "un camping en famille", "une course de vélo dans le village",
+      "la découverte d'un trésor dans le grenier", "une journée à la piscine municipale",
+      "un concours de cuisine entre amis", "la rentrée dans une nouvelle école",
+      "une excursion en bateau sur la rivière", "un atelier de peinture en plein air",
+      "une nuit à la belle étoile", "la récolte des pommes à l'automne",
+      "un spectacle de cirque", "une promenade au bord de la plage",
+    ];
+    const themeAleatoire = THEMES[Math.floor(Math.random() * THEMES.length)];
+
     const prompt = `Tu es un assistant pédagogique pour une école primaire française.
 Tu génères des exercices de type "${type}" adaptés au niveau ${niveauNom}.
 Matière : ${chapitre.matiere}${chapitre.sous_matiere ? ` — ${chapitre.sous_matiere}` : ""}.
 Chapitre : ${chapitre.titre}.
 Nombre d'items à générer : ${nb_questions}.
-${contexte ? `Thème / contexte souhaité : ${contexte}` : ""}${existantsResume}
+${contexte ? `Thème / contexte souhaité : ${contexte}` : ""}
+Thème imposé pour le texte/les questions : ${themeAleatoire}.${existantsResume}
 
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
 Format attendu :
