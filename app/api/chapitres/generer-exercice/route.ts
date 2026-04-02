@@ -94,8 +94,9 @@ function getRegles(type: ExerciceType): string {
 - Génère UN SEUL texte d'au moins 8 phrases avec exactement le nombre de trous demandé
 - Le nombre d'items = le nombre de trous dans le texte unique (PAS le nombre de textes)
 - Le texte doit être cohérent, fluide et intéressant comme une petite histoire
-- CRITIQUE : chaque mot dans "trous" DOIT apparaître EXACTEMENT tel quel dans "texte_complet" (même orthographe, même conjugaison)
-- CRITIQUE : vérifie chaque conjugaison avant de répondre. Par exemple "escalader" au futur 3e pers. sing. = "escaladera", PAS "escaladers" ni "escalera"
+- CRITIQUE : chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot présent dans "texte_complet"
+- Avant de répondre, relis ton texte et vérifie que chaque mot du tableau "trous" se retrouve bien dans "texte_complet". Corrige toute incohérence.
+- Utilise uniquement des verbes courants du 1er groupe si le sujet porte sur le 1er groupe (manger, jouer, danser, chanter, regarder, marcher, etc.). Évite les verbes pièges comme "escalader" dont la conjugaison est souvent mal formée.
 - Fournir des indices utiles mais pas trop évidents (ex: "verbe [infinitif] au futur, [personne]")
 - Les trous doivent être répartis dans tout le texte, pas concentrés au début`;
     case "qcm":
@@ -171,7 +172,7 @@ Règles :
 ${regles}`;
 
     const message = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: type === "texte_a_trous" ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });
