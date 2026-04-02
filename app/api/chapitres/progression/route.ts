@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
   }
 
   if (!exercices || exercices.length === 0) {
-    return NextResponse.json([]);
+    return NextResponse.json({ exercices: [] });
   }
 
   // Récupérer les résultats de l'élève pour ces exercices
@@ -88,10 +88,11 @@ export async function GET(req: NextRequest) {
       titre: exo.titre,
       type: exo.type,
       meilleur_score: meilleur?.score ?? null,
+      total: meilleur?.total ?? null,
       valide,
       debloque,
     };
   });
 
-  return NextResponse.json(progression);
+  return NextResponse.json({ exercices: progression });
 }

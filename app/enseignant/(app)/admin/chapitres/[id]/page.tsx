@@ -57,6 +57,15 @@ export default function PageChapitreDetail() {
   const { id: chapitreId } = useParams<{ id: string }>();
   const router = useRouter();
 
+  // Toast feedback
+  const [toast, setToast] = useState<{ msg: string; type: "ok" | "err" } | null>(null);
+  const toastRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  function showToast(msg: string, type: "ok" | "err" = "ok") {
+    if (toastRef.current) clearTimeout(toastRef.current);
+    setToast({ msg, type });
+    toastRef.current = setTimeout(() => setToast(null), 3500);
+  }
+
   // Données
   const [chapitre, setChapitre] = useState<Chapitre | null>(null);
   const [exercices, setExercices] = useState<Exercice[]>([]);
@@ -128,12 +137,20 @@ export default function PageChapitreDetail() {
   // ── Actions ───────────────────────────────────────────────────────────────
 
   async function toggleGroupe(groupeId: string, actif: boolean) {
+    const ancien = groupes.map((g) => ({ ...g }));
     setGroupes((prev) => prev.map((g) => g.id === groupeId ? { ...g, actif } : g));
-    await fetch("/api/chapitres/assignation", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chapitre_id: chapitreId, groupe_id: groupeId, actif }),
-    });
+    try {
+      const res = await fetch("/api/chapitres/assignation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chapitre_id: chapitreId, groupe_id: groupeId, actif }),
+      });
+      if (!res.ok) throw new Error();
+      showToast(actif ? "Groupe activé" : "Groupe désactivé");
+    } catch {
+      setGroupes(ancien);
+      showToast("Erreur lors de la modification du groupe", "err");
+    }
   }
 
   async function ajouterExercice() {
@@ -211,41 +228,63 @@ export default function PageChapitreDetail() {
       contenuVide.phrases = [];
     }
 
-    const res = await fetch("/api/chapitres/exercices", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        chapitre_id: chapitreId,
-        titre: ajoutTitre,
-        type: ajoutType,
-        contenu: contenuVide,
-        nb_questions: 10,
-      }),
-    });
-    const json = await res.json();
-    if (json.exercice) {
-      setExercices((prev) => [...prev, json.exercice]);
+    try {
+      const res = await fetch("/api/chapitres/exercices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chapitre_id: chapitreId,
+          titre: ajoutTitre,
+          type: ajoutType,
+          contenu: contenuVide,
+          nb_questions: 10,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      if (json.exercice) {
+        setExercices((prev) => [...prev, json.exercice]);
+      }
+      showToast("Exercice créé");
+      setAjoutTitre("");
+      setAjoutContexte("");
+      setAjoutVisible(false);
+    } catch {
+      showToast("Erreur lors de la création de l'exercice", "err");
     }
-    setAjoutTitre("");
-    setAjoutContexte("");
-    setAjoutVisible(false);
   }
 
   async function supprimerExercice(id: string) {
-    await fetch(`/api/chapitres/exercices?id=${id}`, { method: "DELETE" });
+    const ancien = [...exercices];
     setExercices((prev) => prev.filter((e) => e.id !== id));
     setASupprimer(null);
+    try {
+      const res = await fetch(`/api/chapitres/exercices?id=${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
+      showToast("Exercice supprimé");
+    } catch {
+      setExercices(ancien);
+      showToast("Erreur lors de la suppression", "err");
+    }
   }
 
   async function renommerExercice(id: string) {
     if (!editTitre.trim()) return;
     setEnSauvegarde(true);
-    await fetch("/api/chapitres/exercices", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, titre: editTitre }),
-    });
-    setExercices((prev) => prev.map((e) => e.id === id ? { ...e, titre: editTitre } : e));
+    const ancien = exercices.find((e) => e.id === id)?.titre ?? "";
+    try {
+      const res = await fetch("/api/chapitres/exercices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, titre: editTitre }),
+      });
+      if (!res.ok) throw new Error();
+      setExercices((prev) => prev.map((e) => e.id === id ? { ...e, titre: editTitre } : e));
+      showToast("Titre modifié");
+    } catch {
+      setExercices((prev) => prev.map((e) => e.id === id ? { ...e, titre: ancien } : e));
+      showToast("Erreur lors du renommage", "err");
+    }
     setEnEdition(null);
     setEnSauvegarde(false);
   }
@@ -279,21 +318,36 @@ export default function PageChapitreDetail() {
   }
 
   async function sauvegarderSeuil() {
-    await fetch("/api/admin/chapitres", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id: chapitreId, seuil_evaluation: seuil }),
-    });
-    setChapitre((prev) => prev ? { ...prev, seuil_evaluation: seuil } : prev);
+    const ancienSeuil = chapitre?.seuil_evaluation ?? 90;
+    try {
+      const res = await fetch("/api/admin/chapitres", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: chapitreId, seuil_evaluation: seuil }),
+      });
+      if (!res.ok) throw new Error();
+      setChapitre((prev) => prev ? { ...prev, seuil_evaluation: seuil } : prev);
+      showToast("Seuil mis à jour");
+    } catch {
+      setSeuil(ancienSeuil);
+      showToast("Erreur lors de la sauvegarde du seuil", "err");
+    }
     setEditParams(false);
   }
 
   async function mettreAJourOrdre(ordonnés: Exercice[]) {
-    await fetch("/api/chapitres/exercices/reorder", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ exercice_ids: ordonnés.map((e) => e.id) }),
-    });
+    const ancien = [...exercices];
+    try {
+      const res = await fetch("/api/chapitres/exercices/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ exercice_ids: ordonnés.map((e) => e.id) }),
+      });
+      if (!res.ok) throw new Error();
+    } catch {
+      setExercices(ancien);
+      showToast("Erreur lors du réordonnement", "err");
+    }
   }
 
   // ── DnD ───────────────────────────────────────────────────────────────────
@@ -395,6 +449,27 @@ export default function PageChapitreDetail() {
 
   return (
     <>
+      {/* ── Toast ── */}
+      {toast && (
+        <div
+          style={{
+            position: "fixed", bottom: 24, left: "50%", transform: "translateX(-50%)",
+            zIndex: 9999, padding: "10px 22px", borderRadius: 12,
+            background: toast.type === "ok" ? "#166534" : "#991B1B",
+            color: "white", fontSize: 13, fontWeight: 600,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+            animation: "fadeInUp 0.25s ease",
+            display: "flex", alignItems: "center", gap: 8,
+          }}
+        >
+          <span className="ms" style={{ fontSize: 18 }}>
+            {toast.type === "ok" ? "check_circle" : "error"}
+          </span>
+          {toast.msg}
+        </div>
+      )}
+
       {/* ── Sous-barre ── */}
       <div style={{
         background: "white", borderBottom: "1px solid var(--border)",

@@ -22,6 +22,19 @@ interface ProgressionChapitre {
   evalDisponible: boolean;
 }
 
+interface ChapitreAssigne {
+  id: string;
+  titre: string;
+  matiere: string;
+  sous_matiere: string | null;
+  nbExercices: number;
+  nbValides: number;
+  pourcentage: number;
+  tousValides: boolean;
+  exerciceEnCoursId: string | null;
+  exerciceEnCoursOrdre: number | null;
+}
+
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
 const MATIERE_ICONE: Record<string, string> = {
@@ -146,6 +159,7 @@ export default function DashboardEleve() {
   const [ceintureInfo, setCeintureInfo]               = useState<{ index: number; nom: string; couleur: string } | null>(null);
   const [dailyProblem, setDailyProblem]               = useState<{ id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null>(null);
   const [dailyProblemSolved, setDailyProblemSolved]    = useState(false);
+  const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
 
   // Ref pour accéder à session dans l'intervalle sans le capturer dans la closure
   const sessionRef = useRef(session);
@@ -258,6 +272,12 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
 
+      // Chapitres (parcours progressif)
+      fetch(`/api/chapitres/mes-chapitres?eleve_id=${eleveId}`)
+        .then((r) => r.json())
+        .then((json) => setChapitresAssignes(json.chapitres ?? []))
+        .catch(() => {});
+
       // Problème du jour
       fetch("/api/daily-problem")
         .then((r) => r.json())
@@ -330,6 +350,12 @@ export default function DashboardEleve() {
               .catch(() => {});
           }
         })
+        .catch(() => {});
+
+      // Chapitres (parcours progressif)
+      fetch(`/api/chapitres/mes-chapitres?rb_id=${rbId}`)
+        .then((r) => r.json())
+        .then((json) => setChapitresAssignes(json.chapitres ?? []))
         .catch(() => {});
 
       // Problème du jour
@@ -821,6 +847,63 @@ export default function DashboardEleve() {
                   S'entraîner →
                 </div>
               </Link>
+            )}
+
+            {/* Chapitres — parcours progressif */}
+            {chapitresAssignes.length > 0 && (
+              <div className="pb-card" style={{ padding: "20px" }}>
+                <p className="pb-section-title" style={{ fontSize: 16, marginBottom: 14 }}>📚 Mes chapitres</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {chapitresAssignes.map((ch) => (
+                    <Link
+                      key={ch.id}
+                      href={`/eleve/chapitre/${ch.id}`}
+                      style={{
+                        display: "block", textDecoration: "none", color: "inherit",
+                        padding: "14px 16px", borderRadius: 14,
+                        background: ch.tousValides
+                          ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
+                          : "var(--pb-surface-container, #f5f5f5)",
+                        border: ch.tousValides
+                          ? "1.5px solid rgba(34,197,94,0.3)"
+                          : "1px solid var(--pb-outline-variant, #e5e5e5)",
+                        transition: "all 0.2s",
+                      }}
+                    >
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 10, marginBottom: 8 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <span className="ms" style={{ fontSize: 20, color: ch.tousValides ? "#22C55E" : "var(--pb-primary)" }}>
+                            {ch.tousValides ? "verified" : iconeMatiere(ch.matiere)}
+                          </span>
+                          <span style={{ fontSize: 14, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)" }}>
+                            {ch.titre}
+                          </span>
+                        </div>
+                        <span style={{ fontSize: 12, fontWeight: 700, color: ch.tousValides ? "#22C55E" : "var(--pb-on-surface-variant)" }}>
+                          {ch.nbValides}/{ch.nbExercices}
+                        </span>
+                      </div>
+                      <div style={{ height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 100, overflow: "hidden" }}>
+                        <div style={{
+                          width: `${ch.pourcentage}%`, height: "100%",
+                          background: ch.tousValides ? "#22C55E" : "var(--pb-primary)",
+                          borderRadius: 100, transition: "width 0.5s ease",
+                        }} />
+                      </div>
+                      {!ch.tousValides && ch.exerciceEnCoursOrdre != null && (
+                        <div style={{ fontSize: 12, color: "var(--pb-primary)", fontWeight: 600, marginTop: 6 }}>
+                          ▶ Exercice {ch.exerciceEnCoursOrdre} · Continuer →
+                        </div>
+                      )}
+                      {ch.tousValides && (
+                        <div style={{ fontSize: 12, color: "#22C55E", fontWeight: 600, marginTop: 6 }}>
+                          ✅ Tous les exercices validés · Évaluation disponible
+                        </div>
+                      )}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             )}
 
             {/* Podcasts / QCM */}
