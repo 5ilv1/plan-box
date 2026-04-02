@@ -24,7 +24,7 @@ import { FonctionGram } from "@/types";
 import dynamic from "next/dynamic";
 const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
 
-type EtatActivite = "chargement" | "en_cours" | "termine" | "erreur";
+type EtatActivite = "chargement" | "pret" | "en_cours" | "termine" | "erreur";
 
 const SEUIL_REUSSITE = 80;   // ≥ 80% → exercice réussi
 const SEUIL_REAFFECT  = 60;   // < 60% → réaffectation le prochain jour d'école
