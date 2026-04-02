@@ -857,30 +857,44 @@ export default function PageChapitreDetail() {
               </div>
             )}
 
-            {apercuEx.type === "texte_a_trous" && (
-              <div>
-                {typeof apercuEx.contenu.consigne === "string" && apercuEx.contenu.consigne && (
-                  <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 10, fontStyle: "italic" }}>
-                    {String(apercuEx.contenu.consigne)}
-                  </p>
-                )}
-                <p style={{ fontSize: 14, lineHeight: 1.8 }}>
-                  {apercuEx.contenu.texte_complet as string}
-                </p>
-                {Array.isArray(apercuEx.contenu.trous) && (
-                  <div style={{ marginTop: 12 }}>
-                    <span style={{ fontSize: 12, fontWeight: 600 }}>Trous :</span>
-                    <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
-                      {(apercuEx.contenu.trous as Array<{ mot: string }>).map((t, i) => (
-                        <span key={i} style={{ padding: "2px 8px", background: "#FEF3C7", borderRadius: 6, fontSize: 12 }}>
-                          {t.mot}
-                        </span>
-                      ))}
+            {apercuEx.type === "texte_a_trous" && (() => {
+              // Le contenu peut être un tableau de textes ou un objet unique
+              const items: Array<{ titre?: string; consigne?: string; texte_complet?: string; trous?: Array<{ mot: string }> }> =
+                Array.isArray(apercuEx.contenu) ? apercuEx.contenu : [apercuEx.contenu];
+              return (
+                <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                  {items.map((item, idx) => (
+                    <div key={idx} style={{ padding: items.length > 1 ? "14px 16px" : 0, background: items.length > 1 ? "var(--bg-secondary, #f9fafb)" : "transparent", borderRadius: 12 }}>
+                      {item.titre && items.length > 1 && (
+                        <p style={{ fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
+                          {idx + 1}. {item.titre}
+                        </p>
+                      )}
+                      {typeof item.consigne === "string" && item.consigne && (
+                        <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 10, fontStyle: "italic" }}>
+                          {item.consigne}
+                        </p>
+                      )}
+                      <p style={{ fontSize: 14, lineHeight: 1.8 }}>
+                        {item.texte_complet}
+                      </p>
+                      {Array.isArray(item.trous) && item.trous.length > 0 && (
+                        <div style={{ marginTop: 8 }}>
+                          <span style={{ fontSize: 12, fontWeight: 600 }}>Trous :</span>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+                            {item.trous.map((t, i) => (
+                              <span key={i} style={{ padding: "2px 8px", background: "#FEF3C7", borderRadius: 6, fontSize: 12 }}>
+                                {t.mot}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
-                )}
-              </div>
-            )}
+                  ))}
+                </div>
+              );
+            })()}
 
             {apercuEx.type === "classement" && (
               <div>
