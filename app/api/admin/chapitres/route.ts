@@ -135,6 +135,10 @@ export async function DELETE(req: NextRequest) {
     );
   }
 
+  // Supprimer les dépendances liées au chapitre
+  await admin.from("plan_travail").delete().eq("chapitre_id", id);
+  await admin.from("pb_progression").delete().eq("chapitre_id", id);
+
   const { error } = await admin.from("chapitres").delete().eq("id", id);
 
   if (error) {
