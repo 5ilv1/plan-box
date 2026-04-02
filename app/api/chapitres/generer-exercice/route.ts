@@ -1,0 +1,192 @@
+import { NextRequest, NextResponse } from "next/server";
+import { createAdminClient } from "@/lib/supabase-admin";
+import Anthropic from "@anthropic-ai/sdk";
+
+const anthropic = new Anthropic();
+
+type ExerciceType = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement";
+
+function getFormatPourType(type: ExerciceType): string {
+  switch (type) {
+    case "exercice":
+      return `{
+  "titre": "Titre court de l'exercice",
+  "consigne": "La consigne générale",
+  "questions": [
+    {
+      "id": 1,
+      "enonce": "Texte de la question",
+      "reponse_attendue": "La réponse correcte",
+      "indice": "Un indice optionnel"
+    }
+  ]
+}`;
+    case "calcul_mental":
+      return `{
+  "calculs": [
+    { "id": 1, "enonce": "7 × 8 =", "reponse": "56" }
+  ]
+}`;
+    case "texte_a_trous":
+      return `{
+  "titre": "Titre court",
+  "consigne": "Complète le texte avec les mots manquants",
+  "texte_complet": "Le texte intégral sans trous",
+  "trous": [
+    { "position": 0, "mot": "Le mot à deviner", "indice": "Un indice pour aider" }
+  ]
+}`;
+    case "qcm":
+      return `{
+  "titre": "Titre court",
+  "consigne": "Choisis la bonne réponse",
+  "questions": [
+    {
+      "question": "La question posée",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "reponse_correcte": 0,
+      "explication": "Explication de la bonne réponse"
+    }
+  ]
+}`;
+    case "classement":
+      return `{
+  "titre": "Titre court",
+  "consigne": "Classe chaque élément dans la bonne catégorie",
+  "categories": ["Catégorie 1", "Catégorie 2"],
+  "items": [
+    { "texte": "Élément à classer", "categorie": "Catégorie 1" }
+  ]
+}`;
+    case "analyse_phrase":
+      return `{
+  "titre": "Titre court",
+  "consigne": "Identifie les groupes dans chaque phrase",
+  "phrases": [
+    {
+      "texte": "Le chat mange la souris.",
+      "groupes": [
+        { "mots": "Le chat", "fonction": "sujet", "debut": 0, "fin": 7 },
+        { "mots": "mange", "fonction": "verbe", "debut": 8, "fin": 13 },
+        { "mots": "la souris", "fonction": "COD", "debut": 14, "fin": 23 }
+      ]
+    }
+  ]
+}`;
+  }
+}
+
+function getRegles(type: ExerciceType): string {
+  const base = `- Langage simple, adapté à des enfants de 8-11 ans
+- Pas de violence, pas de sujets sensibles
+- Questions progressives en difficulté`;
+
+  switch (type) {
+    case "calcul_mental":
+      return `${base}
+- Calculs réalistes pour le niveau
+- Résultats entiers uniquement
+- Varier les structures (ex. "3 × ? = 21" parfois)`;
+    case "texte_a_trous":
+      return `${base}
+- Le texte doit être cohérent et intéressant
+- Les mots à deviner doivent être des mots clés du chapitre
+- Fournir des indices utiles mais pas trop évidents`;
+    case "qcm":
+      return `${base}
+- Exactement 4 options par question
+- Les mauvaises réponses doivent être plausibles
+- reponse_correcte est l'index (0-3) de la bonne option`;
+    case "classement":
+      return `${base}
+- 2 à 4 catégories
+- Répartir les items équitablement entre les catégories
+- Chaque item ne peut appartenir qu'à une seule catégorie`;
+    case "analyse_phrase":
+      return `${base}
+- Phrases simples et claires
+- Les positions debut/fin correspondent aux index de caractères dans la phrase
+- Fonctions grammaticales adaptées au niveau (sujet, verbe, COD, COI, CC...)`;
+    default:
+      return `${base}
+- Réponses courtes et vérifiables`;
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const body = await req.json();
+    const { chapitre_id, type, contexte, nb_questions } = body;
+
+    if (!chapitre_id || !type || !nb_questions) {
+      return NextResponse.json({ error: "chapitre_id, type et nb_questions requis" }, { status: 400 });
+    }
+
+    const admin = createAdminClient();
+
+    // Lire les infos du chapitre
+    const { data: chapitre, error: errCh } = await admin
+      .from("chapitres")
+      .select("titre, matiere, sous_matiere, niveau_id, niveaux(nom)")
+      .eq("id", chapitre_id)
+      .single();
+
+    if (errCh || !chapitre) {
+      console.error("[generer-exercice] chapitre:", errCh);
+      return NextResponse.json({ error: "Chapitre introuvable" }, { status: 404 });
+    }
+
+    // Lire les exercices existants pour éviter les répétitions
+    const { data: exosExistants } = await admin
+      .from("exercice")
+      .select("titre, type, contenu")
+      .eq("chapitre_id", chapitre_id);
+
+    const niveauNom = (chapitre as any).niveaux?.nom ?? "CM1-CM2";
+    const existantsResume = exosExistants && exosExistants.length > 0
+      ? `\n\nExercices déjà créés pour ce chapitre (à ne pas répéter) :\n${exosExistants.map((e: any) => `- ${e.titre} (${e.type})`).join("\n")}`
+      : "";
+
+    const format = getFormatPourType(type as ExerciceType);
+    const regles = getRegles(type as ExerciceType);
+
+    const prompt = `Tu es un assistant pédagogique pour une école primaire française.
+Tu génères des exercices de type "${type}" adaptés au niveau ${niveauNom}.
+Matière : ${chapitre.matiere}${chapitre.sous_matiere ? ` — ${chapitre.sous_matiere}` : ""}.
+Chapitre : ${chapitre.titre}.
+Nombre d'items à générer : ${nb_questions}.
+${contexte ? `Thème / contexte souhaité : ${contexte}` : ""}${existantsResume}
+
+Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
+Format attendu :
+${format}
+
+Règles :
+${regles}`;
+
+    const message = await anthropic.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 4096,
+      messages: [{ role: "user", content: prompt }],
+    });
+
+    const text = message.content[0].type === "text" ? message.content[0].text : "";
+
+    // Nettoyage des balises markdown éventuelles
+    const json = text
+      .replace(/^```json\s*/i, "")
+      .replace(/^```\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    const contenu = JSON.parse(json);
+
+    // Extraire le titre depuis le contenu généré ou en créer un
+    const titre = contenu.titre || `${type} — ${chapitre.titre}`;
+
+    return NextResponse.json({ titre, contenu });
+  } catch (err) {
+    console.error("[generer-exercice]", err);
+    return NextResponse.json({ error: "Erreur lors de la génération" }, { status: 500 });
+  }
+}
