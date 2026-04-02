@@ -31,11 +31,13 @@ function getFormatPourType(type: ExerciceType): string {
       return `{
   "titre": "Titre court",
   "consigne": "Complète le texte avec les mots manquants",
-  "texte_complet": "Le texte intégral sans trous",
+  "texte_complet": "Le texte intégral avec tous les mots (au moins 5 phrases). C'est UN SEUL texte continu.",
   "trous": [
-    { "position": 0, "mot": "Le mot à deviner", "indice": "Un indice pour aider" }
+    { "position": 0, "mot": "premier mot à deviner", "indice": "Un indice" },
+    { "position": 1, "mot": "deuxième mot à deviner", "indice": "Un autre indice" }
   ]
-}`;
+}
+IMPORTANT: le tableau "trous" doit contenir exactement le nombre d'items demandé. C'est UN SEUL objet JSON, pas un tableau.`;
     case "qcm":
       return `{
   "titre": "Titre court",
@@ -89,9 +91,12 @@ function getRegles(type: ExerciceType): string {
 - Varier les structures (ex. "3 × ? = 21" parfois)`;
     case "texte_a_trous":
       return `${base}
-- Le texte doit être cohérent et intéressant
-- Les mots à deviner doivent être des mots clés du chapitre
-- Fournir des indices utiles mais pas trop évidents`;
+- Génère UN SEUL texte d'au moins 5 phrases avec exactement le nombre de trous demandé
+- Le nombre d'items = le nombre de trous dans le texte unique (PAS le nombre de textes)
+- Le texte doit être cohérent, fluide et intéressant comme une petite histoire ou un paragraphe documentaire
+- Les mots à deviner doivent être des mots clés liés au chapitre
+- Fournir des indices utiles mais pas trop évidents
+- Les trous doivent être répartis dans tout le texte`;
     case "qcm":
       return `${base}
 - Exactement 4 options par question
