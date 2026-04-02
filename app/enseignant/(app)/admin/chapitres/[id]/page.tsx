@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type TypeExercice = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement";
+type TypeExercice = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement" | "ecriture_contrainte";
 
 interface Exercice {
   id: string;
@@ -47,6 +47,7 @@ const TYPE_LABELS: Record<TypeExercice, { label: string; icon: string; bg: strin
   analyse_phrase:  { label: "Analyse phrase",   icon: "schema",       bg: "#EDE9FE", color: "#6D28D9" },
   qcm:             { label: "QCM",             icon: "quiz",         bg: "#FEF3C7", color: "#92400E" },
   classement:      { label: "Classement",      icon: "category",     bg: "#FCE7F3", color: "#9D174D" },
+  ecriture_contrainte: { label: "Écriture",   icon: "edit",         bg: "#F3E8FF", color: "#7C3AED" },
 };
 
 const DRAG_THRESHOLD = 6;
@@ -945,6 +946,33 @@ export default function PageChapitreDetail() {
                     </div>
                   </div>
                 ))}
+              </div>
+            )}
+            {apercuEx.type === "ecriture_contrainte" && (
+              <div>
+                {typeof apercuEx.contenu.consigne === "string" && (
+                  <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 12, color: "#5B21B6" }}>
+                    📝 {apercuEx.contenu.consigne}
+                  </p>
+                )}
+                <div style={{ fontSize: 13, marginBottom: 10 }}>
+                  <strong>Nombre de phrases :</strong> {(apercuEx.contenu.nb_phrases as number) ?? 3}
+                </div>
+                {Array.isArray(apercuEx.contenu.contraintes) && (
+                  <div style={{ marginBottom: 10 }}>
+                    <span style={{ fontSize: 12, fontWeight: 600 }}>Contraintes :</span>
+                    <ul style={{ margin: "6px 0 0 16px", padding: 0, fontSize: 13 }}>
+                      {(apercuEx.contenu.contraintes as string[]).map((c, i) => (
+                        <li key={i} style={{ marginBottom: 3 }}>{c}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {typeof apercuEx.contenu.exemple === "string" && (
+                  <p style={{ fontSize: 12, fontStyle: "italic", color: "var(--text-secondary)", marginTop: 8 }}>
+                    💡 Exemple : « {apercuEx.contenu.exemple} »
+                  </p>
+                )}
               </div>
             )}
           </div>

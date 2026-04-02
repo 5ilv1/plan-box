@@ -30,6 +30,7 @@ const TYPE_ICONS: Record<string, { icon: string; color: string }> = {
   analyse_phrase: { icon: "schema",      color: "#6D28D9" },
   qcm:            { icon: "quiz",        color: "#92400E" },
   classement:     { icon: "category",    color: "#9D174D" },
+  ecriture_contrainte: { icon: "edit",  color: "#7C3AED" },
 };
 
 export default function PageChapitreEleve() {

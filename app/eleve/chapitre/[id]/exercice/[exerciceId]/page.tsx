@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
 
@@ -183,12 +183,255 @@ export default function PageExerciceEleve() {
     }
   }
 
+  // ── Écriture contrainte ──────────────────────────────────────────────
+  const [texteEleve, setTexteEleve] = useState("");
+  const [tentative, setTentative] = useState(1);
+  const [analyseIA, setAnalyseIA] = useState<{
+    valide: boolean;
+    erreurs: Array<{ phrase: string; type: string; indice: string; mot_concerne?: string }>;
+    commentaire: string;
+    nb_phrases_ecrites: number;
+    score: number;
+  } | null>(null);
+  const [enAnalyse, setEnAnalyse] = useState(false);
+  const [ecritureValide, setEcritureValide] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  async function soumettreEcriture() {
+    if (!exercice || !texteEleve.trim()) return;
+    setEnAnalyse(true);
+    setAnalyseIA(null);
+    try {
+      const contenu = exercice.contenu as Record<string, unknown>;
+      const res = await fetch("/api/chapitres/exercices/corriger-ecriture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          texte: texteEleve.trim(),
+          consigne: contenu.consigne,
+          contraintes: contenu.contraintes,
+          nb_phrases: contenu.nb_phrases ?? 3,
+          tentative,
+        }),
+      });
+      const analyse = await res.json();
+      setAnalyseIA(analyse);
+
+      if (analyse.valide) {
+        setEcritureValide(true);
+        // Sauvegarder le résultat
+        const total = (contenu.contraintes as string[])?.length ?? 1;
+        await fetch("/api/chapitres/exercices/resultat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            exercice_id: exerciceId,
+            eleve_id: session?.source === "planbox" ? session.id : undefined,
+            rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+            score: total,
+            total,
+          }),
+        });
+      } else if (tentative === 1) {
+        setTentative(2);
+      } else {
+        // 2e tentative échouée — sauvegarder l'échec
+        const total = (contenu.contraintes as string[])?.length ?? 1;
+        await fetch("/api/chapitres/exercices/resultat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            exercice_id: exerciceId,
+            eleve_id: session?.source === "planbox" ? session.id : undefined,
+            rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+            score: analyse.score ?? 0,
+            total,
+          }),
+        });
+      }
+    } catch {
+      setAnalyseIA({ valide: false, erreurs: [], commentaire: "Erreur lors de l'analyse. Réessaie.", nb_phrases_ecrites: 0, score: 0 });
+    }
+    setEnAnalyse(false);
+  }
+
   // ── Rendu ──────────────────────────────────────────────────────────────
 
   if (etat === "chargement") {
     return (
       <div style={{ maxWidth: 500, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
+      </div>
+    );
+  }
+
+  // ── Écriture contrainte : rendu spécial ──
+  if (exercice?.type === "ecriture_contrainte" && etat === "en_cours") {
+    const contenu = exercice.contenu as Record<string, unknown>;
+    const contraintes = (contenu.contraintes as string[]) ?? [];
+    const nbPhrases = (contenu.nb_phrases as number) ?? 3;
+    const exemple = contenu.exemple as string | undefined;
+
+    return (
+      <div style={{ maxWidth: 560, margin: "0 auto", padding: "20px 20px 80px" }}>
+        {/* En-tête */}
+        <div style={{ marginBottom: 20 }}>
+          <button
+            onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--pb-on-surface-variant)", fontSize: 13, marginBottom: 8 }}
+          >
+            ← Retour
+          </button>
+          <h2 style={{ fontSize: 20, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)", marginBottom: 4 }}>
+            ✏️ {exercice.titre}
+          </h2>
+          <span style={{
+            display: "inline-block", fontSize: 10, fontWeight: 700, letterSpacing: "0.07em",
+            textTransform: "uppercase", padding: "4px 12px", borderRadius: 999,
+            background: "rgba(124,58,237,0.08)", color: "#7C3AED",
+          }}>
+            Tentative {tentative}/2
+          </span>
+        </div>
+
+        {/* Consigne */}
+        <div style={{
+          padding: "20px 24px", borderRadius: 20, marginBottom: 16,
+          background: "linear-gradient(135deg, #EDE9FE, #F5F3FF)",
+          border: "1px solid rgba(124,58,237,0.15)",
+        }}>
+          <p style={{ fontSize: 15, fontWeight: 600, color: "#5B21B6", marginBottom: 10, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+            📝 {String(contenu.consigne)}
+          </p>
+          <div style={{ fontSize: 13, color: "#6D28D9" }}>
+            <strong>Contraintes :</strong>
+            <ul style={{ margin: "6px 0 0 16px", padding: 0 }}>
+              {contraintes.map((c, i) => (
+                <li key={i} style={{ marginBottom: 3 }}>{c}</li>
+              ))}
+            </ul>
+          </div>
+          <p style={{ fontSize: 13, color: "#6D28D9", marginTop: 8 }}>
+            Écris <strong>{nbPhrases} phrase{nbPhrases > 1 ? "s" : ""}</strong>.
+          </p>
+          {exemple && (
+            <p style={{ fontSize: 12, color: "#7C3AED", marginTop: 8, fontStyle: "italic", opacity: 0.8 }}>
+              💡 Exemple : « {exemple} »
+            </p>
+          )}
+        </div>
+
+        {/* Zone d'écriture */}
+        <div style={{
+          padding: "20px", borderRadius: 20, background: "white",
+          border: "1px solid var(--pb-outline-variant, #eee)",
+          boxShadow: "0 2px 12px rgba(0,0,0,0.04)", marginBottom: 16,
+        }}>
+          <textarea
+            ref={textareaRef}
+            value={texteEleve}
+            onChange={(e) => setTexteEleve(e.target.value)}
+            placeholder={`Écris tes ${nbPhrases} phrases ici…`}
+            disabled={enAnalyse || ecritureValide}
+            rows={6}
+            style={{
+              width: "100%", padding: "14px", borderRadius: 12,
+              fontSize: 15, lineHeight: 1.7, resize: "vertical",
+              border: "2px solid var(--pb-outline-variant, #ddd)",
+              outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              background: ecritureValide ? "#F0FDF4" : "white",
+            }}
+          />
+        </div>
+
+        {/* Feedback IA */}
+        {analyseIA && !ecritureValide && (
+          <div style={{
+            padding: "20px 24px", borderRadius: 20, marginBottom: 16,
+            background: analyseIA.erreurs.length === 0 ? "#F0FDF4" : "#FFF7ED",
+            border: `1px solid ${analyseIA.erreurs.length === 0 ? "rgba(34,197,94,0.3)" : "rgba(234,88,12,0.2)"}`,
+          }}>
+            <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: analyseIA.erreurs.length === 0 ? "#166534" : "#9A3412" }}>
+              {analyseIA.commentaire}
+            </p>
+
+            {analyseIA.erreurs.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {analyseIA.erreurs.map((err, i) => (
+                  <div key={i} style={{
+                    padding: "12px 14px", borderRadius: 12,
+                    background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.12)",
+                  }}>
+                    {err.mot_concerne && (
+                      <span style={{
+                        display: "inline-block", fontSize: 11, fontWeight: 700,
+                        padding: "2px 8px", borderRadius: 6, marginBottom: 6,
+                        background: "rgba(234,88,12,0.1)", color: "#C2410C",
+                      }}>
+                        {err.type.replace(/_/g, " ")}
+                      </span>
+                    )}
+                    <p style={{ fontSize: 13, color: "#78350F", margin: 0 }}>
+                      💡 {err.indice}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {tentative === 2 && analyseIA.erreurs.length > 0 && (
+              <p style={{ fontSize: 13, color: "#DC2626", fontWeight: 600, marginTop: 12 }}>
+                Des erreurs persistent. Corrige ton texte et réessaie.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Résultat validé */}
+        {ecritureValide && analyseIA && (
+          <div style={{
+            padding: "30px", borderRadius: 20, textAlign: "center",
+            background: "linear-gradient(135deg, #DCFCE7, #F0FDF4)",
+            border: "2px solid #22C55E", marginBottom: 16,
+          }}>
+            <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+            <h3 style={{ fontSize: 20, fontWeight: 800, color: "#166534", marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+              Exercice validé !
+            </h3>
+            <p style={{ fontSize: 14, color: "#166534" }}>{analyseIA.commentaire}</p>
+            <button
+              onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+              style={{
+                marginTop: 16, padding: "12px 28px", borderRadius: 12,
+                fontSize: 15, fontWeight: 700, background: "#22C55E", color: "white",
+                border: "none", cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              }}
+            >
+              Continuer →
+            </button>
+          </div>
+        )}
+
+        {/* Bouton soumettre */}
+        {!ecritureValide && (
+          <button
+            onClick={soumettreEcriture}
+            disabled={enAnalyse || !texteEleve.trim()}
+            style={{
+              width: "100%", padding: "14px", borderRadius: 14, fontSize: 16, fontWeight: 700,
+              background: enAnalyse ? "#9CA3AF" : texteEleve.trim() ? "#7C3AED" : "var(--pb-surface-container, #eee)",
+              color: texteEleve.trim() ? "white" : "var(--pb-on-surface-variant)",
+              border: "none", cursor: enAnalyse ? "wait" : "pointer",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            {enAnalyse
+              ? "Analyse en cours… ✨"
+              : analyseIA
+                ? "Soumettre ma correction"
+                : "Vérifier mon texte"}
+          </button>
+        )}
       </div>
     );
   }

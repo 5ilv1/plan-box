@@ -4,7 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
-type ExerciceType = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement";
+type ExerciceType = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement" | "ecriture_contrainte";
 
 function getFormatPourType(type: ExerciceType): string {
   switch (type) {
@@ -75,6 +75,17 @@ IMPORTANT: le tableau "trous" doit contenir exactement le nombre d'items demand�
     }
   ]
 }`;
+    case "ecriture_contrainte":
+      return `{
+  "titre": "Titre court et motivant",
+  "consigne": "La consigne d'écriture complète et précise pour l'élève",
+  "nb_phrases": 3,
+  "contraintes": [
+    "Contrainte 1 que l'IA vérifiera (ex: utiliser le futur de l'indicatif)",
+    "Contrainte 2 (ex: utiliser des verbes du premier groupe)"
+  ],
+  "exemple": "Une phrase d'exemple respectant les contraintes (pour aider l'élève)"
+}`;
   }
 }
 
@@ -114,6 +125,13 @@ function getRegles(type: ExerciceType): string {
 - Phrases simples et claires
 - Les positions debut/fin correspondent aux index de caractères dans la phrase
 - Fonctions grammaticales adaptées au niveau (sujet, verbe, COD, COI, CC...)`;
+    case "ecriture_contrainte":
+      return `${base}
+- La consigne doit être claire, motivante et adaptée au niveau
+- nb_phrases : nombre de phrases que l'élève doit écrire (2 à 5)
+- Les contraintes doivent être précises et vérifiables par une IA (temps verbal, type de verbes, vocabulaire, etc.)
+- L'exemple doit être une phrase simple qui respecte toutes les contraintes
+- Ne pas donner trop de contraintes à la fois (2 à 3 max)`;
     default:
       return `${base}
 - Réponses courtes et vérifiables`;

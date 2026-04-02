@@ -130,6 +130,7 @@ export default function PageEvaluationFinale() {
         }
       }
     }
+    // ecriture_contrainte : pas de questions extraites — exercice validé par l'IA directement
 
     return qs;
   }
