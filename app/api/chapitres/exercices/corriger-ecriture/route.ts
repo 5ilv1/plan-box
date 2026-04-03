@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
 
     const estDeuxiemeTentative = tentative === 2;
 
-    const prompt = `Tu es un enseignant bienveillant de français en école primaire.
+    const prompt = `Tu es un enseignant bienveillant et encourageant de français en école primaire (CE2-CM2).
 
-Un élève devait écrire ${nb_phrases || 3} phrases en respectant cette consigne :
+Un élève de 8-10 ans devait écrire ${nb_phrases || 3} phrases en respectant cette consigne :
 "${consigne}"
 
 Les contraintes à vérifier :
@@ -33,36 +33,35 @@ ${texte}
 """
 
 ${estDeuxiemeTentative
-  ? `C'est la DEUXIÈME tentative de l'élève (il a déjà corrigé une première fois).
-Sois plus strict : si des erreurs persistent, indique-les clairement.`
-  : `C'est la PREMIÈRE tentative de l'élève.
-Donne des indices pédagogiques pour l'aider à se corriger, sans donner la réponse directement.`}
+  ? `C'est la DEUXIÈME tentative. Donne les corrections directes (mot_erroné → mot_correct).
+Si les seules erreurs restantes sont mineures (contexte un peu libre, vocabulaire créatif), VALIDE le texte.`
+  : `C'est la PREMIÈRE tentative.
+Donne des indices courts et bienveillants pour aider l'élève à se corriger lui-même.`}
 
 Analyse le texte et réponds en JSON valide :
 {
   "nb_phrases_ecrites": <nombre de phrases détectées>,
-  "valide": <true si le texte respecte TOUTES les contraintes et contient le bon nombre de phrases, false sinon>,
+  "valide": <true/false>,
   "erreurs": [
     {
-      "phrase": "la phrase complète de l'élève contenant l'erreur",
+      "phrase": "la phrase de l'élève contenant l'erreur",
       "type": "conjugaison|orthographe|grammaire|contrainte_non_respectee|nombre_phrases",
-      "mot_concerne": "le mot ou groupe de mots EXACT tel qu'écrit par l'élève (OBLIGATOIRE)",
-      "indice": "${estDeuxiemeTentative ? "La correction : mot_concerne → mot corrigé" : "un indice pédagogique COURT pour aider l'élève à corriger ce mot précis"}"
+      "mot_concerne": "le mot EXACT de l'élève (OBLIGATOIRE)",
+      "indice": "${estDeuxiemeTentative ? "mot_erroné → mot_correct" : "indice court pour corriger ce mot"}"
     }
   ],
-  "commentaire": "un bref commentaire encourageant pour l'élève (1-2 phrases)",
-  "score": <nombre de contraintes respectées sur le total>
+  "commentaire": "commentaire encourageant (1-2 phrases)",
+  "score": <contraintes respectées / total>
 }
 
-Règles d'analyse :
-- Vérifie le nombre de phrases (doit être exactement ${nb_phrases || 3})
-- Vérifie chaque contrainte une par une
-- Vérifie l'orthographe et la conjugaison
-- IMPORTANT : chaque erreur DOIT contenir "mot_concerne" avec le mot exact de l'élève qui pose problème
-- L'indice doit être court (max 15 mots) et cibler le mot concerné
-${estDeuxiemeTentative ? "- Donne la correction directe dans l'indice : « mot_erroné → mot_correct »" : "- Ne donne PAS la réponse, donne un indice pour que l'élève trouve lui-même"}
-- Sois bienveillant dans les commentaires
-- Si tout est correct, "valide" = true et "erreurs" = []
+Règles :
+- Ne signale QUE les vraies erreurs de langue : orthographe, conjugaison, grammaire
+- Pour les contraintes de CONTEXTE/THÈME : sois TOLÉRANT. Si l'élève parle de nager pendant une excursion en bateau, c'est acceptable. Ne sanctionne le contexte que s'il est complètement hors sujet.
+- Vérifie le nombre de phrases (doit être ${nb_phrases || 3})
+- Chaque erreur DOIT avoir "mot_concerne" avec le mot exact
+- L'indice doit être court (max 15 mots)
+- Sois encourageant et bienveillant — c'est un enfant !
+- Si tout est correct ou si les erreurs restantes sont mineures, "valide" = true et "erreurs" = []
 - Réponds UNIQUEMENT en JSON valide, sans markdown`;
 
     const message = await anthropic.messages.create({
