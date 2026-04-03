@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
+import ClassementEleve from "@/components/ClassementEleve";
 
 interface Question {
   id: number;
@@ -101,16 +102,10 @@ export default function PageExerciceEleve() {
       for (const t of contenu.trous as Array<{ mot: string; indice?: string }>) {
         qs.push({ enonce: `Quel mot manque ?${t.indice ? ` (indice : ${t.indice})` : ""}`, reponse: t.mot });
       }
-    } else if (ex.type === "classement" && Array.isArray(contenu.items)) {
-      for (const item of contenu.items as Array<{ texte: string; categorie: string }>) {
-        const cats = (contenu.categories as string[]) ?? [];
-        qs.push({
-          enonce: `Dans quelle catégorie : "${item.texte}" ?`,
-          reponse: item.categorie,
-          options: cats,
-          reponseIdx: cats.indexOf(item.categorie),
-        });
-      }
+    } else if (ex.type === "classement") {
+      // Rendu spécial via ClassementEleve — pas de questions à préparer
+      setEtat("en_cours");
+      return;
     } else if (ex.type === "analyse_phrase" && Array.isArray(contenu.phrases)) {
       for (const phrase of contenu.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: string }> }>) {
         for (const g of phrase.groupes) {
@@ -261,6 +256,63 @@ export default function PageExerciceEleve() {
     return (
       <div style={{ maxWidth: 500, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
+      </div>
+    );
+  }
+
+  // ── Classement : rendu spécial via ClassementEleve ──
+  if (exercice?.type === "classement" && etat === "en_cours") {
+    const contenu = exercice.contenu as Record<string, unknown>;
+    const categories = (contenu.categories as string[]) ?? [];
+    const items = (contenu.items as Array<{ texte: string; categorie: string }>) ?? [];
+
+    return (
+      <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px 20px 80px" }}>
+        <div style={{ marginBottom: 20 }}>
+          <button
+            onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--pb-on-surface-variant)", fontSize: 13, marginBottom: 8 }}
+          >
+            ← Retour
+          </button>
+          <h2 style={{ fontSize: 20, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)", marginBottom: 4 }}>
+            🏷️ {exercice.titre}
+          </h2>
+        </div>
+
+        <ClassementEleve
+          titre={exercice.titre}
+          consigne={String(contenu.consigne ?? "Classe chaque élément dans la bonne catégorie.")}
+          categories={categories}
+          items={items}
+          onTermine={async (scoreResult) => {
+            const total = items.length;
+            const bon = scoreResult.bon;
+            const isValide = bon / total >= 0.8;
+
+            await fetch("/api/chapitres/exercices/resultat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                exercice_id: exerciceId,
+                eleve_id: session?.source === "planbox" ? session.id : undefined,
+                rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+                score: bon,
+                total,
+              }),
+            });
+
+            if (isValide) {
+              setScore(bon);
+              setValide(true);
+              setEtat("resultat");
+            } else {
+              setScore(bon);
+              setValide(false);
+              setEtat("resultat");
+            }
+          }}
+        />
       </div>
     );
   }
@@ -457,7 +509,7 @@ export default function PageExerciceEleve() {
             {valide ? "Exercice validé !" : "Pas encore…"}
           </h2>
           <p style={{ fontSize: 16, color: "var(--pb-on-surface-variant)", marginBottom: 4 }}>
-            {score}/{questions.length} bonnes réponses
+            {score}/{questions.length || exercice?.nb_questions || "?"} bonnes réponses
           </p>
           <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 24 }}>
             {valide
