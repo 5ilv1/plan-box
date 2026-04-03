@@ -267,7 +267,7 @@ export default function PageExerciceEleve() {
     const items = (contenu.items as Array<{ texte: string; categorie: string }>) ?? [];
 
     return (
-      <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px 20px 80px" }}>
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px 20px 80px" }}>
         <div style={{ marginBottom: 20 }}>
           <button
             onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
