@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 interface Item {
   texte: string;
@@ -50,6 +50,22 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
   const [erreurs, setErreurs] = useState<Set<number>>(new Set());
   const [score, setScore] = useState({ bon: 0, total: 0 });
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+  const ghostRef = useRef<HTMLDivElement | null>(null);
+  const draggedElRef = useRef<HTMLElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Attach non-passive touchmove on the container so preventDefault() works on iOS Safari
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const handler = (e: TouchEvent) => {
+      if (ghostRef.current) {
+        e.preventDefault();
+      }
+    };
+    el.addEventListener("touchmove", handler, { passive: false });
+    return () => el.removeEventListener("touchmove", handler);
+  }, []);
 
   const totalClasses = Object.values(classement).reduce((s, arr) => s + arr.length, 0);
   const tousClasses = itemsRestants.length === 0;
@@ -114,17 +130,89 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
     setDragSource(null);
   }
 
-  // --- Touch events ---
+  // --- Touch events (iPad / mobile) ---
   function handleTouchStart(e: React.TouchEvent, item: ItemWithId, source: string | null) {
-    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    const touch = e.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+    draggedElRef.current = e.currentTarget as HTMLElement;
     setDraggedItem(item);
     setDragSource(source);
+
+    // Create ghost element that follows the finger
+    const ghost = document.createElement("div");
+    ghost.textContent = item.texte;
+    Object.assign(ghost.style, {
+      position: "fixed",
+      left: `${touch.clientX}px`,
+      top: `${touch.clientY}px`,
+      transform: "translate(-50%, -50%)",
+      padding: "8px 16px",
+      borderRadius: "10px",
+      background: "white",
+      border: "2px solid #0369A1",
+      fontSize: "0.9375rem",
+      fontWeight: "600",
+      color: "#0369A1",
+      boxShadow: "0 4px 16px rgba(0,0,0,0.18)",
+      zIndex: "9999",
+      pointerEvents: "none",
+      whiteSpace: "nowrap",
+      maxWidth: "200px",
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+    });
+    document.body.appendChild(ghost);
+    ghostRef.current = ghost;
+  }
+
+  function handleTouchMove(e: React.TouchEvent) {
+    if (!draggedItem) return;
+    e.preventDefault(); // Prevent scrolling while dragging
+
+    const touch = e.touches[0];
+
+    // Move ghost element
+    if (ghostRef.current) {
+      ghostRef.current.style.left = `${touch.clientX}px`;
+      ghostRef.current.style.top = `${touch.clientY}px`;
+    }
+
+    // Highlight drop zone under finger (hide ghost temporarily for elementFromPoint)
+    if (ghostRef.current) ghostRef.current.style.display = "none";
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (ghostRef.current) ghostRef.current.style.display = "";
+
+    const catEl = el?.closest("[data-category]") as HTMLElement | null;
+    const poolEl = el?.closest("[data-pool]") as HTMLElement | null;
+
+    if (catEl) {
+      setDragOverCat(catEl.dataset.category!);
+      setDragOverPool(false);
+    } else if (poolEl) {
+      setDragOverCat(null);
+      setDragOverPool(true);
+    } else {
+      setDragOverCat(null);
+      setDragOverPool(false);
+    }
   }
 
   function handleTouchEnd(e: React.TouchEvent) {
+    // Remove ghost element
+    if (ghostRef.current) {
+      ghostRef.current.remove();
+      ghostRef.current = null;
+    }
+
     if (!draggedItem) return;
     const touch = e.changedTouches[0];
+
+    // Hide the dragged element so elementFromPoint finds the drop zone underneath
+    if (draggedElRef.current) draggedElRef.current.style.visibility = "hidden";
     const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    if (draggedElRef.current) draggedElRef.current.style.visibility = "";
+    draggedElRef.current = null;
+
     const catEl = el?.closest("[data-category]") as HTMLElement | null;
     const poolEl = el?.closest("[data-pool]") as HTMLElement | null;
     if (catEl) {
@@ -135,6 +223,8 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
       setDraggedItem(null);
       setDragSource(null);
     }
+    setDragOverCat(null);
+    setDragOverPool(false);
     touchStartRef.current = null;
   }
 
@@ -210,7 +300,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
   }
 
   return (
-    <div style={{ padding: "1rem 0" }}>
+    <div ref={containerRef} style={{ padding: "1rem 0" }}>
       {/* Consigne */}
       <div style={{
         background: "rgba(3,105,161,0.06)", border: "1px solid rgba(3,105,161,0.15)",
@@ -301,6 +391,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
                       onDragStart={() => { setDraggedItem(item); setDragSource(cat); }}
                       onDragEnd={() => { setDraggedItem(null); setDragSource(null); setDragOverCat(null); setDragOverPool(false); }}
                       onTouchStart={(e) => etat === "classement" && handleTouchStart(e, item, cat)}
+                      onTouchMove={handleTouchMove}
                       onTouchEnd={handleTouchEnd}
                       style={{
                         padding: "6px 10px", borderRadius: 8,
@@ -353,6 +444,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
               onDragStart={() => { setDraggedItem(item); setDragSource(null); }}
               onDragEnd={() => { setDraggedItem(null); setDragSource(null); setDragOverCat(null); setDragOverPool(false); }}
               onTouchStart={(e) => etat === "classement" && handleTouchStart(e, item, null)}
+              onTouchMove={handleTouchMove}
               onTouchEnd={handleTouchEnd}
               style={{
                 padding: "8px 16px", borderRadius: 10,
