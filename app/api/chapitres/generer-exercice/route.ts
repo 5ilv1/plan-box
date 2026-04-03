@@ -196,7 +196,7 @@ export async function POST(req: NextRequest) {
 Tu génères des exercices de type "${type}" adaptés au niveau ${niveauNom}.
 Matière : ${chapitre.matiere}${chapitre.sous_matiere ? ` — ${chapitre.sous_matiere}` : ""}.
 Chapitre : ${chapitre.titre}.
-Nombre d'items à générer : ${nb_questions}.
+Nombre d'items à générer : ${type === "ecriture_contrainte" ? 1 : nb_questions}.
 ${contexte ? `Thème / contexte souhaité : ${contexte}` : ""}
 Thème imposé pour le texte/les questions : ${themeAleatoire}.${existantsResume}
 
@@ -208,7 +208,7 @@ Règles :
 ${regles}`;
 
     const message = await anthropic.messages.create({
-      model: type === "texte_a_trous" ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
+      model: (type === "texte_a_trous" || type === "ecriture_contrainte") ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });
@@ -222,7 +222,12 @@ ${regles}`;
       .replace(/\s*```$/i, "")
       .trim();
 
-    const contenu = JSON.parse(json);
+    let contenu = JSON.parse(json);
+
+    // Si l'IA a retourné un tableau au lieu d'un objet (ex: ecriture_contrainte), prendre le premier
+    if (Array.isArray(contenu)) {
+      contenu = contenu[0];
+    }
 
     // Extraire le titre depuis le contenu généré ou en créer un
     const titre = contenu.titre || `${type} — ${chapitre.titre}`;

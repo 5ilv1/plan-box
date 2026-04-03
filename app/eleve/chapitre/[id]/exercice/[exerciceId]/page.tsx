@@ -198,7 +198,8 @@ export default function PageExerciceEleve() {
     setEnAnalyse(true);
     setAnalyseIA(null);
     try {
-      const contenu = exercice.contenu as Record<string, unknown>;
+      const rawContenu = exercice.contenu;
+      const contenu = (Array.isArray(rawContenu) ? rawContenu[0] : rawContenu) as Record<string, unknown>;
       const res = await fetch("/api/chapitres/exercices/corriger-ecriture", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -397,7 +398,9 @@ export default function PageExerciceEleve() {
 
   // ── Écriture contrainte : rendu spécial ──
   if (exercice?.type === "ecriture_contrainte" && etat === "en_cours") {
-    const contenu = exercice.contenu as Record<string, unknown>;
+    // Le contenu peut être un tableau (ancien format) ou un objet unique
+    const rawContenu = exercice.contenu;
+    const contenu = (Array.isArray(rawContenu) ? rawContenu[0] : rawContenu) as Record<string, unknown>;
     const contraintes = (contenu.contraintes as string[]) ?? [];
     const nbPhrases = (contenu.nb_phrases as number) ?? 3;
     const exemple = contenu.exemple as string | undefined;
