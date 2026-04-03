@@ -75,7 +75,7 @@ export default function PageChapitreEleve() {
 
   if (chargement || chargementSession) {
     return (
-      <div style={{ maxWidth: 600, margin: "40px auto", padding: "0 20px" }}>
+      <div style={{ maxWidth: 800, margin: "40px auto", padding: "0 20px" }}>
         {[1, 2, 3].map((i) => (
           <div key={i} className="skeleton" style={{ height: 60, borderRadius: 16, marginBottom: 12 }} />
         ))}
@@ -96,7 +96,7 @@ export default function PageChapitreEleve() {
   const pourcentage = exercices.length > 0 ? Math.round((nbValides / exercices.length) * 100) : 0;
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px 20px 80px" }}>
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
       {/* En-tête */}
       <div style={{ marginBottom: 24 }}>
         <Link href="/eleve/dashboard" style={{

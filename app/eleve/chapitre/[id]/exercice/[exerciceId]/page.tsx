@@ -256,7 +256,7 @@ export default function PageExerciceEleve() {
 
   if (etat === "chargement") {
     return (
-      <div style={{ maxWidth: 500, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+      <div style={{ maxWidth: 800, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
       </div>
     );
@@ -296,7 +296,7 @@ export default function PageExerciceEleve() {
     }
 
     return (
-      <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 80px" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
         <div style={{ marginBottom: 20 }}>
           <button
             onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
@@ -346,7 +346,7 @@ export default function PageExerciceEleve() {
     const items = (contenu.items as Array<{ texte: string; categorie: string }>) ?? [];
 
     return (
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px 20px 80px" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
         <div style={{ marginBottom: 20 }}>
           <button
             onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
@@ -607,7 +607,7 @@ export default function PageExerciceEleve() {
 
   if (etat === "resultat") {
     return (
-      <div style={{ maxWidth: 500, margin: "40px auto", padding: "0 20px", textAlign: "center" }}>
+      <div style={{ maxWidth: 800, margin: "40px auto", padding: "0 20px", textAlign: "center" }}>
         <div style={{
           padding: "40px 30px", borderRadius: 24,
           background: valide
@@ -696,7 +696,7 @@ export default function PageExerciceEleve() {
   const consigneExo = exercice?.contenu ? String((exercice.contenu as Record<string, unknown>).consigne ?? "") : "";
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 80px", display: "flex", flexDirection: "column", minHeight: "calc(100vh - 100px)", justifyContent: "center" }}>
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px", display: "flex", flexDirection: "column", minHeight: "calc(100vh - 100px)", justifyContent: "center" }}>
       {/* En-tête */}
       <div style={{ marginBottom: 24 }}>
         <button
