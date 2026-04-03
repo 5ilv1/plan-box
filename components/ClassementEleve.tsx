@@ -59,6 +59,13 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
     if (!draggedItem) return;
     setDragOverCat(null);
 
+    // Ignorer si on drop dans la même catégorie
+    if (dragSource === categorie) {
+      setDraggedItem(null);
+      setDragSource(null);
+      return;
+    }
+
     if (dragSource) {
       // Déplacer d'une catégorie à une autre
       setClassement((prev) => ({
