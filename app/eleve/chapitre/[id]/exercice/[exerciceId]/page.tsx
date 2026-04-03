@@ -693,15 +693,24 @@ export default function PageExerciceEleve() {
 
   const isQCM = q.options && q.options.length > 0;
 
+  const consigneExo = exercice?.contenu ? String((exercice.contenu as Record<string, unknown>).consigne ?? "") : "";
+
   return (
-    <div style={{ maxWidth: 500, margin: "0 auto", padding: "20px 20px 80px" }}>
+    <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 80px", display: "flex", flexDirection: "column", minHeight: "calc(100vh - 100px)", justifyContent: "center" }}>
       {/* En-tête */}
-      <div style={{ marginBottom: 20 }}>
+      <div style={{ marginBottom: 24 }}>
+        <button
+          onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--pb-on-surface-variant)", fontSize: 13, marginBottom: 8 }}
+        >
+          ← Retour
+        </button>
+
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <span style={{ fontSize: 13, color: "var(--pb-on-surface-variant)" }}>
+          <h2 style={{ fontSize: 18, fontWeight: 800, margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)" }}>
             {exercice?.titre}
-          </span>
-          <span style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-primary)" }}>
+          </h2>
+          <span style={{ fontSize: 14, fontWeight: 700, color: "var(--pb-primary)", whiteSpace: "nowrap", marginLeft: 16 }}>
             {indexCourant + 1}/{questions.length}
           </span>
         </div>
@@ -716,10 +725,10 @@ export default function PageExerciceEleve() {
         </div>
 
         {/* Dots résultats */}
-        <div style={{ display: "flex", gap: 4, marginTop: 8, justifyContent: "center" }}>
+        <div style={{ display: "flex", gap: 5, marginTop: 10, justifyContent: "center" }}>
           {questions.map((_, i) => (
             <div key={i} style={{
-              width: 8, height: 8, borderRadius: "50%",
+              width: 10, height: 10, borderRadius: "50%",
               background: i < resultats.length
                 ? resultats[i] ? "#22C55E" : "#EF4444"
                 : i === indexCourant ? "var(--pb-primary)" : "var(--pb-outline-variant, #ddd)",
@@ -729,15 +738,27 @@ export default function PageExerciceEleve() {
         </div>
       </div>
 
+      {/* Consigne */}
+      {consigneExo && (
+        <div style={{
+          padding: "14px 20px", borderRadius: 14, marginBottom: 20,
+          background: "rgba(37,99,235,0.06)", border: "1px solid rgba(37,99,235,0.15)",
+          display: "flex", alignItems: "flex-start", gap: 10,
+        }}>
+          <span className="ms" style={{ fontSize: 18, color: "#2563EB", flexShrink: 0, marginTop: 1 }}>info</span>
+          <p style={{ fontSize: 14, color: "#1E40AF", margin: 0, lineHeight: 1.5 }}>{consigneExo}</p>
+        </div>
+      )}
+
       {/* Question */}
       <div style={{
-        padding: "28px 24px", borderRadius: 20, background: "white",
+        padding: "36px 32px", borderRadius: 24, background: "white",
         border: "1px solid var(--pb-outline-variant, #eee)",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
-        marginBottom: 20,
+        boxShadow: "0 4px 20px rgba(0,0,0,0.06)",
+        marginBottom: 24,
       }}>
         <p style={{
-          fontSize: 18, fontWeight: 700, marginBottom: 20, lineHeight: 1.5,
+          fontSize: 20, fontWeight: 700, marginBottom: 24, lineHeight: 1.5,
           color: "var(--pb-on-surface)", textAlign: "center",
           fontFamily: "'Plus Jakarta Sans', sans-serif",
         }}>
@@ -746,7 +767,7 @@ export default function PageExerciceEleve() {
 
         {/* Champ réponse */}
         {isQCM ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {q.options!.map((opt, oi) => {
               let bg = "var(--pb-surface-container, #f5f5f5)";
               let border = "1px solid var(--pb-outline-variant, #eee)";
@@ -764,7 +785,7 @@ export default function PageExerciceEleve() {
 
               return (
                 <button key={oi} onClick={() => !afficherCorrection && setQcmChoisi(oi)} style={{
-                  padding: "12px 16px", borderRadius: 12, fontSize: 15, fontWeight: 500,
+                  padding: "14px 20px", borderRadius: 14, fontSize: 16, fontWeight: 500,
                   background: bg, border, color, cursor: afficherCorrection ? "default" : "pointer",
                   textAlign: "left", fontFamily: "'Plus Jakarta Sans', sans-serif",
                   transition: "all 0.15s",
@@ -784,8 +805,8 @@ export default function PageExerciceEleve() {
               disabled={afficherCorrection}
               autoFocus
               style={{
-                width: "100%", padding: "14px 16px", borderRadius: 12,
-                fontSize: 16, fontWeight: 500, textAlign: "center",
+                width: "100%", padding: "16px 20px", borderRadius: 14,
+                fontSize: 18, fontWeight: 500, textAlign: "center",
                 border: afficherCorrection
                   ? resultats[resultats.length - 1]
                     ? "2px solid #22C55E"
@@ -801,7 +822,7 @@ export default function PageExerciceEleve() {
               }}
             />
             {afficherCorrection && !resultats[resultats.length - 1] && (
-              <p style={{ fontSize: 14, color: "#DC2626", marginTop: 8, textAlign: "center" }}>
+              <p style={{ fontSize: 15, color: "#DC2626", marginTop: 10, textAlign: "center" }}>
                 Réponse : <strong>{q.reponse}</strong>
               </p>
             )}
@@ -815,7 +836,7 @@ export default function PageExerciceEleve() {
           onClick={verifierReponse}
           disabled={isQCM ? qcmChoisi === null : !reponseEleve.trim()}
           style={{
-            width: "100%", padding: "14px", borderRadius: 14, fontSize: 16, fontWeight: 700,
+            width: "100%", padding: "16px", borderRadius: 16, fontSize: 17, fontWeight: 700,
             background: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "var(--pb-primary)" : "var(--pb-surface-container, #eee)",
             color: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "white" : "var(--pb-on-surface-variant)",
             border: "none", cursor: "pointer",
@@ -828,7 +849,7 @@ export default function PageExerciceEleve() {
         <button
           onClick={passerSuivant}
           style={{
-            width: "100%", padding: "14px", borderRadius: 14, fontSize: 16, fontWeight: 700,
+            width: "100%", padding: "16px", borderRadius: 16, fontSize: 17, fontWeight: 700,
             background: resultats[resultats.length - 1] ? "#22C55E" : "#F59E0B",
             color: "white", border: "none", cursor: "pointer",
             fontFamily: "'Plus Jakarta Sans', sans-serif",
