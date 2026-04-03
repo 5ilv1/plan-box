@@ -79,7 +79,7 @@ export async function PATCH(req: NextRequest) {
 
   const champsAutorisés = [
     "titre", "matiere", "sous_matiere", "niveau_id",
-    "description", "nb_cartes_eval", "seuil_reussite", "seuil_evaluation", "ordre",
+    "description", "nb_cartes_eval", "seuil_reussite", "seuil_evaluation", "seuil_exercice", "ordre",
   ];
 
   const champsMaj: Record<string, unknown> = {};

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback, useEffect } from "react";
 
 interface Item {
   texte: string;
@@ -43,49 +43,58 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
     () => Object.fromEntries(categories.map((c) => [c, []]))
   );
   const [draggedItem, setDraggedItem] = useState<ItemWithId | null>(null);
-  const [dragSource, setDragSource] = useState<string | null>(null); // null = from pool, string = from category
+  const [dragSource, setDragSource] = useState<string | null>(null);
   const [dragOverCat, setDragOverCat] = useState<string | null>(null);
   const [dragOverPool, setDragOverPool] = useState(false);
   const [etat, setEtat] = useState<"classement" | "resultat" | "termine">("classement");
   const [erreurs, setErreurs] = useState<Set<number>>(new Set());
   const [score, setScore] = useState({ bon: 0, total: 0 });
-  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
+
+  // Touch drag state
+  const touchDragRef = useRef<{
+    item: ItemWithId;
+    source: string | null;
+    ghostEl: HTMLDivElement | null;
+    startX: number;
+    startY: number;
+    isDragging: boolean;
+  } | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const totalClasses = Object.values(classement).reduce((s, arr) => s + arr.length, 0);
   const tousClasses = itemsRestants.length === 0;
 
   // --- Drop dans une catégorie ---
-  function handleDropInCat(categorie: string) {
-    if (!draggedItem) return;
+  function handleDropInCat(categorie: string, item?: ItemWithId, source?: string | null) {
+    const droppedItem = item || draggedItem;
+    const droppedSource = source !== undefined ? source : dragSource;
+    if (!droppedItem) return;
     setDragOverCat(null);
 
     // Ignorer si on drop dans la même catégorie
-    if (dragSource === categorie) {
+    if (droppedSource === categorie) {
       setDraggedItem(null);
       setDragSource(null);
       return;
     }
 
-    if (dragSource) {
-      // Déplacer d'une catégorie à une autre
+    if (droppedSource) {
       setClassement((prev) => ({
         ...prev,
-        [dragSource]: prev[dragSource].filter((i) => i.id !== draggedItem.id),
-        [categorie]: [...prev[categorie], draggedItem],
+        [droppedSource]: prev[droppedSource].filter((i) => i.id !== droppedItem.id),
+        [categorie]: [...prev[categorie], droppedItem],
       }));
     } else {
-      // Déplacer du pool vers une catégorie
       setClassement((prev) => ({
         ...prev,
-        [categorie]: [...prev[categorie], draggedItem],
+        [categorie]: [...prev[categorie], droppedItem],
       }));
-      setItemsRestants((prev) => prev.filter((i) => i.id !== draggedItem.id));
+      setItemsRestants((prev) => prev.filter((i) => i.id !== droppedItem.id));
     }
 
-    // Retirer de la liste d'erreurs si présent
     setErreurs((prev) => {
       const next = new Set(prev);
-      next.delete(draggedItem.id);
+      next.delete(droppedItem.id);
       return next;
     });
 
@@ -93,20 +102,22 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
     setDragSource(null);
   }
 
-  // --- Drop dans le pool (retrait d'une catégorie) ---
-  function handleDropInPool() {
-    if (!draggedItem || !dragSource) return;
+  // --- Drop dans le pool ---
+  function handleDropInPool(item?: ItemWithId, source?: string | null) {
+    const droppedItem = item || draggedItem;
+    const droppedSource = source !== undefined ? source : dragSource;
+    if (!droppedItem || !droppedSource) return;
     setDragOverPool(false);
 
     setClassement((prev) => ({
       ...prev,
-      [dragSource]: prev[dragSource].filter((i) => i.id !== draggedItem.id),
+      [droppedSource]: prev[droppedSource].filter((i) => i.id !== droppedItem.id),
     }));
-    setItemsRestants((prev) => [...prev, draggedItem]);
+    setItemsRestants((prev) => [...prev, droppedItem]);
 
     setErreurs((prev) => {
       const next = new Set(prev);
-      next.delete(draggedItem.id);
+      next.delete(droppedItem.id);
       return next;
     });
 
@@ -114,29 +125,138 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
     setDragSource(null);
   }
 
-  // --- Touch events ---
-  function handleTouchStart(e: React.TouchEvent, item: ItemWithId, source: string | null) {
-    touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    setDraggedItem(item);
-    setDragSource(source);
-  }
+  // --- Touch: Détection zone sous le doigt ---
+  const getDropTarget = useCallback((x: number, y: number): { type: "category"; name: string } | { type: "pool" } | null => {
+    const el = document.elementFromPoint(x, y);
+    if (!el) return null;
+    const catEl = el.closest("[data-category]") as HTMLElement | null;
+    if (catEl) return { type: "category", name: catEl.dataset.category! };
+    const poolEl = el.closest("[data-pool]") as HTMLElement | null;
+    if (poolEl) return { type: "pool" };
+    return null;
+  }, []);
 
-  function handleTouchEnd(e: React.TouchEvent) {
-    if (!draggedItem) return;
-    const touch = e.changedTouches[0];
-    const el = document.elementFromPoint(touch.clientX, touch.clientY);
-    const catEl = el?.closest("[data-category]") as HTMLElement | null;
-    const poolEl = el?.closest("[data-pool]") as HTMLElement | null;
-    if (catEl) {
-      handleDropInCat(catEl.dataset.category!);
-    } else if (poolEl) {
-      handleDropInPool();
-    } else {
+  // --- Touch Start ---
+  const handleTouchStart = useCallback((e: React.TouchEvent, item: ItemWithId, source: string | null) => {
+    if (etat !== "classement") return;
+    const touch = e.touches[0];
+
+    // Créer le ghost
+    const ghost = document.createElement("div");
+    ghost.textContent = item.texte;
+    ghost.style.cssText = `
+      position: fixed;
+      z-index: 9999;
+      padding: 8px 16px;
+      border-radius: 10px;
+      background: white;
+      border: 2px solid #0369A1;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: #0369A1;
+      pointer-events: none;
+      transform: translate(-50%, -50%) scale(1.05);
+      transition: transform 0.1s;
+      max-width: 200px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    `;
+    ghost.style.left = `${touch.clientX}px`;
+    ghost.style.top = `${touch.clientY}px`;
+    document.body.appendChild(ghost);
+
+    touchDragRef.current = {
+      item,
+      source,
+      ghostEl: ghost,
+      startX: touch.clientX,
+      startY: touch.clientY,
+      isDragging: false,
+    };
+  }, [etat]);
+
+  // --- Touch Move (global via useEffect) ---
+  useEffect(() => {
+    function onTouchMove(e: TouchEvent) {
+      const ref = touchDragRef.current;
+      if (!ref) return;
+
+      const touch = e.touches[0];
+      const dx = touch.clientX - ref.startX;
+      const dy = touch.clientY - ref.startY;
+
+      // Seuil de 8px pour déclencher le drag (éviter les taps accidentels)
+      if (!ref.isDragging && Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+
+      ref.isDragging = true;
+      e.preventDefault(); // Empêcher le scroll
+
+      // Déplacer le ghost
+      if (ref.ghostEl) {
+        ref.ghostEl.style.left = `${touch.clientX}px`;
+        ref.ghostEl.style.top = `${touch.clientY}px`;
+      }
+
+      // Highlight de la zone survolée
+      // On cache temporairement le ghost pour que elementFromPoint trouve la zone en dessous
+      if (ref.ghostEl) ref.ghostEl.style.display = "none";
+      const target = getDropTarget(touch.clientX, touch.clientY);
+      if (ref.ghostEl) ref.ghostEl.style.display = "";
+
+      if (target?.type === "category") {
+        setDragOverCat(target.name);
+        setDragOverPool(false);
+      } else if (target?.type === "pool") {
+        setDragOverCat(null);
+        setDragOverPool(true);
+      } else {
+        setDragOverCat(null);
+        setDragOverPool(false);
+      }
+    }
+
+    function onTouchEnd(e: TouchEvent) {
+      const ref = touchDragRef.current;
+      if (!ref) return;
+
+      // Supprimer le ghost
+      if (ref.ghostEl) {
+        ref.ghostEl.remove();
+      }
+
+      if (ref.isDragging) {
+        const touch = e.changedTouches[0];
+        const target = getDropTarget(touch.clientX, touch.clientY);
+
+        if (target?.type === "category") {
+          handleDropInCat(target.name, ref.item, ref.source);
+        } else if (target?.type === "pool" && ref.source) {
+          handleDropInPool(ref.item, ref.source);
+        }
+      }
+
+      // Reset
+      setDragOverCat(null);
+      setDragOverPool(false);
       setDraggedItem(null);
       setDragSource(null);
+      touchDragRef.current = null;
     }
-    touchStartRef.current = null;
-  }
+
+    document.addEventListener("touchmove", onTouchMove, { passive: false });
+    document.addEventListener("touchend", onTouchEnd);
+    document.addEventListener("touchcancel", onTouchEnd);
+
+    return () => {
+      document.removeEventListener("touchmove", onTouchMove);
+      document.removeEventListener("touchend", onTouchEnd);
+      document.removeEventListener("touchcancel", onTouchEnd);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [getDropTarget, classement, itemsRestants]);
 
   // --- Valider ---
   function valider() {
@@ -159,16 +279,13 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
     setScore({ bon, total: items.length });
 
     if (errs.size === 0) {
-      // Tout est correct !
       setEtat("termine");
       onTermine({ bon, total: items.length }, log);
     } else {
-      // Il y a des erreurs → les remettre dans le pool
       setErreurs(errs);
       setEtat("resultat");
 
       setTimeout(() => {
-        // Remettre les items faux dans le pool
         const itemsFaux: ItemWithId[] = [];
         const newClassement: Record<string, ItemWithId[]> = {};
 
@@ -210,7 +327,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
   }
 
   return (
-    <div style={{ padding: "1rem 0" }}>
+    <div ref={containerRef} style={{ padding: "1rem 0", touchAction: "pan-y" }}>
       {/* Consigne */}
       <div style={{
         background: "rgba(3,105,161,0.06)", border: "1px solid rgba(3,105,161,0.15)",
@@ -300,8 +417,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
                       draggable={etat === "classement"}
                       onDragStart={() => { setDraggedItem(item); setDragSource(cat); }}
                       onDragEnd={() => { setDraggedItem(null); setDragSource(null); setDragOverCat(null); setDragOverPool(false); }}
-                      onTouchStart={(e) => etat === "classement" && handleTouchStart(e, item, cat)}
-                      onTouchEnd={handleTouchEnd}
+                      onTouchStart={(e) => handleTouchStart(e, item, cat)}
                       style={{
                         padding: "6px 10px", borderRadius: 8,
                         background: isErr ? "#FEE2E2" : "white",
@@ -311,6 +427,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
                         cursor: etat === "classement" ? "grab" : "default",
                         animation: "fadeIn 0.3s ease",
                         transition: "all 0.3s",
+                        touchAction: "none",
                       }}
                     >
                       {isErr && <span className="ms" style={{ fontSize: 14, marginRight: 4, verticalAlign: "middle" }}>close</span>}
@@ -352,8 +469,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
               draggable={etat === "classement"}
               onDragStart={() => { setDraggedItem(item); setDragSource(null); }}
               onDragEnd={() => { setDraggedItem(null); setDragSource(null); setDragOverCat(null); setDragOverPool(false); }}
-              onTouchStart={(e) => etat === "classement" && handleTouchStart(e, item, null)}
-              onTouchEnd={handleTouchEnd}
+              onTouchStart={(e) => handleTouchStart(e, item, null)}
               style={{
                 padding: "8px 16px", borderRadius: 10,
                 background: draggedItem?.id === item.id ? "rgba(3,105,161,0.15)" : "white",
@@ -363,6 +479,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
                 boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
                 transition: "all 0.15s",
                 opacity: draggedItem?.id === item.id ? 0.6 : 1,
+                touchAction: "none",
               }}
             >
               {item.texte}

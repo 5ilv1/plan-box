@@ -57,75 +57,99 @@ export default function PageExerciceEleve() {
   const [score, setScore] = useState(0);
   const [valide, setValide] = useState(false);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
+  const [seuilExo, setSeuilExo] = useState(0.9);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
-    chargerExercice();
+
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    chargerExercice(ctrl.signal);
+
+    return () => { ctrl.abort(); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chargementSession, session]);
+  }, [chargementSession, session, chapitreId, exerciceId]);
 
-  async function chargerExercice() {
-    const res = await fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`);
-    const json = await res.json();
-    const exos = json.exercices ?? [];
-    const ex = exos.find((e: Exercice) => e.id === exerciceId);
+  async function chargerExercice(signal: AbortSignal) {
+    try {
+      const [res, chapRes] = await Promise.all([
+        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`, { signal }),
+        fetch(`/api/admin/chapitres/${chapitreId}`, { signal }),
+      ]);
+      if (signal.aborted) return;
 
-    if (!ex) {
-      router.push(`/eleve/chapitre/${chapitreId}`);
-      return;
-    }
+      const json = await res.json();
+      const exos = json.exercices ?? [];
+      const ex = exos.find((e: Exercice) => e.id === exerciceId);
 
-    setExercice(ex);
-
-    // Préparer les questions selon le type
-    const qs: typeof questions = [];
-    const contenu = ex.contenu;
-
-    if (ex.type === "exercice" && Array.isArray(contenu.questions)) {
-      for (const q of contenu.questions as Question[]) {
-        qs.push({ enonce: q.enonce, reponse: q.reponse_attendue, indice: q.indice });
+      if (!ex) {
+        router.push(`/eleve/chapitre/${chapitreId}`);
+        return;
       }
-    } else if (ex.type === "qcm" && Array.isArray(contenu.questions)) {
-      for (const q of contenu.questions as QCMQuestion[]) {
-        qs.push({
-          enonce: q.question,
-          reponse: q.options[q.reponse_correcte],
-          options: q.options,
-          reponseIdx: q.reponse_correcte,
-        });
+
+      // Charger le seuil de validation des exercices depuis le chapitre
+      const chapJson = await chapRes.json();
+      if (chapJson.chapitre?.seuil_exercice != null) {
+        setSeuilExo(chapJson.chapitre.seuil_exercice / 100);
       }
-    } else if (ex.type === "calcul_mental" && Array.isArray(contenu.calculs)) {
-      for (const c of contenu.calculs as Calcul[]) {
-        qs.push({ enonce: c.enonce, reponse: String(c.reponse) });
-      }
-    } else if (ex.type === "texte_a_trous") {
-      // Rendu spécial via TexteATrousEleve — pas de questions à préparer
-      setEtat("en_cours");
-      return;
-    } else if (ex.type === "classement") {
-      // Rendu spécial via ClassementEleve — pas de questions à préparer
-      setEtat("en_cours");
-      return;
-    } else if (ex.type === "analyse_phrase" && Array.isArray(contenu.phrases)) {
-      for (const phrase of contenu.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: string }> }>) {
-        for (const g of phrase.groupes) {
+
+      setExercice(ex);
+
+      // Préparer les questions selon le type
+      const qs: typeof questions = [];
+      const contenu = ex.contenu;
+
+      if (ex.type === "exercice" && Array.isArray(contenu.questions)) {
+        for (const q of contenu.questions as Question[]) {
+          qs.push({ enonce: q.enonce, reponse: q.reponse_attendue, indice: q.indice });
+        }
+      } else if (ex.type === "qcm" && Array.isArray(contenu.questions)) {
+        for (const q of contenu.questions as QCMQuestion[]) {
           qs.push({
-            enonce: `Dans la phrase « ${phrase.texte} », quelle est la fonction de « ${g.mots} » ?`,
-            reponse: g.fonction,
+            enonce: q.question,
+            reponse: q.options[q.reponse_correcte],
+            options: q.options,
+            reponseIdx: q.reponse_correcte,
           });
         }
+      } else if (ex.type === "calcul_mental" && Array.isArray(contenu.calculs)) {
+        for (const c of contenu.calculs as Calcul[]) {
+          qs.push({ enonce: c.enonce, reponse: String(c.reponse) });
+        }
+      } else if (ex.type === "texte_a_trous") {
+        setEtat("en_cours");
+        return;
+      } else if (ex.type === "classement") {
+        setEtat("en_cours");
+        return;
+      } else if (ex.type === "analyse_phrase" && Array.isArray(contenu.phrases)) {
+        for (const phrase of contenu.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: string }> }>) {
+          for (const g of phrase.groupes) {
+            qs.push({
+              enonce: `Dans la phrase « ${phrase.texte} », quelle est la fonction de « ${g.mots} » ?`,
+              reponse: g.fonction,
+            });
+          }
+        }
       }
-    }
 
-    // Mélanger les questions
-    for (let i = qs.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [qs[i], qs[j]] = [qs[j], qs[i]];
-    }
+      // Mélanger les questions
+      for (let i = qs.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [qs[i], qs[j]] = [qs[j], qs[i]];
+      }
 
-    setQuestions(qs);
-    setEtat("en_cours");
+      setQuestions(qs);
+      setEtat("en_cours");
+    } catch (err) {
+      if (signal.aborted) return;
+      console.error("[chargerExercice]", err);
+      router.push(`/eleve/chapitre/${chapitreId}`);
+    }
   }
 
   const normaliser = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ");
@@ -154,7 +178,7 @@ export default function PageExerciceEleve() {
       // Fin de l'exercice — calculer le score et sauvegarder
       const bonnes = resultats.filter(Boolean).length;
       const total = questions.length;
-      const estValide = total > 0 && (bonnes / total) >= 0.9; // 90% requis
+      const estValide = total > 0 && (bonnes / total) >= seuilExo;
 
       setScore(bonnes);
       setValide(estValide);
@@ -331,7 +355,7 @@ export default function PageExerciceEleve() {
             });
 
             setScore(bon);
-            setValide(total > 0 && (bon / total) >= 0.9);
+            setValide(total > 0 && (bon / total) >= seuilExo);
             setEtat("resultat");
           }}
         />
@@ -367,7 +391,7 @@ export default function PageExerciceEleve() {
           onTermine={async (scoreResult) => {
             const total = items.length;
             const bon = scoreResult.bon;
-            const isValide = bon / total >= 0.9;
+            const isValide = bon / total >= seuilExo;
 
             await fetch("/api/chapitres/exercices/resultat", {
               method: "POST",

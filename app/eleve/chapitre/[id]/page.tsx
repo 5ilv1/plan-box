@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useEleveSession } from "@/hooks/useEleveSession";
@@ -42,35 +42,50 @@ export default function PageChapitreEleve() {
   const [exercices, setExercices] = useState<ExerciceProgression[]>([]);
   const [chargement, setChargement] = useState(true);
   const [evalDebloquee, setEvalDebloquee] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
-    charger();
+
+    // Annuler le chargement précédent (ex: changement de chapitreId)
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    charger(session, ctrl.signal);
+
+    return () => { ctrl.abort(); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chargementSession, session]);
+  }, [chargementSession, session, chapitreId]);
 
-  async function charger() {
-    if (!session) return;
+  async function charger(s: NonNullable<typeof session>, signal: AbortSignal) {
     setChargement(true);
+    try {
+      const param = s.source === "planbox"
+        ? `eleve_id=${s.id}`
+        : `rb_eleve_id=${s.id}`;
 
-    const param = session.source === "planbox"
-      ? `eleve_id=${session.id}`
-      : `rb_eleve_id=${session.id}`;
+      const [chapRes, progRes] = await Promise.all([
+        fetch(`/api/admin/chapitres/${chapitreId}`, { signal }).then((r) => r.json()),
+        fetch(`/api/chapitres/progression?chapitre_id=${chapitreId}&${param}`, { signal }).then((r) => r.json()),
+      ]);
 
-    const [chapRes, progRes] = await Promise.all([
-      fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
-      fetch(`/api/chapitres/progression?chapitre_id=${chapitreId}&${param}`).then((r) => r.json()),
-    ]);
+      if (signal.aborted) return;
 
-    if (chapRes.chapitre) {
-      setChapitre(chapRes.chapitre);
+      if (chapRes.chapitre) {
+        setChapitre(chapRes.chapitre);
+      }
+
+      const exos = progRes.exercices ?? [];
+      setExercices(exos);
+      setEvalDebloquee(exos.length > 0 && exos.every((e: ExerciceProgression) => e.valide));
+    } catch (err) {
+      if (signal.aborted) return;
+      console.error("[charger chapitre]", err);
+    } finally {
+      if (!signal.aborted) setChargement(false);
     }
-
-    const exos = progRes.exercices ?? [];
-    setExercices(exos);
-    setEvalDebloquee(exos.length > 0 && exos.every((e: ExerciceProgression) => e.valide));
-    setChargement(false);
   }
 
   if (chargement || chargementSession) {

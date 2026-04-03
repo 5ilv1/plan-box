@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maquette — Mon bilan · Plan Box</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F8FA;
+      --card: #FFFFFF;
+      --primary: #2563EB;
+      --primary-pale: #EEF0FE;
+      --primary-mid: #AAB7FA;
+      --text: #111827;
+      --text-sec: #6B7280;
+      --border: #E5E7EB;
+      --success: #10B981;
+      --warning: #F59E0B;
+      --error: #EF4444;
+      --purple: #7C3AED;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --radius: 1rem;
+      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(37,99,235,0.05);
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+    .ms { font-family: 'Material Symbols Rounded'; font-weight: 400; font-style: normal; font-size: 20px; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; word-wrap: normal; direction: ltr; -webkit-font-feature-settings: 'liga'; font-feature-settings: 'liga'; -webkit-font-smoothing: antialiased; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+
+    /* ── Layout ── */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* ── Sidebar (simplified) ── */
+    .sidebar {
+      width: 72px; background: white; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center; padding: 20px 0; gap: 6px;
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 10;
+    }
+    .sidebar-logo { width: 40px; height: 40px; margin-bottom: 16px; }
+    .sidebar-item {
+      width: 48px; height: 48px; border-radius: 14px; display: flex; align-items: center;
+      justify-content: center; cursor: pointer; color: var(--text-sec); transition: all 0.15s;
+    }
+    .sidebar-item:hover { background: var(--primary-pale); color: var(--primary); }
+    .sidebar-item.active { background: var(--primary-pale); color: var(--primary); }
+
+    /* ── Main ── */
+    .main { margin-left: 72px; flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0; z-index: 9;
+      background: rgba(247,248,250,0.85); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .header-breadcrumb { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-sec); }
+    .header-breadcrumb strong { color: var(--text); font-weight: 700; font-size: 15px; }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 36px; height: 36px; border-radius: 999px;
+      background: linear-gradient(135deg, #2563EB, #7C3AED);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 13px; font-weight: 800;
+    }
+
+    /* ── Tabs ── */
+    .tabs { display: flex; gap: 4px; padding: 0 32px; margin: 24px 0 0; }
+    .tab {
+      padding: 8px 18px; border-radius: 999px; font-size: 13px; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; color: var(--text-sec); background: transparent;
+      border: 1.5px solid transparent;
+    }
+    .tab:hover { background: var(--primary-pale); color: var(--primary); }
+    .tab.active { background: var(--primary); color: white; }
+
+    /* ── Content ── */
+    .content { padding: 24px 32px 48px; display: flex; flex-direction: column; gap: 24px; }
+
+    /* ── Hero banner ── */
+    .hero {
+      border-radius: 1.5rem; padding: 28px 32px;
+      background: linear-gradient(135deg, #0050D4 0%, #7C3AED 100%);
+      color: white; position: relative; overflow: hidden;
+      display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: center;
+    }
+    .hero-deco {
+      position: absolute; border-radius: 50%;
+      background: rgba(255,255,255,0.07);
+    }
+    .hero h2 { font-size: 22px; font-weight: 800; margin-bottom: 4px; }
+    .hero p { font-size: 14px; opacity: 0.85; margin-bottom: 20px; }
+    .hero-kpis { display: flex; gap: 20px; }
+    .hero-kpi { text-align: center; }
+    .hero-kpi-val { font-size: 28px; font-weight: 900; line-height: 1; }
+    .hero-kpi-label { font-size: 11px; opacity: 0.8; margin-top: 2px; }
+    .hero-streak {
+      background: rgba(255,255,255,0.12); border-radius: 1.25rem;
+      padding: 18px 24px; text-align: center; min-width: 140px; backdrop-filter: blur(4px);
+    }
+    .hero-streak-val { font-size: 48px; font-weight: 900; line-height: 1; }
+    .hero-streak-label { font-size: 12px; opacity: 0.85; margin-top: 4px; font-weight: 600; }
+
+    /* ── Section title ── */
+    .section-title {
+      font-size: 11px; font-weight: 700; color: var(--text-sec);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: white; border-radius: var(--radius); padding: 20px 22px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 15px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-sub { font-size: 12px; color: var(--text-sec); margin-bottom: 18px; }
+
+    /* ── Grid ── */
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+
+    /* ══════════════════════════════════════
+       GRAPHIQUE COURBE SVG
+    ══════════════════════════════════════ */
+    .chart-legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--text-sec); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+    .chart-wrap { position: relative; }
+    .chart-y-labels { position: absolute; left: 0; top: 0; bottom: 24px; display: flex; flex-direction: column; justify-content: space-between; }
+    .chart-y-label { font-size: 10px; color: #ccc; text-align: right; padding-right: 4px; }
+    .chart-svg-wrap { margin-left: 28px; }
+    .chart-x-labels { display: flex; justify-content: space-between; margin-left: 28px; margin-top: 4px; }
+    .chart-x-label { font-size: 10px; color: var(--text-sec); text-align: center; flex: 1; }
+
+    /* ══════════════════════════════════════
+       DONUT CHART
+    ══════════════════════════════════════ */
+    .donut-wrap { display: flex; align-items: center; gap: 24px; }
+    .donut-legend { display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .donut-legend-item { display: flex; align-items: center; gap: 8px; }
+    .donut-legend-dot { width: 10px; height: 10px; border-radius: 999px; flex-shrink: 0; }
+    .donut-legend-label { font-size: 13px; font-weight: 600; color: var(--text); }
+    .donut-legend-val { font-size: 12px; color: var(--text-sec); margin-left: auto; }
+
+    /* ══════════════════════════════════════
+       POINTS FORTS / À TRAVAILLER
+    ══════════════════════════════════════ */
+    .strength-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .strength-col { border-radius: 0.875rem; padding: 16px; }
+    .strength-col.good { background: #F0FDF4; border: 1.5px solid #BBF7D0; }
+    .strength-col.warn { background: #FFFBEB; border: 1.5px solid #FDE68A; }
+    .strength-col-title {
+      font-size: 12px; font-weight: 700; margin-bottom: 10px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .strength-col.good .strength-col-title { color: #15803D; }
+    .strength-col.warn .strength-col-title { color: #92400E; }
+    .strength-tag {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 0.625rem; margin-bottom: 6px;
+      font-size: 12px; font-weight: 600;
+    }
+    .strength-tag.good { background: #DCFCE7; color: #15803D; }
+    .strength-tag.warn { background: #FEF3C7; color: #92400E; }
+    .strength-tag-score { margin-left: auto; font-size: 11px; opacity: 0.8; font-weight: 700; }
+
+    /* ══════════════════════════════════════
+       MATIÈRE BAR
+    ══════════════════════════════════════ */
+    .matiere-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+    .matiere-label { font-size: 12px; font-weight: 600; color: var(--text); width: 86px; flex-shrink: 0; }
+    .matiere-bar-track { flex: 1; height: 8px; background: var(--border); border-radius: 999px; overflow: hidden; }
+    .matiere-bar-fill { height: 100%; border-radius: 999px; transition: width 0.6s ease; }
+    .matiere-score { font-size: 12px; font-weight: 700; color: var(--text); width: 32px; text-align: right; }
+    .matiere-delta { font-size: 11px; font-weight: 600; width: 36px; text-align: right; }
+    .delta-up { color: var(--success); }
+    .delta-down { color: var(--error); }
+    .delta-neutral { color: var(--text-sec); }
+
+    /* ══════════════════════════════════════
+       MINI CALENDAR HEATMAP
+    ══════════════════════════════════════ */
+    .heatmap { display: flex; gap: 3px; flex-wrap: wrap; }
+    .heatmap-cell {
+      width: 14px; height: 14px; border-radius: 3px;
+      background: var(--border);
+    }
+    .heatmap-cell.lvl1 { background: #BBF7D0; }
+    .heatmap-cell.lvl2 { background: #4ADE80; }
+    .heatmap-cell.lvl3 { background: #16A34A; }
+    .heatmap-cell.lvl0 { background: #F3F4F6; }
+    .heatmap-months { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-sec); margin-bottom: 4px; }
+
+    /* ══════════════════════════════════════
+       RECENT ACTIVITY
+    ══════════════════════════════════════ */
+    .activity-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .activity-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .activity-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .activity-info { flex: 1; min-width: 0; }
+    .activity-title { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .activity-meta { font-size: 11px; color: var(--text-sec); }
+    .activity-score { font-size: 13px; font-weight: 700; }
+
+    /* ══════════════════════════════════════
+       PERIOD SELECTOR
+    ══════════════════════════════════════ */
+    .period-sel { display: flex; gap: 4px; }
+    .period-btn {
+      padding: 4px 12px; border-radius: 6px; font-size: 11px; font-weight: 600;
+      cursor: pointer; border: 1.5px solid var(--border); background: white; color: var(--text-sec);
+      font-family: var(--font); transition: all 0.12s;
+    }
+    .period-btn:hover { border-color: var(--primary); color: var(--primary); }
+    .period-btn.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+    /* responsive tooltip */
+    .dot-tooltip {
+      position: absolute; background: #1F2937; color: white;
+      font-size: 11px; font-weight: 600; padding: 4px 8px; border-radius: 6px;
+      white-space: nowrap; pointer-events: none; transform: translate(-50%, -130%);
+      opacity: 0; transition: opacity 0.15s;
+    }
+    .chart-dot:hover + .dot-tooltip { opacity: 1; }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Sidebar minimaliste -->
+  <aside class="sidebar">
+    <img src="/planbox-mascotte.png" class="sidebar-logo" alt="Plan Box" />
+    <div class="sidebar-item"><span class="ms">home</span></div>
+    <div class="sidebar-item"><span class="ms">calendar_today</span></div>
+    <div class="sidebar-item active"><span class="ms">bar_chart</span></div>
+    <div class="sidebar-item"><span class="ms">school</span></div>
+    <div style="flex:1"></div>
+    <div class="sidebar-item"><span class="ms">logout</span></div>
+  </aside>
+
+  <div class="main">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-breadcrumb">
+        <span>Plan Box</span>
+        <span class="ms" style="font-size:14px;opacity:.4">chevron_right</span>
+        <strong>Mon bilan</strong>
+      </div>
+      <div class="header-right">
+        <div style="font-size:13px;font-weight:600;color:var(--text-sec)">Léa Martin</div>
+        <div class="avatar">LM</div>
+      </div>
+    </header>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab">Programme</div>
+      <div class="tab active">Mon bilan</div>
+      <div class="tab">Mes leçons</div>
+    </div>
+
+    <!-- Content -->
+    <main class="content">
+
+      <!-- ── Hero ── -->
+      <div class="hero">
+        <div class="hero-deco" style="width:320px;height:320px;top:-100px;right:180px;"></div>
+        <div class="hero-deco" style="width:160px;height:160px;bottom:-60px;right:80px;"></div>
+
+        <div style="position:relative;z-index:1">
+          <h2>Bravo Léa ! 🎉</h2>
+          <p>Voici tes résultats des 4 dernières semaines.</p>
+          <div class="hero-kpis">
+            <div class="hero-kpi">
+              <div class="hero-kpi-val">47</div>
+              <div class="hero-kpi-label">exercices faits</div>
+            </div>
+            <div class="hero-kpi">
+              <div class="hero-kpi-val">78%</div>
+              <div class="hero-kpi-label">taux de réussite</div>
+            </div>
+            <div class="hero-kpi">
+              <div class="hero-kpi-val">12</div>
+              <div class="hero-kpi-label">réussis du 1er coup</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-streak" style="position:relative;z-index:1">
+          <div style="font-size:28px;margin-bottom:4px">🔥</div>
+          <div class="hero-streak-val">7</div>
+          <div class="hero-streak-label">jours consécutifs</div>
+        </div>
+      </div>
+
+      <!-- ── Ligne 1 : courbe + donut ── -->
+      <div class="grid-2">
+
+        <!-- Courbe de progression par matière -->
+        <div class="card" style="grid-column: 1 / 3;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px">
+            <div>
+              <div class="card-title">
+                <span class="ms" style="color:var(--primary)">trending_up</span>
+                Progression par matière
+              </div>
+              <div class="card-sub">Score moyen sur les 8 dernières semaines</div>
+            </div>
+            <div class="period-sel">
+              <button class="period-btn">4 sem.</button>
+              <button class="period-btn active">8 sem.</button>
+              <button class="period-btn">3 mois</button>
+            </div>
+          </div>
+
+          <!-- Légende -->
+          <div class="chart-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:#2563EB"></div>Français</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#7C3AED"></div>Maths</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#0891B2"></div>Histoire</div>
+            <div class="legend-item"><div class="legend-dot" style="background:#059669"></div>Géographie</div>
+          </div>
+
+          <!-- SVG Chart -->
+          <div class="chart-wrap">
+            <div class="chart-y-labels" style="width:24px">
+              <span class="chart-y-label">100</span>
+              <span class="chart-y-label">75</span>
+              <span class="chart-y-label">50</span>
+              <span class="chart-y-label">25</span>
+              <span class="chart-y-label">0</span>
+            </div>
+            <div class="chart-svg-wrap">
+              <svg viewBox="0 0 620 180" style="width:100%;height:180px;display:block">
+                <!-- Grille -->
+                <line x1="0" y1="0"   x2="620" y2="0"   stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="0" y1="45"  x2="620" y2="45"  stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="0" y1="90"  x2="620" y2="90"  stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="0" y1="135" x2="620" y2="135" stroke="#F3F4F6" stroke-width="1"/>
+                <line x1="0" y1="180" x2="620" y2="180" stroke="#F3F4F6" stroke-width="1"/>
+
+                <!-- Français (bleu) — montée progressive -->
+                <polyline points="0,108 88,99 177,90 265,81 354,63 442,54 531,45 619,36"
+                  fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <!-- zone remplie -->
+                <polygon points="0,108 88,99 177,90 265,81 354,63 442,54 531,45 619,36 619,180 0,180"
+                  fill="#2563EB" opacity="0.06"/>
+                <!-- points -->
+                <circle cx="0"   cy="108" r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="88"  cy="99"  r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="177" cy="90"  r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="265" cy="81"  r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="354" cy="63"  r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="442" cy="54"  r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="531" cy="45"  r="4" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+                <circle cx="619" cy="36"  r="5" fill="#2563EB" stroke="white" stroke-width="2.5"/>
+
+                <!-- Maths (violet) — progression avec creux -->
+                <polyline points="0,126 88,117 177,108 265,126 354,99 442,81 531,72 619,54"
+                  fill="none" stroke="#7C3AED" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <polygon points="0,126 88,117 177,108 265,126 354,99 442,81 531,72 619,54 619,180 0,180"
+                  fill="#7C3AED" opacity="0.05"/>
+                <circle cx="0"   cy="126" r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="88"  cy="117" r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="177" cy="108" r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="265" cy="126" r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="354" cy="99"  r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="442" cy="81"  r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="531" cy="72"  r="4" fill="white" stroke="#7C3AED" stroke-width="2.5"/>
+                <circle cx="619" cy="54"  r="5" fill="#7C3AED" stroke="white" stroke-width="2.5"/>
+
+                <!-- Histoire (cyan) — stable puis hausse -->
+                <polyline points="0,90 88,90 177,99 265,90 354,81 442,90 531,72 619,63"
+                  fill="none" stroke="#0891B2" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="none"/>
+                <circle cx="0"   cy="90"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="88"  cy="90"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="177" cy="99"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="265" cy="90"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="354" cy="81"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="442" cy="90"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="531" cy="72"  r="4" fill="white" stroke="#0891B2" stroke-width="2"/>
+                <circle cx="619" cy="63"  r="5" fill="#0891B2" stroke="white" stroke-width="2.5"/>
+
+                <!-- Géo (vert) — bonne progression -->
+                <polyline points="0,144 88,135 177,126 265,108 354,108 442,99 531,81 619,72"
+                  fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="0"   cy="144" r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="88"  cy="135" r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="177" cy="126" r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="265" cy="108" r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="354" cy="108" r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="442" cy="99"  r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="531" cy="81"  r="4" fill="white" stroke="#059669" stroke-width="2"/>
+                <circle cx="619" cy="72"  r="5" fill="#059669" stroke="white" stroke-width="2.5"/>
+
+                <!-- Ligne "cette semaine" -->
+                <line x1="619" y1="0" x2="619" y2="180" stroke="#E5E7EB" stroke-width="1.5" stroke-dasharray="4 3"/>
+                <text x="614" y="10" font-size="9" fill="#9CA3AF" font-family="'Plus Jakarta Sans',sans-serif" text-anchor="end">cette sem.</text>
+              </svg>
+            </div>
+            <div class="chart-x-labels">
+              <span class="chart-x-label">S1</span>
+              <span class="chart-x-label">S2</span>
+              <span class="chart-x-label">S3</span>
+              <span class="chart-x-label">S4</span>
+              <span class="chart-x-label">S5</span>
+              <span class="chart-x-label">S6</span>
+              <span class="chart-x-label">S7</span>
+              <span class="chart-x-label">S8</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Ligne 2 : scores par matière + donut 1er coup ── -->
+      <div class="grid-2">
+
+        <!-- Scores par matière (barres) -->
+        <div class="card">
+          <div class="card-title">
+            <span class="ms" style="color:#F59E0B">school</span>
+            Score par matière
+          </div>
+          <div class="card-sub">Cette semaine vs semaine dernière</div>
+
+          <div class="matiere-row">
+            <div class="matiere-label">Français</div>
+            <div class="matiere-bar-track">
+              <div class="matiere-bar-fill" style="width:80%;background:linear-gradient(90deg,#AAB7FA,#2563EB)"></div>
+            </div>
+            <div class="matiere-score">80%</div>
+            <div class="matiere-delta delta-up">+8%</div>
+          </div>
+          <div class="matiere-row">
+            <div class="matiere-label">Maths</div>
+            <div class="matiere-bar-track">
+              <div class="matiere-bar-fill" style="width:70%;background:linear-gradient(90deg,#C4B5FD,#7C3AED)"></div>
+            </div>
+            <div class="matiere-score">70%</div>
+            <div class="matiere-delta delta-up">+12%</div>
+          </div>
+          <div class="matiere-row">
+            <div class="matiere-label">Histoire</div>
+            <div class="matiere-bar-track">
+              <div class="matiere-bar-fill" style="width:65%;background:linear-gradient(90deg,#A5F3FC,#0891B2)"></div>
+            </div>
+            <div class="matiere-score">65%</div>
+            <div class="matiere-delta delta-down">−3%</div>
+          </div>
+          <div class="matiere-row">
+            <div class="matiere-label">Géographie</div>
+            <div class="matiere-bar-track">
+              <div class="matiere-bar-fill" style="width:88%;background:linear-gradient(90deg,#6EE7B7,#059669)"></div>
+            </div>
+            <div class="matiere-score">88%</div>
+            <div class="matiere-delta delta-up">+5%</div>
+          </div>
+          <div class="matiere-row" style="margin-bottom:0">
+            <div class="matiere-label">Sciences</div>
+            <div class="matiere-bar-track">
+              <div class="matiere-bar-fill" style="width:55%;background:linear-gradient(90deg,#FED7AA,#EA580C)"></div>
+            </div>
+            <div class="matiere-score">55%</div>
+            <div class="matiere-delta delta-neutral">—</div>
+          </div>
+        </div>
+
+        <!-- Donut 1er coup vs plusieurs essais -->
+        <div class="card">
+          <div class="card-title">
+            <span class="ms" style="color:#10B981">check_circle</span>
+            1er coup vs plusieurs essais
+          </div>
+          <div class="card-sub">Sur les 47 exercices des 4 dernières semaines</div>
+
+          <div class="donut-wrap">
+            <!-- Donut SVG -->
+            <svg viewBox="0 0 120 120" style="width:120px;height:120px;flex-shrink:0">
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#F3F4F6" stroke-width="16"/>
+              <!-- 1er coup : 56% → 198° → stroke-dasharray = 0.56 * 301 = 169 -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#10B981" stroke-width="16"
+                stroke-dasharray="169 132" stroke-dashoffset="75" stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+              <!-- 2e essai : 28% → 84 -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#F59E0B" stroke-width="16"
+                stroke-dasharray="84 217" stroke-dashoffset="-94" stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+              <!-- 3+ essais : 16% → 48 -->
+              <circle cx="60" cy="60" r="48" fill="none" stroke="#EF4444" stroke-width="16"
+                stroke-dasharray="48 253" stroke-dashoffset="-178" stroke-linecap="round"
+                transform="rotate(-90 60 60)"/>
+              <text x="60" y="55" text-anchor="middle" font-size="18" font-weight="900" fill="#111827" font-family="'Plus Jakarta Sans',sans-serif">56%</text>
+              <text x="60" y="69" text-anchor="middle" font-size="9" fill="#6B7280" font-family="'Plus Jakarta Sans',sans-serif">1er coup</text>
+            </svg>
+
+            <div class="donut-legend">
+              <div class="donut-legend-item">
+                <div class="donut-legend-dot" style="background:#10B981"></div>
+                <div>
+                  <div class="donut-legend-label">Réussi du 1er coup</div>
+                  <div style="font-size:11px;color:var(--text-sec)">26 exercices</div>
+                </div>
+                <div class="donut-legend-val" style="color:#10B981;font-weight:800">56%</div>
+              </div>
+              <div class="donut-legend-item">
+                <div class="donut-legend-dot" style="background:#F59E0B"></div>
+                <div>
+                  <div class="donut-legend-label">2e ou 3e essai</div>
+                  <div style="font-size:11px;color:var(--text-sec)">13 exercices</div>
+                </div>
+                <div class="donut-legend-val" style="color:#F59E0B;font-weight:800">28%</div>
+              </div>
+              <div class="donut-legend-item">
+                <div class="donut-legend-dot" style="background:#EF4444"></div>
+                <div>
+                  <div class="donut-legend-label">Après aide / réponse</div>
+                  <div style="font-size:11px;color:var(--text-sec)">8 exercices</div>
+                </div>
+                <div class="donut-legend-val" style="color:#EF4444;font-weight:800">16%</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Barre de tendance -->
+          <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border)">
+            <div style="font-size:11px;color:var(--text-sec);margin-bottom:6px;font-weight:600">Tendance sur 8 semaines</div>
+            <div style="display:flex;height:6px;border-radius:999px;overflow:hidden;gap:1px">
+              <div style="flex:1;background:#FEE2E2;border-radius:3px 0 0 3px"></div>
+              <div style="flex:1;background:#FEF3C7"></div>
+              <div style="flex:1;background:#FEF3C7"></div>
+              <div style="flex:1;background:#D1FAE5"></div>
+              <div style="flex:1;background:#D1FAE5"></div>
+              <div style="flex:1;background:#10B981"></div>
+              <div style="flex:1;background:#10B981"></div>
+              <div style="flex:1;background:#10B981;border-radius:0 3px 3px 0"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-sec);margin-top:3px">
+              <span>S1</span><span>S8</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Ligne 3 : Points forts / à travailler ── -->
+      <div class="card">
+        <div class="card-title" style="margin-bottom:4px">
+          <span class="ms" style="color:var(--purple)">psychology</span>
+          Points forts & points à travailler
+        </div>
+        <div class="card-sub">Basé sur tes 4 dernières semaines d'exercices</div>
+
+        <div class="strength-grid">
+          <div class="strength-col good">
+            <div class="strength-col-title">
+              <span class="ms" style="font-size:16px">star</span>
+              Mes points forts
+            </div>
+            <div class="strength-tag good">
+              <span class="ms" style="font-size:15px">auto_stories</span>
+              Lecture & compréhension
+              <span class="strength-tag-score">92%</span>
+            </div>
+            <div class="strength-tag good">
+              <span class="ms" style="font-size:15px">public</span>
+              Géographie physique
+              <span class="strength-tag-score">88%</span>
+            </div>
+            <div class="strength-tag good">
+              <span class="ms" style="font-size:15px">calculate</span>
+              Multiplication & division
+              <span class="strength-tag-score">85%</span>
+            </div>
+            <div class="strength-tag good">
+              <span class="ms" style="font-size:15px">spellcheck</span>
+              Orthographe lexicale
+              <span class="strength-tag-score">82%</span>
+            </div>
+          </div>
+
+          <div class="strength-col warn">
+            <div class="strength-col-title">
+              <span class="ms" style="font-size:16px">fitness_center</span>
+              À travailler
+            </div>
+            <div class="strength-tag warn">
+              <span class="ms" style="font-size:15px">edit_note</span>
+              Conjugaison (passé composé)
+              <span class="strength-tag-score">48%</span>
+            </div>
+            <div class="strength-tag warn">
+              <span class="ms" style="font-size:15px">history_edu</span>
+              Chronologie historique
+              <span class="strength-tag-score">52%</span>
+            </div>
+            <div class="strength-tag warn">
+              <span class="ms" style="font-size:15px">functions</span>
+              Fractions
+              <span class="strength-tag-score">55%</span>
+            </div>
+            <div class="strength-tag warn">
+              <span class="ms" style="font-size:15px">subject</span>
+              Homophones a/à, et/est
+              <span class="strength-tag-score">58%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Suggestion IA -->
+        <div style="margin-top:14px;padding:12px 14px;background:linear-gradient(135deg,#EEF0FE,#F5F3FF);border-radius:0.75rem;border:1.5px solid #C4B5FD;display:flex;align-items:flex-start;gap:10px">
+          <span class="ms" style="font-size:20px;color:#7C3AED;flex-shrink:0;margin-top:1px">auto_awesome</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#5B21B6;margin-bottom:2px">Suggestion Plan Box</div>
+            <div style="font-size:12px;color:#6D28D9;line-height:1.5">
+              Tu fais beaucoup de progrès en maths ! Pour le passé composé, essaie de refaire les exercices de la semaine 4 — ils t'avaient posé problème. 💪
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Ligne 4 : Heatmap + activités récentes ── -->
+      <div class="grid-2">
+
+        <!-- Heatmap activité -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:4px">
+            <span class="ms" style="color:#059669">local_fire_department</span>
+            Mon assiduité
+          </div>
+          <div class="card-sub">Jours avec au moins 1 exercice complété</div>
+
+          <div class="heatmap-months">
+            <span>Janvier</span><span>Février</span><span>Mars</span>
+          </div>
+          <div class="heatmap">
+            <!-- Janvier — 31 jours -->
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl1"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl1"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl1"></div>
+            <div class="heatmap-cell lvl0"></div>
+            <!-- Février — 28 jours -->
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl1"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl1"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl1"></div>
+            <!-- Mars (29 mars) -->
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl1"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl0"></div><div class="heatmap-cell lvl0"></div>
+            <div class="heatmap-cell lvl1"></div><div class="heatmap-cell lvl2"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl2"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div><div class="heatmap-cell lvl3"></div>
+            <div class="heatmap-cell lvl3"></div>
+          </div>
+
+          <!-- Légende échelle -->
+          <div style="display:flex;align-items:center;gap:4px;margin-top:10px;font-size:10px;color:var(--text-sec)">
+            <span>Moins</span>
+            <div class="heatmap-cell lvl0" style="width:10px;height:10px;"></div>
+            <div class="heatmap-cell lvl1" style="width:10px;height:10px;"></div>
+            <div class="heatmap-cell lvl2" style="width:10px;height:10px;"></div>
+            <div class="heatmap-cell lvl3" style="width:10px;height:10px;"></div>
+            <span>Plus</span>
+          </div>
+        </div>
+
+        <!-- Activités récentes -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:16px">
+            <span class="ms" style="color:var(--primary)">history</span>
+            Activités récentes
+          </div>
+
+          <div class="activity-row">
+            <div class="activity-icon" style="background:#EEF0FE">
+              <span class="ms" style="font-size:18px;color:#2563EB">edit_note</span>
+            </div>
+            <div class="activity-info">
+              <div class="activity-title">Conjugaison — passé composé</div>
+              <div class="activity-meta">Français · Il y a 2h · 3 essais</div>
+            </div>
+            <div class="activity-score" style="color:#F59E0B">6/10</div>
+          </div>
+
+          <div class="activity-row">
+            <div class="activity-icon" style="background:#F0FDF4">
+              <span class="ms" style="font-size:18px;color:#10B981">calculate</span>
+            </div>
+            <div class="activity-info">
+              <div class="activity-title">Tables de multiplication</div>
+              <div class="activity-meta">Maths · Hier · 1er essai ⚡</div>
+            </div>
+            <div class="activity-score" style="color:#10B981">10/10</div>
+          </div>
+
+          <div class="activity-row">
+            <div class="activity-icon" style="background:#F5F3FF">
+              <span class="ms" style="font-size:18px;color:#7C3AED">spellcheck</span>
+            </div>
+            <div class="activity-info">
+              <div class="activity-title">Dictée — les saisons</div>
+              <div class="activity-meta">Français · Hier</div>
+            </div>
+            <div class="activity-score" style="color:#10B981">8/10</div>
+          </div>
+
+          <div class="activity-row">
+            <div class="activity-icon" style="background:#FFF7ED">
+              <span class="ms" style="font-size:18px;color:#EA580C">public</span>
+            </div>
+            <div class="activity-info">
+              <div class="activity-title">Les fleuves de France</div>
+              <div class="activity-meta">Géographie · Lundi · 1er essai ⚡</div>
+            </div>
+            <div class="activity-score" style="color:#10B981">9/10</div>
+          </div>
+
+          <div class="activity-row">
+            <div class="activity-icon" style="background:#FEF2F2">
+              <span class="ms" style="font-size:18px;color:#EF4444">quiz</span>
+            </div>
+            <div class="activity-info">
+              <div class="activity-title">La Révolution française</div>
+              <div class="activity-meta">Histoire · Lundi · 4 essais</div>
+            </div>
+            <div class="activity-score" style="color:#EF4444">4/10</div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script>
+  // Tabs interactifs
+  document.querySelectorAll('.tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+    });
+  });
+  // Period selector
+  document.querySelectorAll('.period-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      btn.closest('.period-sel').querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    });
+  });
+</script>
+</body>
+</html>

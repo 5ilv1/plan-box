@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useEleveSession } from "@/hooks/useEleveSession";
@@ -44,46 +44,59 @@ export default function PageEvaluationFinale() {
   const [score, setScore] = useState(0);
   const [reussi, setReussi] = useState(false);
   const [exercicesEchoues, setExercicesEchoues] = useState<string[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
-    charger();
+
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
+    charger(ctrl.signal);
+
+    return () => { ctrl.abort(); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chargementSession, session]);
+  }, [chargementSession, session, chapitreId]);
 
-  async function charger() {
-    // Charger le chapitre + les exercices
-    const [chapRes, exoRes] = await Promise.all([
-      fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
-      fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
-    ]);
+  async function charger(signal: AbortSignal) {
+    try {
+      const [chapRes, exoRes] = await Promise.all([
+        fetch(`/api/admin/chapitres/${chapitreId}`, { signal }).then((r) => r.json()),
+        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`, { signal }).then((r) => r.json()),
+      ]);
 
-    if (chapRes.chapitre) {
-      setChapitreTitre(chapRes.chapitre.titre);
-      setSeuilEval(chapRes.chapitre.seuil_evaluation ?? 90);
-    }
+      if (signal.aborted) return;
 
-    const exercices: Exercice[] = exoRes.exercices ?? [];
-    if (exercices.length === 0) {
+      if (chapRes.chapitre) {
+        setChapitreTitre(chapRes.chapitre.titre);
+        setSeuilEval(chapRes.chapitre.seuil_evaluation ?? 90);
+      }
+
+      const exercices: Exercice[] = exoRes.exercices ?? [];
+      if (exercices.length === 0) {
+        router.push(`/eleve/chapitre/${chapitreId}`);
+        return;
+      }
+
+      // Extraire des questions de chaque exercice (2-3 par exercice, mélangées)
+      const allQuestions: QuestionEval[] = [];
+
+      for (const ex of exercices) {
+        const qs = extraireQuestions(ex);
+        const nbAPrendre = Math.min(3, Math.max(2, qs.length));
+        const melangees = melanger(qs);
+        allQuestions.push(...melangees.slice(0, nbAPrendre));
+      }
+
+      setQuestions(melanger(allQuestions));
+      setEtat("en_cours");
+    } catch (err) {
+      if (signal.aborted) return;
+      console.error("[charger evaluation]", err);
       router.push(`/eleve/chapitre/${chapitreId}`);
-      return;
     }
-
-    // Extraire des questions de chaque exercice (2-3 par exercice, mélangées)
-    const allQuestions: QuestionEval[] = [];
-
-    for (const ex of exercices) {
-      const qs = extraireQuestions(ex);
-      // Prendre 2-3 questions par exercice pour l'évaluation
-      const nbAPrendre = Math.min(3, Math.max(2, qs.length));
-      const melangees = melanger(qs);
-      allQuestions.push(...melangees.slice(0, nbAPrendre));
-    }
-
-    // Mélanger toutes les questions
-    setQuestions(melanger(allQuestions));
-    setEtat("en_cours");
   }
 
   function extraireQuestions(ex: Exercice): QuestionEval[] {

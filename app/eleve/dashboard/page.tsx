@@ -164,6 +164,7 @@ export default function DashboardEleve() {
   // Ref pour accéder à session dans l'intervalle sans le capturer dans la closure
   const sessionRef = useRef(session);
   useEffect(() => { sessionRef.current = session; }, [session]);
+  const abortRef = useRef<AbortController | null>(null);
 
   // ── Bornes semaine ──────────────────────────────────────────────────────────
   function getBornesSemaine() {
@@ -183,15 +184,22 @@ export default function DashboardEleve() {
   useEffect(() => {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
+
+    abortRef.current?.abort();
+    const ctrl = new AbortController();
+    abortRef.current = ctrl;
+
     if (session.source === "repetibox") {
-      chargerRB(parseInt(session.id, 10));
+      chargerRB(parseInt(session.id, 10), ctrl.signal);
     } else {
-      chargerPB(session.id);
+      chargerPB(session.id, ctrl.signal);
     }
+
+    return () => { ctrl.abort(); };
   }, [chargementSession, session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Chargement Plan Box ─────────────────────────────────────────────────────
-  async function chargerPB(eleveId: string) {
+  async function chargerPB(eleveId: string, signal: AbortSignal) {
     try {
       const aujourd_hui = new Date().toISOString().split("T")[0];
       const { debut, fin } = getBornesSemaine();
@@ -227,6 +235,8 @@ export default function DashboardEleve() {
           .limit(10),
       ]);
 
+      if (signal.aborted) return;
+
       if (eleveData) setNiveauNom((eleveData as any).niveaux?.nom ?? "");
       setProgressionsPB((progressionsData ?? []) as ProgressionComplete[]);
       setNotifications((notifsData ?? []) as Notification[]);
@@ -234,7 +244,6 @@ export default function DashboardEleve() {
       supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
 
       const blocs = filtrerBlocsConditionnels((blocsWeek ?? []) as PlanTravail[]);
-      // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
       setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
       setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
       setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
@@ -247,23 +256,26 @@ export default function DashboardEleve() {
 
       const rbId = (eleveData as any)?.repetibox_eleve_id;
       if (rbId) setRbEleveId(rbId);
+
+      // Requêtes secondaires (non-bloquantes) — avec signal
       if (rbId) {
-        fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`)
+        fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`, { signal })
           .then((r) => r.json())
-          .then((json) => setChapitresRB(json.chapitres ?? []))
+          .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
           .catch(() => {});
       }
 
-      // Ceintures de multiplications — vérifier si activé pour cet élève
       const ceintureParam = rbId ? `rb_id=${rbId}` : `eleve_id=${eleveId}`;
-      fetch(`/api/ceinture-active?${ceintureParam}`)
+      fetch(`/api/ceinture-active?${ceintureParam}`, { signal })
         .then((r) => r.json())
         .then((d) => {
+          if (signal.aborted) return;
           setCeintureActive(d.actif === true);
           if (d.actif) {
-            fetch(`/api/ceinture-progression?${ceintureParam}`)
+            fetch(`/api/ceinture-progression?${ceintureParam}`, { signal })
               .then((r) => r.json())
               .then((p) => {
+                if (signal.aborted) return;
                 const c = CEINTURES[p.ceinture_index ?? 0];
                 if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
               })
@@ -272,19 +284,17 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
 
-      // Chapitres (parcours progressif)
-      fetch(`/api/chapitres/mes-chapitres?eleve_id=${eleveId}`)
+      fetch(`/api/chapitres/mes-chapitres?eleve_id=${eleveId}`, { signal })
         .then((r) => r.json())
-        .then((json) => setChapitresAssignes(json.chapitres ?? []))
+        .then((json) => { if (!signal.aborted) setChapitresAssignes(json.chapitres ?? []); })
         .catch(() => {});
 
-      // Problème du jour
-      fetch("/api/daily-problem")
+      fetch("/api/daily-problem", { signal })
         .then((r) => r.json())
         .then((json) => {
+          if (signal.aborted) return;
           if (json.id && !json.noSchool) {
             setDailyProblem(json);
-            // Priorité : statut serveur (validation enseignant) > localStorage
             if (json.serverAttempt?.solved) {
               setDailyProblemSolved(true);
             } else {
@@ -295,21 +305,23 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
     } catch (err) {
+      if (signal.aborted) return;
       console.error("[chargerPB]", err);
     } finally {
-      setChargementDonnees(false);
+      if (!signal.aborted) setChargementDonnees(false);
     }
   }
 
   // ── Chargement Repetibox ────────────────────────────────────────────────────
-  async function chargerRB(rbId: number) {
+  async function chargerRB(rbId: number, signal: AbortSignal) {
     try {
       supabase.from("eleves_planbox_meta").upsert(
         { repetibox_eleve_id: rbId, derniere_connexion: new Date().toISOString() },
         { onConflict: "repetibox_eleve_id" }
       );
 
-      const res = await fetch(`/api/mon-plan-travail?rb=${rbId}`);
+      const res = await fetch(`/api/mon-plan-travail?rb=${rbId}`, { signal });
+      if (signal.aborted) return;
       const json = await res.json();
       const blocs: PlanTravail[] = json.blocs ?? [];
 
@@ -317,7 +329,6 @@ export default function DashboardEleve() {
       const { debut, fin } = getBornesSemaine();
 
       const blocsWeekFiltered = filtrerBlocsConditionnels(blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin));
-      // Blocs semaine : visibles toute la semaine → dans "aujourd'hui" uniquement pour éviter le doublon
       setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
       setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
 
@@ -330,20 +341,22 @@ export default function DashboardEleve() {
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
       setPodcastsQcm(podcastsRB);
 
-      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`)
+      // Requêtes secondaires avec signal
+      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
         .then((r) => r.json())
-        .then((json) => setChapitresRB(json.chapitres ?? []))
+        .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
         .catch(() => {});
 
-      // Ceintures de multiplications
-      fetch(`/api/ceinture-active?rb_id=${rbId}`)
+      fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal })
         .then((r) => r.json())
         .then((d) => {
+          if (signal.aborted) return;
           setCeintureActive(d.actif === true);
           if (d.actif) {
-            fetch(`/api/ceinture-progression?rb_id=${rbId}`)
+            fetch(`/api/ceinture-progression?rb_id=${rbId}`, { signal })
               .then((r) => r.json())
               .then((p) => {
+                if (signal.aborted) return;
                 const c = CEINTURES[p.ceinture_index ?? 0];
                 if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
               })
@@ -352,19 +365,17 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
 
-      // Chapitres (parcours progressif)
-      fetch(`/api/chapitres/mes-chapitres?rb_id=${rbId}`)
+      fetch(`/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
         .then((r) => r.json())
-        .then((json) => setChapitresAssignes(json.chapitres ?? []))
+        .then((json) => { if (!signal.aborted) setChapitresAssignes(json.chapitres ?? []); })
         .catch(() => {});
 
-      // Problème du jour
-      fetch("/api/daily-problem")
+      fetch("/api/daily-problem", { signal })
         .then((r) => r.json())
         .then((json) => {
+          if (signal.aborted) return;
           if (json.id && !json.noSchool) {
             setDailyProblem(json);
-            // Priorité : statut serveur (validation enseignant) > localStorage
             if (json.serverAttempt?.solved) {
               setDailyProblemSolved(true);
             } else {
@@ -375,9 +386,10 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
     } catch (err) {
+      if (signal.aborted) return;
       console.error("[chargerRB]", err);
     } finally {
-      setChargementDonnees(false);
+      if (!signal.aborted) setChargementDonnees(false);
     }
   }
 
@@ -387,7 +399,7 @@ export default function DashboardEleve() {
     return blocs.map((b) => `${b.id}:${b.statut}:${JSON.stringify(b.contenu)}`).join("|");
   }
 
-  const rafraichirBlocs = useCallback(async () => {
+  const rafraichirBlocs = useCallback(async (signal?: AbortSignal) => {
     const s = sessionRef.current;
     if (!s) return;
 
@@ -398,7 +410,8 @@ export default function DashboardEleve() {
       let blocsWeek: PlanTravail[] = [];
 
       if (s.source === "repetibox") {
-        const res = await fetch(`/api/mon-plan-travail?rb=${s.id}`);
+        const res = await fetch(`/api/mon-plan-travail?rb=${s.id}`, signal ? { signal } : undefined);
+        if (signal?.aborted) return;
         const json = await res.json();
         const blocs: PlanTravail[] = json.blocs ?? [];
         blocsWeek = blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin);
@@ -410,6 +423,7 @@ export default function DashboardEleve() {
           .gte("date_assignation", debut)
           .lte("date_assignation", fin)
           .order("created_at", { ascending: true });
+        if (signal?.aborted) return;
         blocsWeek = (data ?? []) as PlanTravail[];
       }
 
@@ -417,28 +431,33 @@ export default function DashboardEleve() {
       const nouvsAujourd = blocsFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui);
       const nouvsSemaine = blocsFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui);
 
-      setBlocsAujourdhui((prev) => sigBlocs(nouvsAujourd) !== sigBlocs(prev) ? nouvsAujourd : prev);
-      setBlocsSemaine((prev) => sigBlocs(nouvsSemaine) !== sigBlocs(prev) ? nouvsSemaine : prev);
-    } catch { /* silencieux */ }
+      if (!signal?.aborted) {
+        setBlocsAujourdhui((prev) => sigBlocs(nouvsAujourd) !== sigBlocs(prev) ? nouvsAujourd : prev);
+        setBlocsSemaine((prev) => sigBlocs(nouvsSemaine) !== sigBlocs(prev) ? nouvsSemaine : prev);
+      }
+    } catch { /* silencieux — inclut AbortError */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  // Démarre le polling dès que le chargement initial est terminé
+  // Polling 30s + rafraîchissement au retour sur la page
   useEffect(() => {
     if (chargementDonnees) return;
-    const interval = setInterval(rafraichirBlocs, 30_000);
-    return () => clearInterval(interval);
-  }, [chargementDonnees, rafraichirBlocs]);
 
-  // Rafraîchissement immédiat quand l'élève revient sur la page (après un exercice)
-  useEffect(() => {
-    if (chargementDonnees) return;
+    const ctrl = new AbortController();
+
+    const interval = setInterval(() => rafraichirBlocs(ctrl.signal), 30_000);
+
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
-        rafraichirBlocs();
+        rafraichirBlocs(ctrl.signal);
       }
     }
     document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      ctrl.abort();
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
   }, [chargementDonnees, rafraichirBlocs]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────

@@ -27,6 +27,7 @@ interface Chapitre {
   description: string | null;
   seuil_evaluation: number;
   seuil_reussite: number;
+  seuil_exercice: number;
   nb_cartes_eval: number;
   created_at: string;
   niveaux?: { nom: string };
@@ -91,9 +92,30 @@ export default function PageChapitreDetail() {
   // Suppression
   const [aSupprimer, setASupprimer] = useState<string | null>(null);
 
+  // Onglet actif (parcours | suivi)
+  const [onglet, setOnglet] = useState<"parcours" | "suivi">("parcours");
+
+  // Suivi élèves
+  interface SuiviExercice { id: string; titre: string; type: string; ordre: number }
+  interface SuiviEleve {
+    id: string; prenom: string; nom: string; source: string;
+    resultats: Record<string, { score: number; total: number; valide: boolean }>;
+    evaluation: { score: number; total: number; pourcentage: number; reussi: boolean } | null;
+  }
+  interface SuiviStats {
+    nbEleves: number; nbValides: number; scoreMoyenEval: number | null;
+    exercicesProblematiques: Array<{ exerciceId: string; titre: string; tauxReussite: number; nbEchecs: number }>;
+  }
+  const [suiviEleves, setSuiviEleves] = useState<SuiviEleve[]>([]);
+  const [suiviExercices, setSuiviExercices] = useState<SuiviExercice[]>([]);
+  const [suiviStats, setSuiviStats] = useState<SuiviStats | null>(null);
+  const [suiviChargement, setSuiviChargement] = useState(false);
+  const suiviChargeRef = useRef(false);
+
   // Paramètres
   const [editParams, setEditParams] = useState(false);
   const [seuil, setSeuil] = useState(90);
+  const [seuilExo, setSeuilExo] = useState(90);
 
   // DnD
   const dragIdRef = useRef<string | null>(null);
@@ -129,6 +151,7 @@ export default function PageChapitreDetail() {
     if (chapRes.chapitre) {
       setChapitre(chapRes.chapitre);
       setSeuil(chapRes.chapitre.seuil_evaluation ?? 90);
+      setSeuilExo(chapRes.chapitre.seuil_exercice ?? 90);
     }
     setExercices(exRes.exercices ?? []);
     setGroupes(grpRes.groupes ?? []);
@@ -325,23 +348,52 @@ export default function PageChapitreDetail() {
     setEnGeneration(false);
   }
 
-  async function sauvegarderSeuil() {
+  async function sauvegarderSeuils() {
     const ancienSeuil = chapitre?.seuil_evaluation ?? 90;
+    const ancienSeuilExo = chapitre?.seuil_exercice ?? 90;
     try {
       const res = await fetch("/api/admin/chapitres", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id: chapitreId, seuil_evaluation: seuil }),
+        body: JSON.stringify({ id: chapitreId, seuil_evaluation: seuil, seuil_exercice: seuilExo }),
       });
       if (!res.ok) throw new Error();
-      setChapitre((prev) => prev ? { ...prev, seuil_evaluation: seuil } : prev);
-      showToast("Seuil mis à jour");
+      setChapitre((prev) => prev ? { ...prev, seuil_evaluation: seuil, seuil_exercice: seuilExo } : prev);
+      showToast("Seuils mis à jour");
     } catch {
       setSeuil(ancienSeuil);
-      showToast("Erreur lors de la sauvegarde du seuil", "err");
+      setSeuilExo(ancienSeuilExo);
+      showToast("Erreur lors de la sauvegarde des seuils", "err");
     }
     setEditParams(false);
   }
+
+  // ── Chargement suivi élèves ──
+  async function chargerSuivi() {
+    if (suiviChargeRef.current) return;
+    suiviChargeRef.current = true;
+    setSuiviChargement(true);
+    try {
+      const res = await fetch(`/api/chapitres/suivi?chapitre_id=${chapitreId}`);
+      const json = await res.json();
+      setSuiviExercices(json.exercices ?? []);
+      setSuiviEleves(json.eleves ?? []);
+      setSuiviStats(json.stats ?? null);
+    } catch (err) {
+      console.error("[chargerSuivi]", err);
+    } finally {
+      setSuiviChargement(false);
+      suiviChargeRef.current = false;
+    }
+  }
+
+  // Charger le suivi quand on bascule sur l'onglet
+  useEffect(() => {
+    if (onglet === "suivi" && !suiviStats) {
+      chargerSuivi();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [onglet]);
 
   async function mettreAJourOrdre(ordonnés: Exercice[]) {
     const ancien = [...exercices];
@@ -537,6 +589,34 @@ export default function PageChapitreDetail() {
             </div>
           )}
 
+          {/* ── Onglets ── */}
+          <div style={{
+            display: "flex", gap: 0, marginBottom: 20,
+            borderRadius: 12, overflow: "hidden",
+            border: "1px solid var(--border)", background: "var(--bg)",
+          }}>
+            {([
+              { id: "parcours" as const, label: "Parcours", icon: "route" },
+              { id: "suivi" as const, label: "Suivi élèves", icon: "monitoring" },
+            ]).map((tab) => (
+              <button key={tab.id} onClick={() => setOnglet(tab.id)} style={{
+                flex: 1, padding: "10px 16px", border: "none", cursor: "pointer",
+                fontSize: 13, fontWeight: 700,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                background: onglet === tab.id ? "white" : "transparent",
+                color: onglet === tab.id ? "var(--primary)" : "var(--text-secondary)",
+                boxShadow: onglet === tab.id ? "0 1px 4px rgba(0,0,0,0.08)" : "none",
+                display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                transition: "all 0.15s",
+              }}>
+                <span className="ms" style={{ fontSize: 18 }}>{tab.icon}</span>
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {onglet === "parcours" && (<>
+
           {/* ── Paramètres éval ── */}
           <div className="card" style={{ marginBottom: 20, padding: "14px 20px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -547,13 +627,13 @@ export default function PageChapitreDetail() {
                 </div>
                 <div style={{ width: 1, height: 30, background: "var(--border)" }} />
                 <div>
-                  <span style={{ fontSize: 11, color: "var(--text-secondary)", display: "block" }}>Exercices</span>
-                  <span style={{ fontSize: 20, fontWeight: 800, color: "var(--primary)" }}>{exercices.length}</span>
+                  <span style={{ fontSize: 11, color: "var(--text-secondary)", display: "block" }}>Seuil exercices</span>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: "var(--primary)" }}>{chapitre.seuil_exercice ?? 90}%</span>
                 </div>
                 <div style={{ width: 1, height: 30, background: "var(--border)" }} />
                 <div>
-                  <span style={{ fontSize: 11, color: "var(--text-secondary)", display: "block" }}>Validation exercice</span>
-                  <span style={{ fontSize: 20, fontWeight: 800, color: "var(--primary)" }}>100%</span>
+                  <span style={{ fontSize: 11, color: "var(--text-secondary)", display: "block" }}>Exercices</span>
+                  <span style={{ fontSize: 20, fontWeight: 800, color: "var(--primary)" }}>{exercices.length}</span>
                 </div>
               </div>
               <button className="btn-ghost" onClick={() => setEditParams(!editParams)} style={{ padding: "5px 14px", fontSize: 13 }}>
@@ -566,8 +646,13 @@ export default function PageChapitreDetail() {
                   Seuil évaluation finale : <strong>{seuil}%</strong>
                 </label>
                 <input type="range" min={70} max={100} step={5} value={seuil}
-                  onChange={(e) => setSeuil(+e.target.value)} style={{ width: "100%", marginBottom: 12 }} />
-                <button className="btn-primary" onClick={sauvegarderSeuil} style={{ width: "100%" }}>
+                  onChange={(e) => setSeuil(+e.target.value)} style={{ width: "100%", marginBottom: 16 }} />
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+                  Seuil validation exercices : <strong>{seuilExo}%</strong>
+                </label>
+                <input type="range" min={50} max={100} step={5} value={seuilExo}
+                  onChange={(e) => setSeuilExo(+e.target.value)} style={{ width: "100%", marginBottom: 12 }} />
+                <button className="btn-primary" onClick={sauvegarderSeuils} style={{ width: "100%" }}>
                   ✓ Enregistrer
                 </button>
               </div>
@@ -739,6 +824,208 @@ export default function PageChapitreDetail() {
               </button>
             </div>
           )}
+
+          </>)}
+
+          {/* ═══════════════════════════════════════════════════════════════════
+              ONGLET SUIVI ÉLÈVES
+              ═══════════════════════════════════════════════════════════════════ */}
+          {onglet === "suivi" && (
+            <div>
+              {suiviChargement ? (
+                <div style={{ textAlign: "center", padding: "48px 20px" }}>
+                  <div className="skeleton" style={{ height: 80, borderRadius: 16, marginBottom: 16 }} />
+                  <div className="skeleton" style={{ height: 200, borderRadius: 16 }} />
+                </div>
+              ) : !suiviStats || suiviStats.nbEleves === 0 ? (
+                <div className="card" style={{ textAlign: "center", padding: "48px 20px", color: "var(--text-secondary)" }}>
+                  <div style={{ fontSize: 40, marginBottom: 12 }}>
+                    <span className="ms" style={{ fontSize: 48, color: "var(--text-secondary)" }}>group_off</span>
+                  </div>
+                  <p style={{ marginBottom: 6, fontWeight: 600, fontSize: 15 }}>Aucun élève assigné</p>
+                  <p style={{ fontSize: 13 }}>Assignez ce chapitre à un groupe pour voir le suivi.</p>
+                </div>
+              ) : (
+                <>
+                  {/* ── KPI ── */}
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 12, marginBottom: 20 }}>
+                    <div className="card" style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        Parcours validé
+                      </div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: "#16A34A" }}>
+                        {suiviStats.nbValides}<span style={{ fontSize: 16, fontWeight: 600, color: "var(--text-secondary)" }}>/{suiviStats.nbEleves}</span>
+                      </div>
+                    </div>
+                    <div className="card" style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        Score moyen éval
+                      </div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: suiviStats.scoreMoyenEval != null ? "#2563EB" : "var(--text-secondary)" }}>
+                        {suiviStats.scoreMoyenEval != null ? `${suiviStats.scoreMoyenEval}%` : "—"}
+                      </div>
+                    </div>
+                    <div className="card" style={{ padding: "14px 16px", textAlign: "center" }}>
+                      <div style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 600, marginBottom: 4, textTransform: "uppercase", letterSpacing: "0.05em" }}>
+                        Exos en difficulté
+                      </div>
+                      <div style={{ fontSize: 28, fontWeight: 800, color: suiviStats.exercicesProblematiques.length > 0 ? "#DC2626" : "#16A34A" }}>
+                        {suiviStats.exercicesProblematiques.length}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* ── Alertes exercices problématiques ── */}
+                  {suiviStats.exercicesProblematiques.length > 0 && (
+                    <div style={{
+                      background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 14,
+                      padding: "12px 16px", marginBottom: 20,
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 8 }}>
+                        <span className="ms" style={{ fontSize: 18, color: "#DC2626" }}>warning</span>
+                        <span style={{ fontSize: 13, fontWeight: 700, color: "#991B1B" }}>Exercices problématiques</span>
+                      </div>
+                      {suiviStats.exercicesProblematiques.map((ep) => (
+                        <div key={ep.exerciceId} style={{
+                          display: "flex", alignItems: "center", justifyContent: "space-between",
+                          padding: "6px 0", borderTop: "1px solid #FEE2E2",
+                        }}>
+                          <span style={{ fontSize: 13, fontWeight: 600, color: "#7F1D1D" }}>{ep.titre}</span>
+                          <span style={{ fontSize: 12, color: "#991B1B" }}>
+                            {ep.tauxReussite}% de réussite · {ep.nbEchecs} échec{ep.nbEchecs > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* ── Tableau croisé ── */}
+                  <div className="card" style={{ padding: 0, overflow: "hidden" }}>
+                    <div style={{ overflowX: "auto" }}>
+                      <table style={{
+                        width: "100%", borderCollapse: "collapse",
+                        fontSize: 12, fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      }}>
+                        <thead>
+                          <tr style={{ background: "var(--bg)" }}>
+                            <th style={{
+                              padding: "10px 14px", textAlign: "left", fontWeight: 700,
+                              position: "sticky", left: 0, background: "var(--bg)", zIndex: 2,
+                              borderBottom: "2px solid var(--border)", fontSize: 11, color: "var(--text-secondary)",
+                              textTransform: "uppercase", letterSpacing: "0.05em", minWidth: 140,
+                            }}>
+                              Élève
+                            </th>
+                            {suiviExercices.map((ex, i) => (
+                              <th key={ex.id} style={{
+                                padding: "10px 8px", textAlign: "center", fontWeight: 600,
+                                borderBottom: "2px solid var(--border)", fontSize: 11,
+                                color: "var(--text-secondary)", minWidth: 70, whiteSpace: "nowrap",
+                              }}>
+                                Exo {i + 1}
+                              </th>
+                            ))}
+                            <th style={{
+                              padding: "10px 8px", textAlign: "center", fontWeight: 700,
+                              borderBottom: "2px solid var(--border)", fontSize: 11,
+                              color: "#DC2626", minWidth: 70,
+                            }}>
+                              Éval
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {suiviEleves.map((eleve, idx) => {
+                            const tousValides = suiviExercices.every((ex) => eleve.resultats[ex.id]?.valide);
+                            return (
+                              <tr key={eleve.id} style={{
+                                background: idx % 2 === 0 ? "white" : "var(--bg)",
+                                borderBottom: "1px solid var(--border)",
+                              }}>
+                                <td style={{
+                                  padding: "8px 14px", fontWeight: 600,
+                                  position: "sticky", left: 0, zIndex: 1,
+                                  background: idx % 2 === 0 ? "white" : "var(--bg)",
+                                  borderRight: "1px solid var(--border)",
+                                  display: "flex", alignItems: "center", gap: 6,
+                                }}>
+                                  {tousValides && eleve.evaluation?.reussi ? (
+                                    <span className="ms" style={{ fontSize: 14, color: "#16A34A" }}>verified</span>
+                                  ) : tousValides ? (
+                                    <span className="ms" style={{ fontSize: 14, color: "#2563EB" }}>check_circle</span>
+                                  ) : null}
+                                  <span>{eleve.prenom} {eleve.nom.charAt(0)}.</span>
+                                </td>
+                                {suiviExercices.map((ex) => {
+                                  const r = eleve.resultats[ex.id];
+                                  return (
+                                    <td key={ex.id} style={{ padding: "8px 4px", textAlign: "center" }}>
+                                      {!r ? (
+                                        <span style={{ color: "var(--text-secondary)", fontSize: 16 }}>—</span>
+                                      ) : r.valide ? (
+                                        <span style={{
+                                          display: "inline-block", padding: "2px 8px", borderRadius: 6,
+                                          background: "#DCFCE7", color: "#166534", fontWeight: 700, fontSize: 11,
+                                        }}>
+                                          {r.score}/{r.total}
+                                        </span>
+                                      ) : (
+                                        <span style={{
+                                          display: "inline-block", padding: "2px 8px", borderRadius: 6,
+                                          background: "#FEF3C7", color: "#92400E", fontWeight: 700, fontSize: 11,
+                                        }}>
+                                          {r.score}/{r.total}
+                                        </span>
+                                      )}
+                                    </td>
+                                  );
+                                })}
+                                <td style={{ padding: "8px 4px", textAlign: "center" }}>
+                                  {!eleve.evaluation ? (
+                                    tousValides ? (
+                                      <span style={{ fontSize: 11, color: "#2563EB", fontWeight: 600 }}>
+                                        <span className="ms" style={{ fontSize: 14, verticalAlign: "middle" }}>lock_open</span>
+                                      </span>
+                                    ) : (
+                                      <span className="ms" style={{ fontSize: 16, color: "var(--text-secondary)" }}>lock</span>
+                                    )
+                                  ) : eleve.evaluation.reussi ? (
+                                    <span style={{
+                                      display: "inline-block", padding: "2px 8px", borderRadius: 6,
+                                      background: "#DCFCE7", color: "#166534", fontWeight: 700, fontSize: 11,
+                                    }}>
+                                      {eleve.evaluation.pourcentage}%
+                                    </span>
+                                  ) : (
+                                    <span style={{
+                                      display: "inline-block", padding: "2px 8px", borderRadius: 6,
+                                      background: "#FEE2E2", color: "#991B1B", fontWeight: 700, fontSize: 11,
+                                    }}>
+                                      {eleve.evaluation.pourcentage}%
+                                    </span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  {/* ── Bouton rafraîchir ── */}
+                  <div style={{ textAlign: "center", marginTop: 16 }}>
+                    <button className="btn-ghost" onClick={chargerSuivi} disabled={suiviChargement}
+                      style={{ fontSize: 12, padding: "6px 16px" }}>
+                      <span className="ms" style={{ fontSize: 16, verticalAlign: "middle", marginRight: 4 }}>refresh</span>
+                      Actualiser
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
+
         </div>
       </div>
 

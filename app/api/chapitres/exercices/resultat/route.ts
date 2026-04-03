@@ -18,10 +18,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "eleve_id ou rb_eleve_id requis" }, { status: 400 });
   }
 
-  // Exercice validé si score >= 90%
-  const valide = total > 0 && (score / total) >= 0.9;
-
   const admin = createAdminClient();
+
+  // Lire le seuil de validation de l'exercice depuis le chapitre
+  let seuilExercice = 0.9; // 90% par défaut
+  const { data: exoData } = await admin
+    .from("exercice")
+    .select("chapitre_id, chapitres(seuil_exercice)")
+    .eq("id", exercice_id)
+    .single();
+
+  if (exoData?.chapitres) {
+    const seuil = (exoData.chapitres as unknown as { seuil_exercice: number | null }).seuil_exercice;
+    if (seuil != null) seuilExercice = seuil / 100;
+  }
+
+  const valide = total > 0 && (score / total) >= seuilExercice;
 
   const { data, error } = await admin
     .from("exercice_resultat")

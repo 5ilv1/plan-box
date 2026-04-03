@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maquette — Bilan de classe · Plan Box Enseignant</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #F7F8FA;
+      --card: #FFFFFF;
+      --primary: #0050D4;
+      --primary-pale: #EEF0FE;
+      --primary-mid: #AAB7FA;
+      --text: #282B51;
+      --text-sec: #555881;
+      --border: #E0E0FF;
+      --success: #16A34A;
+      --warning: #D97706;
+      --error: #DC2626;
+      --purple: #702AE1;
+      --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+      --radius: 1rem;
+      --shadow: 0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,80,212,0.05);
+    }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); min-height: 100vh; }
+    .ms { font-family: 'Material Symbols Rounded'; font-weight: 400; font-style: normal; line-height: 1; letter-spacing: normal; text-transform: none; display: inline-block; white-space: nowrap; direction: ltr; font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
+
+    /* ── Layout ── */
+    .shell { display: flex; min-height: 100vh; }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 288px; background: white; border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; padding: 20px 16px;
+      position: fixed; top: 0; bottom: 0; left: 0; z-index: 10; gap: 2px;
+    }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin-bottom: 16px; }
+    .sidebar-logo img { width: 36px; height: 36px; }
+    .sidebar-logo span { font-size: 17px; font-weight: 800; color: var(--text); }
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 14px; border-radius: 12px; cursor: pointer;
+      font-size: 13px; font-weight: 600; color: var(--text-sec);
+      transition: all 0.12s; text-decoration: none;
+    }
+    .nav-item:hover { background: var(--primary-pale); color: var(--primary); }
+    .nav-item.active { background: var(--primary-pale); color: var(--primary); font-weight: 700; box-shadow: 0 1px 4px rgba(0,80,212,0.08); }
+    .nav-item .ms { font-size: 20px; }
+    .nav-sep { height: 1px; background: var(--border); margin: 8px 0; }
+
+    /* ── Main ── */
+    .main { margin-left: 288px; flex: 1; min-height: 100vh; }
+
+    /* ── Header ── */
+    .header {
+      position: sticky; top: 0; z-index: 9;
+      background: rgba(247,248,250,0.9); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 32px;
+      display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    }
+    .header-title { font-size: 17px; font-weight: 800; color: var(--text); }
+    .header-right { display: flex; align-items: center; gap: 10px; }
+    .avatar {
+      width: 34px; height: 34px; border-radius: 999px;
+      background: linear-gradient(135deg, #0050D4, #702AE1);
+      display: flex; align-items: center; justify-content: center;
+      color: white; font-size: 12px; font-weight: 800;
+    }
+
+    /* ── Content ── */
+    .content { padding: 28px 32px 48px; display: flex; flex-direction: column; gap: 22px; }
+
+    /* ── Filters bar ── */
+    .filters {
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .filter-label { font-size: 12px; font-weight: 700; color: var(--text-sec); }
+    .filter-chip {
+      padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid var(--border); background: white; color: var(--text-sec);
+      cursor: pointer; transition: all 0.12s; font-family: var(--font);
+    }
+    .filter-chip:hover { border-color: var(--primary); color: var(--primary); }
+    .filter-chip.active { background: var(--primary); border-color: var(--primary); color: white; }
+    .filter-select {
+      padding: 6px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+      border: 1.5px solid var(--border); background: white; color: var(--text);
+      cursor: pointer; font-family: var(--font); appearance: none; padding-right: 28px;
+    }
+
+    /* ── Card ── */
+    .card {
+      background: white; border-radius: var(--radius); padding: 20px 22px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+    }
+    .card-title {
+      font-size: 14px; font-weight: 700; color: var(--text);
+      margin-bottom: 4px; display: flex; align-items: center; gap: 8px;
+    }
+    .card-sub { font-size: 12px; color: var(--text-sec); margin-bottom: 16px; }
+
+    /* ── Grid ── */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    .grid-32 { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+    /* ── KPI cards ── */
+    .kpi {
+      background: white; border-radius: var(--radius); padding: 18px 20px;
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 6px;
+    }
+    .kpi-label { font-size: 11px; font-weight: 700; color: var(--text-sec); text-transform: uppercase; letter-spacing: 0.05em; }
+    .kpi-val { font-size: 30px; font-weight: 900; line-height: 1; }
+    .kpi-sub { font-size: 11px; font-weight: 600; display: flex; align-items: center; gap: 4px; }
+    .kpi-up { color: var(--success); }
+    .kpi-down { color: var(--error); }
+    .kpi-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px; }
+
+    /* ── Difficulté badge ── */
+    .diff-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 999px; font-size: 11px; font-weight: 700;
+    }
+    .diff-elevee  { background: #FEE2E2; color: #DC2626; }
+    .diff-moderee { background: #FEF3C7; color: #D97706; }
+    .diff-faible  { background: #DCFCE7; color: #16A34A; }
+    .diff-ok      { background: #F0F9FF; color: #0369A1; }
+
+    /* ── Table élèves ── */
+    .table-wrap { overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    thead th {
+      font-size: 11px; font-weight: 700; color: var(--text-sec);
+      text-transform: uppercase; letter-spacing: 0.05em;
+      padding: 10px 12px; text-align: left;
+      border-bottom: 2px solid var(--border);
+      white-space: nowrap;
+    }
+    thead th.sortable { cursor: pointer; }
+    thead th.sortable:hover { color: var(--primary); }
+    tbody tr { transition: background 0.1s; cursor: pointer; }
+    tbody tr:hover { background: var(--primary-pale); }
+    tbody td { padding: 11px 12px; border-bottom: 1px solid #F3F4FF; font-size: 13px; vertical-align: middle; }
+    .td-name { font-weight: 700; color: var(--text); }
+    .td-niveau { font-size: 11px; color: var(--text-sec); }
+    .score-pill {
+      display: inline-flex; align-items: center; gap: 3px;
+      padding: 2px 8px; border-radius: 6px; font-size: 12px; font-weight: 700;
+    }
+    .score-bad  { background: #FEE2E2; color: #DC2626; }
+    .score-med  { background: #FEF3C7; color: #D97706; }
+    .score-good { background: #DCFCE7; color: #16A34A; }
+    .mini-bar-wrap { display: flex; align-items: center; gap: 6px; }
+    .mini-bar-track { flex: 1; height: 5px; background: #E5E7EB; border-radius: 999px; min-width: 60px; overflow: hidden; }
+    .mini-bar-fill  { height: 100%; border-radius: 999px; }
+    .tag-list { display: flex; gap: 4px; flex-wrap: wrap; }
+    .tag {
+      padding: 2px 7px; border-radius: 5px; font-size: 10px; font-weight: 700;
+      background: #FEF3C7; color: #92400E; white-space: nowrap;
+    }
+    .tag.fr  { background: #EEF0FE; color: #1642A3; }
+    .tag.ma  { background: #F5F3FF; color: #5B21B6; }
+    .tag.hi  { background: #FFF7ED; color: #9A3412; }
+    .tag.ge  { background: #F0FDF4; color: #166534; }
+    .tag.sc  { background: #F0F9FF; color: #075985; }
+    .nb-reaffect { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 700; color: #D97706; }
+    .row-selected { background: #EEF0FE !important; }
+
+    /* ── Détail élève panel ── */
+    .detail-panel {
+      background: white; border-radius: var(--radius);
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .detail-header {
+      padding: 16px 20px;
+      background: linear-gradient(135deg, #0050D4, #702AE1);
+      color: white;
+    }
+    .detail-name { font-size: 18px; font-weight: 800; margin-bottom: 2px; }
+    .detail-meta { font-size: 12px; opacity: 0.85; }
+    .detail-body { padding: 16px 20px; }
+    .detail-section { margin-bottom: 16px; }
+    .detail-section-title {
+      font-size: 10px; font-weight: 700; color: var(--text-sec);
+      text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px;
+    }
+    .detail-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 10px; border-radius: 8px; margin-bottom: 4px;
+      background: var(--bg);
+    }
+    .detail-row-label { font-size: 12px; font-weight: 600; color: var(--text); display: flex; align-items: center; gap: 6px; }
+    .detail-row-score { font-size: 12px; font-weight: 700; }
+    .detail-action {
+      width: 100%; padding: 9px; border-radius: 8px; border: none;
+      font-family: var(--font); font-size: 12px; font-weight: 700;
+      cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+      margin-bottom: 6px; transition: all 0.12s;
+    }
+    .detail-action.primary { background: var(--primary); color: white; }
+    .detail-action.primary:hover { background: #003DA0; }
+    .detail-action.ghost { background: var(--primary-pale); color: var(--primary); }
+    .detail-action.ghost:hover { background: #D4DAFC; }
+
+    /* ── Points faibles collectifs ── */
+    .weakness-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 12px; border-radius: 8px; margin-bottom: 6px;
+      border: 1px solid var(--border);
+    }
+    .weakness-row:hover { background: var(--primary-pale); border-color: var(--primary-mid); }
+    .weakness-icon { width: 34px; height: 34px; border-radius: 9px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .weakness-info { flex: 1; min-width: 0; }
+    .weakness-title { font-size: 13px; font-weight: 600; color: var(--text); }
+    .weakness-meta { font-size: 11px; color: var(--text-sec); }
+    .weakness-stat { text-align: right; }
+    .weakness-pct { font-size: 16px; font-weight: 800; }
+    .weakness-eleves { font-size: 11px; color: var(--text-sec); }
+    .bar-h { height: 4px; background: var(--border); border-radius: 999px; margin-top: 4px; overflow: hidden; }
+    .bar-h-fill { height: 100%; border-radius: 999px; }
+
+    /* ── Alerte ── */
+    .alert-row {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 12px 14px; border-radius: 10px; margin-bottom: 8px;
+    }
+    .alert-row.red  { background: #FEF2F2; border: 1px solid #FECACA; }
+    .alert-row.orange { background: #FFFBEB; border: 1px solid #FDE68A; }
+    .alert-text { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.5; }
+    .alert-sub { font-size: 11px; color: var(--text-sec); margin-top: 2px; }
+    .alert-time { font-size: 10px; color: var(--text-sec); white-space: nowrap; margin-left: auto; padding-top: 2px; }
+
+    /* ── Aucun ── */
+    .empty { text-align: center; padding: 32px; color: var(--text-sec); font-size: 13px; }
+
+    /* ── Trend sparkline ── */
+    .sparkline { display: flex; align-items: flex-end; gap: 2px; height: 24px; }
+    .spark-bar { width: 5px; border-radius: 2px; }
+  </style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="/planbox-mascotte.png" alt="Plan Box" />
+      <span>Plan Box</span>
+    </div>
+
+    <a class="nav-item"><span class="ms">dashboard</span> Tableau de bord</a>
+    <a class="nav-item"><span class="ms">calendar_month</span> Planning</a>
+    <a class="nav-item"><span class="ms">menu_book</span> Chapitres</a>
+    <a class="nav-item"><span class="ms">spellcheck</span> Dictées</a>
+    <a class="nav-item"><span class="ms">library_books</span> Bibliothèque</a>
+    <a class="nav-item"><span class="ms">auto_stories</span> Leçons</a>
+    <a class="nav-item"><span class="ms">group</span> Élèves & Groupes</a>
+    <div class="nav-sep"></div>
+    <a class="nav-item active">
+      <span class="ms">bar_chart</span> Bilan de classe
+      <span style="margin-left:auto;background:#DC2626;color:white;font-size:10px;font-weight:800;padding:2px 6px;border-radius:999px;">3</span>
+    </a>
+    <a class="nav-item"><span class="ms">qr_code_2</span> QR codes</a>
+    <a class="nav-item"><span class="ms">calculate</span> Problème du jour</a>
+    <div class="nav-sep"></div>
+    <a class="nav-item"><span class="ms">settings</span> Paramètres</a>
+    <a class="nav-item" style="margin-top:auto"><span class="ms">logout</span> Déconnexion</a>
+  </aside>
+
+  <div class="main">
+
+    <!-- Header -->
+    <header class="header">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div class="header-title">Bilan de classe</div>
+        <span style="font-size:11px;color:var(--text-sec);background:var(--bg);border:1px solid var(--border);padding:3px 10px;border-radius:999px;font-weight:600;">Semaine du 24 mars</span>
+      </div>
+      <div class="header-right">
+        <span style="font-size:13px;font-weight:600;color:var(--text-sec)">M. Renaut</span>
+        <div class="avatar">SR</div>
+      </div>
+    </header>
+
+    <main class="content">
+
+      <!-- ── Filtres ── -->
+      <div class="filters">
+        <span class="filter-label">Période</span>
+        <button class="filter-chip">Cette semaine</button>
+        <button class="filter-chip active">Ce mois</button>
+        <button class="filter-chip">Ce trimestre</button>
+        <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+        <span class="filter-label">Groupe</span>
+        <button class="filter-chip active">Tous</button>
+        <button class="filter-chip">CM2</button>
+        <button class="filter-chip">CM1</button>
+        <button class="filter-chip">CE2</button>
+        <div style="width:1px;height:20px;background:var(--border);margin:0 4px"></div>
+        <span class="filter-label">Matière</span>
+        <select class="filter-select">
+          <option>Toutes les matières</option>
+          <option>Français</option>
+          <option>Mathématiques</option>
+          <option>Histoire</option>
+        </select>
+      </div>
+
+      <!-- ── KPIs ── -->
+      <div class="grid-4">
+        <div class="kpi">
+          <div class="kpi-icon" style="background:#FEE2E2">
+            <span class="ms" style="font-size:20px;color:#DC2626">warning</span>
+          </div>
+          <div class="kpi-label">Élèves en difficulté</div>
+          <div class="kpi-val" style="color:#DC2626">5</div>
+          <div class="kpi-sub kpi-down">
+            <span class="ms" style="font-size:14px">arrow_upward</span>+2 vs semaine dernière
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-icon" style="background:#FEF3C7">
+            <span class="ms" style="font-size:20px;color:#D97706">refresh</span>
+          </div>
+          <div class="kpi-label">Exercices réaffectés</div>
+          <div class="kpi-val" style="color:#D97706">12</div>
+          <div class="kpi-sub" style="color:var(--text-sec)">
+            sur 47 exercices soumis
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-icon" style="background:#DCFCE7">
+            <span class="ms" style="font-size:20px;color:#16A34A">check_circle</span>
+          </div>
+          <div class="kpi-label">Taux de réussite global</div>
+          <div class="kpi-val" style="color:#16A34A">74%</div>
+          <div class="kpi-sub kpi-up">
+            <span class="ms" style="font-size:14px">arrow_upward</span>+6% vs mois dernier
+          </div>
+        </div>
+
+        <div class="kpi">
+          <div class="kpi-icon" style="background:#EEF0FE">
+            <span class="ms" style="font-size:20px;color:#0050D4">sentiment_dissatisfied</span>
+          </div>
+          <div class="kpi-label">Sans activité (+5 jours)</div>
+          <div class="kpi-val" style="color:#0050D4">2</div>
+          <div class="kpi-sub" style="color:var(--text-sec)">
+            Théo M., Sarah K.
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Tableau élèves + détail ── -->
+      <div class="grid-32">
+
+        <!-- Tableau -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <div style="padding:18px 20px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
+            <div>
+              <div class="card-title" style="margin-bottom:2px">
+                <span class="ms" style="color:var(--error)">group</span>
+                Élèves — vue d'ensemble
+              </div>
+              <div style="font-size:11px;color:var(--text-sec)">Cliquer sur un élève pour voir le détail</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <input placeholder="🔍 Rechercher…" style="padding:6px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:12px;font-family:var(--font);outline:none;color:var(--text)" />
+            </div>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Élève</th>
+                  <th class="sortable">Difficulté ↕</th>
+                  <th class="sortable">Score moy. ↕</th>
+                  <th>Points faibles</th>
+                  <th class="sortable">Réaffect. ↕</th>
+                  <th>Tendance</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <!-- Élève 1 — difficulté élevée -->
+                <tr class="row-selected" onclick="selectEleve(this)">
+                  <td>
+                    <div class="td-name">Léa Martin</div>
+                    <div class="td-niveau">CM1 · Groupe A</div>
+                  </td>
+                  <td><span class="diff-badge diff-elevee"><span class="ms" style="font-size:12px">priority_high</span>Élevée</span></td>
+                  <td>
+                    <div class="mini-bar-wrap">
+                      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:42%;background:#DC2626"></div></div>
+                      <span class="score-pill score-bad">42%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tag-list">
+                      <span class="tag fr">Conjugaison</span>
+                      <span class="tag fr">Homophones</span>
+                    </div>
+                  </td>
+                  <td><span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>4x</span></td>
+                  <td>
+                    <div class="sparkline">
+                      <div class="spark-bar" style="height:14px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:10px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:12px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:8px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:6px;background:#FCA5A5"></div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Élève 2 -->
+                <tr onclick="selectEleve(this)">
+                  <td>
+                    <div class="td-name">Tom Dubois</div>
+                    <div class="td-niveau">CM1 · Groupe A</div>
+                  </td>
+                  <td><span class="diff-badge diff-elevee"><span class="ms" style="font-size:12px">priority_high</span>Élevée</span></td>
+                  <td>
+                    <div class="mini-bar-wrap">
+                      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:38%;background:#DC2626"></div></div>
+                      <span class="score-pill score-bad">38%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tag-list">
+                      <span class="tag ma">Fractions</span>
+                      <span class="tag hi">Chronologie</span>
+                    </div>
+                  </td>
+                  <td><span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>6x</span></td>
+                  <td>
+                    <div class="sparkline">
+                      <div class="spark-bar" style="height:16px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:14px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:16px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:12px;background:#FCA5A5"></div>
+                      <div class="spark-bar" style="height:10px;background:#FCA5A5"></div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Élève 3 -->
+                <tr onclick="selectEleve(this)">
+                  <td>
+                    <div class="td-name">Emma Petit</div>
+                    <div class="td-niveau">CM2 · Groupe B</div>
+                  </td>
+                  <td><span class="diff-badge diff-moderee"><span class="ms" style="font-size:12px">remove</span>Modérée</span></td>
+                  <td>
+                    <div class="mini-bar-wrap">
+                      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:57%;background:#D97706"></div></div>
+                      <span class="score-pill score-med">57%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tag-list">
+                      <span class="tag ma">Division</span>
+                    </div>
+                  </td>
+                  <td><span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>2x</span></td>
+                  <td>
+                    <div class="sparkline">
+                      <div class="spark-bar" style="height:16px;background:#FDE68A"></div>
+                      <div class="spark-bar" style="height:14px;background:#FDE68A"></div>
+                      <div class="spark-bar" style="height:12px;background:#FDE68A"></div>
+                      <div class="spark-bar" style="height:14px;background:#FDE68A"></div>
+                      <div class="spark-bar" style="height:16px;background:#FDE68A"></div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Élève 4 -->
+                <tr onclick="selectEleve(this)">
+                  <td>
+                    <div class="td-name">Hugo Bernard</div>
+                    <div class="td-niveau">CE2 · Groupe C</div>
+                  </td>
+                  <td><span class="diff-badge diff-moderee"><span class="ms" style="font-size:12px">remove</span>Modérée</span></td>
+                  <td>
+                    <div class="mini-bar-wrap">
+                      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:61%;background:#D97706"></div></div>
+                      <span class="score-pill score-med">61%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tag-list">
+                      <span class="tag fr">Orthographe</span>
+                      <span class="tag ge">Géo</span>
+                    </div>
+                  </td>
+                  <td><span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>1x</span></td>
+                  <td>
+                    <div class="sparkline">
+                      <div class="spark-bar" style="height:10px;background:#FDE68A"></div>
+                      <div class="spark-bar" style="height:12px;background:#A7F3D0"></div>
+                      <div class="spark-bar" style="height:14px;background:#A7F3D0"></div>
+                      <div class="spark-bar" style="height:16px;background:#A7F3D0"></div>
+                      <div class="spark-bar" style="height:18px;background:#6EE7B7"></div>
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Élève 5 -->
+                <tr onclick="selectEleve(this)">
+                  <td>
+                    <div class="td-name">Théo Moreau</div>
+                    <div class="td-niveau">CM1 · Groupe A</div>
+                  </td>
+                  <td><span class="diff-badge diff-moderee"><span class="ms" style="font-size:12px">remove</span>Modérée</span></td>
+                  <td>
+                    <div class="mini-bar-wrap">
+                      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:55%;background:#D97706"></div></div>
+                      <span class="score-pill score-med">55%</span>
+                    </div>
+                  </td>
+                  <td>
+                    <div class="tag-list">
+                      <span class="tag ma">Multiplication</span>
+                    </div>
+                  </td>
+                  <td><span style="font-size:12px;color:var(--text-sec)">—</span></td>
+                  <td>
+                    <div style="display:flex;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--text-sec)">
+                      <span class="ms" style="font-size:14px;color:#D97706">access_time</span>Inactif 5j
+                    </div>
+                  </td>
+                </tr>
+
+                <!-- Séparateur -->
+                <tr>
+                  <td colspan="6" style="padding:6px 12px;background:#F8F9FF">
+                    <span style="font-size:10px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:0.05em">
+                      ✓ Élèves sans difficulté majeure (18)
+                    </span>
+                  </td>
+                </tr>
+
+                <tr onclick="selectEleve(this)" style="opacity:0.6">
+                  <td><div class="td-name">Camille Rousseau</div><div class="td-niveau">CM2 · Groupe B</div></td>
+                  <td><span class="diff-badge diff-faible">OK</span></td>
+                  <td>
+                    <div class="mini-bar-wrap">
+                      <div class="mini-bar-track"><div class="mini-bar-fill" style="width:82%;background:#16A34A"></div></div>
+                      <span class="score-pill score-good">82%</span>
+                    </div>
+                  </td>
+                  <td><span style="color:var(--text-sec);font-size:12px">—</span></td>
+                  <td><span style="color:var(--text-sec);font-size:12px">—</span></td>
+                  <td>
+                    <div class="sparkline">
+                      <div class="spark-bar" style="height:12px;background:#A7F3D0"></div>
+                      <div class="spark-bar" style="height:14px;background:#A7F3D0"></div>
+                      <div class="spark-bar" style="height:16px;background:#6EE7B7"></div>
+                      <div class="spark-bar" style="height:18px;background:#6EE7B7"></div>
+                      <div class="spark-bar" style="height:20px;background:#16A34A"></div>
+                    </div>
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Détail élève -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <div class="detail-panel">
+            <div class="detail-header">
+              <div style="display:flex;align-items:flex-start;justify-content:space-between">
+                <div>
+                  <div class="detail-name">Léa Martin</div>
+                  <div class="detail-meta">CM1 · Groupe A · Plan Box</div>
+                </div>
+                <span class="diff-badge diff-elevee" style="background:rgba(255,255,255,0.2);color:white">
+                  <span class="ms" style="font-size:12px">priority_high</span>Difficulté élevée
+                </span>
+              </div>
+              <div style="display:flex;gap:16px;margin-top:14px">
+                <div style="text-align:center">
+                  <div style="font-size:22px;font-weight:900">42%</div>
+                  <div style="font-size:10px;opacity:0.8">score moyen</div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:22px;font-weight:900">4</div>
+                  <div style="font-size:10px;opacity:0.8">réaffectations</div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:22px;font-weight:900">9</div>
+                  <div style="font-size:10px;opacity:0.8">exercices faits</div>
+                </div>
+                <div style="text-align:center">
+                  <div style="font-size:22px;font-weight:900">2j</div>
+                  <div style="font-size:10px;opacity:0.8">dernière connexion</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="detail-body">
+
+              <div class="detail-section">
+                <div class="detail-section-title">Points faibles identifiés</div>
+
+                <div class="detail-row">
+                  <div class="detail-row-label">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0;display:inline-block"></span>
+                    Conjugaison — passé composé
+                  </div>
+                  <span class="detail-row-score" style="color:#DC2626">3 échecs</span>
+                </div>
+                <div class="detail-row">
+                  <div class="detail-row-label">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0;display:inline-block"></span>
+                    Homophones a/à, et/est
+                  </div>
+                  <span class="detail-row-score" style="color:#DC2626">2 échecs</span>
+                </div>
+                <div class="detail-row">
+                  <div class="detail-row-label">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#D97706;flex-shrink:0;display:inline-block"></span>
+                    Accords sujet-verbe
+                  </div>
+                  <span class="detail-row-score" style="color:#D97706">1 échec</span>
+                </div>
+              </div>
+
+              <div class="detail-section">
+                <div class="detail-section-title">Points forts</div>
+                <div class="detail-row">
+                  <div class="detail-row-label">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#16A34A;flex-shrink:0;display:inline-block"></span>
+                    Lecture & compréhension
+                  </div>
+                  <span class="detail-row-score" style="color:#16A34A">91%</span>
+                </div>
+                <div class="detail-row">
+                  <div class="detail-row-label">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#16A34A;flex-shrink:0;display:inline-block"></span>
+                    Calcul mental
+                  </div>
+                  <span class="detail-row-score" style="color:#16A34A">85%</span>
+                </div>
+              </div>
+
+              <button class="detail-action primary">
+                <span class="ms" style="font-size:16px">add_task</span>
+                Affecter un exercice ciblé
+              </button>
+              <button class="detail-action ghost">
+                <span class="ms" style="font-size:16px">auto_stories</span>
+                Envoyer une leçon associée
+              </button>
+              <button class="detail-action ghost">
+                <span class="ms" style="font-size:16px">person</span>
+                Voir le profil complet
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Ligne 3 : Points faibles collectifs + Alertes ── -->
+      <div class="grid-2">
+
+        <!-- Points faibles collectifs -->
+        <div class="card">
+          <div class="card-title" style="margin-bottom:4px">
+            <span class="ms" style="color:#DC2626">fitness_center</span>
+            Points faibles collectifs
+          </div>
+          <div class="card-sub">Notions où la classe est en dessous de 60% en moyenne</div>
+
+          <div class="weakness-row">
+            <div class="weakness-icon" style="background:#EEF0FE">
+              <span class="ms" style="font-size:18px;color:#1642A3">edit_note</span>
+            </div>
+            <div class="weakness-info">
+              <div class="weakness-title">Conjugaison — passé composé</div>
+              <div class="weakness-meta">Français · 8 élèves en difficulté</div>
+              <div class="bar-h"><div class="bar-h-fill" style="width:44%;background:#DC2626"></div></div>
+            </div>
+            <div class="weakness-stat">
+              <div class="weakness-pct" style="color:#DC2626">44%</div>
+              <div class="weakness-eleves">moy. classe</div>
+            </div>
+          </div>
+
+          <div class="weakness-row">
+            <div class="weakness-icon" style="background:#F5F3FF">
+              <span class="ms" style="font-size:18px;color:#5B21B6">functions</span>
+            </div>
+            <div class="weakness-info">
+              <div class="weakness-title">Fractions — opérations</div>
+              <div class="weakness-meta">Mathématiques · 6 élèves en difficulté</div>
+              <div class="bar-h"><div class="bar-h-fill" style="width:51%;background:#D97706"></div></div>
+            </div>
+            <div class="weakness-stat">
+              <div class="weakness-pct" style="color:#D97706">51%</div>
+              <div class="weakness-eleves">moy. classe</div>
+            </div>
+          </div>
+
+          <div class="weakness-row">
+            <div class="weakness-icon" style="background:#EEF0FE">
+              <span class="ms" style="font-size:18px;color:#1642A3">spellcheck</span>
+            </div>
+            <div class="weakness-info">
+              <div class="weakness-title">Homophones a/à, et/est</div>
+              <div class="weakness-meta">Français · 5 élèves en difficulté</div>
+              <div class="bar-h"><div class="bar-h-fill" style="width:55%;background:#D97706"></div></div>
+            </div>
+            <div class="weakness-stat">
+              <div class="weakness-pct" style="color:#D97706">55%</div>
+              <div class="weakness-eleves">moy. classe</div>
+            </div>
+          </div>
+
+          <div class="weakness-row">
+            <div class="weakness-icon" style="background:#FFF7ED">
+              <span class="ms" style="font-size:18px;color:#9A3412">history_edu</span>
+            </div>
+            <div class="weakness-info">
+              <div class="weakness-title">Chronologie — Révolution française</div>
+              <div class="weakness-meta">Histoire · 5 élèves en difficulté</div>
+              <div class="bar-h"><div class="bar-h-fill" style="width:57%;background:#D97706"></div></div>
+            </div>
+            <div class="weakness-stat">
+              <div class="weakness-pct" style="color:#D97706">57%</div>
+              <div class="weakness-eleves">moy. classe</div>
+            </div>
+          </div>
+
+          <div class="weakness-row">
+            <div class="weakness-icon" style="background:#F0FDF4">
+              <span class="ms" style="font-size:18px;color:#166534">public</span>
+            </div>
+            <div class="weakness-info">
+              <div class="weakness-title">Les fleuves de France</div>
+              <div class="weakness-meta">Géographie · 4 élèves en difficulté</div>
+              <div class="bar-h"><div class="bar-h-fill" style="width:59%;background:#D97706"></div></div>
+            </div>
+            <div class="weakness-stat">
+              <div class="weakness-pct" style="color:#D97706">59%</div>
+              <div class="weakness-eleves">moy. classe</div>
+            </div>
+          </div>
+
+          <!-- Suggestion IA -->
+          <div style="margin-top:14px;padding:12px 14px;background:linear-gradient(135deg,#EEF0FE,#F5F3FF);border-radius:10px;border:1.5px solid #C4B5FD;display:flex;align-items:flex-start;gap:10px">
+            <span class="ms" style="font-size:20px;color:#702AE1;flex-shrink:0;margin-top:1px">auto_awesome</span>
+            <div>
+              <div style="font-size:12px;font-weight:700;color:#5B21B6;margin-bottom:2px">Suggestion Plan Box</div>
+              <div style="font-size:12px;color:#6D28D9;line-height:1.5">
+                La conjugaison du passé composé est le point faible n°1 de ta classe. Envisage une séance collective avant de réaffecter des exercices individuels.
+              </div>
+              <button style="margin-top:8px;padding:5px 12px;border-radius:6px;background:#702AE1;color:white;border:none;font-size:11px;font-weight:700;cursor:pointer;font-family:var(--font)">
+                Générer un exercice collectif →
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Alertes + Inactifs -->
+        <div style="display:flex;flex-direction:column;gap:16px">
+
+          <!-- Alertes -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:4px">
+              <span class="ms" style="color:#DC2626">notifications_active</span>
+              Alertes
+            </div>
+            <div class="card-sub">Élèves nécessitant une intervention</div>
+
+            <div class="alert-row red">
+              <span class="ms" style="font-size:20px;color:#DC2626;flex-shrink:0">priority_high</span>
+              <div style="flex:1">
+                <div class="alert-text">Tom D. a échoué 3 fois à "Fractions" sans amélioration</div>
+                <div class="alert-sub">Score moyen : 32% · Dernière tentative hier</div>
+              </div>
+              <div class="alert-time">il y a 1j</div>
+            </div>
+
+            <div class="alert-row red">
+              <span class="ms" style="font-size:20px;color:#DC2626;flex-shrink:0">priority_high</span>
+              <div style="flex:1">
+                <div class="alert-text">Léa M. a échoué 3 fois à "Conjugaison passé composé"</div>
+                <div class="alert-sub">Score moyen : 38% · Réaffecté pour lundi</div>
+              </div>
+              <div class="alert-time">il y a 2j</div>
+            </div>
+
+            <div class="alert-row orange">
+              <span class="ms" style="font-size:20px;color:#D97706;flex-shrink:0">access_time</span>
+              <div style="flex:1">
+                <div class="alert-text">Théo M. n'a fait aucun exercice depuis 5 jours</div>
+                <div class="alert-sub">3 exercices en retard dans son planning</div>
+              </div>
+              <div class="alert-time">il y a 5j</div>
+            </div>
+
+            <div class="alert-row orange">
+              <span class="ms" style="font-size:20px;color:#D97706;flex-shrink:0">access_time</span>
+              <div style="flex:1">
+                <div class="alert-text">Sarah K. inactive depuis 6 jours</div>
+                <div class="alert-sub">5 exercices non faits · Aucune connexion</div>
+              </div>
+              <div class="alert-time">il y a 6j</div>
+            </div>
+          </div>
+
+          <!-- Exercices les plus réaffectés -->
+          <div class="card">
+            <div class="card-title" style="margin-bottom:4px">
+              <span class="ms" style="color:#D97706">refresh</span>
+              Exercices les plus réaffectés
+            </div>
+            <div class="card-sub">Ce mois-ci</div>
+
+            <div style="display:flex;flex-direction:column;gap:6px">
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:8px">
+                <div>
+                  <div style="font-size:12px;font-weight:600">Conjugaison — passé composé</div>
+                  <div style="font-size:11px;color:var(--text-sec)">Français · 5 élèves concernés</div>
+                </div>
+                <span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>11x</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:8px">
+                <div>
+                  <div style="font-size:12px;font-weight:600">Fractions — opérations</div>
+                  <div style="font-size:11px;color:var(--text-sec)">Maths · 4 élèves concernés</div>
+                </div>
+                <span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>8x</span>
+              </div>
+              <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 10px;background:var(--bg);border-radius:8px">
+                <div>
+                  <div style="font-size:12px;font-weight:600">Homophones a/à</div>
+                  <div style="font-size:11px;color:var(--text-sec)">Français · 3 élèves concernés</div>
+                </div>
+                <span class="nb-reaffect"><span class="ms" style="font-size:14px">refresh</span>6x</span>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;padding:10px 12px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;font-size:12px;color:#92400E;display:flex;align-items:center;gap:8px">
+              <span class="ms" style="font-size:16px">lightbulb</span>
+              Ces exercices sont peut-être trop difficiles pour le niveau actuel. Envisage de les simplifier.
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.filter-chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const group = this.closest('.filters');
+      const siblings = [...group.querySelectorAll('.filter-chip')].filter(c => {
+        // Only same group
+        const allChips = [...group.querySelectorAll('.filter-chip')];
+        const idx = allChips.indexOf(this);
+        // Find separator position
+        return true;
+      });
+      // Simple: toggle active
+      this.classList.toggle('active');
+    });
+  });
+
+  function selectEleve(row) {
+    document.querySelectorAll('tbody tr').forEach(r => r.classList.remove('row-selected'));
+    row.classList.add('row-selected');
+  }
+</script>
+
+</body>
+</html>
