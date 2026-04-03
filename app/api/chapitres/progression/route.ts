@@ -58,11 +58,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Erreur de lecture des résultats" }, { status: 500 });
   }
 
-  // Calculer le meilleur score par exercice
+  // Calculer le meilleur résultat par exercice (priorise valide > score)
   const meilleurParExo: Record<string, { score: number; total: number; valide: boolean }> = {};
   for (const r of resultats || []) {
     const existant = meilleurParExo[r.exercice_id];
-    if (!existant || r.score > existant.score || (r.score === existant.score && r.valide && !existant.valide)) {
+    if (!existant) {
+      meilleurParExo[r.exercice_id] = { score: r.score, total: r.total, valide: r.valide };
+    } else if (r.valide && !existant.valide) {
+      // Un résultat validé l'emporte toujours sur un non-validé
+      meilleurParExo[r.exercice_id] = { score: r.score, total: r.total, valide: r.valide };
+    } else if (r.valide === existant.valide && r.score > existant.score) {
+      // À validité égale, on prend le meilleur score
       meilleurParExo[r.exercice_id] = { score: r.score, total: r.total, valide: r.valide };
     }
   }
