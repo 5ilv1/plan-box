@@ -6,7 +6,7 @@ import Link from "next/link";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
-type TypeExercice = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement" | "ecriture_contrainte";
+type TypeExercice = "exercice" | "calcul_mental" | "texte_a_trous" | "analyse_phrase" | "qcm" | "classement" | "ecriture_contrainte" | "revision";
 
 interface Exercice {
   id: string;
@@ -49,6 +49,7 @@ const TYPE_LABELS: Record<TypeExercice, { label: string; icon: string; bg: strin
   qcm:             { label: "QCM",             icon: "quiz",         bg: "#FEF3C7", color: "#92400E" },
   classement:      { label: "Classement",      icon: "category",     bg: "#FCE7F3", color: "#9D174D" },
   ecriture_contrainte: { label: "Écriture",   icon: "edit",         bg: "#F3E8FF", color: "#7C3AED" },
+  revision:            { label: "Révision",   icon: "menu_book",    bg: "#FEF3C7", color: "#D97706" },
 };
 
 const DRAG_THRESHOLD = 6;
@@ -91,6 +92,18 @@ export default function PageChapitreDetail() {
 
   // Suppression
   const [aSupprimer, setASupprimer] = useState<string | null>(null);
+
+  // Ajout révision
+  const [revisionVisible, setRevisionVisible] = useState(false);
+  const [revTitre, setRevTitre] = useState("");
+  const [revTexte, setRevTexte] = useState("");
+  const [revVideo, setRevVideo] = useState("");
+  const [revPointsCles, setRevPointsCles] = useState<string[]>([""]);
+  const [revContexte, setRevContexte] = useState("");
+  const [enGenerationLecon, setEnGenerationLecon] = useState(false);
+
+  // Édition révision
+  const [editRevisionId, setEditRevisionId] = useState<string | null>(null);
 
   // Onglet actif (parcours | suivi)
   const [onglet, setOnglet] = useState<"parcours" | "suivi">("parcours");
@@ -276,6 +289,111 @@ export default function PageChapitreDetail() {
     } catch {
       showToast("Erreur lors de la création de l'exercice", "err");
     }
+  }
+
+  async function ajouterRevision() {
+    if (!revTitre.trim()) return;
+    try {
+      const contenu = {
+        texte: revTexte,
+        video_url: revVideo || undefined,
+        points_cles: revPointsCles.filter((p) => p.trim()),
+      };
+      const res = await fetch("/api/chapitres/exercices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chapitre_id: chapitreId,
+          titre: revTitre,
+          type: "revision",
+          contenu,
+          nb_questions: 0,
+        }),
+      });
+      if (!res.ok) throw new Error();
+      const json = await res.json();
+      if (json.exercice) {
+        setExercices((prev) => [...prev, json.exercice]);
+      }
+      showToast("Révision ajoutée");
+      resetRevisionForm();
+    } catch {
+      showToast("Erreur lors de la création", "err");
+    }
+  }
+
+  async function sauvegarderRevision() {
+    if (!editRevisionId || !revTitre.trim()) return;
+    setEnSauvegarde(true);
+    try {
+      const contenu = {
+        texte: revTexte,
+        video_url: revVideo || undefined,
+        points_cles: revPointsCles.filter((p) => p.trim()),
+      };
+      const res = await fetch("/api/chapitres/exercices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editRevisionId, titre: revTitre, contenu }),
+      });
+      if (!res.ok) throw new Error();
+      setExercices((prev) => prev.map((e) =>
+        e.id === editRevisionId ? { ...e, titre: revTitre, contenu } : e
+      ));
+      showToast("Révision mise à jour");
+      resetRevisionForm();
+    } catch {
+      showToast("Erreur lors de la sauvegarde", "err");
+    }
+    setEnSauvegarde(false);
+  }
+
+  async function genererLecon() {
+    if (!revTitre.trim()) return;
+    setEnGenerationLecon(true);
+    try {
+      const res = await fetch("/api/chapitres/generer-lecon", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chapitre_id: chapitreId,
+          titre: revTitre,
+          contexte: revContexte || undefined,
+        }),
+      });
+      const json = await res.json();
+      if (json.contenu) {
+        if (json.titre) setRevTitre(json.titre);
+        setRevTexte(json.contenu.texte || "");
+        setRevPointsCles(json.contenu.points_cles?.length > 0 ? json.contenu.points_cles : [""]);
+      } else {
+        showToast(json.error || "Erreur de génération", "err");
+      }
+    } catch {
+      showToast("Erreur lors de la génération", "err");
+    }
+    setEnGenerationLecon(false);
+  }
+
+  function resetRevisionForm() {
+    setRevisionVisible(false);
+    setEditRevisionId(null);
+    setRevTitre("");
+    setRevTexte("");
+    setRevVideo("");
+    setRevPointsCles([""]);
+    setRevContexte("");
+  }
+
+  function ouvrirEditionRevision(ex: Exercice) {
+    const c = ex.contenu as { texte?: string; video_url?: string; points_cles?: string[] };
+    setEditRevisionId(ex.id);
+    setRevTitre(ex.titre);
+    setRevTexte(c.texte ?? "");
+    setRevVideo(c.video_url ?? "");
+    setRevPointsCles(c.points_cles?.length ? [...c.points_cles] : [""]);
+    setRevContexte("");
+    setRevisionVisible(true);
   }
 
   async function supprimerExercice(id: string) {
@@ -472,6 +590,7 @@ export default function PageChapitreDetail() {
   // ── Helpers rendu ─────────────────────────────────────────────────────────
 
   function nbQuestionsContenu(ex: Exercice): number {
+    if (ex.type === "revision") return 0;
     const c = ex.contenu;
     if (Array.isArray(c.questions)) return c.questions.length;
     if (Array.isArray(c.calculs)) return c.calculs.length;
@@ -545,9 +664,20 @@ export default function PageChapitreDetail() {
             {chapitre.niveaux?.nom} · {chapitre.matiere}
           </span>
         </div>
-        <button className="btn-primary" onClick={() => setAjoutVisible(true)} style={{ fontSize: 13, whiteSpace: "nowrap" }}>
-          + Ajouter un exercice
-        </button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => setRevisionVisible(true)} style={{
+            fontSize: 13, whiteSpace: "nowrap", padding: "6px 14px", borderRadius: 8,
+            border: "1.5px solid #FDE68A", background: "#FFFBEB", color: "#92400E",
+            fontWeight: 700, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+            display: "flex", alignItems: "center", gap: 5,
+          }}>
+            <span className="ms" style={{ fontSize: 16 }}>menu_book</span>
+            + Révision
+          </button>
+          <button className="btn-primary" onClick={() => setAjoutVisible(true)} style={{ fontSize: 13, whiteSpace: "nowrap" }}>
+            + Exercice
+          </button>
+        </div>
       </div>
 
       <div className="page">
@@ -663,7 +793,9 @@ export default function PageChapitreDetail() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 14 }}>
             <h2 style={{ fontSize: 18, fontWeight: 700, margin: 0 }}>🛤️ Parcours de l&apos;élève</h2>
             <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>
-              {exercices.length} exercice{exercices.length !== 1 ? "s" : ""} + évaluation
+              {exercices.filter((e) => e.type !== "revision").length} exercice{exercices.filter((e) => e.type !== "revision").length !== 1 ? "s" : ""}
+              {exercices.filter((e) => e.type === "revision").length > 0 && ` · ${exercices.filter((e) => e.type === "revision").length} révision${exercices.filter((e) => e.type === "revision").length !== 1 ? "s" : ""}`}
+              {" "}+ évaluation
             </span>
           </div>
 
@@ -752,11 +884,29 @@ export default function PageChapitreDetail() {
                             </span>
                           )}
 
-                          {/* Nb questions */}
-                          <span style={{ fontSize: 11, color: "var(--text-secondary)", flexShrink: 0 }}>
-                            {nbQ} question{nbQ !== 1 ? "s" : ""}
-                          </span>
+                          {/* Nb questions / label revision */}
+                          {ex.type === "revision" ? (
+                            <span style={{ fontSize: 11, color: "#D97706", fontWeight: 600, flexShrink: 0 }}>
+                              Mini-leçon
+                            </span>
+                          ) : (
+                            <span style={{ fontSize: 11, color: "var(--text-secondary)", flexShrink: 0 }}>
+                              {nbQ} question{nbQ !== 1 ? "s" : ""}
+                            </span>
+                          )}
                         </div>
+
+                        {/* Aperçu vidéo pour les révisions */}
+                        {ex.type === "revision" && (ex.contenu as any).video_url && (
+                          <div style={{
+                            display: "flex", alignItems: "center", gap: 6, marginTop: 6,
+                            padding: "4px 10px", background: "#FFF7ED", borderRadius: 8, fontSize: 11,
+                            color: "#92400E", fontWeight: 600,
+                          }}>
+                            <span className="ms" style={{ fontSize: 14 }}>videocam</span>
+                            Vidéo incluse
+                          </div>
+                        )}
 
                         {/* Actions */}
                         <div style={{ display: "flex", gap: 6, marginTop: 8 }}>
@@ -764,10 +914,17 @@ export default function PageChapitreDetail() {
                             onClick={() => setApercuId(ex.id)}>
                             👁 Aperçu
                           </button>
-                          <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px" }}
-                            onClick={() => regenererExercice(ex)} disabled={enGeneration}>
-                            🔄 Régénérer
-                          </button>
+                          {ex.type === "revision" ? (
+                            <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px" }}
+                              onClick={() => ouvrirEditionRevision(ex)}>
+                              ✏️ Modifier
+                            </button>
+                          ) : (
+                            <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px" }}
+                              onClick={() => regenererExercice(ex)} disabled={enGeneration}>
+                              🔄 Régénérer
+                            </button>
+                          )}
                           <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px", color: "#DC2626" }}
                             onClick={() => setASupprimer(ex.id)}>
                             🗑
@@ -815,12 +972,16 @@ export default function PageChapitreDetail() {
             </div>
           )}
 
-          {/* Bouton ajouter (en bas de la timeline) */}
-          {exercices.length > 0 && !ajoutVisible && (
-            <div style={{ textAlign: "center", marginTop: 16 }}>
+          {/* Boutons ajouter (en bas de la timeline) */}
+          {exercices.length > 0 && !ajoutVisible && !revisionVisible && (
+            <div style={{ display: "flex", justifyContent: "center", gap: 10, marginTop: 16 }}>
+              <button className="btn-ghost" onClick={() => setRevisionVisible(true)}
+                style={{ fontSize: 13, padding: "8px 16px", color: "#D97706" }}>
+                📖 + Révision
+              </button>
               <button className="btn-ghost" onClick={() => setAjoutVisible(true)}
-                style={{ fontSize: 13, padding: "8px 20px" }}>
-                + Ajouter un exercice au parcours
+                style={{ fontSize: 13, padding: "8px 16px" }}>
+                ✏️ + Exercice
               </button>
             </div>
           )}
@@ -1042,7 +1203,7 @@ export default function PageChapitreDetail() {
             {/* Type */}
             <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 8 }}>Type</label>
             <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
-              {(Object.keys(TYPE_LABELS) as TypeExercice[]).map((t) => {
+              {(Object.keys(TYPE_LABELS) as TypeExercice[]).filter((t) => t !== "revision").map((t) => {
                 const info = TYPE_LABELS[t];
                 return (
                   <button key={t} onClick={() => setAjoutType(t)} style={{
@@ -1235,6 +1396,48 @@ export default function PageChapitreDetail() {
                 ))}
               </div>
             )}
+            {apercuEx.type === "revision" && (() => {
+              const c = apercuEx.contenu as { texte?: string; video_url?: string; points_cles?: string[] };
+              return (
+                <div>
+                  {c.video_url && (
+                    <div style={{
+                      padding: "10px 14px", background: "#FFF7ED", borderRadius: 10,
+                      marginBottom: 14, display: "flex", alignItems: "center", gap: 8,
+                    }}>
+                      <span className="ms" style={{ fontSize: 18, color: "#D97706" }}>videocam</span>
+                      <a href={c.video_url} target="_blank" rel="noopener noreferrer"
+                        style={{ fontSize: 13, color: "#92400E", fontWeight: 600 }}>
+                        {c.video_url}
+                      </a>
+                    </div>
+                  )}
+                  {c.texte && (
+                    <div style={{
+                      fontSize: 14, lineHeight: 1.7, marginBottom: 14,
+                      padding: "14px 16px", background: "var(--bg)", borderRadius: 10,
+                    }}>
+                      <div dangerouslySetInnerHTML={{ __html: c.texte }} />
+                    </div>
+                  )}
+                  {c.points_cles && c.points_cles.length > 0 && (
+                    <div style={{
+                      background: "#EFF6FF", borderRadius: 10, padding: "12px 16px",
+                    }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF", marginBottom: 8 }}>
+                        💡 À retenir
+                      </div>
+                      <ul style={{ margin: 0, paddingLeft: 18 }}>
+                        {c.points_cles.map((pt, i) => (
+                          <li key={i} style={{ fontSize: 13, marginBottom: 4 }}>{pt}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
+
             {apercuEx.type === "ecriture_contrainte" && (
               <div>
                 {typeof apercuEx.contenu.consigne === "string" && (
@@ -1287,6 +1490,168 @@ export default function PageChapitreDetail() {
                 Supprimer
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modale révision (création / édition) ── */}
+      {revisionVisible && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.4)", zIndex: 1000,
+          display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+        }} onClick={() => !enGenerationLecon && resetRevisionForm()}>
+          <div className="card" style={{ width: 600, maxHeight: "85vh", overflow: "auto", padding: 24 }}
+            onClick={(e) => e.stopPropagation()}>
+            <h3 style={{ fontSize: 18, fontWeight: 700, marginBottom: 20, display: "flex", alignItems: "center", gap: 8 }}>
+              <span style={{ fontSize: 22 }}>📖</span>
+              {editRevisionId ? "Modifier la révision" : "Nouvelle révision"}
+            </h3>
+
+            {/* Titre */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+              Titre de la leçon
+            </label>
+            <input
+              value={revTitre} onChange={(e) => setRevTitre(e.target.value)}
+              className="form-input" placeholder="Ex: Rappel — Les fractions décimales"
+              style={{ width: "100%", marginBottom: 14 }}
+            />
+
+            {/* Contexte IA (seulement en création ou si texte vide) */}
+            {!editRevisionId && (
+              <>
+                <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+                  Instructions pour l&apos;IA <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span>
+                </label>
+                <textarea
+                  value={revContexte} onChange={(e) => setRevContexte(e.target.value)}
+                  className="form-input" rows={2}
+                  placeholder="Précisions sur le contenu souhaité..."
+                  style={{ width: "100%", resize: "vertical", marginBottom: 10 }}
+                />
+                <button
+                  onClick={genererLecon}
+                  disabled={!revTitre.trim() || enGenerationLecon}
+                  style={{
+                    padding: "8px 18px", borderRadius: 8, border: "1.5px solid #FDE68A",
+                    background: enGenerationLecon ? "#FEF3C7" : "linear-gradient(135deg, #FFFBEB, #FEF3C7)",
+                    color: "#92400E", fontSize: 13, fontWeight: 700, cursor: "pointer",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    marginBottom: 16, display: "flex", alignItems: "center", gap: 6,
+                    opacity: !revTitre.trim() || enGenerationLecon ? 0.6 : 1,
+                  }}
+                >
+                  {enGenerationLecon ? "⏳ Génération en cours…" : "✨ Générer la leçon avec l'IA"}
+                </button>
+              </>
+            )}
+
+            {/* URL vidéo */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+              URL vidéo <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel, YouTube)</span>
+            </label>
+            <input
+              value={revVideo} onChange={(e) => setRevVideo(e.target.value)}
+              className="form-input" placeholder="https://www.youtube.com/watch?v=..."
+              style={{ width: "100%", marginBottom: 14 }}
+            />
+
+            {/* Contenu texte */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+              Contenu de la leçon <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(HTML simple accepté)</span>
+            </label>
+            <textarea
+              value={revTexte} onChange={(e) => setRevTexte(e.target.value)}
+              className="form-input" rows={10}
+              placeholder="Écris ta leçon ici ou génère-la avec l'IA..."
+              style={{ width: "100%", resize: "vertical", marginBottom: 14, fontFamily: "monospace", fontSize: 12, lineHeight: 1.6 }}
+            />
+
+            {/* Points clés */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+              Points clés — À retenir
+            </label>
+            <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
+              {revPointsCles.map((pt, i) => (
+                <div key={i} style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontSize: 12, color: "#2563EB", fontWeight: 700, flexShrink: 0 }}>💡</span>
+                  <input
+                    value={pt}
+                    onChange={(e) => {
+                      const cp = [...revPointsCles];
+                      cp[i] = e.target.value;
+                      setRevPointsCles(cp);
+                    }}
+                    className="form-input"
+                    placeholder={`Point clé ${i + 1}`}
+                    style={{ flex: 1, fontSize: 13, padding: "4px 10px", marginBottom: 0 }}
+                  />
+                  {revPointsCles.length > 1 && (
+                    <button
+                      onClick={() => setRevPointsCles((prev) => prev.filter((_, j) => j !== i))}
+                      style={{ background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: 16, padding: "0 4px" }}
+                    >✕</button>
+                  )}
+                </div>
+              ))}
+              {revPointsCles.length < 5 && (
+                <button
+                  onClick={() => setRevPointsCles((prev) => [...prev, ""])}
+                  className="btn-ghost"
+                  style={{ fontSize: 12, padding: "4px 12px", alignSelf: "flex-start" }}
+                >
+                  + Ajouter un point clé
+                </button>
+              )}
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: "flex", gap: 10 }}>
+              {editRevisionId ? (
+                <button className="btn-primary" onClick={sauvegarderRevision}
+                  disabled={!revTitre.trim() || !revTexte.trim() || enSauvegarde}
+                  style={{ flex: 1 }}>
+                  {enSauvegarde ? "Enregistrement…" : "✓ Enregistrer"}
+                </button>
+              ) : (
+                <button className="btn-primary" onClick={ajouterRevision}
+                  disabled={!revTitre.trim() || !revTexte.trim()}
+                  style={{ flex: 1 }}>
+                  📖 Ajouter au parcours
+                </button>
+              )}
+              <button className="btn-ghost" onClick={resetRevisionForm}>
+                Annuler
+              </button>
+            </div>
+
+            {/* Bouton régénérer si en édition */}
+            {editRevisionId && (
+              <div style={{ marginTop: 12, borderTop: "1px solid var(--border)", paddingTop: 12 }}>
+                <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+                  Régénérer avec l&apos;IA
+                </label>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <input
+                    value={revContexte} onChange={(e) => setRevContexte(e.target.value)}
+                    className="form-input" placeholder="Instructions..."
+                    style={{ flex: 1, fontSize: 12, padding: "4px 10px", marginBottom: 0 }}
+                  />
+                  <button
+                    onClick={genererLecon}
+                    disabled={!revTitre.trim() || enGenerationLecon}
+                    style={{
+                      padding: "6px 14px", borderRadius: 8, border: "1.5px solid #FDE68A",
+                      background: "#FFFBEB", color: "#92400E", fontSize: 12, fontWeight: 700,
+                      cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      whiteSpace: "nowrap", opacity: enGenerationLecon ? 0.6 : 1,
+                    }}
+                  >
+                    {enGenerationLecon ? "⏳…" : "✨ Générer"}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}

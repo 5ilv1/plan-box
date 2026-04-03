@@ -9,6 +9,7 @@ const TYPES_VALIDES = [
   "qcm",
   "classement",
   "ecriture_contrainte",
+  "revision",
 ] as const;
 
 const CHAMPS_MODIFIABLES = ["titre", "type", "contenu", "nb_questions", "ordre"];

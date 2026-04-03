@@ -31,6 +31,7 @@ const TYPE_ICONS: Record<string, { icon: string; color: string }> = {
   qcm:            { icon: "quiz",        color: "#92400E" },
   classement:     { icon: "category",    color: "#9D174D" },
   ecriture_contrainte: { icon: "edit",  color: "#7C3AED" },
+  revision:       { icon: "menu_book",   color: "#D97706" },
 };
 
 export default function PageChapitreEleve() {
@@ -187,7 +188,13 @@ export default function PageChapitreEleve() {
               {/* Carte exercice */}
               <div
                 onClick={() => {
-                  if (!isLocked) router.push(`/eleve/chapitre/${chapitreId}/exercice/${ex.exercice_id}`);
+                  if (!isLocked) {
+                    if (ex.type === "revision") {
+                      router.push(`/eleve/chapitre/${chapitreId}/revision/${ex.exercice_id}`);
+                    } else {
+                      router.push(`/eleve/chapitre/${chapitreId}/exercice/${ex.exercice_id}`);
+                    }
+                  }
                 }}
                 style={{
                   flex: 1, padding: "14px 18px", borderRadius: 16,
@@ -207,13 +214,21 @@ export default function PageChapitreEleve() {
                       </span>
                     </div>
                     <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-                      {ex.valide
-                        ? `✅ Validé · ${ex.meilleur_score}/${ex.total}`
-                        : isLocked
-                          ? "🔒 Termine l'exercice précédent"
-                          : isCurrent
-                            ? "▶ Commencer"
-                            : ""}
+                      {ex.type === "revision"
+                        ? ex.valide
+                          ? "✅ Lu"
+                          : isLocked
+                            ? "🔒 Termine l'exercice précédent"
+                            : isCurrent
+                              ? "📖 Lire la leçon"
+                              : ""
+                        : ex.valide
+                          ? `✅ Validé · ${ex.meilleur_score}/${ex.total}`
+                          : isLocked
+                            ? "🔒 Termine l'exercice précédent"
+                            : isCurrent
+                              ? "▶ Commencer"
+                              : ""}
                     </div>
                   </div>
 
