@@ -265,8 +265,34 @@ export default function PageExerciceEleve() {
   // ── Texte à trous : rendu spécial via TexteATrousEleve ──
   if (exercice?.type === "texte_a_trous" && etat === "en_cours") {
     const contenu = exercice.contenu as Record<string, unknown>;
-    const texteComplet = (contenu.texte as string) ?? "";
-    const trous = (contenu.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
+    const texteComplet = (contenu.texte_complet as string) ?? (contenu.texte as string) ?? "";
+    const trousBruts = (contenu.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
+
+    // Recalculer les positions réelles : les positions en base sont séquentielles (0,1,2...)
+    // mais le composant attend l'index du mot dans le texte splitté par espaces
+    const mots = texteComplet.split(/\s+/);
+    const trousAvecPositions: Array<{ position: number; mot: string; indice?: string }> = [];
+    const positionsUtilisees = new Set<number>();
+
+    for (const trou of trousBruts) {
+      // Chercher le mot dans le texte (en nettoyant la ponctuation pour la comparaison)
+      const motNettoye = trou.mot.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      let found = false;
+      for (let i = 0; i < mots.length; i++) {
+        if (positionsUtilisees.has(i)) continue;
+        const motTexteNettoye = mots[i].replace(/[.,;:!?'"()«»]/g, "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        if (motTexteNettoye === motNettoye) {
+          trousAvecPositions.push({ ...trou, position: i });
+          positionsUtilisees.add(i);
+          found = true;
+          break;
+        }
+      }
+      if (!found) {
+        // Fallback : garder la position originale
+        trousAvecPositions.push(trou);
+      }
+    }
 
     return (
       <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 80px" }}>
@@ -286,9 +312,9 @@ export default function PageExerciceEleve() {
           titre={exercice.titre}
           consigne={String(contenu.consigne ?? "Complète le texte en trouvant les mots manquants.")}
           texteComplet={texteComplet}
-          trous={trous}
+          trous={trousAvecPositions}
           onTermine={async (scoreResult) => {
-            const total = trous.length;
+            const total = trousAvecPositions.length;
             const bon = scoreResult.bon;
 
             await fetch("/api/chapitres/exercices/resultat", {
