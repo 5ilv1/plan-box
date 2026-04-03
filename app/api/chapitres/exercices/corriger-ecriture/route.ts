@@ -44,10 +44,10 @@ Analyse le texte et réponds en JSON valide :
   "valide": <true si le texte respecte TOUTES les contraintes et contient le bon nombre de phrases, false sinon>,
   "erreurs": [
     {
-      "phrase": "la phrase de l'élève contenant l'erreur",
+      "phrase": "la phrase complète de l'élève contenant l'erreur",
       "type": "conjugaison|orthographe|grammaire|contrainte_non_respectee|nombre_phrases",
-      "indice": "un indice pédagogique pour aider l'élève${estDeuxiemeTentative ? " ou la correction directe" : ""}",
-      "mot_concerne": "le mot ou groupe de mots problématique (optionnel)"
+      "mot_concerne": "le mot ou groupe de mots EXACT tel qu'écrit par l'élève (OBLIGATOIRE)",
+      "indice": "${estDeuxiemeTentative ? "La correction : mot_concerne → mot corrigé" : "un indice pédagogique COURT pour aider l'élève à corriger ce mot précis"}"
     }
   ],
   "commentaire": "un bref commentaire encourageant pour l'élève (1-2 phrases)",
@@ -58,6 +58,9 @@ Règles d'analyse :
 - Vérifie le nombre de phrases (doit être exactement ${nb_phrases || 3})
 - Vérifie chaque contrainte une par une
 - Vérifie l'orthographe et la conjugaison
+- IMPORTANT : chaque erreur DOIT contenir "mot_concerne" avec le mot exact de l'élève qui pose problème
+- L'indice doit être court (max 15 mots) et cibler le mot concerné
+${estDeuxiemeTentative ? "- Donne la correction directe dans l'indice : « mot_erroné → mot_correct »" : "- Ne donne PAS la réponse, donne un indice pour que l'élève trouve lui-même"}
 - Sois bienveillant dans les commentaires
 - Si tout est correct, "valide" = true et "erreurs" = []
 - Réponds UNIQUEMENT en JSON valide, sans markdown`;

@@ -495,15 +495,26 @@ export default function PageExerciceEleve() {
                     padding: "12px 14px", borderRadius: 12,
                     background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.12)",
                   }}>
-                    {err.mot_concerne && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                      {err.mot_concerne && (
+                        <span style={{
+                          display: "inline-block", fontSize: 14, fontWeight: 800,
+                          padding: "3px 10px", borderRadius: 8,
+                          background: "rgba(220,38,38,0.12)", color: "#DC2626",
+                          textDecoration: "line-through",
+                        }}>
+                          « {err.mot_concerne} »
+                        </span>
+                      )}
                       <span style={{
-                        display: "inline-block", fontSize: 11, fontWeight: 700,
-                        padding: "2px 8px", borderRadius: 6, marginBottom: 6,
+                        display: "inline-block", fontSize: 10, fontWeight: 700,
+                        padding: "2px 8px", borderRadius: 6,
                         background: "rgba(234,88,12,0.1)", color: "#C2410C",
+                        textTransform: "uppercase", letterSpacing: "0.05em",
                       }}>
                         {err.type.replace(/_/g, " ")}
                       </span>
-                    )}
+                    </div>
                     <p style={{ fontSize: 13, color: "#78350F", margin: 0 }}>
                       💡 {err.indice}
                     </p>
