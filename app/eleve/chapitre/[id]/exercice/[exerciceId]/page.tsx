@@ -406,7 +406,7 @@ export default function PageExerciceEleve() {
     const exemple = contenu.exemple as string | undefined;
 
     return (
-      <div style={{ maxWidth: 560, margin: "0 auto", padding: "20px 20px 80px" }}>
+      <div style={{ maxWidth: 750, margin: "0 auto", padding: "20px 20px 80px" }}>
         {/* En-tête */}
         <div style={{ marginBottom: 20 }}>
           <button
