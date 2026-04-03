@@ -645,7 +645,7 @@ export default function PageChapitreDetail() {
                 <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
                   Seuil évaluation finale : <strong>{seuil}%</strong>
                 </label>
-                <input type="range" min={70} max={100} step={5} value={seuil}
+                <input type="range" min={50} max={100} step={5} value={seuil}
                   onChange={(e) => setSeuil(+e.target.value)} style={{ width: "100%", marginBottom: 16 }} />
                 <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
                   Seuil validation exercices : <strong>{seuilExo}%</strong>
