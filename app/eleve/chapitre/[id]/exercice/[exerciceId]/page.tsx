@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import ClassementEleve from "@/components/ClassementEleve";
+import TexteATrousEleve from "@/components/TexteATrousEleve";
 
 interface Question {
   id: number;
@@ -98,10 +99,10 @@ export default function PageExerciceEleve() {
       for (const c of contenu.calculs as Calcul[]) {
         qs.push({ enonce: c.enonce, reponse: String(c.reponse) });
       }
-    } else if (ex.type === "texte_a_trous" && Array.isArray(contenu.trous)) {
-      for (const t of contenu.trous as Array<{ mot: string; indice?: string }>) {
-        qs.push({ enonce: `Quel mot manque ?${t.indice ? ` (indice : ${t.indice})` : ""}`, reponse: t.mot });
-      }
+    } else if (ex.type === "texte_a_trous") {
+      // Rendu spécial via TexteATrousEleve — pas de questions à préparer
+      setEtat("en_cours");
+      return;
     } else if (ex.type === "classement") {
       // Rendu spécial via ClassementEleve — pas de questions à préparer
       setEtat("en_cours");
@@ -256,6 +257,57 @@ export default function PageExerciceEleve() {
     return (
       <div style={{ maxWidth: 500, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
+      </div>
+    );
+  }
+
+  // ── Classement : rendu spécial via ClassementEleve ──
+  // ── Texte à trous : rendu spécial via TexteATrousEleve ──
+  if (exercice?.type === "texte_a_trous" && etat === "en_cours") {
+    const contenu = exercice.contenu as Record<string, unknown>;
+    const texteComplet = (contenu.texte as string) ?? "";
+    const trous = (contenu.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
+
+    return (
+      <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 80px" }}>
+        <div style={{ marginBottom: 20 }}>
+          <button
+            onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--pb-on-surface-variant)", fontSize: 13, marginBottom: 8 }}
+          >
+            ← Retour
+          </button>
+          <h2 style={{ fontSize: 20, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)", marginBottom: 4 }}>
+            📝 {exercice.titre}
+          </h2>
+        </div>
+
+        <TexteATrousEleve
+          titre={exercice.titre}
+          consigne={String(contenu.consigne ?? "Complète le texte en trouvant les mots manquants.")}
+          texteComplet={texteComplet}
+          trous={trous}
+          onTermine={async (scoreResult) => {
+            const total = trous.length;
+            const bon = scoreResult.bon;
+
+            await fetch("/api/chapitres/exercices/resultat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                exercice_id: exerciceId,
+                eleve_id: session?.source === "planbox" ? session.id : undefined,
+                rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+                score: bon,
+                total,
+              }),
+            });
+
+            setScore(bon);
+            setValide(bon === total);
+            setEtat("resultat");
+          }}
+        />
       </div>
     );
   }
