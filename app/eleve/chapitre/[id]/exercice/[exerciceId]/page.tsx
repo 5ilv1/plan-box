@@ -406,7 +406,7 @@ export default function PageExerciceEleve() {
     const exemple = contenu.exemple as string | undefined;
 
     return (
-      <div style={{ maxWidth: 750, margin: "0 auto", padding: "20px 20px 80px" }}>
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "20px 20px 80px" }}>
         {/* En-tête */}
         <div style={{ marginBottom: 20 }}>
           <button
@@ -427,155 +427,180 @@ export default function PageExerciceEleve() {
           </span>
         </div>
 
-        {/* Consigne */}
-        <div style={{
-          padding: "20px 24px", borderRadius: 20, marginBottom: 16,
-          background: "linear-gradient(135deg, #EDE9FE, #F5F3FF)",
-          border: "1px solid rgba(124,58,237,0.15)",
-        }}>
-          <p style={{ fontSize: 15, fontWeight: 600, color: "#5B21B6", marginBottom: 10, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-            📝 {String(contenu.consigne)}
-          </p>
-          <div style={{ fontSize: 13, color: "#6D28D9" }}>
-            <strong>Contraintes :</strong>
-            <ul style={{ margin: "6px 0 0 16px", padding: 0 }}>
-              {contraintes.map((c, i) => (
-                <li key={i} style={{ marginBottom: 3 }}>{c}</li>
-              ))}
-            </ul>
+        {/* Layout 2 colonnes sur tablette/desktop */}
+        <div style={{ display: "flex", gap: 20, alignItems: "flex-start", flexWrap: "wrap" }}>
+
+          {/* Colonne gauche : consigne + écriture + bouton */}
+          <div style={{ flex: "1 1 400px", minWidth: 0 }}>
+            {/* Consigne */}
+            <div style={{
+              padding: "20px 24px", borderRadius: 20, marginBottom: 16,
+              background: "linear-gradient(135deg, #EDE9FE, #F5F3FF)",
+              border: "1px solid rgba(124,58,237,0.15)",
+            }}>
+              <p style={{ fontSize: 15, fontWeight: 600, color: "#5B21B6", marginBottom: 10, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                📝 {String(contenu.consigne)}
+              </p>
+              <div style={{ fontSize: 13, color: "#6D28D9" }}>
+                <strong>Contraintes :</strong>
+                <ul style={{ margin: "6px 0 0 16px", padding: 0 }}>
+                  {contraintes.map((c, i) => (
+                    <li key={i} style={{ marginBottom: 3 }}>{c}</li>
+                  ))}
+                </ul>
+              </div>
+              <p style={{ fontSize: 13, color: "#6D28D9", marginTop: 8 }}>
+                Écris <strong>{nbPhrases} phrase{nbPhrases > 1 ? "s" : ""}</strong>.
+              </p>
+              {exemple && (
+                <p style={{ fontSize: 12, color: "#7C3AED", marginTop: 8, fontStyle: "italic", opacity: 0.8 }}>
+                  💡 Exemple : « {exemple} »
+                </p>
+              )}
+            </div>
+
+            {/* Zone d'écriture */}
+            <div style={{
+              padding: "20px", borderRadius: 20, background: "white",
+              border: "1px solid var(--pb-outline-variant, #eee)",
+              boxShadow: "0 2px 12px rgba(0,0,0,0.04)", marginBottom: 16,
+            }}>
+              <textarea
+                ref={textareaRef}
+                value={texteEleve}
+                onChange={(e) => setTexteEleve(e.target.value)}
+                placeholder={`Écris tes ${nbPhrases} phrases ici…`}
+                disabled={enAnalyse || ecritureValide}
+                rows={8}
+                style={{
+                  width: "100%", padding: "14px", borderRadius: 12,
+                  fontSize: 15, lineHeight: 1.7, resize: "vertical",
+                  border: "2px solid var(--pb-outline-variant, #ddd)",
+                  outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  background: ecritureValide ? "#F0FDF4" : "white",
+                }}
+              />
+            </div>
+
+            {/* Bouton soumettre */}
+            {!ecritureValide && (
+              <button
+                onClick={soumettreEcriture}
+                disabled={enAnalyse || !texteEleve.trim()}
+                style={{
+                  width: "100%", padding: "14px", borderRadius: 14, fontSize: 16, fontWeight: 700,
+                  background: enAnalyse ? "#9CA3AF" : texteEleve.trim() ? "#7C3AED" : "var(--pb-surface-container, #eee)",
+                  color: texteEleve.trim() ? "white" : "var(--pb-on-surface-variant)",
+                  border: "none", cursor: enAnalyse ? "wait" : "pointer",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}
+              >
+                {enAnalyse
+                  ? "Analyse en cours… ✨"
+                  : analyseIA
+                    ? "Soumettre ma correction"
+                    : "Vérifier mon texte"}
+              </button>
+            )}
           </div>
-          <p style={{ fontSize: 13, color: "#6D28D9", marginTop: 8 }}>
-            Écris <strong>{nbPhrases} phrase{nbPhrases > 1 ? "s" : ""}</strong>.
-          </p>
-          {exemple && (
-            <p style={{ fontSize: 12, color: "#7C3AED", marginTop: 8, fontStyle: "italic", opacity: 0.8 }}>
-              💡 Exemple : « {exemple} »
-            </p>
-          )}
-        </div>
 
-        {/* Zone d'écriture */}
-        <div style={{
-          padding: "20px", borderRadius: 20, background: "white",
-          border: "1px solid var(--pb-outline-variant, #eee)",
-          boxShadow: "0 2px 12px rgba(0,0,0,0.04)", marginBottom: 16,
-        }}>
-          <textarea
-            ref={textareaRef}
-            value={texteEleve}
-            onChange={(e) => setTexteEleve(e.target.value)}
-            placeholder={`Écris tes ${nbPhrases} phrases ici…`}
-            disabled={enAnalyse || ecritureValide}
-            rows={6}
-            style={{
-              width: "100%", padding: "14px", borderRadius: 12,
-              fontSize: 15, lineHeight: 1.7, resize: "vertical",
-              border: "2px solid var(--pb-outline-variant, #ddd)",
-              outline: "none", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              background: ecritureValide ? "#F0FDF4" : "white",
-            }}
-          />
-        </div>
+          {/* Colonne droite : feedback IA / résultat */}
+          <div style={{ flex: "1 1 340px", minWidth: 0 }}>
+            {/* Feedback IA */}
+            {analyseIA && !ecritureValide && (
+              <div style={{
+                padding: "20px 24px", borderRadius: 20,
+                background: analyseIA.erreurs.length === 0 ? "#F0FDF4" : "#FFF7ED",
+                border: `1px solid ${analyseIA.erreurs.length === 0 ? "rgba(34,197,94,0.3)" : "rgba(234,88,12,0.2)"}`,
+                position: "sticky", top: 20,
+              }}>
+                <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: analyseIA.erreurs.length === 0 ? "#166534" : "#9A3412" }}>
+                  {analyseIA.commentaire}
+                </p>
 
-        {/* Feedback IA */}
-        {analyseIA && !ecritureValide && (
-          <div style={{
-            padding: "20px 24px", borderRadius: 20, marginBottom: 16,
-            background: analyseIA.erreurs.length === 0 ? "#F0FDF4" : "#FFF7ED",
-            border: `1px solid ${analyseIA.erreurs.length === 0 ? "rgba(34,197,94,0.3)" : "rgba(234,88,12,0.2)"}`,
-          }}>
-            <p style={{ fontSize: 14, fontWeight: 600, marginBottom: 10, color: analyseIA.erreurs.length === 0 ? "#166534" : "#9A3412" }}>
-              {analyseIA.commentaire}
-            </p>
-
-            {analyseIA.erreurs.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                {analyseIA.erreurs.map((err, i) => (
-                  <div key={i} style={{
-                    padding: "12px 14px", borderRadius: 12,
-                    background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.12)",
-                  }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
-                      {err.mot_concerne && (
-                        <span style={{
-                          display: "inline-block", fontSize: 14, fontWeight: 800,
-                          padding: "3px 10px", borderRadius: 8,
-                          background: "rgba(220,38,38,0.12)", color: "#DC2626",
-                          textDecoration: "line-through",
-                        }}>
-                          « {err.mot_concerne} »
-                        </span>
-                      )}
-                      <span style={{
-                        display: "inline-block", fontSize: 10, fontWeight: 700,
-                        padding: "2px 8px", borderRadius: 6,
-                        background: "rgba(234,88,12,0.1)", color: "#C2410C",
-                        textTransform: "uppercase", letterSpacing: "0.05em",
+                {analyseIA.erreurs.length > 0 && (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                    {analyseIA.erreurs.map((err, i) => (
+                      <div key={i} style={{
+                        padding: "12px 14px", borderRadius: 12,
+                        background: "rgba(234,88,12,0.06)", border: "1px solid rgba(234,88,12,0.12)",
                       }}>
-                        {err.type.replace(/_/g, " ")}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: 13, color: "#78350F", margin: 0 }}>
-                      💡 {err.indice}
-                    </p>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, flexWrap: "wrap" }}>
+                          {err.mot_concerne && (
+                            <span style={{
+                              display: "inline-block", fontSize: 14, fontWeight: 800,
+                              padding: "3px 10px", borderRadius: 8,
+                              background: "rgba(220,38,38,0.12)", color: "#DC2626",
+                              textDecoration: "line-through",
+                            }}>
+                              « {err.mot_concerne} »
+                            </span>
+                          )}
+                          <span style={{
+                            display: "inline-block", fontSize: 10, fontWeight: 700,
+                            padding: "2px 8px", borderRadius: 6,
+                            background: "rgba(234,88,12,0.1)", color: "#C2410C",
+                            textTransform: "uppercase", letterSpacing: "0.05em",
+                          }}>
+                            {err.type.replace(/_/g, " ")}
+                          </span>
+                        </div>
+                        <p style={{ fontSize: 13, color: "#78350F", margin: 0 }}>
+                          💡 {err.indice}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                ))}
+                )}
+
+                {tentative === 2 && analyseIA.erreurs.length > 0 && (
+                  <p style={{ fontSize: 13, color: "#DC2626", fontWeight: 600, marginTop: 12 }}>
+                    Des erreurs persistent. Corrige ton texte et réessaie.
+                  </p>
+                )}
               </div>
             )}
 
-            {tentative === 2 && analyseIA.erreurs.length > 0 && (
-              <p style={{ fontSize: 13, color: "#DC2626", fontWeight: 600, marginTop: 12 }}>
-                Des erreurs persistent. Corrige ton texte et réessaie.
-              </p>
+            {/* Résultat validé */}
+            {ecritureValide && analyseIA && (
+              <div style={{
+                padding: "30px", borderRadius: 20, textAlign: "center",
+                background: "linear-gradient(135deg, #DCFCE7, #F0FDF4)",
+                border: "2px solid #22C55E",
+              }}>
+                <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
+                <h3 style={{ fontSize: 20, fontWeight: 800, color: "#166534", marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Exercice validé !
+                </h3>
+                <p style={{ fontSize: 14, color: "#166534" }}>{analyseIA.commentaire}</p>
+                <button
+                  onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+                  style={{
+                    marginTop: 16, padding: "12px 28px", borderRadius: 12,
+                    fontSize: 15, fontWeight: 700, background: "#22C55E", color: "white",
+                    border: "none", cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}
+                >
+                  Continuer →
+                </button>
+              </div>
+            )}
+
+            {/* Placeholder avant soumission */}
+            {!analyseIA && !ecritureValide && (
+              <div style={{
+                padding: "30px 24px", borderRadius: 20, textAlign: "center",
+                background: "rgba(124,58,237,0.04)", border: "1px dashed rgba(124,58,237,0.2)",
+                color: "#7C3AED", opacity: 0.6,
+              }}>
+                <span className="ms" style={{ fontSize: 36, display: "block", marginBottom: 8 }}>rate_review</span>
+                <p style={{ fontSize: 13, margin: 0, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  La correction apparaîtra ici
+                </p>
+              </div>
             )}
           </div>
-        )}
-
-        {/* Résultat validé */}
-        {ecritureValide && analyseIA && (
-          <div style={{
-            padding: "30px", borderRadius: 20, textAlign: "center",
-            background: "linear-gradient(135deg, #DCFCE7, #F0FDF4)",
-            border: "2px solid #22C55E", marginBottom: 16,
-          }}>
-            <div style={{ fontSize: 48, marginBottom: 12 }}>🎉</div>
-            <h3 style={{ fontSize: 20, fontWeight: 800, color: "#166534", marginBottom: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
-              Exercice validé !
-            </h3>
-            <p style={{ fontSize: 14, color: "#166534" }}>{analyseIA.commentaire}</p>
-            <button
-              onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
-              style={{
-                marginTop: 16, padding: "12px 28px", borderRadius: 12,
-                fontSize: 15, fontWeight: 700, background: "#22C55E", color: "white",
-                border: "none", cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              }}
-            >
-              Continuer →
-            </button>
-          </div>
-        )}
-
-        {/* Bouton soumettre */}
-        {!ecritureValide && (
-          <button
-            onClick={soumettreEcriture}
-            disabled={enAnalyse || !texteEleve.trim()}
-            style={{
-              width: "100%", padding: "14px", borderRadius: 14, fontSize: 16, fontWeight: 700,
-              background: enAnalyse ? "#9CA3AF" : texteEleve.trim() ? "#7C3AED" : "var(--pb-surface-container, #eee)",
-              color: texteEleve.trim() ? "white" : "var(--pb-on-surface-variant)",
-              border: "none", cursor: enAnalyse ? "wait" : "pointer",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
-          >
-            {enAnalyse
-              ? "Analyse en cours… ✨"
-              : analyseIA
-                ? "Soumettre ma correction"
-                : "Vérifier mon texte"}
-          </button>
-        )}
+        </div>
       </div>
     );
   }
