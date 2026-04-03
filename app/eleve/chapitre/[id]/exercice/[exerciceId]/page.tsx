@@ -154,7 +154,7 @@ export default function PageExerciceEleve() {
       // Fin de l'exercice — calculer le score et sauvegarder
       const bonnes = resultats.filter(Boolean).length;
       const total = questions.length;
-      const estValide = bonnes === total; // 100% requis
+      const estValide = total > 0 && (bonnes / total) >= 0.9; // 90% requis
 
       setScore(bonnes);
       setValide(estValide);
@@ -331,7 +331,7 @@ export default function PageExerciceEleve() {
             });
 
             setScore(bon);
-            setValide(bon === total);
+            setValide(total > 0 && (bon / total) >= 0.9);
             setEtat("resultat");
           }}
         />
@@ -367,7 +367,7 @@ export default function PageExerciceEleve() {
           onTermine={async (scoreResult) => {
             const total = items.length;
             const bon = scoreResult.bon;
-            const isValide = bon / total >= 0.8;
+            const isValide = bon / total >= 0.9;
 
             await fetch("/api/chapitres/exercices/resultat", {
               method: "POST",
@@ -631,7 +631,7 @@ export default function PageExerciceEleve() {
           <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 24 }}>
             {valide
               ? "Tu peux passer à la suite !"
-              : "Il faut 100% pour valider. Réessaie !"}
+              : "Il faut au moins 90% pour valider. Réessaie !"}
           </p>
 
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>

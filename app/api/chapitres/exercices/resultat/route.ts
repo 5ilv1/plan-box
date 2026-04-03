@@ -18,8 +18,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "eleve_id ou rb_eleve_id requis" }, { status: 400 });
   }
 
-  // Exercice normal : valide = 100% (score === total)
-  const valide = score === total;
+  // Exercice validé si score >= 90%
+  const valide = total > 0 && (score / total) >= 0.9;
 
   const admin = createAdminClient();
 
