@@ -55,7 +55,14 @@ interface CellDetail {
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 
-const MATIERES = ["Tout", "français", "maths", "sciences", "histoire-géo", "anglais"];
+const COULEURS_MATIERE: Record<string, { bg: string; texte: string; border: string; icone: string }> = {
+  français:       { bg: "#DBEAFE", texte: "#1E40AF", border: "#93C5FD", icone: "📖" },
+  maths:          { bg: "#D1FAE5", texte: "#065F46", border: "#6EE7B7", icone: "🔢" },
+  sciences:       { bg: "#FEF3C7", texte: "#92400E", border: "#FCD34D", icone: "🔬" },
+  "histoire-géo": { bg: "#EDE9FE", texte: "#5B21B6", border: "#C4B5FD", icone: "🌍" },
+  anglais:        { bg: "#FCE7F3", texte: "#9D174D", border: "#F9A8D4", icone: "🇬🇧" },
+  EMC:            { bg: "#F0FDF4", texte: "#166534", border: "#86EFAC", icone: "⚖️" },
+};
 
 const COULEUR_STATUT: Record<string, { bg: string; texte: string; border: string }> = {
   valide:     { bg: "#DCFCE7", texte: "#16A34A", border: "#BBF7D0" },
@@ -63,10 +70,6 @@ const COULEUR_STATUT: Record<string, { bg: string; texte: string; border: string
   remediation:{ bg: "#FEF3C7", texte: "#D97706", border: "#FDE68A" },
   absent:     { bg: "#F1F5F9", texte: "#94A3B8", border: "#E2E8F0" },
 };
-
-function truncate(s: string, n: number) {
-  return s.length > n ? s.slice(0, n) + "…" : s;
-}
 
 function scoreBloc(contenu: Record<string, unknown> | null): string | null {
   if (!contenu) return null;
@@ -81,6 +84,33 @@ const TYPE_ICONE: Record<string, string> = {
   eval: "quiz", ressource: "open_in_new", libre: "edit", media: "play_circle",
 };
 
+// Grouper les chapitres par sous_matiere
+interface SousMatiereGroupe {
+  nom: string | null; // null = pas de sous-matière
+  label: string;
+  chapitres: Chapitre[];
+}
+
+function grouperParSousMatiere(chapitres: Chapitre[]): SousMatiereGroupe[] {
+  const map = new Map<string, Chapitre[]>();
+  const ordreAppearance: string[] = [];
+
+  for (const c of chapitres) {
+    const key = c.sous_matiere ?? "__general__";
+    if (!map.has(key)) {
+      map.set(key, []);
+      ordreAppearance.push(key);
+    }
+    map.get(key)!.push(c);
+  }
+
+  return ordreAppearance.map((key) => ({
+    nom: key === "__general__" ? null : key,
+    label: key === "__general__" ? "Général" : key,
+    chapitres: map.get(key)!,
+  }));
+}
+
 // ── Composant ────────────────────────────────────────────────────────────────
 
 export default function ProgressionElevesView() {
@@ -91,13 +121,15 @@ export default function ProgressionElevesView() {
   const [memberships, setMemberships] = useState<Membership[]>([]);
   const [chargement, setChargement]   = useState(true);
 
-  const [filtreMatiere, setFiltreMatiere] = useState("Tout");
+  const [filtreMatiere, setFiltreMatiere] = useState<string | null>(null);
   const [filtreGroupe, setFiltreGroupe]   = useState("tous");
 
   const [cellule, setCellule]  = useState<{ eleveId: string; chapitreId: string } | null>(null);
   const [detail, setDetail]    = useState<CellDetail | null>(null);
   const [loadDetail, setLoadDetail] = useState(false);
   const [enRappel, setEnRappel] = useState(false);
+
+  const [sectionsOuvertes, setSectionsOuvertes] = useState<Set<string>>(new Set());
 
   const tableRef = useRef<HTMLDivElement>(null);
 
@@ -122,7 +154,7 @@ export default function ProgressionElevesView() {
     return () => clearInterval(id);
   }, [charger]);
 
-  // Realtime plan_travail
+  // Realtime pb_progression
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
@@ -131,6 +163,24 @@ export default function ProgressionElevesView() {
       .subscribe();
     return () => { supabase.removeChannel(channel); };
   }, [charger]);
+
+  // Auto-sélection première matière
+  useEffect(() => {
+    if (filtreMatiere === null && chapitres.length > 0) {
+      const matieres = [...new Set(chapitres.map((c) => c.matiere))];
+      if (matieres.length > 0) {
+        setFiltreMatiere(matieres[0]);
+      }
+    }
+  }, [chapitres, filtreMatiere]);
+
+  // Ouvrir toutes les sections par défaut au changement de matière
+  useEffect(() => {
+    if (!filtreMatiere) return;
+    const chapsFiltres = chapitres.filter((c) => c.matiere === filtreMatiere);
+    const groupes = grouperParSousMatiere(chapsFiltres);
+    setSectionsOuvertes(new Set(groupes.map((g) => g.label)));
+  }, [filtreMatiere, chapitres]);
 
   // ── Détail cellule ───────────────────────────────────────────────────────
   useEffect(() => {
@@ -152,23 +202,51 @@ export default function ProgressionElevesView() {
     elevesGroupe === null || elevesGroupe.includes(e.uid)
   );
 
-  // Chapitres qui ont au moins un élève avec progression
-  const chapitresAvecEleves = new Set(progressions.map((p) => p.chapitre_id));
-
-  const chapitresFiltres = chapitres.filter((c) =>
-    chapitresAvecEleves.has(c.id) &&
-    (filtreMatiere === "Tout" || c.matiere === filtreMatiere)
+  // Chapitres de la matière sélectionnée
+  const chapitresMatiere = chapitres.filter((c) =>
+    filtreMatiere ? c.matiere === filtreMatiere : false
   );
+
+  // Grouper par sous-matière
+  const sousGroupes = grouperParSousMatiere(chapitresMatiere);
+
+  // Matières disponibles (avec au moins un chapitre)
+  const matieresDisponibles = [...new Set(chapitres.map((c) => c.matiere))];
 
   // Map de lookup progression
   const progMap = new Map<string, ProgressionData>();
   progressions.forEach((p) => progMap.set(`${p.eleve_uid}__${p.chapitre_id}`, p));
 
-  // Trouve l'élève et le chapitre pour le drawer
+  // Stats par élève pour la matière courante
+  function statsEleve(uid: string) {
+    let total = 0;
+    let valides = 0;
+    let enCours = 0;
+    for (const c of chapitresMatiere) {
+      const prog = progMap.get(`${uid}__${c.id}`);
+      if (prog) {
+        total++;
+        if (prog.statut === "valide") valides++;
+        else if (prog.statut === "en_cours") enCours++;
+      }
+    }
+    return { total, valides, enCours };
+  }
+
+  // Drawer data
   const eleveDrawer   = cellule ? eleves.find((e) => e.uid === cellule.eleveId) : null;
   const chapDrawer    = cellule ? chapitres.find((c) => c.id === cellule.chapitreId) : null;
   const progDrawer    = cellule ? progMap.get(`${cellule.eleveId}__${cellule.chapitreId}`) : null;
 
+  // Toggle section
+  function toggleSection(label: string) {
+    setSectionsOuvertes((prev) => {
+      const next = new Set(prev);
+      if (next.has(label)) next.delete(label);
+      else next.add(label);
+      return next;
+    });
+  }
 
   // ── Action "Envoyer rappel" ──────────────────────────────────────────────
   async function envoyerRappel() {
@@ -212,23 +290,31 @@ export default function ProgressionElevesView() {
 
       {/* ── Filtres ── */}
       <div style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", display: "flex", gap: 12, flexWrap: "wrap", alignItems: "center" }}>
-        {/* Filtre matière */}
+        {/* Filtre matière — boutons avec icônes */}
         <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
-          {MATIERES.map((m) => (
-            <button
-              key={m}
-              onClick={() => setFiltreMatiere(m)}
-              style={{
-                padding: "4px 12px", borderRadius: 20, fontSize: 12, cursor: "pointer",
-                fontWeight: filtreMatiere === m ? 700 : 500,
-                background: filtreMatiere === m ? "var(--primary)" : "var(--white)",
-                color: filtreMatiere === m ? "white" : "var(--text-secondary)",
-                border: filtreMatiere === m ? "none" : "1px solid var(--border)",
-              }}
-            >
-              {m}
-            </button>
-          ))}
+          {matieresDisponibles.map((m) => {
+            const cfg = COULEURS_MATIERE[m] ?? { bg: "#F3F4F6", texte: "#374151", border: "#D1D5DB", icone: "📚" };
+            const actif = filtreMatiere === m;
+            return (
+              <button
+                key={m}
+                onClick={() => setFiltreMatiere(m)}
+                style={{
+                  padding: "6px 14px", borderRadius: 20, fontSize: 12, cursor: "pointer",
+                  fontWeight: actif ? 800 : 600,
+                  background: actif ? cfg.bg : "var(--white)",
+                  color: actif ? cfg.texte : "var(--text-secondary)",
+                  border: actif ? `2px solid ${cfg.border}` : "1px solid var(--border)",
+                  display: "flex", alignItems: "center", gap: 5,
+                  transition: "all 0.15s",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}
+              >
+                <span style={{ fontSize: 13 }}>{cfg.icone}</span>
+                {m.charAt(0).toUpperCase() + m.slice(1)}
+              </button>
+            );
+          })}
         </div>
 
         {/* Filtre groupe */}
@@ -247,101 +333,199 @@ export default function ProgressionElevesView() {
         )}
       </div>
 
-      {/* ── Tableau ── */}
-      <div
-        ref={tableRef}
-        style={{ overflowX: "auto", padding: "12px 16px 20px" }}
-      >
-        {chapitresFiltres.length === 0 ? (
+      {/* ── Contenu par sous-matière ── */}
+      <div style={{ padding: "12px 16px 20px" }}>
+        {sousGroupes.length === 0 ? (
           <div style={{ padding: 32, color: "var(--text-secondary)", fontSize: 14, textAlign: "center" }}>
             Aucun chapitre pour cette matière.
           </div>
         ) : (
-          <table style={{ borderCollapse: "collapse", minWidth: "100%", fontSize: 12 }}>
-            <thead>
-              <tr>
-                {/* Colonne élève */}
-                <th style={{
-                  textAlign: "left", fontWeight: 700, fontSize: 12, padding: "6px 12px 6px 0",
-                  position: "sticky", left: 0, background: "var(--bg)", zIndex: 2,
-                  borderBottom: "2px solid var(--border)", whiteSpace: "nowrap",
-                  color: "var(--text-secondary)",
-                }}>
-                  Élève
-                </th>
-                {/* Colonnes chapitres */}
-                {chapitresFiltres.map((c) => (
-                  <th
-                    key={c.id}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {sousGroupes.map((groupe) => {
+              const ouvert = sectionsOuvertes.has(groupe.label);
+              const cfg = COULEURS_MATIERE[filtreMatiere ?? ""] ?? { bg: "#F3F4F6", texte: "#374151", border: "#D1D5DB", icone: "📚" };
+
+              // Stats globales de la sous-matière
+              let totalValides = 0;
+              let totalEleves = 0;
+              for (const eleve of elevesFiltres) {
+                for (const chap of groupe.chapitres) {
+                  const prog = progMap.get(`${eleve.uid}__${chap.id}`);
+                  if (prog?.statut === "valide") totalValides++;
+                }
+                totalEleves++;
+              }
+              const potentiel = totalEleves * groupe.chapitres.length;
+              const tauxGlobal = potentiel > 0 ? Math.round((totalValides / potentiel) * 100) : 0;
+
+              return (
+                <div
+                  key={groupe.label}
+                  style={{
+                    border: "1px solid var(--border)",
+                    borderRadius: 16,
+                    overflow: "hidden",
+                    background: "var(--white)",
+                  }}
+                >
+                  {/* En-tête sous-matière */}
+                  <button
+                    onClick={() => toggleSection(groupe.label)}
                     style={{
-                      textAlign: "center", fontWeight: 600, fontSize: 11, padding: "6px 8px",
-                      borderBottom: "2px solid var(--border)",
-                      color: "var(--text-secondary)", minWidth: 80,
-                      maxWidth: 160, whiteSpace: "normal", wordBreak: "break-word",
-                      verticalAlign: "bottom", lineHeight: 1.3,
+                      width: "100%",
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "12px 16px",
+                      background: ouvert ? `${cfg.bg}80` : "var(--bg)",
+                      border: "none",
+                      borderBottom: ouvert ? "1px solid var(--border)" : "none",
+                      cursor: "pointer",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      transition: "background 0.15s",
                     }}
                   >
-                    {c.titre}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {elevesFiltres.map((eleve) => (
-                <tr key={eleve.uid} style={{ borderBottom: "1px solid var(--border)" }}>
-                  {/* Cellule élève */}
-                  <td style={{
-                    padding: "7px 12px 7px 0", fontWeight: 600, fontSize: 13,
-                    position: "sticky", left: 0, background: "var(--white)", zIndex: 1,
-                    whiteSpace: "nowrap",
-                  }}>
-                    {eleve.prenom} {eleve.nom.charAt(0)}.
-                    {eleve.niveaux && (
-                      <span style={{ fontSize: 10, marginLeft: 5, color: "var(--text-secondary)", fontWeight: 400 }}>
-                        {eleve.niveaux.nom}
+                    <span className="ms" style={{ fontSize: 18, color: cfg.texte, transition: "transform 0.2s", transform: ouvert ? "rotate(0deg)" : "rotate(-90deg)" }}>
+                      expand_more
+                    </span>
+                    <span style={{ fontWeight: 800, fontSize: 14, color: cfg.texte }}>
+                      {groupe.label}
+                    </span>
+                    <span style={{ fontSize: 11, color: "var(--text-secondary)", fontWeight: 500 }}>
+                      {groupe.chapitres.length} chapitre{groupe.chapitres.length > 1 ? "s" : ""}
+                    </span>
+                    {/* Jauge de progression globale */}
+                    <div style={{ flex: 1 }} />
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <div style={{ width: 60, height: 6, borderRadius: 3, background: "#E5E7EB", overflow: "hidden" }}>
+                        <div style={{ width: `${tauxGlobal}%`, height: "100%", borderRadius: 3, background: tauxGlobal >= 80 ? "#16A34A" : tauxGlobal >= 40 ? "#2563EB" : "#D97706", transition: "width 0.3s" }} />
+                      </div>
+                      <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", minWidth: 32, textAlign: "right" }}>
+                        {tauxGlobal}%
                       </span>
-                    )}
-                    {eleve.source === "repetibox" && (
-                      <span style={{ fontSize: 9, marginLeft: 4, color: "#7C3AED", fontWeight: 700 }}>RB</span>
-                    )}
-                  </td>
+                    </div>
+                  </button>
 
-                  {/* Cellules progression */}
-                  {chapitresFiltres.map((chap) => {
-                    const cle = `${eleve.uid}__${chap.id}`;
-                    const prog = progMap.get(cle);
-                    const estSelectionne = cellule?.eleveId === eleve.uid && cellule?.chapitreId === chap.id;
-                    const cfg = prog ? COULEUR_STATUT[prog.statut] : COULEUR_STATUT.absent;
+                  {/* Tableau des chapitres */}
+                  {ouvert && (
+                    <div ref={tableRef} style={{ overflowX: "auto" }}>
+                      <table style={{ borderCollapse: "collapse", minWidth: "100%", fontSize: 12 }}>
+                        <thead>
+                          <tr>
+                            <th style={{
+                              textAlign: "left", fontWeight: 700, fontSize: 11, padding: "8px 12px 8px 16px",
+                              position: "sticky", left: 0, background: "var(--white)", zIndex: 2,
+                              borderBottom: "2px solid var(--border)", whiteSpace: "nowrap",
+                              color: "var(--text-secondary)",
+                            }}>
+                              Élève
+                            </th>
+                            {groupe.chapitres.map((c) => (
+                              <th
+                                key={c.id}
+                                style={{
+                                  textAlign: "center", fontWeight: 600, fontSize: 11, padding: "8px 6px",
+                                  borderBottom: "2px solid var(--border)",
+                                  color: "var(--text-secondary)", minWidth: 70,
+                                  maxWidth: 140, whiteSpace: "normal", wordBreak: "break-word",
+                                  verticalAlign: "bottom", lineHeight: 1.3,
+                                }}
+                              >
+                                {c.titre}
+                              </th>
+                            ))}
+                            {/* Colonne résumé */}
+                            <th style={{
+                              textAlign: "center", fontWeight: 700, fontSize: 11, padding: "8px 12px",
+                              borderBottom: "2px solid var(--border)", borderLeft: "2px solid var(--border)",
+                              color: cfg.texte, whiteSpace: "nowrap", minWidth: 60,
+                            }}>
+                              Validés
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {elevesFiltres.map((eleve) => {
+                            const nbValides = groupe.chapitres.filter((c) => {
+                              const prog = progMap.get(`${eleve.uid}__${c.id}`);
+                              return prog?.statut === "valide";
+                            }).length;
 
-                    return (
-                      <td key={chap.id} style={{ textAlign: "center", padding: "4px" }}>
-                        <button
-                          title={prog ? `${prog.statut} — ${prog.pourcentage}%` : "Non commencé"}
-                          onClick={() => setCellule(estSelectionne ? null : { eleveId: eleve.uid, chapitreId: chap.id })}
-                          style={{
-                            width: 40, height: 40, borderRadius: "50%",
-                            border: `2px solid ${estSelectionne ? "var(--primary)" : cfg.border}`,
-                            background: estSelectionne ? "var(--primary)" : cfg.bg,
-                            color: estSelectionne ? "white" : cfg.texte,
-                            fontWeight: 700, fontSize: prog?.statut === "valide" ? 14 : 10,
-                            cursor: "pointer", display: "inline-flex",
-                            alignItems: "center", justifyContent: "center",
-                            lineHeight: 1, transition: "all 0.12s",
-                            outline: "none",
-                          }}
-                        >
-                          {!prog && "—"}
-                          {prog?.statut === "valide" && "✓"}
-                          {prog?.statut === "en_cours" && `${prog.pourcentage}%`}
-                          {prog?.statut === "remediation" && "🔁"}
-                        </button>
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                            return (
+                              <tr key={eleve.uid} style={{ borderBottom: "1px solid var(--border)" }}>
+                                <td style={{
+                                  padding: "6px 12px 6px 16px", fontWeight: 600, fontSize: 13,
+                                  position: "sticky", left: 0, background: "var(--white)", zIndex: 1,
+                                  whiteSpace: "nowrap",
+                                }}>
+                                  {eleve.prenom} {eleve.nom.charAt(0)}.
+                                  {eleve.niveaux && (
+                                    <span style={{ fontSize: 10, marginLeft: 5, color: "var(--text-secondary)", fontWeight: 400 }}>
+                                      {eleve.niveaux.nom}
+                                    </span>
+                                  )}
+                                  {eleve.source === "repetibox" && (
+                                    <span style={{ fontSize: 9, marginLeft: 4, color: "#7C3AED", fontWeight: 700 }}>RB</span>
+                                  )}
+                                </td>
+
+                                {groupe.chapitres.map((chap) => {
+                                  const cle = `${eleve.uid}__${chap.id}`;
+                                  const prog = progMap.get(cle);
+                                  const estSelectionne = cellule?.eleveId === eleve.uid && cellule?.chapitreId === chap.id;
+                                  const cfgStatut = prog ? COULEUR_STATUT[prog.statut] : COULEUR_STATUT.absent;
+
+                                  return (
+                                    <td key={chap.id} style={{ textAlign: "center", padding: "3px" }}>
+                                      <button
+                                        title={prog ? `${prog.statut} — ${prog.pourcentage}%` : "Non commencé"}
+                                        onClick={() => setCellule(estSelectionne ? null : { eleveId: eleve.uid, chapitreId: chap.id })}
+                                        style={{
+                                          width: 36, height: 36, borderRadius: "50%",
+                                          border: `2px solid ${estSelectionne ? "var(--primary)" : cfgStatut.border}`,
+                                          background: estSelectionne ? "var(--primary)" : cfgStatut.bg,
+                                          color: estSelectionne ? "white" : cfgStatut.texte,
+                                          fontWeight: 700, fontSize: prog?.statut === "valide" ? 13 : 9,
+                                          cursor: "pointer", display: "inline-flex",
+                                          alignItems: "center", justifyContent: "center",
+                                          lineHeight: 1, transition: "all 0.12s",
+                                          outline: "none",
+                                        }}
+                                      >
+                                        {!prog && "—"}
+                                        {prog?.statut === "valide" && "✓"}
+                                        {prog?.statut === "en_cours" && `${prog.pourcentage}%`}
+                                        {prog?.statut === "remediation" && "🔁"}
+                                      </button>
+                                    </td>
+                                  );
+                                })}
+
+                                {/* Colonne résumé */}
+                                <td style={{
+                                  textAlign: "center", padding: "3px 8px",
+                                  borderLeft: "2px solid var(--border)",
+                                  fontWeight: 800, fontSize: 13,
+                                  color: nbValides === groupe.chapitres.length && nbValides > 0
+                                    ? "#16A34A"
+                                    : nbValides > 0
+                                    ? cfg.texte
+                                    : "var(--text-secondary)",
+                                }}>
+                                  {nbValides}/{groupe.chapitres.length}
+                                  {nbValides === groupe.chapitres.length && nbValides > 0 && (
+                                    <span style={{ marginLeft: 3, fontSize: 12 }}>🏆</span>
+                                  )}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
         )}
       </div>
 
@@ -353,10 +537,10 @@ export default function ProgressionElevesView() {
           { cle: "valide",     label: "✓  Validé" },
           { cle: "remediation",label: "🔁  Remédiation" },
         ].map(({ cle, label }) => {
-          const cfg = COULEUR_STATUT[cle];
+          const cfgS = COULEUR_STATUT[cle];
           return (
             <div key={cle} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 11, color: "var(--text-secondary)" }}>
-              <div style={{ width: 16, height: 16, borderRadius: "50%", background: cfg.bg, border: `2px solid ${cfg.border}` }} />
+              <div style={{ width: 16, height: 16, borderRadius: "50%", background: cfgS.bg, border: `2px solid ${cfgS.border}` }} />
               {label}
             </div>
           );
@@ -366,13 +550,11 @@ export default function ProgressionElevesView() {
       {/* ── Drawer détail ── */}
       {cellule && (
         <>
-          {/* Fond semi-transparent */}
           <div
             onClick={() => setCellule(null)}
             style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.2)", zIndex: 100 }}
           />
 
-          {/* Panel latéral */}
           <div style={{
             position: "fixed", top: 0, right: 0, bottom: 0, width: 340,
             background: "var(--white)", borderLeft: "1px solid var(--border)",
@@ -389,6 +571,11 @@ export default function ProgressionElevesView() {
                   <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 2 }}>
                     {chapDrawer?.titre}
                   </div>
+                  {chapDrawer?.sous_matiere && (
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 1, fontStyle: "italic" }}>
+                      {chapDrawer.matiere} › {chapDrawer.sous_matiere}
+                    </div>
+                  )}
                 </div>
                 <button
                   onClick={() => setCellule(null)}
@@ -398,7 +585,6 @@ export default function ProgressionElevesView() {
                 </button>
               </div>
 
-              {/* Badge statut */}
               {progDrawer && (
                 <div style={{ marginTop: 10 }}>
                   <span style={{

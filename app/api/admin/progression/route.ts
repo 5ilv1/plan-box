@@ -84,15 +84,23 @@ export async function GET(req: NextRequest) {
 
   const lignes = planTravailData ?? [];
 
-  // Collecter les IDs uniques par source
-  const pbEleveIds = [...new Set(
-    lignes.filter((l) => l.eleve_id).map((l) => l.eleve_id as string)
-  )];
-  const rbEleveIds = [...new Set(
-    lignes
-      .filter((l) => l.repetibox_eleve_id != null)
-      .map((l) => l.repetibox_eleve_id as number)
-  )];
+  // Collecter les IDs uniques par source — depuis plan_travail ET pb_progression ET groupes
+  const pbIdsFromPT = new Set(lignes.filter((l) => l.eleve_id).map((l) => l.eleve_id as string));
+  const rbIdsFromPT = new Set(lignes.filter((l) => l.repetibox_eleve_id != null).map((l) => l.repetibox_eleve_id as number));
+
+  // Ajouter les élèves depuis pb_progression (peuvent avoir progression sans plan_travail)
+  for (const p of ((pbProgressions ?? []) as any[])) {
+    if (p.eleve_id) pbIdsFromPT.add(p.eleve_id);
+  }
+
+  // Ajouter les élèves depuis les groupes (pour voir les élèves sans travail)
+  for (const m of ((memberships ?? []) as any[])) {
+    if (m.planbox_eleve_id) pbIdsFromPT.add(m.planbox_eleve_id);
+    if (m.repetibox_eleve_id != null) rbIdsFromPT.add(m.repetibox_eleve_id);
+  }
+
+  const pbEleveIds = [...pbIdsFromPT];
+  const rbEleveIds = [...rbIdsFromPT];
 
   // Charger les noms des élèves en parallèle
   const [{ data: pbEleves }, { data: rbEleves }] = await Promise.all([
@@ -195,6 +203,9 @@ export async function GET(req: NextRequest) {
     updated_at: string;
   }> = [];
 
+  // Ensemble des clés déjà traitées
+  const progressionKeys = new Set<string>();
+
   for (const [key, calc] of progCalc) {
     if (calc.total === 0) continue;
     const sepIdx = key.indexOf("__");
@@ -211,15 +222,29 @@ export async function GET(req: NextRequest) {
       statut:      pbProg?.statut ?? "en_cours",
       updated_at:  pbProg?.updated_at ?? new Date().toISOString(),
     });
+    progressionKeys.add(key);
   }
 
-  // Ne garder que les chapitres qui ont au moins un élève avec des blocs assignés
-  const chapitresAvecEleves = new Set(progressions.map((p) => p.chapitre_id));
-  const chapitresFiltres = (chapitres ?? []).filter((c: any) => chapitresAvecEleves.has(c.id));
+  // Ajouter les progressions pb_progression sans plan_travail correspondant
+  for (const [key, pbProg] of pbProgMap) {
+    if (progressionKeys.has(key)) continue;
+    const sepIdx = key.indexOf("__");
+    const uid    = key.slice(0, sepIdx);
+    const chapId = key.slice(sepIdx + 2);
+    // Vérifier que l'élève est connu
+    if (!elevesMap.has(uid)) continue;
+    progressions.push({
+      eleve_uid:   uid,
+      chapitre_id: chapId,
+      pourcentage: pbProg.statut === "valide" ? 100 : pbProg.pourcentage ?? 0,
+      statut:      pbProg.statut ?? "en_cours",
+      updated_at:  pbProg.updated_at ?? new Date().toISOString(),
+    });
+  }
 
   return NextResponse.json({
     eleves,
-    chapitres:    chapitresFiltres,
+    chapitres:    chapitres ?? [],
     progressions,
     groupes:      groupes ?? [],
     memberships:  membershipsNorm,
