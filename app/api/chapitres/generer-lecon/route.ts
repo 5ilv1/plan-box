@@ -6,9 +6,8 @@ const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 /**
  * POST /api/chapitres/generer-lecon
- * Génère une mini-leçon de révision par IA.
+ * Génère une mini-leçon de révision structurée par IA.
  * Body: { chapitre_id, titre, contexte? }
- * Retourne: { titre, contenu: { texte, points_cles } }
  */
 export async function POST(req: NextRequest) {
   try {
@@ -21,7 +20,6 @@ export async function POST(req: NextRequest) {
 
     const admin = createAdminClient();
 
-    // Lire les infos du chapitre
     const { data: chapitre, error: errCh } = await admin
       .from("chapitres")
       .select("titre, matiere, sous_matiere, niveau_id, niveaux(nom)")
@@ -32,7 +30,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Chapitre introuvable" }, { status: 404 });
     }
 
-    // Lire les exercices existants pour contextualiser la leçon
     const { data: exosExistants } = await admin
       .from("exercice")
       .select("titre, type")
@@ -50,13 +47,25 @@ Tu prépares une mini-leçon de révision pour le chapitre "${chapitre.titre}"${
 Sujet de la leçon : ${titre}
 ${contexte ? `Instructions supplémentaires : ${contexte}` : ""}${exercicesListe}
 
-Génère une leçon claire et concise pour un enfant de 8-11 ans.
+Génère une leçon structurée, claire et visuellement riche pour un enfant de 8-11 ans.
 
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
 Format attendu :
 {
-  "titre": "Titre clair de la leçon",
-  "texte": "Le contenu de la leçon en HTML simple (utilise <h3>, <p>, <strong>, <em>, <ul>, <li>, <br>). La leçon doit faire entre 150 et 400 mots. Utilise des exemples concrets. Structure bien avec des paragraphes courts.",
+  "titre": "Titre clair et engageant de la leçon",
+  "introduction": "1-2 phrases d'accroche qui expliquent pourquoi cette notion est importante (max 50 mots)",
+  "contenu_html": "Le corps de la leçon en HTML simple (<h3>, <p>, <strong>, <em>, <ul>, <li>). Bien structuré en sections courtes avec des sous-titres. 150-300 mots.",
+  "regle_or": "LA règle essentielle à retenir, formulée simplement en une phrase (la plus importante de la leçon)",
+  "astuce": "Un conseil pratique ou un moyen mnémotechnique pour ne pas se tromper (1-2 phrases)",
+  "exemples": [
+    {
+      "titre": "Titre de l'exemple (ex: Conjugaison du verbe Jouer)",
+      "colonnes": ["Colonne 1", "Colonne 2", "Colonne 3"],
+      "lignes": [
+        ["Cellule 1", "Cellule 2", "Cellule 3"]
+      ]
+    }
+  ],
   "points_cles": [
     "Point clé 1 à retenir",
     "Point clé 2 à retenir",
@@ -67,15 +76,16 @@ Format attendu :
 Règles :
 - Langage simple et bienveillant, adapté à des enfants de 8-11 ans
 - Pas de jargon technique non expliqué
-- Des exemples concrets et colorés
-- Maximum 5 points clés, minimum 2
-- Le HTML doit être simple : pas de classes, pas de styles inline, pas de scripts
-- Les points clés sont des phrases courtes et mémorisables (type "À retenir")
-- Commence directement par le contenu, pas par "Bonjour" ou une introduction sociale`;
+- Le HTML de contenu_html doit être simple : pas de classes, pas de styles, pas de scripts
+- "regle_or" : UNE seule phrase, la plus importante (comme "La Règle d'Or")
+- "astuce" : un truc pratique pour aider l'élève (comme "Astuce Pro")
+- "exemples" : un tableau structuré avec au moins 3 lignes. Si pas pertinent, tableau vide []
+- "points_cles" : 2 à 4 phrases courtes et mémorisables
+- Commence directement par le contenu, pas de "Bonjour" ou formule sociale`;
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-20250514",
-      max_tokens: 2048,
+      max_tokens: 3000,
       messages: [{ role: "user", content: prompt }],
     });
 
@@ -89,6 +99,11 @@ Règles :
 
     const contenu = JSON.parse(json);
     const titreGenere = contenu.titre || titre;
+
+    // Rétro-compatibilité : s'assurer que "texte" existe (pour l'ancien format)
+    if (!contenu.texte && contenu.contenu_html) {
+      contenu.texte = contenu.contenu_html;
+    }
 
     return NextResponse.json({ titre: titreGenere, contenu });
   } catch (err) {

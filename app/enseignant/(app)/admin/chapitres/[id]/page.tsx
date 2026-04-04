@@ -96,9 +96,13 @@ export default function PageChapitreDetail() {
   // Ajout révision
   const [revisionVisible, setRevisionVisible] = useState(false);
   const [revTitre, setRevTitre] = useState("");
+  const [revIntro, setRevIntro] = useState("");
   const [revTexte, setRevTexte] = useState("");
+  const [revRegleOr, setRevRegleOr] = useState("");
+  const [revAstuce, setRevAstuce] = useState("");
   const [revVideo, setRevVideo] = useState("");
   const [revPointsCles, setRevPointsCles] = useState<string[]>([""]);
+  const [revExemples, setRevExemples] = useState<Array<{ titre: string; colonnes: string[]; lignes: string[][] }>>([]);
   const [revContexte, setRevContexte] = useState("");
   const [enGenerationLecon, setEnGenerationLecon] = useState(false);
 
@@ -291,14 +295,22 @@ export default function PageChapitreDetail() {
     }
   }
 
+  function buildRevisionContenu() {
+    return {
+      introduction: revIntro || undefined,
+      contenu_html: revTexte,
+      texte: revTexte, // rétro-compatibilité
+      regle_or: revRegleOr || undefined,
+      astuce: revAstuce || undefined,
+      video_url: revVideo || undefined,
+      points_cles: revPointsCles.filter((p) => p.trim()),
+      exemples: revExemples.filter((e) => e.colonnes.length > 0 && e.lignes.length > 0),
+    };
+  }
+
   async function ajouterRevision() {
     if (!revTitre.trim()) return;
     try {
-      const contenu = {
-        texte: revTexte,
-        video_url: revVideo || undefined,
-        points_cles: revPointsCles.filter((p) => p.trim()),
-      };
       const res = await fetch("/api/chapitres/exercices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -306,7 +318,7 @@ export default function PageChapitreDetail() {
           chapitre_id: chapitreId,
           titre: revTitre,
           type: "revision",
-          contenu,
+          contenu: buildRevisionContenu(),
           nb_questions: 0,
         }),
       });
@@ -326,11 +338,7 @@ export default function PageChapitreDetail() {
     if (!editRevisionId || !revTitre.trim()) return;
     setEnSauvegarde(true);
     try {
-      const contenu = {
-        texte: revTexte,
-        video_url: revVideo || undefined,
-        points_cles: revPointsCles.filter((p) => p.trim()),
-      };
+      const contenu = buildRevisionContenu();
       const res = await fetch("/api/chapitres/exercices", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -364,8 +372,12 @@ export default function PageChapitreDetail() {
       const json = await res.json();
       if (json.contenu) {
         if (json.titre) setRevTitre(json.titre);
-        setRevTexte(json.contenu.texte || "");
+        setRevIntro(json.contenu.introduction || "");
+        setRevTexte(json.contenu.contenu_html || json.contenu.texte || "");
+        setRevRegleOr(json.contenu.regle_or || "");
+        setRevAstuce(json.contenu.astuce || "");
         setRevPointsCles(json.contenu.points_cles?.length > 0 ? json.contenu.points_cles : [""]);
+        setRevExemples(json.contenu.exemples?.length > 0 ? json.contenu.exemples : []);
       } else {
         showToast(json.error || "Erreur de génération", "err");
       }
@@ -379,19 +391,27 @@ export default function PageChapitreDetail() {
     setRevisionVisible(false);
     setEditRevisionId(null);
     setRevTitre("");
+    setRevIntro("");
     setRevTexte("");
+    setRevRegleOr("");
+    setRevAstuce("");
     setRevVideo("");
     setRevPointsCles([""]);
+    setRevExemples([]);
     setRevContexte("");
   }
 
   function ouvrirEditionRevision(ex: Exercice) {
-    const c = ex.contenu as { texte?: string; video_url?: string; points_cles?: string[] };
+    const c = ex.contenu as any;
     setEditRevisionId(ex.id);
     setRevTitre(ex.titre);
-    setRevTexte(c.texte ?? "");
+    setRevIntro(c.introduction ?? "");
+    setRevTexte(c.contenu_html ?? c.texte ?? "");
+    setRevRegleOr(c.regle_or ?? "");
+    setRevAstuce(c.astuce ?? "");
     setRevVideo(c.video_url ?? "");
     setRevPointsCles(c.points_cles?.length ? [...c.points_cles] : [""]);
+    setRevExemples(c.exemples?.length ? [...c.exemples] : []);
     setRevContexte("");
     setRevisionVisible(true);
   }
@@ -1397,13 +1417,14 @@ export default function PageChapitreDetail() {
               </div>
             )}
             {apercuEx.type === "revision" && (() => {
-              const c = apercuEx.contenu as { texte?: string; video_url?: string; points_cles?: string[] };
+              const c = apercuEx.contenu as any;
+              const html = c.contenu_html || c.texte || "";
               return (
-                <div>
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                   {c.video_url && (
                     <div style={{
                       padding: "10px 14px", background: "#FFF7ED", borderRadius: 10,
-                      marginBottom: 14, display: "flex", alignItems: "center", gap: 8,
+                      display: "flex", alignItems: "center", gap: 8,
                     }}>
                       <span className="ms" style={{ fontSize: 18, color: "#D97706" }}>videocam</span>
                       <a href={c.video_url} target="_blank" rel="noopener noreferrer"
@@ -1412,23 +1433,63 @@ export default function PageChapitreDetail() {
                       </a>
                     </div>
                   )}
-                  {c.texte && (
+                  {c.introduction && (
+                    <p style={{ fontSize: 13, color: "var(--text-secondary)", fontStyle: "italic", margin: 0 }}>
+                      {c.introduction}
+                    </p>
+                  )}
+                  {html && (
                     <div style={{
-                      fontSize: 14, lineHeight: 1.7, marginBottom: 14,
+                      fontSize: 13, lineHeight: 1.7,
                       padding: "14px 16px", background: "var(--bg)", borderRadius: 10,
                     }}>
-                      <div dangerouslySetInnerHTML={{ __html: c.texte }} />
+                      <div dangerouslySetInnerHTML={{ __html: html }} />
                     </div>
                   )}
-                  {c.points_cles && c.points_cles.length > 0 && (
+                  {c.regle_or && (
                     <div style={{
-                      background: "#EFF6FF", borderRadius: 10, padding: "12px 16px",
+                      padding: "12px 16px", borderRadius: 10,
+                      background: "#F8F5FF", borderLeft: "4px solid #0050D4",
                     }}>
-                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF", marginBottom: 8 }}>
-                        💡 À retenir
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#0050D4", marginBottom: 4 }}>La Règle d&apos;Or</div>
+                      <p style={{ fontSize: 13, margin: 0, fontWeight: 500 }}>{c.regle_or}</p>
+                    </div>
+                  )}
+                  {c.astuce && (
+                    <div style={{
+                      padding: "12px 16px", borderRadius: 10,
+                      background: "rgba(112,42,225,0.06)", border: "1px solid rgba(112,42,225,0.12)",
+                    }}>
+                      <div style={{ fontSize: 11, fontWeight: 800, color: "#5B00C7", marginBottom: 4 }}>💡 Astuce Pro</div>
+                      <p style={{ fontSize: 13, margin: 0, color: "rgba(91,0,199,0.75)" }}>{c.astuce}</p>
+                    </div>
+                  )}
+                  {c.exemples?.length > 0 && c.exemples.map((ex: any, i: number) => (
+                    ex.colonnes && ex.lignes?.length > 0 && (
+                      <div key={i} style={{ borderRadius: 10, border: "1px solid var(--border)", padding: "12px 14px", background: "white" }}>
+                        <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 8 }}>{ex.titre}</div>
+                        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12 }}>
+                          <thead>
+                            <tr>{ex.colonnes.map((col: string, ci: number) => (
+                              <th key={ci} style={{ padding: "4px 8px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: 600, color: "var(--text-secondary)" }}>{col}</th>
+                            ))}</tr>
+                          </thead>
+                          <tbody>
+                            {ex.lignes.map((ligne: string[], li: number) => (
+                              <tr key={li}>{ligne.map((cell: string, ci: number) => (
+                                <td key={ci} style={{ padding: "4px 8px", borderBottom: "1px solid var(--bg)", fontWeight: ci === 1 ? 700 : 400, color: ci === 1 ? "#0050D4" : "inherit" }}>{cell}</td>
+                              ))}</tr>
+                            ))}
+                          </tbody>
+                        </table>
                       </div>
+                    )
+                  ))}
+                  {c.points_cles?.length > 0 && (
+                    <div style={{ background: "#EFF6FF", borderRadius: 10, padding: "12px 16px" }}>
+                      <div style={{ fontSize: 12, fontWeight: 700, color: "#1E40AF", marginBottom: 8 }}>✅ À retenir</div>
                       <ul style={{ margin: 0, paddingLeft: 18 }}>
-                        {c.points_cles.map((pt, i) => (
+                        {c.points_cles.map((pt: string, i: number) => (
                           <li key={i} style={{ fontSize: 13, marginBottom: 4 }}>{pt}</li>
                         ))}
                       </ul>
@@ -1556,20 +1617,75 @@ export default function PageChapitreDetail() {
               style={{ width: "100%", marginBottom: 14 }}
             />
 
+            {/* Introduction */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+              Introduction <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(accroche courte)</span>
+            </label>
+            <input
+              value={revIntro} onChange={(e) => setRevIntro(e.target.value)}
+              className="form-input" placeholder="Pourquoi cette notion est importante..."
+              style={{ width: "100%", marginBottom: 14 }}
+            />
+
             {/* Contenu texte */}
             <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
-              Contenu de la leçon <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(HTML simple accepté)</span>
+              Contenu principal <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(HTML simple)</span>
             </label>
             <textarea
               value={revTexte} onChange={(e) => setRevTexte(e.target.value)}
-              className="form-input" rows={10}
-              placeholder="Écris ta leçon ici ou génère-la avec l'IA..."
+              className="form-input" rows={8}
+              placeholder="Le corps de la leçon..."
               style={{ width: "100%", resize: "vertical", marginBottom: 14, fontFamily: "monospace", fontSize: 12, lineHeight: 1.6 }}
             />
 
+            {/* Règle d'Or */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#0050D4" }}>
+              🏆 Règle d&apos;Or <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(la règle essentielle)</span>
+            </label>
+            <input
+              value={revRegleOr} onChange={(e) => setRevRegleOr(e.target.value)}
+              className="form-input" placeholder="La règle la plus importante à retenir..."
+              style={{ width: "100%", marginBottom: 14 }}
+            />
+
+            {/* Astuce */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#702AE1" }}>
+              💡 Astuce Pro <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(conseil pratique)</span>
+            </label>
+            <input
+              value={revAstuce} onChange={(e) => setRevAstuce(e.target.value)}
+              className="form-input" placeholder="Un truc mnémotechnique ou un conseil..."
+              style={{ width: "100%", marginBottom: 14 }}
+            />
+
+            {/* Tableau d'exemples */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+              📊 Tableau d&apos;exemples <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span>
+            </label>
+            {revExemples.length > 0 && revExemples.map((ex, ei) => (
+              <div key={ei} style={{
+                border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px",
+                marginBottom: 8, background: "var(--bg)", fontSize: 12,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                  <strong>{ex.titre}</strong>
+                  <span style={{ color: "var(--text-secondary)" }}>({ex.colonnes.join(" · ")})</span>
+                  <span style={{ color: "var(--text-secondary)" }}>{ex.lignes.length} ligne{ex.lignes.length > 1 ? "s" : ""}</span>
+                  <button onClick={() => setRevExemples((prev) => prev.filter((_, j) => j !== ei))}
+                    style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: 14 }}>✕</button>
+                </div>
+              </div>
+            ))}
+            {revExemples.length === 0 && (
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 8px", fontStyle: "italic" }}>
+                Aucun tableau. Générez la leçon avec l&apos;IA pour en créer automatiquement.
+              </p>
+            )}
+            <div style={{ marginBottom: 14 }} />
+
             {/* Points clés */}
             <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
-              Points clés — À retenir
+              ✅ Points clés — À retenir
             </label>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
               {revPointsCles.map((pt, i) => (
