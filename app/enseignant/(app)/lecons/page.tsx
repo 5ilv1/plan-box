@@ -513,14 +513,39 @@ export default function BanqueLecons() {
                         display: "flex", alignItems: "center", gap: 5,
                       }}>
                         <span><span className="ms" style={{ fontSize: 14, verticalAlign: "middle" }}>check_circle</span> Affectée le {new Date(affectationsParUrl[lecon.url] + "T00:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>
-                        <button
-                          onClick={() => ouvrirAffectation(lecon)}
-                          disabled={enSuppr}
-                          title="Modifier l'affectation"
-                          style={{ marginLeft: "auto", fontSize: 11, fontWeight: 700, color: "#15803D", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}
-                        >
-                          modifier
-                        </button>
+                        <span style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                          <button
+                            onClick={() => ouvrirAffectation(lecon)}
+                            disabled={enSuppr}
+                            title="Modifier l'affectation"
+                            style={{ fontSize: 11, fontWeight: 700, color: "#15803D", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}
+                          >
+                            modifier
+                          </button>
+                          <button
+                            onClick={async () => {
+                              if (!confirm("Désaffecter cette leçon pour tous les groupes ?")) return;
+                              const date = affectationsParUrl[lecon.url];
+                              const res = await fetch("/api/affecter-lecon-copier", {
+                                method: "DELETE",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ date, titre: lecon.titre }),
+                              });
+                              if (res.ok) {
+                                setAffectationsParUrl((prev) => {
+                                  const next = { ...prev };
+                                  delete next[lecon.url];
+                                  return next;
+                                });
+                              }
+                            }}
+                            disabled={enSuppr}
+                            title="Désaffecter cette leçon"
+                            style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}
+                          >
+                            désaffecter
+                          </button>
+                        </span>
                       </div>
                     ) : (
                       <button
