@@ -110,6 +110,7 @@ Règles STRICTES :
       .trim();
 
     const contenu = JSON.parse(json);
+    console.log("[generer-lecon] contenu keys:", Object.keys(contenu), "grille:", !!contenu.grille, "exemples:", contenu.exemples?.length ?? 0, "regle_or:", !!contenu.regle_or);
     const titreGenere = contenu.titre || titre;
 
     // Rétro-compatibilité : s'assurer que "texte" existe (pour l'ancien format)
