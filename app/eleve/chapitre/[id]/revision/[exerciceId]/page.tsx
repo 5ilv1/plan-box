@@ -292,6 +292,12 @@ export default function PageRevisionEleve() {
                     boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                   }}>
                     <span style={{
+                      fontSize: 14, color: "var(--pb-on-surface, #282b51)",
+                      fontWeight: 500, flex: 1,
+                    }}>
+                      {item.texte}
+                    </span>
+                    <span style={{
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
                       background: "#E8EAFF", color: "#4F5AE5", fontWeight: 800,
                       fontSize: 14, borderRadius: 8, padding: "4px 10px",
@@ -299,12 +305,6 @@ export default function PageRevisionEleve() {
                       fontFamily: "'Plus Jakarta Sans', sans-serif",
                     }}>
                       {item.etiquette}
-                    </span>
-                    <span style={{
-                      fontSize: 14, color: "var(--pb-on-surface, #282b51)",
-                      fontWeight: 500,
-                    }}>
-                      {item.texte}
                     </span>
                   </div>
                 ))}
