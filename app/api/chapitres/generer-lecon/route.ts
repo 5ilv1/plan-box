@@ -55,9 +55,14 @@ Format attendu :
 {
   "titre": "Titre court et clair",
   "introduction": "UNE seule phrase qui pose le sujet (max 20 mots)",
-  "contenu_html": "COURT : 50-100 mots MAX en HTML simple (<h3>, <p>, <strong>, <em>, <ul>, <li>). Juste l'explication essentielle, pas de développement. Une seule section avec un sous-titre.",
+  "grille": {
+    "titre": "Titre de la grille (ex: Les terminaisons du futur)",
+    "items": [
+      { "etiquette": "-ai", "texte": "Je / J'" },
+      { "etiquette": "-as", "texte": "Tu" }
+    ]
+  },
   "regle_or": "LA règle fondamentale en une phrase claire et mémorisable",
-  "astuce": "Un truc pratique ou mnémotechnique (1 phrase)",
   "exemples": [
     {
       "titre": "Titre du tableau (ex: Conjugaison du verbe Jouer au futur)",
@@ -67,6 +72,7 @@ Format attendu :
       ]
     }
   ],
+  "astuce": "Un truc pratique ou mnémotechnique (1 phrase)",
   "points_cles": [
     "Point clé 1",
     "Point clé 2",
@@ -75,17 +81,22 @@ Format attendu :
 }
 
 Règles STRICTES :
-- CONCISION : le contenu_html doit faire 50-100 mots, PAS PLUS. C'est une fiche, pas un cours
-- TABLEAUX OBLIGATOIRES : génère TOUJOURS au moins un tableau d'exemples concrets (conjugaison, calculs, conversions, exemples comparatifs...). 4 à 8 lignes par tableau
-- Pour les maths : tableau avec Opération / Calcul / Résultat. Pour le français : Pronom / Forme conjuguée / Règle appliquée. Adapter selon le sujet
+- PAS de contenu_html. Toute l'information passe par grille + regle_or + exemples + points_cles
+- GRILLE OBLIGATOIRE : génère TOUJOURS une grille de badges visuels résumant l'essentiel (terminaisons, formules, catégories, opérations…). 4 à 8 items par grille. Chaque item a une "etiquette" courte (le mot-clé, la terminaison, le symbole) et un "texte" (l'explication courte)
+  - Français : etiquette = terminaison/suffixe, texte = pronom ou cas d'usage
+  - Maths : etiquette = symbole/formule courte, texte = signification
+  - Sciences/Histoire/Géo : etiquette = mot-clé, texte = définition très courte
+- TABLEAUX OBLIGATOIRES : génère TOUJOURS au moins un tableau d'exemples concrets. 4 à 8 lignes par tableau
+  - Français : Pronom / Forme conjuguée / Structure. Maths : Opération / Calcul / Résultat. Adapter selon le sujet
 - "regle_or" : formulation directe type "Pour former le futur, on prend l'infinitif + les terminaisons -ai, -as, -a, -ons, -ez, -ont"
 - "astuce" : un vrai truc pratique, pas une reformulation de la règle
 - "points_cles" : 2 à 3 phrases ultra-courtes
+- "introduction" : UNE seule phrase, max 20 mots
 - Langage simple, adapté 8-11 ans
 - Pas de "Bonjour", pas de bavardage, droit au but`;
 
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6-20250514",
       max_tokens: 3000,
       messages: [{ role: "user", content: prompt }],
     });

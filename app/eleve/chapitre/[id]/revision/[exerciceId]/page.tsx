@@ -11,9 +11,20 @@ interface ExempleTableau {
   lignes: string[][];
 }
 
+interface GrilleItem {
+  etiquette: string;
+  texte: string;
+}
+
+interface Grille {
+  titre: string;
+  items: GrilleItem[];
+}
+
 interface RevisionContenu {
   // Nouveau format structuré
   introduction?: string;
+  grille?: Grille;
   contenu_html?: string;
   regle_or?: string;
   astuce?: string;
@@ -246,24 +257,67 @@ export default function PageRevisionEleve() {
         {/* ── Colonne principale ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
-          {/* Introduction + contenu principal */}
-          <div style={{
-            background: "white", borderRadius: 20, padding: "28px 32px",
-            boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-          }}>
-            {/* Introduction */}
-            {contenu.introduction && (
-              <p style={{
-                fontSize: 15, color: "var(--pb-on-surface-variant, #555)",
-                lineHeight: 1.7, marginBottom: 20,
-                fontStyle: "italic",
-              }}>
-                {contenu.introduction}
-              </p>
-            )}
+          {/* Introduction */}
+          {contenu.introduction && (
+            <p style={{
+              fontSize: 15, color: "var(--pb-on-surface-variant, #555)",
+              lineHeight: 1.7, margin: 0, fontStyle: "italic",
+            }}>
+              {contenu.introduction}
+            </p>
+          )}
 
-            {/* Contenu HTML principal */}
-            {corpsHtml && (
+          {/* Grille de badges visuels */}
+          {contenu.grille && contenu.grille.items?.length > 0 && (
+            <div style={{
+              background: "var(--pb-surface-container, #F3F4F8)", borderRadius: 20,
+              padding: "24px 28px",
+            }}>
+              <h4 style={{
+                fontSize: 16, fontWeight: 800, margin: "0 0 16px",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                color: "var(--pb-on-surface, #282b51)",
+              }}>
+                {contenu.grille.titre}
+              </h4>
+              <div style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))",
+                gap: 10,
+              }}>
+                {contenu.grille.items.map((item, i) => (
+                  <div key={i} style={{
+                    display: "flex", alignItems: "center", gap: 10,
+                    background: "white", borderRadius: 12, padding: "10px 14px",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+                  }}>
+                    <span style={{
+                      display: "inline-flex", alignItems: "center", justifyContent: "center",
+                      background: "#E8EAFF", color: "#4F5AE5", fontWeight: 800,
+                      fontSize: 14, borderRadius: 8, padding: "4px 10px",
+                      minWidth: 36, textAlign: "center",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}>
+                      {item.etiquette}
+                    </span>
+                    <span style={{
+                      fontSize: 14, color: "var(--pb-on-surface, #282b51)",
+                      fontWeight: 500,
+                    }}>
+                      {item.texte}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Contenu HTML (rétro-compatibilité ancien format) */}
+          {!contenu.grille && corpsHtml && (
+            <div style={{
+              background: "white", borderRadius: 20, padding: "28px 32px",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
+            }}>
               <div
                 dangerouslySetInnerHTML={{ __html: corpsHtml }}
                 style={{
@@ -273,30 +327,30 @@ export default function PageRevisionEleve() {
                   wordBreak: "break-word",
                 }}
               />
-            )}
+            </div>
+          )}
 
-            {/* Règle d'Or */}
-            {contenu.regle_or && (
+          {/* Règle d'Or */}
+          {contenu.regle_or && (
+            <div style={{
+              padding: "20px 24px", borderRadius: 14,
+              background: "linear-gradient(135deg, #F8F5FF, #F1EFFF)",
+              borderLeft: "4px solid #0050D4",
+            }}>
               <div style={{
-                marginTop: 24, padding: "20px 24px", borderRadius: 14,
-                background: "linear-gradient(135deg, #F8F5FF, #F1EFFF)",
-                borderLeft: "4px solid #0050D4",
+                fontSize: 13, fontWeight: 800, color: "#0050D4", marginBottom: 8,
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}>
-                <div style={{
-                  fontSize: 13, fontWeight: 800, color: "#0050D4", marginBottom: 8,
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                }}>
-                  La Règle d&apos;Or
-                </div>
-                <p style={{
-                  fontSize: 15, fontWeight: 500, color: "var(--pb-on-surface, #282b51)",
-                  margin: 0, lineHeight: 1.6,
-                }}>
-                  {contenu.regle_or}
-                </p>
+                La Règle d&apos;Or
               </div>
-            )}
-          </div>
+              <p style={{
+                fontSize: 15, fontWeight: 500, color: "var(--pb-on-surface, #282b51)",
+                margin: 0, lineHeight: 1.6,
+              }}>
+                {contenu.regle_or}
+              </p>
+            </div>
+          )}
 
           {/* Tableau d'exemples */}
           {contenu.exemples && contenu.exemples.length > 0 && contenu.exemples.map((ex, i) => (

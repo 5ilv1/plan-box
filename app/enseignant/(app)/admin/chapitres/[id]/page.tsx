@@ -103,6 +103,7 @@ export default function PageChapitreDetail() {
   const [revVideo, setRevVideo] = useState("");
   const [revPointsCles, setRevPointsCles] = useState<string[]>([""]);
   const [revExemples, setRevExemples] = useState<Array<{ titre: string; colonnes: string[]; lignes: string[][] }>>([]);
+  const [revGrille, setRevGrille] = useState<{ titre: string; items: Array<{ etiquette: string; texte: string }> } | null>(null);
   const [revContexte, setRevContexte] = useState("");
   const [enGenerationLecon, setEnGenerationLecon] = useState(false);
 
@@ -298,8 +299,9 @@ export default function PageChapitreDetail() {
   function buildRevisionContenu() {
     return {
       introduction: revIntro || undefined,
-      contenu_html: revTexte,
-      texte: revTexte, // rétro-compatibilité
+      grille: revGrille && revGrille.items.length > 0 ? revGrille : undefined,
+      contenu_html: revTexte || undefined,
+      texte: revTexte || undefined, // rétro-compatibilité
       regle_or: revRegleOr || undefined,
       astuce: revAstuce || undefined,
       video_url: revVideo || undefined,
@@ -378,6 +380,7 @@ export default function PageChapitreDetail() {
         setRevAstuce(json.contenu.astuce || "");
         setRevPointsCles(json.contenu.points_cles?.length > 0 ? json.contenu.points_cles : [""]);
         setRevExemples(json.contenu.exemples?.length > 0 ? json.contenu.exemples : []);
+        setRevGrille(json.contenu.grille?.items?.length > 0 ? json.contenu.grille : null);
       } else {
         showToast(json.error || "Erreur de génération", "err");
       }
@@ -398,6 +401,7 @@ export default function PageChapitreDetail() {
     setRevVideo("");
     setRevPointsCles([""]);
     setRevExemples([]);
+    setRevGrille(null);
     setRevContexte("");
   }
 
@@ -412,6 +416,7 @@ export default function PageChapitreDetail() {
     setRevVideo(c.video_url ?? "");
     setRevPointsCles(c.points_cles?.length ? [...c.points_cles] : [""]);
     setRevExemples(c.exemples?.length ? [...c.exemples] : []);
+    setRevGrille(c.grille?.items?.length ? c.grille : null);
     setRevContexte("");
     setRevisionVisible(true);
   }
@@ -1658,9 +1663,42 @@ export default function PageChapitreDetail() {
               style={{ width: "100%", marginBottom: 14 }}
             />
 
+            {/* Grille de badges */}
+            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#4F5AE5" }}>
+              🏷️ Grille visuelle <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(badges : terminaisons, formules...)</span>
+            </label>
+            {revGrille && revGrille.items.length > 0 ? (
+              <div style={{
+                border: "1px solid var(--border)", borderRadius: 10, padding: "10px 12px",
+                marginBottom: 8, background: "var(--bg)", fontSize: 12,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 6 }}>
+                  <strong>{revGrille.titre}</strong>
+                  <span style={{ color: "var(--text-secondary)" }}>{revGrille.items.length} badge{revGrille.items.length > 1 ? "s" : ""}</span>
+                  <button onClick={() => setRevGrille(null)}
+                    style={{ marginLeft: "auto", background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: 14 }}>✕</button>
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+                  {revGrille.items.map((item, i) => (
+                    <span key={i} style={{
+                      background: "#E8EAFF", color: "#4F5AE5", fontWeight: 700,
+                      fontSize: 11, borderRadius: 6, padding: "2px 8px",
+                    }}>
+                      {item.etiquette} {item.texte}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: "0 0 8px", fontStyle: "italic" }}>
+                Aucune grille. Générez la leçon avec l&apos;IA pour en créer automatiquement.
+              </p>
+            )}
+            <div style={{ marginBottom: 14 }} />
+
             {/* Tableau d'exemples */}
             <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
-              📊 Tableau d&apos;exemples <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span>
+              📊 Tableau d&apos;exemples <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(conjugaison, calculs...)</span>
             </label>
             {revExemples.length > 0 && revExemples.map((ex, ei) => (
               <div key={ei} style={{
