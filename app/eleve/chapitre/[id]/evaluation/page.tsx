@@ -423,6 +423,9 @@ export default function PageEvaluationFinale() {
               onChange={(e) => setReponseEleve(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter" && !afficherCorrection && reponseEleve.trim()) verifierReponse(); }}
               disabled={afficherCorrection}
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
               placeholder="Ta réponse…"
               autoFocus
               style={{

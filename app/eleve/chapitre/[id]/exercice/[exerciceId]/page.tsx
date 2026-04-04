@@ -822,11 +822,15 @@ export default function PageExerciceEleve() {
         ) : (
           <div>
             <input
+              type="text"
               value={reponseEleve}
               onChange={(e) => setReponseEleve(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !afficherCorrection && reponseEleve.trim() && verifierReponse()}
               placeholder="Ta réponse…"
               disabled={afficherCorrection}
+              autoCapitalize="off"
+              autoCorrect="off"
+              spellCheck={false}
               autoFocus
               style={{
                 width: "100%", padding: "16px 20px", borderRadius: 14,
