@@ -230,6 +230,31 @@ ${regles}`;
       contenu = contenu[0];
     }
 
+    // ── Correction des positions pour texte_a_trous ─────────────────────────
+    if (type === "texte_a_trous" && contenu.texte_complet && Array.isArray(contenu.trous)) {
+      const mots = (contenu.texte_complet as string).split(/\s+/);
+      const trousFixed: { position: number; mot: string; indice?: string }[] = [];
+      for (const trou of contenu.trous as { position: number; mot: string; indice?: string }[]) {
+        // Chercher la vraie position du mot dans le texte
+        const motSansPonctuation = trou.mot.replace(/[.,;:!?'"()]/g, "");
+        let found = false;
+        const positionsPrises = new Set<number>(trousFixed.map((t) => t.position));
+        for (let i = 0; i < mots.length; i++) {
+          if (positionsPrises.has(i)) continue;
+          const motTexte = mots[i].replace(/[.,;:!?'"()]/g, "");
+          if (motTexte === motSansPonctuation || motTexte === trou.mot) {
+            trousFixed.push({ ...trou, position: i, mot: mots[i] });
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          console.warn(`[generer-exercice] trou "${trou.mot}" introuvable dans texte_complet`);
+        }
+      }
+      contenu.trous = trousFixed;
+    }
+
     // Valider et corriger les réponses (orthographe, conjugaison)
     contenu = await validerReponsesExercice(contenu, type, anthropic);
 
