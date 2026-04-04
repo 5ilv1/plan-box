@@ -139,6 +139,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
   // --- Touch Start ---
   const handleTouchStart = useCallback((e: React.TouchEvent, item: ItemWithId, source: string | null) => {
     if (etat !== "classement") return;
+    e.preventDefault(); // Empêcher la sélection de texte sur iPad/Safari
     const touch = e.touches[0];
 
     // Créer le ghost
@@ -425,6 +426,8 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
                         fontSize: "0.8125rem", fontWeight: 500,
                         color: isErr ? "#DC2626" : c.text,
                         cursor: etat === "classement" ? "grab" : "default",
+                        userSelect: "none",
+                        WebkitUserSelect: "none",
                         animation: "fadeIn 0.3s ease",
                         transition: "all 0.3s",
                         touchAction: "none",
@@ -475,7 +478,7 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
                 background: draggedItem?.id === item.id ? "rgba(3,105,161,0.15)" : "white",
                 border: draggedItem?.id === item.id ? "2px solid #0369A1" : "1.5px solid var(--border)",
                 fontSize: "0.9375rem", fontWeight: 600, color: "var(--text)",
-                cursor: "grab", userSelect: "none",
+                cursor: "grab", userSelect: "none", WebkitUserSelect: "none",
                 boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
                 transition: "all 0.15s",
                 opacity: draggedItem?.id === item.id ? 0.6 : 1,
