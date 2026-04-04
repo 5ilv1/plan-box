@@ -290,6 +290,8 @@ export default function CalcMentalStack({
           value={reponse}
           onChange={(e) => setReponse(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && valider()}
+          autoCapitalize="off"
+          autoCorrect="off"
           placeholder="Ta réponse…"
           disabled={!!feedback}
           style={{ fontSize: 18, textAlign: "center", flex: 1 }}

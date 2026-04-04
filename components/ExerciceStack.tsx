@@ -321,6 +321,9 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
                   value={reponse}
                   onChange={e => setReponse(e.target.value)}
                   onKeyDown={e => e.key === "Enter" && valider()}
+                  autoCapitalize="off"
+                  autoCorrect="off"
+                  spellCheck={false}
                   placeholder="Ta réponse…"
                   style={{
                     flex: 1, padding: "14px 18px", fontSize: 16, fontWeight: 600,
