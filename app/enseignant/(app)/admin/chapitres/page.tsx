@@ -358,6 +358,8 @@ export default function PageAdminChapitres() {
         if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD) return;
         d.isDragging = true;
         setDragSrc({ matiere: d.matiere, sousMatiere: d.sousMatiere, idx: d.idx });
+        document.body.style.userSelect = "none";
+        document.body.style.webkitUserSelect = "none";
       }
       setGhostPos({ x: e.clientX, y: e.clientY });
       // Trouver l'index cible
@@ -380,7 +382,8 @@ export default function PageAdminChapitres() {
         // Drop handled via current state in component
       }
       dragRef.current = null;
-      // clearDrag will be called via onPointerUp on the element
+      document.body.style.userSelect = "";
+      document.body.style.webkitUserSelect = "";
     }
 
     window.addEventListener("pointermove", onMove, { passive: true });
@@ -514,7 +517,7 @@ export default function PageAdminChapitres() {
                           opacity: estSource ? 0.5 : 1,
                           borderTop: estCible ? `2px solid var(--primary)` : "2px solid transparent",
                           transition: "background 0.1s", cursor: "grab",
-                          touchAction: "none",
+                          touchAction: "none", userSelect: "none", WebkitUserSelect: "none",
                         }}
                       >
                         {/* Poignée drag */}

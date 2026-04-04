@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { ParamsGeneration } from "@/types";
+import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -109,7 +110,8 @@ export async function POST(req: NextRequest) {
       .replace(/\s*```$/i, "")
       .trim();
 
-    const resultat = JSON.parse(json);
+    let resultat = JSON.parse(json);
+    resultat = await validerReponsesExercice(resultat, params.type, client);
     return NextResponse.json({ resultat });
   } catch (err) {
     console.error("Erreur génération exercice:", err);

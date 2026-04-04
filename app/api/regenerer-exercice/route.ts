@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -56,7 +57,9 @@ Règles :
 
     const texte = message.content[0].type === "text" ? message.content[0].text : "";
     const json = texte.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
-    return NextResponse.json({ resultat: JSON.parse(json) });
+    let resultat = JSON.parse(json);
+    resultat = await validerReponsesExercice(resultat, type, client);
+    return NextResponse.json({ resultat });
   } catch (err) {
     console.error("[regenerer-exercice]", err);
     return NextResponse.json({ erreur: "Échec de la génération." }, { status: 500 });

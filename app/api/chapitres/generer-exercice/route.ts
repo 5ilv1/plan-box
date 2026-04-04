@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
+import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -228,6 +229,9 @@ ${regles}`;
     if (Array.isArray(contenu)) {
       contenu = contenu[0];
     }
+
+    // Valider et corriger les réponses (orthographe, conjugaison)
+    contenu = await validerReponsesExercice(contenu, type, anthropic);
 
     // Extraire le titre depuis le contenu généré ou en créer un
     const titre = contenu.titre || `${type} — ${chapitre.titre}`;

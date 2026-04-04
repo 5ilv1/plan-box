@@ -646,6 +646,8 @@ export default function PageBibliotheque() {
         if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD_FM) return;
         d.isDragging = true;
         setDragFM(d.data);
+        document.body.style.userSelect = "none";
+        document.body.style.webkitUserSelect = "none";
       }
       const iso = findCell(e.clientX, e.clientY);
       dropTargetFMRef.current = iso;
@@ -662,6 +664,8 @@ export default function PageBibliotheque() {
       }
       dragFMRef.current = null;
       dropTargetFMRef.current = null;
+      document.body.style.userSelect = "";
+      document.body.style.webkitUserSelect = "";
       setDragFM(null);
       setDropTargetFM(null);
     }
@@ -1387,7 +1391,7 @@ export default function PageBibliotheque() {
                                     letterSpacing: isEval ? "0.04em" : undefined,
                                     opacity: dragFM?.date === iso && dragFM?.groupe === h.groupe.nom ? 0.4 : 1,
                                     transition: "opacity 0.15s",
-                                    touchAction: "none",
+                                    touchAction: "none", userSelect: "none", WebkitUserSelect: "none",
                                   }}
                                   title={isEval ? `${h.groupe.nom} — ÉVAL — Glisser pour déplacer` : `${h.groupe.nom} — p.${h.page} — Glisser pour déplacer`}
                                 >

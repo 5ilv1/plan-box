@@ -324,6 +324,8 @@ export default function NouvelleSemainePage() {
         d.isDragging = true;
         if (d.kind === "type") setDraggedType(d.value as TypeBloc);
         else setDraggedBloc(d.value);
+        document.body.style.userSelect = "none";
+        document.body.style.webkitUserSelect = "none";
       }
       setGhostPosSem({ x: e.clientX, y: e.clientY });
       const overJour = findJour(e.clientX, e.clientY);
@@ -342,11 +344,15 @@ export default function NouvelleSemainePage() {
           handleDropRef.current(targetJour);
           dragSemRef.current = null;
           dragOverJourRef.current = null;
+          document.body.style.userSelect = "";
+          document.body.style.webkitUserSelect = "";
           return;
         }
       }
       dragSemRef.current = null;
       dragOverJourRef.current = null;
+      document.body.style.userSelect = "";
+      document.body.style.webkitUserSelect = "";
       setDraggedType(null);
       setDraggedBloc(null);
       setDragOverJour(null);
@@ -1088,7 +1094,7 @@ export default function NouvelleSemainePage() {
                                   opacity: draggedBloc === bloc.id ? 0.4 : isExistant ? 0.85 : 1,
                                   transition: "opacity 0.15s",
                                   borderLeft: isExistant ? `3px solid ${cfg?.couleur ?? "#666"}` : undefined,
-                                  touchAction: "none",
+                                  touchAction: "none", userSelect: "none", WebkitUserSelect: "none",
                                 }}
                               >
                                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>
