@@ -257,14 +257,58 @@ export default function PageRevisionEleve() {
         {/* ── Colonne principale ── */}
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
-          {/* Introduction */}
-          {contenu.introduction && (
-            <p style={{
-              fontSize: 15, color: "var(--pb-on-surface-variant, #555)",
-              lineHeight: 1.7, margin: 0, fontStyle: "italic",
+          {/* Card principal : introduction + règle d'or */}
+          {(contenu.introduction || contenu.regle_or || corpsHtml) && (
+            <div style={{
+              background: "white", borderRadius: 20, padding: "28px 32px",
+              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
             }}>
-              {contenu.introduction}
-            </p>
+              {/* Introduction */}
+              {contenu.introduction && (
+                <p style={{
+                  fontSize: 15, color: "var(--pb-on-surface-variant, #555)",
+                  lineHeight: 1.7, margin: "0 0 20px", fontStyle: "italic",
+                }}>
+                  {contenu.introduction}
+                </p>
+              )}
+
+              {/* Contenu HTML (rétro-compatibilité ancien format) */}
+              {corpsHtml && (
+                <div
+                  dangerouslySetInnerHTML={{ __html: corpsHtml }}
+                  style={{
+                    fontSize: 15, lineHeight: 1.8,
+                    color: "var(--pb-on-surface, #282b51)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    wordBreak: "break-word",
+                    marginBottom: contenu.regle_or ? 24 : 0,
+                  }}
+                />
+              )}
+
+              {/* Règle d'Or */}
+              {contenu.regle_or && (
+                <div style={{
+                  padding: "20px 24px", borderRadius: 14,
+                  background: "linear-gradient(135deg, #F8F5FF, #F1EFFF)",
+                  borderLeft: "4px solid #0050D4",
+                }}>
+                  <div style={{
+                    fontSize: 13, fontWeight: 800, color: "#0050D4", marginBottom: 8,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}>
+                    La Règle d&apos;Or
+                  </div>
+                  <p style={{
+                    fontSize: 15, fontWeight: 500, color: "var(--pb-on-surface, #282b51)",
+                    margin: 0, lineHeight: 1.6,
+                  }}>
+                    {contenu.regle_or}
+                  </p>
+                </div>
+              )}
+            </div>
           )}
 
           {/* Grille de badges visuels */}
@@ -292,12 +336,6 @@ export default function PageRevisionEleve() {
                     boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                   }}>
                     <span style={{
-                      fontSize: 14, color: "var(--pb-on-surface, #282b51)",
-                      fontWeight: 500, flex: 1,
-                    }}>
-                      {item.texte}
-                    </span>
-                    <span style={{
                       display: "inline-flex", alignItems: "center", justifyContent: "center",
                       background: "#E8EAFF", color: "#4F5AE5", fontWeight: 800,
                       fontSize: 14, borderRadius: 8, padding: "4px 10px",
@@ -306,49 +344,15 @@ export default function PageRevisionEleve() {
                     }}>
                       {item.etiquette}
                     </span>
+                    <span style={{
+                      fontSize: 14, color: "var(--pb-on-surface, #282b51)",
+                      fontWeight: 500,
+                    }}>
+                      {item.texte}
+                    </span>
                   </div>
                 ))}
               </div>
-            </div>
-          )}
-
-          {/* Contenu HTML (rétro-compatibilité ancien format) */}
-          {!contenu.grille && corpsHtml && (
-            <div style={{
-              background: "white", borderRadius: 20, padding: "28px 32px",
-              boxShadow: "0 1px 4px rgba(0,0,0,0.05)",
-            }}>
-              <div
-                dangerouslySetInnerHTML={{ __html: corpsHtml }}
-                style={{
-                  fontSize: 15, lineHeight: 1.8,
-                  color: "var(--pb-on-surface, #282b51)",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  wordBreak: "break-word",
-                }}
-              />
-            </div>
-          )}
-
-          {/* Règle d'Or */}
-          {contenu.regle_or && (
-            <div style={{
-              padding: "20px 24px", borderRadius: 14,
-              background: "linear-gradient(135deg, #F8F5FF, #F1EFFF)",
-              borderLeft: "4px solid #0050D4",
-            }}>
-              <div style={{
-                fontSize: 13, fontWeight: 800, color: "#0050D4", marginBottom: 8,
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-              }}>
-                La Règle d&apos;Or
-              </div>
-              <p style={{
-                fontSize: 15, fontWeight: 500, color: "var(--pb-on-surface, #282b51)",
-                margin: 0, lineHeight: 1.6,
-              }}>
-                {contenu.regle_or}
-              </p>
             </div>
           )}
 
