@@ -1763,13 +1763,13 @@ export default function PageChapitreDetail() {
             <div style={{ display: "flex", gap: 10 }}>
               {editRevisionId ? (
                 <button className="btn-primary" onClick={sauvegarderRevision}
-                  disabled={!revTitre.trim() || !revTexte.trim() || enSauvegarde}
+                  disabled={!revTitre.trim() || (!revTexte.trim() && !revGrille && revExemples.length === 0) || enSauvegarde}
                   style={{ flex: 1 }}>
                   {enSauvegarde ? "Enregistrement…" : "✓ Enregistrer"}
                 </button>
               ) : (
                 <button className="btn-primary" onClick={ajouterRevision}
-                  disabled={!revTitre.trim() || !revTexte.trim()}
+                  disabled={!revTitre.trim() || (!revTexte.trim() && !revGrille && revExemples.length === 0)}
                   style={{ flex: 1 }}>
                   📖 Ajouter au parcours
                 </button>
