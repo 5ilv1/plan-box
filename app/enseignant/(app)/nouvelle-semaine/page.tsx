@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
 import { TYPE_BLOC_CONFIG, TypeBloc, AssignationSelecteur } from "@/types";
@@ -91,6 +91,14 @@ export default function NouvelleSemainePage() {
   const [draggedType, setDraggedType] = useState<TypeBloc | null>(null);
   const [dragOverJour, setDragOverJour] = useState<number | null>(null);
   const [draggedBloc, setDraggedBloc] = useState<string | null>(null);
+  const [ghostPosSem, setGhostPosSem] = useState<{ x: number; y: number } | null>(null);
+  const DRAG_THRESHOLD_SEM = 8;
+  const dragSemRef = useRef<{
+    kind: "type" | "bloc"; value: string;
+    startX: number; startY: number; isDragging: boolean;
+  } | null>(null);
+  const jourColRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const dragOverJourRef = useRef<number | null>(null);
   const [stats, setStats] = useState<StatsSemainePrecedente | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -284,7 +292,72 @@ export default function NouvelleSemainePage() {
       setDraggedBloc(null);
     }
     setDragOverJour(null);
+    setGhostPosSem(null);
   }
+
+  // Keep ref in sync so pointer event handler can call it
+  const handleDropRef = useRef(handleDropOnJour);
+  useEffect(() => { handleDropRef.current = handleDropOnJour; });
+
+  // Pointer events — compatible iPad
+  function handlePointerDownSem(e: React.PointerEvent, kind: "type" | "bloc", value: string) {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragSemRef.current = { kind, value, startX: e.clientX, startY: e.clientY, isDragging: false };
+  }
+
+  useEffect(() => {
+    function findJour(x: number, y: number): number | null {
+      for (let ji = 0; ji < 5; ji++) {
+        const el = jourColRefs.current[ji];
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return ji;
+      }
+      return null;
+    }
+
+    function onMove(e: PointerEvent) {
+      const d = dragSemRef.current;
+      if (!d) return;
+      if (!d.isDragging) {
+        if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD_SEM) return;
+        d.isDragging = true;
+        if (d.kind === "type") setDraggedType(d.value as TypeBloc);
+        else setDraggedBloc(d.value);
+      }
+      setGhostPosSem({ x: e.clientX, y: e.clientY });
+      const overJour = findJour(e.clientX, e.clientY);
+      dragOverJourRef.current = overJour;
+      setDragOverJour(overJour);
+    }
+
+    function onUp(e: PointerEvent) {
+      const d = dragSemRef.current;
+      if (d?.isDragging) {
+        const targetJour = findJour(e.clientX, e.clientY);
+        if (targetJour !== null) {
+          // State (draggedType/draggedBloc) is already set from onMove
+          // We need to call handleDropOnJour in a way that has access to current state
+          // Use the ref-based callback which closes over the latest state
+          handleDropRef.current(targetJour);
+          dragSemRef.current = null;
+          dragOverJourRef.current = null;
+          return;
+        }
+      }
+      dragSemRef.current = null;
+      dragOverJourRef.current = null;
+      setDraggedType(null);
+      setDraggedBloc(null);
+      setDragOverJour(null);
+      setGhostPosSem(null);
+    }
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function supprimerBloc(id: string) {
     const bloc = blocs.find((b) => b.id === id);
@@ -903,15 +976,14 @@ export default function NouvelleSemainePage() {
                     {TYPES_DISPONIBLES.map((t) => (
                       <div
                         key={t.type}
-                        draggable
-                        onDragStart={() => setDraggedType(t.type)}
-                        onDragEnd={() => setDraggedType(null)}
+                        onPointerDown={(e) => handlePointerDownSem(e, "type", t.type)}
                         style={{
                           padding: "8px 10px", borderRadius: 10,
                           background: "white", border: "1px solid var(--pb-outline-variant, #ddd)",
                           cursor: "grab", display: "flex", alignItems: "center", gap: 8,
                           fontSize: 13, fontWeight: 600, color: "var(--pb-on-surface)",
                           transition: "all 0.15s", userSelect: "none",
+                          touchAction: "none",
                         }}
                         onMouseEnter={(e) => { e.currentTarget.style.borderColor = t.color; e.currentTarget.style.boxShadow = `0 2px 8px ${t.color}20`; }}
                         onMouseLeave={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ddd)"; e.currentTarget.style.boxShadow = "none"; }}
@@ -937,9 +1009,7 @@ export default function NouvelleSemainePage() {
                     return (
                       <div
                         key={ji}
-                        onDragOver={(e) => { e.preventDefault(); setDragOverJour(ji); }}
-                        onDragLeave={() => setDragOverJour(null)}
-                        onDrop={(e) => { e.preventDefault(); handleDropOnJour(ji); }}
+                        ref={(el) => { jourColRefs.current[ji] = el; }}
                         style={{
                           minHeight: 300,
                           borderRadius: 14,
@@ -1009,9 +1079,7 @@ export default function NouvelleSemainePage() {
                             return (
                               <div
                                 key={bloc.id}
-                                draggable
-                                onDragStart={() => setDraggedBloc(bloc.id)}
-                                onDragEnd={() => setDraggedBloc(null)}
+                                onPointerDown={(e) => handlePointerDownSem(e, "bloc", bloc.id)}
                                 style={{
                                   padding: "8px 10px", borderRadius: 8,
                                   background: isExistant ? `${cfg?.couleur ?? "#666"}08` : `${cfg?.couleur ?? "#666"}10`,
@@ -1020,6 +1088,7 @@ export default function NouvelleSemainePage() {
                                   opacity: draggedBloc === bloc.id ? 0.4 : isExistant ? 0.85 : 1,
                                   transition: "opacity 0.15s",
                                   borderLeft: isExistant ? `3px solid ${cfg?.couleur ?? "#666"}` : undefined,
+                                  touchAction: "none",
                                 }}
                               >
                                 <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 2 }}>

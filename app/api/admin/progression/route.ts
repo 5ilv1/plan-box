@@ -62,6 +62,9 @@ export async function GET(req: NextRequest) {
     { data: pbProgressions },
     { data: groupes },
     { data: memberships },
+    { data: chapAssign },
+    { data: exercices },
+    { data: exResultats },
   ] = await Promise.all([
     admin
       .from("plan_travail")
@@ -80,6 +83,16 @@ export async function GET(req: NextRequest) {
     admin
       .from("eleve_groupe")
       .select("groupe_id, planbox_eleve_id, repetibox_eleve_id"),
+    admin
+      .from("chapitre_assignation")
+      .select("chapitre_id, groupe_id")
+      .eq("actif", true),
+    admin
+      .from("exercice")
+      .select("id, chapitre_id"),
+    admin
+      .from("exercice_resultat")
+      .select("exercice_id, eleve_id, rb_eleve_id, valide"),
   ]);
 
   const lignes = planTravailData ?? [];
@@ -240,6 +253,81 @@ export async function GET(req: NextRequest) {
       statut:      pbProg.statut ?? "en_cours",
       updated_at:  pbProg.updated_at ?? new Date().toISOString(),
     });
+    progressionKeys.add(key);
+  }
+
+  // ── Parcours chapitres : progression depuis exercice_resultat ─────────────
+  // Calculer nb exercices par chapitre
+  const exosParChapitre = new Map<string, string[]>();
+  for (const ex of (exercices ?? []) as { id: string; chapitre_id: string }[]) {
+    const list = exosParChapitre.get(ex.chapitre_id) ?? [];
+    list.push(ex.id);
+    exosParChapitre.set(ex.chapitre_id, list);
+  }
+
+  // Set des exercices validés par élève (uid → Set<exercice_id>)
+  const exoValides = new Map<string, Set<string>>();
+  for (const r of (exResultats ?? []) as { exercice_id: string; eleve_id: string | null; rb_eleve_id: number | null; valide: boolean }[]) {
+    if (!r.valide) continue;
+    const uid = r.eleve_id ? `pb_${r.eleve_id}` : r.rb_eleve_id != null ? `rb_${r.rb_eleve_id}` : null;
+    if (!uid) continue;
+    if (!exoValides.has(uid)) exoValides.set(uid, new Set());
+    exoValides.get(uid)!.add(r.exercice_id);
+  }
+
+  // Map groupeId → Set<chapitreId> depuis chapitre_assignation
+  const groupeChapMap = new Map<string, Set<string>>();
+  for (const a of (chapAssign ?? []) as { chapitre_id: string; groupe_id: string }[]) {
+    if (!groupeChapMap.has(a.groupe_id)) groupeChapMap.set(a.groupe_id, new Set());
+    groupeChapMap.get(a.groupe_id)!.add(a.chapitre_id);
+  }
+
+  // Map groupeId → Set<eleveUid> depuis memberships
+  const groupeElevesMap = new Map<string, Set<string>>();
+  for (const m of (memberships ?? []) as { groupe_id: string; planbox_eleve_id: string | null; repetibox_eleve_id: number | null }[]) {
+    const uid = m.planbox_eleve_id ? `pb_${m.planbox_eleve_id}` : m.repetibox_eleve_id != null ? `rb_${m.repetibox_eleve_id}` : null;
+    if (!uid) continue;
+    if (!groupeElevesMap.has(m.groupe_id)) groupeElevesMap.set(m.groupe_id, new Set());
+    groupeElevesMap.get(m.groupe_id)!.add(uid);
+  }
+
+  // Pour chaque (groupe → chapitres assignés → élèves du groupe), calculer la progression
+  for (const [groupeId, chapIds] of groupeChapMap) {
+    const eleveUids = groupeElevesMap.get(groupeId);
+    if (!eleveUids) continue;
+
+    for (const chapId of chapIds) {
+      const exoIds = exosParChapitre.get(chapId);
+      if (!exoIds || exoIds.length === 0) continue;
+
+      for (const uid of eleveUids) {
+        if (!elevesMap.has(uid)) continue;
+        const key = `${uid}__${chapId}`;
+
+        const validesEleve = exoValides.get(uid);
+        const nbValides = validesEleve ? exoIds.filter((id) => validesEleve.has(id)).length : 0;
+        const pourcentageParcours = Math.round((nbValides / exoIds.length) * 100);
+
+        if (progressionKeys.has(key)) {
+          // Fusionner : prendre le max des pourcentages
+          const existing = progressions.find((p) => p.eleve_uid === uid && p.chapitre_id === chapId);
+          if (existing && pourcentageParcours > existing.pourcentage) {
+            existing.pourcentage = pourcentageParcours;
+            if (nbValides === exoIds.length) existing.statut = "valide";
+            else if (nbValides > 0) existing.statut = "en_cours";
+          }
+        } else if (nbValides > 0) {
+          progressions.push({
+            eleve_uid:   uid,
+            chapitre_id: chapId,
+            pourcentage: pourcentageParcours,
+            statut:      nbValides === exoIds.length ? "valide" : "en_cours",
+            updated_at:  new Date().toISOString(),
+          });
+          progressionKeys.add(key);
+        }
+      }
+    }
   }
 
   return NextResponse.json({

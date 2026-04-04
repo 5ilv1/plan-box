@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -90,9 +90,16 @@ export default function PageAdminChapitres() {
   // Accordéons ouverts (par défaut tout ouvert)
   const [accordeonsOuverts, setAccordeonsOuverts] = useState<Set<string>>(new Set<string>());
 
-  // Drag & drop — inclut la sous-matière pour n'autoriser le glisser qu'au sein d'un même sous-groupe
+  // Drag & drop (Pointer Events — compatible iPad)
+  const DRAG_THRESHOLD = 8;
   const [dragSrc, setDragSrc] = useState<{ matiere: string; sousMatiere: string | null; idx: number } | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const [ghostPos, setGhostPos] = useState<{ x: number; y: number } | null>(null);
+  const dragRef = useRef<{
+    matiere: string; sousMatiere: string | null; idx: number;
+    startX: number; startY: number; isDragging: boolean;
+  } | null>(null);
+  const rowRefsChap = useRef<Record<string, HTMLDivElement | null>>({});
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -337,31 +344,63 @@ export default function PageAdminChapitres() {
     });
   }
 
-  // Drag handlers — incluent la sous-matière pour cloisonner le glisser par sous-groupe
-  function handleDragStart(matiere: string, sousMatiere: string | null, idx: number) {
-    setDragSrc({ matiere, sousMatiere, idx });
-    setDragOverIdx(idx);
+  // Pointer Events drag handlers — compatible iPad/touch
+  function handlePointerDownChap(e: React.PointerEvent, matiere: string, sousMatiere: string | null, idx: number) {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragRef.current = { matiere, sousMatiere, idx, startX: e.clientX, startY: e.clientY, isDragging: false };
   }
 
-  function handleDragOver(e: React.DragEvent, matiere: string, sousMatiere: string | null, idx: number) {
-    e.preventDefault();
-    if (dragSrc?.matiere !== matiere || dragSrc.sousMatiere !== sousMatiere) return;
-    setDragOverIdx(idx);
-  }
+  useEffect(() => {
+    function onMove(e: PointerEvent) {
+      const d = dragRef.current;
+      if (!d) return;
+      if (!d.isDragging) {
+        if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD) return;
+        d.isDragging = true;
+        setDragSrc({ matiere: d.matiere, sousMatiere: d.sousMatiere, idx: d.idx });
+      }
+      setGhostPos({ x: e.clientX, y: e.clientY });
+      // Trouver l'index cible
+      const entries = Object.entries(rowRefsChap.current).filter(
+        ([key]) => key.startsWith(`${d.matiere}|${d.sousMatiere ?? ""}|`)
+      );
+      let targetIdx = entries.length;
+      for (const [key, el] of entries) {
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        const idx = parseInt(key.split("|")[2], 10);
+        if (e.clientY < rect.top + rect.height / 2) { targetIdx = idx; break; }
+      }
+      setDragOverIdx(targetIdx);
+    }
 
-  function handleDrop(matiere: string, sousMatiere: string | null, subGroupItems: Chapitre[]) {
+    function onUp() {
+      const d = dragRef.current;
+      if (d?.isDragging) {
+        // Drop handled via current state in component
+      }
+      dragRef.current = null;
+      // clearDrag will be called via onPointerUp on the element
+    }
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  function handlePointerUpChap(matiere: string, sousMatiere: string | null, subGroupItems: Chapitre[]) {
     if (!dragSrc || dragSrc.matiere !== matiere || dragSrc.sousMatiere !== sousMatiere || dragOverIdx === null) {
       clearDrag(); return;
     }
     const srcIdx = dragSrc.idx;
-    const dstIdx = dragOverIdx;
+    const dstIdx = dragOverIdx > srcIdx ? dragOverIdx - 1 : dragOverIdx;
     if (srcIdx === dstIdx) { clearDrag(); return; }
 
     const newItems = [...subGroupItems];
     const [removed] = newItems.splice(srcIdx, 1);
     newItems.splice(dstIdx, 0, removed);
 
-    // Si pas de sous-matières dans ce groupe → ordre global ; sinon → ordre par sous-groupe
     const hasSousMatieres = chapitres.some(c => c.matiere === matiere && c.sous_matiere);
     if (hasSousMatieres) {
       reordonnerSousGroupe(matiere, sousMatiere, newItems);
@@ -374,6 +413,7 @@ export default function PageAdminChapitres() {
   function clearDrag() {
     setDragSrc(null);
     setDragOverIdx(null);
+    setGhostPos(null);
   }
 
   // Grouper par matière, triés par ordre
@@ -464,11 +504,9 @@ export default function PageAdminChapitres() {
                   return (
                     <div key={c.id}>
                       <div
-                        draggable
-                        onDragStart={() => handleDragStart(groupe.matiere, smKey, i)}
-                        onDragOver={(e) => handleDragOver(e, groupe.matiere, smKey, i)}
-                        onDrop={() => handleDrop(groupe.matiere, smKey, subGroupItems)}
-                        onDragEnd={clearDrag}
+                        ref={(el) => { rowRefsChap.current[`${groupe.matiere}|${smKey ?? ""}|${i}`] = el; }}
+                        onPointerDown={(e) => handlePointerDownChap(e, groupe.matiere, smKey, i)}
+                        onPointerUp={() => handlePointerUpChap(groupe.matiere, smKey, subGroupItems)}
                         style={{
                           display: "flex", alignItems: "center", gap: 10,
                           padding: "11px 18px",
@@ -476,6 +514,7 @@ export default function PageAdminChapitres() {
                           opacity: estSource ? 0.5 : 1,
                           borderTop: estCible ? `2px solid var(--primary)` : "2px solid transparent",
                           transition: "background 0.1s", cursor: "grab",
+                          touchAction: "none",
                         }}
                       >
                         {/* Poignée drag */}

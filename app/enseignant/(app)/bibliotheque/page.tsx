@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -151,6 +151,15 @@ export default function PageBibliotheque() {
   const [moisFM, setMoisFM]                   = useState<Date>(() => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1); });
   const [dragFM, setDragFM]                   = useState<{ date: string; groupe: string; page?: number; eval?: boolean } | null>(null);
   const [dropTargetFM, setDropTargetFM]       = useState<string | null>(null);
+  // Pointer events refs for iPad compatibility
+  const DRAG_THRESHOLD_FM = 8;
+  const dragFMRef = useRef<{
+    data: { date: string; groupe: string; page?: number; eval?: boolean };
+    startX: number; startY: number; isDragging: boolean;
+  } | null>(null);
+  const cellRefsFM = useRef<Record<string, HTMLDivElement | null>>({});
+  const dropTargetFMRef = useRef<string | null>(null);
+  const deplacerBlocFMRef = useRef<((item: { date: string; groupe: string; page?: number; eval?: boolean }, date: string) => void) | null>(null);
 
   /* ── Thèmes d'écriture ── */
   const [themesEcriture,  setThemesEcriture]  = useState<{ id: string; date: string; sujet: string; contrainte: string; affecte: boolean }[]>([]);
@@ -610,6 +619,58 @@ export default function PageBibliotheque() {
       }
     } catch { setMessageFM("❌ Erreur réseau."); }
   }
+
+  // Keep ref in sync for pointer event handler
+  useEffect(() => { deplacerBlocFMRef.current = deplacerBlocFM; });
+
+  // Pointer events for iPad-compatible drag & drop
+  function handlePointerDownFM(e: React.PointerEvent, data: { date: string; groupe: string; page?: number; eval?: boolean }) {
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragFMRef.current = { data, startX: e.clientX, startY: e.clientY, isDragging: false };
+  }
+
+  useEffect(() => {
+    function findCell(x: number, y: number): string | null {
+      for (const [iso, el] of Object.entries(cellRefsFM.current)) {
+        if (!el) continue;
+        const rect = el.getBoundingClientRect();
+        if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) return iso;
+      }
+      return null;
+    }
+
+    function onMove(e: PointerEvent) {
+      const d = dragFMRef.current;
+      if (!d) return;
+      if (!d.isDragging) {
+        if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD_FM) return;
+        d.isDragging = true;
+        setDragFM(d.data);
+      }
+      const iso = findCell(e.clientX, e.clientY);
+      dropTargetFMRef.current = iso;
+      setDropTargetFM(iso);
+    }
+
+    function onUp(e: PointerEvent) {
+      const d = dragFMRef.current;
+      if (d?.isDragging) {
+        const targetIso = findCell(e.clientX, e.clientY);
+        if (targetIso) {
+          deplacerBlocFMRef.current?.(d.data, targetIso);
+        }
+      }
+      dragFMRef.current = null;
+      dropTargetFMRef.current = null;
+      setDragFM(null);
+      setDropTargetFM(null);
+    }
+
+    window.addEventListener("pointermove", onMove, { passive: true });
+    window.addEventListener("pointerup", onUp);
+    return () => { window.removeEventListener("pointermove", onMove); window.removeEventListener("pointerup", onUp); };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function supprimerBlocFM(item: { date: string; groupe: string; page?: number; eval?: boolean }) {
     const label = item.eval
@@ -1272,21 +1333,7 @@ export default function PageBibliotheque() {
                         return (
                           <div
                             key={iso}
-                            onDragOver={(e) => {
-                              if (!dragFM || estWeekend || !dansMois) return;
-                              e.preventDefault();
-                              e.dataTransfer.dropEffect = "move";
-                              setDropTargetFM(iso);
-                            }}
-                            onDragLeave={() => setDropTargetFM(null)}
-                            onDrop={(e) => {
-                              e.preventDefault();
-                              setDropTargetFM(null);
-                              if (dragFM && dansMois && !estWeekend) {
-                                deplacerBlocFM(dragFM, iso);
-                                setDragFM(null);
-                              }
-                            }}
+                            ref={(el) => { if (!estWeekend && dansMois) cellRefsFM.current[iso] = el; }}
                             style={{
                               minHeight: 90,
                               border: dropTargetFM === iso ? "2px dashed var(--primary)" : "1px solid var(--border)",
@@ -1329,13 +1376,7 @@ export default function PageBibliotheque() {
                               return (
                                 <div
                                   key={hi}
-                                  draggable
-                                  onDragStart={(e) => {
-                                    setDragFM({ date: iso, groupe: h.groupe.nom, ...(isEval ? { eval: true } : { page: h.page }) });
-                                    e.dataTransfer.effectAllowed = "move";
-                                    e.dataTransfer.setData("text/plain", `${iso}|${h.groupe.nom}|${isEval ? "eval" : h.page}`);
-                                  }}
-                                  onDragEnd={() => setDragFM(null)}
+                                  onPointerDown={(e) => handlePointerDownFM(e, { date: iso, groupe: h.groupe.nom, ...(isEval ? { eval: true } : { page: h.page }) })}
                                   style={{
                                     display: "flex", alignItems: "center", gap: 2,
                                     fontSize: 10, fontWeight: isEval ? 800 : 700, marginBottom: 2,
@@ -1346,6 +1387,7 @@ export default function PageBibliotheque() {
                                     letterSpacing: isEval ? "0.04em" : undefined,
                                     opacity: dragFM?.date === iso && dragFM?.groupe === h.groupe.nom ? 0.4 : 1,
                                     transition: "opacity 0.15s",
+                                    touchAction: "none",
                                   }}
                                   title={isEval ? `${h.groupe.nom} — ÉVAL — Glisser pour déplacer` : `${h.groupe.nom} — p.${h.page} — Glisser pour déplacer`}
                                 >
