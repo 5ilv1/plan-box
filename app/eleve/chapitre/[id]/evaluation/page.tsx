@@ -196,31 +196,44 @@ function MiniQCM({ questions, onTermine }: {
   }
 
   return (
-    <div>
-      <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 8 }}>
-        Question {index + 1}/{questions.length}
-      </p>
-      <p style={{
-        fontSize: 16, fontWeight: 700, marginBottom: 16, lineHeight: 1.5,
-        color: "var(--pb-on-surface)", fontFamily: "'Plus Jakarta Sans', sans-serif",
+    <div style={{
+      background: "white", borderRadius: "1.5rem", padding: "2rem 1.5rem",
+      border: `1px solid ${feedback ? (choisi === q.reponse_correcte ? "var(--accent, #16A34A)" : "#E53E3E") : "var(--border-light, #E2E8F0)"}`,
+      boxShadow: "0 4px 24px rgba(0,0,0,0.08)",
+      display: "flex", flexDirection: "column", gap: "1.5rem",
+      transition: "border-color 0.2s ease",
+    }}>
+      {/* Question */}
+      <div style={{
+        textAlign: "center", padding: "1.25rem 1rem", borderRadius: "1rem",
+        background: "#F7F8FA", minHeight: 80,
+        display: "flex", alignItems: "center", justifyContent: "center",
       }}>
-        {q.question}
-      </p>
+        <p style={{
+          fontSize: "1.25rem", fontWeight: 600, color: "var(--text-primary, #1A202C)",
+          lineHeight: 1.4, margin: 0,
+        }}>
+          {q.question}
+        </p>
+      </div>
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+      <div style={{ height: 1, background: "var(--border-light, #E2E8F0)" }} />
+
+      {/* Grille 2×2 */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
         {q.options.map((opt, i) => {
-          let bg = "var(--pb-surface-container, #f5f5f5)";
-          let border = "1.5px solid var(--pb-outline-variant, #e0e0e0)";
-          let color = "var(--pb-on-surface)";
+          let bg = "white";
+          let borderColor = "var(--border, #E2E8F0)";
+          let textColor = "var(--text-primary, #1A202C)";
 
-          if (feedback) {
+          if (!feedback && i === choisi) {
+            borderColor = "#3B82F6"; bg = "#EFF6FF"; textColor = "#1D4ED8";
+          } else if (feedback) {
             if (i === q.reponse_correcte) {
-              bg = "#DCFCE7"; border = "1.5px solid #22C55E"; color = "#166534";
+              borderColor = "var(--accent, #16A34A)"; bg = "#F0FAF5"; textColor = "var(--accent, #16A34A)";
             } else if (i === choisi && i !== q.reponse_correcte) {
-              bg = "#FEE2E2"; border = "1.5px solid #EF4444"; color = "#991B1B";
+              borderColor = "#E53E3E"; bg = "#FFF5F5"; textColor = "#E53E3E";
             }
-          } else if (i === choisi) {
-            bg = "rgba(220,38,38,0.08)"; border = "1.5px solid #DC2626"; color = "#DC2626";
           }
 
           return (
@@ -229,51 +242,52 @@ function MiniQCM({ questions, onTermine }: {
               onClick={() => !feedback && setChoisi(i)}
               disabled={feedback}
               style={{
-                padding: "12px 16px", borderRadius: 12, textAlign: "left",
-                background: bg, border, color, fontSize: 15, fontWeight: 600,
-                cursor: feedback ? "default" : "pointer",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                transition: "all 0.2s",
+                backgroundColor: bg, border: `1px solid ${borderColor}`, borderRadius: "0.875rem",
+                padding: "1rem 1.25rem", fontSize: "0.9375rem", fontWeight: 500,
+                color: textColor, cursor: feedback ? "default" : "pointer",
+                textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center",
+                transition: "all 0.15s ease", fontFamily: "inherit",
               }}
             >
               {opt}
+              {feedback && i === q.reponse_correcte && <span style={{ marginLeft: "0.5rem" }}>✓</span>}
+              {feedback && i === choisi && i !== q.reponse_correcte && <span style={{ marginLeft: "0.5rem" }}>✗</span>}
             </button>
           );
         })}
       </div>
 
-      {q.explication && feedback && (
-        <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 12, fontStyle: "italic" }}>
-          {q.explication}
-        </p>
-      )}
-
+      {/* Bouton Valider / Suivant */}
       {!feedback ? (
-        <button
-          onClick={valider}
-          disabled={choisi === null}
-          style={{
-            width: "100%", padding: "14px", borderRadius: 12,
-            background: choisi !== null ? "#DC2626" : "#ccc",
-            color: "white", border: "none", fontSize: 15, fontWeight: 700,
-            cursor: choisi !== null ? "pointer" : "default",
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-          }}
-        >
-          Valider
-        </button>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={valider}
+            disabled={choisi === null}
+            style={{
+              width: "auto", padding: "0.875rem 2.5rem", borderRadius: 999,
+              background: "var(--pb-primary, #0050D4)", color: "white", border: "none",
+              fontSize: 15, fontWeight: 700, opacity: choisi !== null ? 1 : 0.5,
+              cursor: choisi !== null ? "pointer" : "not-allowed",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            ✓ Valider ma réponse
+          </button>
+        </div>
       ) : (
-        <button
-          onClick={suivant}
-          style={{
-            width: "100%", padding: "14px", borderRadius: 12,
-            background: choisi === q.reponse_correcte ? "#22C55E" : "#F87171",
-            color: "white", border: "none", fontSize: 15, fontWeight: 700,
-            cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-          }}
-        >
-          {index + 1 >= questions.length ? "Terminer" : "Suivant →"}
-        </button>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={suivant}
+            style={{
+              width: "auto", padding: "0.875rem 2.5rem", borderRadius: 999,
+              background: choisi === q.reponse_correcte ? "#16A34A" : "#DC2626",
+              color: "white", border: "none", fontSize: 15, fontWeight: 700,
+              cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            {index + 1 >= questions.length ? "Terminer ✅" : "Suivant →"}
+          </button>
+        </div>
       )}
     </div>
   );

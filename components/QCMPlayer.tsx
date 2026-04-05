@@ -81,22 +81,32 @@ export default function QCMPlayer({
     }
   }, [index, questions, reponsesChoisies, qcm_id, planTravailId, eleveId, repetiboxEleveId, prenom, nom, onTermine]);
 
-  function choisir(optionIndex: number) {
-    if (reponseValidee !== null) return; // déjà validé
+  const [reponseSelectionnee, setReponseSelectionnee] = useState<number | null>(null);
 
-    const correct = optionIndex === q.reponse_correcte;
-    setReponseValidee(optionIndex);
+  function selectionner(optionIndex: number) {
+    if (reponseValidee !== null) return;
+    setReponseSelectionnee(optionIndex);
+  }
+
+  function validerReponse() {
+    if (reponseSelectionnee === null || reponseValidee !== null) return;
+
+    const correct = reponseSelectionnee === q.reponse_correcte;
+    setReponseValidee(reponseSelectionnee);
     setReponsesChoisies((prev) => {
       const next = [...prev];
-      next[index] = optionIndex;
+      next[index] = reponseSelectionnee;
       return next;
     });
+  }
 
-    // Animation de sortie puis passage à la suivante
+  function suivant() {
+    const correct = reponseValidee === q.reponse_correcte;
+    setSortie(correct ? "droite" : "gauche");
     setTimeout(() => {
-      setSortie(correct ? "droite" : "gauche");
-      setTimeout(passerSuivante, 380);
-    }, 1200);
+      setReponseSelectionnee(null);
+      passerSuivante();
+    }, 380);
   }
 
   function recommencer() {
@@ -346,107 +356,98 @@ export default function QCMPlayer({
           {/* Séparateur */}
           <div style={{ height: 1, background: "var(--pb-surface-container, #E0E0FF)" }} />
 
-          {/* Options */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem" }}>
+          {/* Options — grille 2×2 style Repetibox */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
             {q.options.map((opt, j) => {
-              const selectionne = reponseValidee === j;
+              const estSelectionne = reponseSelectionnee === j;
+              const estValide = reponseValidee === j;
               const estCorrect = j === q.reponse_correcte;
               const revele = reponseValidee !== null;
 
               let bg = "white";
-              let border = "1.5px solid var(--pb-outline-variant, #A7AAD7)";
-              let textColor = "var(--pb-on-surface, #282B51)";
-              let badgeBg = "var(--pb-surface-container, #E7E6FF)";
-              let badgeColor = "var(--pb-on-surface-variant, #555881)";
+              let borderColor = "var(--border, #E2E8F0)";
+              let textColor = "var(--text-primary, #1A202C)";
 
-              if (revele && estCorrect) {
-                bg = "#F0FDF4";
-                border = "2px solid #16A34A";
-                textColor = "#15803D";
-                badgeBg = "#16A34A";
-                badgeColor = "white";
-              } else if (revele && selectionne && !estCorrect) {
-                bg = "#FEF2F2";
-                border = "2px solid #DC2626";
-                textColor = "#DC2626";
-                badgeBg = "#DC2626";
-                badgeColor = "white";
+              if (!revele && estSelectionne) {
+                borderColor = "#3B82F6"; bg = "#EFF6FF"; textColor = "#1D4ED8";
               } else if (revele) {
-                bg = "var(--pb-surface-low, #F8F5FF)";
-                border = "1.5px solid var(--pb-surface-container, #E0E0FF)";
-                textColor = "var(--pb-on-surface-variant, #555)";
+                if (estCorrect) {
+                  borderColor = "var(--accent, #16A34A)"; bg = "#F0FAF5"; textColor = "var(--accent, #16A34A)";
+                } else if (estValide && !estCorrect) {
+                  borderColor = "#E53E3E"; bg = "#FFF5F5"; textColor = "#E53E3E";
+                }
               }
 
               return (
                 <button
                   key={j}
-                  onClick={() => choisir(j)}
-                  disabled={reponseValidee !== null}
+                  onClick={() => selectionner(j)}
+                  disabled={revele}
                   style={{
-                    display: "flex", alignItems: "center", gap: 10,
-                    padding: "12px 14px", borderRadius: "0.875rem",
-                    border, background: bg, color: textColor,
-                    fontWeight: 600, fontSize: 14,
-                    cursor: reponseValidee !== null ? "default" : "pointer",
-                    fontFamily: "'Manrope', sans-serif",
-                    textAlign: "left",
-                    transition: "all 0.2s ease",
-                    opacity: revele && !estCorrect && !selectionne ? 0.5 : 1,
+                    backgroundColor: bg, border: `1px solid ${borderColor}`, borderRadius: "0.875rem",
+                    padding: "1rem 1.25rem",
+                    fontSize: "0.9375rem", fontWeight: 500,
+                    color: textColor,
+                    cursor: revele ? "default" : "pointer", textAlign: "center",
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    transition: "all 0.15s ease", fontFamily: "inherit",
                   }}
                 >
-                  <span style={{
-                    width: 26, height: 26, borderRadius: "50%", flexShrink: 0,
-                    background: badgeBg, color: badgeColor,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    fontSize: 12, fontWeight: 800,
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  }}>
-                    {revele && estCorrect ? (
-                      <span className="ms" style={{ fontSize: 16 }}>check</span>
-                    ) : revele && selectionne ? (
-                      <span className="ms" style={{ fontSize: 16 }}>close</span>
-                    ) : (
-                      ["A", "B", "C", "D"][j]
-                    )}
-                  </span>
-                  <span style={{ flex: 1 }}>{opt}</span>
+                  {opt}
+                  {revele && estCorrect && <span style={{ marginLeft: "0.5rem" }}>✓</span>}
+                  {revele && estValide && !estCorrect && <span style={{ marginLeft: "0.5rem" }}>✗</span>}
                 </button>
               );
             })}
           </div>
 
-          {/* Feedback après réponse */}
-          {reponseValidee !== null && (
-            <div style={{
-              padding: "12px 16px",
-              borderRadius: "0.875rem",
-              background: reponseValidee === q.reponse_correcte ? "#F0FDF4" : "#FEF2F2",
-              border: `1.5px solid ${reponseValidee === q.reponse_correcte ? "#BBF7D0" : "#FECACA"}`,
-              fontSize: 14, fontWeight: 600,
-              color: reponseValidee === q.reponse_correcte ? "#15803D" : "#DC2626",
-              display: "flex", alignItems: "center", gap: 8,
-              animation: "qcmEntrer 0.2s ease",
-            }}>
-              <span className="ms" style={{ fontSize: 20 }}>
-                {reponseValidee === q.reponse_correcte ? "check_circle" : "info"}
-              </span>
-              {reponseValidee === q.reponse_correcte
-                ? "Bonne réponse !"
-                : `La bonne réponse était : ${q.options[q.reponse_correcte]}`
-              }
-            </div>
-          )}
-
           {/* Explication si disponible */}
           {reponseValidee !== null && q.explication && (
             <div style={{
-              padding: "10px 14px", borderRadius: "0.75rem",
-              background: "#FFFBEB", border: "1px solid #FDE68A",
-              fontSize: 13, color: "#92400E", lineHeight: 1.5,
+              padding: "1rem 1.25rem", borderRadius: "0.875rem",
+              background: "#FFFBEB", border: "1px solid #F59E0B",
+              fontSize: "0.9rem", color: "#92400E", lineHeight: 1.6,
               display: "flex", alignItems: "flex-start", gap: 6,
             }}>
-              <span className="ms" style={{ fontSize: 16, color: "#F59E0B", flexShrink: 0, marginTop: 1 }}>lightbulb</span>
+              <span style={{ flexShrink: 0 }}>💡</span>
               {q.explication}
+            </div>
+          )}
+
+          {/* Bouton Valider / Suivant */}
+          {!reponseValidee ? (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <button
+                onClick={validerReponse}
+                disabled={reponseSelectionnee === null}
+                className="btn-primary"
+                style={{
+                  width: "auto", padding: "0.875rem 2.5rem",
+                  opacity: reponseSelectionnee !== null ? 1 : 0.5,
+                  cursor: reponseSelectionnee !== null ? "pointer" : "not-allowed",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 15, fontWeight: 700, borderRadius: 999,
+                  background: "var(--pb-primary, #0050D4)", color: "white", border: "none",
+                }}
+              >
+                ✓ Valider ma réponse
+              </button>
+            </div>
+          ) : (
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <button
+                onClick={suivant}
+                className="btn-primary"
+                style={{
+                  width: "auto", padding: "0.875rem 2.5rem",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 15, fontWeight: 700, borderRadius: 999,
+                  background: reponseValidee === q.reponse_correcte ? "#16A34A" : "#DC2626",
+                  color: "white", border: "none", cursor: "pointer",
+                }}
+              >
+                {index + 1 >= questions.length ? "Terminer ✅" : "Suivant →"}
+              </button>
             </div>
           )}
         </div>
