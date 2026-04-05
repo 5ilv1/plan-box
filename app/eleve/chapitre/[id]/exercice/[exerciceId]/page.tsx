@@ -791,30 +791,33 @@ export default function PageExerciceEleve() {
 
         {/* Champ réponse */}
         {isQCM ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.875rem" }}>
             {q.options!.map((opt, oi) => {
-              let bg = "var(--pb-surface-container, #f5f5f5)";
-              let border = "1px solid var(--pb-outline-variant, #eee)";
-              let color = "var(--pb-on-surface)";
+              let bg = "white";
+              let borderColor = "var(--border, #E2E8F0)";
+              let textColor = "var(--text-primary, #1A202C)";
 
               if (afficherCorrection) {
                 if (oi === q.reponseIdx) {
-                  bg = "#DCFCE7"; border = "2px solid #22C55E"; color = "#166534";
+                  borderColor = "var(--accent, #16A34A)"; bg = "#F0FAF5"; textColor = "var(--accent, #16A34A)";
                 } else if (oi === qcmChoisi && oi !== q.reponseIdx) {
-                  bg = "#FEE2E2"; border = "2px solid #EF4444"; color = "#991B1B";
+                  borderColor = "#E53E3E"; bg = "#FFF5F5"; textColor = "#E53E3E";
                 }
               } else if (qcmChoisi === oi) {
-                bg = "rgba(37,99,235,0.1)"; border = "2px solid var(--pb-primary)";
+                borderColor = "#3B82F6"; bg = "#EFF6FF"; textColor = "#1D4ED8";
               }
 
               return (
                 <button key={oi} onClick={() => !afficherCorrection && setQcmChoisi(oi)} style={{
-                  padding: "14px 20px", borderRadius: 14, fontSize: 16, fontWeight: 500,
-                  background: bg, border, color, cursor: afficherCorrection ? "default" : "pointer",
-                  textAlign: "left", fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  transition: "all 0.15s",
+                  padding: "1rem 1.25rem", borderRadius: "0.875rem", fontSize: "0.9375rem", fontWeight: 500,
+                  backgroundColor: bg, border: `1px solid ${borderColor}`, color: textColor,
+                  cursor: afficherCorrection ? "default" : "pointer",
+                  textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center",
+                  fontFamily: "inherit", transition: "all 0.15s ease",
                 }}>
                   {opt}
+                  {afficherCorrection && oi === q.reponseIdx && <span style={{ marginLeft: "0.5rem" }}>✓</span>}
+                  {afficherCorrection && oi === qcmChoisi && oi !== q.reponseIdx && <span style={{ marginLeft: "0.5rem" }}>✗</span>}
                 </button>
               );
             })}
@@ -860,19 +863,23 @@ export default function PageExerciceEleve() {
 
       {/* Bouton action */}
       {!afficherCorrection ? (
-        <button
-          onClick={verifierReponse}
-          disabled={isQCM ? qcmChoisi === null : !reponseEleve.trim()}
-          style={{
-            width: "100%", padding: "16px", borderRadius: 16, fontSize: 17, fontWeight: 700,
-            background: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "var(--pb-primary)" : "var(--pb-surface-container, #eee)",
-            color: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "white" : "var(--pb-on-surface-variant)",
-            border: "none", cursor: "pointer",
-            fontFamily: "'Plus Jakarta Sans', sans-serif",
-          }}
-        >
-          Vérifier
-        </button>
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <button
+            onClick={verifierReponse}
+            disabled={isQCM ? qcmChoisi === null : !reponseEleve.trim()}
+            style={{
+              width: "auto", padding: "0.875rem 2.5rem", borderRadius: 999, fontSize: 15, fontWeight: 700,
+              background: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "var(--pb-primary)" : "var(--pb-surface-container, #eee)",
+              color: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "white" : "var(--pb-on-surface-variant)",
+              border: "none",
+              cursor: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "pointer" : "not-allowed",
+              opacity: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? 1 : 0.5,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            ✓ Valider ma réponse
+          </button>
+        </div>
       ) : (
         <button
           onClick={passerSuivant}
