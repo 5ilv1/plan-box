@@ -42,7 +42,7 @@ IMPORTANT: le tableau "trous" doit contenir exactement le nombre d'items demand�
     case "qcm":
       return `{
   "titre": "Titre court",
-  "consigne": "Choisis la bonne réponse",
+  "consigne": "Consigne précise liée à l'objectif (ex: 'Trouve le verbe correctement conjugué au futur', 'Choisis le bon homophone'…)",
   "questions": [
     {
       "question": "La question posée",
@@ -113,8 +113,10 @@ function getRegles(type: ExerciceType): string {
 - Les trous doivent être répartis dans tout le texte, pas concentrés au début`;
     case "qcm":
       return `${base}
+- La consigne doit être précise et liée à l'objectif pédagogique (ex: "Trouve le verbe correctement conjugué au futur", pas "Choisis la bonne réponse")
+- Chaque question doit présenter une phrase avec un mot manquant ou un choix à faire, en lien avec l'objectif
 - Exactement 4 options par question
-- Les mauvaises réponses doivent être plausibles
+- Les mauvaises réponses doivent être plausibles (erreurs typiques des élèves)
 - reponse_correcte est l'index (0-3) de la bonne option`;
     case "classement":
       return `${base}
