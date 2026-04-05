@@ -65,13 +65,15 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
         const trous = (c.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
         if (trous.length === 0) break;
         const trousChoisis = piocher(trous, Math.min(4, trous.length));
+        // Retirer les indices en évaluation
+        const trousSansIndice = trousChoisis.map(({ indice, ...rest }) => rest);
         minis.push({
           id: ex.id,
           titre: ex.titre,
           type: "texte_a_trous",
           contenu: {
             ...c,
-            trous: trousChoisis,
+            trous: trousSansIndice,
           },
         });
         break;
@@ -99,11 +101,13 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
         const questions = (c.questions as QCMQuestion[]) ?? [];
         if (questions.length === 0) break;
         const qChoisis = piocher(questions, Math.min(3, questions.length));
+        // Retirer les explications en évaluation
+        const qSansExplication = qChoisis.map(({ explication, ...rest }) => rest);
         minis.push({
           id: ex.id,
           titre: ex.titre,
           type: "qcm",
-          contenu: { ...c, questions: qChoisis },
+          contenu: { ...c, questions: qSansExplication },
         });
         break;
       }
@@ -113,11 +117,13 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
         const questions = (c.questions as Array<{ id: number; enonce: string; reponse_attendue: string; indice?: string }>) ?? [];
         if (questions.length === 0) break;
         const qChoisis = piocher(questions, Math.min(3, questions.length));
+        // Retirer les indices en évaluation
+        const qSansIndice = qChoisis.map(({ indice, ...rest }) => rest);
         minis.push({
           id: ex.id,
           titre: ex.titre,
           type: "exercice",
-          contenu: { ...c, questions: qChoisis },
+          contenu: { ...c, questions: qSansIndice },
         });
         break;
       }
@@ -392,7 +398,7 @@ export default function PageEvaluationFinale() {
 
   if (etat === "chargement") {
     return (
-      <div style={{ maxWidth: 600, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+      <div style={{ maxWidth: 800, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
       </div>
     );
@@ -487,7 +493,7 @@ export default function PageEvaluationFinale() {
   const progression = (indexCourant / minis.length) * 100;
 
   return (
-    <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px 20px 80px" }}>
+    <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
       {/* En-tête */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
