@@ -51,7 +51,7 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
 
     for (const trou of trous) {
       const reponse = reponses[trou.position] ?? "";
-      const motAttendu = trou.mot.replace(/[.,;:!?'"()]/g, "");
+      const motAttendu = trou.mot.replace(/[.,;:!?"()]/g, "");
       const correct = normaliser(reponse) === normaliser(motAttendu);
       res[trou.position] = correct;
       if (correct) bonnes++;
