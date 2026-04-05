@@ -6,6 +6,16 @@ interface Trou {
   position: number;
   mot: string;
   indice?: string;
+  prefixe?: string;
+}
+
+// Détecte l'élision française (j', l', n', d', s', c', qu', m', t') et sépare préfixe / mot
+function separerElision(mot: string): { prefixe: string; motSansElision: string } {
+  const match = mot.match(/^([jlndsctm][''']|qu['''])(.+)$/i);
+  if (match) {
+    return { prefixe: match[1].replace(/['']/g, "'") + "", motSansElision: match[2] };
+  }
+  return { prefixe: "", motSansElision: mot };
 }
 
 interface Props {
@@ -51,8 +61,13 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
 
     for (const trou of trous) {
       const reponse = reponses[trou.position] ?? "";
-      const motAttendu = trou.mot.replace(/[.,;:!?"()]/g, "");
-      const correct = normaliser(reponse) === normaliser(motAttendu);
+      const motBrut = trou.mot.replace(/[.,;:!?'"()]/g, "");
+      // Si le mot contient une élision (j'aurai, l'école…), accepter avec ou sans le préfixe
+      const { prefixe, motSansElision } = separerElision(motBrut);
+      const motAttendu = prefixe ? motSansElision : motBrut;
+      // Accepter la réponse avec ou sans préfixe élidé
+      const repNorm = normaliser(reponse);
+      const correct = repNorm === normaliser(motAttendu) || (!!prefixe && repNorm === normaliser(motBrut));
       res[trou.position] = correct;
       if (correct) bonnes++;
     }
@@ -138,11 +153,16 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
             const resultat = resultats[i];
             const estCorrect = resultat === true;
             const estIncorrect = resultat === false;
-            const largeur = Math.max(trou.mot.length * 12, 60);
+            // Séparer l'élision : j'aurai → préfixe "j'" + mot "aurai"
+            const motBrut = trou.mot.replace(/[.,;:!?'"()]/g, "");
+            const { prefixe: elision, motSansElision } = separerElision(motBrut);
+            const motAffiche = elision ? motSansElision : motBrut;
+            const largeur = Math.max(motAffiche.length * 12, 60);
 
             return (
               <React.Fragment key={i}>
               <span style={{ display: "inline-block", verticalAlign: "baseline", margin: "0 3px" }}>
+                {elision && <span style={{ fontSize: "1.125rem" }}>{elision}</span>}
                 {termine || estCorrect ? (
                   // Mot correct : affiché en vert
                   <span style={{
@@ -150,7 +170,7 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
                     borderBottom: "2px solid #16A34A",
                     padding: "0 4px",
                   }}>
-                    {trou.mot}
+                    {motAffiche}
                   </span>
                 ) : (
                   <span style={{ position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "center", verticalAlign: "middle" }}>
