@@ -294,7 +294,7 @@ export default function MotsRevision({ mots, theme, onTermine }: Props) {
               onChange={(e) => setSaisie(e.target.value)}
               placeholder="Écris le mot ici..."
               autoComplete="off"
-              autoCapitalize="off"
+              autoCapitalize="none"
               spellCheck={false}
               style={{
                 width: "100%", padding: "14px 16px", borderRadius: 12,

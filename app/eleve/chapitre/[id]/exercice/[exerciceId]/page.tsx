@@ -828,7 +828,7 @@ export default function PageExerciceEleve() {
               onKeyDown={(e) => e.key === "Enter" && !afficherCorrection && reponseEleve.trim() && verifierReponse()}
               placeholder="Ta réponse…"
               disabled={afficherCorrection}
-              autoCapitalize="off"
+              autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}
               autoFocus

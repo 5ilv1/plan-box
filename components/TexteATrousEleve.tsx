@@ -164,8 +164,9 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
                       }}
                       onKeyDown={(e) => handleKeyDown(e, i)}
                       disabled={termine}
-                      autoCapitalize="off"
+                      autoCapitalize="none"
                       autoCorrect="off"
+                      autoComplete="off"
                       spellCheck={false}
                       placeholder="..."
                       style={{
