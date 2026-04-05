@@ -65,15 +65,13 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
         const trous = (c.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
         if (trous.length === 0) break;
         const trousChoisis = piocher(trous, Math.min(4, trous.length));
-        // Retirer les indices en évaluation
-        const trousSansIndice = trousChoisis.map(({ indice, ...rest }) => rest);
         minis.push({
           id: ex.id,
           titre: ex.titre,
           type: "texte_a_trous",
           contenu: {
             ...c,
-            trous: trousSansIndice,
+            trous: trousChoisis,
           },
         });
         break;
