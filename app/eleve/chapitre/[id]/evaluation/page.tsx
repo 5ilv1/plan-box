@@ -1,9 +1,17 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useEleveSession } from "@/hooks/useEleveSession";
+import TexteATrousEleve from "@/components/TexteATrousEleve";
+import ClassementEleve from "@/components/ClassementEleve";
+import ExerciceStack from "@/components/ExerciceStack";
+import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
+import CalcMentalStack from "@/components/CalcMentalStack";
+import { FonctionGram, QCMQuestion } from "@/types";
+
+// ── Types ──────────────────────────────────────────────────────────────
 
 interface Exercice {
   id: string;
@@ -13,17 +21,261 @@ interface Exercice {
   ordre: number;
 }
 
-interface QuestionEval {
-  enonce: string;
-  reponse: string;
-  indice?: string;
-  options?: string[];
-  reponseIdx?: number;
+interface MiniExercice {
+  id: string;            // exercice original ID
+  titre: string;
+  type: string;
+  contenu: Record<string, unknown>; // contenu réduit (sous-ensemble)
+}
+
+interface ScoreExo {
   exerciceId: string;
-  exerciceTitre: string;
+  bon: number;
+  total: number;
 }
 
 type Etat = "chargement" | "en_cours" | "resultat";
+
+// ── Helpers ──────────────────────────────────────────────────────────────
+
+function melanger<T>(arr: T[]): T[] {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/** Prend n éléments aléatoires d'un tableau */
+function piocher<T>(arr: T[], n: number): T[] {
+  return melanger(arr).slice(0, n);
+}
+
+/** Crée des mini-exercices à partir des exercices du chapitre */
+function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
+  const minis: MiniExercice[] = [];
+
+  for (const ex of exercices) {
+    const c = ex.contenu;
+
+    switch (ex.type) {
+      case "texte_a_trous": {
+        // Garder le texte complet mais seulement 3-4 trous
+        const trous = (c.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
+        if (trous.length === 0) break;
+        const trousChoisis = piocher(trous, Math.min(4, trous.length));
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "texte_a_trous",
+          contenu: {
+            ...c,
+            trous: trousChoisis,
+          },
+        });
+        break;
+      }
+
+      case "classement": {
+        // Garder toutes les catégories mais seulement 4-5 items
+        const items = (c.items as Array<{ texte: string; categorie: string }>) ?? [];
+        if (items.length === 0) break;
+        const itemsChoisis = piocher(items, Math.min(5, items.length));
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "classement",
+          contenu: {
+            ...c,
+            items: itemsChoisis,
+          },
+        });
+        break;
+      }
+
+      case "qcm": {
+        // Prendre 3 questions du QCM
+        const questions = (c.questions as QCMQuestion[]) ?? [];
+        if (questions.length === 0) break;
+        const qChoisis = piocher(questions, Math.min(3, questions.length));
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "qcm",
+          contenu: { ...c, questions: qChoisis },
+        });
+        break;
+      }
+
+      case "exercice": {
+        // Prendre 2-3 questions
+        const questions = (c.questions as Array<{ id: number; enonce: string; reponse_attendue: string; indice?: string }>) ?? [];
+        if (questions.length === 0) break;
+        const qChoisis = piocher(questions, Math.min(3, questions.length));
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "exercice",
+          contenu: { ...c, questions: qChoisis },
+        });
+        break;
+      }
+
+      case "calcul_mental": {
+        // Prendre 3-4 calculs
+        const calculs = (c.calculs as Array<{ id: number; enonce: string; reponse: string }>) ?? [];
+        if (calculs.length === 0) break;
+        const cChoisis = piocher(calculs, Math.min(4, calculs.length));
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "calcul_mental",
+          contenu: { ...c, calculs: cChoisis },
+        });
+        break;
+      }
+
+      case "analyse_phrase": {
+        // Prendre 1-2 phrases
+        const phrases = (c.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: string; debut: number; fin: number }> }>) ?? [];
+        if (phrases.length === 0) break;
+        const pChoisis = piocher(phrases, Math.min(2, phrases.length));
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "analyse_phrase",
+          contenu: { ...c, phrases: pChoisis },
+        });
+        break;
+      }
+
+      // ecriture_contrainte : pas évaluable automatiquement, on skip
+      default:
+        break;
+    }
+  }
+
+  return melanger(minis);
+}
+
+// ── QCM interne (sans appels API plan de travail) ──────────────────────
+
+function MiniQCM({ questions, onTermine }: {
+  questions: QCMQuestion[];
+  onTermine: (score: { bon: number; total: number }) => void;
+}) {
+  const [index, setIndex] = useState(0);
+  const [choisi, setChoisi] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState(false);
+  const [bon, setBon] = useState(0);
+
+  const q = questions[index];
+  if (!q) return null;
+
+  function valider() {
+    if (choisi === null) return;
+    const correct = choisi === q.reponse_correcte;
+    if (correct) setBon((b) => b + 1);
+    setFeedback(true);
+  }
+
+  function suivant() {
+    setFeedback(false);
+    setChoisi(null);
+    if (index + 1 >= questions.length) {
+      const finalBon = bon + (choisi === q.reponse_correcte ? 0 : 0); // bon already updated
+      onTermine({ bon, total: questions.length });
+    } else {
+      setIndex((i) => i + 1);
+    }
+  }
+
+  return (
+    <div>
+      <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 8 }}>
+        Question {index + 1}/{questions.length}
+      </p>
+      <p style={{
+        fontSize: 16, fontWeight: 700, marginBottom: 16, lineHeight: 1.5,
+        color: "var(--pb-on-surface)", fontFamily: "'Plus Jakarta Sans', sans-serif",
+      }}>
+        {q.question}
+      </p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 16 }}>
+        {q.options.map((opt, i) => {
+          let bg = "var(--pb-surface-container, #f5f5f5)";
+          let border = "1.5px solid var(--pb-outline-variant, #e0e0e0)";
+          let color = "var(--pb-on-surface)";
+
+          if (feedback) {
+            if (i === q.reponse_correcte) {
+              bg = "#DCFCE7"; border = "1.5px solid #22C55E"; color = "#166534";
+            } else if (i === choisi && i !== q.reponse_correcte) {
+              bg = "#FEE2E2"; border = "1.5px solid #EF4444"; color = "#991B1B";
+            }
+          } else if (i === choisi) {
+            bg = "rgba(220,38,38,0.08)"; border = "1.5px solid #DC2626"; color = "#DC2626";
+          }
+
+          return (
+            <button
+              key={i}
+              onClick={() => !feedback && setChoisi(i)}
+              disabled={feedback}
+              style={{
+                padding: "12px 16px", borderRadius: 12, textAlign: "left",
+                background: bg, border, color, fontSize: 15, fontWeight: 600,
+                cursor: feedback ? "default" : "pointer",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                transition: "all 0.2s",
+              }}
+            >
+              {opt}
+            </button>
+          );
+        })}
+      </div>
+
+      {q.explication && feedback && (
+        <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 12, fontStyle: "italic" }}>
+          {q.explication}
+        </p>
+      )}
+
+      {!feedback ? (
+        <button
+          onClick={valider}
+          disabled={choisi === null}
+          style={{
+            width: "100%", padding: "14px", borderRadius: 12,
+            background: choisi !== null ? "#DC2626" : "#ccc",
+            color: "white", border: "none", fontSize: 15, fontWeight: 700,
+            cursor: choisi !== null ? "pointer" : "default",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}
+        >
+          Valider
+        </button>
+      ) : (
+        <button
+          onClick={suivant}
+          style={{
+            width: "100%", padding: "14px", borderRadius: 12,
+            background: choisi === q.reponse_correcte ? "#22C55E" : "#F87171",
+            color: "white", border: "none", fontSize: 15, fontWeight: 700,
+            cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}
+        >
+          {index + 1 >= questions.length ? "Terminer" : "Suivant →"}
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ── Composant principal ──────────────────────────────────────────────────
 
 export default function PageEvaluationFinale() {
   const { id: chapitreId } = useParams<{ id: string }>();
@@ -34,14 +286,10 @@ export default function PageEvaluationFinale() {
   const [seuilEval, setSeuilEval] = useState(90);
   const [etat, setEtat] = useState<Etat>("chargement");
 
-  const [questions, setQuestions] = useState<QuestionEval[]>([]);
+  const [minis, setMinis] = useState<MiniExercice[]>([]);
   const [indexCourant, setIndexCourant] = useState(0);
-  const [reponseEleve, setReponseEleve] = useState("");
-  const [qcmChoisi, setQcmChoisi] = useState<number | null>(null);
-  const [resultats, setResultats] = useState<Array<{ correct: boolean; exerciceId: string }>>([]);
-  const [afficherCorrection, setAfficherCorrection] = useState(false);
+  const [scores, setScores] = useState<ScoreExo[]>([]);
 
-  const [score, setScore] = useState(0);
   const [reussi, setReussi] = useState(false);
   const [exercicesEchoues, setExercicesEchoues] = useState<string[]>([]);
   const abortRef = useRef<AbortController | null>(null);
@@ -80,17 +328,13 @@ export default function PageEvaluationFinale() {
         return;
       }
 
-      // Extraire des questions de chaque exercice (2-3 par exercice, mélangées)
-      const allQuestions: QuestionEval[] = [];
-
-      for (const ex of exercices) {
-        const qs = extraireQuestions(ex);
-        const nbAPrendre = Math.min(3, Math.max(2, qs.length));
-        const melangees = melanger(qs);
-        allQuestions.push(...melangees.slice(0, nbAPrendre));
+      const miniExercices = creerMiniExercices(exercices);
+      if (miniExercices.length === 0) {
+        router.push(`/eleve/chapitre/${chapitreId}`);
+        return;
       }
 
-      setQuestions(melanger(allQuestions));
+      setMinis(miniExercices);
       setEtat("en_cours");
     } catch (err) {
       if (signal.aborted) return;
@@ -99,136 +343,65 @@ export default function PageEvaluationFinale() {
     }
   }
 
-  function extraireQuestions(ex: Exercice): QuestionEval[] {
-    const qs: QuestionEval[] = [];
-    const contenu = ex.contenu;
+  // ── Callback quand un mini-exercice est terminé ──────────────────────
 
-    if (ex.type === "exercice" && Array.isArray(contenu.questions)) {
-      for (const q of contenu.questions as Array<{ enonce: string; reponse_attendue: string; indice?: string }>) {
-        qs.push({ enonce: q.enonce, reponse: q.reponse_attendue, indice: q.indice, exerciceId: ex.id, exerciceTitre: ex.titre });
-      }
-    } else if (ex.type === "qcm" && Array.isArray(contenu.questions)) {
-      for (const q of contenu.questions as Array<{ question: string; options: string[]; reponse_correcte: number; explication?: string }>) {
-        qs.push({
-          enonce: q.question, reponse: q.options[q.reponse_correcte],
-          options: q.options, reponseIdx: q.reponse_correcte,
-          exerciceId: ex.id, exerciceTitre: ex.titre,
-        });
-      }
-    } else if (ex.type === "calcul_mental" && Array.isArray(contenu.calculs)) {
-      for (const c of contenu.calculs as Array<{ enonce: string; reponse: string }>) {
-        qs.push({ enonce: c.enonce, reponse: String(c.reponse), exerciceId: ex.id, exerciceTitre: ex.titre });
-      }
-    } else if (ex.type === "texte_a_trous" && Array.isArray(contenu.trous)) {
-      for (const t of contenu.trous as Array<{ mot: string; indice?: string }>) {
-        qs.push({ enonce: `Quel mot manque ?${t.indice ? ` (indice : ${t.indice})` : ""}`, reponse: t.mot, exerciceId: ex.id, exerciceTitre: ex.titre });
-      }
-    } else if (ex.type === "classement" && Array.isArray(contenu.items)) {
-      const cats = (contenu.categories as string[]) ?? [];
-      for (const item of contenu.items as Array<{ texte: string; categorie: string }>) {
-        qs.push({
-          enonce: `Dans quelle catégorie : "${item.texte}" ?`,
-          reponse: item.categorie, options: cats, reponseIdx: cats.indexOf(item.categorie),
-          exerciceId: ex.id, exerciceTitre: ex.titre,
-        });
-      }
-    } else if (ex.type === "analyse_phrase" && Array.isArray(contenu.phrases)) {
-      for (const phrase of contenu.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: string }> }>) {
-        for (const g of phrase.groupes) {
-          qs.push({
-            enonce: `Dans la phrase « ${phrase.texte} », quelle est la fonction de « ${g.mots} » ?`,
-            reponse: g.fonction,
-            exerciceId: ex.id, exerciceTitre: ex.titre,
-          });
-        }
-      }
-    }
-    // ecriture_contrainte : pas de questions extraites — exercice validé par l'IA directement
+  function onMiniTermine(exerciceId: string, bon: number, total: number) {
+    const newScores = [...scores, { exerciceId, bon, total }];
+    setScores(newScores);
 
-    return qs;
-  }
-
-  function melanger<T>(arr: T[]): T[] {
-    const a = [...arr];
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  }
-
-  const normaliser = (s: string) =>
-    s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/\s+/g, " ");
-
-  const verifierReponse = useCallback(() => {
-    const q = questions[indexCourant];
-    if (!q) return;
-
-    let correct = false;
-    if (q.options && qcmChoisi !== null) {
-      correct = qcmChoisi === q.reponseIdx;
-    } else {
-      correct = normaliser(reponseEleve) === normaliser(q.reponse);
-    }
-
-    setResultats((prev) => [...prev, { correct, exerciceId: q.exerciceId }]);
-    setAfficherCorrection(true);
-  }, [indexCourant, questions, reponseEleve, qcmChoisi]);
-
-  function passerSuivant() {
-    setAfficherCorrection(false);
-    setReponseEleve("");
-    setQcmChoisi(null);
-
-    if (indexCourant + 1 >= questions.length) {
+    if (indexCourant + 1 >= minis.length) {
       // Fin de l'évaluation
-      const bonnes = resultats.filter((r) => r.correct).length;
-      const total = questions.length;
-      const pct = Math.round((bonnes / total) * 100);
-
-      setScore(bonnes);
-      setReussi(pct >= seuilEval);
-
-      // Exercices échoués (IDs uniques des exercices où l'élève a fait des erreurs)
-      const echecs = new Set<string>();
-      for (const r of resultats) {
-        if (!r.correct) echecs.add(r.exerciceId);
-      }
-      const echecsArr = Array.from(echecs);
-      setExercicesEchoues(echecsArr);
-
-      setEtat("resultat");
-
-      // Sauvegarder le résultat de l'évaluation
-      fetch("/api/chapitres/evaluation-resultat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chapitre_id: chapitreId,
-          eleve_id: session?.source === "planbox" ? session.id : undefined,
-          rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
-          score: bonnes,
-          total,
-          exercices_echoues: echecsArr,
-        }),
-      }).catch(() => {});
+      terminerEvaluation(newScores);
     } else {
-      setIndexCourant((prev) => prev + 1);
+      setIndexCourant((i) => i + 1);
     }
+  }
+
+  function terminerEvaluation(allScores: ScoreExo[]) {
+    const totalBon = allScores.reduce((s, sc) => s + sc.bon, 0);
+    const totalQ = allScores.reduce((s, sc) => s + sc.total, 0);
+    const pct = totalQ > 0 ? Math.round((totalBon / totalQ) * 100) : 0;
+
+    setReussi(pct >= seuilEval);
+
+    // Exercices échoués = ceux avec au moins une erreur
+    const echecs = allScores
+      .filter((sc) => sc.bon < sc.total)
+      .map((sc) => sc.exerciceId);
+    const echecsUniques = Array.from(new Set(echecs));
+    setExercicesEchoues(echecsUniques);
+
+    setEtat("resultat");
+
+    // Sauvegarder
+    fetch("/api/chapitres/evaluation-resultat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        chapitre_id: chapitreId,
+        eleve_id: session?.source === "planbox" ? session.id : undefined,
+        rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+        score: totalBon,
+        total: totalQ,
+        exercices_echoues: echecsUniques,
+      }),
+    }).catch(() => {});
   }
 
   // ── Rendu ──────────────────────────────────────────────────────────────
 
   if (etat === "chargement") {
     return (
-      <div style={{ maxWidth: 500, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+      <div style={{ maxWidth: 600, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
       </div>
     );
   }
 
   if (etat === "resultat") {
-    const pct = questions.length > 0 ? Math.round((score / questions.length) * 100) : 0;
+    const totalBon = scores.reduce((s, sc) => s + sc.bon, 0);
+    const totalQ = scores.reduce((s, sc) => s + sc.total, 0);
+    const pct = totalQ > 0 ? Math.round((totalBon / totalQ) * 100) : 0;
 
     return (
       <div style={{ maxWidth: 500, margin: "40px auto", padding: "0 20px", textAlign: "center" }}>
@@ -250,7 +423,7 @@ export default function PageEvaluationFinale() {
             {reussi ? "Évaluation réussie !" : "Pas encore…"}
           </h2>
           <p style={{ fontSize: 18, fontWeight: 700, color: "var(--pb-on-surface)", marginBottom: 4 }}>
-            {score}/{questions.length} ({pct}%)
+            {totalBon}/{totalQ} ({pct}%)
           </p>
           <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 24 }}>
             {reussi
@@ -268,7 +441,7 @@ export default function PageEvaluationFinale() {
                 Exercices à reprendre :
               </p>
               {exercicesEchoues.map((exId) => {
-                const q = questions.find((q) => q.exerciceId === exId);
+                const mini = minis.find((m) => m.id === exId);
                 return (
                   <Link
                     key={exId}
@@ -281,7 +454,7 @@ export default function PageEvaluationFinale() {
                     }}
                   >
                     <span className="ms" style={{ fontSize: 16, color: "#DC2626" }}>replay</span>
-                    {q?.exerciceTitre ?? "Exercice"}
+                    {mini?.titre ?? "Exercice"}
                   </Link>
                 );
               })}
@@ -306,16 +479,15 @@ export default function PageEvaluationFinale() {
     );
   }
 
-  // ── En cours ──────────────────────────────────────────────────────────
+  // ── En cours : afficher le mini-exercice courant ──────────────────────
 
-  const q = questions[indexCourant];
-  if (!q) return null;
+  const mini = minis[indexCourant];
+  if (!mini) return null;
 
-  const isQCM = q.options && q.options.length > 0;
-  const progression = ((indexCourant) / questions.length) * 100;
+  const progression = (indexCourant / minis.length) * 100;
 
   return (
-    <div style={{ maxWidth: 500, margin: "0 auto", padding: "20px 20px 80px" }}>
+    <div style={{ maxWidth: 600, margin: "0 auto", padding: "20px 20px 80px" }}>
       {/* En-tête */}
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
@@ -349,17 +521,17 @@ export default function PageEvaluationFinale() {
             }} />
           </div>
           <span style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)" }}>
-            {indexCourant + 1}/{questions.length}
+            {indexCourant + 1}/{minis.length}
           </span>
         </div>
 
         {/* Dots de progression */}
-        <div style={{ display: "flex", gap: 4, marginTop: 8, flexWrap: "wrap" }}>
-          {questions.map((_, i) => (
+        <div style={{ display: "flex", gap: 6, marginTop: 8, flexWrap: "wrap" }}>
+          {minis.map((_, i) => (
             <div key={i} style={{
-              width: 8, height: 8, borderRadius: "50%",
-              background: i < resultats.length
-                ? resultats[i].correct ? "#22C55E" : "#EF4444"
+              width: 10, height: 10, borderRadius: "50%",
+              background: i < scores.length
+                ? scores[i].bon === scores[i].total ? "#22C55E" : "#EF4444"
                 : i === indexCourant ? "#DC2626" : "var(--pb-outline-variant, #ddd)",
               transition: "background 0.3s",
             }} />
@@ -367,120 +539,67 @@ export default function PageEvaluationFinale() {
         </div>
       </div>
 
-      {/* Question */}
-      <div style={{
-        padding: "28px 24px", borderRadius: 20,
-        background: "white", border: "2px solid rgba(220,38,38,0.15)",
-        boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+      {/* Titre du mini-exercice */}
+      <p style={{
+        fontSize: 14, fontWeight: 700, color: "#DC2626", marginBottom: 12,
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
       }}>
-        <p style={{
-          fontSize: 17, fontWeight: 700, marginBottom: 20, lineHeight: 1.5,
-          color: "var(--pb-on-surface)", fontFamily: "'Plus Jakarta Sans', sans-serif",
-        }}>
-          {q.enonce}
-        </p>
+        {mini.titre}
+      </p>
 
-        {isQCM ? (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {q.options!.map((opt, i) => {
-              let bg = "var(--pb-surface-container, #f5f5f5)";
-              let border = "1.5px solid var(--pb-outline-variant, #e0e0e0)";
-              let color = "var(--pb-on-surface)";
-
-              if (afficherCorrection) {
-                if (i === q.reponseIdx) {
-                  bg = "#DCFCE7"; border = "1.5px solid #22C55E"; color = "#166534";
-                } else if (i === qcmChoisi && i !== q.reponseIdx) {
-                  bg = "#FEE2E2"; border = "1.5px solid #EF4444"; color = "#991B1B";
-                }
-              } else if (i === qcmChoisi) {
-                bg = "rgba(220,38,38,0.08)"; border = "1.5px solid #DC2626"; color = "#DC2626";
-              }
-
-              return (
-                <button
-                  key={i}
-                  onClick={() => !afficherCorrection && setQcmChoisi(i)}
-                  disabled={afficherCorrection}
-                  style={{
-                    padding: "12px 16px", borderRadius: 12, textAlign: "left",
-                    background: bg, border, color, fontSize: 15, fontWeight: 600,
-                    cursor: afficherCorrection ? "default" : "pointer",
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                    transition: "all 0.2s",
-                  }}
-                >
-                  {opt}
-                </button>
-              );
-            })}
-          </div>
-        ) : (
-          <div>
-            <input
-              type="text"
-              value={reponseEleve}
-              onChange={(e) => setReponseEleve(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter" && !afficherCorrection && reponseEleve.trim()) verifierReponse(); }}
-              disabled={afficherCorrection}
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              placeholder="Ta réponse…"
-              autoFocus
-              style={{
-                width: "100%", padding: "14px 16px", borderRadius: 12,
-                border: afficherCorrection
-                  ? resultats[indexCourant]?.correct
-                    ? "2px solid #22C55E"
-                    : "2px solid #EF4444"
-                  : "2px solid var(--pb-outline-variant, #ddd)",
-                fontSize: 16, fontWeight: 600,
-                background: afficherCorrection
-                  ? resultats[indexCourant]?.correct ? "#F0FDF4" : "#FEF2F2"
-                  : "white",
-                outline: "none", boxSizing: "border-box",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-              }}
-            />
-            {afficherCorrection && !resultats[indexCourant]?.correct && (
-              <p style={{ fontSize: 13, color: "#22C55E", fontWeight: 600, marginTop: 8 }}>
-                Réponse correcte : {q.reponse}
-              </p>
-            )}
-          </div>
+      {/* Rendu du composant selon le type */}
+      <div key={`${mini.id}-${indexCourant}`}>
+        {mini.type === "texte_a_trous" && (
+          <TexteATrousEleve
+            titre={mini.titre}
+            consigne={(mini.contenu.consigne as string) ?? "Complète les trous"}
+            texteComplet={(mini.contenu.texte_complet as string) ?? ""}
+            trous={(mini.contenu.trous as Array<{ position: number; mot: string; indice?: string }>) ?? []}
+            onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
+          />
         )}
 
-        {/* Bouton valider / suivant */}
-        <div style={{ marginTop: 20 }}>
-          {!afficherCorrection ? (
-            <button
-              onClick={verifierReponse}
-              disabled={isQCM ? qcmChoisi === null : !reponseEleve.trim()}
-              style={{
-                width: "100%", padding: "14px", borderRadius: 12,
-                background: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "#DC2626" : "#ccc",
-                color: "white", border: "none", fontSize: 15, fontWeight: 700,
-                cursor: (isQCM ? qcmChoisi !== null : reponseEleve.trim()) ? "pointer" : "default",
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-              }}
-            >
-              Valider
-            </button>
-          ) : (
-            <button
-              onClick={passerSuivant}
-              style={{
-                width: "100%", padding: "14px", borderRadius: 12,
-                background: resultats[resultats.length - 1]?.correct ? "#22C55E" : "#F87171",
-                color: "white", border: "none", fontSize: 15, fontWeight: 700,
-                cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              }}
-            >
-              {indexCourant + 1 >= questions.length ? "Voir le résultat" : "Suivant →"}
-            </button>
-          )}
-        </div>
+        {mini.type === "classement" && (
+          <ClassementEleve
+            titre={mini.titre}
+            consigne={(mini.contenu.consigne as string) ?? "Classe les éléments"}
+            categories={(mini.contenu.categories as string[]) ?? []}
+            items={(mini.contenu.items as Array<{ texte: string; categorie: string }>) ?? []}
+            onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
+          />
+        )}
+
+        {mini.type === "exercice" && (
+          <ExerciceStack
+            consigne={(mini.contenu.consigne as string)}
+            questions={(mini.contenu.questions as Array<{ id: number; enonce: string; reponse_attendue: string; indice?: string }>) ?? []}
+            onComplete={(_reponses, score, total) => onMiniTermine(mini.id, score, total)}
+          />
+        )}
+
+        {mini.type === "qcm" && (
+          <MiniQCM
+            questions={(mini.contenu.questions as QCMQuestion[]) ?? []}
+            onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
+          />
+        )}
+
+        {mini.type === "calcul_mental" && (
+          <CalcMentalStack
+            calculs={(mini.contenu.calculs as Array<{ id: number; enonce: string; reponse: string }>) ?? []}
+            onComplete={(score, total) => onMiniTermine(mini.id, score, total)}
+          />
+        )}
+
+        {mini.type === "analyse_phrase" && (
+          <AnalysePhraseEleve
+            titre={mini.titre}
+            consigne={(mini.contenu.consigne as string) ?? "Analyse les phrases"}
+            phrases={(mini.contenu.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: FonctionGram; debut: number; fin: number }> }>) ?? []}
+            fonctionsActives={(mini.contenu.fonctionsActives as FonctionGram[]) ?? ["Sujet", "Verbe", "COD", "COI", "CC Lieu", "CC Temps", "CC Manière"]}
+            onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
+          />
+        )}
       </div>
     </div>
   );
