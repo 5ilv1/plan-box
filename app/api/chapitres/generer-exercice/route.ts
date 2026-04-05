@@ -109,7 +109,7 @@ function getRegles(type: ExerciceType): string {
 - CRITIQUE : chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot présent dans "texte_complet"
 - Avant de répondre, relis ton texte et vérifie que chaque mot du tableau "trous" se retrouve bien dans "texte_complet". Corrige toute incohérence.
 - Utilise uniquement des verbes courants du 1er groupe si le sujet porte sur le 1er groupe (manger, jouer, danser, chanter, regarder, marcher, etc.). Évite les verbes pièges comme "escalader" dont la conjugaison est souvent mal formée.
-- Fournir des indices utiles mais pas trop évidents (ex: "verbe [infinitif] au futur, [personne]")
+- Pour la conjugaison, l'indice est UNIQUEMENT le verbe à l'infinitif (ex: "manger", "être", "aller"). JAMAIS de personne, sujet ou temps. Pour les autres objectifs, l'indice est une aide courte.
 - Les trous doivent être répartis dans tout le texte, pas concentrés au début`;
     case "qcm":
       return `${base}

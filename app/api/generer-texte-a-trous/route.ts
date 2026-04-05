@@ -59,7 +59,7 @@ RÈGLES STRICTES :
 - NE PAS utiliser un thème différent du thème imposé ci-dessus
 - Masque EXACTEMENT 10 mots — ni plus, ni moins
 - Les mots masqués doivent être pertinents par rapport à l'objectif
-- Chaque trou DOIT avoir un indice. RÈGLE ABSOLUE : si l'objectif porte sur la CONJUGAISON, l'indice est UNIQUEMENT l'infinitif du verbe, rien d'autre (ex : "explorer", "avancer", "bondir"). PAS de mention de personne, sujet ou temps dans l'indice. Pour les autres objectifs (orthographe, vocabulaire…), l'indice est une aide courte.
+- Chaque trou DOIT avoir un indice. RÈGLE ABSOLUE : si l'objectif porte sur la CONJUGAISON, l'indice est UNIQUEMENT le verbe à l'infinitif, rien d'autre. Exemples : "manger", "être", "avoir", "aller". JAMAIS de mention de personne, de sujet, de temps ou de groupe dans l'indice. Pour les autres objectifs (orthographe, vocabulaire…), l'indice est une aide courte.
 - Le texte_complet DOIT être grammaticalement PARFAIT — aucune faute d'orthographe, de grammaire ou de conjugaison
 - VÉRIFIE chaque phrase avant de répondre : sujet-verbe accordés, homophones corrects, ponctuation correcte
 - Vocabulaire adapté au niveau ${niveau}
@@ -72,8 +72,8 @@ Format attendu :
   "consigne": "Consigne claire pour l'élève (1 phrase)",
   "texte_complet": "Le texte complet avec tous les mots corrects (pas de crochets). ZÉRO faute.",
   "trous": [
-    { "position": 2, "mot": "mange", "indice": "verbe du 1er groupe au présent" },
-    { "position": 8, "mot": "chantent", "indice": "accord sujet-verbe, le sujet est pluriel" }
+    { "position": 2, "mot": "mange", "indice": "manger" },
+    { "position": 8, "mot": "chantent", "indice": "chanter" }
   ]
 }
 
