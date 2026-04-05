@@ -346,6 +346,7 @@ export default function PageAdminChapitres() {
 
   // Pointer Events drag handlers — compatible iPad/touch
   function handlePointerDownChap(e: React.PointerEvent, matiere: string, sousMatiere: string | null, idx: number) {
+    e.stopPropagation(); // Ne pas propager aux boutons de la ligne
     e.currentTarget.setPointerCapture(e.pointerId);
     dragRef.current = { matiere, sousMatiere, idx, startX: e.clientX, startY: e.clientY, isDragging: false };
   }
@@ -508,7 +509,6 @@ export default function PageAdminChapitres() {
                     <div key={c.id}>
                       <div
                         ref={(el) => { rowRefsChap.current[`${groupe.matiere}|${smKey ?? ""}|${i}`] = el; }}
-                        onPointerDown={(e) => handlePointerDownChap(e, groupe.matiere, smKey, i)}
                         onPointerUp={() => handlePointerUpChap(groupe.matiere, smKey, subGroupItems)}
                         style={{
                           display: "flex", alignItems: "center", gap: 10,
@@ -516,12 +516,14 @@ export default function PageAdminChapitres() {
                           background: estSource ? "var(--primary-pale)" : estCible ? `${couleur}80` : "transparent",
                           opacity: estSource ? 0.5 : 1,
                           borderTop: estCible ? `2px solid var(--primary)` : "2px solid transparent",
-                          transition: "background 0.1s", cursor: "grab",
-                          touchAction: "none", userSelect: "none", WebkitUserSelect: "none",
+                          transition: "background 0.1s",
                         }}
                       >
                         {/* Poignée drag */}
-                        <span style={{ fontSize: 17, color: "#CBD5E1", flexShrink: 0, cursor: "grab", userSelect: "none", lineHeight: 1 }}>
+                        <span
+                          onPointerDown={(e) => handlePointerDownChap(e, groupe.matiere, smKey, i)}
+                          style={{ fontSize: 17, color: "#CBD5E1", flexShrink: 0, cursor: "grab", userSelect: "none", touchAction: "none", lineHeight: 1 }}
+                        >
                           ⠿
                         </span>
 
