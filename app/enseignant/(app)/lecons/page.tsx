@@ -37,7 +37,7 @@ interface LotItem {
 
 /* ── Tri par numéro de leçon (H1, G2, F10…) puis alphabétique ── */
 function numLecon(titre: string): number {
-  const m = titre.match(/^[A-Za-z]+(\d+)/);
+  const m = titre.match(/^[A-Za-z]+\s*(\d+)/);
   return m ? parseInt(m[1], 10) : Infinity;
 }
 function trierLecons<T extends { matiere: string; titre: string }>(liste: T[]): T[] {

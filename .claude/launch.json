@@ -3,9 +3,11 @@
   "configurations": [
     {
       "name": "plan-box",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "runtimeExecutable": "/opt/homebrew/bin/node",
+      "runtimeArgs": ["/opt/homebrew/bin/npm", "run", "dev"],
+      "env": { "PATH": "/opt/homebrew/bin:/usr/bin:/bin" },
+      "port": 3000,
+      "autoPort": true
     }
   ]
 }
