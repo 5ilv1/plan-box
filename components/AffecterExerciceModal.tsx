@@ -88,10 +88,38 @@ export default function AffecterExerciceModal({ exercice, onClose, onSuccess }: 
     setEnSoumission(true);
     setErreur(null);
 
+    // Si ressource podcast avec transcription mais sans QCM → générer le QCM
+    let contenu = exercice.contenu;
+    if (exercice.type === "ressource" && !contenu.qcm) {
+      const taches = (contenu.taches ?? []) as Array<{ sous_type?: string; transcription?: string }>;
+      const tacheAvecTranscription = taches.find(
+        (t) => t.sous_type === "podcast" && t.transcription && t.transcription.trim().length >= 50
+      );
+      if (tacheAvecTranscription?.transcription) {
+        try {
+          const qcmRes = await fetch("/api/generer-qcm", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              transcript: tacheAvecTranscription.transcription,
+              titre: exercice.titre,
+              nbQuestions: 10,
+            }),
+          });
+          const qcmJson = await qcmRes.json();
+          if (qcmRes.ok && qcmJson.questions) {
+            contenu = { ...contenu, qcm: qcmJson.questions, qcm_id: qcmJson.qcm_id };
+          }
+        } catch {
+          // On ne bloque pas l'affectation si le QCM échoue
+        }
+      }
+    }
+
     const body: Record<string, unknown> = {
       type: exercice.type,
       titre: exercice.titre,
-      contenu: exercice.contenu,
+      contenu,
       chapitreId: exercice.chapitre_id ?? null,
       dateAssignation,
       dateLimite: dateLimite || null,

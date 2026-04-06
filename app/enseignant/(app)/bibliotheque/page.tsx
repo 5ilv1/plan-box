@@ -2200,13 +2200,7 @@ export default function PageBibliotheque() {
             id: resAAffecter.id,
             type: "ressource",
             titre: resAAffecter.titre,
-            contenu: {
-              ...resAAffecter.contenu,
-              ...(qcmParRessource.get(resAAffecter.titre) ? {
-                qcm: qcmParRessource.get(resAAffecter.titre),
-                qcm_id: crypto.randomUUID(),
-              } : {}),
-            } as Record<string, unknown>,
+            contenu: resAAffecter.contenu as Record<string, unknown>,
           }}
           onClose={() => setResAAffecter(null)}
         />
