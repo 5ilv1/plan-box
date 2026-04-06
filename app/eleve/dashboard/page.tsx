@@ -151,6 +151,7 @@ export default function DashboardEleve() {
   const [notifications, setNotifications]           = useState<Notification[]>([]);
   const [chapitresRB, setChapitresRB]               = useState<Array<{ chapitre_id: number; chapitre_nom: string; nb_cartes_dues: number; token_url: string }>>([]);
   const [podcastsQcm, setPodcastsQcm]               = useState<Array<{ id: string; titre: string; qcm_id: string }>>([]);
+  const [podcastSemaine, setPodcastSemaine]           = useState<{ id: string; titre: string; qcm_id: string; fait: boolean } | null>(null);
   const [chargementDonnees, setChargementDonnees]   = useState(true);
   const [accordeonsOuverts, setAccordeonsOuverts]   = useState<Set<string>>(new Set());
   const [rbEleveId, setRbEleveId]                   = useState<number | null>(null);
@@ -254,6 +255,28 @@ export default function DashboardEleve() {
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: b.contenu.qcm_id as string }));
       setPodcastsQcm(podcasts);
 
+      // Podcast de la semaine : chercher un podcast assigné cette semaine
+      const podcastCetteSemaine = blocs.find(
+        (b) => b.type === "ressource" && (b.contenu as any)?.qcm_id
+      );
+      if (podcastCetteSemaine) {
+        const qcmId = (podcastCetteSemaine.contenu as any).qcm_id as string;
+        const { data: reponses } = await supabase
+          .from("qcm_reponse")
+          .select("id")
+          .eq("qcm_id", qcmId)
+          .eq("eleve_id", eleveId)
+          .limit(1);
+        if (!signal.aborted) {
+          setPodcastSemaine({
+            id: podcastCetteSemaine.id,
+            titre: podcastCetteSemaine.titre,
+            qcm_id: qcmId,
+            fait: (reponses ?? []).length > 0,
+          });
+        }
+      }
+
       const rbId = (eleveData as any)?.repetibox_eleve_id;
       if (rbId) setRbEleveId(rbId);
 
@@ -340,6 +363,28 @@ export default function DashboardEleve() {
         .slice(0, 4)
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
       setPodcastsQcm(podcastsRB);
+
+      // Podcast de la semaine
+      const podcastCetteSemaine = blocsWeekFiltered.find(
+        (b) => b.type === "ressource" && (b.contenu as any)?.qcm_id
+      );
+      if (podcastCetteSemaine) {
+        const qcmId = (podcastCetteSemaine.contenu as any).qcm_id as string;
+        const { data: reponses } = await supabase
+          .from("qcm_reponse")
+          .select("id")
+          .eq("qcm_id", qcmId)
+          .eq("repetibox_eleve_id", rbId)
+          .limit(1);
+        if (!signal.aborted) {
+          setPodcastSemaine({
+            id: podcastCetteSemaine.id,
+            titre: podcastCetteSemaine.titre,
+            qcm_id: qcmId,
+            fait: (reponses ?? []).length > 0,
+          });
+        }
+      }
 
       // Requêtes secondaires avec signal
       fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
@@ -870,43 +915,46 @@ export default function DashboardEleve() {
 
 {/* Chapitres progressifs déplacés dans "À faire en ligne" */}
 
-            {/* Podcasts / QCM */}
-            {podcastsQcm.length > 0 && (
-              <div className="pb-card">
-                <div style={{ marginBottom: 16 }}>
-                  <p className="pb-section-title" style={{ fontSize: 16 }}>🎙️ Podiums podcasts</p>
+            {/* Podcast de la semaine */}
+            {podcastSemaine && (
+              <Link
+                href={podcastSemaine.fait ? `/eleve/qcm-classement/${podcastSemaine.qcm_id}` : `/eleve/activite/${podcastSemaine.id}`}
+                className="pb-card"
+                style={{
+                  display: "block", textDecoration: "none", color: "inherit",
+                  background: podcastSemaine.fait
+                    ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
+                    : "linear-gradient(135deg, #EFF6FF, #DBEAFE)",
+                  border: `1.5px solid ${podcastSemaine.fait ? "rgba(22,163,74,0.25)" : "rgba(59,130,246,0.25)"}`,
+                  padding: "20px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <span className="ms" style={{ fontSize: 28, color: podcastSemaine.fait ? "#16A34A" : "#3B82F6" }}>
+                    {podcastSemaine.fait ? "check_circle" : "podcasts"}
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: podcastSemaine.fait ? "#166534" : "#1E40AF" }}>
+                      Podcast de la semaine
+                    </div>
+                    <div style={{
+                      fontSize: 12, color: podcastSemaine.fait ? "#15803D" : "#2563EB",
+                      overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                    }}>
+                      {podcastSemaine.titre}
+                    </div>
+                  </div>
                 </div>
-                {podcastsQcm.map((p) => (
-                  <a
-                    key={p.id}
-                    href={`/eleve/qcm-classement/${p.qcm_id}`}
-                    className="pb-podcast-item"
-                    style={{ textDecoration: "none", color: "inherit", display: "flex" }}
-                  >
-                    <div className="pb-podcast-icon">
-                      <span className="ms" style={{ fontSize: 20 }}>headphones</span>
-                    </div>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontWeight: 700, fontSize: 13, color: "var(--pb-on-surface)",
-                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                      }}>
-                        {p.titre}
-                      </div>
-                      <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", marginTop: 2 }}>
-                        Voir le classement →
-                      </div>
-                    </div>
-                  </a>
-                ))}
-                <a
-                  href="/eleve/qcm-classement/global"
-                  style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 700, color: "var(--pb-primary)", textDecoration: "none", marginTop: 4, paddingTop: 12, borderTop: "1px solid var(--pb-outline-variant)" }}
-                >
-                  <span className="ms" style={{ fontSize: 16 }}>emoji_events</span>
-                  Classement général →
-                </a>
-              </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: podcastSemaine.fait ? "#16A34A" : "#3B82F6",
+                  color: "white", padding: "8px 18px",
+                  borderRadius: 999, fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}>
+                  {podcastSemaine.fait ? "Voir le classement →" : "Écouter & répondre →"}
+                </div>
+              </Link>
             )}
 
             {/* Mes chapitres (Plan Box) */}

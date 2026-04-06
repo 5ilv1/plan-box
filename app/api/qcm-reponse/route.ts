@@ -55,12 +55,21 @@ export async function GET(req: NextRequest) {
 
   // ── Classement global ────────────────────────────────────────────────────
   if (global === "true") {
-    const { data, error } = await admin
-      .from("qcm_reponse")
-      .select("qcm_id, prenom, nom, score, total, eleve_id, repetibox_eleve_id, created_at")
-      .order("created_at", { ascending: true });
+    const [{ data, error }, { data: podiumConfigs }] = await Promise.all([
+      admin
+        .from("qcm_reponse")
+        .select("qcm_id, prenom, nom, score, total, eleve_id, repetibox_eleve_id, created_at")
+        .order("created_at", { ascending: true }),
+      admin
+        .from("podcast_podium_config")
+        .select("qcm_id, dans_podium")
+        .eq("dans_podium", false),
+    ]);
 
     if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+
+    // QCM exclus du podium
+    const exclus = new Set((podiumConfigs ?? []).map((c) => c.qcm_id));
 
     // Pour chaque élève, meilleur score par QCM, puis somme
     type EleveAgg = {
@@ -70,6 +79,7 @@ export async function GET(req: NextRequest) {
     const elevesMap = new Map<string, EleveAgg>();
 
     for (const r of data ?? []) {
+      if (exclus.has(r.qcm_id)) continue; // exclure les podcasts hors podium
       const key = r.eleve_id ?? (r.repetibox_eleve_id ? `rb_${r.repetibox_eleve_id}` : `${r.prenom}_${r.nom}`);
       if (!elevesMap.has(key)) {
         elevesMap.set(key, { prenom: r.prenom, nom: r.nom, scoresParQcm: new Map() });

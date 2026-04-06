@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/enseignant/admin/chapitres", label: "Chapitres",       icon: "menu_book" },
   { href: "/enseignant/dictees",         label: "Dictées",         icon: "spellcheck" },
   { href: "/enseignant/bibliotheque",    label: "Bibliothèque",    icon: "library_books" },
+  { href: "/enseignant/podcasts",        label: "Podcasts",        icon: "podcasts" },
   { href: "/enseignant/lecons",          label: "Leçons",          icon: "auto_stories" },
   { href: "/enseignant/admin/eleves",    label: "Élèves & Groupes",icon: "group" },
   { href: "/enseignant/admin/qrcodes",   label: "QR codes",        icon: "qr_code_2" },
