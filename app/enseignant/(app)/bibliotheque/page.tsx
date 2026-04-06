@@ -33,6 +33,7 @@ interface Exercice {
 }
 
 interface AssignationResume {
+  id?: string;
   titre: string;
   type: string;
   groupe_label: string | null;
@@ -254,7 +255,7 @@ export default function PageBibliotheque() {
       const today = new Date().toISOString().split("T")[0];
       const { data } = await supabase
         .from("plan_travail")
-        .select("titre, type, groupe_label, date_assignation, contenu")
+        .select("id, titre, type, groupe_label, date_assignation, contenu")
         .in("titre", titres)
         .gte("date_assignation", today)
         .neq("statut", "fait")
@@ -880,7 +881,38 @@ export default function PageBibliotheque() {
     return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
   }
 
-  function ChipsAffectation({ items }: { items: AssignationResume[] }) {
+  async function desaffecterRes(titre: string, groupeLabel: string | null, dateAssignation: string) {
+    if (!confirm(`Supprimer l'affectation ${groupeLabel ? groupeLabel : "individuelle"} du ${fmtDate(dateAssignation)} ?`)) return;
+    // Trouver les IDs correspondants
+    const items = affectationsRes.get(titre) ?? [];
+    const ids = items
+      .filter((a) => a.groupe_label === groupeLabel && a.date_assignation === dateAssignation && a.id)
+      .map((a) => a.id!);
+    if (ids.length === 0) return;
+
+    const res = await fetch("/api/supprimer-plan-travail", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ids }),
+    });
+    if (!res.ok) {
+      const json = await res.json();
+      alert("Erreur : " + (json.error ?? "inconnue"));
+      return;
+    }
+    // Mettre à jour l'état local
+    setAffectationsRes((prev) => {
+      const next = new Map(prev);
+      const remaining = (next.get(titre) ?? []).filter(
+        (a) => !(a.groupe_label === groupeLabel && a.date_assignation === dateAssignation)
+      );
+      if (remaining.length === 0) next.delete(titre);
+      else next.set(titre, remaining);
+      return next;
+    });
+  }
+
+  function ChipsAffectation({ items, onDesaffecter }: { items: AssignationResume[]; onDesaffecter?: (groupeLabel: string | null, dateAssignation: string) => void }) {
     // Dédupliquer par (groupe_label, date) et afficher max 3
     const uniques = items.filter((a, i, arr) =>
       arr.findIndex(b => b.groupe_label === a.groupe_label && b.date_assignation === a.date_assignation) === i
@@ -892,8 +924,21 @@ export default function PageBibliotheque() {
           <span key={i} style={{
             fontSize: 10, padding: "2px 7px", borderRadius: 4,
             background: "#EFF6FF", color: "#1D4ED8", fontWeight: 600, whiteSpace: "nowrap",
+            display: "inline-flex", alignItems: "center", gap: 4,
           }}>
             {a.groupe_label ? `👥 ${a.groupe_label}` : "👤 Individuel"} · {fmtDate(a.date_assignation)}
+            {onDesaffecter && (
+              <button
+                onClick={(e) => { e.stopPropagation(); onDesaffecter(a.groupe_label, a.date_assignation); }}
+                style={{
+                  background: "none", border: "none", cursor: "pointer", padding: 0,
+                  fontSize: 11, color: "#1D4ED8", fontWeight: 800, lineHeight: 1,
+                }}
+                title="Désaffecter"
+              >
+                ✕
+              </button>
+            )}
           </span>
         ))}
         {uniques.length > 4 && (
@@ -1212,7 +1257,7 @@ export default function PageBibliotheque() {
                             {taches[0]?.url && <span style={{ fontSize: 11, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 220 }}><span className="ms" style={{ fontSize: 11, verticalAlign: "middle" }}>link</span> {taches[0].url}</span>}
                             <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>{new Date(r.created_at).toLocaleDateString("fr-FR")}</span>
                           </div>
-                          <ChipsAffectation items={affRes} />
+                          <ChipsAffectation items={affRes} onDesaffecter={(gl, da) => desaffecterRes(r.titre, gl, da)} />
                         </div>
                         <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
                           <button className="btn-secondary" onClick={() => setApercuRes(r)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Aperçu</button>
