@@ -415,7 +415,7 @@ export default function QCMPlayer({
           )}
 
           {/* Bouton Valider / Suivant */}
-          {!reponseValidee ? (
+          {reponseValidee === null ? (
             <div style={{ display: "flex", justifyContent: "center" }}>
               <button
                 onClick={validerReponse}
