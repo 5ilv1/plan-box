@@ -136,6 +136,7 @@ export default function PageBibliotheque() {
   const [editResUrl, setEditResUrl]         = useState("");
   const [enSauvegardeRes, setEnSauvegardeRes] = useState(false);
   const [apercuRes, setApercuRes] = useState<RessourceBibliotheque | null>(null);
+  const [resAAffecter, setResAAffecter] = useState<RessourceBibliotheque | null>(null);
   const [qcmParRessource, setQcmParRessource] = useState<Map<string, QCMQuestion[]>>(new Map());
 
   /* ── Affectations ── */
@@ -1217,6 +1218,7 @@ export default function PageBibliotheque() {
                           <button className="btn-secondary" onClick={() => setApercuRes(r)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Aperçu</button>
                           <Link href={`/enseignant/generer?type=ressource&biblio=${r.id}`} className="btn-secondary" style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6, textDecoration: "none" }}>Réutiliser</Link>
                           <button className="btn-secondary" onClick={() => ouvrirEditionRes(r)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Modifier</button>
+                          <button className="btn-primary" onClick={() => setResAAffecter(r)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Affecter</button>
                           {suppression === r.id ? (
                             <>
                               <button onClick={() => supprimerRes(r.id)} style={{ padding: "4px 10px", fontSize: 13, background: "var(--error)", color: "white", border: "none", borderRadius: 6, cursor: "pointer" }}>Confirmer</button>
@@ -2191,6 +2193,25 @@ export default function PageBibliotheque() {
         />
       )}
 
+      {/* ── Modal affectation ressource ── */}
+      {resAAffecter && (
+        <AffecterExerciceModal
+          exercice={{
+            id: resAAffecter.id,
+            type: "ressource",
+            titre: resAAffecter.titre,
+            contenu: {
+              ...resAAffecter.contenu,
+              ...(qcmParRessource.get(resAAffecter.titre) ? {
+                qcm: qcmParRessource.get(resAAffecter.titre),
+                qcm_id: crypto.randomUUID(),
+              } : {}),
+            } as Record<string, unknown>,
+          }}
+          onClose={() => setResAAffecter(null)}
+        />
+      )}
+
       {/* ── Modale aperçu ressource (vue élève) ── */}
       {apercuRes && (() => {
         const taches = apercuRes.contenu?.taches
@@ -2274,7 +2295,7 @@ export default function PageBibliotheque() {
               {/* Pied de modale */}
               <div style={{ padding: "12px 20px", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "flex-end", gap: 8, flexShrink: 0 }}>
                 <button className="btn-secondary" onClick={() => setApercuRes(null)} style={{ padding: "6px 16px", fontSize: 13, borderRadius: 6 }}>Fermer</button>
-                <Link href={`/enseignant/generer?type=ressource&biblio=${apercuRes.id}`} className="btn-primary" style={{ padding: "6px 16px", fontSize: 13, borderRadius: 6, textDecoration: "none" }}>Réutiliser</Link>
+                <button className="btn-primary" onClick={() => { setResAAffecter(apercuRes); setApercuRes(null); }} style={{ padding: "6px 16px", fontSize: 13, borderRadius: 6 }}>Affecter</button>
               </div>
             </div>
           </div>
