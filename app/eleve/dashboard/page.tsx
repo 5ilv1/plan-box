@@ -1238,7 +1238,7 @@ export default function DashboardEleve() {
                     const tousBlocs = [
                       ...groupesEnLigne.flatMap(([, { blocs }]) => blocs),
                       ...blocsEnLigneLibres,
-                    ];
+                    ].filter((b) => !(b.type === "ressource" && (b.contenu as any)?.qcm_id));
                     if (tousBlocs.length === 0) return null;
                     return (
                       <div className="pb-activite-grid">
