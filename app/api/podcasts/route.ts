@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 
 // GET /api/podcasts — liste tous les podcasts (QCM) avec scores et config podium
-export async function GET() {
+// Inclut aussi les podcasts non-assignés de la bibliothèque
+export async function GET(req: NextRequest) {
+  const enseignantId = new URL(req.url).searchParams.get("enseignant_id");
   const admin = createAdminClient();
 
   // 1. Récupérer tous les blocs podcast avec qcm_id (un par qcm_id suffit)
@@ -21,6 +23,18 @@ export async function GET() {
     const qcmId = (b.contenu as any)?.qcm_id;
     if (!qcmId || parQcm.has(qcmId)) continue;
     parQcm.set(qcmId, { qcm_id: qcmId, titre: b.titre, date: b.date_assignation, contenu: b.contenu as Record<string, unknown> });
+  }
+
+  // 1b. Récupérer les podcasts de la bibliothèque (non encore assignés)
+  let biblioRes: Array<{ id: string; titre: string; sous_type: string; contenu: Record<string, unknown>; created_at: string }> = [];
+  if (enseignantId) {
+    const { data } = await admin
+      .from("banque_ressources")
+      .select("id, titre, sous_type, contenu, created_at")
+      .eq("enseignant_id", enseignantId)
+      .eq("sous_type", "podcast")
+      .order("created_at", { ascending: false });
+    biblioRes = (data ?? []) as typeof biblioRes;
   }
 
   // 2. Récupérer toutes les réponses QCM
@@ -80,7 +94,24 @@ export async function GET() {
     };
   });
 
-  return NextResponse.json({ podcasts });
+  // 5. Podcasts de la bibliothèque non encore assignés
+  const biblio = biblioRes
+    .filter((r) => {
+      // Vérifier que ce podcast n'est pas déjà dans la liste assignée (par titre)
+      return !podcasts.some((p) => p.titre === r.titre);
+    })
+    .map((r) => ({
+      biblio_id: r.id,
+      qcm_id: null as string | null,
+      titre: r.titre,
+      date: null as string | null,
+      contenu: r.contenu,
+      dans_podium: false,
+      nb_eleves: 0,
+      scores: [] as typeof podcasts[0]["scores"],
+    }));
+
+  return NextResponse.json({ podcasts, biblio });
 }
 
 // PATCH /api/podcasts — met à jour la config podium d'un podcast
