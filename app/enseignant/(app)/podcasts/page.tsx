@@ -13,25 +13,54 @@ interface ScoreEleve {
   created_at: string;
 }
 
+interface Groupe {
+  id: string;
+  nom: string;
+}
+
 interface Podcast {
   qcm_id: string;
   titre: string;
   date: string;
+  contenu: Record<string, unknown>;
   dans_podium: boolean;
   nb_eleves: number;
   scores: ScoreEleve[];
 }
 
+// Prochain lundi (ou aujourd'hui si lundi)
+function prochainLundi(): string {
+  const d = new Date();
+  const jour = d.getDay();
+  const diff = jour === 0 ? 1 : jour === 1 ? 0 : 8 - jour;
+  d.setDate(d.getDate() + diff);
+  return d.toISOString().split("T")[0];
+}
+
 export default function PodcastsEnseignant() {
   const [podcasts, setPodcasts] = useState<Podcast[]>([]);
+  const [groupes, setGroupes] = useState<Groupe[]>([]);
   const [chargement, setChargement] = useState(true);
   const [ouvert, setOuvert] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
 
+  // Affectation
+  const [affecterQcmId, setAffecterQcmId] = useState<string | null>(null);
+  const [affDate, setAffDate] = useState(prochainLundi());
+  const [affGroupeIds, setAffGroupeIds] = useState<Set<string>>(new Set());
+  const [affMode, setAffMode] = useState<"classe" | "groupes">("classe");
+  const [affEnCours, setAffEnCours] = useState(false);
+  const [affResultat, setAffResultat] = useState<string | null>(null);
+
   useEffect(() => {
-    fetch("/api/podcasts")
-      .then((r) => r.json())
-      .then((json) => setPodcasts(json.podcasts ?? []))
+    Promise.all([
+      fetch("/api/podcasts").then((r) => r.json()),
+      fetch("/api/admin/groupes").then((r) => r.json()),
+    ])
+      .then(([podJson, grpJson]) => {
+        setPodcasts(podJson.podcasts ?? []);
+        setGroupes(grpJson.groupes ?? []);
+      })
       .catch(() => {})
       .finally(() => setChargement(false));
   }, []);
@@ -50,6 +79,50 @@ export default function PodcastsEnseignant() {
     setSaving(null);
   }
 
+  function ouvrirAffecter(qcm_id: string) {
+    setAffecterQcmId(qcm_id);
+    setAffDate(prochainLundi());
+    setAffGroupeIds(new Set());
+    setAffMode("classe");
+    setAffResultat(null);
+  }
+
+  async function lancerAffectation() {
+    if (!affecterQcmId) return;
+    const podcast = podcasts.find((p) => p.qcm_id === affecterQcmId);
+    if (!podcast) return;
+
+    setAffEnCours(true);
+    setAffResultat(null);
+
+    const body: Record<string, unknown> = {
+      type: "ressource",
+      titre: podcast.titre,
+      contenu: podcast.contenu,
+      dateAssignation: affDate,
+      periodicite: "jour",
+      groupeIds: affMode === "classe" ? groupes.map((g) => g.id) : Array.from(affGroupeIds),
+    };
+
+    try {
+      const res = await fetch("/api/affecter-exercice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const json = await res.json();
+      if (json.ok) {
+        setAffResultat(`Affecté à ${json.nb} élève${json.nb > 1 ? "s" : ""}`);
+        setTimeout(() => setAffecterQcmId(null), 2000);
+      } else {
+        setAffResultat(`Erreur : ${json.erreur ?? "inconnue"}`);
+      }
+    } catch {
+      setAffResultat("Erreur réseau");
+    }
+    setAffEnCours(false);
+  }
+
   if (chargement) {
     return (
       <div style={{ padding: 40, textAlign: "center", color: "var(--pb-on-surface-variant)" }}>
@@ -62,6 +135,7 @@ export default function PodcastsEnseignant() {
     return (
       <div style={{ padding: 40 }}>
         <h1 style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", marginBottom: 8 }}>
+          <span className="ms" style={{ fontSize: 28, verticalAlign: "middle", marginRight: 8 }}>podcasts</span>
           Podcasts
         </h1>
         <p style={{ color: "var(--pb-on-surface-variant)" }}>
@@ -90,6 +164,7 @@ export default function PodcastsEnseignant() {
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         {podcasts.map((p) => {
           const isOpen = ouvert === p.qcm_id;
+          const isAffecting = affecterQcmId === p.qcm_id;
           const moyennePct = p.scores.length > 0
             ? Math.round(p.scores.reduce((s, e) => s + e.pct, 0) / p.scores.length)
             : 0;
@@ -143,6 +218,25 @@ export default function PodcastsEnseignant() {
                   </div>
                 </div>
 
+                {/* Bouton Affecter */}
+                <button
+                  onClick={(e) => { e.stopPropagation(); ouvrirAffecter(p.qcm_id); }}
+                  style={{
+                    display: "flex", alignItems: "center", gap: 6,
+                    padding: "6px 14px", borderRadius: 999,
+                    border: "1.5px solid var(--pb-primary, #0050D4)",
+                    background: "rgba(0,80,212,0.06)",
+                    color: "var(--pb-primary, #0050D4)",
+                    fontSize: 12, fontWeight: 700,
+                    cursor: "pointer",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    flexShrink: 0,
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 16 }}>send</span>
+                  Affecter
+                </button>
+
                 {/* Toggle podium */}
                 <button
                   onClick={(e) => { e.stopPropagation(); togglePodium(p.qcm_id, p.dans_podium, p.titre); }}
@@ -177,6 +271,125 @@ export default function PodcastsEnseignant() {
                   expand_more
                 </span>
               </div>
+
+              {/* Panneau d'affectation */}
+              {isAffecting && (
+                <div style={{
+                  borderTop: "1px solid var(--pb-outline-variant, #E0E0FF)",
+                  padding: "20px",
+                  background: "rgba(0,80,212,0.03)",
+                }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 14, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                    <span className="ms" style={{ fontSize: 18, verticalAlign: "middle", marginRight: 6 }}>send</span>
+                    Affecter ce podcast
+                  </div>
+
+                  {/* Date (lundi) */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: "var(--pb-on-surface-variant)", display: "block", marginBottom: 4 }}>
+                      Semaine du (lundi)
+                    </label>
+                    <input
+                      type="date"
+                      value={affDate}
+                      onChange={(e) => setAffDate(e.target.value)}
+                      style={{
+                        padding: "8px 12px", borderRadius: 8,
+                        border: "1.5px solid var(--pb-outline-variant, #D1D5DB)",
+                        fontSize: 14, fontFamily: "inherit",
+                      }}
+                    />
+                  </div>
+
+                  {/* Mode */}
+                  <div style={{ marginBottom: 14 }}>
+                    <label style={{ fontSize: 12, fontWeight: 700, color: "var(--pb-on-surface-variant)", display: "block", marginBottom: 6 }}>
+                      Affecter à
+                    </label>
+                    <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
+                      {(["classe", "groupes"] as const).map((m) => (
+                        <button
+                          key={m}
+                          onClick={() => setAffMode(m)}
+                          style={{
+                            padding: "6px 16px", borderRadius: 999,
+                            border: `1.5px solid ${affMode === m ? "var(--pb-primary)" : "#D1D5DB"}`,
+                            background: affMode === m ? "var(--pb-primary)" : "white",
+                            color: affMode === m ? "white" : "var(--pb-on-surface)",
+                            fontSize: 13, fontWeight: 700, cursor: "pointer",
+                            fontFamily: "'Plus Jakarta Sans', sans-serif",
+                          }}
+                        >
+                          {m === "classe" ? "Toute la classe" : "Groupe(s)"}
+                        </button>
+                      ))}
+                    </div>
+
+                    {affMode === "groupes" && (
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {groupes.map((g) => (
+                          <button
+                            key={g.id}
+                            onClick={() => setAffGroupeIds((prev) => {
+                              const next = new Set(prev);
+                              if (next.has(g.id)) next.delete(g.id);
+                              else next.add(g.id);
+                              return next;
+                            })}
+                            style={{
+                              padding: "5px 14px", borderRadius: 999,
+                              border: `1.5px solid ${affGroupeIds.has(g.id) ? "var(--pb-primary)" : "#E0E0FF"}`,
+                              background: affGroupeIds.has(g.id) ? "rgba(0,80,212,0.08)" : "white",
+                              color: affGroupeIds.has(g.id) ? "var(--pb-primary)" : "var(--pb-on-surface)",
+                              fontSize: 13, fontWeight: 600, cursor: "pointer",
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            }}
+                          >
+                            {g.nom}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <button
+                      onClick={lancerAffectation}
+                      disabled={affEnCours || (affMode === "groupes" && affGroupeIds.size === 0)}
+                      style={{
+                        padding: "10px 24px", borderRadius: 999,
+                        background: "var(--pb-primary, #0050D4)", color: "white",
+                        border: "none", fontSize: 14, fontWeight: 700, cursor: "pointer",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        opacity: affEnCours || (affMode === "groupes" && affGroupeIds.size === 0) ? 0.5 : 1,
+                      }}
+                    >
+                      {affEnCours ? "Affectation..." : "Affecter"}
+                    </button>
+                    <button
+                      onClick={() => setAffecterQcmId(null)}
+                      style={{
+                        padding: "10px 20px", borderRadius: 999,
+                        background: "transparent", color: "var(--pb-on-surface-variant)",
+                        border: "1.5px solid var(--pb-outline-variant, #D1D5DB)",
+                        fontSize: 14, fontWeight: 600, cursor: "pointer",
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      }}
+                    >
+                      Annuler
+                    </button>
+                    {affResultat && (
+                      <span style={{
+                        fontSize: 13, fontWeight: 700,
+                        color: affResultat.startsWith("Erreur") ? "#DC2626" : "#16A34A",
+                      }}>
+                        {affResultat}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Détail scores élèves */}
               {isOpen && (

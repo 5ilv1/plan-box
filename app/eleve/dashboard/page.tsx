@@ -917,18 +917,13 @@ export default function DashboardEleve() {
 
             {/* Podcast de la semaine */}
             {podcastSemaine && (
-              <Link
-                href={podcastSemaine.fait ? `/eleve/qcm-classement/${podcastSemaine.qcm_id}` : `/eleve/activite/${podcastSemaine.id}`}
-                className="pb-card"
-                style={{
-                  display: "block", textDecoration: "none", color: "inherit",
-                  background: podcastSemaine.fait
-                    ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
-                    : "linear-gradient(135deg, #EFF6FF, #DBEAFE)",
-                  border: `1.5px solid ${podcastSemaine.fait ? "rgba(22,163,74,0.25)" : "rgba(59,130,246,0.25)"}`,
-                  padding: "20px",
-                }}
-              >
+              <div className="pb-card" style={{
+                background: podcastSemaine.fait
+                  ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
+                  : "linear-gradient(135deg, #EFF6FF, #DBEAFE)",
+                border: `1.5px solid ${podcastSemaine.fait ? "rgba(22,163,74,0.25)" : "rgba(59,130,246,0.25)"}`,
+                padding: "20px",
+              }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
                   <span className="ms" style={{ fontSize: 28, color: podcastSemaine.fait ? "#16A34A" : "#3B82F6" }}>
                     {podcastSemaine.fait ? "check_circle" : "podcasts"}
@@ -945,16 +940,37 @@ export default function DashboardEleve() {
                     </div>
                   </div>
                 </div>
-                <div style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  background: podcastSemaine.fait ? "#16A34A" : "#3B82F6",
-                  color: "white", padding: "8px 18px",
-                  borderRadius: 999, fontSize: 13, fontWeight: 700,
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                }}>
+                <Link
+                  href={podcastSemaine.fait ? `/eleve/qcm-classement/${podcastSemaine.qcm_id}` : `/eleve/activite/${podcastSemaine.id}`}
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    background: podcastSemaine.fait ? "#16A34A" : "#3B82F6",
+                    color: "white", padding: "8px 18px",
+                    borderRadius: 999, fontSize: 13, fontWeight: 700,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    textDecoration: "none",
+                  }}
+                >
                   {podcastSemaine.fait ? "Voir le classement →" : "Écouter & répondre →"}
+                </Link>
+                {/* Liens podiums */}
+                <div style={{ display: "flex", gap: 10, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${podcastSemaine.fait ? "rgba(22,163,74,0.15)" : "rgba(59,130,246,0.15)"}` }}>
+                  <Link
+                    href={`/eleve/qcm-classement/${podcastSemaine.qcm_id}`}
+                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: podcastSemaine.fait ? "#166534" : "#1E40AF", textDecoration: "none" }}
+                  >
+                    <span className="ms" style={{ fontSize: 16 }}>emoji_events</span>
+                    Podium podcast
+                  </Link>
+                  <Link
+                    href="/eleve/qcm-classement/global"
+                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: podcastSemaine.fait ? "#166534" : "#1E40AF", textDecoration: "none" }}
+                  >
+                    <span className="ms" style={{ fontSize: 16 }}>leaderboard</span>
+                    Classement global
+                  </Link>
                 </div>
-              </Link>
+              </div>
             )}
 
             {/* Mes chapitres (Plan Box) */}

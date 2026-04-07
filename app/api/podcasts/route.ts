@@ -16,11 +16,11 @@ export async function GET() {
   if (errBlocs) return NextResponse.json({ erreur: errBlocs.message }, { status: 500 });
 
   // Dédupliquer par qcm_id
-  const parQcm = new Map<string, { qcm_id: string; titre: string; date: string }>();
+  const parQcm = new Map<string, { qcm_id: string; titre: string; date: string; contenu: Record<string, unknown> }>();
   for (const b of blocs ?? []) {
     const qcmId = (b.contenu as any)?.qcm_id;
     if (!qcmId || parQcm.has(qcmId)) continue;
-    parQcm.set(qcmId, { qcm_id: qcmId, titre: b.titre, date: b.date_assignation });
+    parQcm.set(qcmId, { qcm_id: qcmId, titre: b.titre, date: b.date_assignation, contenu: b.contenu as Record<string, unknown> });
   }
 
   // 2. Récupérer toutes les réponses QCM
@@ -73,6 +73,7 @@ export async function GET() {
       qcm_id: p.qcm_id,
       titre: p.titre,
       date: p.date,
+      contenu: p.contenu,
       dans_podium: podiumMap.get(p.qcm_id) ?? true, // par défaut dans le podium
       nb_eleves: scores.length,
       scores,
