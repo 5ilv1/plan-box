@@ -40,11 +40,13 @@ export async function GET(req: NextRequest) {
 
   const chapitreIds = [...new Set(assignations.map((a) => a.chapitre_id))];
 
-  // 3. Infos chapitres + nb exercices
+  // 3. Infos chapitres + nb exercices (filtrer par date_debut si définie)
+  const today = new Date().toISOString().split("T")[0];
   const { data: chapitres } = await admin
     .from("chapitres")
-    .select("id, titre, matiere, sous_matiere, seuil_evaluation, niveaux(nom)")
-    .in("id", chapitreIds);
+    .select("id, titre, matiere, sous_matiere, seuil_evaluation, date_debut, niveaux(nom)")
+    .in("id", chapitreIds)
+    .or(`date_debut.is.null,date_debut.lte.${today}`);
 
   if (!chapitres?.length) {
     return NextResponse.json({ chapitres: [] });

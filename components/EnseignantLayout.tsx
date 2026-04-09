@@ -13,6 +13,7 @@ const NAV_ITEMS = [
   { href: "/enseignant/bibliotheque",    label: "Bibliothèque",    icon: "library_books" },
   { href: "/enseignant/podcasts",        label: "Podcasts",        icon: "podcasts" },
   { href: "/enseignant/lecons",          label: "Leçons",          icon: "auto_stories" },
+  { href: "/enseignant/ma-ptite-regle", label: "Ma P'tite Règle", icon: "ink_pen" },
   { href: "/enseignant/admin/eleves",    label: "Élèves & Groupes",icon: "group" },
   { href: "/enseignant/admin/qrcodes",   label: "QR codes",        icon: "qr_code_2" },
   { href: "/enseignant/daily-problem",   label: "Problème du jour", icon: "calculate" },
