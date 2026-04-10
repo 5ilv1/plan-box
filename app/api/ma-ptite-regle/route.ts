@@ -154,14 +154,15 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
         type: "exercice" as const,
         nb: 7, nbCible: 5, reponseUnMot: false,
         instruction: `Exercice de transformation/réécriture.
-INTERDIT : mettre des trous (___) dans l'énoncé. L'énoncé est une CONSIGNE DE TRANSFORMATION, pas un texte à trous.
-Chaque énoncé donne une INSTRUCTION suivie d'une phrase complète à transformer.
-Exemples d'énoncés :
+INTERDIT ABSOLU : NE PAS mettre de trous (___) dans l'énoncé. Si un énoncé contient "___", il sera SUPPRIMÉ.
+L'énoncé COMMENCE par un verbe d'action (Réécris, Mets, Transforme, Remplace) suivi de la phrase entre guillemets.
+Format OBLIGATOIRE de chaque énoncé :
 - "Réécris cette phrase en remplaçant « il » par « elle » : « Il est grand et il court vite. »"
 - "Mets cette phrase au pluriel : « Le chat est noir et petit. »"
-- "Réécris en changeant le sujet par « nous » : « Marie est contente et elle chante. »"
-La reponse_attendue est la phrase entièrement réécrite avec les bons accords.
-Les transformations doivent obliger l'élève à choisir entre "est" et "et" dans la nouvelle phrase.`,
+- "Transforme en changeant le sujet par « nous » : « Marie est contente et elle chante. »"
+- "Remplace « le garçon » par « les filles » : « Le garçon est rapide et il saute haut. »"
+La reponse_attendue est la phrase ENTIÈREMENT réécrite avec tous les accords modifiés.
+Les transformations doivent obliger l'élève à réfléchir à l'usage de "est"/"sont"/"et" dans la nouvelle phrase.`,
       },
       {
         jour: "Vendredi",
@@ -439,6 +440,13 @@ ${format}`;
         }
       }
     }
+  }
+
+  // Pour les exercices de réécriture (pas reponseUnMot), supprimer les questions à trous
+  if (type === "exercice" && !reponseUnMot && Array.isArray(contenu.questions)) {
+    contenu.questions = contenu.questions.filter((q: any) => {
+      return !q.enonce?.includes("___");
+    });
   }
 
   // Valider et corriger les réponses
