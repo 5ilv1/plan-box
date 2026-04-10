@@ -155,16 +155,6 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
         nb: 0, // pas de génération IA, contenu statique
         instruction: "",
       },
-      {
-        jour: "Vendredi",
-        label: "Évaluation — Mix",
-        type: "qcm" as const,
-        nb: 8,
-        instruction: `Évaluation finale qui mélange tous les types d'exercices vus dans la semaine.
-Questions variées : identification, correction d'erreurs, choix du bon mot.
-Plus exigeant que les exercices précédents pour vérifier la maîtrise de la règle.
-INTERDIT : inventer des mots qui n'existent pas comme distracteurs. Les erreurs dans les options doivent être des VRAIES confusions entre les homophones visés par la règle, pas des fautes de frappe ou des mots inventés.`,
-      },
     ];
 
     const niveauNom = "CM1-CM2";
