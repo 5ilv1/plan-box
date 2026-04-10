@@ -428,16 +428,11 @@ ${format}`;
       return nbTrous <= 1 && !repHasSlash;
     });
 
-    // Si l'énoncé a un trou et la réponse est une phrase complète,
-    // extraire le mot qui remplace le trou
+    // Forcer la réponse à un seul mot
     for (const q of contenu.questions as any[]) {
-      if (q.enonce?.includes("___") && q.reponse_attendue?.includes(" ")) {
-        const enonceWords = q.enonce.replace(/_{2,}/g, "___").split(/\s+/);
-        const reponseWords = q.reponse_attendue.split(/\s+/);
-        const idxTrou = enonceWords.indexOf("___");
-        if (idxTrou >= 0 && idxTrou < reponseWords.length) {
-          q.reponse_attendue = reponseWords[idxTrou].replace(/[.,;:!?]/g, "");
-        }
+      if (q.reponse_attendue?.includes(" ")) {
+        // Prendre le premier mot (c'est l'homophone visé)
+        q.reponse_attendue = q.reponse_attendue.split(/\s+/)[0].replace(/[.,;:!?]/g, "");
       }
     }
   }
