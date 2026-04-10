@@ -53,8 +53,9 @@ ${isCalcul
 1. Vérifie l'orthographe, la conjugaison et la grammaire de la réponse.
 2. Si un "enonce" est fourni avec un trou (___), vérifie que la réponse est SÉMANTIQUEMENT CORRECTE dans le contexte de la phrase.
 3. Si la réponse ne correspond pas au sens de la phrase, corrige-la.
-4. Ne reformule PAS, ne change PAS le sens global, ne modifie PAS la ponctuation.
-5. Si une réponse est déjà correcte, renvoie-la à l'identique.`}
+4. IMPORTANT : si l'énoncé contient un verbe entre parenthèses (ex: "(manger)"), la réponse DOIT être une forme de CE verbe (ex: "mangé", "manger"), JAMAIS un autre verbe. Si la réponse est un verbe différent, remplace-la par la forme correcte du verbe indiqué.
+5. Ne reformule PAS, ne change PAS le sens global, ne modifie PAS la ponctuation.
+6. Si une réponse est déjà correcte, renvoie-la à l'identique.`}
 
 Entrée :
 ${JSON.stringify(itemsAvecEnonce)}

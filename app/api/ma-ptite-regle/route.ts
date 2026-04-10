@@ -372,10 +372,11 @@ L'élève doit écrire la bonne forme du verbe : infinitif (-er) ou participe pa
 Format de chaque question :
 - enonce : une phrase avec un trou à la place du verbe, suivi du verbe entre parenthèses. Ex: "Il a ___ une pomme. (manger)"
 - reponse_attendue : la forme correcte du verbe (ex: "mangé", "manger")
-La reponse_attendue est UN SEUL MOT.
-UNIQUEMENT des verbes du 1er groupe (-er) : manger, jouer, marcher, regarder, trouver, etc.
+La reponse_attendue est UN SEUL MOT : c'est OBLIGATOIREMENT la forme correcte du verbe indiqué entre parenthèses.
+Si l'énoncé dit "(manger)" → la réponse est "mangé" ou "manger", JAMAIS un autre verbe.
+UNIQUEMENT des verbes du 1er groupe (-er) : manger, jouer, marcher, regarder, trouver, préparer, etc.
 INTERDIT d'utiliser des verbes du 2e groupe (finir, choisir…) ou du 3e groupe (prendre, vendre, faire…).
-La confusion -er/-é ne concerne QUE les verbes du 1er groupe.
+INTERDIT de répondre par un verbe différent de celui entre parenthèses.
 Alterner infinitif et participe passé.`
       : `Exercice d'observation/découverte sur la règle « ${titre} ».
 Chaque question présente un mot ou un groupe nominal au SINGULIER. L'élève doit écrire la forme au PLURIEL.
