@@ -143,9 +143,10 @@ RÈGLE ABSOLUE : CHAQUE occurrence du mot visé par la règle dans le texte DOIT
         label: "Trouve l'erreur — Entraînement",
         type: "qcm" as const,
         nb: 5,
-        instruction: `Exercice "trouve l'erreur". Présente des phrases dont certaines contiennent une erreur d'orthographe liée à la règle.
-L'élève doit identifier si la phrase est correcte ou incorrecte, et choisir la bonne correction.
-Pour chaque question, propose la phrase et 4 options : la phrase correcte et 3 variantes avec erreurs.`,
+        instruction: `Exercice "trouve l'erreur". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
+Chaque question propose 4 versions de la MÊME phrase. Les erreurs portent UNIQUEMENT sur la confusion entre les mots visés par la règle (ex: "est" utilisé à la place de "et", ou inversement).
+INTERDIT : inventer des mots qui n'existent pas (comme "és", "ét", "a/à" mal orthographiés). Les erreurs doivent être des VRAIES confusions entre homophones existants.
+Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent ces mots aux mauvais endroits.`,
       },
       {
         jour: "Jeudi",
@@ -163,7 +164,8 @@ Chaque question donne une phrase à transformer et l'élève doit écrire la phr
         nb: 8,
         instruction: `Évaluation finale qui mélange tous les types d'exercices vus dans la semaine.
 Questions variées : identification, correction d'erreurs, choix du bon mot.
-Plus exigeant que les exercices précédents pour vérifier la maîtrise de la règle.`,
+Plus exigeant que les exercices précédents pour vérifier la maîtrise de la règle.
+INTERDIT : inventer des mots qui n'existent pas comme distracteurs. Les erreurs dans les options doivent être des VRAIES confusions entre les homophones visés par la règle, pas des fautes de frappe ou des mots inventés.`,
       },
     ];
 
