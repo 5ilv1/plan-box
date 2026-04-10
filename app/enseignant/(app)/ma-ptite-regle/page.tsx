@@ -147,7 +147,7 @@ function Modal({ onClose, title, children }: { onClose: () => void; title: strin
       }}
       onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
     >
-      <div style={{ background: "white", borderRadius: 16, width: "100%", maxWidth: 560, maxHeight: "90vh", overflow: "auto" }}>
+      <div style={{ background: "white", borderRadius: 16, width: "100%", maxWidth: 720, maxHeight: "90vh", overflow: "auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 20px", borderBottom: "1px solid #E0E0E0" }}>
           <h3 style={{ margin: 0, fontSize: 18 }}>{title}</h3>
           <button onClick={onClose} style={{ border: "none", background: "none", fontSize: 20, cursor: "pointer", color: "#666" }}>✕</button>
@@ -202,8 +202,11 @@ export default function MaPtiteRegle() {
   const [assignRegle, setAssignRegle] = useState<string | null>(null);
   const [assignGroupes, setAssignGroupes] = useState<Set<string>>(new Set());
 
-  // Aperçu
+  // Aperçu / Édition
   const [apercuRegle, setApercuRegle] = useState<Regle | null>(null);
+  const [exoEdits, setExoEdits] = useState<Record<string, Record<string, unknown>>>({});
+  const [exoSaving, setExoSaving] = useState<string | null>(null);
+  const [exoSaved, setExoSaved] = useState<Set<string>>(new Set());
 
   // Édition
   const [editRegle, setEditRegle] = useState<Regle | null>(null);
@@ -310,6 +313,53 @@ export default function MaPtiteRegle() {
     setNewMotsCibles(m.mots_cibles ?? []);
     setShowTemplates(false);
     setShowCreation(true);
+  }
+
+  /* ── Édition d'un exercice dans l'aperçu ──────────── */
+
+  function getContenuEdite(ex: Exercice): Record<string, unknown> {
+    return exoEdits[ex.id] ?? (ex.contenu as Record<string, unknown>) ?? {};
+  }
+
+  function majContenuExo(exId: string, contenu: Record<string, unknown>) {
+    setExoEdits((prev) => ({ ...prev, [exId]: contenu }));
+    // Retirer le statut "sauvé" quand on modifie
+    setExoSaved((prev) => { const n = new Set(prev); n.delete(exId); return n; });
+  }
+
+  async function sauvegarderExo(exId: string) {
+    const contenu = exoEdits[exId];
+    if (!contenu) return;
+    setExoSaving(exId);
+    try {
+      // Recalculer nb_questions
+      let nbQ = 0;
+      if (Array.isArray(contenu.questions)) nbQ = (contenu.questions as unknown[]).length;
+      else if (Array.isArray(contenu.trous)) nbQ = (contenu.trous as unknown[]).length;
+      else if (contenu.nb_phrases) nbQ = contenu.nb_phrases as number;
+
+      const res = await fetch("/api/chapitres/exercices", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: exId, contenu, nb_questions: nbQ || undefined }),
+      });
+      if (res.ok) {
+        setExoSaved((prev) => new Set(prev).add(exId));
+        await charger();
+        // Mettre à jour apercuRegle avec les nouvelles données
+        const reglesRes = await fetch(`/api/ma-ptite-regle?enseignant_id=${enseignantId}`).then((r) => r.json());
+        const updated = (reglesRes.regles ?? []).find((r: Regle) => r.id === apercuRegle?.id);
+        if (updated) setApercuRegle(updated);
+      }
+    } finally {
+      setExoSaving(null);
+    }
+  }
+
+  function ouvrirApercu(r: Regle) {
+    setApercuRegle(r);
+    setExoEdits({});
+    setExoSaved(new Set());
   }
 
   /* ── Modifier (date) ─────────────────────────────── */
@@ -429,7 +479,7 @@ export default function MaPtiteRegle() {
 
                 {/* Actions */}
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                  <button onClick={() => setApercuRegle(r)} title="Aperçu" style={btnStyle("#6B7280")}>
+                  <button onClick={() => ouvrirApercu(r)} title="Aperçu" style={btnStyle("#6B7280")}>
                     <span className="ms" style={{ fontSize: 16 }}>visibility</span>
                   </button>
                   <button onClick={() => ouvrirEdition(r)} title="Modifier" style={btnStyle("#6B7280")}>
@@ -693,7 +743,7 @@ export default function MaPtiteRegle() {
         </Modal>
       )}
 
-      {/* ── Modale aperçu ─────────────────────────────── */}
+      {/* ── Modale aperçu / édition ─────────────────────── */}
       {apercuRegle && (
         <Modal onClose={() => setApercuRegle(null)} title={apercuRegle.titre}>
           {/* Leçon */}
@@ -706,18 +756,27 @@ export default function MaPtiteRegle() {
             </div>
           )}
 
-          {/* Exercices */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          {/* Exercices éditables */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {apercuRegle.exercices
               .filter((ex) => ex.type !== "revision")
               .map((ex, i) => {
-                const contenu = ex.contenu as Record<string, unknown> | null;
-                const questions = (contenu?.questions as Array<Record<string, unknown>>) ?? [];
-                const trous = (contenu?.trous as Array<Record<string, unknown>>) ?? [];
-                const consigne = (contenu?.consigne as string) ?? "";
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const contenu = getContenuEdite(ex) as any;
+                const questions: any[] = contenu?.questions ?? [];
+                const trous: any[] = contenu?.trous ?? [];
+                const isModified = !!exoEdits[ex.id];
+                const isSaving = exoSaving === ex.id;
+                const isSaved = exoSaved.has(ex.id);
+
+                const inputStyle: React.CSSProperties = {
+                  width: "100%", fontSize: 12, padding: "4px 8px", borderRadius: 6,
+                  border: "1px solid #D1D5DB", background: "white",
+                };
 
                 return (
                   <div key={ex.id} style={{ border: "1px solid #E5E7EB", borderRadius: 10, overflow: "hidden" }}>
+                    {/* En-tête */}
                     <div style={{
                       display: "flex", alignItems: "center", gap: 8, padding: "10px 14px",
                       background: "#F9FAFB", borderBottom: "1px solid #E5E7EB",
@@ -731,63 +790,216 @@ export default function MaPtiteRegle() {
                         padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 500,
                         background: "#ECFDF5", color: "#059669",
                       }}>
-                        {ex.type === "qcm" ? "QCM" : ex.type === "texte_a_trous" ? "Texte à trous" : "Rédaction"}
+                        {ex.type === "qcm" ? "QCM" : ex.type === "texte_a_trous" ? "Texte à trous" : ex.type === "ecriture_contrainte" ? "Écriture" : "Exercice"}
                       </span>
+                      {/* Bouton sauvegarder */}
+                      {isModified && (
+                        <button
+                          onClick={() => sauvegarderExo(ex.id)}
+                          disabled={isSaving}
+                          style={{
+                            ...btnStyle("white"), background: "#059669", color: "white", border: "none",
+                            fontSize: 11, padding: "4px 10px",
+                          }}
+                        >
+                          {isSaving ? "…" : "Enregistrer"}
+                        </button>
+                      )}
+                      {isSaved && !isModified && (
+                        <span style={{ fontSize: 11, color: "#059669", fontWeight: 500 }}>
+                          <span className="ms" style={{ fontSize: 14, verticalAlign: -2 }}>check_circle</span> OK
+                        </span>
+                      )}
                     </div>
-                    <div style={{ padding: "10px 14px", fontSize: 13 }}>
-                      {consigne && <p style={{ margin: "0 0 8px", fontStyle: "italic", color: "#666" }}>{consigne}</p>}
 
-                      {/* QCM : afficher les questions */}
-                      {ex.type === "qcm" && questions.length > 0 ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-                          {questions.slice(0, 3).map((q, qi) => (
-                            <div key={qi} style={{ padding: "6px 10px", background: "#F9FAFB", borderRadius: 6, fontSize: 12 }}>
-                              <strong>Q{qi + 1}.</strong> {String(q.question ?? q.enonce ?? "")}
+                    <div style={{ padding: "10px 14px", fontSize: 13 }}>
+                      {/* Consigne éditable */}
+                      {contenu.consigne !== undefined && (
+                        <div style={{ marginBottom: 8 }}>
+                          <label style={{ fontSize: 11, fontWeight: 600, color: "#666", display: "block", marginBottom: 2 }}>Consigne</label>
+                          <textarea
+                            value={String(contenu.consigne ?? "")}
+                            onChange={(e) => majContenuExo(ex.id, { ...contenu, consigne: e.target.value })}
+                            rows={2}
+                            style={{ ...inputStyle, resize: "vertical" }}
+                          />
+                        </div>
+                      )}
+
+                      {/* ── Exercice type (questions + réponse) ─── */}
+                      {ex.type === "exercice" && questions.length > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {questions.map((q, qi) => (
+                            <div key={qi} style={{ padding: "8px 10px", background: "#F9FAFB", borderRadius: 8 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                <strong style={{ fontSize: 12, flexShrink: 0 }}>Q{qi + 1}</strong>
+                                <button
+                                  onClick={() => {
+                                    const nq = [...questions]; nq.splice(qi, 1);
+                                    majContenuExo(ex.id, { ...contenu, questions: nq });
+                                  }}
+                                  style={{ marginLeft: "auto", border: "none", background: "none", color: "#DC2626", cursor: "pointer", fontSize: 14, padding: 0 }}
+                                  title="Supprimer"
+                                >
+                                  <span className="ms" style={{ fontSize: 16 }}>close</span>
+                                </button>
+                              </div>
+                              <input
+                                value={String(q.enonce ?? "")}
+                                onChange={(e) => {
+                                  const nq = [...questions]; nq[qi] = { ...nq[qi], enonce: e.target.value };
+                                  majContenuExo(ex.id, { ...contenu, questions: nq });
+                                }}
+                                placeholder="Énoncé"
+                                style={{ ...inputStyle, marginBottom: 4 }}
+                              />
+                              <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                                <span style={{ fontSize: 11, color: "#059669", flexShrink: 0 }}>Réponse :</span>
+                                <input
+                                  value={String(q.reponse_attendue ?? "")}
+                                  onChange={(e) => {
+                                    const nq = [...questions]; nq[qi] = { ...nq[qi], reponse_attendue: e.target.value };
+                                    majContenuExo(ex.id, { ...contenu, questions: nq });
+                                  }}
+                                  style={{ ...inputStyle, color: "#059669", fontWeight: 600 }}
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* ── QCM ───────────────────────────── */}
+                      {ex.type === "qcm" && questions.length > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                          {questions.map((q, qi) => (
+                            <div key={qi} style={{ padding: "8px 10px", background: "#F9FAFB", borderRadius: 8 }}>
+                              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+                                <strong style={{ fontSize: 12, flexShrink: 0 }}>Q{qi + 1}</strong>
+                                <input
+                                  value={String(q.question ?? "")}
+                                  onChange={(e) => {
+                                    const nq = [...questions]; nq[qi] = { ...nq[qi], question: e.target.value };
+                                    majContenuExo(ex.id, { ...contenu, questions: nq });
+                                  }}
+                                  style={{ ...inputStyle, flex: 1 }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    const nq = [...questions]; nq.splice(qi, 1);
+                                    majContenuExo(ex.id, { ...contenu, questions: nq });
+                                  }}
+                                  style={{ border: "none", background: "none", color: "#DC2626", cursor: "pointer", padding: 0 }}
+                                  title="Supprimer"
+                                >
+                                  <span className="ms" style={{ fontSize: 16 }}>close</span>
+                                </button>
+                              </div>
                               {Array.isArray(q.options) && (
-                                <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 3, marginLeft: 8 }}>
                                   {(q.options as string[]).map((opt, oi) => (
-                                    <span key={oi} style={{
-                                      padding: "2px 6px", borderRadius: 4, fontSize: 11,
-                                      background: oi === (q.reponse_correcte as number) ? "#DCFCE7" : "#F3F4F6",
-                                      fontWeight: oi === (q.reponse_correcte as number) ? 600 : 400,
-                                    }}>
-                                      {opt}
-                                    </span>
+                                    <div key={oi} style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                                      <input
+                                        type="radio"
+                                        name={`qcm-${ex.id}-${qi}`}
+                                        checked={oi === (q.reponse_correcte as number)}
+                                        onChange={() => {
+                                          const nq = [...questions]; nq[qi] = { ...nq[qi], reponse_correcte: oi };
+                                          majContenuExo(ex.id, { ...contenu, questions: nq });
+                                        }}
+                                        style={{ margin: 0, accentColor: "#059669" }}
+                                      />
+                                      <input
+                                        value={opt}
+                                        onChange={(e) => {
+                                          const nq = [...questions];
+                                          const opts = [...(nq[qi].options as string[])];
+                                          opts[oi] = e.target.value;
+                                          nq[qi] = { ...nq[qi], options: opts };
+                                          majContenuExo(ex.id, { ...contenu, questions: nq });
+                                        }}
+                                        style={{
+                                          ...inputStyle,
+                                          background: oi === (q.reponse_correcte as number) ? "#DCFCE7" : "white",
+                                          fontWeight: oi === (q.reponse_correcte as number) ? 600 : 400,
+                                        }}
+                                      />
+                                    </div>
                                   ))}
                                 </div>
                               )}
                             </div>
                           ))}
-                          {questions.length > 3 && (
-                            <p style={{ margin: 0, fontSize: 11, color: "#999" }}>+ {questions.length - 3} autres questions</p>
-                          )}
                         </div>
-                      ) : null}
+                      )}
 
-                      {/* Texte à trous : afficher un extrait */}
-                      {ex.type === "texte_a_trous" && contenu?.texte_complet ? (
-                        <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.6 }}>
-                          <p style={{ margin: "0 0 4px" }}>
-                            {String(contenu.texte_complet).slice(0, 200)}…
-                          </p>
-                          <p style={{ margin: 0, color: "#999", fontSize: 11 }}>{trous.length} trous à compléter</p>
+                      {/* ── Texte à trous ──────────────────── */}
+                      {ex.type === "texte_a_trous" && contenu.texte_complet && (
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 600, color: "#666", display: "block", marginBottom: 2 }}>Texte complet</label>
+                          <textarea
+                            value={String(contenu.texte_complet ?? "")}
+                            onChange={(e) => majContenuExo(ex.id, { ...contenu, texte_complet: e.target.value })}
+                            rows={4}
+                            style={{ ...inputStyle, resize: "vertical", marginBottom: 8, lineHeight: 1.5 }}
+                          />
+                          <label style={{ fontSize: 11, fontWeight: 600, color: "#666", display: "block", marginBottom: 4 }}>Trous ({trous.length})</label>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            {trous.map((t, ti) => (
+                              <div key={ti} style={{ display: "flex", gap: 4, alignItems: "center" }}>
+                                <span style={{ fontSize: 11, color: "#999", width: 20, textAlign: "right", flexShrink: 0 }}>{ti + 1}.</span>
+                                <input
+                                  value={String(t.mot ?? "")}
+                                  onChange={(e) => {
+                                    const nt = [...trous]; nt[ti] = { ...nt[ti], mot: e.target.value };
+                                    majContenuExo(ex.id, { ...contenu, trous: nt });
+                                  }}
+                                  style={{ ...inputStyle, width: 100, fontWeight: 600, color: "#059669" }}
+                                />
+                                <input
+                                  value={String(t.indice ?? "")}
+                                  onChange={(e) => {
+                                    const nt = [...trous]; nt[ti] = { ...nt[ti], indice: e.target.value };
+                                    majContenuExo(ex.id, { ...contenu, trous: nt });
+                                  }}
+                                  placeholder="Indice"
+                                  style={{ ...inputStyle, flex: 1, color: "#666", fontStyle: "italic" }}
+                                />
+                                <button
+                                  onClick={() => {
+                                    const nt = [...trous]; nt.splice(ti, 1);
+                                    majContenuExo(ex.id, { ...contenu, trous: nt });
+                                  }}
+                                  style={{ border: "none", background: "none", color: "#DC2626", cursor: "pointer", padding: 0 }}
+                                >
+                                  <span className="ms" style={{ fontSize: 16 }}>close</span>
+                                </button>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      ) : null}
+                      )}
 
-                      {/* Exercice libre : afficher les questions */}
-                      {ex.type === "exercice" && questions.length > 0 ? (
-                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          {questions.slice(0, 3).map((q, qi) => (
-                            <div key={qi} style={{ padding: "6px 10px", background: "#F9FAFB", borderRadius: 6, fontSize: 12 }}>
-                              <strong>Q{qi + 1}.</strong> {String(q.enonce ?? "")}
-                              <span style={{ color: "#059669", marginLeft: 8 }}>→ {String(q.reponse_attendue ?? "")}</span>
+                      {/* ── Écriture contrainte ────────────── */}
+                      {ex.type === "ecriture_contrainte" && (
+                        <div>
+                          <label style={{ fontSize: 11, fontWeight: 600, color: "#666", display: "block", marginBottom: 4 }}>Contraintes</label>
+                          {((contenu.contraintes ?? []) as string[]).map((c: string, ci: number) => (
+                            <div key={ci} style={{ display: "flex", gap: 4, alignItems: "center", marginBottom: 4 }}>
+                              <span style={{ fontSize: 11, color: "#999", flexShrink: 0 }}>{ci + 1}.</span>
+                              <input
+                                value={c}
+                                onChange={(e) => {
+                                  const nc = [...(contenu.contraintes as string[])];
+                                  nc[ci] = e.target.value;
+                                  majContenuExo(ex.id, { ...contenu, contraintes: nc });
+                                }}
+                                style={{ ...inputStyle, flex: 1 }}
+                              />
                             </div>
                           ))}
-                          {questions.length > 3 && (
-                            <p style={{ margin: 0, fontSize: 11, color: "#999" }}>+ {questions.length - 3} autres questions</p>
-                          )}
                         </div>
-                      ) : null}
+                      )}
                     </div>
                   </div>
                 );
