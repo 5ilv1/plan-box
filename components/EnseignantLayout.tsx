@@ -21,25 +21,13 @@ const DEFAULT_NAV_ITEMS = [
   { href: "/enseignant/bilan",           label: "Bilan de classe",  icon: "bar_chart" },
 ];
 
-const NAV_STORAGE_KEY = "ens-nav-order";
-
-function getNavItems() {
-  if (typeof window === "undefined") return DEFAULT_NAV_ITEMS;
-  try {
-    const saved = localStorage.getItem(NAV_STORAGE_KEY);
-    if (!saved) return DEFAULT_NAV_ITEMS;
-    const order: string[] = JSON.parse(saved);
-    // Reconstituer à partir des hrefs sauvegardés, ajouter les nouveaux items à la fin
-    const map = new Map(DEFAULT_NAV_ITEMS.map((item) => [item.href, item]));
-    const sorted = order.map((href) => map.get(href)).filter(Boolean) as typeof DEFAULT_NAV_ITEMS;
-    // Ajouter les items qui n'étaient pas dans l'ordre sauvegardé (nouveaux ajouts)
-    for (const item of DEFAULT_NAV_ITEMS) {
-      if (!order.includes(item.href)) sorted.push(item);
-    }
-    return sorted;
-  } catch {
-    return DEFAULT_NAV_ITEMS;
+function buildNavFromOrder(order: string[]): typeof DEFAULT_NAV_ITEMS {
+  const map = new Map(DEFAULT_NAV_ITEMS.map((item) => [item.href, item]));
+  const sorted = order.map((href) => map.get(href)).filter(Boolean) as typeof DEFAULT_NAV_ITEMS;
+  for (const item of DEFAULT_NAV_ITEMS) {
+    if (!order.includes(item.href)) sorted.push(item);
   }
+  return sorted;
 }
 
 interface Props {
@@ -54,9 +42,24 @@ export default function EnseignantLayout({ children }: Props) {
   const [autorise, setAutorise] = useState<boolean | null>(null);
 
   // Drag & drop sidebar
-  const [navItems, setNavItems] = useState(getNavItems);
+  const [navItems, setNavItems] = useState(DEFAULT_NAV_ITEMS);
   const dragIdx = useRef<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+  const navLoaded = useRef(false);
+
+  // Charger l'ordre depuis la BDD au montage
+  useEffect(() => {
+    if (navLoaded.current) return;
+    navLoaded.current = true;
+    fetch("/api/user-preferences")
+      .then((r) => r.json())
+      .then((d) => {
+        if (Array.isArray(d.nav_order) && d.nav_order.length > 0) {
+          setNavItems(buildNavFromOrder(d.nav_order));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const onDragStart = useCallback((idx: number) => (e: React.DragEvent) => {
     dragIdx.current = idx;
@@ -81,7 +84,13 @@ export default function EnseignantLayout({ children }: Props) {
       const next = [...prev];
       const [item] = next.splice(from, 1);
       next.splice(idx, 0, item);
-      localStorage.setItem(NAV_STORAGE_KEY, JSON.stringify(next.map((n) => n.href)));
+      const order = next.map((n) => n.href);
+      // Sauvegarder en BDD (fire & forget)
+      fetch("/api/user-preferences", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nav_order: order }),
+      }).catch(() => {});
       return next;
     });
     dragIdx.current = null;
