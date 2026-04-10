@@ -31,7 +31,7 @@ export async function GET(req: NextRequest) {
 
   const [exosRes, assignRes] = await Promise.all([
     ids.length > 0
-      ? admin.from("exercice").select("id, chapitre_id, titre, type, ordre").in("chapitre_id", ids).order("ordre")
+      ? admin.from("exercice").select("id, chapitre_id, titre, type, ordre, nb_questions, contenu").in("chapitre_id", ids).order("ordre")
       : { data: [], error: null },
     ids.length > 0
       ? admin.from("chapitre_assignation").select("chapitre_id, groupe_id, actif").in("chapitre_id", ids)

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
-import Link from "next/link";
+
 
 /* ── Types ─────────────────────────────────────────── */
 
@@ -12,6 +12,8 @@ interface Exercice {
   titre: string;
   type: string;
   ordre: number;
+  nb_questions: number | null;
+  contenu: Record<string, unknown> | null;
 }
 
 interface Regle {
@@ -178,6 +180,9 @@ export default function MaPtiteRegle() {
   // Assignation
   const [assignRegle, setAssignRegle] = useState<string | null>(null);
   const [assignGroupes, setAssignGroupes] = useState<Set<string>>(new Set());
+
+  // Aperçu
+  const [apercuRegle, setApercuRegle] = useState<Regle | null>(null);
 
   /* ── Chargement ─────────────────────────────────── */
 
@@ -368,11 +373,9 @@ export default function MaPtiteRegle() {
 
                 {/* Actions */}
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
-                  <Link href={`/enseignant/admin/chapitres/${r.id}`} style={{ textDecoration: "none" }}>
-                    <button title="Gérer les exercices" style={btnStyle("#6B7280")}>
-                      <span className="ms" style={{ fontSize: 16 }}>edit</span>
-                    </button>
-                  </Link>
+                  <button onClick={() => setApercuRegle(r)} title="Aperçu" style={btnStyle("#6B7280")}>
+                    <span className="ms" style={{ fontSize: 16 }}>visibility</span>
+                  </button>
                   <button onClick={() => { setAssignRegle(r.id); setAssignGroupes(new Set()); }} title="Assigner" style={btnStyle("var(--pb-primary, #0050D4)")}>
                     <span className="ms" style={{ fontSize: 16 }}>group_add</span>
                   </button>
@@ -470,11 +473,6 @@ export default function MaPtiteRegle() {
                         </span>
                       </div>
                     ))}
-                  </div>
-                  <div style={{ marginTop: 10, fontSize: 12, color: "#888" }}>
-                    <Link href={`/enseignant/admin/chapitres/${r.id}`} style={{ color: "var(--pb-primary, #0050D4)" }}>
-                      Gérer les exercices dans l&apos;éditeur de chapitre →
-                    </Link>
                   </div>
                 </div>
               )}
@@ -601,6 +599,109 @@ export default function MaPtiteRegle() {
             >
               {enCreation ? "Génération en cours…" : "Créer et générer les exercices"}
             </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* ── Modale aperçu ─────────────────────────────── */}
+      {apercuRegle && (
+        <Modal onClose={() => setApercuRegle(null)} title={apercuRegle.titre}>
+          {/* Leçon */}
+          {apercuRegle.description && (
+            <div style={{ marginBottom: 16, padding: 14, background: "#F5F3FF", borderRadius: 10 }}>
+              <div style={{ fontWeight: 600, fontSize: 14, color: "#7C3AED", marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+                <span className="ms" style={{ fontSize: 18 }}>menu_book</span> Leçon
+              </div>
+              <p style={{ margin: 0, fontSize: 13, lineHeight: 1.5 }}>{apercuRegle.description}</p>
+            </div>
+          )}
+
+          {/* Exercices */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            {apercuRegle.exercices
+              .filter((ex) => ex.type !== "revision")
+              .map((ex, i) => {
+                const contenu = ex.contenu as Record<string, unknown> | null;
+                const questions = (contenu?.questions as Array<Record<string, unknown>>) ?? [];
+                const trous = (contenu?.trous as Array<Record<string, unknown>>) ?? [];
+                const consigne = (contenu?.consigne as string) ?? "";
+
+                return (
+                  <div key={ex.id} style={{ border: "1px solid #E5E7EB", borderRadius: 10, overflow: "hidden" }}>
+                    <div style={{
+                      display: "flex", alignItems: "center", gap: 8, padding: "10px 14px",
+                      background: "#F9FAFB", borderBottom: "1px solid #E5E7EB",
+                    }}>
+                      <span style={{
+                        width: 24, height: 24, borderRadius: "50%", background: "#7C3AED", color: "white",
+                        display: "flex", alignItems: "center", justifyContent: "center", fontSize: 12, fontWeight: 700, flexShrink: 0,
+                      }}>{i + 1}</span>
+                      <span style={{ fontWeight: 600, fontSize: 13, flex: 1 }}>{ex.titre}</span>
+                      <span style={{
+                        padding: "2px 8px", borderRadius: 4, fontSize: 11, fontWeight: 500,
+                        background: "#ECFDF5", color: "#059669",
+                      }}>
+                        {ex.type === "qcm" ? "QCM" : ex.type === "texte_a_trous" ? "Texte à trous" : "Rédaction"}
+                      </span>
+                    </div>
+                    <div style={{ padding: "10px 14px", fontSize: 13 }}>
+                      {consigne && <p style={{ margin: "0 0 8px", fontStyle: "italic", color: "#666" }}>{consigne}</p>}
+
+                      {/* QCM : afficher les questions */}
+                      {ex.type === "qcm" && questions.length > 0 ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                          {questions.slice(0, 3).map((q, qi) => (
+                            <div key={qi} style={{ padding: "6px 10px", background: "#F9FAFB", borderRadius: 6, fontSize: 12 }}>
+                              <strong>Q{qi + 1}.</strong> {String(q.question ?? q.enonce ?? "")}
+                              {Array.isArray(q.options) && (
+                                <div style={{ marginTop: 4, display: "flex", flexWrap: "wrap", gap: 4 }}>
+                                  {(q.options as string[]).map((opt, oi) => (
+                                    <span key={oi} style={{
+                                      padding: "2px 6px", borderRadius: 4, fontSize: 11,
+                                      background: oi === (q.reponse_correcte as number) ? "#DCFCE7" : "#F3F4F6",
+                                      fontWeight: oi === (q.reponse_correcte as number) ? 600 : 400,
+                                    }}>
+                                      {opt}
+                                    </span>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                          {questions.length > 3 && (
+                            <p style={{ margin: 0, fontSize: 11, color: "#999" }}>+ {questions.length - 3} autres questions</p>
+                          )}
+                        </div>
+                      ) : null}
+
+                      {/* Texte à trous : afficher un extrait */}
+                      {ex.type === "texte_a_trous" && contenu?.texte_complet ? (
+                        <div style={{ fontSize: 12, color: "#374151", lineHeight: 1.6 }}>
+                          <p style={{ margin: "0 0 4px" }}>
+                            {String(contenu.texte_complet).slice(0, 200)}…
+                          </p>
+                          <p style={{ margin: 0, color: "#999", fontSize: 11 }}>{trous.length} trous à compléter</p>
+                        </div>
+                      ) : null}
+
+                      {/* Exercice libre : afficher les questions */}
+                      {ex.type === "exercice" && questions.length > 0 ? (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          {questions.slice(0, 3).map((q, qi) => (
+                            <div key={qi} style={{ padding: "6px 10px", background: "#F9FAFB", borderRadius: 6, fontSize: 12 }}>
+                              <strong>Q{qi + 1}.</strong> {String(q.enonce ?? "")}
+                              <span style={{ color: "#059669", marginLeft: 8 }}>→ {String(q.reponse_attendue ?? "")}</span>
+                            </div>
+                          ))}
+                          {questions.length > 3 && (
+                            <p style={{ margin: 0, fontSize: 11, color: "#999" }}>+ {questions.length - 3} autres questions</p>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })}
           </div>
         </Modal>
       )}
