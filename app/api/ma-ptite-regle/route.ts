@@ -135,7 +135,8 @@ Les phrases doivent guider l'élève vers la compréhension de la règle sans la
         nb: 8,
         instruction: `Exercice à trous d'entraînement. L'élève doit compléter les phrases avec le bon mot.
 Les trous portent uniquement sur la difficulté orthographique visée par la règle.
-Le texte doit être une petite histoire cohérente avec les mots manquants liés à la règle.`,
+Le texte doit être une petite histoire cohérente avec les mots manquants liés à la règle.
+RÈGLE ABSOLUE : CHAQUE occurrence du mot visé par la règle dans le texte DOIT être un trou. Il ne doit JAMAIS y avoir un "est", "et" (ou le mot visé) écrit en clair dans le texte — tous doivent être remplacés par des trous.`,
       },
       {
         jour: "Mercredi",
@@ -361,6 +362,7 @@ ${type === "exercice" ? `- RÈGLE ABSOLUE : chaque énoncé contient exactement 
 ${type === "texte_a_trous" ? `- Génère UN SEUL texte cohérent d'au moins 5 phrases
 - Chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot du texte_complet
 - Les trous portent uniquement sur "${titreRegle}"
+- CHAQUE occurrence du mot visé dans le texte DOIT être un trou. Aucune occurrence ne doit rester en clair.
 - L'indice doit être l'astuce de substitution ou le mot de remplacement` : ""}
 
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
