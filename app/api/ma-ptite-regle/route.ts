@@ -153,9 +153,15 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
         label: "Transforme / Réécris",
         type: "exercice" as const,
         nb: 7, nbCible: 5, reponseUnMot: false,
-        instruction: `Exercice de transformation/réécriture. L'élève doit réécrire des phrases en appliquant la règle.
-Exemples : transformer au pluriel, changer le sujet, passer d'une forme à l'autre.
-Chaque question donne une phrase à transformer et l'élève doit écrire la phrase corrigée.`,
+        instruction: `Exercice de transformation/réécriture.
+INTERDIT : mettre des trous (___) dans l'énoncé. L'énoncé est une CONSIGNE DE TRANSFORMATION, pas un texte à trous.
+Chaque énoncé donne une INSTRUCTION suivie d'une phrase complète à transformer.
+Exemples d'énoncés :
+- "Réécris cette phrase en remplaçant « il » par « elle » : « Il est grand et il court vite. »"
+- "Mets cette phrase au pluriel : « Le chat est noir et petit. »"
+- "Réécris en changeant le sujet par « nous » : « Marie est contente et elle chante. »"
+La reponse_attendue est la phrase entièrement réécrite avec les bons accords.
+Les transformations doivent obliger l'élève à choisir entre "est" et "et" dans la nouvelle phrase.`,
       },
       {
         jour: "Vendredi",
