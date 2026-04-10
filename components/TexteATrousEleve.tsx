@@ -18,6 +18,31 @@ function separerElision(mot: string): { prefixe: string; motSansElision: string 
   return { prefixe: "", motSansElision: mot };
 }
 
+// Détecte si un mot est un verbe du 1er groupe (-er/-é/-ée/-és/-ées)
+// et génère les deux options (infinitif + participe passé)
+function genererOptionsVerbe(mot: string): [string, string] | null {
+  const m = mot.replace(/[.,;:!?'"()]/g, "");
+  // Infinitif → participe passé
+  if (/er$/i.test(m) && m.length >= 4) {
+    const radical = m.slice(0, -2);
+    return [m, radical + "é"];
+  }
+  // Participe passé → infinitif
+  if (/ées$/i.test(m)) {
+    return [m.slice(0, -3) + "er", m];
+  }
+  if (/és$/i.test(m)) {
+    return [m.slice(0, -2) + "er", m];
+  }
+  if (/ée$/i.test(m)) {
+    return [m.slice(0, -2) + "er", m];
+  }
+  if (/é$/i.test(m) && m.length >= 4) {
+    return [m.slice(0, -1) + "er", m];
+  }
+  return null;
+}
+
 interface Props {
   titre: string;
   consigne: string;
@@ -153,6 +178,7 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
             const { prefixe: elision, motSansElision } = separerElision(motBrut);
             const motAffiche = elision ? motSansElision : motBrut;
             const largeur = Math.max(motAffiche.length * 12, 60);
+            const optionsVerbe = genererOptionsVerbe(motBrut);
 
             return (
               <React.Fragment key={i}>
@@ -167,7 +193,65 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
                   }}>
                     {motAffiche}
                   </span>
+                ) : optionsVerbe ? (
+                  // Menu déroulant pour les verbes -er/-é
+                  <span style={{ position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "center", verticalAlign: "middle" }}>
+                    <select
+                      value={val}
+                      onChange={(e) => {
+                        setReponses((prev) => ({ ...prev, [i]: e.target.value }));
+                        if (verifie) { setVerifie(false); setResultats({}); }
+                      }}
+                      disabled={termine}
+                      style={{
+                        padding: "4px 24px 4px 8px",
+                        border: `2px ${estIncorrect ? "solid #EF4444" : "solid #0E7490"}`,
+                        borderRadius: 8,
+                        fontSize: "1rem",
+                        fontWeight: 600,
+                        textAlign: "center",
+                        outline: "none",
+                        background: estIncorrect ? "#FEF2F2" : "rgba(14,116,144,0.04)",
+                        color: val ? (estIncorrect ? "#DC2626" : "var(--text)") : "#9CA3AF",
+                        cursor: "pointer",
+                        fontFamily: "var(--font)",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%230E7490' stroke-width='1.5' fill='none'/%3E%3C/svg%3E")`,
+                        backgroundRepeat: "no-repeat",
+                        backgroundPosition: "right 6px center",
+                      }}
+                    >
+                      <option value="">choisir</option>
+                      {optionsVerbe.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                    {/* Aide après erreur */}
+                    {estIncorrect && trou.indice && tentative <= 2 && (
+                      <div style={{
+                        position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)",
+                        background: "#FEF3C7", border: "1px solid #FDE68A", borderRadius: 8,
+                        padding: "4px 10px", fontSize: "0.6875rem", color: "#92400E",
+                        whiteSpace: "nowrap", zIndex: 10, fontWeight: 500,
+                        boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                      }}>
+                        💡 {trou.indice}
+                      </div>
+                    )}
+                    {estIncorrect && tentative >= 3 && (
+                      <div style={{
+                        position: "absolute", bottom: "calc(100% + 4px)", left: "50%", transform: "translateX(-50%)",
+                        background: "#DCFCE7", border: "1px solid #86EFAC", borderRadius: 8,
+                        padding: "4px 10px", fontSize: "0.6875rem", color: "#166534",
+                        whiteSpace: "nowrap", zIndex: 10, fontWeight: 700,
+                      }}>
+                        → {trou.mot}
+                      </div>
+                    )}
+                  </span>
                 ) : (
+                  // Input texte classique (homophones, etc.)
                   <span style={{ position: "relative", display: "inline-flex", flexDirection: "column", alignItems: "center", verticalAlign: "middle" }}>
                     <input
                       ref={(el) => { inputRefs.current[i] = el; }}
