@@ -134,9 +134,10 @@ Les phrases doivent guider l'élève vers la compréhension de la règle sans la
         type: "texte_a_trous" as const,
         nb: 8,
         instruction: `Exercice à trous d'entraînement. L'élève doit compléter les phrases avec le bon mot.
-Les trous portent uniquement sur la difficulté orthographique visée par la règle.
 Le texte doit être une petite histoire cohérente avec les mots manquants liés à la règle.
-RÈGLE ABSOLUE : CHAQUE occurrence du mot visé par la règle dans le texte DOIT être un trou. Il ne doit JAMAIS y avoir un "est", "et" (ou le mot visé) écrit en clair dans le texte — tous doivent être remplacés par des trous.`,
+Les trous portent UNIQUEMENT sur les mots EXACTS visés par la règle : uniquement "${titre.split(" / ").join('" et "')}".
+INTERDIT de mettre un trou sur d'autres mots (pas de trou sur "sont", "a", "ont", ou tout autre mot qui n'est pas exactement "${titre}").
+CHAQUE occurrence de ces mots exacts dans le texte DOIT être un trou. Aucune ne doit rester en clair.`,
       },
       {
         jour: "Mercredi",
