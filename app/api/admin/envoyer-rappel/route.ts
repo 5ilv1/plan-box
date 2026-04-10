@@ -1,7 +1,11 @@
 import { createAdminClient } from "@/lib/supabase-admin";
 import { NextRequest, NextResponse } from "next/server";
+import { requireEnseignant } from "@/lib/server-auth";
 
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json();
   const { eleveId, chapitreId, message } = body;
 

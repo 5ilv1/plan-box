@@ -97,16 +97,26 @@ export function enonceePonctuation(texte: string): string {
     .trim();
 }
 
+// Échappe les caractères HTML pour éviter les injections XSS
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 // Surligneage HTML des mots à apprendre dans un texte
 export function surlignerMots(texte: string, mots: MotDict[]): string {
   const tokens = texte.split(/(\s+|(?=[.,;:!?«»"'()\-])|(?<=[.,;:!?«»"'()\-]))/);
   return tokens
     .map((token) => {
-      if (!token || /^\s+$/.test(token)) return token;
+      if (!token || /^\s+$/.test(token)) return escapeHtml(token);
       const correspond = mots.some((m) => motCorrespond(m.mot, token));
+      const safe = escapeHtml(token);
       return correspond
-        ? `<mark style="background:#BFDBFE;border-radius:3px;padding:0 2px">${token}</mark>`
-        : token;
+        ? `<mark style="background:#BFDBFE;border-radius:3px;padding:0 2px">${safe}</mark>`
+        : safe;
     })
     .join("");
 }

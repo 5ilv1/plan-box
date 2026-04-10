@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/admin/bilan-difficulte?debut=YYYY-MM-DD&fin=YYYY-MM-DD&groupe=xxx&matiere=xxx
@@ -8,6 +9,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
  * Retourne la liste des élèves avec leurs stats et chapitres en difficulté.
  */
 export async function GET(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const params = new URL(req.url).searchParams;
   const debut = params.get("debut");
   const fin = params.get("fin");

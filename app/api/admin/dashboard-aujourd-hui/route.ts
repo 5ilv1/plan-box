@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/admin/dashboard-aujourd-hui
@@ -9,6 +10,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
  * - elevesConnectesAujourdhui : nb d'élèves (PB + RB) connectés dans la journée
  */
 export async function GET() {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
   const today = new Date().toISOString().split("T")[0];
   const debutJour = `${today}T00:00:00.000Z`;

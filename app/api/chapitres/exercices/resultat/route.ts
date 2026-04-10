@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { getServerUser } from "@/lib/server-auth";
 
 /**
  * POST /api/chapitres/exercices/resultat
@@ -16,6 +17,14 @@ export async function POST(req: NextRequest) {
 
   if (!eleve_id && !rb_eleve_id) {
     return NextResponse.json({ error: "eleve_id ou rb_eleve_id requis" }, { status: 400 });
+  }
+
+  // Vérifier que l'élève PB authentifié ne soumet que ses propres résultats
+  if (eleve_id) {
+    const user = await getServerUser();
+    if (!user || user.id !== eleve_id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+    }
   }
 
   const admin = createAdminClient();

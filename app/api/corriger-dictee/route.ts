@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { getServerUser } from "@/lib/server-auth";
 
 export const maxDuration = 60;
 
@@ -23,12 +24,20 @@ export async function POST(req: NextRequest) {
   const admin = createAdminClient();
   const { data: bloc, error } = await admin
     .from("plan_travail")
-    .select("contenu, type")
+    .select("contenu, type, eleve_id, repetibox_eleve_id")
     .eq("id", bloc_id)
     .single();
 
   if (error || !bloc) {
     return NextResponse.json({ error: "Bloc introuvable" }, { status: 404 });
+  }
+
+  // Vérifier que le bloc appartient à l'élève PB authentifié
+  if (bloc.eleve_id) {
+    const user = await getServerUser();
+    if (!user || user.id !== bloc.eleve_id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+    }
   }
 
   if (bloc.type !== "dictee" && bloc.type !== "mots") {

@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // DELETE /api/admin/supprimer-blocs
 // Body : { ids: string[] }
 // Supprime tous les plan_travail dont l'id est dans la liste
 export async function DELETE(req: Request) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   try {
     const { ids } = await req.json();
     if (!Array.isArray(ids) || ids.length === 0) {

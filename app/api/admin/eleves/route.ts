@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/admin/eleves
 // Retourne tous les élèves : Plan Box (eleves + niveaux) ET Repetibox (eleve + meta)
 export async function GET() {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
 
   const [
@@ -54,6 +58,9 @@ export async function GET() {
 // POST /api/admin/eleves
 // Crée un élève Plan Box (compte Supabase Auth + entrée eleves)
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { prenom, nom, email, password, niveau_id, groupeIds } = body ?? {};
 
@@ -177,6 +184,9 @@ async function mettreAJourDicteesEleve(
 // PATCH /api/admin/eleves
 // Met à jour un élève PB (champs) ou un élève RB (meta + groupes)
 export async function PATCH(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { id, source, niveau_id, groupeIds, niveau_etoiles } = body ?? {};
 
@@ -258,6 +268,9 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE /api/admin/eleves?id=<id>&source=<planbox|repetibox>
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const params = new URL(req.url).searchParams;
   const id = params.get("id");
   const source = params.get("source");

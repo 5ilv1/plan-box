@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // POST /api/admin/exercices
 // Insère un exercice dans la banque (server-side, bypass RLS)
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
@@ -37,6 +41,9 @@ export async function POST(req: NextRequest) {
 // GET /api/admin/exercices?type=exercice&matiere=maths&niveau_id=xxx
 // Retourne la banque d'exercices avec filtres optionnels
 export async function GET(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const params = new URL(req.url).searchParams;
   const type = params.get("type");
   const matiere = params.get("matiere");
@@ -65,6 +72,9 @@ export async function GET(req: NextRequest) {
 // PATCH /api/admin/exercices
 // Met à jour un exercice (titre, matiere, chapitre_id, niveau_id, contenu)
 export async function PATCH(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { id, titre, contenu, matiere, sous_matiere, chapitre_id, niveau_id } = body ?? {};
 
@@ -90,6 +100,9 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/admin/exercices?id=<uuid>
 // Supprime l'exercice de la banque ET tous les plan_travail non-fait associés (par titre + type)
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const params = new URL(req.url).searchParams;
   const id = params.get("id");
 

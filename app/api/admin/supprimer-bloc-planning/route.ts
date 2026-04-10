@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { getServerUser } from "@/lib/server-auth";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // DELETE /api/admin/supprimer-bloc-planning
 // Body : { type, titre, date }
 // Supprime tous les plan_travail correspondant à ce bloc (tous les élèves)
 export async function DELETE(req: Request) {
-  const user = await getServerUser();
-  if (!user) return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
 
   const { type, titre, date } = await req.json();
   if (!type || !titre || !date) {

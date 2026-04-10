@@ -23,6 +23,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Validation basique des scores pour empêcher la manipulation
+  if (typeof score !== "number" || typeof total !== "number" || score < 0 || total <= 0 || score > total) {
+    return NextResponse.json(
+      { erreur: "score et total invalides" },
+      { status: 400 }
+    );
+  }
+
   const admin = createAdminClient();
 
   const { error } = await admin.from("qcm_reponse").insert({

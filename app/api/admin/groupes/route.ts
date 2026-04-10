@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/admin/groupes
 // Retourne tous les groupes avec leurs membres (PB + RB)
 export async function GET() {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
 
   const [
@@ -48,6 +52,9 @@ export async function GET() {
 // POST /api/admin/groupes
 // Crée un groupe et optionnellement y ajoute des élèves
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { nom, eleveUids } = body ?? {};
 
@@ -85,6 +92,9 @@ export async function POST(req: NextRequest) {
 // PATCH /api/admin/groupes
 // Renomme un groupe
 export async function PATCH(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { id, nom } = body ?? {};
 
@@ -107,6 +117,9 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/admin/groupes?id=<uuid>
 // Supprime un groupe et ses liaisons élèves
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const id = new URL(req.url).searchParams.get("id");
 
   if (!id) return NextResponse.json({ erreur: "id requis" }, { status: 400 });

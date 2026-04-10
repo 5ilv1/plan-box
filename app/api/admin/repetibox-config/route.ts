@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase-admin"
+import { requireEnseignant } from "@/lib/server-auth"
 
 // GET → { configs: [{ id, groupe_id, eleve_id, actif }] }
 export async function GET() {
+  const auth = await requireEnseignant()
+  if (auth.error) return auth.error
+
   const admin = createAdminClient()
   const { data, error } = await admin
     .from("pb_repetibox_config")
@@ -15,6 +19,9 @@ export async function GET() {
 // POST { groupe_id?, eleve_id?, repetibox_eleve_id?, actif: boolean }
 // Upsert : supprime l'existant puis insère
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant()
+  if (auth.error) return auth.error
+
   const body = await req.json()
   const { groupe_id, eleve_id, repetibox_eleve_id, actif } = body
 
@@ -50,6 +57,9 @@ export async function POST(req: NextRequest) {
 
 // DELETE ?groupe_id=X ou ?eleve_id=Y ou ?repetibox_eleve_id=Z
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant()
+  if (auth.error) return auth.error
+
   const params = new URL(req.url).searchParams
   const groupe_id = params.get("groupe_id")
   const eleve_id = params.get("eleve_id")

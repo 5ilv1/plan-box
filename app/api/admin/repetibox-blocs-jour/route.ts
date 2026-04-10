@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/admin/repetibox-blocs-jour
@@ -12,6 +13,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
  *   override individuel RB > override individuel PB > config groupe > inactif
  */
 export async function GET() {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
   const today = new Date().toISOString().split("T")[0];
 

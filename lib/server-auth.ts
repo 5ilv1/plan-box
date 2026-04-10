@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function getServerUser() {
   const cookieStore = await cookies();
@@ -15,4 +16,23 @@ export async function getServerUser() {
   );
   const { data: { user } } = await supabase.auth.getUser();
   return user;
+}
+
+/**
+ * Vérifie que l'utilisateur est authentifié ET est l'enseignant.
+ * Retourne le user si OK, ou une NextResponse 401/403 sinon.
+ */
+export async function requireEnseignant(): Promise<
+  | { user: NonNullable<Awaited<ReturnType<typeof getServerUser>>>; error?: never }
+  | { user?: never; error: NextResponse }
+> {
+  const user = await getServerUser();
+  if (!user) {
+    return { error: NextResponse.json({ erreur: "Non authentifié" }, { status: 401 }) };
+  }
+  const enseignantEmail = process.env.APP_ENSEIGNANT_EMAIL;
+  if (enseignantEmail && user.email !== enseignantEmail) {
+    return { error: NextResponse.json({ erreur: "Accès réservé à l'enseignant" }, { status: 403 }) };
+  }
+  return { user };
 }

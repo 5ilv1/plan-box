@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/admin/progression
 //
@@ -10,6 +11,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
 // Mode 2 (?eleveId=X&chapitreId=Y) : détail d'un élève pour un chapitre
 //   eleveId = "pb_UUID" ou "rb_N"
 export async function GET(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const params = new URL(req.url).searchParams;
   const eleveId    = params.get("eleveId");
   const chapitreId = params.get("chapitreId");

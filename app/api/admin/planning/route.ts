@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // Calcule le lundi de la semaine contenant une date
 function getLundi(dateStr: string): Date {
@@ -18,6 +19,9 @@ function formatDate(d: Date): string {
 // GET /api/admin/planning?debut=YYYY-MM-DD&fin=YYYY-MM-DD  (vue mois)
 // Retourne tous les blocs de la période avec info élève
 export async function GET(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const params = new URL(req.url).searchParams;
 
   let lundiStr: string;
@@ -97,6 +101,9 @@ export async function GET(req: NextRequest) {
 // Mode 2 : { blocId, titre, contenu }                → modifie le contenu d'un bloc
 // Mode 3 : { blocId, date_assignation, groupe_label } → modifie date + groupe depuis le modal
 export async function PATCH(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { blocId, date_assignation, groupe_label, titre, contenu } = body ?? {};
 
@@ -141,6 +148,9 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/admin/planning?id=<uuid>
 // Supprime un bloc du plan de travail
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const id = new URL(req.url).searchParams.get("id");
 
   if (!id) return NextResponse.json({ erreur: "id requis" }, { status: 400 });
