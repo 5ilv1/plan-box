@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "import-ce2": "npx tsx lib/scripts/importCE2.ts"
+    "import-ce2": "npx tsx lib/scripts/importCE2.ts",
+    "joseph": "npx tsx scripts/joseph.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
