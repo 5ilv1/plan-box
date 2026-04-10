@@ -1,14 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/admin/chapitres
 // Retourne tous les chapitres avec leur niveau, triés par matière > niveau > ordre
 export async function GET() {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
 
   const { data, error } = await admin
     .from("chapitres")
     .select("*, niveaux(*)")
+    .or("sous_matiere.is.null,sous_matiere.neq.rituel-orthographe")
     .order("matiere")
     .order("ordre", { nullsFirst: false });
 
@@ -22,6 +27,9 @@ export async function GET() {
 // POST /api/admin/chapitres
 // Crée un nouveau chapitre
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { titre, matiere, sous_matiere, niveau_id, description, nb_cartes_eval, seuil_reussite } = body ?? {};
 
@@ -70,6 +78,9 @@ export async function POST(req: NextRequest) {
 // PATCH /api/admin/chapitres
 // Met à jour un chapitre (champs ou ordre)
 export async function PATCH(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   const { id, ...champs } = body ?? {};
 
@@ -110,6 +121,9 @@ export async function PATCH(req: NextRequest) {
 // DELETE /api/admin/chapitres?id=<uuid>
 // Supprime un chapitre — refusé si des élèves sont en cours dessus
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const id = new URL(req.url).searchParams.get("id");
 
   if (!id) {
