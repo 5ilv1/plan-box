@@ -1,10 +1,13 @@
 # Plan Box
 
+Application de gestion de classe pour enseignants (CE2-CM2) avec exercices IA, dictées, plans de travail et suivi de progression.
+
 ## Stack technique
 - Next.js 16 + React 19 + TypeScript
-- Supabase (auth + base de données)
+- Supabase (auth + base de données + RLS)
 - Tailwind CSS v4
-- Anthropic SDK (claude-sonnet-4-20250514 / claude-opus-4-20250514)
+- Anthropic SDK : `claude-sonnet-4-20250514` (défaut), `claude-opus-4-20250514` (exercices complexes)
+- OpenAI (TTS pour les dictées)
 
 ## Lancer le projet
 ```bash
@@ -12,19 +15,154 @@ cd /Users/sylvainrenaut/plan-box
 npm run dev
 ```
 
-## Agents disponibles
+## Architecture
 
-### Joseph — Agent de test Ma P'tite Règle
-Joseph est un élève virtuel qui vérifie et corrige automatiquement les exercices de Ma P'tite Règle.
+### Structure des dossiers
+```
+app/
+  api/                  # ~60 API routes
+  enseignant/(app)/     # Pages enseignant (dashboard, chapitres, dictées, etc.)
+  eleve/                # Pages élève (exercices, évaluation, révision)
+  auth/                 # Authentification
+components/             # Composants React réutilisables
+lib/                    # Utilitaires (supabase, auth, validation, calcul, etc.)
+scripts/                # Scripts CLI (joseph.ts)
+```
 
+### Patterns importants
+- **Client Supabase navigateur** : `createClient()` depuis `lib/supabase.ts` (singleton)
+- **Client Supabase admin** : `createAdminClient()` depuis `lib/supabase-admin.ts` (service_role, bypass RLS, API routes uniquement)
+- **Auth serveur** : `getServerUser()` et `requireEnseignant()` depuis `lib/server-auth.ts`
+- **requireEnseignant()** vérifie par email (`APP_ENSEIGNANT_EMAIL`) OU par possession d'une classe dans la table `classe`
+- **Contenu exercices** : stocké en JSON dans `exercice.contenu` et `plan_travail.contenu`
+
+### Double source élèves
+Le système gère deux sources d'élèves :
+- **PlanBox** : UUID Supabase Auth, préfixe `pb_UUID`
+- **Repetibox** : ID entier importé, préfixe `rb_N`
+Les deux coexistent dans les progressions, assignations et résultats.
+
+## Base de données (Supabase)
+
+### Projet
+- ID : `dobaryyfqgcumwbskark`
+- Région : `eu-west-3`
+
+### Tables principales
+| Table | Description |
+|-------|-------------|
+| `chapitres` | Chapitres (matière, sous_matiere, niveau_id, ordre) |
+| `exercice` | Exercices liés à un chapitre (type, contenu JSON, ordre) |
+| `exercice_resultat` | Résultats élèves (score, total, valide) |
+| `eleves` | Élèves PlanBox (prenom, nom, niveau_id) |
+| `eleve` | Élèves Repetibox (prenom, nom) |
+| `groupes` | Groupes de classe |
+| `eleve_groupe` | Liaison élève-groupe (planbox_eleve_id OU repetibox_eleve_id) |
+| `chapitre_assignation` | Assignation chapitre → groupe (actif) |
+| `plan_travail` | Blocs de travail assignés (type, statut, contenu JSON) |
+| `pb_progression` | Progression par élève et chapitre (pourcentage, statut) |
+| `niveaux` | CE2, CM1, CM2 |
+| `classe` | Classes enseignant (user_id) |
+| `dictees` | Dictées générées (titre, thème, niveaux 1-4 étoiles) |
+| `notifications` | Notifications |
+| `evaluation_resultat` | Résultats d'évaluation |
+| `banque_exercices` | Banque d'exercices réutilisables |
+| `user_preferences` | Préférences UI (nav_order) |
+
+### Relations FK critiques
+Avant de supprimer un chapitre, nettoyer dans cet ordre :
+1. `exercice_resultat` (via exercice_id)
+2. `exercice`, `chapitre_assignation`, `pb_progression`, `evaluation_resultat`, `plan_travail`, `notifications`, `banque_exercices` (via chapitre_id)
+3. Puis `chapitres`
+
+### Marqueur rituel orthographe
+`sous_matiere = "rituel-orthographe"` identifie les chapitres Ma P'tite Règle. Ils sont filtrés de la page Chapitres mais apparaissent dans la progression.
+
+## Types d'exercices
+
+| Type | Contenu JSON | Description |
+|------|-------------|-------------|
+| `revision` | `points_cles[]`, `contenu_html`, `exemples[]` | Leçon/fiche de révision |
+| `exercice` | `questions[{enonce, reponse_attendue, indice}]` | Questions ouvertes à trous |
+| `texte_a_trous` | `texte_complet`, `trous[{mot, position, indice}]` | Texte avec mots manquants |
+| `qcm` | `questions[{question, options[], reponse_correcte, explication}]` | QCM |
+| `ecriture_contrainte` | `consigne`, `contraintes[]`, `nb_phrases` | Écriture libre avec contraintes |
+| `calcul_mental` | `questions[{expression, reponse}]` | Calcul mental |
+| `analyse_phrase` | `phrases[{phrase, analyse}]` | Analyse grammaticale |
+
+## Ma P'tite Règle — Catégories
+
+| Catégorie | Exemples | Modèle IA |
+|-----------|----------|-----------|
+| `homophone` | est/et, ou/où, sont/son, a/à | Sonnet |
+| `morphologie` | -er/-é, pluriels -ou/-ail, accords | Opus |
+| `syntaxe` | négation ne…pas, interrogation | Opus |
+
+La détection de catégorie est automatique via `detecterCategorie()` dans l'API.
+
+## Dictées
+
+### Workflow
+1. Génération IA : 4 niveaux de difficulté (⭐ CE2 → ⭐⭐⭐⭐ CM2+)
+2. Audio TTS via OpenAI (phrase par phrase)
+3. Élève écoute et écrit (manuscrit ou clavier)
+4. Correction via Claude Vision (analyse image manuscrite)
+
+### Structure
+```typescript
+DicteeContenu {
+  niveau_etoiles: 1|2|3|4
+  titre, texte, phrases[], mots[],
+  audio_complet_url, audio_phrases_urls
+}
+```
+
+## Variables d'environnement
+```
+NEXT_PUBLIC_SUPABASE_URL       # URL Supabase
+NEXT_PUBLIC_SUPABASE_ANON_KEY  # Clé anonyme Supabase
+SUPABASE_SECRET_KEY            # Clé service_role (serveur)
+APP_ENSEIGNANT_EMAIL           # Email enseignant
+PB_ANTHROPIC_KEY               # Clé API Anthropic
+OPENAI_API_KEY                 # Clé OpenAI (TTS)
+CRON_SECRET                    # Secret pour les crons
+NEXT_PUBLIC_APP_URL            # URL de l'app
+NEXT_PUBLIC_REPETIBOX_URL      # URL Repetibox
+```
+
+## Déploiement
+- **Vercel** : auto-deploy sur push `main`
+- **URL prod** : https://plan-box-phi.vercel.app
+
+## Pièges connus
+
+1. **Normalisation des accents** : ne JAMAIS supprimer les accents dans le normaliser (`normaliser()` dans la page exercice élève). Sinon `ou` = `où` et `er` = `é`
+2. **FK avant suppression** : toujours nettoyer toutes les tables FK avant de supprimer un chapitre (voir section Relations FK)
+3. **requireEnseignant()** : vérifie par email OU par classe, pas uniquement par email
+4. **Exercices -er/-é** : UNIQUEMENT verbes du 1er groupe, INTERDIT 2e/3e groupe dans les prompts
+5. **Texte à trous -er/-é** : utiliser des `<select>` dropdown, pas des inputs texte (sinon impossible de répondre)
+6. **env vars** : dans les scripts CLI, charger avec `export $(grep -v '^#' .env.local | xargs)` avant d'exécuter
+
+## Joseph — Agent de test et correction
+
+Joseph est un élève virtuel qui vérifie et corrige automatiquement les exercices.
+
+### Commandes
 Quand l'utilisateur dit **"fais passer Joseph"**, exécuter :
 ```bash
 export $(grep -v '^#' .env.local | xargs) && npm run joseph
 ```
 
-Variantes :
-- **"fais passer Joseph sur er"** → `npm run joseph "er"`
-- **"fais passer Joseph avec correction"** ou **"Joseph --fix"** → `npm run joseph -- --fix`
-- **"fais passer Joseph sur er avec correction"** → `npm run joseph -- --fix "er"`
+| Demande utilisateur | Commande |
+|---------------------|----------|
+| "fais passer Joseph" | `npm run joseph` |
+| "fais passer Joseph sur er" | `npm run joseph "er"` |
+| "fais passer Joseph avec correction" | `npm run joseph -- --fix` |
+| "fais passer Joseph sur er avec correction" | `npm run joseph -- --fix "er"` |
+| "fais passer Joseph sur les dictées" | `npm run joseph -- --dictees` |
+| "fais passer Joseph sur le parcours élève" | `npm run joseph -- --parcours` |
 
-Les variables d'env doivent être chargées avant (`export $(grep -v '^#' .env.local | xargs)`).
+### Capacités
+- **Ma P'tite Règle** : vérifie structure + contenu IA de chaque exercice, corrige en BDD avec `--fix`
+- **Dictées** (`--dictees`) : vérifie la cohérence des dictées générées (texte, phrases, mots, niveaux)
+- **Parcours élève** (`--parcours`) : simule un élève qui fait les exercices d'un chapitre de bout en bout

@@ -315,43 +315,152 @@ async function appliquerCorrection(ex: any, contenuCorrige: any): Promise<boolea
   return true;
 }
 
-// ── Main ───────────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// MODULE DICTÉES
+// ══════════════════════════════════════════════════════════════════════════
 
-async function main() {
-  const args = process.argv.slice(2);
-  const fixMode = args.includes("--fix");
-  const filtre = args.filter((a) => a !== "--fix").join(" ").trim();
-
-  console.log("🧑‍🎓 Joseph — Agent de test Ma P'tite Règle");
-  if (fixMode) console.log("🔧 Mode correction activé (--fix)");
-  if (filtre) console.log(`🎯 Filtre : "${filtre}"`);
+async function verifierDictees(filtre: string) {
+  console.log("\n📝 Vérification des dictées");
   console.log("=".repeat(60));
 
-  // Récupérer les chapitres rituels
-  const { data: allChapitres } = await supabase
-    .from("chapitres")
-    .select("id, titre")
-    .eq("sous_matiere", "rituel-orthographe")
-    .order("created_at");
+  const { data: allDictees } = await supabase
+    .from("dictees")
+    .select("id, titre, created_at")
+    .order("created_at", { ascending: false });
 
-  const chapitres = filtre
-    ? (allChapitres ?? []).filter((c) => c.titre.toLowerCase().includes(filtre.toLowerCase()))
-    : allChapitres;
+  const dictees = filtre
+    ? (allDictees ?? []).filter((d: any) => d.titre.toLowerCase().includes(filtre.toLowerCase()))
+    : allDictees;
 
-  if (!chapitres?.length) {
-    console.log("⚠️  Aucun chapitre rituel trouvé.");
+  if (!dictees?.length) {
+    console.log("⚠️  Aucune dictée trouvée.");
     return;
   }
 
-  console.log(`📚 ${chapitres.length} chapitre(s) rituel(s) trouvé(s)\n`);
+  console.log(`📚 ${dictees.length} dictée(s) trouvée(s)\n`);
 
-  // Stocker les exercices pour la phase de correction
-  const tousExercices: any[] = [];
-
-  for (const chap of chapitres) {
-    console.log(`\n📖 ${chap.titre}`);
+  for (const dict of dictees) {
+    console.log(`\n📝 ${dict.titre}`);
     console.log("-".repeat(50));
 
+    // Récupérer les blocs plan_travail de type dictee liés
+    const { data: blocs } = await supabase
+      .from("plan_travail")
+      .select("id, contenu, type")
+      .eq("type", "dictee")
+      .not("contenu", "is", null)
+      .limit(50);
+
+    // Filtrer ceux qui contiennent le titre de la dictée
+    const blocsDict = (blocs ?? []).filter((b: any) => {
+      const c = b.contenu as any;
+      return c?.titre_dictee === dict.titre || c?.dictee_id === dict.id;
+    });
+
+    if (blocsDict.length === 0) {
+      // Vérifier directement la dictée
+      const { data: dictDetail } = await supabase
+        .from("dictees")
+        .select("*")
+        .eq("id", dict.id)
+        .single();
+
+      if (!dictDetail) continue;
+      const d = dictDetail as any;
+
+      // Vérifier la structure
+      if (!d.texte && !d.contenu) {
+        warning(dict.titre, dict.id, "dictée", "dictee", "Pas de texte ni de contenu");
+        continue;
+      }
+
+      console.log(`  ✓ Structure OK`);
+      continue;
+    }
+
+    for (const bloc of blocsDict) {
+      const c = bloc.contenu as any;
+
+      // Vérifier la structure du contenu dictée
+      if (!c.texte?.trim()) {
+        erreur(dict.titre, bloc.id, "Bloc dictée", "dictee", "Texte de dictée vide");
+      }
+
+      if (c.phrases && Array.isArray(c.phrases)) {
+        for (let i = 0; i < c.phrases.length; i++) {
+          const p = c.phrases[i];
+          if (!p.texte?.trim()) {
+            erreur(dict.titre, bloc.id, "Bloc dictée", "dictee", `Phrase ${i + 1} : texte vide`);
+          }
+        }
+
+        // Vérifier que la concaténation des phrases = texte complet
+        const textePhrases = c.phrases.map((p: any) => p.texte?.trim()).join(" ");
+        const texteComplet = c.texte?.trim();
+        if (texteComplet && textePhrases && !texteComplet.includes(textePhrases.slice(0, 30))) {
+          warning(dict.titre, bloc.id, "Bloc dictée", "dictee",
+            "Les phrases ne semblent pas correspondre au texte complet");
+        }
+
+        console.log(`  ✓ ${c.phrases.length} phrase(s), niveau ${c.niveau_etoiles ?? "?"}⭐`);
+      } else {
+        warning(dict.titre, bloc.id, "Bloc dictée", "dictee", "Pas de découpage en phrases");
+      }
+
+      if (c.mots && Array.isArray(c.mots)) {
+        for (let i = 0; i < c.mots.length; i++) {
+          if (!c.mots[i]?.trim()) {
+            erreur(dict.titre, bloc.id, "Bloc dictée", "dictee", `Mot ${i + 1} : vide dans la liste de mots`);
+          }
+        }
+      }
+    }
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// MODULE PARCOURS ÉLÈVE
+// ══════════════════════════════════════════════════════════════════════════
+
+async function verifierParcours(filtre: string) {
+  console.log("\n🎒 Vérification du parcours élève");
+  console.log("=".repeat(60));
+
+  // Récupérer les chapitres assignés à au moins un groupe
+  const { data: assignations } = await supabase
+    .from("chapitre_assignation")
+    .select("chapitre_id")
+    .eq("actif", true);
+
+  const chapIds = [...new Set((assignations ?? []).map((a: any) => a.chapitre_id))];
+
+  if (chapIds.length === 0) {
+    console.log("⚠️  Aucun chapitre assigné trouvé.");
+    return;
+  }
+
+  const { data: allChapitres } = await supabase
+    .from("chapitres")
+    .select("id, titre, matiere, sous_matiere, nb_cartes_eval, seuil_reussite")
+    .in("id", chapIds)
+    .order("matiere");
+
+  const chapitres = filtre
+    ? (allChapitres ?? []).filter((c: any) => c.titre.toLowerCase().includes(filtre.toLowerCase()))
+    : allChapitres;
+
+  if (!chapitres?.length) {
+    console.log("⚠️  Aucun chapitre trouvé.");
+    return;
+  }
+
+  console.log(`📚 ${chapitres.length} chapitre(s) assigné(s)\n`);
+
+  for (const chap of chapitres as any[]) {
+    console.log(`\n📖 ${chap.titre} (${chap.matiere})`);
+    console.log("-".repeat(50));
+
+    // Récupérer les exercices
     const { data: exercices } = await supabase
       .from("exercice")
       .select("id, titre, type, nb_questions, contenu, ordre")
@@ -359,90 +468,265 @@ async function main() {
       .order("ordre");
 
     if (!exercices?.length) {
-      erreur(chap.titre, "", "-", "-", "Chapitre sans exercice", undefined, false);
+      erreur(chap.titre, chap.id, "Parcours", "parcours", "Chapitre assigné sans exercice — l'élève verra un chapitre vide", undefined, false);
       continue;
     }
 
     console.log(`  ${exercices.length} exercice(s)`);
 
+    // Simuler le parcours élève exercice par exercice
+    let nbOk = 0;
     for (const ex of exercices) {
-      console.log(`  → ${ex.titre} (${ex.type})`);
-      tousExercices.push({ ...ex, chapTitre: chap.titre });
+      const contenu = ex.contenu as any;
+      const problems: string[] = [];
 
-      // 1. Vérifications structurelles
-      verifierStructureExercice(chap.titre, ex);
+      if (!contenu) {
+        problems.push("contenu null — exercice inaccessible");
+      } else {
+        switch (ex.type) {
+          case "exercice":
+            if (!contenu.questions?.length) problems.push("pas de questions");
+            else {
+              for (let i = 0; i < contenu.questions.length; i++) {
+                const q = contenu.questions[i];
+                if (!q.enonce) problems.push(`Q${i + 1}: pas d'énoncé`);
+                if (!q.reponse_attendue) problems.push(`Q${i + 1}: pas de réponse attendue`);
+              }
+            }
+            break;
 
-      // 2. Vérification IA
-      await verifierAvecIA(chap.titre, ex);
-    }
-  }
+          case "texte_a_trous":
+            if (!contenu.texte_complet) problems.push("pas de texte_complet");
+            if (!contenu.trous?.length) problems.push("pas de trous");
+            break;
 
-  // ── Phase de correction ────────────────────────────────────────────────
-  if (fixMode && erreurs.some((e) => e.fixable)) {
-    console.log("\n" + "=".repeat(60));
-    console.log("🔧 PHASE DE CORRECTION");
-    console.log("=".repeat(60));
+          case "qcm":
+            if (!contenu.questions?.length) problems.push("pas de questions");
+            else {
+              for (let i = 0; i < contenu.questions.length; i++) {
+                const q = contenu.questions[i];
+                if (!q.options?.length) problems.push(`Q${i + 1}: pas d'options`);
+                if (q.reponse_correcte == null) problems.push(`Q${i + 1}: pas de réponse correcte`);
+              }
+            }
+            break;
 
-    // Grouper les erreurs par exercice
-    const exIdsACorreger = [...new Set(erreurs.filter((e) => e.fixable).map((e) => e.exerciceId))];
+          case "ecriture_contrainte":
+            if (!contenu.consigne) problems.push("pas de consigne");
+            break;
 
-    for (const exId of exIdsACorreger) {
-      const ex = tousExercices.find((e) => e.id === exId);
-      if (!ex) continue;
+          case "revision":
+            if (!contenu.points_cles?.length && !contenu.contenu_html) {
+              problems.push("leçon vide");
+            }
+            break;
 
-      console.log(`\n  🔧 Correction de "${ex.titre}"…`);
-      const contenuCorrige = await corrigerExercice(ex);
+          case "calcul_mental":
+            if (!contenu.questions?.length) problems.push("pas de questions");
+            break;
 
-      if (contenuCorrige) {
-        const ok = await appliquerCorrection(ex, contenuCorrige);
-        if (ok) {
-          console.log(`  ✅ Corrigé et sauvegardé en BDD`);
+          case "analyse_phrase":
+            if (!contenu.phrases?.length) problems.push("pas de phrases");
+            break;
+        }
+      }
 
-          // Re-vérifier après correction
-          console.log(`  🔄 Re-vérification…`);
-          const anciennesErreurs = erreurs.length;
-          ex.contenu = contenuCorrige;
-          // Retirer les anciennes erreurs de cet exercice
-          const idx = erreurs.findIndex((e) => e.exerciceId === exId);
-          while (idx >= 0) {
-            erreurs.splice(idx, 1);
-            const next = erreurs.findIndex((e) => e.exerciceId === exId);
-            if (next < 0) break;
-          }
-          // Re-vérifier
-          verifierStructureExercice(ex.chapTitre, ex);
-          await verifierAvecIA(ex.chapTitre, ex);
-          const nouvellesErreurs = erreurs.filter((e) => e.exerciceId === exId);
-          if (nouvellesErreurs.length === 0) {
-            console.log(`  ✅ Aucune erreur restante`);
-          } else {
-            console.log(`  ⚠️  ${nouvellesErreurs.length} erreur(s) restante(s)`);
-          }
+      if (problems.length > 0) {
+        const icon = "❌";
+        console.log(`  ${icon} ${ex.titre} (${ex.type})`);
+        for (const p of problems) {
+          erreur(chap.titre, ex.id, ex.titre, "parcours", `Bloquant pour l'élève : ${p}`, undefined, false);
+          console.log(`     → ${p}`);
         }
       } else {
-        console.log(`  ⚠️  Pas de correction générée`);
+        nbOk++;
+        console.log(`  ✅ ${ex.titre} (${ex.type})`);
+      }
+    }
+
+    // Vérifier le seuil d'évaluation
+    if (chap.nb_cartes_eval && chap.nb_cartes_eval > exercices.length) {
+      warning(chap.titre, chap.id, "Évaluation", "parcours",
+        `nb_cartes_eval (${chap.nb_cartes_eval}) > nombre d'exercices (${exercices.length})`);
+    }
+
+    // Vérifier que le parcours est complet
+    const types = exercices.map((e: any) => e.type);
+    if (!types.includes("revision") && chap.sous_matiere === "rituel-orthographe") {
+      warning(chap.titre, chap.id, "Parcours", "parcours", "Rituel sans leçon (type revision)");
+    }
+
+    // Vérification IA du parcours : cohérence pédagogique
+    if (exercices.length >= 3) {
+      try {
+        const resume = exercices.map((e: any) => `- ${e.titre} (${e.type})`).join("\n");
+        const res = await anthropic.messages.create({
+          model: "claude-sonnet-4-20250514",
+          max_tokens: 300,
+          messages: [{
+            role: "user",
+            content: `Tu es un expert en pédagogie primaire (CE2-CM2). Vérifie la cohérence de ce parcours d'exercices pour le chapitre "${chap.titre}" :
+
+${resume}
+
+Vérifie :
+- L'ordre est-il pédagogiquement logique (découverte → entraînement → production) ?
+- Y a-t-il un exercice manquant ou incohérent ?
+
+Réponds en JSON : { "ok": true/false, "problemes": ["..."] }
+Si tout est cohérent, réponds : { "ok": true, "problemes": [] }`,
+          }],
+        });
+
+        const text = res.content[0].type === "text" ? res.content[0].text : "";
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (jsonMatch) {
+          const result = JSON.parse(jsonMatch[0]);
+          if (!result.ok && result.problemes?.length) {
+            for (const p of result.problemes) {
+              warning(chap.titre, chap.id, "Parcours", "parcours", `[IA] ${p}`);
+            }
+          }
+        }
+      } catch {}
+    }
+
+    console.log(`  → ${nbOk}/${exercices.length} exercice(s) jouable(s)`);
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// MAIN
+// ══════════════════════════════════════════════════════════════════════════
+
+async function main() {
+  const args = process.argv.slice(2);
+  const fixMode = args.includes("--fix");
+  const dicteesMode = args.includes("--dictees");
+  const parcoursMode = args.includes("--parcours");
+  const allMode = !dicteesMode && !parcoursMode; // par défaut = ptite règle
+  const filtre = args.filter((a) => !a.startsWith("--")).join(" ").trim();
+
+  console.log("🧑‍🎓 Joseph — Agent de test Plan Box");
+  if (fixMode) console.log("🔧 Mode correction activé (--fix)");
+  if (dicteesMode) console.log("📝 Mode dictées");
+  if (parcoursMode) console.log("🎒 Mode parcours élève");
+  if (!dicteesMode && !parcoursMode) console.log("✏️  Mode Ma P'tite Règle");
+  if (filtre) console.log(`🎯 Filtre : "${filtre}"`);
+  console.log("=".repeat(60));
+
+  // ── Ma P'tite Règle ────────────────────────────────────────────────────
+  if (allMode) {
+    const { data: allChapitres } = await supabase
+      .from("chapitres")
+      .select("id, titre")
+      .eq("sous_matiere", "rituel-orthographe")
+      .order("created_at");
+
+    const chapitres = filtre
+      ? (allChapitres ?? []).filter((c) => c.titre.toLowerCase().includes(filtre.toLowerCase()))
+      : allChapitres;
+
+    if (!chapitres?.length) {
+      console.log("⚠️  Aucun chapitre rituel trouvé.");
+    } else {
+      console.log(`📚 ${chapitres.length} chapitre(s) rituel(s) trouvé(s)\n`);
+
+      const tousExercices: any[] = [];
+
+      for (const chap of chapitres) {
+        console.log(`\n📖 ${chap.titre}`);
+        console.log("-".repeat(50));
+
+        const { data: exercices } = await supabase
+          .from("exercice")
+          .select("id, titre, type, nb_questions, contenu, ordre")
+          .eq("chapitre_id", chap.id)
+          .order("ordre");
+
+        if (!exercices?.length) {
+          erreur(chap.titre, "", "-", "-", "Chapitre sans exercice", undefined, false);
+          continue;
+        }
+
+        console.log(`  ${exercices.length} exercice(s)`);
+
+        for (const ex of exercices) {
+          console.log(`  → ${ex.titre} (${ex.type})`);
+          tousExercices.push({ ...ex, chapTitre: chap.titre });
+          verifierStructureExercice(chap.titre, ex);
+          await verifierAvecIA(chap.titre, ex);
+        }
+      }
+
+      // Phase de correction
+      if (fixMode && erreurs.some((e) => e.fixable)) {
+        console.log("\n" + "=".repeat(60));
+        console.log("🔧 PHASE DE CORRECTION");
+        console.log("=".repeat(60));
+
+        const exIdsACorreger = [...new Set(erreurs.filter((e) => e.fixable).map((e) => e.exerciceId))];
+
+        for (const exId of exIdsACorreger) {
+          const ex = tousExercices.find((e) => e.id === exId);
+          if (!ex) continue;
+
+          console.log(`\n  🔧 Correction de "${ex.titre}"…`);
+          const contenuCorrige = await corrigerExercice(ex);
+
+          if (contenuCorrige) {
+            const ok = await appliquerCorrection(ex, contenuCorrige);
+            if (ok) {
+              console.log(`  ✅ Corrigé et sauvegardé en BDD`);
+              console.log(`  🔄 Re-vérification…`);
+              ex.contenu = contenuCorrige;
+              // Retirer les anciennes erreurs
+              let idx = erreurs.findIndex((e) => e.exerciceId === exId);
+              while (idx >= 0) {
+                erreurs.splice(idx, 1);
+                idx = erreurs.findIndex((e) => e.exerciceId === exId);
+              }
+              verifierStructureExercice(ex.chapTitre, ex);
+              await verifierAvecIA(ex.chapTitre, ex);
+              const restantes = erreurs.filter((e) => e.exerciceId === exId);
+              console.log(restantes.length === 0 ? `  ✅ Aucune erreur restante` : `  ⚠️  ${restantes.length} erreur(s) restante(s)`);
+            }
+          } else {
+            console.log(`  ⚠️  Pas de correction générée`);
+          }
+        }
       }
     }
   }
 
-  // ── Rapport ────────────────────────────────────────────────────────────
+  // ── Dictées ────────────────────────────────────────────────────────────
+  if (dicteesMode) {
+    await verifierDictees(filtre);
+  }
+
+  // ── Parcours élève ─────────────────────────────────────────────────────
+  if (parcoursMode) {
+    await verifierParcours(filtre);
+  }
+
+  // ── Rapport final ──────────────────────────────────────────────────────
   console.log("\n" + "=".repeat(60));
-  console.log("📋 RAPPORT DE TEST");
+  console.log("📋 RAPPORT FINAL DE JOSEPH");
   console.log("=".repeat(60));
 
   if (corrections.length > 0) {
     console.log(`\n🔧 ${corrections.length} CORRECTION(S) APPLIQUÉE(S) :`);
     for (const c of corrections) {
-      console.log(`\n  ✅ ${c.exercice}`);
+      console.log(`  ✅ ${c.exercice}`);
     }
   }
 
   if (erreurs.length === 0 && warnings.length === 0) {
-    console.log("\n✅ Aucune erreur détectée ! Tous les exercices sont valides.");
+    console.log("\n✅ Aucune erreur détectée ! Tout est valide.");
   }
 
   if (erreurs.length > 0) {
-    console.log(`\n❌ ${erreurs.length} ERREUR(S) RESTANTE(S) :`);
+    console.log(`\n❌ ${erreurs.length} ERREUR(S) :`);
     for (const e of erreurs) {
       console.log(`\n  📕 [${e.type}] ${e.chapitre} → ${e.exercice}`);
       console.log(`     ${e.probleme}`);
