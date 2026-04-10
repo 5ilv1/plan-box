@@ -26,12 +26,7 @@ interface Props {
   onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
 }
 
-function estExerciceConjugaison(consigne: string): boolean {
-  return /conjugu|verbe|temps verbal|présent|passé|futur|imparfait|passé simple|plus-que-parfait/i.test(consigne);
-}
-
 export default function TexteATrousEleve({ titre, consigne, texteComplet, trous, onTermine }: Props) {
-  const afficherIndice = estExerciceConjugaison(consigne);
   const mots = texteComplet.split(/\s+/);
   const [reponses, setReponses] = useState<Record<number, string>>({});
   const [resultats, setResultats] = useState<Record<number, boolean | null>>({});
@@ -208,8 +203,8 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
                         if (!estIncorrect) { e.currentTarget.style.borderStyle = "dashed"; }
                       }}
                     />
-                    {/* Indice visible uniquement pour les exercices de conjugaison */}
-                    {afficherIndice && trou.indice && !estCorrect && (
+                    {/* Indice visible sous le trou */}
+                    {trou.indice && !estCorrect && (
                       <span style={{
                         fontSize: "0.6rem", color: "#0E7490", fontStyle: "italic",
                         marginTop: 1, lineHeight: 1, whiteSpace: "nowrap",
