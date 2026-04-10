@@ -150,19 +150,10 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
       },
       {
         jour: "Jeudi",
-        label: "Transforme / Réécris",
-        type: "exercice" as const,
-        nb: 7, nbCible: 5, reponseUnMot: false,
-        instruction: `Exercice de transformation/réécriture.
-INTERDIT ABSOLU : NE PAS mettre de trous (___) dans l'énoncé. Si un énoncé contient "___", il sera SUPPRIMÉ.
-L'énoncé COMMENCE par un verbe d'action (Réécris, Mets, Transforme, Remplace) suivi de la phrase entre guillemets.
-Format OBLIGATOIRE de chaque énoncé :
-- "Réécris cette phrase en remplaçant « il » par « elle » : « Il est grand et il court vite. »"
-- "Mets cette phrase au pluriel : « Le chat est noir et petit. »"
-- "Transforme en changeant le sujet par « nous » : « Marie est contente et elle chante. »"
-- "Remplace « le garçon » par « les filles » : « Le garçon est rapide et il saute haut. »"
-La reponse_attendue est la phrase ENTIÈREMENT réécrite avec tous les accords modifiés.
-Les transformations doivent obliger l'élève à réfléchir à l'usage de "est"/"sont"/"et" dans la nouvelle phrase.`,
+        label: "Écriture — Utilise la règle",
+        type: "ecriture_contrainte" as const,
+        nb: 0, // pas de génération IA, contenu statique
+        instruction: "",
       },
       {
         jour: "Vendredi",
@@ -182,8 +173,30 @@ INTERDIT : inventer des mots qui n'existent pas comme distracteurs. Les erreurs 
     for (let i = 0; i < exercicesDefs.length; i++) {
       const def = exercicesDefs[i];
       try {
+        // Exercice d'écriture : contenu statique, pas de génération IA
+        if (def.type === "ecriture_contrainte") {
+          await admin.from("exercice").insert({
+            chapitre_id: chapitre.id,
+            titre: def.label,
+            type: def.type,
+            contenu: {
+              consigne: `Écris 3 phrases en utilisant correctement « ${titre} ».\nRappel : ${regle}`,
+              contraintes: [
+                `Utiliser correctement « ${titre.split(" / ")[0]} » au moins une fois`,
+                `Utiliser correctement « ${titre.split(" / ")[1]?.trim() || titre} » au moins une fois`,
+                "Écrire des phrases complètes avec un sujet, un verbe et un complément",
+              ],
+              nb_phrases: 3,
+            },
+            nb_questions: 3,
+            ordre: i + 1,
+          });
+          results.push({ jour: def.jour, ok: true, titre: def.label });
+          continue;
+        }
+
         const generated = await genererExerciceRegle(
-          def.type,
+          def.type as "qcm" | "texte_a_trous" | "exercice",
           def.nb,
           titre,
           regle,
@@ -374,7 +387,6 @@ IMPORTANT :
 ${type === "qcm" ? "- IMPORTANT : la position de la bonne réponse (reponse_correcte) doit varier aléatoirement entre 0, 1, 2 et 3" : ""}
 ${type === "exercice" && reponseUnMot ? `- RÈGLE ABSOLUE : chaque énoncé contient exactement UN SEUL trou (___). JAMAIS deux trous dans une phrase.
 - La reponse_attendue est exactement UN SEUL mot, jamais une combinaison avec "/" ou plusieurs mots.` : ""}
-${type === "exercice" && !reponseUnMot ? `- INTERDIT ABSOLU : NE PAS mettre de trous (___) dans les énoncés. L'énoncé est une consigne de transformation, pas un texte à trous.` : ""}
 ${type === "texte_a_trous" ? `- Génère UN SEUL texte cohérent d'au moins 5 phrases
 - Chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot du texte_complet
 - Les trous portent uniquement sur "${titreRegle}"
@@ -386,7 +398,7 @@ Format attendu :
 ${format}`;
 
   const message = await anthropic.messages.create({
-    model: (type === "texte_a_trous" || (type === "exercice" && !reponseUnMot)) ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
+    model: type === "texte_a_trous" ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
     max_tokens: 4096,
     messages: [{ role: "user", content: prompt }],
   });
@@ -436,13 +448,6 @@ ${format}`;
         q.reponse_attendue = q.reponse_attendue.split(/\s+/)[0].replace(/[.,;:!?]/g, "");
       }
     }
-  }
-
-  // Pour les exercices de réécriture (pas reponseUnMot), supprimer les questions à trous
-  if (type === "exercice" && !reponseUnMot && Array.isArray(contenu.questions)) {
-    contenu.questions = contenu.questions.filter((q: any) => {
-      return !q.enonce?.includes("___");
-    });
   }
 
   // Valider et corriger les réponses
