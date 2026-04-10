@@ -30,9 +30,28 @@ export async function requireEnseignant(): Promise<
   if (!user) {
     return { error: NextResponse.json({ erreur: "Non authentifié" }, { status: 401 }) };
   }
+
+  // Vérifier par email OU par possession d'une classe
   const enseignantEmail = process.env.APP_ENSEIGNANT_EMAIL;
-  if (enseignantEmail && user.email !== enseignantEmail) {
+  if (enseignantEmail && user.email === enseignantEmail) {
+    return { user };
+  }
+
+  // Fallback : vérifier si l'utilisateur possède au moins une classe
+  const { createClient: createAdmin } = await import("@supabase/supabase-js");
+  const admin = createAdmin(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SECRET_KEY!,
+  );
+  const { data: classes } = await admin
+    .from("classe")
+    .select("id")
+    .eq("user_id", user.id)
+    .limit(1);
+
+  if (!classes || classes.length === 0) {
     return { error: NextResponse.json({ erreur: "Accès réservé à l'enseignant" }, { status: 403 }) };
   }
+
   return { user };
 }
