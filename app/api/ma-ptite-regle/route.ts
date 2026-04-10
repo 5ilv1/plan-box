@@ -372,8 +372,9 @@ IMPORTANT :
 - Pas de violence, pas de sujets sensibles
 - Questions progressives en difficulté
 ${type === "qcm" ? "- IMPORTANT : la position de la bonne réponse (reponse_correcte) doit varier aléatoirement entre 0, 1, 2 et 3" : ""}
-${type === "exercice" ? `- RÈGLE ABSOLUE : chaque énoncé contient exactement UN SEUL trou (___). JAMAIS deux trous dans une phrase.
+${type === "exercice" && reponseUnMot ? `- RÈGLE ABSOLUE : chaque énoncé contient exactement UN SEUL trou (___). JAMAIS deux trous dans une phrase.
 - La reponse_attendue est exactement UN SEUL mot, jamais une combinaison avec "/" ou plusieurs mots.` : ""}
+${type === "exercice" && !reponseUnMot ? `- INTERDIT ABSOLU : NE PAS mettre de trous (___) dans les énoncés. L'énoncé est une consigne de transformation, pas un texte à trous.` : ""}
 ${type === "texte_a_trous" ? `- Génère UN SEUL texte cohérent d'au moins 5 phrases
 - Chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot du texte_complet
 - Les trous portent uniquement sur "${titreRegle}"
@@ -385,7 +386,7 @@ Format attendu :
 ${format}`;
 
   const message = await anthropic.messages.create({
-    model: type === "texte_a_trous" ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
+    model: (type === "texte_a_trous" || (type === "exercice" && !reponseUnMot)) ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
     max_tokens: 4096,
     messages: [{ role: "user", content: prompt }],
   });
