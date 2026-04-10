@@ -211,7 +211,7 @@ Règles :
 ${regles}`;
 
     const message = await anthropic.messages.create({
-      model: (type === "texte_a_trous" || type === "ecriture_contrainte") ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 4096,
       messages: [{ role: "user", content: prompt }],
     });

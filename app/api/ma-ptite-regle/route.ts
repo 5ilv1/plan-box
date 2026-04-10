@@ -68,11 +68,15 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const { titre, regle, astuce, exemple, niveau_id, groupe_ids, date_debut,
-      categorie = "homophone", mots_cibles } = body;
+      mots_cibles } = body;
 
     if (!titre || !regle) {
       return NextResponse.json({ error: "titre et regle requis" }, { status: 400 });
     }
+
+    // 0. Détection automatique de la catégorie par l'IA
+    const categorie = await detecterCategorie(titre, regle);
+    console.log(`[ma-ptite-regle] Catégorie détectée pour "${titre}": ${categorie}`);
 
     const admin = createAdminClient();
 
@@ -252,6 +256,42 @@ export async function DELETE(req: NextRequest) {
 }
 
 /* ──────────────────────────────────────────────────────
+   Helpers : détection automatique de catégorie
+   ────────────────────────────────────────────────────── */
+
+async function detecterCategorie(
+  titre: string,
+  regle: string,
+): Promise<"homophone" | "morphologie" | "syntaxe"> {
+  try {
+    const message = await anthropic.messages.create({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 50,
+      messages: [{
+        role: "user",
+        content: `Classe cette règle d'orthographe dans UNE des 3 catégories suivantes :
+- "homophone" : confusion entre deux mots qui se prononcent pareil (est/et, ou/où, sont/son, a/à, etc.)
+- "morphologie" : transformation de forme (pluriels, terminaisons verbales -er/-é, accords, suffixes)
+- "syntaxe" : structure de phrase (négation ne…pas, interrogation, etc.)
+
+Titre : "${titre}"
+Règle : "${regle}"
+
+Réponds UNIQUEMENT par un seul mot : homophone, morphologie ou syntaxe.`,
+      }],
+    });
+
+    const raw = (message.content[0].type === "text" ? message.content[0].text : "").trim().toLowerCase();
+    if (raw === "morphologie") return "morphologie";
+    if (raw === "syntaxe") return "syntaxe";
+    return "homophone";
+  } catch (err) {
+    console.warn("[detecterCategorie] Erreur, fallback homophone:", err);
+    return "homophone";
+  }
+}
+
+/* ──────────────────────────────────────────────────────
    Helpers : définitions d'exercices par catégorie
    ────────────────────────────────────────────────────── */
 
@@ -321,42 +361,79 @@ INTERDIT : inventer des mots qui n'existent pas. Les erreurs doivent être des V
   }
 
   if (categorie === "morphologie") {
-    return [
-      {
-        jour: "Lundi",
-        label: "Observation — Découverte",
-        type: "exercice",
-        nb: 7, nbCible: 5,
-        instruction: `Exercice d'observation/découverte sur la règle « ${titre} ».
+    // Détecter si c'est une règle de pluriel ou de terminaison verbale
+    const estPluriel = /pluriel|pluri|-al|-ail|-ou/i.test(titre);
+    const estVerbe = /infinitif|participe|conjugaison|-er|-é/i.test(titre);
+
+    const instructionObservation = estVerbe
+      ? `Exercice d'observation/découverte sur la règle « ${titre} ».
+Chaque question présente une phrase avec UN SEUL trou (___) à la place d'un verbe.
+L'élève doit écrire la bonne forme du verbe : infinitif (-er) ou participe passé (-é/-ée/-és/-ées).
+Format de chaque question :
+- enonce : une phrase avec un trou à la place du verbe, suivi du verbe entre parenthèses. Ex: "Il a ___ une pomme. (manger)"
+- reponse_attendue : la forme correcte du verbe (ex: "mangé", "manger")
+La reponse_attendue est UN SEUL MOT.
+UNIQUEMENT des verbes du 1er groupe (-er) : manger, jouer, marcher, regarder, trouver, etc.
+INTERDIT d'utiliser des verbes du 2e groupe (finir, choisir…) ou du 3e groupe (prendre, vendre, faire…).
+La confusion -er/-é ne concerne QUE les verbes du 1er groupe.
+Alterner infinitif et participe passé.`
+      : `Exercice d'observation/découverte sur la règle « ${titre} ».
 Chaque question présente un mot ou un groupe nominal au SINGULIER. L'élève doit écrire la forme au PLURIEL.
 Format de chaque question :
 - enonce : "Écris au pluriel : un {mot}" (ou "des {groupe nominal}")
 - reponse_attendue : la forme plurielle correcte (ex: "des chevaux", "des bijoux")
 Les questions doivent couvrir à la fois les cas réguliers ET les exceptions de la règle.
-Au moins 2 questions doivent porter sur des exceptions.`,
+Au moins 2 questions doivent porter sur des exceptions.`;
+
+    const instructionTrous = estVerbe
+      ? `Exercice à trous sur « ${titre} ».
+Génère une petite histoire cohérente qui utilise des verbes du 1er groupe à l'infinitif et au participe passé.
+UNIQUEMENT des verbes du 1er groupe (-er) : manger, jouer, marcher, regarder, trouver, etc.
+INTERDIT : verbes du 2e groupe (finir, choisir…) ou du 3e groupe (prendre, vendre, faire…).
+Les trous portent UNIQUEMENT sur les verbes en -er ou -é/-ée/-és/-ées.
+Le texte doit alterner les deux formes (infinitif et participe passé).
+CHAQUE verbe en -er ou -é concerné par la règle DOIT être un trou.
+L'indice doit être l'astuce "vendre/vendu" appliquée au contexte de la phrase.`
+      : `Exercice à trous sur « ${titre} ».
+Génère une petite histoire cohérente qui utilise des noms/adjectifs au pluriel concernés par cette règle.
+Les trous portent UNIQUEMENT sur les mots au pluriel qui illustrent la règle (les formes en -oux, -aux, -eaux, -als, -ails selon la règle).
+Le texte doit mélanger des cas réguliers ET des exceptions.
+CHAQUE mot au pluriel concerné par la règle DOIT être un trou.
+L'indice doit rappeler si c'est un cas régulier ou une exception.`;
+
+    const instructionQcm = estVerbe
+      ? `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase avec la bonne terminaison du verbe parmi 4 propositions.
+Chaque question propose 4 versions de la MÊME phrase. Les erreurs portent sur la confusion entre -er (infinitif) et -é/-ée/-és/-ées (participe passé).
+UNIQUEMENT des verbes du 1er groupe (-er). INTERDIT : verbes du 2e ou 3e groupe.
+INTERDIT : inventer des terminaisons fantaisistes. Les erreurs doivent être des confusions RÉELLES entre infinitif et participe passé.
+Varier les verbes et les contextes (après auxiliaire, après préposition, après un autre verbe).`
+      : `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
+Chaque question propose 4 versions de la MÊME phrase contenant un pluriel lié à la règle « ${titre} ».
+Les erreurs portent sur la terminaison du pluriel : mauvais suffixe (-s au lieu de -x, -aux au lieu de -als, etc.).
+INTERDIT : inventer des suffixes fantaisistes. Les erreurs doivent être des confusions RÉELLES entre les terminaisons existantes (-s, -x, -aux, -als, -ails, -oux).
+Au moins 2 questions doivent porter sur des exceptions.`;
+
+    return [
+      {
+        jour: "Lundi",
+        label: "Observation — Découverte",
+        type: "exercice",
+        nb: 7, nbCible: 5, reponseUnMot: estVerbe,
+        instruction: instructionObservation,
       },
       {
         jour: "Mardi",
         label: "Exercice à trous — Entraînement",
         type: "texte_a_trous",
         nb: 8,
-        instruction: `Exercice à trous sur « ${titre} ».
-Génère une petite histoire cohérente qui utilise des noms/adjectifs au pluriel concernés par cette règle.
-Les trous portent UNIQUEMENT sur les mots au pluriel qui illustrent la règle (les formes en -oux, -aux, -eaux, -als, -ails selon la règle).
-Le texte doit mélanger des cas réguliers ET des exceptions.
-CHAQUE mot au pluriel concerné par la règle DOIT être un trou.
-L'indice doit rappeler si c'est un cas régulier ou une exception.`,
+        instruction: instructionTrous,
       },
       {
         jour: "Mercredi",
         label: "Trouve l'erreur — Entraînement",
         type: "qcm",
         nb: 5,
-        instruction: `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
-Chaque question propose 4 versions de la MÊME phrase contenant un pluriel lié à la règle « ${titre} ».
-Les erreurs portent sur la terminaison du pluriel : mauvais suffixe (-s au lieu de -x, -aux au lieu de -als, etc.).
-INTERDIT : inventer des suffixes fantaisistes. Les erreurs doivent être des confusions RÉELLES entre les terminaisons existantes (-s, -x, -aux, -als, -ails, -oux).
-Au moins 2 questions doivent porter sur des exceptions.`,
+        instruction: instructionQcm,
       },
       {
         jour: "Jeudi",
@@ -435,6 +512,14 @@ function genererContraintesEcriture(
   }
 
   if (categorie === "morphologie") {
+    const estVerbe = /infinitif|participe|conjugaison|-er|-é/i.test(titre);
+    if (estVerbe) {
+      return [
+        "Utiliser au moins 1 verbe du 1er groupe à l'infinitif (-er)",
+        "Utiliser au moins 1 verbe du 1er groupe au participe passé (-é/-ée)",
+        "Écrire des phrases complètes avec un sujet, un verbe et un complément",
+      ];
+    }
     return [
       `Utiliser au moins 2 mots au pluriel qui suivent la règle « ${titre} »`,
       `Utiliser au moins 1 mot qui est une exception à la règle`,
@@ -517,16 +602,10 @@ async function genererExerciceRegle(
   ];
   const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
 
-  // Utiliser Opus pour les règles complexes (morphologie/syntaxe), Sonnet pour texte_a_trous, Haiku pour homophones simples
-  let model: string;
-  if (categorie !== "homophone") {
-    // Règles complexes : Opus pour une génération fiable
-    model = "claude-opus-4-20250514";
-  } else if (type === "texte_a_trous") {
-    model = "claude-sonnet-4-20250514";
-  } else {
-    model = "claude-haiku-4-5-20251001";
-  }
+  // Sonnet par défaut, Opus pour les règles complexes (morphologie/syntaxe)
+  const model = categorie !== "homophone"
+    ? "claude-opus-4-20250514"
+    : "claude-sonnet-4-20250514";
 
   const prompt = `Tu es un assistant pédagogique pour une école primaire française (niveau ${niveauNom}).
 

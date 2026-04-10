@@ -55,7 +55,7 @@ const REGLES_P5: {
     regle: "Après un auxiliaire (être/avoir conjugué), on utilise le participe passé (-é). Après une préposition (à, de, pour, sans) ou un autre verbe conjugué, on utilise l'infinitif (-er).",
     astuce: "Remplace par « vendre/vendu » : si « vendu » fonctionne → -é (participe passé). Si « vendre » fonctionne → -er (infinitif).",
     exemple: "Il a mangé une pomme. / Il va manger une pomme.",
-    categorie: "homophone",
+    categorie: "morphologie",
   },
   {
     titre: "ou / où",

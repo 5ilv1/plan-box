@@ -567,7 +567,7 @@ function PageGenererInner() {
         matiere: (paramsEnCours as { matiere?: string }).matiere,
         ...contenuFinal.data,
         genere_par_ia: true,
-        modele_utilise: "claude-haiku-4-5-20251001",
+        modele_utilise: "claude-sonnet-4-20250514",
       };
     } else if (contenuFinal.type === "texte_a_trous") {
       contenuJsonb = {

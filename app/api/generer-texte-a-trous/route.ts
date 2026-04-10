@@ -107,7 +107,7 @@ RÈGLE HOMOPHONES : Si l'objectif porte sur des homophones (et/est/es, a/à, son
     }
 
     const response = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 2048,
       system: systemPrompt,
       messages,
