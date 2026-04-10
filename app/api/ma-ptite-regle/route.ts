@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
         jour: "Lundi",
         label: "Observation — Découverte",
         type: "exercice" as const,
-        nb: 5,
+        nb: 7, nbCible: 5,
         instruction: `Exercice d'observation/découverte pour que l'élève identifie la règle par lui-même.
 RÈGLE ABSOLUE : chaque question contient UNE SEULE phrase avec UN SEUL trou (UN SEUL mot manquant, jamais deux).
 L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN mot.
@@ -183,12 +183,22 @@ Plus exigeant que les exercices précédents pour vérifier la maîtrise de la r
           niveauNom
         );
 
+        // Tronquer au nombre cible si on a demandé plus (pour compenser le filtre)
+        const nbCible = (def as any).nbCible ?? def.nb;
+        if (Array.isArray(generated.contenu.questions) && generated.contenu.questions.length > nbCible) {
+          generated.contenu.questions = generated.contenu.questions.slice(0, nbCible);
+        }
+
+        const nbFinal = Array.isArray(generated.contenu.questions)
+          ? generated.contenu.questions.length
+          : def.nb;
+
         await admin.from("exercice").insert({
           chapitre_id: chapitre.id,
           titre: def.label,
           type: def.type,
           contenu: generated.contenu,
-          nb_questions: def.nb,
+          nb_questions: nbFinal,
           ordre: i + 1,
         });
 

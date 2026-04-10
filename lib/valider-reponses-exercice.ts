@@ -35,26 +35,35 @@ export async function validerReponsesExercice(
 
     if (items.length === 0) return contenu;
 
-    // ── Appel Haiku pour validation ─────────────────────────────────────────
+    // ── Appel Sonnet pour validation ─────────────────────────────────────────
     const isCalcul = type === "calcul_mental";
 
-    const prompt = `Tu es un correcteur orthographique pour des exercices scolaires français (CE2-CM2).
-Voici une liste de réponses attendues au format JSON.
+    // Extraire les énoncés pour permettre la validation sémantique
+    let itemsAvecEnonce: { id: number | string; enonce?: string; reponse: string }[] = items;
+    if (type === "exercice") {
+      const questions = contenu.questions as { id: number; enonce?: string; reponse_attendue: string }[];
+      itemsAvecEnonce = questions.map((q) => ({ id: q.id, enonce: q.enonce, reponse: q.reponse_attendue }));
+    }
+
+    const prompt = `Tu es un correcteur expert pour des exercices scolaires français (CE2-CM2).
+Voici une liste de questions et réponses attendues au format JSON.
 ${isCalcul
   ? `Chaque item contient un calcul et sa réponse (format "énoncé → réponse"). Vérifie que le résultat mathématique est correct. Si le résultat est faux, corrige-le. Renvoie UNIQUEMENT la réponse corrigée (sans l'énoncé).`
-  : `Corrige UNIQUEMENT les fautes d'orthographe, de conjugaison ou de grammaire.
-Ne reformule PAS, ne change PAS le sens, ne modifie PAS la ponctuation.
-Si une réponse contient plusieurs mots séparés par " / ", vérifie chaque mot indépendamment.
-Si une réponse est déjà correcte, renvoie-la à l'identique.`}
+  : `Pour chaque item :
+1. Vérifie l'orthographe, la conjugaison et la grammaire de la réponse.
+2. Si un "enonce" est fourni avec un trou (___), vérifie que la réponse est SÉMANTIQUEMENT CORRECTE dans le contexte de la phrase.
+3. Si la réponse ne correspond pas au sens de la phrase, corrige-la.
+4. Ne reformule PAS, ne change PAS le sens global, ne modifie PAS la ponctuation.
+5. Si une réponse est déjà correcte, renvoie-la à l'identique.`}
 
 Entrée :
-${JSON.stringify(items)}
+${JSON.stringify(itemsAvecEnonce)}
 
 Réponds UNIQUEMENT en JSON valide (un tableau), sans markdown :
 [{"id": 1, "reponse": "la réponse corrigée"}]`;
 
     const message = await anthropic.messages.create({
-      model: "claude-haiku-4-5-20251001",
+      model: "claude-sonnet-4-20250514",
       max_tokens: 1024,
       messages: [{ role: "user", content: prompt }],
     });
