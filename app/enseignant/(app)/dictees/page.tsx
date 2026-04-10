@@ -625,7 +625,7 @@ export default function PageDictees() {
             </div>
             <Link
               href="/enseignant/generer?type=dictee"
-              className="btn-primary"
+              className="btn-primary-sm"
             >
               Nouvelle dictée
             </Link>

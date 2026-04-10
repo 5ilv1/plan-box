@@ -263,12 +263,11 @@ a:hover {
   background-color: var(--primary);
   color: var(--white);
   font-family: var(--font);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  padding: 0.5rem 1.1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
   border-radius: var(--radius-btn);
   border: none;
-  /* Classe réservée, non utilisée actuellement */
   cursor: pointer;
   transition: background-color 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
   text-decoration: none;
@@ -281,6 +280,7 @@ a:hover {
   text-decoration: none;
 }
 .btn-primary-sm:active { transform: scale(0.98); box-shadow: none; }
+.btn-primary-sm:disabled { opacity: 0.55; cursor: not-allowed; box-shadow: none; }
 a.btn-primary-sm, a.btn-primary-sm:visited, a.btn-primary-sm:hover { color: var(--white); text-decoration: none; }
 
 /* Liens stylisés en bouton primaire */

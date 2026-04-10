@@ -120,11 +120,13 @@ export async function POST(req: NextRequest) {
       {
         jour: "Lundi",
         label: "Observation — Découverte",
-        type: "qcm" as const,
+        type: "exercice" as const,
         nb: 5,
         instruction: `Exercice d'observation/découverte pour que l'élève identifie la règle par lui-même.
-Présente des phrases et demande à l'élève d'identifier le bon usage dans chaque cas.
-Les questions doivent guider l'élève vers la compréhension de la règle sans la formuler explicitement.`,
+RÈGLE ABSOLUE : chaque question contient UNE SEULE phrase avec UN SEUL trou (UN SEUL mot manquant, jamais deux).
+L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN mot.
+INTERDIT : plusieurs trous dans une phrase, réponses avec "/" ou plusieurs mots.
+Les phrases doivent guider l'élève vers la compréhension de la règle sans la formuler explicitement.`,
       },
       {
         jour: "Mardi",
@@ -344,6 +346,8 @@ IMPORTANT :
 - Pas de violence, pas de sujets sensibles
 - Questions progressives en difficulté
 ${type === "qcm" ? "- IMPORTANT : la position de la bonne réponse (reponse_correcte) doit varier aléatoirement entre 0, 1, 2 et 3" : ""}
+${type === "exercice" ? `- RÈGLE ABSOLUE : chaque énoncé contient exactement UN SEUL trou (___). JAMAIS deux trous dans une phrase.
+- La reponse_attendue est exactement UN SEUL mot, jamais une combinaison avec "/" ou plusieurs mots.` : ""}
 ${type === "texte_a_trous" ? `- Génère UN SEUL texte cohérent d'au moins 5 phrases
 - Chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot du texte_complet
 - Les trous portent uniquement sur "${titreRegle}"
@@ -386,6 +390,15 @@ ${format}`;
       }
     }
     contenu.trous = trousFixed;
+  }
+
+  // Pour les exercices à trou unique, filtrer les questions avec plusieurs trous
+  if (type === "exercice" && Array.isArray(contenu.questions)) {
+    contenu.questions = contenu.questions.filter((q: any) => {
+      const nbTrous = (q.enonce?.match(/_{2,}/g) || []).length;
+      const repHasSlash = q.reponse_attendue?.includes("/");
+      return nbTrous <= 1 && !repHasSlash;
+    });
   }
 
   // Valider et corriger les réponses

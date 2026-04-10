@@ -375,9 +375,8 @@ export default function BanqueLecons() {
               <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>download</span> Import en lot
             </button>
             <button
-              className="btn-primary"
+              className="btn-primary-sm"
               onClick={() => setModalForm({ titre: "", matiere: "français", url: "", nomFichier: "", annee: null })}
-              style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 16px", fontSize: 14 }}
             >
               + Ajouter une leçon
             </button>

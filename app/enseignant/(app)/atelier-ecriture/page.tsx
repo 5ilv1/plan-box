@@ -154,15 +154,10 @@ export default function AtelierEcriturePage() {
         </div>
         {textes.length > 0 && (
           <button
+            className="btn-primary-sm"
             onClick={imprimerTous}
-            style={{
-              display: "flex", alignItems: "center", gap: 8,
-              background: "var(--pb-primary)", color: "white", border: "none",
-              borderRadius: 12, padding: "10px 20px", fontSize: 14,
-              fontWeight: 700, cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-            }}
           >
-            <span className="ms" style={{ fontSize: 20 }}>print</span>
+            <span className="ms" style={{ fontSize: 18 }}>print</span>
             Imprimer tous les textes ({textes.filter(t => getTexteJour(t, 4).trim().length > 0).length})
           </button>
         )}

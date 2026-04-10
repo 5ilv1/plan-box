@@ -1043,9 +1043,9 @@ export default function PageBibliotheque() {
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, gap: 12, flexWrap: "wrap" }}>
             <h1 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}><span className="ms" style={{ fontSize: 22, verticalAlign: "middle" }}>library_books</span> Bibliothèque</h1>
             {onglet === "exercices" ? (
-              <Link href="/enseignant/generer" className="btn-primary">+ Générer →</Link>
+              <Link href="/enseignant/generer" className="btn-primary-sm">+ Générer →</Link>
             ) : (
-              <Link href="/enseignant/generer?type=ressource" className="btn-primary">+ Nouvelle ressource</Link>
+              <Link href="/enseignant/generer?type=ressource" className="btn-primary-sm">+ Nouvelle ressource</Link>
             )}
           </div>
 
