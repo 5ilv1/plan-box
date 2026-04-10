@@ -34,60 +34,79 @@ interface Groupe {
 
 /* ── Les 9 règles P5 pré-définies ────────────────── */
 
-const REGLES_P5 = [
+const REGLES_P5: {
+  titre: string;
+  regle: string;
+  astuce: string;
+  exemple: string;
+  categorie: "homophone" | "morphologie" | "syntaxe";
+  mots_cibles?: string[];
+}[] = [
   {
     titre: "est / et",
     regle: "« est » est le verbe être conjugué (on peut le remplacer par « était »). « et » est une conjonction de coordination (on peut le remplacer par « et puis »).",
     astuce: "Remplace par « était » → si ça fonctionne, écris « est ». Sinon, écris « et ».",
     exemple: "Le chat est fatigué et il dort. → Le chat était fatigué et puis il dort.",
+    categorie: "homophone",
+    mots_cibles: ["est", "et"],
   },
   {
     titre: "Infinitif / participe passé (-er / -é)",
     regle: "Après un auxiliaire (être/avoir conjugué), on utilise le participe passé (-é). Après une préposition (à, de, pour, sans) ou un autre verbe conjugué, on utilise l'infinitif (-er).",
     astuce: "Remplace par « vendre/vendu » : si « vendu » fonctionne → -é (participe passé). Si « vendre » fonctionne → -er (infinitif).",
     exemple: "Il a mangé une pomme. / Il va manger une pomme.",
+    categorie: "homophone",
   },
   {
     titre: "ou / où",
     regle: "« ou » exprime un choix entre deux possibilités (on peut le remplacer par « ou bien »). « où » indique un lieu ou un moment.",
     astuce: "Remplace par « ou bien » : si ça fonctionne → « ou ». Sinon → « où ».",
     exemple: "Tu veux du thé ou du café ? / Où habites-tu ?",
+    categorie: "homophone",
+    mots_cibles: ["ou", "où"],
   },
   {
     titre: "Pluriel des noms en -ou",
     regle: "En général, les noms en -ou prennent un -s au pluriel. Exceptions : bijoux, cailloux, choux, genoux, hiboux, joujoux, poux → prennent un -x.",
     astuce: "Retiens les 7 exceptions en -oux : Viens mon chou, mon bijou, sur mes genoux, avec tes joujoux, et ne jette pas de cailloux sur ce hibou plein de poux !",
     exemple: "des clous, des trous, MAIS des bijoux, des cailloux.",
+    categorie: "morphologie",
   },
   {
     titre: "La négation ne…pas",
     regle: "La négation encadre le verbe avec « ne…pas » (ou « ne…plus », « ne…jamais », « ne…rien »). Le « ne » se place avant le verbe et le deuxième mot après.",
     astuce: "Cherche le verbe conjugué → place « ne » devant et « pas » (ou autre) après.",
     exemple: "Il ne mange pas de pomme. / Elle n'aime plus le chocolat.",
+    categorie: "syntaxe",
   },
   {
     titre: "sont / son",
     regle: "« sont » est le verbe être conjugué à la 3e personne du pluriel (on peut le remplacer par « étaient »). « son » est un déterminant possessif (on peut le remplacer par « mon » ou « leur »).",
     astuce: "Remplace par « étaient » → si ça fonctionne, écris « sont ». Sinon, essaie « mon/leur » → écris « son ».",
     exemple: "Ils sont contents. / Il a pris son cartable.",
+    categorie: "homophone",
+    mots_cibles: ["sont", "son"],
   },
   {
     titre: "Pluriels en -al / -aux",
     regle: "Les noms et adjectifs en -al font leur pluriel en -aux. Exceptions courantes : bals, carnavals, chacals, festivals, récitals, régals.",
     astuce: "Par défaut → -aux. Les exceptions sont des fêtes et des animaux : bals, festivals, carnavals, chacals, récitals, régals.",
     exemple: "un cheval → des chevaux / un journal → des journaux / MAIS un festival → des festivals.",
+    categorie: "morphologie",
   },
   {
     titre: "Pluriels en -ail / -aux",
     regle: "La plupart des noms en -ail prennent un -s au pluriel. Exceptions : bail → baux, corail → coraux, émail → émaux, soupirail → soupiraux, travail → travaux, vitrail → vitraux.",
     astuce: "Par défaut → -ails. Les exceptions changent en -aux : baux, coraux, émaux, soupiraux, travaux, vitraux.",
     exemple: "des détails, des rails, MAIS des travaux, des vitraux.",
+    categorie: "morphologie",
   },
   {
     titre: "Pluriel des adjectifs",
     regle: "Les adjectifs s'accordent en genre et en nombre avec le nom qu'ils qualifient. Au pluriel, on ajoute généralement -s. Adjectifs en -eau → -eaux. Adjectifs en -al → -aux (sauf banal, fatal, final, naval → -als).",
     astuce: "Regarde le nom : s'il est au pluriel, l'adjectif aussi ! Attention aux adjectifs en -eau et -al.",
     exemple: "de beaux chevaux / des jeux brutaux / MAIS des combats navals.",
+    categorie: "morphologie",
   },
 ];
 
@@ -170,6 +189,8 @@ export default function MaPtiteRegle() {
   const [newExemple, setNewExemple] = useState("");
   const [newNiveauId, setNewNiveauId] = useState("");
   const [newDateDebut, setNewDateDebut] = useState("");
+  const [newCategorie, setNewCategorie] = useState<"homophone" | "morphologie" | "syntaxe">("homophone");
+  const [newMotsCibles, setNewMotsCibles] = useState<string[]>([]);
   const [selectedGroupes, setSelectedGroupes] = useState<Set<string>>(new Set());
   const [enCreation, setEnCreation] = useState(false);
   const [creationStatus, setCreationStatus] = useState<string | null>(null);
@@ -227,6 +248,8 @@ export default function MaPtiteRegle() {
           regle: newRegle,
           astuce: newAstuce,
           exemple: newExemple,
+          categorie: newCategorie,
+          mots_cibles: newMotsCibles.length > 0 ? newMotsCibles : undefined,
           niveau_id: newNiveauId || null,
           date_debut: newDateDebut || null,
           groupe_ids: [...selectedGroupes],
@@ -242,7 +265,8 @@ export default function MaPtiteRegle() {
       setCreationStatus("Règle créée avec succès !");
       setShowCreation(false);
       setNewTitre(""); setNewRegle(""); setNewAstuce(""); setNewExemple("");
-      setNewNiveauId(""); setNewDateDebut(""); setSelectedGroupes(new Set());
+      setNewNiveauId(""); setNewDateDebut(""); setNewCategorie("homophone"); setNewMotsCibles([]);
+      setSelectedGroupes(new Set());
       await charger();
     } catch {
       alert("Erreur réseau");
@@ -282,6 +306,8 @@ export default function MaPtiteRegle() {
     setNewRegle(m.regle);
     setNewAstuce(m.astuce);
     setNewExemple(m.exemple);
+    setNewCategorie(m.categorie);
+    setNewMotsCibles(m.mots_cibles ?? []);
     setShowTemplates(false);
     setShowCreation(true);
   }

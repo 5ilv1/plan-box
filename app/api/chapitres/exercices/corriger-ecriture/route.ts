@@ -56,6 +56,7 @@ Analyse le texte et réponds en JSON valide :
 
 Règles :
 - Ne signale QUE les vraies erreurs de langue : orthographe, conjugaison, grammaire
+- IMPORTANT : Les contraintes d'utilisation de mots (ex: "Utiliser « est » au moins une fois") s'évaluent sur L'ENSEMBLE du texte, PAS phrase par phrase. Si le mot apparaît dans N'IMPORTE QUELLE phrase, la contrainte est respectée. Ne signale PAS l'absence d'un mot dans une phrase si ce mot est présent dans une autre phrase.
 - Pour les contraintes de CONTEXTE/THÈME : sois TOLÉRANT. Si l'élève parle de nager pendant une excursion en bateau, c'est acceptable. Ne sanctionne le contexte que s'il est complètement hors sujet.
 - Vérifie le nombre de phrases (doit être ${nb_phrases || 3})
 - Chaque erreur DOIT avoir "mot_concerne" avec le mot exact

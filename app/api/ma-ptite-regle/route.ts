@@ -67,7 +67,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { titre, regle, astuce, exemple, niveau_id, groupe_ids, date_debut } = body;
+    const { titre, regle, astuce, exemple, niveau_id, groupe_ids, date_debut,
+      categorie = "homophone", mots_cibles } = body;
 
     if (!titre || !regle) {
       return NextResponse.json({ error: "titre et regle requis" }, { status: 400 });
@@ -115,48 +116,8 @@ export async function POST(req: NextRequest) {
       ordre: 0,
     });
 
-    // 3. Générer 5 exercices via IA
-    const exercicesDefs = [
-      {
-        jour: "Lundi",
-        label: "Observation — Découverte",
-        type: "exercice" as const,
-        nb: 7, nbCible: 5, reponseUnMot: true,
-        instruction: `Exercice d'observation/découverte pour que l'élève identifie la règle par lui-même.
-RÈGLE ABSOLUE : chaque question contient UNE SEULE phrase avec UN SEUL trou (UN SEUL mot manquant, jamais deux).
-L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN SEUL MOT (ex: "est" ou "et").
-JAMAIS une phrase complète en reponse_attendue, JAMAIS de "/", JAMAIS plusieurs mots.
-Les phrases doivent guider l'élève vers la compréhension de la règle sans la formuler explicitement.`,
-      },
-      {
-        jour: "Mardi",
-        label: "Exercice à trous — Entraînement",
-        type: "texte_a_trous" as const,
-        nb: 8,
-        instruction: `Exercice à trous d'entraînement. L'élève doit compléter les phrases avec le bon mot.
-Le texte doit être une petite histoire cohérente avec les mots manquants liés à la règle.
-Les trous portent UNIQUEMENT sur les mots EXACTS visés par la règle : uniquement "${titre.split(" / ").join('" et "')}".
-INTERDIT de mettre un trou sur d'autres mots (pas de trou sur "sont", "a", "ont", ou tout autre mot qui n'est pas exactement "${titre}").
-CHAQUE occurrence de ces mots exacts dans le texte DOIT être un trou. Aucune ne doit rester en clair.`,
-      },
-      {
-        jour: "Mercredi",
-        label: "Trouve l'erreur — Entraînement",
-        type: "qcm" as const,
-        nb: 5,
-        instruction: `Exercice "trouve l'erreur". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
-Chaque question propose 4 versions de la MÊME phrase. Les erreurs portent UNIQUEMENT sur la confusion entre les mots visés par la règle (ex: "est" utilisé à la place de "et", ou inversement).
-INTERDIT : inventer des mots qui n'existent pas (comme "és", "ét", "a/à" mal orthographiés). Les erreurs doivent être des VRAIES confusions entre homophones existants.
-Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent ces mots aux mauvais endroits.`,
-      },
-      {
-        jour: "Jeudi",
-        label: "Écriture — Utilise la règle",
-        type: "ecriture_contrainte" as const,
-        nb: 0, // pas de génération IA, contenu statique
-        instruction: "",
-      },
-    ];
+    // 3. Générer les exercices via IA (adaptés à la catégorie de règle)
+    const exercicesDefs = getExercicesDefs(categorie, titre, regle, mots_cibles);
 
     const niveauNom = "CM1-CM2";
     const results: { jour: string; ok: boolean; titre?: string }[] = [];
@@ -166,17 +127,14 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
       try {
         // Exercice d'écriture : contenu statique, pas de génération IA
         if (def.type === "ecriture_contrainte") {
+          const contraintes = genererContraintesEcriture(categorie, titre, regle, mots_cibles);
           await admin.from("exercice").insert({
             chapitre_id: chapitre.id,
             titre: def.label,
             type: def.type,
             contenu: {
               consigne: `Écris 3 phrases en utilisant correctement « ${titre} ».\nRappel : ${regle}`,
-              contraintes: [
-                `Utiliser correctement « ${titre.split(" / ")[0]} » au moins une fois`,
-                `Utiliser correctement « ${titre.split(" / ")[1]?.trim() || titre} » au moins une fois`,
-                "Écrire des phrases complètes avec un sujet, un verbe et un complément",
-              ],
+              contraintes,
               nb_phrases: 3,
             },
             nb_questions: 3,
@@ -195,7 +153,8 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
           exemple || "",
           def.instruction,
           niveauNom,
-          (def as any).reponseUnMot ?? false
+          (def as any).reponseUnMot ?? false,
+          categorie,
         );
 
         // Tronquer au nombre cible si on a demandé plus (pour compenser le filtre)
@@ -293,6 +252,205 @@ export async function DELETE(req: NextRequest) {
 }
 
 /* ──────────────────────────────────────────────────────
+   Helpers : définitions d'exercices par catégorie
+   ────────────────────────────────────────────────────── */
+
+type ExoDef = {
+  jour: string;
+  label: string;
+  type: "exercice" | "texte_a_trous" | "qcm" | "ecriture_contrainte";
+  nb: number;
+  nbCible?: number;
+  reponseUnMot?: boolean;
+  instruction: string;
+};
+
+function getExercicesDefs(
+  categorie: string,
+  titre: string,
+  regle: string,
+  mots_cibles?: string[],
+): ExoDef[] {
+  const motsCiblesStr = mots_cibles?.length
+    ? mots_cibles.map((m) => `"${m}"`).join(" et ")
+    : titre.includes(" / ")
+      ? titre.split(" / ").map((m) => `"${m.trim()}"`).join(" et ")
+      : `"${titre}"`;
+
+  if (categorie === "homophone") {
+    return [
+      {
+        jour: "Lundi",
+        label: "Observation — Découverte",
+        type: "exercice",
+        nb: 7, nbCible: 5, reponseUnMot: true,
+        instruction: `Exercice d'observation/découverte pour que l'élève identifie la règle par lui-même.
+RÈGLE ABSOLUE : chaque question contient UNE SEULE phrase avec UN SEUL trou (UN SEUL mot manquant, jamais deux).
+L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN SEUL MOT (ex: ${motsCiblesStr}).
+JAMAIS une phrase complète en reponse_attendue, JAMAIS de "/", JAMAIS plusieurs mots.
+Les phrases doivent guider l'élève vers la compréhension de la règle sans la formuler explicitement.`,
+      },
+      {
+        jour: "Mardi",
+        label: "Exercice à trous — Entraînement",
+        type: "texte_a_trous",
+        nb: 8,
+        instruction: `Exercice à trous d'entraînement. L'élève doit compléter les phrases avec le bon mot.
+Le texte doit être une petite histoire cohérente avec les mots manquants liés à la règle.
+Les trous portent UNIQUEMENT sur les mots EXACTS visés par la règle : uniquement ${motsCiblesStr}.
+INTERDIT de mettre un trou sur d'autres mots.
+CHAQUE occurrence de ces mots exacts dans le texte DOIT être un trou. Aucune ne doit rester en clair.`,
+      },
+      {
+        jour: "Mercredi",
+        label: "Trouve l'erreur — Entraînement",
+        type: "qcm",
+        nb: 5,
+        instruction: `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
+Chaque question propose 4 versions de la MÊME phrase. Les erreurs portent UNIQUEMENT sur la confusion entre ${motsCiblesStr}.
+INTERDIT : inventer des mots qui n'existent pas. Les erreurs doivent être des VRAIES confusions entre les homophones existants.`,
+      },
+      {
+        jour: "Jeudi",
+        label: "Écriture — Utilise la règle",
+        type: "ecriture_contrainte",
+        nb: 0,
+        instruction: "",
+      },
+    ];
+  }
+
+  if (categorie === "morphologie") {
+    return [
+      {
+        jour: "Lundi",
+        label: "Observation — Découverte",
+        type: "exercice",
+        nb: 7, nbCible: 5,
+        instruction: `Exercice d'observation/découverte sur la règle « ${titre} ».
+Chaque question présente un mot ou un groupe nominal au SINGULIER. L'élève doit écrire la forme au PLURIEL.
+Format de chaque question :
+- enonce : "Écris au pluriel : un {mot}" (ou "des {groupe nominal}")
+- reponse_attendue : la forme plurielle correcte (ex: "des chevaux", "des bijoux")
+Les questions doivent couvrir à la fois les cas réguliers ET les exceptions de la règle.
+Au moins 2 questions doivent porter sur des exceptions.`,
+      },
+      {
+        jour: "Mardi",
+        label: "Exercice à trous — Entraînement",
+        type: "texte_a_trous",
+        nb: 8,
+        instruction: `Exercice à trous sur « ${titre} ».
+Génère une petite histoire cohérente qui utilise des noms/adjectifs au pluriel concernés par cette règle.
+Les trous portent UNIQUEMENT sur les mots au pluriel qui illustrent la règle (les formes en -oux, -aux, -eaux, -als, -ails selon la règle).
+Le texte doit mélanger des cas réguliers ET des exceptions.
+CHAQUE mot au pluriel concerné par la règle DOIT être un trou.
+L'indice doit rappeler si c'est un cas régulier ou une exception.`,
+      },
+      {
+        jour: "Mercredi",
+        label: "Trouve l'erreur — Entraînement",
+        type: "qcm",
+        nb: 5,
+        instruction: `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
+Chaque question propose 4 versions de la MÊME phrase contenant un pluriel lié à la règle « ${titre} ».
+Les erreurs portent sur la terminaison du pluriel : mauvais suffixe (-s au lieu de -x, -aux au lieu de -als, etc.).
+INTERDIT : inventer des suffixes fantaisistes. Les erreurs doivent être des confusions RÉELLES entre les terminaisons existantes (-s, -x, -aux, -als, -ails, -oux).
+Au moins 2 questions doivent porter sur des exceptions.`,
+      },
+      {
+        jour: "Jeudi",
+        label: "Écriture — Utilise la règle",
+        type: "ecriture_contrainte",
+        nb: 0,
+        instruction: "",
+      },
+    ];
+  }
+
+  // categorie === "syntaxe" (ex: la négation ne…pas)
+  return [
+    {
+      jour: "Lundi",
+      label: "Observation — Découverte",
+      type: "exercice",
+      nb: 7, nbCible: 5,
+      instruction: `Exercice d'observation/découverte sur « ${titre} ».
+Chaque question présente une phrase AFFIRMATIVE. L'élève doit la réécrire à la forme NÉGATIVE en utilisant correctement la structure « ${titre} ».
+Format :
+- enonce : "Mets cette phrase à la forme négative : {phrase affirmative}"
+- reponse_attendue : la phrase complète à la forme négative
+Les phrases doivent être simples et variées (temps présent, passé composé, futur).
+Inclure au moins 1 phrase avec un verbe commençant par une voyelle (n' au lieu de ne).`,
+    },
+    {
+      jour: "Mardi",
+      label: "Exercice à trous — Entraînement",
+      type: "texte_a_trous",
+      nb: 8,
+      instruction: `Exercice à trous sur « ${titre} ».
+Génère une petite histoire cohérente contenant des phrases à la forme NÉGATIVE.
+Les trous portent UNIQUEMENT sur les mots de la négation : "ne", "n'", "pas", "plus", "jamais", "rien", "personne".
+CHAQUE mot de négation dans le texte DOIT être un trou.
+L'indice doit aider l'élève à identifier quelle partie de la négation manque (premier ou second élément).`,
+    },
+    {
+      jour: "Mercredi",
+      label: "Trouve l'erreur — Entraînement",
+      type: "qcm",
+      nb: 5,
+      instruction: `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase avec la négation correctement placée parmi 4 propositions.
+Chaque question propose 4 versions de la MÊME phrase négative.
+Les erreurs portent sur le placement ou l'oubli de « ne/n' » ou « pas/plus/jamais » :
+- oubli du "ne" (erreur fréquente à l'oral)
+- "ne" mal placé (pas devant le verbe)
+- mauvais second élément de la négation
+INTERDIT : inventer des structures impossibles. Les erreurs doivent refléter les VRAIES fautes des élèves.`,
+    },
+    {
+      jour: "Jeudi",
+      label: "Écriture — Utilise la règle",
+      type: "ecriture_contrainte",
+      nb: 0,
+      instruction: "",
+    },
+  ];
+}
+
+/* ── Contraintes pour l'exercice d'écriture ──────────── */
+
+function genererContraintesEcriture(
+  categorie: string,
+  titre: string,
+  regle: string,
+  mots_cibles?: string[],
+): string[] {
+  if (categorie === "homophone") {
+    const mots = mots_cibles?.length
+      ? mots_cibles
+      : titre.split(" / ").map((m) => m.trim());
+    const contraintes = mots.map((m) => `Utiliser correctement « ${m} » au moins une fois`);
+    contraintes.push("Écrire des phrases complètes avec un sujet, un verbe et un complément");
+    return contraintes;
+  }
+
+  if (categorie === "morphologie") {
+    return [
+      `Utiliser au moins 2 mots au pluriel qui suivent la règle « ${titre} »`,
+      `Utiliser au moins 1 mot qui est une exception à la règle`,
+      "Écrire des phrases complètes avec un sujet, un verbe et un complément",
+    ];
+  }
+
+  // syntaxe
+  return [
+    `Utiliser correctement la structure « ${titre} » dans au moins 2 phrases`,
+    "Écrire au moins 1 phrase avec un verbe commençant par une voyelle (n' au lieu de ne)",
+    "Écrire des phrases complètes avec un sujet, un verbe et un complément",
+  ];
+}
+
+/* ──────────────────────────────────────────────────────
    Helpers : génération IA d'un exercice pour une règle
    ────────────────────────────────────────────────────── */
 
@@ -327,8 +485,8 @@ function getFormatPourType(type: "qcm" | "texte_a_trous" | "exercice"): string {
   "questions": [
     {
       "id": 1,
-      "enonce": "Texte de la question (phrase à transformer)",
-      "reponse_attendue": "La réponse correcte (phrase transformée)",
+      "enonce": "Texte de la question",
+      "reponse_attendue": "La réponse correcte",
       "indice": "Un indice optionnel"
     }
   ]
@@ -345,7 +503,8 @@ async function genererExerciceRegle(
   exemple: string,
   instruction: string,
   niveauNom: string,
-  reponseUnMot: boolean = false
+  reponseUnMot: boolean = false,
+  categorie: string = "homophone",
 ): Promise<{ titre: string; contenu: any }> {
   const format = getFormatPourType(type);
 
@@ -357,6 +516,17 @@ async function genererExerciceRegle(
     "un spectacle de cirque", "la récolte des pommes à l'automne",
   ];
   const theme = THEMES[Math.floor(Math.random() * THEMES.length)];
+
+  // Utiliser Opus pour les règles complexes (morphologie/syntaxe), Sonnet pour texte_a_trous, Haiku pour homophones simples
+  let model: string;
+  if (categorie !== "homophone") {
+    // Règles complexes : Opus pour une génération fiable
+    model = "claude-opus-4-20250514";
+  } else if (type === "texte_a_trous") {
+    model = "claude-sonnet-4-20250514";
+  } else {
+    model = "claude-haiku-4-5-20251001";
+  }
 
   const prompt = `Tu es un assistant pédagogique pour une école primaire française (niveau ${niveauNom}).
 
@@ -380,7 +550,6 @@ ${type === "exercice" && reponseUnMot ? `- RÈGLE ABSOLUE : chaque énoncé cont
 - La reponse_attendue est exactement UN SEUL mot, jamais une combinaison avec "/" ou plusieurs mots.` : ""}
 ${type === "texte_a_trous" ? `- Génère UN SEUL texte cohérent d'au moins 5 phrases
 - Chaque "mot" dans "trous" DOIT être un copier-coller exact d'un mot du texte_complet
-- Les trous portent uniquement sur "${titreRegle}"
 - CHAQUE occurrence du mot visé dans le texte DOIT être un trou. Aucune occurrence ne doit rester en clair.
 - L'indice doit être l'astuce de substitution ou le mot de remplacement` : ""}
 
@@ -389,7 +558,7 @@ Format attendu :
 ${format}`;
 
   const message = await anthropic.messages.create({
-    model: type === "texte_a_trous" ? "claude-sonnet-4-20250514" : "claude-haiku-4-5-20251001",
+    model,
     max_tokens: 4096,
     messages: [{ role: "user", content: prompt }],
   });
@@ -423,19 +592,16 @@ ${format}`;
     contenu.trous = trousFixed;
   }
 
-  // Pour les exercices de type "exercice", filtrer et corriger si reponseUnMot
+  // Pour les homophones avec reponseUnMot : filtrer et corriger
   if (type === "exercice" && reponseUnMot && Array.isArray(contenu.questions)) {
-    // Filtrer les questions avec plusieurs trous ou réponses avec "/"
     contenu.questions = contenu.questions.filter((q: any) => {
       const nbTrous = (q.enonce?.match(/_{2,}/g) || []).length;
       const repHasSlash = q.reponse_attendue?.includes("/");
       return nbTrous <= 1 && !repHasSlash;
     });
 
-    // Forcer la réponse à un seul mot
     for (const q of contenu.questions as any[]) {
       if (q.reponse_attendue?.includes(" ")) {
-        // Prendre le premier mot (c'est l'homophone visé)
         q.reponse_attendue = q.reponse_attendue.split(/\s+/)[0].replace(/[.,;:!?]/g, "");
       }
     }
@@ -444,12 +610,11 @@ ${format}`;
   // Valider et corriger les réponses
   contenu = await validerReponsesExercice(contenu, type, anthropic);
 
-  // Mélanger les options QCM (Fisher-Yates) pour que la bonne réponse ne soit pas toujours en premier
+  // Mélanger les options QCM (Fisher-Yates)
   if (type === "qcm" && Array.isArray(contenu.questions)) {
     for (const q of contenu.questions as any[]) {
       if (!Array.isArray(q.options) || q.reponse_correcte === undefined) continue;
       const bonneReponse = q.options[q.reponse_correcte];
-      // Fisher-Yates shuffle
       for (let i = q.options.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [q.options[i], q.options[j]] = [q.options[j], q.options[i]];

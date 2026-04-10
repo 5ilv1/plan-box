@@ -152,7 +152,7 @@ export default function PageExerciceEleve() {
     }
   }
 
-  const normaliser = (s: string) => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[.,;:!?'"()«»]/g, "").replace(/\s+/g, " ");
+  const normaliser = (s: string) => s.toLowerCase().trim().replace(/[.,;:!?'"()«»]/g, "").replace(/\s+/g, " ");
 
   const verifierReponse = useCallback(() => {
     const q = questions[indexCourant];
