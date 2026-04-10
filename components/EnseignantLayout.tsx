@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useState, useRef, useCallback, type ReactNode } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 
-const NAV_ITEMS = [
+const DEFAULT_NAV_ITEMS = [
   { href: "/enseignant/dashboard",       label: "Tableau de bord", icon: "dashboard" },
   { href: "/enseignant/admin/planning",  label: "Planning",        icon: "calendar_month" },
   { href: "/enseignant/admin/chapitres", label: "Chapitres",       icon: "menu_book" },
@@ -21,6 +21,27 @@ const NAV_ITEMS = [
   { href: "/enseignant/bilan",           label: "Bilan de classe",  icon: "bar_chart" },
 ];
 
+const NAV_STORAGE_KEY = "ens-nav-order";
+
+function getNavItems() {
+  if (typeof window === "undefined") return DEFAULT_NAV_ITEMS;
+  try {
+    const saved = localStorage.getItem(NAV_STORAGE_KEY);
+    if (!saved) return DEFAULT_NAV_ITEMS;
+    const order: string[] = JSON.parse(saved);
+    // Reconstituer à partir des hrefs sauvegardés, ajouter les nouveaux items à la fin
+    const map = new Map(DEFAULT_NAV_ITEMS.map((item) => [item.href, item]));
+    const sorted = order.map((href) => map.get(href)).filter(Boolean) as typeof DEFAULT_NAV_ITEMS;
+    // Ajouter les items qui n'étaient pas dans l'ordre sauvegardé (nouveaux ajouts)
+    for (const item of DEFAULT_NAV_ITEMS) {
+      if (!order.includes(item.href)) sorted.push(item);
+    }
+    return sorted;
+  } catch {
+    return DEFAULT_NAV_ITEMS;
+  }
+}
+
 interface Props {
   children: ReactNode;
 }
@@ -31,6 +52,46 @@ export default function EnseignantLayout({ children }: Props) {
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [autorise, setAutorise] = useState<boolean | null>(null);
+
+  // Drag & drop sidebar
+  const [navItems, setNavItems] = useState(getNavItems);
+  const dragIdx = useRef<number | null>(null);
+  const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
+
+  const onDragStart = useCallback((idx: number) => (e: React.DragEvent) => {
+    dragIdx.current = idx;
+    e.dataTransfer.effectAllowed = "move";
+    // Image fantôme semi-transparente
+    if (e.currentTarget instanceof HTMLElement) {
+      e.dataTransfer.setDragImage(e.currentTarget, 20, 20);
+    }
+  }, []);
+
+  const onDragOver = useCallback((idx: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setDragOverIdx(idx);
+  }, []);
+
+  const onDrop = useCallback((idx: number) => (e: React.DragEvent) => {
+    e.preventDefault();
+    const from = dragIdx.current;
+    if (from === null || from === idx) { setDragOverIdx(null); return; }
+    setNavItems((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(from, 1);
+      next.splice(idx, 0, item);
+      localStorage.setItem(NAV_STORAGE_KEY, JSON.stringify(next.map((n) => n.href)));
+      return next;
+    });
+    dragIdx.current = null;
+    setDragOverIdx(null);
+  }, []);
+
+  const onDragEnd = useCallback(() => {
+    dragIdx.current = null;
+    setDragOverIdx(null);
+  }, []);
 
   useEffect(() => {
     async function verifier() {
@@ -112,18 +173,29 @@ export default function EnseignantLayout({ children }: Props) {
           </Link>
         </div>
 
-        {/* Navigation */}
+        {/* Navigation (drag & drop pour réorganiser) */}
         <nav className="ens-sidebar-nav">
-          {NAV_ITEMS.map(({ href, label, icon }) => {
+          {navItems.map(({ href, label, icon }, idx) => {
             const actif =
               pathname === href ||
               (href !== "/enseignant/dashboard" && pathname.startsWith(href));
+            const isDragOver = dragOverIdx === idx;
             return (
               <Link
                 key={href}
                 href={href}
+                draggable
+                onDragStart={onDragStart(idx)}
+                onDragOver={onDragOver(idx)}
+                onDrop={onDrop(idx)}
+                onDragEnd={onDragEnd}
                 className={`ens-nav-item${actif ? " active" : ""}`}
+                style={isDragOver ? {
+                  borderTop: "2px solid var(--pb-primary, #0050D4)",
+                  marginTop: -2,
+                } : undefined}
               >
+                <span className="ms ens-drag-handle">drag_indicator</span>
                 <span className="ms">{icon}</span>
                 <span>{label}</span>
               </Link>
