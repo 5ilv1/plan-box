@@ -193,9 +193,13 @@ INTERDIT : inventer des mots qui n'existent pas comme distracteurs. Les erreurs 
           generated.contenu.questions = generated.contenu.questions.slice(0, nbCible);
         }
 
-        const nbFinal = Array.isArray(generated.contenu.questions)
-          ? generated.contenu.questions.length
-          : def.nb;
+        // Calculer le vrai nombre de questions/trous
+        let nbFinal = def.nb;
+        if (Array.isArray(generated.contenu.questions)) {
+          nbFinal = generated.contenu.questions.length;
+        } else if (def.type === "texte_a_trous" && Array.isArray(generated.contenu.trous)) {
+          nbFinal = generated.contenu.trous.length;
+        }
 
         await admin.from("exercice").insert({
           chapitre_id: chapitre.id,
@@ -433,6 +437,20 @@ ${format}`;
 
   // Valider et corriger les réponses
   contenu = await validerReponsesExercice(contenu, type, anthropic);
+
+  // Mélanger les options QCM (Fisher-Yates) pour que la bonne réponse ne soit pas toujours en premier
+  if (type === "qcm" && Array.isArray(contenu.questions)) {
+    for (const q of contenu.questions as any[]) {
+      if (!Array.isArray(q.options) || q.reponse_correcte === undefined) continue;
+      const bonneReponse = q.options[q.reponse_correcte];
+      // Fisher-Yates shuffle
+      for (let i = q.options.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [q.options[i], q.options[j]] = [q.options[j], q.options[i]];
+      }
+      q.reponse_correcte = q.options.indexOf(bonneReponse);
+    }
+  }
 
   const titre = contenu.titre || `${type} — ${titreRegle}`;
   return { titre, contenu };
