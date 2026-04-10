@@ -242,15 +242,29 @@ export async function DELETE(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Supprimer les exercices, résultats, assignations, puis le chapitre
-  await admin.from("exercice_resultat").delete().in(
-    "exercice_id",
-    (await admin.from("exercice").select("id").eq("chapitre_id", id)).data?.map((e: any) => e.id) ?? []
-  );
-  await admin.from("exercice").delete().eq("chapitre_id", id);
-  await admin.from("chapitre_assignation").delete().eq("chapitre_id", id);
-  await admin.from("pb_progression").delete().eq("chapitre_id", id);
-  await admin.from("chapitres").delete().eq("id", id);
+  // Supprimer toutes les dépendances FK avant de supprimer le chapitre
+  const exRes = await admin.from("exercice").select("id").eq("chapitre_id", id);
+  const exIds = (exRes.data ?? []).map((e: any) => e.id);
+  if (exIds.length > 0) {
+    await admin.from("exercice_resultat").delete().in("exercice_id", exIds);
+  }
+
+  // Nettoyer toutes les tables référençant chapitre_id
+  await Promise.all([
+    admin.from("exercice").delete().eq("chapitre_id", id),
+    admin.from("chapitre_assignation").delete().eq("chapitre_id", id),
+    admin.from("pb_progression").delete().eq("chapitre_id", id),
+    admin.from("evaluation_resultat").delete().eq("chapitre_id", id),
+    admin.from("plan_travail").delete().eq("chapitre_id", id),
+    admin.from("notifications").delete().eq("chapitre_id", id),
+    admin.from("banque_exercices").delete().eq("chapitre_id", id),
+  ]);
+
+  const { error } = await admin.from("chapitres").delete().eq("id", id);
+  if (error) {
+    console.error("[ma-ptite-regle DELETE]", error);
+    return NextResponse.json({ error: "Erreur suppression: " + error.message }, { status: 500 });
+  }
 
   return NextResponse.json({ ok: true });
 }
