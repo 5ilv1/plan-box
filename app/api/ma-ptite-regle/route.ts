@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
         jour: "Lundi",
         label: "Observation — Découverte",
         type: "exercice" as const,
-        nb: 7, nbCible: 5,
+        nb: 7, nbCible: 5, reponseUnMot: true,
         instruction: `Exercice d'observation/découverte pour que l'élève identifie la règle par lui-même.
 RÈGLE ABSOLUE : chaque question contient UNE SEULE phrase avec UN SEUL trou (UN SEUL mot manquant, jamais deux).
 L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN SEUL MOT (ex: "est" ou "et").
@@ -152,7 +152,7 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
         jour: "Jeudi",
         label: "Transforme / Réécris",
         type: "exercice" as const,
-        nb: 7, nbCible: 5,
+        nb: 7, nbCible: 5, reponseUnMot: false,
         instruction: `Exercice de transformation/réécriture. L'élève doit réécrire des phrases en appliquant la règle.
 Exemples : transformer au pluriel, changer le sujet, passer d'une forme à l'autre.
 Chaque question donne une phrase à transformer et l'élève doit écrire la phrase corrigée.`,
@@ -183,7 +183,8 @@ INTERDIT : inventer des mots qui n'existent pas comme distracteurs. Les erreurs 
           astuce || "",
           exemple || "",
           def.instruction,
-          niveauNom
+          niveauNom,
+          (def as any).reponseUnMot ?? false
         );
 
         // Tronquer au nombre cible si on a demandé plus (pour compenser le filtre)
@@ -328,7 +329,8 @@ async function genererExerciceRegle(
   astuce: string,
   exemple: string,
   instruction: string,
-  niveauNom: string
+  niveauNom: string,
+  reponseUnMot: boolean = false
 ): Promise<{ titre: string; contenu: any }> {
   const format = getFormatPourType(type);
 
@@ -406,8 +408,8 @@ ${format}`;
     contenu.trous = trousFixed;
   }
 
-  // Pour les exercices à trou unique, filtrer et corriger les questions
-  if (type === "exercice" && Array.isArray(contenu.questions)) {
+  // Pour les exercices de type "exercice", filtrer et corriger si reponseUnMot
+  if (type === "exercice" && reponseUnMot && Array.isArray(contenu.questions)) {
     // Filtrer les questions avec plusieurs trous ou réponses avec "/"
     contenu.questions = contenu.questions.filter((q: any) => {
       const nbTrous = (q.enonce?.match(/_{2,}/g) || []).length;
@@ -419,8 +421,6 @@ ${format}`;
     // extraire le mot qui remplace le trou
     for (const q of contenu.questions as any[]) {
       if (q.enonce?.includes("___") && q.reponse_attendue?.includes(" ")) {
-        // Comparer l'énoncé (avec ___) et la réponse (phrase complète)
-        // pour extraire le mot manquant
         const enonceWords = q.enonce.replace(/_{2,}/g, "___").split(/\s+/);
         const reponseWords = q.reponse_attendue.split(/\s+/);
         const idxTrou = enonceWords.indexOf("___");
