@@ -343,23 +343,35 @@ export default function DashboardEleve() {
         { onConflict: "repetibox_eleve_id" }
       );
 
-      const res = await fetch(`/api/mon-plan-travail?rb=${rbId}`, { signal });
-      if (signal.aborted) return;
-      const json = await res.json();
-      const blocs: PlanTravail[] = json.blocs ?? [];
-
       const aujourd_hui = new Date().toISOString().split("T")[0];
       const { debut, fin } = getBornesSemaine();
 
-      const blocsWeekFiltered = filtrerBlocsConditionnels(blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin));
+      // 3 requêtes ciblées en parallèle au lieu d'une grosse qui charge tout
+      const [resSemaine, resExos, resPodcasts] = await Promise.all([
+        fetch(`/api/mon-plan-travail?rb=${rbId}&debut=${debut}&fin=${fin}`, { signal }),
+        fetch(`/api/mon-plan-travail?rb=${rbId}&types=exercice,calcul_mental,eval`, { signal }),
+        fetch(`/api/mon-plan-travail?rb=${rbId}&types=ressource`, { signal }),
+      ]);
+      if (signal.aborted) return;
+
+      const [jsonSemaine, jsonExos, jsonPodcasts] = await Promise.all([
+        resSemaine.json(),
+        resExos.json(),
+        resPodcasts.json(),
+      ]);
+
+      const blocsSemaine: PlanTravail[] = jsonSemaine.blocs ?? [];
+      const blocsExos: PlanTravail[] = (jsonExos.blocs ?? []).filter((b: PlanTravail) => b.chapitre_id);
+      const blocsPodcasts: PlanTravail[] = jsonPodcasts.blocs ?? [];
+
+      const blocsWeekFiltered = filtrerBlocsConditionnels(blocsSemaine);
       setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
       setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
 
-      const blocsExos = blocs.filter((b) => ["exercice", "calcul_mental", "eval"].includes(b.type) && b.chapitre_id);
       setProgressionExos(groupParChapitre(blocsExos));
 
-      const podcastsRB = blocs
-        .filter((b) => b.type === "ressource" && (b.contenu as any)?.qcm_id)
+      const podcastsRB = blocsPodcasts
+        .filter((b) => (b.contenu as any)?.qcm_id)
         .slice(0, 4)
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
       setPodcastsQcm(podcastsRB);
@@ -455,11 +467,10 @@ export default function DashboardEleve() {
       let blocsWeek: PlanTravail[] = [];
 
       if (s.source === "repetibox") {
-        const res = await fetch(`/api/mon-plan-travail?rb=${s.id}`, signal ? { signal } : undefined);
+        const res = await fetch(`/api/mon-plan-travail?rb=${s.id}&debut=${debut}&fin=${fin}`, signal ? { signal } : undefined);
         if (signal?.aborted) return;
         const json = await res.json();
-        const blocs: PlanTravail[] = json.blocs ?? [];
-        blocsWeek = blocs.filter((b) => b.date_assignation >= debut && b.date_assignation <= fin);
+        blocsWeek = json.blocs ?? [];
       } else {
         const { data } = await supabase
           .from("plan_travail")

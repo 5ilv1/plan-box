@@ -53,21 +53,15 @@ export async function GET(req: NextRequest) {
     }
   } else {
     // Élève Repetibox natif : config individuelle > config groupe > OFF
-    const { data: configIndiv } = await admin
-      .from("pb_repetibox_config")
-      .select("actif")
-      .eq("repetibox_eleve_id", rbId)
-      .maybeSingle()
+    // Lancer les 2 requêtes en parallèle pour accélérer
+    const [{ data: configIndiv }, { data: membres }] = await Promise.all([
+      admin.from("pb_repetibox_config").select("actif").eq("repetibox_eleve_id", rbId).maybeSingle(),
+      admin.from("eleve_groupe").select("groupe_id").eq("repetibox_eleve_id", rbId),
+    ])
 
     if (configIndiv !== null) {
       if (!configIndiv.actif) return NextResponse.json({ chapitres: [] })
     } else {
-      // Pas d'override individuel : chercher dans les groupes
-      const { data: membres } = await admin
-        .from("eleve_groupe")
-        .select("groupe_id")
-        .eq("repetibox_eleve_id", rbId)
-
       const groupeIds = (membres ?? []).map((g: { groupe_id: string }) => g.groupe_id)
       if (groupeIds.length === 0) return NextResponse.json({ chapitres: [] })
 
@@ -136,30 +130,24 @@ export async function GET(req: NextRequest) {
   ].map((a: { chapitre_id: number }) => a.chapitre_id)
   const chapitresAssignesUniques = [...new Set(chapitresAssignesIds)]
 
-  // ── Toutes les progressions de l'élève ───────────────────────────────────
-  const { data: toutesProgressions, error: progError } = await admin
-    .from("progression")
-    .select("carte_id, prochaine_revision")
-    .eq("eleve_id", rbId)
+  // ── Progressions + cartes en parallèle ───────────────────────────────────
+  if (chapitresAssignesUniques.length === 0) return NextResponse.json({ chapitres: [] })
+
+  const [{ data: toutesProgressions, error: progError }, { data: toutesCartes }] = await Promise.all([
+    admin.from("progression").select("carte_id, prochaine_revision").eq("eleve_id", rbId),
+    admin.from("carte").select("id, chapitre_id").in("chapitre_id", chapitresAssignesUniques),
+  ])
 
   if (progError) {
     return NextResponse.json({ error: progError.message }, { status: 500 })
   }
 
+  if (!toutesCartes || toutesCartes.length === 0) return NextResponse.json({ chapitres: [] })
+
   const progressionMap = new Map<number, string>()
   for (const p of (toutesProgressions ?? []) as Array<{ carte_id: number; prochaine_revision: string }>) {
     progressionMap.set(p.carte_id, p.prochaine_revision)
   }
-
-  // ── Toutes les cartes des chapitres assignés ──────────────────────────────
-  if (chapitresAssignesUniques.length === 0) return NextResponse.json({ chapitres: [] })
-
-  const { data: toutesCartes } = await admin
-    .from("carte")
-    .select("id, chapitre_id")
-    .in("chapitre_id", chapitresAssignesUniques)
-
-  if (!toutesCartes || toutesCartes.length === 0) return NextResponse.json({ chapitres: [] })
 
   // ── Filtrer : dues = pas de progression OU prochaine_revision <= aujourd'hui
   const cartesDues = (toutesCartes as Array<{ id: number; chapitre_id: number }>).filter((carte) => {
@@ -189,30 +177,30 @@ export async function GET(req: NextRequest) {
     chapitresMap.set(ch.id, ch.nom)
   }
 
-  // ── Générer les tokens 8h ────────────────────────────────────────────────
+  // ── Générer les tokens 8h (en parallèle) ─────────────────────────────────
   const authId = eleveInfo?.auth_id
   const repetiboxUrl = process.env.NEXT_PUBLIC_REPETIBOX_URL || "https://leitner-app-kohl.vercel.app"
 
-  const resultats = []
-  for (const [chapitreId, nbCartes] of compteParChapitre) {
+  // Créer un seul token pour tous les chapitres (valable 8h)
+  let sharedToken: string | null = null
+  if (authId) {
+    const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
+    const { data: tokenData } = await admin
+      .from("qr_tokens")
+      .insert({ eleve_auth_id: authId, expires_at: expiresAt })
+      .select("token")
+      .single()
+    sharedToken = tokenData?.token ?? null
+  }
+
+  const resultats = Array.from(compteParChapitre).map(([chapitreId, nbCartes]) => {
     const chapitreNom = chapitresMap.get(chapitreId) ?? `Chapitre ${chapitreId}`
     let tokenUrl = `${repetiboxUrl}/eleve/revision/leitner?chapitre=${chapitreId}`
-
-    if (authId) {
-      const expiresAt = new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString()
-      const { data: tokenData } = await admin
-        .from("qr_tokens")
-        .insert({ eleve_auth_id: authId, expires_at: expiresAt })
-        .select("token")
-        .single()
-
-      if (tokenData?.token) {
-        tokenUrl = `${repetiboxUrl}/eleve/revision/leitner?chapitre=${chapitreId}&token=${tokenData.token}`
-      }
+    if (sharedToken) {
+      tokenUrl += `&token=${sharedToken}`
     }
-
-    resultats.push({ chapitre_id: chapitreId, chapitre_nom: chapitreNom, nb_cartes_dues: nbCartes, token_url: tokenUrl })
-  }
+    return { chapitre_id: chapitreId, chapitre_nom: chapitreNom, nb_cartes_dues: nbCartes, token_url: tokenUrl }
+  })
 
   return NextResponse.json({ chapitres: resultats })
 }

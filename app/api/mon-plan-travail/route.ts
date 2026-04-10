@@ -3,10 +3,16 @@ import { createAdminClient } from "@/lib/supabase-admin";
 
 // GET /api/mon-plan-travail?rb=<repetibox_eleve_id>
 // GET /api/mon-plan-travail?rb=<repetibox_eleve_id>&bloc=<blocId>   → un seul bloc
+// GET /api/mon-plan-travail?rb=<id>&debut=YYYY-MM-DD&fin=YYYY-MM-DD → blocs d'une période
+// GET /api/mon-plan-travail?rb=<id>&types=exercice,calcul_mental,eval → blocs par types (progression)
+// GET /api/mon-plan-travail?rb=<id>&types=ressource                  → podcasts uniquement
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const rb = searchParams.get("rb");
-  const blocId = searchParams.get("bloc"); // optionnel — pour la page activité
+  const blocId = searchParams.get("bloc");
+  const debut = searchParams.get("debut");
+  const fin = searchParams.get("fin");
+  const types = searchParams.get("types");
 
   if (!rb) {
     return NextResponse.json({ erreur: "Paramètre rb requis" }, { status: 400 });
@@ -25,7 +31,7 @@ export async function GET(req: NextRequest) {
       .from("plan_travail")
       .select("*, chapitres(titre, matiere)")
       .eq("id", blocId)
-      .eq("repetibox_eleve_id", rbId) // vérification de propriété
+      .eq("repetibox_eleve_id", rbId)
       .single();
 
     if (error || !data) {
@@ -35,12 +41,19 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ bloc: data });
   }
 
-  // Cas 2 : tous les blocs de l'élève (dashboard)
-  const { data, error } = await admin
+  // Cas 2 : blocs filtrés (dashboard optimisé)
+  let query = admin
     .from("plan_travail")
-    .select("*, chapitres(*)")
-    .eq("repetibox_eleve_id", rbId)
-    .order("date_assignation", { ascending: false });
+    .select("*, chapitres(id, titre, matiere)")
+    .eq("repetibox_eleve_id", rbId);
+
+  if (debut) query = query.gte("date_assignation", debut);
+  if (fin) query = query.lte("date_assignation", fin);
+  if (types) query = query.in("type", types.split(","));
+
+  const { data, error } = await query
+    .order("date_assignation", { ascending: false })
+    .limit(500);
 
   if (error) {
     console.error("[GET /api/mon-plan-travail]", error);
