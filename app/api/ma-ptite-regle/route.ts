@@ -124,8 +124,8 @@ export async function POST(req: NextRequest) {
         nb: 7, nbCible: 5,
         instruction: `Exercice d'observation/découverte pour que l'élève identifie la règle par lui-même.
 RÈGLE ABSOLUE : chaque question contient UNE SEULE phrase avec UN SEUL trou (UN SEUL mot manquant, jamais deux).
-L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN mot.
-INTERDIT : plusieurs trous dans une phrase, réponses avec "/" ou plusieurs mots.
+L'énoncé contient exactement UN "___" et la reponse_attendue est exactement UN SEUL MOT (ex: "est" ou "et").
+JAMAIS une phrase complète en reponse_attendue, JAMAIS de "/", JAMAIS plusieurs mots.
 Les phrases doivent guider l'élève vers la compréhension de la règle sans la formuler explicitement.`,
       },
       {
@@ -152,7 +152,7 @@ Exemple pour est/et : une phrase avec "est" et "et" → les variantes inversent 
         jour: "Jeudi",
         label: "Transforme / Réécris",
         type: "exercice" as const,
-        nb: 5,
+        nb: 7, nbCible: 5,
         instruction: `Exercice de transformation/réécriture. L'élève doit réécrire des phrases en appliquant la règle.
 Exemples : transformer au pluriel, changer le sujet, passer d'une forme à l'autre.
 Chaque question donne une phrase à transformer et l'élève doit écrire la phrase corrigée.`,
@@ -406,13 +406,29 @@ ${format}`;
     contenu.trous = trousFixed;
   }
 
-  // Pour les exercices à trou unique, filtrer les questions avec plusieurs trous
+  // Pour les exercices à trou unique, filtrer et corriger les questions
   if (type === "exercice" && Array.isArray(contenu.questions)) {
+    // Filtrer les questions avec plusieurs trous ou réponses avec "/"
     contenu.questions = contenu.questions.filter((q: any) => {
       const nbTrous = (q.enonce?.match(/_{2,}/g) || []).length;
       const repHasSlash = q.reponse_attendue?.includes("/");
       return nbTrous <= 1 && !repHasSlash;
     });
+
+    // Si l'énoncé a un trou et la réponse est une phrase complète,
+    // extraire le mot qui remplace le trou
+    for (const q of contenu.questions as any[]) {
+      if (q.enonce?.includes("___") && q.reponse_attendue?.includes(" ")) {
+        // Comparer l'énoncé (avec ___) et la réponse (phrase complète)
+        // pour extraire le mot manquant
+        const enonceWords = q.enonce.replace(/_{2,}/g, "___").split(/\s+/);
+        const reponseWords = q.reponse_attendue.split(/\s+/);
+        const idxTrou = enonceWords.indexOf("___");
+        if (idxTrou >= 0 && idxTrou < reponseWords.length) {
+          q.reponse_attendue = reponseWords[idxTrou].replace(/[.,;:!?]/g, "");
+        }
+      }
+    }
   }
 
   // Valider et corriger les réponses
