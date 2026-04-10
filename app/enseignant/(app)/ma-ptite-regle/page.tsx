@@ -184,6 +184,11 @@ export default function MaPtiteRegle() {
   // Aperçu
   const [apercuRegle, setApercuRegle] = useState<Regle | null>(null);
 
+  // Édition
+  const [editRegle, setEditRegle] = useState<Regle | null>(null);
+  const [editDateDebut, setEditDateDebut] = useState("");
+  const [enSauvegarde, setEnSauvegarde] = useState(false);
+
   /* ── Chargement ─────────────────────────────────── */
 
   const charger = useCallback(async () => {
@@ -281,6 +286,31 @@ export default function MaPtiteRegle() {
     setShowCreation(true);
   }
 
+  /* ── Modifier (date) ─────────────────────────────── */
+
+  function ouvrirEdition(r: Regle) {
+    setEditRegle(r);
+    setEditDateDebut(r.date_debut ?? "");
+  }
+
+  async function sauvegarderEdition() {
+    if (!editRegle) return;
+    setEnSauvegarde(true);
+    try {
+      const admin = await fetch(`/api/ma-ptite-regle`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: editRegle.id, date_debut: editDateDebut || null }),
+      });
+      if (admin.ok) {
+        setEditRegle(null);
+        await charger();
+      }
+    } finally {
+      setEnSauvegarde(false);
+    }
+  }
+
   /* ── Rendu ──────────────────────────────────────── */
 
   if (chargement) {
@@ -375,6 +405,9 @@ export default function MaPtiteRegle() {
                 <div style={{ display: "flex", gap: 6, flexShrink: 0 }} onClick={(e) => e.stopPropagation()}>
                   <button onClick={() => setApercuRegle(r)} title="Aperçu" style={btnStyle("#6B7280")}>
                     <span className="ms" style={{ fontSize: 16 }}>visibility</span>
+                  </button>
+                  <button onClick={() => ouvrirEdition(r)} title="Modifier" style={btnStyle("#6B7280")}>
+                    <span className="ms" style={{ fontSize: 16 }}>edit</span>
                   </button>
                   <button onClick={() => { setAssignRegle(r.id); setAssignGroupes(new Set()); }} title="Assigner" style={btnStyle("var(--pb-primary, #0050D4)")}>
                     <span className="ms" style={{ fontSize: 16 }}>group_add</span>
@@ -598,6 +631,37 @@ export default function MaPtiteRegle() {
               }}
             >
               {enCreation ? "Génération en cours…" : "Créer et générer les exercices"}
+            </button>
+          </div>
+        </Modal>
+      )}
+
+      {/* ── Modale édition ─────────────────────────────── */}
+      {editRegle && (
+        <Modal onClose={() => setEditRegle(null)} title="Modifier la règle">
+          <Field label="Titre">
+            <input className="form-input" value={editRegle.titre} disabled style={{ width: "100%", fontSize: 14, opacity: 0.6 }} />
+          </Field>
+          <Field label="Date de début">
+            <input
+              type="date"
+              className="form-input"
+              value={editDateDebut}
+              onChange={(e) => setEditDateDebut(e.target.value)}
+              style={{ width: "100%", fontSize: 14 }}
+            />
+            <p style={{ margin: "4px 0 0", fontSize: 11, color: "#888" }}>
+              Laissez vide pour rendre disponible immédiatement.
+            </p>
+          </Field>
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 8 }}>
+            <button onClick={() => setEditRegle(null)} style={btnStyle("#6B7280")}>Annuler</button>
+            <button
+              onClick={sauvegarderEdition}
+              disabled={enSauvegarde}
+              style={{ ...btnStyle("white"), background: "var(--pb-primary, #0050D4)", color: "white", border: "none" }}
+            >
+              {enSauvegarde ? "Enregistrement…" : "Enregistrer"}
             </button>
           </div>
         </Modal>

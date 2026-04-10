@@ -215,6 +215,30 @@ Plus exigeant que les exercices précédents pour vérifier la maîtrise de la r
 }
 
 /* ──────────────────────────────────────────────────────
+   PATCH /api/ma-ptite-regle
+   Modifie un chapitre rituel. Body: { id, date_debut? }
+   ────────────────────────────────────────────────────── */
+export async function PATCH(req: NextRequest) {
+  const body = await req.json();
+  const { id, date_debut } = body;
+
+  if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
+
+  const admin = createAdminClient();
+  const { error } = await admin
+    .from("chapitres")
+    .update({ date_debut: date_debut || null })
+    .eq("id", id);
+
+  if (error) {
+    console.error("[ma-ptite-regle PATCH]", error);
+    return NextResponse.json({ error: "Erreur mise à jour" }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
+/* ──────────────────────────────────────────────────────
    DELETE /api/ma-ptite-regle?id=UUID
    Supprime un chapitre rituel et ses exercices
    ────────────────────────────────────────────────────── */
