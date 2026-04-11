@@ -40,12 +40,16 @@ export default function EnseignantLayout({ children }: Props) {
   const supabase = createClient();
   const [email, setEmail] = useState("");
   const [autorise, setAutorise] = useState<boolean | null>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Drag & drop sidebar
   const [navItems, setNavItems] = useState(DEFAULT_NAV_ITEMS);
   const dragIdx = useRef<number | null>(null);
   const [dragOverIdx, setDragOverIdx] = useState<number | null>(null);
   const navLoaded = useRef(false);
+
+  // Fermer la sidebar mobile quand on navigue
+  useEffect(() => { setSidebarOpen(false); }, [pathname]);
 
   // Charger l'ordre depuis la BDD au montage
   useEffect(() => {
@@ -153,8 +157,13 @@ export default function EnseignantLayout({ children }: Props) {
 
   return (
     <div className="ens-layout">
+      {/* ── Overlay mobile ── */}
+      <div
+        className={`ens-sidebar-overlay${sidebarOpen ? " open" : ""}`}
+        onClick={() => setSidebarOpen(false)}
+      />
       {/* ── Sidebar ── */}
-      <aside className="ens-sidebar">
+      <aside className={`ens-sidebar${sidebarOpen ? " open" : ""}`}>
         {/* Logo */}
         <div className="ens-sidebar-logo">
           <div className="ens-sidebar-logo-icon">
@@ -199,6 +208,7 @@ export default function EnseignantLayout({ children }: Props) {
                 onDrop={onDrop(idx)}
                 onDragEnd={onDragEnd}
                 className={`ens-nav-item${actif ? " active" : ""}`}
+                data-label={label}
                 style={isDragOver ? {
                   borderTop: "2px solid var(--pb-primary, #0050D4)",
                   marginTop: -2,
@@ -214,11 +224,11 @@ export default function EnseignantLayout({ children }: Props) {
 
         {/* Footer */}
         <div className="ens-sidebar-footer">
-          <Link href="/enseignant/parametres" className="ens-nav-item">
+          <Link href="/enseignant/parametres" className="ens-nav-item" data-label="Paramètres">
             <span className="ms">settings</span>
             <span>Paramètres</span>
           </Link>
-          <button onClick={deconnecter} className="ens-nav-item logout" type="button">
+          <button onClick={deconnecter} className="ens-nav-item logout" type="button" data-label="Déconnexion">
             <span className="ms">logout</span>
             <span style={{ fontWeight: 600 }}>Déconnexion</span>
           </button>
@@ -229,6 +239,14 @@ export default function EnseignantLayout({ children }: Props) {
       <div className="ens-main-area">
         {/* Header */}
         <header className="ens-header">
+          <button
+            className="ens-hamburger"
+            type="button"
+            onClick={() => setSidebarOpen((v) => !v)}
+            aria-label="Menu"
+          >
+            <span className="ms" style={{ fontSize: 24 }}>menu</span>
+          </button>
           <div className="ens-search">
             <span className="ms">search</span>
             <input

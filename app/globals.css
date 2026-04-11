@@ -2180,3 +2180,150 @@ input[type="number"] {
 .ens-btn.ghost:hover {
   background: var(--ens-surface-container-high, #E0E0FF);
 }
+
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE ENSEIGNANT
+   ═══════════════════════════════════════════════════════════ */
+
+/* Hamburger (caché par défaut, visible mobile) */
+.ens-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--pb-on-surface);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.ens-hamburger:hover { background: var(--pb-surface-low); }
+
+/* Overlay sidebar mobile */
+.ens-sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 49;
+}
+
+/* ── Tablette : sidebar icônes seules (≤ 1024px) ──────────── */
+@media (max-width: 1024px) {
+  .ens-sidebar {
+    width: 68px;
+    padding: 16px 8px;
+    gap: 16px;
+    align-items: center;
+  }
+
+  /* Logo : icône seule */
+  .ens-sidebar-logo { justify-content: center; }
+  .ens-sidebar-logo > div:last-child { display: none; }
+
+  /* Boutons : icônes seules */
+  .ens-sidebar-btn span:not(.ms) { display: none; }
+  .ens-sidebar-btn {
+    padding: 12px;
+    border-radius: 12px;
+    justify-content: center;
+  }
+
+  /* Nav items : icônes seules avec tooltip */
+  .ens-nav-item span:not(.ms) { display: none; }
+  .ens-nav-item {
+    justify-content: center;
+    padding: 10px;
+    position: relative;
+  }
+  .ens-drag-handle { display: none !important; }
+
+  /* Tooltip au hover */
+  .ens-nav-item::after {
+    content: attr(data-label);
+    position: absolute;
+    left: calc(100% + 8px);
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--pb-on-surface);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 100;
+  }
+  .ens-nav-item:hover::after { opacity: 1; }
+
+  /* Footer */
+  .ens-sidebar-footer { gap: 2px; }
+
+  /* Main area */
+  .ens-main-area { margin-left: 68px; }
+
+  /* Header compact */
+  .ens-header { padding: 16px 20px; }
+  .ens-header-profile-info { display: none; }
+  .ens-header-sep { display: none; }
+
+  /* Content */
+  .ens-content { padding: 0 20px 32px; }
+
+  /* Hero */
+  .ens-hero { padding: 20px; border-radius: 16px; }
+  .ens-hero-stats { gap: 12px; }
+}
+
+/* ── Mobile : sidebar cachée + hamburger (≤ 768px) ────────── */
+@media (max-width: 768px) {
+  .ens-hamburger { display: flex; }
+
+  .ens-sidebar {
+    width: 288px;
+    padding: 24px;
+    gap: 28px;
+    align-items: stretch;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+  }
+
+  /* Sidebar ouverte */
+  .ens-sidebar.open {
+    transform: translateX(0);
+    box-shadow: 4px 0 24px rgba(0,0,0,0.15);
+  }
+
+  /* Restaurer les labels en mode ouvert */
+  .ens-sidebar.open .ens-sidebar-logo > div:last-child { display: block; }
+  .ens-sidebar.open .ens-sidebar-btn span:not(.ms) { display: inline; }
+  .ens-sidebar.open .ens-sidebar-btn { padding: 14px 0; border-radius: 16px; justify-content: center; }
+  .ens-sidebar.open .ens-nav-item span:not(.ms) { display: inline; }
+  .ens-sidebar.open .ens-nav-item { justify-content: flex-start; padding: 10px 16px; }
+  .ens-sidebar.open .ens-nav-item::after { display: none; }
+
+  /* Overlay visible quand sidebar ouverte */
+  .ens-sidebar-overlay.open { display: block; }
+
+  /* Main area full width */
+  .ens-main-area { margin-left: 0; }
+
+  /* Header */
+  .ens-header { padding: 12px 16px; gap: 8px; }
+  .ens-search { max-width: none; }
+  .ens-search input { padding: 10px 12px 10px 40px; font-size: 0.8125rem; }
+
+  /* Content */
+  .ens-content { padding: 0 12px 24px; }
+
+  /* Hero */
+  .ens-hero { margin: 0 -12px 16px; border-radius: 0; padding: 16px; }
+  .ens-hero-stats { flex-wrap: wrap; gap: 8px; }
+  .ens-hero-stat { flex: 1; min-width: 60px; }
+
+  /* Grilles */
+  .ens-grid-2col { grid-template-columns: 1fr; gap: 16px; }
+  .ens-view-tabs { flex-wrap: wrap; }
+}
