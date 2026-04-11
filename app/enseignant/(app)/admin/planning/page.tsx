@@ -465,6 +465,28 @@ export default function PageAdminPlanning() {
     return { nom, date, iso, groupes: grouperBlocs(blocsJour), nbBlocs: blocsJour.length };
   });
 
+  // Chapitres & règles uniques de la semaine
+  const chapitresSemaine = (() => {
+    const seen = new Map<string, { titre: string; matiere: string; isRegle: boolean; nbBlocs: number; types: Set<string> }>();
+    for (const b of blocsFiltres) {
+      if (!b.chapitre_id) continue;
+      const chap = (b as any).chapitres;
+      if (!chap?.titre) continue;
+      if (seen.has(b.chapitre_id)) {
+        const entry = seen.get(b.chapitre_id)!;
+        entry.nbBlocs++;
+        entry.types.add(b.type);
+      } else {
+        const isRegle = chap.titre.includes("P'tite Règle");
+        seen.set(b.chapitre_id, { titre: chap.titre, matiere: chap.matiere ?? "", isRegle, nbBlocs: 1, types: new Set([b.type]) });
+      }
+    }
+    return Array.from(seen.values()).sort((a, b) => {
+      if (a.isRegle !== b.isRegle) return a.isRegle ? 1 : -1; // chapitres d'abord, règles après
+      return a.titre.localeCompare(b.titre);
+    });
+  })();
+
   function buildCalendrier() {
     const premierCase = getPremierCaseMois(mois);
     const moisNum = mois.getMonth();
@@ -717,6 +739,43 @@ export default function PageAdminPlanning() {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* ── Chapitres & Règles de la semaine ──────────────────────────── */}
+          {!chargement && chapitresSemaine.length > 0 && (
+            <div style={{ marginTop: 20, padding: "16px 20px", background: "white", border: "1px solid var(--border)", borderRadius: 12 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                <span className="ms" style={{ fontSize: 18, color: "var(--primary)" }}>menu_book</span>
+                <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>Chapitres & règles de la semaine</span>
+                <span style={{ fontSize: 11, color: "var(--text-secondary)", marginLeft: 4 }}>({chapitresSemaine.length})</span>
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                {chapitresSemaine.map((c, i) => {
+                  const matiereColors: Record<string, string> = {
+                    français: "#3B82F6", maths: "#F59E0B", "histoire-géo": "#10B981",
+                    sciences: "#8B5CF6", anglais: "#EF4444",
+                  };
+                  const color = c.isRegle ? "#7C3AED" : matiereColors[c.matiere] ?? "#6B7280";
+                  const icon = c.isRegle ? "ink_pen" : "menu_book";
+                  // Nettoyer le titre : retirer "Ma P'tite Règle : " pour les règles
+                  const titreAffiche = c.isRegle ? c.titre.replace(/^Ma P'tite Règle\s*:\s*/i, "") : c.titre;
+                  return (
+                    <div key={i} style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      padding: "5px 12px", borderRadius: 8,
+                      background: `${color}10`, border: `1px solid ${color}30`,
+                      fontSize: 12, color, fontWeight: 500,
+                    }}>
+                      <span className="ms" style={{ fontSize: 14 }}>{icon}</span>
+                      {titreAffiche}
+                      <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 2 }}>
+                        ({c.nbBlocs} bloc{c.nbBlocs > 1 ? "s" : ""})
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           )}
         </div>
