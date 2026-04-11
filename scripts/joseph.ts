@@ -250,21 +250,110 @@ Si tout est correct, réponds : { "erreurs": [], "ok": true }`;
   }
 }
 
-// ── Correction IA ──────────────────────────────────────────────────────────
+// ── Corrections programmatiques (déterministes, pas d'IA) ─────────────────
+
+function corrigerPositionsTrous(contenu: any): { corrige: boolean; supprimés: string[] } {
+  if (!contenu.texte_complet || !Array.isArray(contenu.trous)) return { corrige: false, supprimés: [] };
+
+  const mots = (contenu.texte_complet as string).split(/\s+/);
+  const trousFixed: any[] = [];
+  const supprimés: string[] = [];
+
+  for (const trou of contenu.trous) {
+    const motSansPonctuation = trou.mot?.replace(/[.,;:!?'"()«»\-]/g, "");
+    if (!motSansPonctuation) { supprimés.push(trou.mot ?? "?"); continue; }
+
+    // Chercher le mot dans le texte
+    const positionsPrises = new Set<number>(trousFixed.map((t) => t.position));
+    let found = false;
+    for (let i = 0; i < mots.length; i++) {
+      if (positionsPrises.has(i)) continue;
+      const motTexte = mots[i].replace(/[.,;:!?'"()«»\-]/g, "");
+      if (motTexte.toLowerCase() === motSansPonctuation.toLowerCase()) {
+        trousFixed.push({ ...trou, position: i, mot: mots[i] });
+        found = true;
+        break;
+      }
+    }
+    if (!found) supprimés.push(trou.mot);
+  }
+
+  const changed = JSON.stringify(contenu.trous) !== JSON.stringify(trousFixed);
+  contenu.trous = trousFixed;
+  return { corrige: changed, supprimés };
+}
+
+function corrigerDoublonsQCM(contenu: any): boolean {
+  if (!Array.isArray(contenu.questions)) return false;
+  let changed = false;
+  for (const q of contenu.questions) {
+    if (!Array.isArray(q.options)) continue;
+    const seen = new Map<string, number>();
+    for (let i = 0; i < q.options.length; i++) {
+      const norm = q.options[i].trim().toLowerCase();
+      if (seen.has(norm)) {
+        // Doublon — supprimer l'option en doublon
+        q.options.splice(i, 1);
+        if (q.reponse_correcte >= i) q.reponse_correcte = Math.max(0, q.reponse_correcte - 1);
+        i--;
+        changed = true;
+      } else {
+        seen.set(norm, i);
+      }
+    }
+  }
+  return changed;
+}
+
+// ── Correction IA (pour les erreurs de contenu) ───────────────────────────
 
 async function corrigerExercice(ex: any): Promise<any | null> {
-  const contenu = ex.contenu;
+  const contenu = JSON.parse(JSON.stringify(ex.contenu)); // deep clone
   if (!contenu) return null;
 
-  // Rassembler les erreurs de cet exercice
   const exErreurs = erreurs.filter((e) => e.exerciceId === ex.id && e.fixable);
   if (exErreurs.length === 0) return null;
 
-  const problemesListe = exErreurs.map((e) => `- ${e.probleme}${e.details ? ` (${e.details})` : ""}`).join("\n");
+  let fixedProgrammatically = false;
+
+  // 1. Corrections programmatiques d'abord
+  if (ex.type === "texte_a_trous") {
+    const { corrige, supprimés } = corrigerPositionsTrous(contenu);
+    if (corrige) {
+      fixedProgrammatically = true;
+      console.log(`  🔧 Positions des trous recalculées`);
+      if (supprimés.length > 0) {
+        console.log(`  🔧 Trous supprimés (mot introuvable dans le texte) : ${supprimés.join(", ")}`);
+      }
+    }
+  }
+
+  if (ex.type === "qcm") {
+    if (corrigerDoublonsQCM(contenu)) {
+      fixedProgrammatically = true;
+      console.log(`  🔧 Doublons QCM supprimés`);
+    }
+  }
+
+  // 2. Filtrer les erreurs restantes (exclure celles corrigées programmatiquement)
+  const erreursRestantes = exErreurs.filter((e) => {
+    if (e.probleme.includes("position") && fixedProgrammatically) return false;
+    if (e.probleme.includes("doublon") && fixedProgrammatically) return false;
+    return true;
+  });
+
+  // Si tout est corrigé programmatiquement, pas besoin d'IA
+  if (erreursRestantes.length === 0) return contenu;
+
+  // 3. Correction IA pour les erreurs de contenu
+  const problemesListe = erreursRestantes.map((e) => `- ${e.probleme}${e.details ? ` (${e.details})` : ""}`).join("\n");
+
+  const chapTitre = ex.chapTitre ?? "";
+  const regleContext = chapTitre.includes("ou") ? `La règle porte sur le pluriel des noms en -ou. Exceptions qui prennent -x : bijoux, cailloux, choux, genoux, hiboux, joujoux, poux. Tous les autres prennent -s (clous, trous, sous, voyous, verrous, etc.).\n` : "";
 
   const prompt = `Tu es un correcteur d'exercices scolaires (CE2-CM2). L'exercice ci-dessous contient des erreurs que tu dois corriger.
 
-Type d'exercice : ${ex.type}
+${regleContext}Type d'exercice : ${ex.type}
 Titre : ${ex.titre}
 
 Contenu actuel (JSON) :
@@ -277,8 +366,8 @@ INSTRUCTIONS :
 - Corrige UNIQUEMENT les erreurs listées ci-dessus
 - Ne change PAS la structure du JSON
 - Ne change PAS les champs qui fonctionnent correctement
-- Pour les QCM : assure-toi que chaque option est unique et que reponse_correcte pointe vers la bonne
-- Pour les texte_a_trous : assure-toi que les positions sont correctes et les mots correspondent au texte
+- Pour les QCM : assure-toi que chaque option est UNIQUE, que les différences portent sur la règle étudiée, et que reponse_correcte pointe vers la bonne réponse
+- Pour les texte_a_trous : assure-toi que chaque mot de trou existe EXACTEMENT dans le texte_complet
 - Pour les exercices : assure-toi que les réponses attendues sont grammaticalement correctes
 
 Réponds UNIQUEMENT avec le JSON corrigé, sans explication. Le JSON doit être valide et complet.`;
@@ -291,19 +380,28 @@ Réponds UNIQUEMENT avec le JSON corrigé, sans explication. Le JSON doit être 
     });
 
     const text = res.content[0].type === "text" ? res.content[0].text : "";
-    // Extraire le JSON (peut être dans un bloc code ou brut)
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      console.log(`  ⚠️  Impossible de parser la correction pour "${ex.titre}"`);
-      return null;
+      console.log(`  ⚠️  Impossible de parser la correction IA pour "${ex.titre}"`);
+      // Retourner quand même les corrections programmatiques
+      return fixedProgrammatically ? contenu : null;
     }
 
     const corrected = JSON.parse(jsonMatch[0]);
+
+    // Réappliquer les corrections programmatiques sur le résultat IA (sécurité)
+    if (corrected.texte_complet && Array.isArray(corrected.trous)) {
+      corrigerPositionsTrous(corrected);
+    }
+    if (Array.isArray(corrected.questions)) {
+      corrigerDoublonsQCM(corrected);
+    }
+
     return corrected;
   } catch (err) {
     console.log(`  ⚠️  Erreur de correction IA pour "${ex.titre}" : ${err}`);
-    return null;
+    return fixedProgrammatically ? contenu : null;
   }
 }
 
@@ -742,10 +840,13 @@ async function main() {
         }
       }
 
-      // Phase de correction
-      if (fixMode && erreurs.some((e) => e.fixable)) {
+      // Phase de correction (max 3 passes)
+      const MAX_PASSES = 3;
+      for (let passe = 1; passe <= MAX_PASSES; passe++) {
+        if (!fixMode || !erreurs.some((e) => e.fixable)) break;
+
         console.log("\n" + "=".repeat(60));
-        console.log("🔧 PHASE DE CORRECTION");
+        console.log(`🔧 PHASE DE CORRECTION — Passe ${passe}/${MAX_PASSES}`);
         console.log("=".repeat(60));
 
         const exIdsACorreger = [...new Set(erreurs.filter((e) => e.fixable).map((e) => e.exerciceId))];
@@ -777,6 +878,13 @@ async function main() {
           } else {
             console.log(`  ⚠️  Pas de correction générée`);
           }
+        }
+
+        if (!erreurs.some((e) => e.fixable)) {
+          console.log(`\n  ✅ Toutes les erreurs corrigées en ${passe} passe(s)`);
+          break;
+        } else if (passe < MAX_PASSES) {
+          console.log(`\n  🔄 ${erreurs.filter((e) => e.fixable).length} erreur(s) restante(s), relance…`);
         }
       }
     }
