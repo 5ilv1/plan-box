@@ -43,6 +43,48 @@ function genererOptionsVerbe(mot: string): [string, string] | null {
   return null;
 }
 
+// Détecte si un mot est un pluriel lié à une règle de pluriel (-ou/-oux, -al/-aux, -ail/-aux)
+// et génère les deux options (forme régulière + forme exception)
+function genererOptionsPluriel(mot: string, indice?: string): [string, string] | null {
+  const m = mot.replace(/[.,;:!?'"()]/g, "");
+
+  // Pluriels en -oux vs -ous
+  if (/oux$/i.test(m)) {
+    return [m, m.slice(0, -1) + "s"]; // bijoux vs bijous
+  }
+  if (/ous$/i.test(m) && indice && /ou/i.test(indice)) {
+    return [m.slice(0, -1) + "x", m]; // caillous vs cailloux — mais c'est "caillous" la réponse ici
+    // En fait le mot correct est dans le texte, donc on génère les 2 options
+  }
+
+  // Pluriels en -aux vs -als
+  if (/aux$/i.test(m) && m.length >= 4) {
+    // Vérifier que ce n'est pas un mot qui finit naturellement en -aux (taux, faux, etc.)
+    const singulierAl = m.slice(0, -3) + "al";
+    const singulierAil = m.slice(0, -3) + "ail";
+    // Si l'indice mentionne -al ou -ail, c'est bien un pluriel de cette règle
+    if (indice && (/al/i.test(indice) || /aux/i.test(indice) || /exception/i.test(indice) || /défaut/i.test(indice))) {
+      return [m, singulierAl + "s"]; // chevaux vs chevals
+    }
+  }
+  if (/als$/i.test(m) && m.length >= 4) {
+    if (indice && (/al/i.test(indice) || /als/i.test(indice) || /exception/i.test(indice) || /défaut/i.test(indice) || /fête/i.test(indice))) {
+      const radical = m.slice(0, -3);
+      return [radical + "aux", m]; // festivaux vs festivals
+    }
+  }
+
+  // Pluriels en -ails vs -aux (règle -ail)
+  if (/ails$/i.test(m)) {
+    if (indice && (/ail/i.test(indice) || /défaut/i.test(indice))) {
+      const radical = m.slice(0, -4);
+      return [radical + "aux", m]; // détaux vs détails
+    }
+  }
+
+  return null;
+}
+
 interface Props {
   titre: string;
   consigne: string;
@@ -178,7 +220,7 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
             const { prefixe: elision, motSansElision } = separerElision(motBrut);
             const motAffiche = elision ? motSansElision : motBrut;
             const largeur = Math.max(motAffiche.length * 12, 60);
-            const optionsVerbe = genererOptionsVerbe(motBrut);
+            const optionsVerbe = genererOptionsVerbe(motBrut) ?? genererOptionsPluriel(motBrut, trou.indice);
 
             return (
               <React.Fragment key={i}>
