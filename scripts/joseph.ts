@@ -145,6 +145,36 @@ function verifierStructureExercice(chap: string, ex: any) {
         if (optSet.size !== q.options.length) {
           erreur(chap, ex.id, ex.titre, ex.type, `QCM ${i + 1} : options en doublon`, q.options.join(" | "));
         }
+
+        // Pour les homophones : vérifier qu'il y a exactement 2 options
+        const estHomophone = / \/ |est.*et|sont.*son|ou.*où|a.*à|ce.*se|on.*ont/i.test(chap);
+        if (estHomophone && q.options.length > 2) {
+          erreur(chap, ex.id, ex.titre, ex.type,
+            `QCM ${i + 1} : ${q.options.length} options au lieu de 2 pour un homophone`,
+            `Les QCM homophones doivent avoir 2 options (1 correcte + 1 confusion) pour éviter les phrases absurdes`
+          );
+        }
+
+        // Vérifier que les options incorrectes ne diffèrent que par 1-2 mots de la bonne réponse
+        if (q.reponse_correcte != null && q.reponse_correcte < q.options.length) {
+          const bonneReponse = q.options[q.reponse_correcte].trim().toLowerCase().split(/\s+/);
+          for (let j = 0; j < q.options.length; j++) {
+            if (j === q.reponse_correcte) continue;
+            const optMots = q.options[j].trim().toLowerCase().split(/\s+/);
+            // Compter les mots différents
+            const maxLen = Math.max(bonneReponse.length, optMots.length);
+            let nbDiffs = Math.abs(bonneReponse.length - optMots.length);
+            for (let k = 0; k < Math.min(bonneReponse.length, optMots.length); k++) {
+              if (bonneReponse[k] !== optMots[k]) nbDiffs++;
+            }
+            if (nbDiffs > 3) {
+              warning(chap, ex.id, ex.titre, ex.type,
+                `QCM ${i + 1} option ${j + 1} : ${nbDiffs} mots différents de la bonne réponse — risque de phrase absurde`,
+                `"${q.options[j]}"`
+              );
+            }
+          }
+        }
       }
       break;
 
@@ -333,12 +363,44 @@ async function corrigerExercice(ex: any): Promise<any | null> {
       fixedProgrammatically = true;
       console.log(`  🔧 Doublons QCM supprimés`);
     }
+
+    // Pour les homophones : réduire à 2 options (bonne réponse + 1 confusion)
+    const chapTitre = ex.chapTitre ?? "";
+    const estHomophone = / \/ |est.*et|sont.*son|ou.*où|a.*à|ce.*se|on.*ont/i.test(chapTitre);
+    if (estHomophone && Array.isArray(contenu.questions)) {
+      for (const q of contenu.questions) {
+        if (Array.isArray(q.options) && q.options.length > 2 && q.reponse_correcte != null) {
+          const bonneReponse = q.options[q.reponse_correcte];
+          // Trouver la meilleure mauvaise option (celle qui diffère le moins de la bonne)
+          const bonneMots = bonneReponse.trim().toLowerCase().split(/\s+/);
+          let meilleurIdx = -1;
+          let minDiffs = Infinity;
+          for (let j = 0; j < q.options.length; j++) {
+            if (j === q.reponse_correcte) continue;
+            const optMots = q.options[j].trim().toLowerCase().split(/\s+/);
+            let diffs = Math.abs(bonneMots.length - optMots.length);
+            for (let k = 0; k < Math.min(bonneMots.length, optMots.length); k++) {
+              if (bonneMots[k] !== optMots[k]) diffs++;
+            }
+            if (diffs < minDiffs) { minDiffs = diffs; meilleurIdx = j; }
+          }
+          if (meilleurIdx >= 0) {
+            const mauvaiseOption = q.options[meilleurIdx];
+            q.options = [bonneReponse, mauvaiseOption];
+            q.reponse_correcte = 0;
+            fixedProgrammatically = true;
+          }
+        }
+      }
+      if (fixedProgrammatically) console.log(`  🔧 QCM homophones réduits à 2 options`);
+    }
   }
 
   // 2. Filtrer les erreurs restantes (exclure celles corrigées programmatiquement)
   const erreursRestantes = exErreurs.filter((e) => {
     if (e.probleme.includes("position") && fixedProgrammatically) return false;
     if (e.probleme.includes("doublon") && fixedProgrammatically) return false;
+    if (e.probleme.includes("options au lieu de 2") && fixedProgrammatically) return false;
     return true;
   });
 
