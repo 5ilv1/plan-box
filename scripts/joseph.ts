@@ -85,6 +85,11 @@ function verifierStructureExercice(chap: string, ex: any) {
         break;
       }
       const mots = contenu.texte_complet.split(/\s+/);
+
+      // Détecter si la règle concerne les verbes -er/-é
+      const estRegleVerbe = /infinitif|participe|-er|-é/i.test(chap);
+      const patternVerbeRegex = /^(.*er|.*é|.*ée|.*és|.*ées)$/i;
+
       for (let i = 0; i < contenu.trous.length; i++) {
         const t = contenu.trous[i];
         if (!t.mot?.trim()) erreur(chap, ex.id, ex.titre, ex.type, `Trou ${i + 1} : mot vide`);
@@ -98,6 +103,17 @@ function verifierStructureExercice(chap: string, ex: any) {
             erreur(chap, ex.id, ex.titre, ex.type,
               `Trou ${i + 1} : position ${t.position} = "${mots[t.position]}" mais mot attendu = "${t.mot}"`,
               `Le texte contient "${motTexte}" à cette position, pas "${motTrou}"`
+            );
+          }
+        }
+
+        // Vérifier que le mot du trou matche le pattern de la règle
+        if (estRegleVerbe && t.mot) {
+          const motNet = t.mot.replace(/[.,;:!?'"()«»\-]/g, "");
+          if (!patternVerbeRegex.test(motNet)) {
+            erreur(chap, ex.id, ex.titre, ex.type,
+              `Trou ${i + 1} : "${t.mot}" ne finit pas en -er/-é — ne correspond pas à la règle`,
+              `Mot hors sujet pour une règle infinitif/participe passé`
             );
           }
         }
@@ -498,6 +514,19 @@ async function verifierParcours(filtre: string) {
           case "texte_a_trous":
             if (!contenu.texte_complet) problems.push("pas de texte_complet");
             if (!contenu.trous?.length) problems.push("pas de trous");
+            else {
+              // Vérifier pattern des mots si c'est une règle verbe
+              const estVerbe = /infinitif|participe|-er|-é/i.test(chap.titre);
+              if (estVerbe) {
+                const motsInvalides = contenu.trous.filter((t: any) => {
+                  const m = t.mot?.replace(/[.,;:!?'"()«»\-]/g, "") ?? "";
+                  return m && !/^(.*er|.*é|.*ée|.*és|.*ées)$/i.test(m);
+                });
+                if (motsInvalides.length > 0) {
+                  problems.push(`${motsInvalides.length} trou(s) hors pattern -er/-é : ${motsInvalides.map((t: any) => `"${t.mot}"`).join(", ")}`);
+                }
+              }
+            }
             break;
 
           case "qcm":
