@@ -670,9 +670,18 @@ ${format}`;
   // Correction des positions pour texte_a_trous
   if (type === "texte_a_trous" && contenu.texte_complet && Array.isArray(contenu.trous)) {
     const mots = (contenu.texte_complet as string).split(/\s+/);
+
+    // Déterminer le pattern attendu selon la règle (verbes -er/-é ou pluriels)
+    const estVerbeRegle = /infinitif|participe|conjugaison|-er|-é/i.test(titreRegle ?? "");
+    const patternVerbe = /^(.*er|.*é|.*ée|.*és|.*ées)$/i;
+
     const trousFixed: { position: number; mot: string; indice?: string }[] = [];
     for (const trou of contenu.trous) {
       const motSansPonctuation = trou.mot.replace(/[.,;:!?'"()]/g, "");
+
+      // Filtrer les trous qui ne matchent pas le pattern de la règle
+      if (estVerbeRegle && !patternVerbe.test(motSansPonctuation)) continue;
+
       const positionsPrises = new Set<number>(trousFixed.map((t) => t.position));
       for (let i = 0; i < mots.length; i++) {
         if (positionsPrises.has(i)) continue;
