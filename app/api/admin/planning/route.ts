@@ -89,10 +89,40 @@ export async function GET(req: NextRequest) {
     return { ...b, eleve_info: eleveInfo };
   });
 
+  // Chapitres & règles assignés (actifs)
+  const { data: assignations } = await admin
+    .from("chapitre_assignation")
+    .select("chapitre_id, groupe_id, chapitres(titre, matiere, sous_matiere), groupes(nom)")
+    .eq("actif", true);
+
+  const chapitresMap = new Map<string, { titre: string; matiere: string; isRegle: boolean; groupes: string[] }>();
+  for (const a of (assignations ?? []) as any[]) {
+    if (!a.chapitres?.titre) continue;
+    const id = a.chapitre_id;
+    if (!chapitresMap.has(id)) {
+      chapitresMap.set(id, {
+        titre: a.chapitres.titre,
+        matiere: a.chapitres.matiere ?? "",
+        isRegle: a.chapitres.sous_matiere === "rituel-orthographe",
+        groupes: [],
+      });
+    }
+    if (a.groupes?.nom) {
+      const entry = chapitresMap.get(id)!;
+      if (!entry.groupes.includes(a.groupes.nom)) entry.groupes.push(a.groupes.nom);
+    }
+  }
+
+  const chapitresActifs = Array.from(chapitresMap.values()).sort((a, b) => {
+    if (a.isRegle !== b.isRegle) return a.isRegle ? 1 : -1;
+    return a.titre.localeCompare(b.titre);
+  });
+
   return NextResponse.json({
     blocs: blocsEnrichis,
     lundi: lundiStr,
     vendredi: vendrediStr,
+    chapitresActifs,
   });
 }
 

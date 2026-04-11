@@ -129,6 +129,7 @@ export default function PageAdminPlanning() {
 
   const [blocs, setBlocs]           = useState<BlocPlanning[]>([]);
   const [chargement, setChargement] = useState(true);
+  const [chapitresActifs, setChapitresActifs] = useState<{ titre: string; matiere: string; isRegle: boolean; groupes: string[] }[]>([]);
 
   // ── Filtre par groupe ──────────────────────────────────────────────────────
   const [groupesFiltres, setGroupesFiltres]         = useState<GroupeFiltre[]>([]);
@@ -210,6 +211,7 @@ export default function PageAdminPlanning() {
     const res  = await fetch(url);
     const json = await res.json();
     setBlocs(json.blocs ?? []);
+    setChapitresActifs(json.chapitresActifs ?? []);
     setChargement(false);
   }, [lundi, mois, vueMode]);
 
@@ -465,27 +467,8 @@ export default function PageAdminPlanning() {
     return { nom, date, iso, groupes: grouperBlocs(blocsJour), nbBlocs: blocsJour.length };
   });
 
-  // Chapitres & règles uniques de la semaine
-  const chapitresSemaine = (() => {
-    const seen = new Map<string, { titre: string; matiere: string; isRegle: boolean; nbBlocs: number; types: Set<string> }>();
-    for (const b of blocsFiltres) {
-      if (!b.chapitre_id) continue;
-      const chap = (b as any).chapitres;
-      if (!chap?.titre) continue;
-      if (seen.has(b.chapitre_id)) {
-        const entry = seen.get(b.chapitre_id)!;
-        entry.nbBlocs++;
-        entry.types.add(b.type);
-      } else {
-        const isRegle = chap.titre.includes("P'tite Règle");
-        seen.set(b.chapitre_id, { titre: chap.titre, matiere: chap.matiere ?? "", isRegle, nbBlocs: 1, types: new Set([b.type]) });
-      }
-    }
-    return Array.from(seen.values()).sort((a, b) => {
-      if (a.isRegle !== b.isRegle) return a.isRegle ? 1 : -1; // chapitres d'abord, règles après
-      return a.titre.localeCompare(b.titre);
-    });
-  })();
+  // Chapitres & règles assignés (depuis l'API)
+  // chapitresActifs est chargé via l'API et stocké dans le state
 
   function buildCalendrier() {
     const premierCase = getPremierCaseMois(mois);
@@ -743,15 +726,15 @@ export default function PageAdminPlanning() {
           )}
 
           {/* ── Chapitres & Règles de la semaine ──────────────────────────── */}
-          {!chargement && chapitresSemaine.length > 0 && (
+          {!chargement && chapitresActifs.length > 0 && (
             <div style={{ marginTop: 20, padding: "16px 20px", background: "white", border: "1px solid var(--border)", borderRadius: 12 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
                 <span className="ms" style={{ fontSize: 18, color: "var(--primary)" }}>menu_book</span>
                 <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>Chapitres & règles de la semaine</span>
-                <span style={{ fontSize: 11, color: "var(--text-secondary)", marginLeft: 4 }}>({chapitresSemaine.length})</span>
+                <span style={{ fontSize: 11, color: "var(--text-secondary)", marginLeft: 4 }}>({chapitresActifs.length})</span>
               </div>
               <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
-                {chapitresSemaine.map((c, i) => {
+                {chapitresActifs.map((c, i) => {
                   const matiereColors: Record<string, string> = {
                     français: "#3B82F6", maths: "#F59E0B", "histoire-géo": "#10B981",
                     sciences: "#8B5CF6", anglais: "#EF4444",
@@ -769,9 +752,11 @@ export default function PageAdminPlanning() {
                     }}>
                       <span className="ms" style={{ fontSize: 14 }}>{icon}</span>
                       {titreAffiche}
-                      <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 2 }}>
-                        ({c.nbBlocs} bloc{c.nbBlocs > 1 ? "s" : ""})
-                      </span>
+                      {c.groupes.length > 0 && (
+                        <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 2 }}>
+                          {c.groupes.join(", ")}
+                        </span>
+                      )}
                     </div>
                   );
                 })}
