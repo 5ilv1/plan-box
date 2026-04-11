@@ -112,7 +112,6 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
 
   function normaliser(s: string): string {
     return s.toLowerCase().trim()
-      .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
       .replace(/['']/g, "'")
       .replace(/\s+/g, " ");
   }
