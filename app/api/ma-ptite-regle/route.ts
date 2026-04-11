@@ -365,9 +365,11 @@ CHAQUE occurrence de ces mots exacts dans le texte DOIT être un trou. Aucune ne
         label: "Trouve l'erreur — Entraînement",
         type: "qcm",
         nb: 5,
-        instruction: `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase correctement orthographiée parmi 4 propositions.
-Chaque question propose 4 versions de la MÊME phrase. Les erreurs portent UNIQUEMENT sur la confusion entre ${motsCiblesStr}.
-INTERDIT : inventer des mots qui n'existent pas. Les erreurs doivent être des VRAIES confusions entre les homophones existants.`,
+        instruction: `Exercice "trouve la bonne phrase". L'élève doit trouver la phrase correctement orthographiée parmi 2 propositions.
+Chaque question propose EXACTEMENT 2 options : une phrase CORRECTE et une phrase avec UNE SEULE erreur de confusion entre ${motsCiblesStr}.
+La différence entre les 2 phrases doit porter sur UN SEUL mot (l'homophone), le reste de la phrase est IDENTIQUE.
+INTERDIT : inventer des mots qui n'existent pas. L'erreur doit être une VRAIE confusion entre les homophones existants.
+IMPORTANT : "options" doit contenir exactement 2 éléments, pas plus.`,
       },
       {
         jour: "Jeudi",
