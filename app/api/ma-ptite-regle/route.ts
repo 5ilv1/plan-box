@@ -45,15 +45,20 @@ export async function GET(req: NextRequest) {
     exosMap.set(e.chapitre_id, arr);
   }
 
-  const assignMap = new Map<string, number>();
+  const assignMap = new Map<string, string[]>();
   for (const a of (assignRes.data ?? []) as any[]) {
-    if (a.actif) assignMap.set(a.chapitre_id, (assignMap.get(a.chapitre_id) ?? 0) + 1);
+    if (a.actif) {
+      const arr = assignMap.get(a.chapitre_id) ?? [];
+      arr.push(a.groupe_id);
+      assignMap.set(a.chapitre_id, arr);
+    }
   }
 
   const regles = (chapitres ?? []).map((c: any) => ({
     ...c,
     exercices: exosMap.get(c.id) ?? [],
-    nb_groupes_assignes: assignMap.get(c.id) ?? 0,
+    nb_groupes_assignes: (assignMap.get(c.id) ?? []).length,
+    groupes_assignes_ids: assignMap.get(c.id) ?? [],
   }));
 
   return NextResponse.json({ regles });

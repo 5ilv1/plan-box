@@ -24,6 +24,7 @@ interface Regle {
   created_at: string;
   exercices: Exercice[];
   nb_groupes_assignes: number;
+  groupes_assignes_ids: string[];
   niveaux?: { nom: string } | null;
 }
 
@@ -290,6 +291,22 @@ export default function MaPtiteRegle() {
   /* ── Assigner ───────────────────────────────────── */
 
   async function assignerGroupes(chapitreId: string) {
+    // Récupérer les groupes actuellement assignés pour comparer
+    const regle = regles.find((r) => r.id === chapitreId);
+    const anciens = new Set(regle?.groupes_assignes_ids ?? []);
+
+    // Désactiver les groupes décochés
+    for (const gid of anciens) {
+      if (!assignGroupes.has(gid)) {
+        await fetch("/api/chapitres/assignation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ chapitre_id: chapitreId, groupe_id: gid, actif: false }),
+        });
+      }
+    }
+
+    // Activer les groupes cochés (nouveaux ou existants)
     for (const gid of assignGroupes) {
       await fetch("/api/chapitres/assignation", {
         method: "POST",
@@ -297,6 +314,7 @@ export default function MaPtiteRegle() {
         body: JSON.stringify({ chapitre_id: chapitreId, groupe_id: gid, actif: true }),
       });
     }
+
     setAssignRegle(null);
     setAssignGroupes(new Set());
     await charger();
@@ -485,7 +503,7 @@ export default function MaPtiteRegle() {
                   <button onClick={() => ouvrirEdition(r)} title="Modifier" style={btnStyle("#6B7280")}>
                     <span className="ms" style={{ fontSize: 16 }}>edit</span>
                   </button>
-                  <button onClick={() => { setAssignRegle(r.id); setAssignGroupes(new Set()); }} title="Assigner" style={btnStyle("var(--pb-primary, #0050D4)")}>
+                  <button onClick={() => { setAssignRegle(r.id); setAssignGroupes(new Set(r.groupes_assignes_ids ?? [])); }} title="Assigner" style={btnStyle("var(--pb-primary, #0050D4)")}>
                     <span className="ms" style={{ fontSize: 16 }}>group_add</span>
                   </button>
                   {isDeleting ? (
