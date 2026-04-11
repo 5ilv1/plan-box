@@ -108,12 +108,53 @@ function verifierStructureExercice(chap: string, ex: any) {
         }
 
         // Vérifier que le mot du trou matche le pattern de la règle
-        if (estRegleVerbe && t.mot) {
+        if (t.mot) {
           const motNet = t.mot.replace(/[.,;:!?'"()«»\-]/g, "");
-          if (!patternVerbeRegex.test(motNet)) {
+          const motLower = motNet.toLowerCase();
+
+          if (estRegleVerbe && !patternVerbeRegex.test(motNet)) {
             erreur(chap, ex.id, ex.titre, ex.type,
               `Trou ${i + 1} : "${t.mot}" ne finit pas en -er/-é — ne correspond pas à la règle`,
               `Mot hors sujet pour une règle infinitif/participe passé`
+            );
+          }
+
+          // Homophones : le mot doit être un des homophones de la règle
+          const estHomophone = / \/ /i.test(chap) && !/pluriel|al|ail|ou$/i.test(chap);
+          if (estHomophone) {
+            const homophones = chap.match(/:\s*(.+)/)?.[1]?.split(/\s*\/\s*/).map((h: string) => h.trim().toLowerCase()) ?? [];
+            if (homophones.length > 0 && !homophones.includes(motLower)) {
+              erreur(chap, ex.id, ex.titre, ex.type,
+                `Trou ${i + 1} : "${t.mot}" n'est pas un des homophones (${homophones.join(", ")})`,
+                `Mot hors sujet`
+              );
+            }
+          }
+
+          // Pluriels -al/-aux : le mot doit finir en -aux ou -als
+          const estRegleAl = /al\s*\/\s*aux|pluriel.*-al/i.test(chap);
+          if (estRegleAl && !/aux$/i.test(motNet) && !/als$/i.test(motNet)) {
+            erreur(chap, ex.id, ex.titre, ex.type,
+              `Trou ${i + 1} : "${t.mot}" ne finit pas en -aux/-als — hors sujet pour la règle`,
+              `Mot hors sujet pour une règle de pluriel en -al`
+            );
+          }
+
+          // Pluriels -ail/-aux : le mot doit finir en -aux ou -ails
+          const estRegleAil = /ail\s*\/\s*aux|pluriel.*-ail/i.test(chap);
+          if (estRegleAil && !/aux$/i.test(motNet) && !/ails$/i.test(motNet)) {
+            erreur(chap, ex.id, ex.titre, ex.type,
+              `Trou ${i + 1} : "${t.mot}" ne finit pas en -aux/-ails — hors sujet pour la règle`,
+              `Mot hors sujet pour une règle de pluriel en -ail`
+            );
+          }
+
+          // Pluriels -ou : le mot doit finir en -oux ou -ous
+          const estRegleOu = /pluriel.*-ou/i.test(chap);
+          if (estRegleOu && !/oux$/i.test(motNet) && !/ous$/i.test(motNet)) {
+            erreur(chap, ex.id, ex.titre, ex.type,
+              `Trou ${i + 1} : "${t.mot}" ne finit pas en -oux/-ous — hors sujet pour la règle`,
+              `Mot hors sujet pour une règle de pluriel en -ou`
             );
           }
         }

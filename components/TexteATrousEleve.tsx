@@ -67,7 +67,7 @@ function genererOptionsPluriel(mot: string, indice?: string): [string, string] |
   if (/oux$/i.test(m)) {
     return [m, m.slice(0, -1) + "s"];
   }
-  if (/ous$/i.test(m) && indice && /ou|régulier/i.test(indice)) {
+  if (/ous$/i.test(m) && indice && /ou|régulier|général/i.test(indice)) {
     return [m.slice(0, -1) + "x", m];
   }
 
@@ -78,14 +78,14 @@ function genererOptionsPluriel(mot: string, indice?: string): [string, string] |
     }
   }
   if (/als$/i.test(m) && m.length >= 4) {
-    if (indice && /al|als|exception|défaut|fête|régulier/i.test(indice)) {
+    if (indice && /al|als|exception|défaut|fête|régulier|général/i.test(indice)) {
       return [m.slice(0, -3) + "aux", m];
     }
   }
 
   // Pluriels en -ails vs -aux (règle -ail)
   if (/ails$/i.test(m)) {
-    if (indice && /ail|défaut|régulier/i.test(indice)) {
+    if (indice && /ail|défaut|régulier|général/i.test(indice)) {
       return [m.slice(0, -4) + "aux", m];
     }
   }
