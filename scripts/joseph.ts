@@ -236,11 +236,17 @@ async function verifierAvecIA(chap: string, ex: any): Promise<void> {
   const contenu = ex.contenu;
   if (!contenu) return;
 
+  // Contexte de la règle pour éviter les faux positifs
+  const regleRef = ex.regleTexte ?? ex.chapDescription ?? "";
+  const regleBlock = regleRef
+    ? `\nRÈGLE DE RÉFÉRENCE (utilise-la pour vérifier les réponses) :\n${regleRef}\n`
+    : "";
+
   let prompt = "";
 
   if (ex.type === "exercice" && contenu.questions?.length) {
-    prompt = `Tu es un vérificateur d'exercices scolaires (CE2-CM2). Analyse cet exercice et signale UNIQUEMENT les ERREURS factuelles.
-
+    prompt = `Tu es un vérificateur d'exercices scolaires (CE2-CM2). Analyse cet exercice et signale UNIQUEMENT les ERREURS factuelles CERTAINES.
+${regleBlock}
 Titre : ${contenu.titre || ex.titre}
 Consigne : ${contenu.consigne || ""}
 
@@ -251,12 +257,13 @@ Vérifie :
 - Chaque réponse attendue est-elle CORRECTE grammaticalement ?
 - L'énoncé est-il clair et non ambigu ?
 - Y a-t-il des erreurs d'orthographe dans les énoncés ?
+- NE SIGNALE PAS les problèmes de style ou de titre — uniquement les erreurs FACTUELLES
 
 Réponds en JSON : { "erreurs": [{ "question": 1, "probleme": "..." }], "ok": true/false }
 Si tout est correct, réponds : { "erreurs": [], "ok": true }`;
   } else if (ex.type === "qcm" && contenu.questions?.length) {
-    prompt = `Tu es un vérificateur d'exercices scolaires (CE2-CM2). Analyse ce QCM et signale UNIQUEMENT les ERREURS.
-
+    prompt = `Tu es un vérificateur d'exercices scolaires (CE2-CM2). Analyse ce QCM et signale UNIQUEMENT les ERREURS factuelles CERTAINES.
+${regleBlock}
 Titre : ${contenu.titre || ex.titre}
 
 Questions :
@@ -266,9 +273,10 @@ ${contenu.questions.map((q: any, i: number) => {
 }).join("\n\n")}
 
 Vérifie :
-- La réponse marquée ✓ est-elle vraiment la bonne ?
+- La réponse marquée ✓ est-elle vraiment la bonne SELON LA RÈGLE DE RÉFÉRENCE ?
 - Les phrases incorrectes contiennent-elles bien une erreur ?
 - Y a-t-il des options identiques ou ambiguës ?
+- NE SIGNALE PAS les problèmes de style — uniquement les erreurs FACTUELLES
 
 Réponds en JSON : { "erreurs": [{ "question": 1, "probleme": "..." }], "ok": true/false }
 Si tout est correct, réponds : { "erreurs": [], "ok": true }`;
@@ -279,8 +287,8 @@ Si tout est correct, réponds : { "erreurs": [], "ok": true }`;
       return `Trou ${i + 1} : position ${t.position}, réponse = "${t.mot}" (dans le texte : "${motContexte}")`;
     }).join("\n");
 
-    prompt = `Tu es un vérificateur d'exercices scolaires (CE2-CM2). Analyse ce texte à trous.
-
+    prompt = `Tu es un vérificateur d'exercices scolaires (CE2-CM2). Analyse ce texte à trous et signale UNIQUEMENT les ERREURS factuelles CERTAINES.
+${regleBlock}
 Titre : ${contenu.titre || ex.titre}
 Texte complet : "${contenu.texte_complet}"
 
@@ -290,7 +298,8 @@ ${trousDetail}
 Vérifie :
 - Chaque mot attendu est-il grammaticalement correct dans le contexte ?
 - Le texte est-il cohérent et adapté à des élèves de CE2-CM2 ?
-- Y a-t-il des mots hors sujet par rapport à la règle travaillée ?
+- Les mots des trous correspondent-ils à la règle travaillée ?
+- NE SIGNALE PAS les problèmes de style ou de titre — uniquement les erreurs FACTUELLES
 
 Réponds en JSON : { "erreurs": [{ "trou": 1, "probleme": "..." }], "ok": true/false }
 Si tout est correct, réponds : { "erreurs": [], "ok": true }`;
