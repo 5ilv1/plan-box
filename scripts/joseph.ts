@@ -410,8 +410,10 @@ async function corrigerExercice(ex: any): Promise<any | null> {
   // 3. Correction IA pour les erreurs de contenu
   const problemesListe = erreursRestantes.map((e) => `- ${e.probleme}${e.details ? ` (${e.details})` : ""}`).join("\n");
 
-  const chapTitre = ex.chapTitre ?? "";
-  const regleContext = chapTitre.includes("ou") ? `La règle porte sur le pluriel des noms en -ou. Exceptions qui prennent -x : bijoux, cailloux, choux, genoux, hiboux, joujoux, poux. Tous les autres prennent -s (clous, trous, sous, voyous, verrous, etc.).\n` : "";
+  const regleTexte = ex.regleTexte ?? ex.chapDescription ?? "";
+  const regleContext = regleTexte
+    ? `RÈGLE DE RÉFÉRENCE (à respecter impérativement) :\n${regleTexte}\n\n`
+    : "";
 
   const prompt = `Tu es un correcteur d'exercices scolaires (CE2-CM2). L'exercice ci-dessous contient des erreurs que tu dois corriger.
 
@@ -862,7 +864,7 @@ async function main() {
   if (allMode) {
     const { data: allChapitres } = await supabase
       .from("chapitres")
-      .select("id, titre")
+      .select("id, titre, description")
       .eq("sous_matiere", "rituel-orthographe")
       .order("created_at");
 
@@ -894,9 +896,14 @@ async function main() {
 
         console.log(`  ${exercices.length} exercice(s)`);
 
+        // Extraire la règle depuis la leçon (type revision) si elle existe
+        const lecon = exercices.find((e: any) => e.type === "revision");
+        const regleContenu = lecon?.contenu as any;
+        const regleTexte = regleContenu?.points_cles?.join("\n") ?? chap.description ?? "";
+
         for (const ex of exercices) {
           console.log(`  → ${ex.titre} (${ex.type})`);
-          tousExercices.push({ ...ex, chapTitre: chap.titre });
+          tousExercices.push({ ...ex, chapTitre: chap.titre, chapDescription: chap.description, regleTexte });
           verifierStructureExercice(chap.titre, ex);
           await verifierAvecIA(chap.titre, ex);
         }
@@ -947,6 +954,137 @@ async function main() {
           break;
         } else if (passe < MAX_PASSES) {
           console.log(`\n  🔄 ${erreurs.filter((e) => e.fixable).length} erreur(s) restante(s), relance…`);
+        }
+      }
+
+      // Phase de regénération : si des erreurs persistent après 3 passes
+      const erreursRestantes = erreurs.filter((e) => e.fixable);
+      if (fixMode && erreursRestantes.length > 0) {
+        console.log("\n" + "=".repeat(60));
+        console.log("🔄 REGÉNÉRATION — Exercices incorrigibles");
+        console.log("=".repeat(60));
+
+        const exIdsARegenerer = [...new Set(erreursRestantes.map((e) => e.exerciceId))];
+
+        for (const exId of exIdsARegenerer) {
+          const ex = tousExercices.find((e) => e.id === exId);
+          if (!ex) continue;
+
+          // Trouver le chapitre parent
+          const chapData = chapitres!.find((c) => tousExercices.some((e) => e.id === exId && e.chapTitre === c.titre));
+          if (!chapData) continue;
+
+          console.log(`\n  🔄 Regénération de "${ex.titre}" (${ex.type})…`);
+
+          try {
+            // Récupérer la leçon pour avoir la règle
+            const leconEx = tousExercices.find((e) => e.chapTitre === ex.chapTitre && e.type === "revision");
+            const leconContenu = leconEx?.contenu as any;
+            const regle = leconContenu?.points_cles?.join(". ") ?? chapData.description ?? "";
+            const astuce = leconContenu?.astuce ?? "";
+
+            // Appeler l'API de regénération
+            const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000"}/api/ma-ptite-regle/regenerer`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ exercice_id: exId }),
+            });
+
+            if (res.ok) {
+              const json = await res.json();
+              console.log(`  ✅ Regénéré avec succès`);
+
+              // Mettre à jour l'exercice local et re-vérifier
+              ex.contenu = json.contenu;
+              let idx = erreurs.findIndex((e) => e.exerciceId === exId);
+              while (idx >= 0) { erreurs.splice(idx, 1); idx = erreurs.findIndex((e) => e.exerciceId === exId); }
+              verifierStructureExercice(ex.chapTitre, ex);
+              await verifierAvecIA(ex.chapTitre, ex);
+              const restantes = erreurs.filter((e) => e.exerciceId === exId);
+              console.log(restantes.length === 0 ? `  ✅ Aucune erreur` : `  ⚠️  ${restantes.length} erreur(s) restante(s)`);
+            } else {
+              // Pas d'API de regénération — regénérer via IA directement
+              console.log(`  ⚠️  API de regénération non disponible, regénération IA directe…`);
+
+              const regleRef = ex.regleTexte ?? ex.chapDescription ?? "";
+              const prompt = `Tu es un générateur d'exercices scolaires (CE2-CM2).
+${regleRef ? `RÈGLE :\n${regleRef}\n` : ""}
+Regénère ENTIÈREMENT cet exercice (type: ${ex.type}) pour la règle "${ex.chapTitre}".
+Le contenu précédent avait des erreurs incorrigibles. Crée un contenu NOUVEAU et CORRECT.
+
+${ex.type === "texte_a_trous" ? `Génère une petite histoire cohérente (5-8 phrases) adaptée à des élèves de CE2-CM2.
+Les trous portent UNIQUEMENT sur les mots concernés par la règle.
+Chaque trou doit avoir un mot qui EXISTE dans le texte_complet, à la bonne position.
+Format JSON attendu : { "titre": "...", "consigne": "...", "texte_complet": "...", "trous": [{ "position": N, "mot": "...", "indice": "..." }] }` : ""}
+
+${ex.type === "qcm" ? `Génère 5 questions "trouve la bonne phrase" avec 2 options chacune.
+Chaque question a 1 phrase correcte et 1 phrase avec UNE erreur sur la règle.
+Format JSON : { "titre": "...", "consigne": "...", "questions": [{ "question": "...", "options": ["...", "..."], "reponse_correcte": 0, "explication": "..." }] }` : ""}
+
+Réponds UNIQUEMENT avec le JSON, sans explication.`;
+
+              const aiRes = await anthropic.messages.create({
+                model: "claude-opus-4-20250514",
+                max_tokens: 4000,
+                messages: [{ role: "user", content: prompt }],
+              });
+
+              const text = aiRes.content[0].type === "text" ? aiRes.content[0].text : "";
+              const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+              const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+
+              if (jsonMatch) {
+                let newContenu = JSON.parse(jsonMatch[0]);
+
+                // Appliquer les corrections programmatiques
+                if (ex.type === "texte_a_trous" && newContenu.texte_complet && Array.isArray(newContenu.trous)) {
+                  const mots = newContenu.texte_complet.split(/\s+/);
+                  const trousFixed: any[] = [];
+                  for (const trou of newContenu.trous) {
+                    const motNet = trou.mot?.replace(/[.,;:!?'"()]/g, "");
+                    if (!motNet) continue;
+                    const posPrises = new Set(trousFixed.map((t: any) => t.position));
+                    for (let i = 0; i < mots.length; i++) {
+                      if (posPrises.has(i)) continue;
+                      if (mots[i].replace(/[.,;:!?'"()]/g, "").toLowerCase() === motNet.toLowerCase()) {
+                        trousFixed.push({ ...trou, position: i, mot: mots[i] });
+                        break;
+                      }
+                    }
+                  }
+                  newContenu.trous = trousFixed;
+                }
+
+                // Sauvegarder en BDD
+                let nbQ = 0;
+                if (Array.isArray(newContenu.questions)) nbQ = newContenu.questions.length;
+                else if (Array.isArray(newContenu.trous)) nbQ = newContenu.trous.length;
+
+                const { error: dbErr } = await supabase
+                  .from("exercice")
+                  .update({ contenu: newContenu, ...(nbQ > 0 ? { nb_questions: nbQ } : {}) })
+                  .eq("id", exId);
+
+                if (!dbErr) {
+                  console.log(`  ✅ Regénéré et sauvegardé en BDD`);
+                  ex.contenu = newContenu;
+                  corrections.push({ exerciceId: exId, exercice: ex.titre, type: ex.type, chapitre: ex.chapTitre, changements: ["Regénération complète"] });
+                  let idx = erreurs.findIndex((e) => e.exerciceId === exId);
+                  while (idx >= 0) { erreurs.splice(idx, 1); idx = erreurs.findIndex((e) => e.exerciceId === exId); }
+                  verifierStructureExercice(ex.chapTitre, ex);
+                  await verifierAvecIA(ex.chapTitre, ex);
+                  const rest = erreurs.filter((e) => e.exerciceId === exId);
+                  console.log(rest.length === 0 ? `  ✅ Aucune erreur` : `  ⚠️  ${rest.length} erreur(s) restante(s)`);
+                } else {
+                  console.log(`  ❌ Erreur BDD : ${dbErr.message}`);
+                }
+              } else {
+                console.log(`  ❌ Impossible de parser la regénération`);
+              }
+            }
+          } catch (err) {
+            console.log(`  ❌ Erreur de regénération : ${err}`);
+          }
         }
       }
     }
