@@ -36,7 +36,7 @@ interface Probleme {
 
 const erreurs: Probleme[] = [];
 const warnings: Probleme[] = [];
-const corrections: { exerciceId: string; exercice: string; avant: string; apres: string }[] = [];
+const corrections: { exerciceId: string; exercice: string; type: string; chapitre: string; changements: string[] }[] = [];
 
 function erreur(chapitre: string, exerciceId: string, exercice: string, type: string, probleme: string, details?: string, fixable = true) {
   erreurs.push({ chapitre, exerciceId, exercice, type, probleme, details, fixable });
@@ -307,9 +307,47 @@ Réponds UNIQUEMENT avec le JSON corrigé, sans explication. Le JSON doit être 
   }
 }
 
+function diffContenu(avant: any, apres: any, prefix = ""): string[] {
+  const diffs: string[] = [];
+  if (Array.isArray(avant) && Array.isArray(apres)) {
+    const maxLen = Math.max(avant.length, apres.length);
+    for (let i = 0; i < maxLen; i++) {
+      if (i >= avant.length) {
+        diffs.push(`${prefix}[${i}] ➕ ajouté`);
+      } else if (i >= apres.length) {
+        diffs.push(`${prefix}[${i}] ➖ supprimé`);
+      } else {
+        diffs.push(...diffContenu(avant[i], apres[i], `${prefix}[${i}].`));
+      }
+    }
+  } else if (typeof avant === "object" && avant && typeof apres === "object" && apres) {
+    const keys = new Set([...Object.keys(avant), ...Object.keys(apres)]);
+    for (const key of keys) {
+      if (JSON.stringify(avant[key]) !== JSON.stringify(apres[key])) {
+        const av = typeof avant[key] === "string" ? avant[key] : JSON.stringify(avant[key]);
+        const ap = typeof apres[key] === "string" ? apres[key] : JSON.stringify(apres[key]);
+        if (av && ap && av !== ap) {
+          const avShort = String(av).length > 80 ? String(av).slice(0, 80) + "…" : String(av);
+          const apShort = String(ap).length > 80 ? String(ap).slice(0, 80) + "…" : String(ap);
+          diffs.push(`${prefix}${key} : "${avShort}" → "${apShort}"`);
+        } else if (!av && ap) {
+          diffs.push(`${prefix}${key} ➕ "${ap}"`);
+        } else if (av && !ap) {
+          diffs.push(`${prefix}${key} ➖ "${av}"`);
+        }
+      }
+    }
+  } else if (avant !== apres) {
+    const avShort = String(avant).length > 80 ? String(avant).slice(0, 80) + "…" : String(avant);
+    const apShort = String(apres).length > 80 ? String(apres).slice(0, 80) + "…" : String(apres);
+    diffs.push(`${prefix}: "${avShort}" → "${apShort}"`);
+  }
+  return diffs;
+}
+
 async function appliquerCorrection(ex: any, contenuCorrige: any): Promise<boolean> {
-  const avant = JSON.stringify(ex.contenu, null, 2).slice(0, 200);
-  const apres = JSON.stringify(contenuCorrige, null, 2).slice(0, 200);
+  // Calculer les changements concrets
+  const changements = diffContenu(ex.contenu, contenuCorrige);
 
   // Recalculer nb_questions
   let nbQ = 0;
@@ -327,7 +365,23 @@ async function appliquerCorrection(ex: any, contenuCorrige: any): Promise<boolea
     return false;
   }
 
-  corrections.push({ exerciceId: ex.id, exercice: ex.titre, avant, apres });
+  if (changements.length > 0) {
+    console.log(`  📝 Changements :`);
+    for (const c of changements.slice(0, 15)) {
+      console.log(`     ${c}`);
+    }
+    if (changements.length > 15) {
+      console.log(`     … et ${changements.length - 15} autre(s)`);
+    }
+  }
+
+  corrections.push({
+    exerciceId: ex.id,
+    exercice: ex.titre,
+    type: ex.type,
+    chapitre: ex.chapTitre,
+    changements,
+  });
   return true;
 }
 
@@ -746,7 +800,17 @@ async function main() {
   if (corrections.length > 0) {
     console.log(`\n🔧 ${corrections.length} CORRECTION(S) APPLIQUÉE(S) :`);
     for (const c of corrections) {
-      console.log(`  ✅ ${c.exercice}`);
+      console.log(`\n  ✅ ${c.exercice} (${c.type})`);
+      if (c.changements.length > 0) {
+        for (const ch of c.changements.slice(0, 10)) {
+          console.log(`     ${ch}`);
+        }
+        if (c.changements.length > 10) {
+          console.log(`     … et ${c.changements.length - 10} autre(s)`);
+        }
+      } else {
+        console.log(`     (restructuration complète)`);
+      }
     }
   }
 
