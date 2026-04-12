@@ -456,3 +456,49 @@ export const NIVEAU_CLASSE: Record<string, string> = {
   CM1: "badge-cm1",
   CM2: "badge-cm2",
 };
+
+// ─── Calcul du Jour ─────────────────────────────────────────────────────────
+
+export type OperationCalcul = "addition" | "soustraction" | "multiplication" | "division";
+
+export type DecimalesMode = "aucun" | "premier_nombre" | "les_deux";
+
+export interface CalculJourConfig {
+  id: string;
+  niveau_id: string;
+  operations: OperationCalcul[];
+  decimales: boolean;
+  decimales_mode: DecimalesMode;
+  nb_decimales: number;
+  nombre_min: number;
+  nombre_max: number;
+  nombre2_min: number;
+  nombre2_max: number;
+  actif: boolean;
+  created_at: string;
+  updated_at: string;
+  niveaux?: Niveau;
+}
+
+export interface CalculJour {
+  id: string;
+  date: string;
+  niveau_id: string;
+  operation: OperationCalcul;
+  nombre1: number;
+  nombre2: number;
+  reponse: number;
+  created_at: string;
+  niveaux?: Niveau;
+}
+
+export interface CalculJourResultat {
+  id: string;
+  calcul_id: string;
+  eleve_id: string | null;
+  rb_eleve_id: number | null;
+  reponse_eleve: number | null;
+  correct: boolean;
+  tentative: number;
+  created_at: string;
+}

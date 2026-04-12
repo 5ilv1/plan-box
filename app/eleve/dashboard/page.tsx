@@ -161,6 +161,7 @@ export default function DashboardEleve() {
   const [dailyProblem, setDailyProblem]               = useState<{ id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null>(null);
   const [dailyProblemSolved, setDailyProblemSolved]    = useState(false);
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
+  const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
 
   // Ref pour accéder à session dans l'intervalle sans le capturer dans la closure
   const sessionRef = useRef(session);
@@ -327,6 +328,14 @@ export default function DashboardEleve() {
           }
         })
         .catch(() => {});
+
+      fetch("/api/calcul-du-jour", { signal })
+        .then((r) => r.json())
+        .then((json) => {
+          if (signal.aborted) return;
+          if (json.id) setCalculJour(json);
+        })
+        .catch(() => {});
     } catch (err) {
       if (signal.aborted) return;
       console.error("[chargerPB]", err);
@@ -440,6 +449,14 @@ export default function DashboardEleve() {
               if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
             }
           }
+        })
+        .catch(() => {});
+
+      fetch("/api/calcul-du-jour", { signal })
+        .then((r) => r.json())
+        .then((json) => {
+          if (signal.aborted) return;
+          if (json.id) setCalculJour(json);
         })
         .catch(() => {});
     } catch (err) {
@@ -1454,6 +1471,66 @@ export default function DashboardEleve() {
                       </div>
                     );
                   })()}
+
+                  {/* ══ Calcul du jour ══ */}
+                  {calculJour && (
+                    <Link
+                      href="/eleve/calcul-du-jour"
+                      className="pb-card"
+                      style={{
+                        display: "flex", flexDirection: "column",
+                        padding: "20px 22px",
+                        borderLeft: `4px solid ${calculJour.deja_fait ? "#22C55E" : "#2563EB"}`,
+                        textDecoration: "none", color: "inherit",
+                        opacity: calculJour.deja_fait ? 0.65 : 1,
+                        minHeight: 130, position: "relative", overflow: "hidden",
+                      }}
+                    >
+                      <div style={{
+                        position: "absolute", bottom: -30, right: -30,
+                        width: 100, height: 100, borderRadius: "50%",
+                        background: "rgba(37,99,235,0.08)", pointerEvents: "none",
+                      }} />
+                      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+                            <span style={{
+                              fontSize: 10, fontWeight: 700, letterSpacing: "0.07em",
+                              textTransform: "uppercase", padding: "4px 12px",
+                              borderRadius: 999, background: "rgba(37,99,235,0.12)", color: "#2563EB",
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                            }}>
+                              Calcul du jour
+                            </span>
+                          </div>
+                          <div style={{
+                            fontSize: 22, fontWeight: 800, fontFamily: "'Courier New', monospace",
+                            color: "var(--pb-on-surface)", marginBottom: 8,
+                            textDecoration: calculJour.deja_fait ? "line-through" : "none",
+                          }}>
+                            {String(calculJour.nombre1).replace(".", ",")} {calculJour.operation === "addition" ? "+" : calculJour.operation === "soustraction" ? "−" : calculJour.operation === "multiplication" ? "×" : "÷"} {String(calculJour.nombre2).replace(".", ",")}
+                          </div>
+                        </div>
+                        <span className="ms" style={{ fontSize: 22, color: "rgba(37,99,235,0.5)", flexShrink: 0, marginLeft: 10 }}>
+                          function
+                        </span>
+                      </div>
+                      {!calculJour.deja_fait ? (
+                        <div style={{ marginTop: "auto", paddingTop: 16 }}>
+                          <span
+                            className="pb-btn primary"
+                            style={{ padding: "10px 20px", fontSize: 14, borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 }}
+                          >
+                            Calculer →
+                          </span>
+                        </div>
+                      ) : (
+                        <div style={{ marginTop: "auto", paddingTop: 16, fontSize: 14, fontWeight: 700, color: "#16A34A" }}>
+                          ✓ Résolu
+                        </div>
+                      )}
+                    </Link>
+                  )}
 
                   {/* ══ Chapitres progressifs ══ */}
                   {chapitresAssignes.map((ch) => (

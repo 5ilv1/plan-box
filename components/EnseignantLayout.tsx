@@ -17,6 +17,7 @@ const DEFAULT_NAV_ITEMS = [
   { href: "/enseignant/admin/eleves",    label: "Élèves & Groupes",icon: "group" },
   { href: "/enseignant/admin/qrcodes",   label: "QR codes",        icon: "qr_code_2" },
   { href: "/enseignant/daily-problem",   label: "Problème du jour", icon: "calculate" },
+  { href: "/enseignant/calcul-du-jour",  label: "Calcul du jour",   icon: "function" },
   { href: "/enseignant/atelier-ecriture",label: "Atelier écriture", icon: "edit_note" },
   { href: "/enseignant/bilan",           label: "Bilan de classe",  icon: "bar_chart" },
 ];
