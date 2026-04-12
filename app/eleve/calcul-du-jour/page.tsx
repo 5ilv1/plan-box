@@ -927,6 +927,7 @@ export default function CalculDuJourPage() {
   const [calcul, setCalcul] = useState<Calcul | null>(null);
   const [reponse, setReponse] = useState("");
   const [tentative, setTentative] = useState(0);
+  const [startTime] = useState(() => Date.now());
 
   const THEME_COLOR = "#7C3AED";
 
@@ -974,7 +975,7 @@ export default function CalculDuJourPage() {
     const res = await fetch("/api/calcul-du-jour/submit", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ calcul_id: calcul.id, reponse_eleve: parseFloat(reponse.replace(",", ".")) }),
+      body: JSON.stringify({ calcul_id: calcul.id, reponse_eleve: parseFloat(reponse.replace(",", ".")), temps_reponse: Math.round((Date.now() - startTime) / 1000) }),
     });
     const data = await res.json();
 

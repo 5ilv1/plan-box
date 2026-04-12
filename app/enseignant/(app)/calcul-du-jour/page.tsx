@@ -38,6 +38,8 @@ interface ResultatEleve {
   reponse_eleve: number | null;
   correct: boolean;
   tentative: number;
+  temps_reponse: number | null;
+  created_at: string;
   eleve_nom: string;
   eleve_uid: string;
 }
@@ -90,6 +92,7 @@ export default function CalculDuJourPage() {
   );
   const [calculs, setCalculs] = useState<CalculDuJour[]>([]);
   const [resultats, setResultats] = useState<ResultatEleve[]>([]);
+  const [ongletFeedback, setOngletFeedback] = useState(NIVEAUX_IDS.CE2);
   const [onglet, setOnglet] = useState(NIVEAUX_IDS.CE2);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -590,6 +593,168 @@ export default function CalculDuJourPage() {
               )}
             </div>
           </div>
+        </section>
+        {/* Section 3 : Feedback élèves */}
+        <section style={sectionStyle}>
+          <h3 className="ens-section-title" style={{ marginBottom: 6 }}>
+            <span className="ms" style={{ fontSize: 20, verticalAlign: "middle", marginRight: 8 }}>groups</span>
+            Réponses des élèves
+          </h3>
+          <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 20 }}>
+            Suivi des réponses au calcul du jour. Les réponses suspectes sont signalées.
+          </p>
+
+          {/* Onglets niveau */}
+          <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+            {NIVEAUX.map((niv) => (
+              <button
+                key={`fb-${niv.key}`}
+                onClick={() => setOngletFeedback(niv.id)}
+                style={{
+                  padding: "8px 20px",
+                  borderRadius: "0.75rem",
+                  border: `2px solid ${ongletFeedback === niv.id ? "var(--primary)" : "var(--border)"}`,
+                  background: ongletFeedback === niv.id ? "var(--primary)" : "white",
+                  color: ongletFeedback === niv.id ? "white" : "var(--text-secondary)",
+                  fontWeight: 700,
+                  fontSize: 13,
+                  cursor: "pointer",
+                  transition: "all 0.15s",
+                }}
+              >
+                {niv.nom}
+              </button>
+            ))}
+          </div>
+
+          {(() => {
+            const calculNiveau = calculs.find((c) => c.niveau_id === ongletFeedback);
+            if (!calculNiveau) {
+              return <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>Aucun calcul pour ce niveau aujourd&apos;hui.</p>;
+            }
+
+            // Grouper les résultats par élève, garder la dernière tentative
+            const resultatsNiveau = resultats.filter((r) => r.calcul_id === calculNiveau.id);
+            const parEleve = new Map<string, ResultatEleve[]>();
+            for (const r of resultatsNiveau) {
+              const key = r.eleve_uid;
+              if (!parEleve.has(key)) parEleve.set(key, []);
+              parEleve.get(key)!.push(r);
+            }
+
+            const eleveRows = [...parEleve.entries()].map(([uid, tries]) => {
+              const sorted = tries.sort((a, b) => a.tentative - b.tentative);
+              const derniere = sorted[sorted.length - 1];
+              const premiere = sorted[0];
+              const reussi = sorted.some((t) => t.correct);
+              const nbTentatives = sorted.length;
+              const tempsMin = premiere.temps_reponse;
+
+              // Détection réponse suspecte : < 5 secondes OU réponse très éloignée (> 10x ou < 0.1x)
+              let suspect = false;
+              let raisonSuspect = "";
+              if (tempsMin !== null && tempsMin < 5) {
+                suspect = true;
+                raisonSuspect = `Répondu en ${tempsMin}s`;
+              }
+              if (!reussi && premiere.reponse_eleve !== null) {
+                const ratio = calculNiveau.reponse !== 0 ? premiere.reponse_eleve / calculNiveau.reponse : 0;
+                if (ratio > 10 || ratio < 0.1) {
+                  suspect = true;
+                  raisonSuspect += (raisonSuspect ? " + " : "") + "Réponse aberrante";
+                }
+              }
+              // Réponse identique au nombre1 ou nombre2 (copié l'énoncé)
+              if (premiere.reponse_eleve === calculNiveau.nombre1 || premiere.reponse_eleve === calculNiveau.nombre2) {
+                suspect = true;
+                raisonSuspect += (raisonSuspect ? " + " : "") + "Recopie d'un opérande";
+              }
+
+              return { uid, nom: derniere.eleve_nom, reussi, nbTentatives, derniere, premiere, tempsMin, suspect, raisonSuspect, tries: sorted };
+            });
+
+            // Trier : suspects d'abord, puis non réussis, puis réussis
+            eleveRows.sort((a, b) => {
+              if (a.suspect !== b.suspect) return a.suspect ? -1 : 1;
+              if (a.reussi !== b.reussi) return a.reussi ? 1 : -1;
+              return a.nom.localeCompare(b.nom);
+            });
+
+            if (eleveRows.length === 0) {
+              return <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>Aucune réponse pour le moment.</p>;
+            }
+
+            return (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead>
+                    <tr style={{ borderBottom: "2px solid var(--border)" }}>
+                      <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700, color: "var(--text)" }}>Élève</th>
+                      <th style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, color: "var(--text)" }}>Réponse</th>
+                      <th style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, color: "var(--text)" }}>Résultat</th>
+                      <th style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, color: "var(--text)" }}>Tentatives</th>
+                      <th style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, color: "var(--text)" }}>Temps</th>
+                      <th style={{ textAlign: "center", padding: "8px 12px", fontWeight: 700, color: "var(--text)" }}>Alerte</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {eleveRows.map((row) => (
+                      <tr key={row.uid} style={{
+                        borderBottom: "1px solid var(--border)",
+                        background: row.suspect ? "rgba(220,38,38,0.04)" : "transparent",
+                      }}>
+                        <td style={{ padding: "10px 12px", fontWeight: 600 }}>{row.nom}</td>
+                        <td style={{ padding: "10px 12px", textAlign: "center", fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                          {row.tries.map((t, i) => (
+                            <span key={i} style={{
+                              color: t.correct ? "#16A34A" : "#DC2626",
+                              fontWeight: 700,
+                              marginRight: i < row.tries.length - 1 ? 4 : 0,
+                            }}>
+                              {String(t.reponse_eleve ?? "—").replace(".", ",")}
+                              {i < row.tries.length - 1 && <span style={{ color: "var(--text-secondary)", fontWeight: 400 }}> → </span>}
+                            </span>
+                          ))}
+                        </td>
+                        <td style={{ padding: "10px 12px", textAlign: "center" }}>
+                          {row.reussi ? (
+                            <span style={{ color: "#16A34A", fontWeight: 700 }}>✓ Correct</span>
+                          ) : (
+                            <span style={{ color: "#DC2626", fontWeight: 700 }}>✗ Faux</span>
+                          )}
+                        </td>
+                        <td style={{ padding: "10px 12px", textAlign: "center", fontWeight: 600 }}>{row.nbTentatives}/2</td>
+                        <td style={{ padding: "10px 12px", textAlign: "center", color: "var(--text-secondary)" }}>
+                          {row.tempsMin !== null ? `${row.tempsMin}s` : "—"}
+                        </td>
+                        <td style={{ padding: "10px 12px", textAlign: "center" }}>
+                          {row.suspect ? (
+                            <span style={{
+                              display: "inline-flex", alignItems: "center", gap: 4,
+                              padding: "3px 10px", borderRadius: 999,
+                              background: "rgba(220,38,38,0.08)", color: "#DC2626",
+                              fontSize: 12, fontWeight: 700,
+                            }}>
+                              <span className="ms" style={{ fontSize: 14 }}>warning</span>
+                              {row.raisonSuspect}
+                            </span>
+                          ) : (
+                            <span style={{ color: "var(--text-secondary)" }}>—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+
+                {/* Légende */}
+                <div style={{ marginTop: 16, padding: "10px 14px", background: "var(--bg)", borderRadius: 10, fontSize: 12, color: "var(--text-secondary)" }}>
+                  <span className="ms" style={{ fontSize: 14, verticalAlign: "middle", marginRight: 4 }}>info</span>
+                  Alertes : réponse en moins de 5s, réponse aberrante (trop éloignée), ou recopie d&apos;un opérande.
+                </div>
+              </div>
+            );
+          })()}
         </section>
       </div>
     </>

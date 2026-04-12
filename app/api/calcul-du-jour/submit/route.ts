@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
 
   const body = await request.json();
-  const { calcul_id, reponse_eleve } = body;
+  const { calcul_id, reponse_eleve, temps_reponse } = body;
 
   if (!calcul_id || reponse_eleve === undefined || reponse_eleve === null) {
     return NextResponse.json({ error: "calcul_id et reponse_eleve requis" }, { status: 400 });
@@ -127,6 +127,7 @@ export async function POST(request: Request) {
       reponse_eleve: reponseNum,
       correct,
       tentative: tentativeNum,
+      temps_reponse: temps_reponse ? Math.round(Number(temps_reponse)) : null,
     });
 
   if (insertError) {
