@@ -1687,14 +1687,14 @@ export default function PageBibliotheque() {
                   <h3 style={{ fontSize: 14, fontWeight: 700, marginBottom: 12, color: "var(--text)" }}>
                     <span className="ms" style={{ fontSize: 14, verticalAlign: "middle" }}>assignment</span> Historique des leçons affectées
                   </h3>
-                  <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, minWidth: 560 }}>
+                  <div>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
                       <thead>
                         <tr style={{ borderBottom: "2px solid var(--border)" }}>
-                          <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700, whiteSpace: "nowrap" }}>Date</th>
-                          <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700, whiteSpace: "nowrap" }}>Groupe</th>
-                          <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700, whiteSpace: "nowrap" }}>Titre</th>
-                          <th style={{ textAlign: "left", padding: "8px 12px", fontWeight: 700, whiteSpace: "nowrap" }}>Lien</th>
+                          <th style={{ textAlign: "left", padding: "8px 6px", fontWeight: 700, fontSize: 12 }}>Date</th>
+                          <th style={{ textAlign: "left", padding: "8px 6px", fontWeight: 700, fontSize: 12 }}>Groupe</th>
+                          <th style={{ textAlign: "left", padding: "8px 6px", fontWeight: 700, fontSize: 12 }}>Titre</th>
+                          <th style={{ textAlign: "left", padding: "8px 6px", fontWeight: 700, fontSize: 12 }}>Lien</th>
                           <th style={{ padding: "8px 12px" }}></th>
                         </tr>
                       </thead>

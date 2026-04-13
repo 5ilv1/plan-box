@@ -2373,4 +2373,14 @@ input[type="number"] {
     width: 100%;
     margin-top: 8px;
   }
+
+  /* Tables : compactes, pas de scroll horizontal */
+  .ens-content table { table-layout: auto; word-break: break-word; }
+  .ens-content th,
+  .ens-content td { padding: 6px 4px !important; font-size: 11px !important; }
+  .ens-content th { white-space: normal !important; }
+
+  /* Boutons dans les tables : icônes seules */
+  .ens-content table .btn-ghost,
+  .ens-content table .btn-secondary { padding: 4px 6px !important; font-size: 11px !important; }
 }

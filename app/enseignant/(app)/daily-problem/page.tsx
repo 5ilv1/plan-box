@@ -217,8 +217,8 @@ export default function DailyProblemTeacher() {
             {eleves.length === 0 ? (
               <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", fontStyle: "italic" }}>Aucun élève</p>
             ) : (
-              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem", minWidth: 500 }}>
+              <div style={{ overflowX: "auto", }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
                   <thead>
                     <tr style={{ borderBottom: "2px solid var(--border)" }}>
                       {["Prénom", "Niveau", "Résolu", "Tentatives", "Indices", ""].map(h => (
@@ -354,8 +354,8 @@ export default function DailyProblemTeacher() {
             {history.length === 0 ? (
               <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", fontStyle: "italic" }}>Aucun historique</p>
             ) : (
-              <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem", minWidth: 480 }}>
+              <div style={{ overflowX: "auto", }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8125rem" }}>
                   <thead>
                     <tr style={{ borderBottom: "2px solid var(--border)" }}>
                       {["Date", "CE2", "CM1", "CM2", "% réussite"].map(h => (
