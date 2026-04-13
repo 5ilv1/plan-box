@@ -139,7 +139,7 @@ export default function ParametresPage() {
             Utilisée pour calculer les vacances scolaires lors de la réaffectation automatique des exercices échoués.
           </p>
 
-          <div style={{ display: "flex", gap: 12, marginBottom: 20 }}>
+          <div style={{ display: "flex", gap: 12, marginBottom: 20, flexWrap: "wrap" }}>
             {(["A", "B", "C"] as const).map(z => (
               <button
                 key={z}
@@ -161,7 +161,7 @@ export default function ParametresPage() {
             ))}
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
             <button
               className="ens-btn primary"
               onClick={sauvegarderZone}

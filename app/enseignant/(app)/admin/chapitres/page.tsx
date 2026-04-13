@@ -559,7 +559,7 @@ export default function PageAdminChapitres() {
                         </div>
 
                         {/* Actions */}
-                        <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>
+                        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                           <Link href={`/enseignant/admin/chapitres/${c.id}`} className="btn-secondary" style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>
                             Exercices
                           </Link>

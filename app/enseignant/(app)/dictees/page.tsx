@@ -728,8 +728,8 @@ export default function PageDictees() {
               </div>
 
               {/* Tableau — toutes les semaines, cases à cocher pour sélectionner */}
-              <div style={{ background: "white", borderRadius: 12, overflow: "hidden", border: "1px solid var(--border)" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <div style={{ background: "white", borderRadius: 12, overflow: "auto", border: "1px solid var(--border)", WebkitOverflowScrolling: "touch" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 400 }}>
                   <thead>
                     <tr style={{ background: "#D1D5DB" }}>
                       <th className="no-print" style={{

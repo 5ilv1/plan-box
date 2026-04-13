@@ -380,7 +380,7 @@ export default function PageAdminEleves() {
         <div className="container" style={{ maxWidth: 820 }}>
 
           {/* Titre + onglets */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, flexWrap: "wrap", gap: 10 }}>
             <div className="tabs">
               <button className={`tab${onglet === "eleves" ? " active" : ""}`} onClick={() => setOnglet("eleves")}>
                 <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>person</span> Élèves ({eleves.length})
@@ -948,7 +948,7 @@ export default function PageAdminEleves() {
               <div style={{ background: "#FEE2E2", color: "#DC2626", padding: "10px 14px", borderRadius: 8, marginBottom: 16, fontSize: 13 }}>{erreurForm}</div>
             )}
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(180px, 100%), 1fr))", gap: 12 }}>
                 <div>
                   <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 4 }}>Prénom *</label>
                   <input type="text" className="form-input" value={formPB.prenom} onChange={(e) => setFormPB((f) => ({ ...f, prenom: e.target.value }))} autoFocus />

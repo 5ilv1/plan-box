@@ -195,7 +195,7 @@ export default function PageGroupes() {
           {/* Créer un groupe */}
           <div className="card" style={{ marginBottom: 24 }}>
             <h2 style={{ fontSize: 15, fontWeight: 700, marginBottom: 14 }}>➕ Nouveau groupe</h2>
-            <form onSubmit={creerGroupe} style={{ display: "flex", gap: 10 }}>
+            <form onSubmit={creerGroupe} style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
               <input
                 ref={inputCreationRef}
                 type="text"

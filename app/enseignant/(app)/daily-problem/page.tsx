@@ -176,7 +176,7 @@ export default function DailyProblemTeacher() {
           )}
 
           {/* Section 1 : Problèmes du jour */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "1rem" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(280px, 100%), 1fr))", gap: "1rem" }}>
             {[{ label: "CE2", problem: problemCE2, color: "#D97706", bg: "rgba(245,158,11,0.08)", borderColor: "rgba(245,158,11,0.25)" },
               { label: "CM1", problem: problemCM1, color: "var(--primary)", bg: "var(--blue-50)", borderColor: "var(--blue-200)" },
               { label: "CM2", problem: problemCM2, color: "#7C3AED", bg: "rgba(124,58,237,0.08)", borderColor: "rgba(124,58,237,0.25)" }]
@@ -273,7 +273,7 @@ export default function DailyProblemTeacher() {
               const cmEleves = eleves.filter(e => e.niveau === "CM1" || e.niveau === "CM2");
               if (cmEleves.length === 0) return <p style={{ fontSize: "0.875rem", color: "var(--text-secondary)", fontStyle: "italic" }}>Aucun élève CM1/CM2</p>;
               return (
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 10 }}>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(260px, 100%), 1fr))", gap: 10 }}>
                   {cmEleves
                     .sort((a, b) => {
                       // D'abord les activés, puis les suggérés, puis le reste

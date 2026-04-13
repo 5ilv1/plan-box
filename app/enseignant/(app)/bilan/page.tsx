@@ -226,7 +226,7 @@ export default function BilanEnseignantPage() {
         <>
           {/* KPIs */}
           {bilanStats && (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 24 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))", gap: 16, marginBottom: 24 }}>
               <div style={cardStyle}>
                 <div style={{ width: 36, height: 36, borderRadius: 10, background: "#FEE2E2", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10 }}>
                   <span className="ms" style={{ fontSize: 20, color: "#DC2626" }}>warning</span>
@@ -255,7 +255,7 @@ export default function BilanEnseignantPage() {
           )}
 
           {/* Tableau + Panel détail */}
-          <div style={{ display: "grid", gridTemplateColumns: selectedEleve ? "1fr 320px" : "1fr", gap: 20, marginBottom: 24 }}>
+          <div style={{ display: "grid", gridTemplateColumns: selectedEleve ? "1fr minmax(0, 320px)" : "1fr", gap: 20, marginBottom: 24 }}>
 
             {/* Tableau */}
             <div style={cardStyle}>
