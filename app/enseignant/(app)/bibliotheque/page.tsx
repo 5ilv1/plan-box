@@ -1133,7 +1133,7 @@ export default function PageBibliotheque() {
                     const conf = COULEURS_TYPE[ex.type] ?? { bg: "#F3F4F6", color: "#374151" };
                     const affEx = ex.titre ? (affectationsEx.get(`${ex.titre}___${ex.type}`) ?? []) : [];
                     return (
-                      <div key={ex.id} className="card" style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 12 }}>
+                      <div key={ex.id} className="card" style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                         <span style={{ padding: "3px 10px", borderRadius: 8, fontSize: 11, fontWeight: 700, background: conf.bg, color: conf.color, flexShrink: 0, whiteSpace: "nowrap" }}>
                           {ex.type === "exercice" ? "Exercice" : "Calcul mental"}
                         </span>
@@ -1151,7 +1151,7 @@ export default function PageBibliotheque() {
                           </div>
                           <ChipsAffectation items={affEx} />
                         </div>
-                        <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           <button className="btn-secondary" onClick={() => setApercu(ex)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Aperçu</button>
                           <button className="btn-secondary" onClick={() => ouvrirEdition(ex)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Modifier</button>
                           <button className="btn-secondary" onClick={() => dupliquer(ex)} disabled={enDuplication.has(ex.id)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>
@@ -1245,7 +1245,7 @@ export default function PageBibliotheque() {
                     const taches = r.contenu?.taches ?? [{ sous_type: r.sous_type, url: r.contenu?.url, texte: r.contenu?.texte }];
                     const affRes = affectationsRes.get(r.titre) ?? [];
                     return (
-                      <div key={r.id} className="card" style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 12 }}>
+                      <div key={r.id} className="card" style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                         <span style={{ padding: "3px 10px", borderRadius: 8, fontSize: 11, fontWeight: 700, background: "#F3F4F6", color: "#374151", flexShrink: 0, whiteSpace: "nowrap" }}>
                           <span className="ms" style={{ fontSize: 14, verticalAlign: "middle" }}>{ICONES_ST[r.sous_type] ?? "link"}</span> {LABELS_ST[r.sous_type] ?? r.sous_type}
                         </span>
@@ -1259,7 +1259,7 @@ export default function PageBibliotheque() {
                           </div>
                           <ChipsAffectation items={affRes} onDesaffecter={(gl, da) => desaffecterRes(r.titre, gl, da)} />
                         </div>
-                        <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                        <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
                           <button className="btn-secondary" onClick={() => setApercuRes(r)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Aperçu</button>
                           <Link href={`/enseignant/generer?type=ressource&biblio=${r.id}`} className="btn-secondary" style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6, textDecoration: "none" }}>Réutiliser</Link>
                           <button className="btn-secondary" onClick={() => ouvrirEditionRes(r)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>Modifier</button>
