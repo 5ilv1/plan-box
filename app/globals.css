@@ -2181,6 +2181,19 @@ input[type="number"] {
   background: var(--ens-surface-container-high, #E0E0FF);
 }
 
+/* ── Planning grid ── */
+.ens-planning-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+  min-width: 900px;
+}
+.ens-planning-day {
+  border-radius: 12px;
+  padding: 10px;
+  min-height: 420px;
+}
+
 /* ═══════════════════════════════════════════════════════════
    RESPONSIVE ENSEIGNANT
    ═══════════════════════════════════════════════════════════ */
@@ -2276,6 +2289,10 @@ input[type="number"] {
   .ens-hero-stats { gap: 12px; }
 }
 
+  /* Planning tablette */
+  .ens-planning-grid { min-width: 0; gap: 8px; }
+  .ens-planning-day { min-height: 300px; padding: 8px; }
+
 /* ── Mobile : sidebar cachée + hamburger (≤ 768px) ────────── */
 @media (max-width: 768px) {
   .ens-hamburger { display: flex; }
@@ -2326,4 +2343,16 @@ input[type="number"] {
   /* Grilles */
   .ens-grid-2col { grid-template-columns: 1fr; gap: 16px; }
   .ens-view-tabs { flex-wrap: wrap; }
+
+  /* Planning mobile : 1 jour par ligne, scroll vertical */
+  .ens-planning-grid {
+    grid-template-columns: 1fr;
+    min-width: 0;
+    gap: 8px;
+  }
+  .ens-planning-day { min-height: auto; padding: 10px; }
+
+  /* Toolbar planning */
+  .ens-planning-toolbar { gap: 6px; padding: 8px 12px; font-size: 12px; }
+  .ens-planning-toolbar select { max-width: 120px; }
 }

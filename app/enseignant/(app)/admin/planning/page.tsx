@@ -590,7 +590,7 @@ export default function PageAdminPlanning() {
       })()}
 
       {/* ── Barre navigation + toggle vue ─────────────────────────────────────── */}
-      <div style={{
+      <div className="ens-planning-toolbar" style={{
         display: "flex", alignItems: "center", gap: 8, padding: "10px 16px",
         background: "white", borderBottom: "1px solid var(--border)", flexWrap: "wrap",
       }}>
@@ -680,7 +680,7 @@ export default function PageAdminPlanning() {
           {chargement ? (
             <div style={{ textAlign: "center", padding: 60, color: "var(--text-secondary)" }}>Chargement…</div>
           ) : (
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: 10, minWidth: 900 }}>
+            <div className="ens-planning-grid">
               {joursSemaine.map(({ nom, date, iso, groupes, nbBlocs }) => {
                 const isToday  = iso === todayISO;
                 const isTarget = dropHighlight === iso;
@@ -688,10 +688,10 @@ export default function PageAdminPlanning() {
                   <div
                     key={iso}
                     ref={(el) => { colRefs.current[iso] = el; }}
+                    className="ens-planning-day"
                     style={{
                       background: isTarget ? "var(--primary-pale)" : "white",
                       border: `2px solid ${isTarget ? "var(--primary)" : isToday ? "var(--primary-mid)" : "var(--border)"}`,
-                      borderRadius: 12, padding: 10, minHeight: 420,
                       transition: "border-color 0.1s, background 0.1s",
                     }}
                   >
