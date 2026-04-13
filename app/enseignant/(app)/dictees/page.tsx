@@ -856,8 +856,8 @@ export default function PageDictees() {
                     {/* ── En-tête accordéon ── */}
                     <div
                       style={{
-                        display: "flex", alignItems: "center",
-                        justifyContent: "space-between", padding: "14px 20px",
+                        display: "flex", alignItems: "center", flexWrap: "wrap",
+                        justifyContent: "space-between", padding: "14px 20px", gap: 8,
                         background: ouvert ? "#F0FDF4" : "white",
                         borderBottom: ouvert ? "1px solid var(--border)" : "none",
                       }}
@@ -874,7 +874,7 @@ export default function PageDictees() {
                       </div>
 
                       {/* Actions */}
-                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexShrink: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                         {/* Sélecteur lundi de démarrage + bouton Affecter */}
                         <div onClick={(e) => e.stopPropagation()} style={{ display: "flex", alignItems: "center", gap: 4 }}>
                           <span style={{ fontSize: 11, color: "var(--text-secondary)", whiteSpace: "nowrap" }}>Début :</span>

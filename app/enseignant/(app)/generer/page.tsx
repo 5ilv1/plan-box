@@ -1174,12 +1174,12 @@ function PageGenererInner() {
               {(typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture") && (
                 <div style={{
                   display: "flex", gap: 10, padding: "16px 0 8px",
-                  marginBottom: 16,
+                  marginBottom: 16, flexWrap: "wrap",
                 }}>
                   <button
                     onClick={() => setTypeBloc("exercice")}
                     style={{
-                      flex: 1, padding: "14px 16px", borderRadius: 14,
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
                       border: typeBloc === "exercice" ? "2px solid var(--primary)" : "1px solid var(--border)",
                       background: typeBloc === "exercice" ? "var(--blue-50)" : "white",
                       cursor: "pointer", textAlign: "left",
@@ -1199,7 +1199,7 @@ function PageGenererInner() {
                   <button
                     onClick={() => setTypeBloc("texte_a_trous")}
                     style={{
-                      flex: 1, padding: "14px 16px", borderRadius: 14,
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
                       border: typeBloc === "texte_a_trous" ? "2px solid #0E7490" : "1px solid var(--border)",
                       background: typeBloc === "texte_a_trous" ? "rgba(14,116,144,0.06)" : "white",
                       cursor: "pointer", textAlign: "left",
@@ -1219,7 +1219,7 @@ function PageGenererInner() {
                   <button
                     onClick={() => setTypeBloc("analyse_phrase")}
                     style={{
-                      flex: 1, padding: "14px 16px", borderRadius: 14,
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
                       border: typeBloc === "analyse_phrase" ? "2px solid #6D28D9" : "1px solid var(--border)",
                       background: typeBloc === "analyse_phrase" ? "rgba(109,40,217,0.06)" : "white",
                       cursor: "pointer", textAlign: "left",
@@ -1239,7 +1239,7 @@ function PageGenererInner() {
                   <button
                     onClick={() => setTypeBloc("classement")}
                     style={{
-                      flex: 1, padding: "14px 16px", borderRadius: 14,
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
                       border: typeBloc === "classement" ? "2px solid #0369A1" : "1px solid var(--border)",
                       background: typeBloc === "classement" ? "rgba(3,105,161,0.06)" : "white",
                       cursor: "pointer", textAlign: "left", transition: "all 0.15s",
@@ -1256,7 +1256,7 @@ function PageGenererInner() {
                   <button
                     onClick={() => setTypeBloc("lecture")}
                     style={{
-                      flex: 1, padding: "14px 16px", borderRadius: 14,
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
                       border: typeBloc === "lecture" ? "2px solid #7C3AED" : "1px solid var(--border)",
                       background: typeBloc === "lecture" ? "rgba(124,58,237,0.06)" : "white",
                       cursor: "pointer", textAlign: "left", transition: "all 0.15s",

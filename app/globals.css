@@ -2360,9 +2360,11 @@ input[type="number"] {
   .ens-content button,
   .ens-content a[class*="btn"] { font-size: 12px; }
 
-  /* Overflow prevention global */
-  .ens-content { overflow-x: hidden; }
-  .ens-content > * { max-width: 100%; }
+  /* Textes longs : empêcher le débordement */
+  .ens-content .page { box-sizing: border-box; max-width: 100%; }
+
+  /* Pages intérieures : réduire le padding */
+  .ens-content .page { padding: 1rem 0; }
 
   /* Chapitres : boutons actions sous le titre */
   .ens-chap-actions {
