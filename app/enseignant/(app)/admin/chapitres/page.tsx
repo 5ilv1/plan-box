@@ -510,9 +510,10 @@ export default function PageAdminChapitres() {
                       <div
                         ref={(el) => { rowRefsChap.current[`${groupe.matiere}|${smKey ?? ""}|${i}`] = el; }}
                         onPointerUp={() => handlePointerUpChap(groupe.matiere, smKey, subGroupItems)}
+                        className="ens-chap-row"
                         style={{
                           display: "flex", alignItems: "center", gap: 10,
-                          padding: "11px 18px",
+                          padding: "11px 18px", flexWrap: "wrap",
                           background: estSource ? "var(--primary-pale)" : estCible ? `${couleur}80` : "transparent",
                           opacity: estSource ? 0.5 : 1,
                           borderTop: estCible ? `2px solid var(--primary)` : "2px solid transparent",
@@ -559,7 +560,7 @@ export default function PageAdminChapitres() {
                         </div>
 
                         {/* Actions */}
-                        <div style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
+                        <div className="ens-chap-actions" style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
                           <Link href={`/enseignant/admin/chapitres/${c.id}`} className="btn-secondary" style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>
                             Exercices
                           </Link>

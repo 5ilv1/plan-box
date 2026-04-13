@@ -2363,4 +2363,10 @@ input[type="number"] {
   /* Overflow prevention global */
   .ens-content { overflow-x: hidden; }
   .ens-content > * { max-width: 100%; }
+
+  /* Chapitres : boutons actions sous le titre */
+  .ens-chap-actions {
+    width: 100%;
+    margin-top: 8px;
+  }
 }
