@@ -2325,7 +2325,7 @@ input[type="number"] {
   .ens-sidebar-overlay.open { display: block; }
 
   /* Main area full width */
-  .ens-main-area { margin-left: 0; }
+  .ens-main-area { margin-left: 0; overflow-x: hidden; }
 
   /* Header */
   .ens-header { padding: 12px 16px; gap: 8px; }
@@ -2360,8 +2360,10 @@ input[type="number"] {
   .ens-content button,
   .ens-content a[class*="btn"] { font-size: 12px; }
 
-  /* Textes longs : empêcher le débordement */
+  /* Pages : empêcher le débordement horizontal */
+  .ens-content { overflow-x: hidden; }
   .ens-content .page { box-sizing: border-box; max-width: 100%; }
+  .ens-content .container { max-width: 100% !important; box-sizing: border-box; }
 
   /* Pages intérieures : réduire le padding */
   .ens-content .page { padding: 1rem 0; }
