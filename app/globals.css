@@ -2355,4 +2355,12 @@ input[type="number"] {
   /* Toolbar planning */
   .ens-planning-toolbar { gap: 6px; padding: 8px 12px; font-size: 12px; }
   .ens-planning-toolbar select { max-width: 120px; }
+
+  /* Chapitres / Élèves : boutons d'action wrappent */
+  .ens-content button,
+  .ens-content a[class*="btn"] { font-size: 12px; }
+
+  /* Overflow prevention global */
+  .ens-content { overflow-x: hidden; }
+  .ens-content > * { max-width: 100%; }
 }
