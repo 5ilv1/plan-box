@@ -48,11 +48,17 @@ type SupprimerMode = { type: "un"; id: string } | { type: "tous" } | null;
 type VueMode = "semaine" | "mois";
 
 const COULEURS_TYPE: Record<string, { bg: string; border: string; color: string }> = {
-  exercice:      { bg: "#EEF0FE", border: "#AAB7FA", color: "#1642A3" },  // blue-50/200/700
-  calcul_mental: { bg: "#D4DAFC", border: "#587DF6", color: "#0D2E76" },  // blue-100/400/800
-  ressource:     { bg: "#EEF0FE", border: "#8399F8", color: "#1642A3" },  // blue-50/300/700
+  // Fichiers de maths → jaune
+  fichier_maths: { bg: "#FEF9C3", border: "#FACC15", color: "#854D0E" },
+  // Leçons → vert
+  lecon_copier:  { bg: "#DCFCE7", border: "#4ADE80", color: "#166534" },
+  revision:      { bg: "#DCFCE7", border: "#4ADE80", color: "#166534" },
+  // Dictées / mots → violet
   dictee:        { bg: "#EDE9FE", border: "#7C3AED", color: "#17055b" },
   mots:          { bg: "#deeffe", border: "#5ca0f0", color: "#1a4fa0" },
+  // Ressources → bleu
+  ressource:     { bg: "#EEF0FE", border: "#8399F8", color: "#1642A3" },
+  // Tout le reste (exercices, calcul mental, etc.) → gris (fallback par défaut)
 };
 
 const ICONES_TYPE: Record<string, string> = {
