@@ -153,6 +153,11 @@ export default function PageAdminPlanning() {
   >([]);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
 
+  // Regénération IA
+  const [regenMode, setRegenMode]     = useState(false);
+  const [regenPrompt, setRegenPrompt] = useState("");
+  const [enRegen, setEnRegen]         = useState(false);
+
   // Réaffectation (date + groupe)
   const [editReaffect, setEditReaffect]         = useState(false);
   const [reaffectDate, setReaffectDate]         = useState("");
@@ -396,6 +401,41 @@ export default function PageAdminPlanning() {
     setEditQuestions((prev) => [...prev, { id: newId, enonce: "", reponse_attendue: "" }]);
   }
 
+  async function regenererExercice() {
+    if (!detail || !regenPrompt.trim()) return;
+    setEnRegen(true);
+    try {
+      const res = await fetch("/api/regenerer-exercice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: detail.type,
+          titre: detail.titre,
+          contenu: detail.contenu,
+          prompt: regenPrompt,
+        }),
+      });
+      if (!res.ok) { alert("Erreur de regénération"); return; }
+      const { contenu: nouveauContenu } = await res.json();
+
+      // Mettre à jour tous les blocs de ce groupe
+      await Promise.all(detail.blocs.map((b) =>
+        fetch("/api/admin/planning", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ blocId: b.id, contenu: nouveauContenu }),
+        })
+      ));
+      const updatedBlocs = detail.blocs.map((b) => ({ ...b, contenu: nouveauContenu }));
+      setDetail({ ...detail, contenu: nouveauContenu, blocs: updatedBlocs });
+      setBlocs((prev) => prev.map((b) => updatedBlocs.find((ub) => ub.id === b.id) ?? b));
+      setRegenMode(false);
+      setRegenPrompt("");
+    } finally {
+      setEnRegen(false);
+    }
+  }
+
   function ouvrirReaffectation() {
     if (!detail) return;
     setReaffectDate(detail.date_assignation);
@@ -438,6 +478,8 @@ export default function PageAdminPlanning() {
     setSupprimerBanqueConfirm(false);
     setEditMode(false);
     setEditReaffect(false);
+    setRegenMode(false);
+    setRegenPrompt("");
   }
 
   // ── Données calculées ─────────────────────────────────────────────────────────
@@ -1311,11 +1353,38 @@ export default function PageAdminPlanning() {
                 {/* ── Actions ── */}
                 <div style={{ paddingTop: 12, borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 8 }}>
 
-                  {detail.type === "exercice" && (
-                    <button onClick={ouvrirEdit} className="btn-ghost"
+                  <button onClick={ouvrirEdit} className="btn-ghost"
+                    style={{ width: "100%", padding: "9px 12px", fontSize: 13, textAlign: "left" }}>
+                    ✏️ Modifier le contenu
+                  </button>
+
+                  {!regenMode ? (
+                    <button onClick={() => setRegenMode(true)} className="btn-ghost"
                       style={{ width: "100%", padding: "9px 12px", fontSize: 13, textAlign: "left" }}>
-                      ✏️ Modifier cet exercice
+                      🔄 Regénérer avec un prompt
                     </button>
+                  ) : (
+                    <div style={{ padding: 12, background: "var(--bg)", borderRadius: 10, border: "1px solid var(--border)" }}>
+                      <label style={{ fontSize: 12, fontWeight: 700, marginBottom: 6, display: "block", color: "var(--text-secondary)" }}>
+                        Instructions de regénération
+                      </label>
+                      <textarea
+                        value={regenPrompt}
+                        onChange={(e) => setRegenPrompt(e.target.value)}
+                        placeholder="Ex : Utilise uniquement des verbes du 1er groupe, ajoute plus de contexte..."
+                        rows={3}
+                        className="form-input"
+                        style={{ resize: "vertical", fontSize: 13, marginBottom: 8 }}
+                      />
+                      <div style={{ display: "flex", gap: 8 }}>
+                        <button onClick={regenererExercice} disabled={enRegen || !regenPrompt.trim()} className="btn-primary" style={{ flex: 1, fontSize: 13 }}>
+                          {enRegen ? "Regénération…" : "🔄 Regénérer"}
+                        </button>
+                        <button className="btn-ghost" onClick={() => { setRegenMode(false); setRegenPrompt(""); }} style={{ fontSize: 13 }}>
+                          Annuler
+                        </button>
+                      </div>
+                    </div>
                   )}
 
                   {/* Confirmation suppression */}

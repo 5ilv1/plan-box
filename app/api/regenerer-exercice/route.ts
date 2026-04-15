@@ -4,9 +4,56 @@ import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
-// POST { type: "exercice" | "calcul_mental", titre, consigne?, nbElements, matiere?, niveau? }
+export const maxDuration = 60;
+
+// POST { type, titre, consigne?, nbElements, matiere?, niveau? }
+// ou   { type, titre, contenu, prompt }  → regénération avec instructions personnalisées
 export async function POST(req: NextRequest) {
-  const { type, titre, consigne, nbElements = 10, matiere = "", niveau = "CM" } = await req.json();
+  const body = await req.json();
+
+  // ── Mode regénération avec prompt personnalisé ──
+  if (body.prompt && body.contenu) {
+    const { type, titre, contenu, prompt: userPrompt } = body;
+
+    const systemPrompt = `Tu es un assistant pédagogique pour une école primaire française (CE2-CM2).
+L'enseignant te demande de REGÉNÉRER un exercice existant en suivant ses instructions.
+
+Type d'exercice : ${type}
+Titre : ${titre}
+
+Contenu actuel (JSON) :
+${JSON.stringify(contenu, null, 2)}
+
+Instructions de l'enseignant :
+${userPrompt}
+
+INSTRUCTIONS :
+- Regénère le contenu en respectant les instructions de l'enseignant
+- Garde le même format JSON que le contenu actuel
+- Garde la même structure (mêmes champs)
+- Adapte le contenu aux élèves de CE2-CM2
+
+Réponds UNIQUEMENT avec le JSON regénéré, sans explication.`;
+
+    try {
+      const message = await client.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 4000,
+        messages: [{ role: "user", content: systemPrompt }],
+      });
+
+      const texte = message.content[0].type === "text" ? message.content[0].text : "";
+      const json = texte.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
+      const contenuRegen = JSON.parse(json);
+      return NextResponse.json({ contenu: contenuRegen });
+    } catch (err) {
+      console.error("[regenerer-exercice] regen:", err);
+      return NextResponse.json({ erreur: "Échec de la regénération." }, { status: 500 });
+    }
+  }
+
+  // ── Mode génération classique (from scratch) ──
+  const { type, titre, consigne, nbElements = 10, matiere = "", niveau = "CM" } = body;
 
   let prompt = "";
 
