@@ -32,12 +32,27 @@ export async function GET(
   }
 
   // Mode normal : exercices + stats
-  const { data: exercices, error } = await admin
+  // Chercher d'abord dans banque_exercices, puis fallback sur exercice
+  let { data: exercices, error } = await admin
     .from("banque_exercices")
     .select("*")
     .eq("chapitre_id", chapitreId)
     .order("ordre", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true });
+
+  // Fallback : si pas d'exercices dans la banque, chercher dans la table exercice
+  if (!error && (!exercices || exercices.length === 0)) {
+    const fallback = await admin
+      .from("exercice")
+      .select("*")
+      .eq("chapitre_id", chapitreId)
+      .order("ordre", { ascending: true, nullsFirst: false })
+      .order("created_at", { ascending: true });
+    if (!fallback.error) {
+      exercices = fallback.data;
+      error = fallback.error;
+    }
+  }
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
 
