@@ -21,7 +21,21 @@ export async function GET() {
     return NextResponse.json({ erreur: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ chapitres: data ?? [] });
+  // Assignations actives par chapitre (groupes)
+  const { data: assignations } = await admin
+    .from("chapitre_assignation")
+    .select("chapitre_id, groupes(nom)")
+    .eq("actif", true);
+
+  const assignationsMap: Record<string, string[]> = {};
+  for (const a of (assignations ?? []) as any[]) {
+    const nom = a.groupes?.nom;
+    if (!nom) continue;
+    if (!assignationsMap[a.chapitre_id]) assignationsMap[a.chapitre_id] = [];
+    if (!assignationsMap[a.chapitre_id].includes(nom)) assignationsMap[a.chapitre_id].push(nom);
+  }
+
+  return NextResponse.json({ chapitres: data ?? [], assignations: assignationsMap });
 }
 
 // POST /api/admin/chapitres

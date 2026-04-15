@@ -68,6 +68,8 @@ export default function PageAdminChapitres() {
   const [aSupprimer, setASupprimer] = useState<string | null>(null);
   const [confirmSuppression, setConfirmSuppression] = useState<{ id: string; erreur: string } | null>(null);
   const [enDuplication, setEnDuplication] = useState<Set<string>>(new Set());
+  // Groupes assignés par chapitre (chapitre_id → noms des groupes)
+  const [assignationsParChapitre, setAssignationsParChapitre] = useState<Map<string, string[]>>(new Map());
 
   // ── État modal "Affecter" ───────────────────────────────────────────────
   const ASSIGNATION_VIDE: AssignationSelecteur = { groupeIds: [], eleveUids: [], groupeNoms: [], touteClasse: false };
@@ -117,6 +119,15 @@ export default function PageAdminChapitres() {
     const chapitresData: Chapitre[] = chap.chapitres ?? [];
     setChapitres(chapitresData);
     setNiveaux((niv.data ?? []) as Niveau[]);
+
+    // Construire la map chapitre_id → groupes assignés (depuis l'API)
+    const assignMap = (chap.assignations ?? {}) as Record<string, string[]>;
+    const map = new Map<string, string[]>();
+    for (const [chapId, groupes] of Object.entries(assignMap)) {
+      map.set(chapId, groupes);
+    }
+    setAssignationsParChapitre(map);
+
     const matieres = Array.from(new Set(chapitresData.map(c => c.matiere)));
     setAccordeonsOuverts(new Set(matieres));
     setChargement(false);
@@ -552,6 +563,11 @@ export default function PageAdminChapitres() {
                           <div style={{ display: "flex", gap: 6, marginTop: 3, alignItems: "center", flexWrap: "wrap" }}>
                             {c.niveaux && (
                               <span className="badge badge-primary" style={{ fontSize: 10 }}>{c.niveaux.nom}</span>
+                            )}
+                            {assignationsParChapitre.has(c.id) && (
+                              <span style={{ fontSize: 10, fontWeight: 600, background: "#DCFCE7", color: "#166534", padding: "1px 7px", borderRadius: 10 }}>
+                                ✓ {assignationsParChapitre.get(c.id)!.join(", ")}
+                              </span>
                             )}
                             {/* Badge sous-matière visible seulement en mode plat (pas de sous-matières dans le groupe) */}
                             {c.sous_matiere && sousMatieresDispo.length === 0 && (
