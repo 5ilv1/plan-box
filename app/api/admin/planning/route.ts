@@ -95,16 +95,22 @@ export async function GET(req: NextRequest) {
     .select("chapitre_id, groupe_id, chapitres(titre, matiere, sous_matiere, date_debut), groupes(nom)")
     .eq("actif", true);
 
-  const chapitresMap = new Map<string, { titre: string; matiere: string; isRegle: boolean; groupes: string[] }>();
+  const chapitresMap = new Map<string, { titre: string; matiere: string; isRegle: boolean; dateDebut: string | null; groupes: string[] }>();
   for (const a of (assignations ?? []) as any[]) {
     if (!a.chapitres?.titre) continue;
 
     const isRegle = a.chapitres.sous_matiere === "rituel-orthographe";
     const dateDebut = a.chapitres.date_debut as string | null;
 
-    // Pour les règles : n'afficher que si date_debut tombe dans la semaine affichée
-    if (isRegle && dateDebut) {
-      if (dateDebut < lundiStr || dateDebut > vendrediStr) continue;
+    // Filtrer par semaine : les règles par date_debut dans la semaine,
+    // les chapitres normaux par date_debut ≤ vendredi (déjà commencés ou commençant cette semaine)
+    if (dateDebut) {
+      if (isRegle) {
+        if (dateDebut < lundiStr || dateDebut > vendrediStr) continue;
+      } else {
+        // Un chapitre normal est visible s'il a commencé (date_debut ≤ vendredi de la semaine)
+        if (dateDebut > vendrediStr) continue;
+      }
     }
 
     const id = a.chapitre_id;
@@ -113,6 +119,7 @@ export async function GET(req: NextRequest) {
         titre: a.chapitres.titre,
         matiere: a.chapitres.matiere ?? "",
         isRegle,
+        dateDebut,
         groupes: [],
       });
     }

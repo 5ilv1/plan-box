@@ -135,7 +135,7 @@ export default function PageAdminPlanning() {
 
   const [blocs, setBlocs]           = useState<BlocPlanning[]>([]);
   const [chargement, setChargement] = useState(true);
-  const [chapitresActifs, setChapitresActifs] = useState<{ titre: string; matiere: string; isRegle: boolean; groupes: string[] }[]>([]);
+  const [chapitresActifs, setChapitresActifs] = useState<{ titre: string; matiere: string; isRegle: boolean; dateDebut: string | null; groupes: string[] }[]>([]);
 
   // ── Filtre par groupe ──────────────────────────────────────────────────────
   const [groupesFiltres, setGroupesFiltres]         = useState<GroupeFiltre[]>([]);
@@ -800,9 +800,14 @@ export default function PageAdminPlanning() {
                     }}>
                       <span className="ms" style={{ fontSize: 14 }}>{icon}</span>
                       {titreAffiche}
+                      {c.dateDebut && (
+                        <span style={{ fontSize: 10, opacity: 0.6, marginLeft: 2 }}>
+                          à partir du {new Date(c.dateDebut + "T12:00:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                        </span>
+                      )}
                       {c.groupes.length > 0 && (
                         <span style={{ fontSize: 10, opacity: 0.7, marginLeft: 2 }}>
-                          {c.groupes.join(", ")}
+                          • {c.groupes.join(", ")}
                         </span>
                       )}
                     </div>
