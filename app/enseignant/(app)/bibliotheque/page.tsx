@@ -19,7 +19,7 @@ interface QuestionExercice {
 
 interface Exercice {
   id: string;
-  type: "exercice" | "calcul_mental";
+  type: string;
   matiere: string | null;
   sous_matiere: string | null;
   niveau_id: string | null;
@@ -65,8 +65,25 @@ interface RessourceBibliotheque {
 /* ─── Constantes ─────────────────────────────────────────── */
 
 const COULEURS_TYPE: Record<string, { bg: string; color: string }> = {
-  exercice:      { bg: "#DBEAFE", color: "#1E40AF" },
-  calcul_mental: { bg: "#D1FAE5", color: "#065F46" },
+  exercice:        { bg: "#DBEAFE", color: "#1E40AF" },
+  calcul_mental:   { bg: "#D1FAE5", color: "#065F46" },
+  texte_a_trous:   { bg: "#FEF3C7", color: "#92400E" },
+  classement:      { bg: "#E0E7FF", color: "#3730A3" },
+  qcm:             { bg: "#FCE7F3", color: "#9D174D" },
+  analyse_phrase:  { bg: "#F3E8FF", color: "#6B21A8" },
+  revision:        { bg: "#DCFCE7", color: "#166534" },
+};
+
+const LABELS_TYPE: Record<string, string> = {
+  exercice: "Exercice",
+  calcul_mental: "Calcul mental",
+  texte_a_trous: "Texte à trous",
+  classement: "Classement",
+  qcm: "QCM",
+  analyse_phrase: "Analyse de phrase",
+  revision: "Révision",
+  ecriture_contrainte: "Écriture",
+  lecture: "Lecture",
 };
 
 const ICONES_ST: Record<string, string> = {
@@ -1092,8 +1109,9 @@ export default function PageBibliotheque() {
               <div style={{ display: "flex", gap: 10, marginBottom: 8, flexWrap: "wrap" }}>
                 <select className="form-input" value={filtreType} onChange={(e) => setFiltreType(e.target.value)} style={{ fontSize: 13, flex: 1, minWidth: 140 }}>
                   <option value="">Tous les types</option>
-                  <option value="exercice">Exercice</option>
-                  <option value="calcul_mental">Calcul mental</option>
+                  {Object.entries(LABELS_TYPE).map(([val, label]) => (
+                    <option key={val} value={val}>{label}</option>
+                  ))}
                 </select>
                 <select className="form-input" value={filtreMatiere} onChange={(e) => setFiltreMatiere(e.target.value)} style={{ fontSize: 13, flex: 1, minWidth: 140 }}>
                   <option value="">Toutes les matières</option>
@@ -1135,7 +1153,7 @@ export default function PageBibliotheque() {
                     return (
                       <div key={ex.id} className="card" style={{ padding: "14px 18px", display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
                         <span style={{ padding: "3px 10px", borderRadius: 8, fontSize: 11, fontWeight: 700, background: conf.bg, color: conf.color, flexShrink: 0, whiteSpace: "nowrap" }}>
-                          {ex.type === "exercice" ? "Exercice" : "Calcul mental"}
+                          {LABELS_TYPE[ex.type] ?? ex.type}
                         </span>
                         <div style={{ flex: 1, minWidth: 0 }}>
                           <div style={{ fontWeight: 600, fontSize: 14, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
