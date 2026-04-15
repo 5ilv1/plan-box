@@ -252,6 +252,15 @@ export default function PageAdminChapitres() {
 
     const erreurs: string[] = [];
 
+    // Mettre à jour la date de début du chapitre
+    if (dateDebutAffecter) {
+      await fetch("/api/admin/chapitres", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: chapitreAAffecter.id, date_debut: dateDebutAffecter }),
+      });
+    }
+
     // Activer le chapitre pour chaque groupe via chapitre_assignation
     for (const groupeId of groupeIds) {
       const res = await fetch("/api/chapitres/assignation", {
@@ -749,6 +758,20 @@ export default function PageAdminChapitres() {
             <div style={{ marginBottom: 18 }}>
               <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Activer pour les groupes</label>
               <AssignationSelector value={assignationAffecter} onChange={setAssignationAffecter} />
+            </div>
+
+            {/* Date de début */}
+            <div style={{ marginBottom: 18 }}>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Date de début</label>
+              <input
+                type="date"
+                className="form-input"
+                value={dateDebutAffecter}
+                onChange={(e) => setDateDebutAffecter(e.target.value)}
+              />
+              <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 4 }}>
+                Le chapitre sera visible par les élèves à partir de cette date.
+              </p>
             </div>
 
             {/* Boutons */}
