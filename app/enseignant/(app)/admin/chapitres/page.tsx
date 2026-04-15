@@ -222,9 +222,14 @@ export default function PageAdminChapitres() {
     setChapitreAAffecter(c);
     setAssignationAffecter(ASSIGNATION_VIDE);
     setErreurAffecter("");
-    const demain = new Date(); demain.setDate(demain.getDate() + 1);
-    setDateDebutAffecter(demain.toISOString().split("T")[0]);
-    setEtalerJours(true);
+    // Pré-remplir avec la date existante ou demain
+    const dateExistante = (c as any).date_debut;
+    if (dateExistante) {
+      setDateDebutAffecter(dateExistante);
+    } else {
+      const demain = new Date(); demain.setDate(demain.getDate() + 1);
+      setDateDebutAffecter(demain.toISOString().split("T")[0]);
+    }
     // Charge les exercices du chapitre
     const res = await fetch(`/api/admin/chapitres/${c.id}/exercices`);
     const json = await res.json();
