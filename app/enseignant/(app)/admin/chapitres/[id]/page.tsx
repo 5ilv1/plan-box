@@ -1632,16 +1632,28 @@ export default function PageChapitreDetail() {
               style={{ width: "100%", marginBottom: 14 }}
             />
 
-            {/* Contenu texte */}
-            <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
-              Contenu principal <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(HTML simple)</span>
-            </label>
-            <textarea
-              value={revTexte} onChange={(e) => setRevTexte(e.target.value)}
-              className="form-input" rows={8}
-              placeholder="Le corps de la leçon..."
-              style={{ width: "100%", resize: "vertical", marginBottom: 14, fontFamily: "monospace", fontSize: 12, lineHeight: 1.6 }}
-            />
+            {/* Contenu texte — masqué si vide, affichable manuellement */}
+            {revTexte ? (
+              <>
+                <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6 }}>
+                  Contenu principal <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(HTML simple)</span>
+                </label>
+                <textarea
+                  value={revTexte} onChange={(e) => setRevTexte(e.target.value)}
+                  className="form-input" rows={8}
+                  placeholder="Le corps de la leçon..."
+                  style={{ width: "100%", resize: "vertical", marginBottom: 14, fontFamily: "monospace", fontSize: 12, lineHeight: 1.6 }}
+                />
+              </>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setRevTexte(" ")}
+                style={{ fontSize: 12, color: "var(--text-secondary)", background: "none", border: "none", cursor: "pointer", padding: "4px 0", marginBottom: 10, textDecoration: "underline" }}
+              >
+                + Ajouter un contenu principal (optionnel)
+              </button>
+            )}
 
             {/* Règle d'Or */}
             <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 6, color: "#0050D4" }}>
