@@ -233,17 +233,27 @@ export default function PageAdminChapitres() {
 
   async function validerAffectation() {
     if (!chapitreAAffecter) return;
-    if (assignationAffecter.groupeIds.length === 0) {
+
+    let groupeIds = assignationAffecter.groupeIds;
+
+    // "Toute la classe" → récupérer tous les groupes
+    if (assignationAffecter.touteClasse && groupeIds.length === 0) {
+      const { data } = await supabase.from("groupes").select("id");
+      groupeIds = (data ?? []).map((g: { id: string }) => g.id);
+    }
+
+    if (groupeIds.length === 0) {
       setErreurAffecter("Sélectionne au moins un groupe.");
       return;
     }
+
     setEnAffectation(true);
     setErreurAffecter("");
 
     const erreurs: string[] = [];
 
     // Activer le chapitre pour chaque groupe via chapitre_assignation
-    for (const groupeId of assignationAffecter.groupeIds) {
+    for (const groupeId of groupeIds) {
       const res = await fetch("/api/chapitres/assignation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
