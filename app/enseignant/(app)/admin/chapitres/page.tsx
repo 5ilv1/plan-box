@@ -241,10 +241,23 @@ export default function PageAdminChapitres() {
       const demain = new Date(); demain.setDate(demain.getDate() + 1);
       setDateDebutAffecter(demain.toISOString().split("T")[0]);
     }
-    // Charge les exercices du chapitre
-    const res = await fetch(`/api/admin/chapitres/${c.id}/exercices`);
-    const json = await res.json();
-    setExercicesAffecter((json.exercices ?? []) as ExerciceSimple[]);
+    // Charger exercices + assignations existantes en parallèle
+    const [exRes, assignRes] = await Promise.all([
+      fetch(`/api/admin/chapitres/${c.id}/exercices`).then(r => r.json()),
+      fetch(`/api/chapitres/assignation?chapitre_id=${c.id}`).then(r => r.json()),
+    ]);
+    setExercicesAffecter((exRes.exercices ?? []) as ExerciceSimple[]);
+    // Pré-remplir les groupes déjà assignés
+    const groupesActifs = ((assignRes.groupes ?? []) as { id: string; nom: string; actif: boolean }[])
+      .filter(g => g.actif);
+    if (groupesActifs.length > 0) {
+      setAssignationAffecter({
+        groupeIds: groupesActifs.map(g => g.id),
+        groupeNoms: groupesActifs.map(g => g.nom),
+        eleveUids: [],
+        touteClasse: false,
+      });
+    }
   }
 
   async function validerAffectation() {
@@ -277,20 +290,28 @@ export default function PageAdminChapitres() {
       });
     }
 
-    // Activer le chapitre pour chaque groupe via chapitre_assignation
-    for (const groupeId of groupeIds) {
-      const res = await fetch("/api/chapitres/assignation", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chapitre_id: chapitreAAffecter.id,
-          groupe_id: groupeId,
-          actif: true,
-        }),
-      });
-      if (!res.ok) {
-        const json = await res.json();
-        erreurs.push(json.error ?? "Erreur d'assignation");
+    // Récupérer tous les groupes pour savoir lesquels désactiver
+    const allGroupesRes = await fetch(`/api/chapitres/assignation?chapitre_id=${chapitreAAffecter.id}`).then(r => r.json());
+    const tousGroupes = (allGroupesRes.groupes ?? []) as { id: string; nom: string; actif: boolean }[];
+
+    // Activer les groupes sélectionnés, désactiver les autres
+    for (const g of tousGroupes) {
+      const doitEtreActif = groupeIds.includes(g.id);
+      // Ne faire l'appel que si le statut change
+      if (doitEtreActif !== g.actif) {
+        const res = await fetch("/api/chapitres/assignation", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chapitre_id: chapitreAAffecter.id,
+            groupe_id: g.id,
+            actif: doitEtreActif,
+          }),
+        });
+        if (!res.ok) {
+          const json = await res.json();
+          erreurs.push(json.error ?? "Erreur d'assignation");
+        }
       }
     }
 
