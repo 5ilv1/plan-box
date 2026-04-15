@@ -1351,35 +1351,89 @@ function PageGenererInner() {
             )}
 
             {/* Aperçu texte à trous */}
-            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "texte_a_trous" && contenu?.type === "texte_a_trous" && (
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "texte_a_trous" && contenu?.type === "texte_a_trous" && (() => {
+              const tat = contenu as { type: "texte_a_trous"; data: TexteATrousData };
+
+              function updateTrouMot(position: number, newMot: string) {
+                const newTrous = tat.data.trous.map((t: { position: number; mot: string; indice?: string }) =>
+                  t.position === position ? { ...t, mot: newMot } : t
+                );
+                const mots = tat.data.texte_complet.split(/\s+/);
+                mots[position] = newMot;
+                setContenu({
+                  ...tat,
+                  data: { ...tat.data, trous: newTrous, texte_complet: mots.join(" ") },
+                });
+              }
+
+              function updateTexteComplet(newTexte: string) {
+                const mots = newTexte.split(/\s+/);
+                const newTrous = tat.data.trous.map((t: { position: number; mot: string; indice?: string }) => {
+                  const motNet = t.mot.replace(/[.,;:!?'"()]/g, "").toLowerCase();
+                  const posPrises = new Set(tat.data.trous.filter((t2: { position: number }) => t2 !== t).map((t2: { position: number }) => t2.position));
+                  for (let i = 0; i < mots.length; i++) {
+                    if (posPrises.has(i)) continue;
+                    if (mots[i].replace(/[.,;:!?'"()]/g, "").toLowerCase() === motNet) {
+                      return { ...t, position: i, mot: mots[i] };
+                    }
+                  }
+                  return t;
+                });
+                setContenu({ ...tat, data: { ...tat.data, texte_complet: newTexte, trous: newTrous } });
+              }
+
+              return (
               <div style={{ padding: 24 }}>
-                <h3 style={{ fontWeight: 700, fontSize: "1.125rem", marginBottom: 8 }}>{contenu.data.titre}</h3>
-                <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: 16 }}>{contenu.data.consigne}</p>
+                <h3 style={{ fontWeight: 700, fontSize: "1.125rem", marginBottom: 8 }}>{tat.data.titre}</h3>
+                <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: 16 }}>{tat.data.consigne}</p>
                 <div style={{
                   background: "var(--blue-50)", borderRadius: 12, padding: "1.25rem 1.5rem",
-                  fontSize: "1rem", lineHeight: 2, border: "1px solid var(--blue-100)",
+                  fontSize: "1rem", lineHeight: 2.2, border: "1px solid var(--blue-100)",
                 }}>
-                  {contenu.data.texte_complet.split(/\s+/).map((mot, i) => {
-                    const trou = contenu.data.trous.find(t => t.position === i);
+                  {tat.data.texte_complet.split(/\s+/).map((mot, i) => {
+                    const trou = tat.data.trous.find((t: { position: number }) => t.position === i);
                     if (trou) {
                       return (
                         <span key={i}>
-                          <span style={{
-                            display: "inline-block", minWidth: 80, padding: "2px 8px",
-                            background: "white", border: "2px dashed #0E7490",
-                            borderRadius: 6, textAlign: "center", fontWeight: 700, color: "#0E7490",
-                          }}>
-                            {trou.mot}
-                          </span>{" "}
+                          <input
+                            type="text"
+                            value={trou.mot}
+                            onChange={(e) => updateTrouMot(i, e.target.value)}
+                            style={{
+                              display: "inline-block", width: Math.max(trou.mot.length * 10 + 20, 60),
+                              padding: "2px 8px", background: "white", border: "2px dashed #0E7490",
+                              borderRadius: 6, textAlign: "center", fontWeight: 700, color: "#0E7490",
+                              fontSize: "inherit", fontFamily: "inherit", outline: "none",
+                            }}
+                            onFocus={(e) => e.target.style.borderColor = "#0050D4"}
+                            onBlur={(e) => e.target.style.borderColor = "#0E7490"}
+                          />{" "}
                         </span>
                       );
                     }
                     return <span key={i}>{mot}{" "}</span>;
                   })}
                 </div>
-                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 12 }}>
-                  {contenu.data.trous.length} trou{contenu.data.trous.length > 1 ? "s" : ""} à compléter
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: 8 }}>
+                  {tat.data.trous.length} trou{tat.data.trous.length > 1 ? "s" : ""} à compléter — <strong>cliquez sur un trou pour le modifier</strong>
                 </p>
+
+                {/* Éditeur texte complet (toggle) */}
+                <details style={{ marginTop: 12 }}>
+                  <summary style={{ fontSize: 13, color: "var(--primary)", cursor: "pointer", fontWeight: 600 }}>
+                    ✏️ Modifier le texte complet
+                  </summary>
+                  <textarea
+                    value={tat.data.texte_complet}
+                    onChange={(e) => updateTexteComplet(e.target.value)}
+                    rows={6}
+                    className="form-input"
+                    style={{ marginTop: 8, fontSize: 13, resize: "vertical", width: "100%" }}
+                  />
+                  <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 4 }}>
+                    Les positions des trous seront recalculées automatiquement.
+                  </p>
+                </details>
 
                 <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
                   <button
@@ -1398,7 +1452,8 @@ function PageGenererInner() {
                   </button>
                 </div>
               </div>
-            )}
+              );
+            })()}
 
             {/* Formulaire analyse de phrase */}
             {etape === "formulaire" && typeBloc === "analyse_phrase" && (
