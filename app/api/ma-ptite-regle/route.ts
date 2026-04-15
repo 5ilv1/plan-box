@@ -284,7 +284,7 @@ async function detecterCategorie(
 ): Promise<"homophone" | "morphologie" | "syntaxe"> {
   try {
     const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 50,
       messages: [{
         role: "user",
@@ -627,7 +627,7 @@ async function genererExerciceRegle(
   // Sonnet par défaut, Opus pour les règles complexes (morphologie/syntaxe)
   const model = categorie !== "homophone"
     ? "claude-opus-4-20250514"
-    : "claude-sonnet-4-20250514";
+    : "claude-sonnet-4-6";
 
   const prompt = `Tu es un assistant pédagogique pour une école primaire française (niveau ${niveauNom}).
 

@@ -85,7 +85,7 @@ async function extractProblems(section: { header: string; body: string }): Promi
   const [periode, semaine] = section.header.split("-");
 
   const response = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 4000,
     system: `Tu es un assistant qui extrait des problèmes de maths d'un document pédagogique CE2.
 Le document est organisé par semaine. Chaque semaine contient :
@@ -146,7 +146,7 @@ IMPORTANT :
 async function computeAnswer(enonce: string, categorie: string): Promise<number | null> {
   try {
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 50,
       system: `Tu es un assistant qui résout des problèmes de mathématiques de niveau CE2 (élèves de 7-9 ans).
 Lis l'énoncé et calcule la réponse correcte.

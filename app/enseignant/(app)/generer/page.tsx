@@ -567,7 +567,7 @@ function PageGenererInner() {
         matiere: (paramsEnCours as { matiere?: string }).matiere,
         ...contenuFinal.data,
         genere_par_ia: true,
-        modele_utilise: "claude-sonnet-4-20250514",
+        modele_utilise: "claude-sonnet-4-6",
       };
     } else if (contenuFinal.type === "texte_a_trous") {
       contenuJsonb = {

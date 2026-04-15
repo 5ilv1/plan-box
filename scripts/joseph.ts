@@ -309,7 +309,7 @@ Si tout est correct, réponds : { "erreurs": [], "ok": true }`;
 
   try {
     const res = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 500,
       messages: [{ role: "user", content: prompt }],
     });
@@ -488,7 +488,7 @@ Réponds UNIQUEMENT avec le JSON corrigé, sans explication. Le JSON doit être 
 
   try {
     const res = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 4000,
       messages: [{ role: "user", content: prompt }],
     });
@@ -856,7 +856,7 @@ async function verifierParcours(filtre: string) {
       try {
         const resume = exercices.map((e: any) => `- ${e.titre} (${e.type})`).join("\n");
         const res = await anthropic.messages.create({
-          model: "claude-sonnet-4-20250514",
+          model: "claude-sonnet-4-6",
           max_tokens: 300,
           messages: [{
             role: "user",

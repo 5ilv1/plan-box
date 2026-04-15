@@ -21,7 +21,7 @@ Règles absolues :
 - Terminer par une question courte qui relance la réflexion`;
 
   const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-20250514",
+    model: "claude-sonnet-4-6",
     max_tokens: 200,
     system: systemPrompt,
     messages: [{ role: "user", content: `Problème : ${enonce}\nRéponse donnée par l'élève : ${wrong_answer}\nType de problème : ${categorie}` }],

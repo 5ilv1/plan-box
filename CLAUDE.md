@@ -6,7 +6,7 @@ Application de gestion de classe pour enseignants (CE2-CM2) avec exercices IA, d
 - Next.js 16 + React 19 + TypeScript
 - Supabase (auth + base de données + RLS)
 - Tailwind CSS v4
-- Anthropic SDK : `claude-sonnet-4-20250514` (défaut), `claude-opus-4-20250514` (exercices complexes)
+- Anthropic SDK : `claude-sonnet-4-6` (défaut), `claude-opus-4-20250514` (exercices complexes)
 - OpenAI (TTS pour les dictées)
 
 ## Lancer le projet

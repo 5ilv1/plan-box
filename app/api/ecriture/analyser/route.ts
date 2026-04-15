@@ -66,7 +66,7 @@ IMPORTANT :
   try {
     const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
     const response = await anthropic.messages.create({
-      model: "claude-sonnet-4-20250514",
+      model: "claude-sonnet-4-6",
       max_tokens: 2000,
       system: systemPrompt,
       messages: [{
