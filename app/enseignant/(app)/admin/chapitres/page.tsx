@@ -233,48 +233,29 @@ export default function PageAdminChapitres() {
 
   async function validerAffectation() {
     if (!chapitreAAffecter) return;
-    if (assignationAffecter.groupeIds.length === 0 && assignationAffecter.eleveUids.length === 0) {
-      setErreurAffecter("Sélectionne au moins un groupe ou un élève.");
-      return;
-    }
-    if (exercicesAffecter.length === 0) {
-      setErreurAffecter("Ce chapitre n'a pas encore d'exercices dans la banque.");
+    if (assignationAffecter.groupeIds.length === 0) {
+      setErreurAffecter("Sélectionne au moins un groupe.");
       return;
     }
     setEnAffectation(true);
     setErreurAffecter("");
 
-    const baseDate = new Date(dateDebutAffecter);
     const erreurs: string[] = [];
 
-    for (let i = 0; i < exercicesAffecter.length; i++) {
-      const ex = exercicesAffecter[i];
-      const dateExo = etalerJours
-        ? new Date(baseDate.getTime() + i * 86_400_000).toISOString().split("T")[0]
-        : dateDebutAffecter;
-
-      const body: Record<string, unknown> = {
-        type: ex.type,
-        titre: ex.titre ?? chapitreAAffecter.titre,
-        contenu: ex.contenu,
-        chapitreId: chapitreAAffecter.id,
-        dateAssignation: dateExo,
-        periodicite: "jour",
-      };
-      if (assignationAffecter.groupeIds.length > 0) {
-        body.groupeIds = assignationAffecter.groupeIds;
-      } else {
-        body.eleveUids = assignationAffecter.eleveUids;
-      }
-
-      const res = await fetch("/api/affecter-exercice", {
+    // Activer le chapitre pour chaque groupe via chapitre_assignation
+    for (const groupeId of assignationAffecter.groupeIds) {
+      const res = await fetch("/api/chapitres/assignation", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          chapitre_id: chapitreAAffecter.id,
+          groupe_id: groupeId,
+          actif: true,
+        }),
       });
       if (!res.ok) {
         const json = await res.json();
-        erreurs.push(json.erreur ?? `Erreur exercice ${i + 1}`);
+        erreurs.push(json.error ?? "Erreur d'assignation");
       }
     }
 
@@ -283,6 +264,7 @@ export default function PageAdminChapitres() {
       setErreurAffecter(erreurs.join(" | "));
     } else {
       setChapitreAAffecter(null);
+      await charger();
     }
   }
 
@@ -743,9 +725,8 @@ export default function PageAdminChapitres() {
               📋 Affecter — {chapitreAAffecter.titre}
             </h2>
             <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 20 }}>
-              {exercicesAffecter.length === 0
-                ? "⚠️ Ce chapitre n'a pas encore d'exercices dans la banque."
-                : `${exercicesAffecter.length} exercice${exercicesAffecter.length > 1 ? "s" : ""} à affecter.`}
+              {exercicesAffecter.length} exercice{exercicesAffecter.length > 1 ? "s" : ""} dans ce chapitre.
+              Les élèves des groupes sélectionnés verront ce chapitre et pourront faire les exercices à leur rythme.
             </p>
 
             {erreurAffecter && (
@@ -754,91 +735,21 @@ export default function PageAdminChapitres() {
               </div>
             )}
 
-            {/* Liste exercices (lecture seule) */}
-            {exercicesAffecter.length > 0 && (
-              <div style={{ marginBottom: 20, border: "1px solid var(--border)", borderRadius: 8, overflow: "hidden" }}>
-                <div style={{ padding: "8px 12px", background: "var(--bg)", fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: 0.5 }}>
-                  Exercices (dans l'ordre)
-                </div>
-                {exercicesAffecter.map((ex, i) => (
-                  <div key={ex.id} style={{ padding: "8px 14px", borderTop: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 10 }}>
-                    <span style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", width: 18, flexShrink: 0 }}>{i + 1}</span>
-                    <span style={{ fontSize: 13, color: "var(--text)", flex: 1 }}>{ex.titre ?? `Exercice ${i + 1}`}</span>
-                    <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>
-                      {ex.type === "exercice" ? "📝" : ex.type === "calcul_mental" ? "🔢" : "📋"}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Assignation */}
+            {/* Sélection des groupes */}
             <div style={{ marginBottom: 18 }}>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Attribuer à</label>
+              <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Activer pour les groupes</label>
               <AssignationSelector value={assignationAffecter} onChange={setAssignationAffecter} />
             </div>
-
-            {/* Date de début */}
-            <div style={{ marginBottom: 14 }}>
-              <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Date de début</label>
-              <input
-                type="date"
-                className="form-input"
-                value={dateDebutAffecter}
-                onChange={(e) => setDateDebutAffecter(e.target.value)}
-              />
-            </div>
-
-            {/* Toggle étalement */}
-            {exercicesAffecter.length > 1 && (
-              <div style={{ marginBottom: 20 }}>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 8 }}>Distribution</label>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button
-                    type="button"
-                    onClick={() => setEtalerJours(true)}
-                    style={{
-                      flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 13, cursor: "pointer",
-                      fontWeight: etalerJours ? 700 : 500,
-                      background: etalerJours ? "var(--primary-pale)" : "var(--white)",
-                      color: etalerJours ? "var(--primary)" : "var(--text-secondary)",
-                      border: etalerJours ? "2px solid var(--primary)" : "1px solid var(--border)",
-                    }}
-                  >
-                    📅 Étaler sur {exercicesAffecter.length} jours
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setEtalerJours(false)}
-                    style={{
-                      flex: 1, padding: "8px 12px", borderRadius: 8, fontSize: 13, cursor: "pointer",
-                      fontWeight: !etalerJours ? 700 : 500,
-                      background: !etalerJours ? "var(--primary-pale)" : "var(--white)",
-                      color: !etalerJours ? "var(--primary)" : "var(--text-secondary)",
-                      border: !etalerJours ? "2px solid var(--primary)" : "1px solid var(--border)",
-                    }}
-                  >
-                    📦 Tout le même jour
-                  </button>
-                </div>
-                {etalerJours && exercicesAffecter.length > 0 && (
-                  <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 6 }}>
-                    1 exercice par jour du {new Date(dateDebutAffecter).toLocaleDateString("fr-FR")} au{" "}
-                    {new Date(new Date(dateDebutAffecter).getTime() + (exercicesAffecter.length - 1) * 86_400_000).toLocaleDateString("fr-FR")}
-                  </p>
-                )}
-              </div>
-            )}
 
             {/* Boutons */}
             <div style={{ display: "flex", gap: 10 }}>
               <button
                 className="btn-primary"
                 onClick={validerAffectation}
-                disabled={enAffectation || exercicesAffecter.length === 0}
+                disabled={enAffectation}
                 style={{ flex: 1 }}
               >
-                {enAffectation ? `Affectation… (${exercicesAffecter.length} exercices)` : "✓ Affecter le chapitre"}
+                {enAffectation ? "Affectation…" : "✓ Affecter le chapitre"}
               </button>
               <button className="btn-ghost" onClick={() => setChapitreAAffecter(null)} style={{ flex: 1 }}>
                 Annuler
