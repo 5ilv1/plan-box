@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import ExerciceEditModal from "./ExerciceEditModal";
 
 // ── Types ──────────────────────────────────────────────────────────────────
 
@@ -89,6 +90,8 @@ export default function PageChapitreDetail() {
 
   // Aperçu exercice
   const [apercuId, setApercuId] = useState<string | null>(null);
+  // Édition contenu exercice
+  const [editContenuId, setEditContenuId] = useState<string | null>(null);
 
   // Suppression
   const [aSupprimer, setASupprimer] = useState<string | null>(null);
@@ -454,6 +457,18 @@ export default function PageChapitreDetail() {
     }
     setEnEdition(null);
     setEnSauvegarde(false);
+  }
+
+  async function sauvegarderContenu(id: string, contenu: Record<string, unknown>) {
+    const res = await fetch("/api/chapitres/exercices", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, contenu }),
+    });
+    if (!res.ok) throw new Error();
+    setExercices((prev) => prev.map((e) => e.id === id ? { ...e, contenu } : e));
+    showToast("Exercice mis à jour");
+    setEditContenuId(null);
   }
 
   async function regenererExercice(ex: Exercice) {
@@ -945,10 +960,16 @@ export default function PageChapitreDetail() {
                               ✏️ Modifier
                             </button>
                           ) : (
-                            <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px" }}
-                              onClick={() => regenererExercice(ex)} disabled={enGeneration}>
-                              🔄 Régénérer
-                            </button>
+                            <>
+                              <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px" }}
+                                onClick={() => setEditContenuId(ex.id)}>
+                                ✏️ Modifier
+                              </button>
+                              <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px" }}
+                                onClick={() => regenererExercice(ex)} disabled={enGeneration}>
+                                🔄 Régénérer
+                              </button>
+                            </>
                           )}
                           <button className="btn-ghost" style={{ fontSize: 11, padding: "3px 10px", color: "#DC2626" }}
                             onClick={() => setASupprimer(ex.id)}>
@@ -1534,6 +1555,18 @@ export default function PageChapitreDetail() {
           </div>
         </div>
       )}
+
+      {/* ── Modale édition contenu ── */}
+      {editContenuId && (() => {
+        const ex = exercices.find((e) => e.id === editContenuId);
+        return ex ? (
+          <ExerciceEditModal
+            exercice={ex}
+            onClose={() => setEditContenuId(null)}
+            onSave={sauvegarderContenu}
+          />
+        ) : null;
+      })()}
 
       {/* ── Modale suppression ── */}
       {aSupprimer && (
