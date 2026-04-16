@@ -75,6 +75,9 @@ export default function PodcastsEnseignant() {
   const [showCreation, setShowCreation] = useState(false);
   const [newTitre, setNewTitre] = useState("");
   const [newUrl, setNewUrl] = useState("");
+  const [newSourceMode, setNewSourceMode] = useState<"url" | "fichier">("url");
+  const [newFichierNom, setNewFichierNom] = useState("");
+  const [newUploadProgress, setNewUploadProgress] = useState<"idle" | "uploading" | "done" | "erreur">("idle");
   const [newTranscription, setNewTranscription] = useState("");
   const [newMatiere, setNewMatiere] = useState("");
   const [enCreation, setEnCreation] = useState(false);
@@ -157,6 +160,33 @@ export default function PodcastsEnseignant() {
     setSaving(null);
   }
 
+  // ── Upload MP3 ──
+  async function uploadMp3(file: File) {
+    setNewUploadProgress("uploading");
+    try {
+      const presignRes = await fetch("/api/upload-podcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: file.name, contentType: file.type }),
+      });
+      const presignJson = await presignRes.json();
+      if (!presignRes.ok) { setNewUploadProgress("erreur"); return; }
+
+      const { error: uploadError } = await supabase.storage
+        .from("podcasts")
+        .uploadToSignedUrl(presignJson.path, presignJson.token, file, {
+          contentType: file.type || "audio/mpeg",
+        });
+      if (uploadError) { setNewUploadProgress("erreur"); return; }
+
+      setNewUrl(presignJson.publicUrl);
+      setNewFichierNom(file.name);
+      setNewUploadProgress("done");
+    } catch {
+      setNewUploadProgress("erreur");
+    }
+  }
+
   // ── Création ──
   async function creerPodcast() {
     if (!enseignantId || !newTitre.trim()) return;
@@ -188,6 +218,7 @@ export default function PodcastsEnseignant() {
         showMsg("Podcast ajouté à la bibliothèque");
         setShowCreation(false);
         setNewTitre(""); setNewUrl(""); setNewTranscription(""); setNewMatiere("");
+        setNewSourceMode("url"); setNewFichierNom(""); setNewUploadProgress("idle");
         await charger(enseignantId);
       }
     } finally {
@@ -566,14 +597,91 @@ export default function PodcastsEnseignant() {
 
       {/* ── Modal création ── */}
       {showCreation && (
-        <Modal onClose={() => setShowCreation(false)} title="Nouveau podcast">
+        <Modal onClose={() => { setShowCreation(false); setNewTitre(""); setNewUrl(""); setNewTranscription(""); setNewMatiere(""); setNewSourceMode("url"); setNewFichierNom(""); setNewUploadProgress("idle"); }} title="Nouveau podcast">
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             <Field label="Titre *">
               <input className="form-input" value={newTitre} onChange={(e) => setNewTitre(e.target.value)} placeholder="Ex : Rosa Bouglione, le cirque dans la peau" style={{ width: "100%", fontSize: 14 }} />
             </Field>
-            <Field label="URL du podcast">
-              <input className="form-input" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="https://..." style={{ width: "100%", fontSize: 14 }} />
+
+            {/* Toggle URL / Fichier */}
+            <Field label="Source audio">
+              <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
+                {(["url", "fichier"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => { setNewSourceMode(mode); setNewUrl(""); setNewFichierNom(""); setNewUploadProgress("idle"); }}
+                    style={{
+                      padding: "6px 16px", borderRadius: 999,
+                      border: `1.5px solid ${newSourceMode === mode ? "var(--pb-primary)" : "#D1D5DB"}`,
+                      background: newSourceMode === mode ? "var(--pb-primary)" : "white",
+                      color: newSourceMode === mode ? "white" : "var(--pb-on-surface)",
+                      fontSize: 13, fontWeight: 700, cursor: "pointer",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}
+                  >
+                    {mode === "url" ? "🔗 URL" : "📁 Fichier MP3"}
+                  </button>
+                ))}
+              </div>
+
+              {newSourceMode === "url" && (
+                <input className="form-input" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="https://..." style={{ width: "100%", fontSize: 14 }} />
+              )}
+
+              {newSourceMode === "fichier" && (
+                <div>
+                  {newUploadProgress === "idle" && (
+                    <label style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "12px 16px", borderRadius: 10,
+                      border: "2px dashed var(--pb-outline-variant, #D1D5DB)",
+                      background: "var(--pb-surface-low, #F5F5FF)",
+                      cursor: "pointer", fontSize: 13, color: "var(--pb-on-surface-variant)",
+                      fontWeight: 600,
+                    }}>
+                      <span className="ms" style={{ fontSize: 22 }}>upload_file</span>
+                      Cliquer pour choisir un fichier MP3
+                      <input
+                        type="file"
+                        accept="audio/mpeg,audio/mp3,.mp3"
+                        style={{ display: "none" }}
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadMp3(f); }}
+                      />
+                    </label>
+                  )}
+                  {newUploadProgress === "uploading" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderRadius: 10, background: "#EFF6FF", border: "1px solid #BFDBFE", fontSize: 13, fontWeight: 600, color: "#1D4ED8" }}>
+                      <span className="ms" style={{ fontSize: 20, animation: "spin 1s linear infinite" }}>sync</span>
+                      Upload en cours…
+                    </div>
+                  )}
+                  {newUploadProgress === "done" && (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "#F0FDF4", border: "1px solid #BBF7D0", fontSize: 13, fontWeight: 600, color: "#15803D" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
+                        {newFichierNom}
+                      </div>
+                      <button type="button" onClick={() => { setNewUrl(""); setNewFichierNom(""); setNewUploadProgress("idle"); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#15803D", fontSize: 12, fontWeight: 700 }}>
+                        Changer
+                      </button>
+                    </div>
+                  )}
+                  {newUploadProgress === "erreur" && (
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "10px 14px", borderRadius: 10, background: "#FEF2F2", border: "1px solid #FCA5A5", fontSize: 13, fontWeight: 600, color: "#DC2626" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <span className="ms" style={{ fontSize: 18 }}>error</span>
+                        Erreur lors de l'upload
+                      </div>
+                      <button type="button" onClick={() => setNewUploadProgress("idle")} style={{ background: "none", border: "none", cursor: "pointer", color: "#DC2626", fontSize: 12, fontWeight: 700 }}>
+                        Réessayer
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
             </Field>
+
             <Field label="Matière (optionnel)">
               <input className="form-input" value={newMatiere} onChange={(e) => setNewMatiere(e.target.value)} placeholder="Ex : Histoire, Sciences…" style={{ width: "100%", fontSize: 14 }} />
             </Field>
@@ -594,12 +702,12 @@ export default function PodcastsEnseignant() {
             </Field>
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20 }}>
-            <button className="btn-ghost" onClick={() => setShowCreation(false)} style={{ fontSize: 14 }}>Annuler</button>
+            <button className="btn-ghost" onClick={() => { setShowCreation(false); setNewSourceMode("url"); setNewFichierNom(""); setNewUploadProgress("idle"); }} style={{ fontSize: 14 }}>Annuler</button>
             <button
               className="btn-primary"
               onClick={creerPodcast}
-              disabled={enCreation || !newTitre.trim()}
-              style={{ fontSize: 14, opacity: enCreation || !newTitre.trim() ? 0.5 : 1 }}
+              disabled={enCreation || !newTitre.trim() || newUploadProgress === "uploading"}
+              style={{ fontSize: 14, opacity: enCreation || !newTitre.trim() || newUploadProgress === "uploading" ? 0.5 : 1 }}
             >
               {enCreation ? "Création…" : "Créer le podcast"}
             </button>
