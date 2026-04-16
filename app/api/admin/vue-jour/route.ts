@@ -58,12 +58,12 @@ export async function GET(req: NextRequest) {
 
   const { data: chapitresData } = await admin
     .from("chapitre_assignation")
-    .select("groupe_id, chapitres(id, titre, matiere, sous_matiere), groupes(nom), created_at")
+    .select("groupe_id, chapitres(id, titre, matiere, sous_matiere, date_debut), groupes(nom), created_at")
     .eq("actif", true);
 
-  // Map groupe_nom → chapitres (max 1 rituel-orthographe = le plus récent)
+  // Map groupe_nom → chapitres (max 1 rituel-orthographe = celui dont date_debut <= today le plus récent)
   const chapitresParGroupe = new Map<string, Array<{ titre: string; matiere: string; sous_matiere: string }>>();
-  const rituelParGroupe = new Map<string, { titre: string; created_at: string }>();
+  const rituelParGroupe = new Map<string, { titre: string; date_debut: string }>();
 
   for (const ca of chapitresData ?? []) {
     const groupeNom = (ca as any).groupes?.nom ?? "";
@@ -72,10 +72,12 @@ export async function GET(req: NextRequest) {
     if (!ch || !groupeNom) continue;
 
     if (ch.sous_matiere === "rituel-orthographe") {
-      // Garder uniquement la plus récemment assignée par groupe
+      // Garder la règle dont date_debut est la plus récente sans dépasser today
+      const debutStr: string = ch.date_debut ?? "";
+      if (!debutStr || debutStr > today) continue; // pas encore active
       const existing = rituelParGroupe.get(groupeNom);
-      if (!existing || caDate > existing.created_at) {
-        rituelParGroupe.set(groupeNom, { titre: ch.titre, created_at: caDate });
+      if (!existing || debutStr > existing.date_debut) {
+        rituelParGroupe.set(groupeNom, { titre: ch.titre, date_debut: debutStr });
       }
     } else {
       // Uniquement les chapitres assignés dans les 10 derniers jours
