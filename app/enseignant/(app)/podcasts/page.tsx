@@ -93,8 +93,9 @@ export default function PodcastsEnseignant() {
   // Aperçu
   const [apercuPodcast, setApercuPodcast] = useState<Podcast | null>(null);
 
-  // Suppression
+  // Suppression / désaffectation
   const [suppression, setSuppression] = useState<string | null>(null);
+  const [desaffectation, setDesaffectation] = useState<string | null>(null);
 
   // Message
   const [message, setMessage] = useState<string | null>(null);
@@ -240,35 +241,54 @@ export default function PodcastsEnseignant() {
     if (!editPodcast) return;
     setEnSauvegarde(true);
     try {
-      const biblioId = editPodcast.biblio_id;
-      if (biblioId) {
-        let contenuMaj = { ...editPodcast.contenu };
-        const taches = contenuMaj.taches as Array<Record<string, unknown>> | undefined;
-        if (taches && taches.length > 0) {
-          contenuMaj = { ...contenuMaj, taches: taches.map((t, i) => i === 0 ? { ...t, url: editUrl } : t) };
-        }
-        contenuMaj = { ...contenuMaj, matiere: editMatiere || null };
-        const ancienTitre = editPodcast.titre;
-        await fetch(`/api/bibliotheque-ressources/${biblioId}`, {
+      let contenuMaj = { ...editPodcast.contenu };
+      const taches = contenuMaj.taches as Array<Record<string, unknown>> | undefined;
+      if (taches && taches.length > 0) {
+        contenuMaj = { ...contenuMaj, taches: taches.map((t, i) => i === 0 ? { ...t, url: editUrl } : t) };
+      }
+      contenuMaj = { ...contenuMaj, matiere: editMatiere || null };
+      const ancienTitre = editPodcast.titre;
+
+      if (editPodcast.biblio_id) {
+        // Cas normal : mise à jour de la bibliothèque
+        await fetch(`/api/bibliotheque-ressources/${editPodcast.biblio_id}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ titre: editTitre, sous_type: "podcast", matiere: editMatiere || null, contenu: contenuMaj }),
         });
-        // Si le titre a changé et que le podcast est assigné, mettre à jour plan_travail
-        if (editTitre !== ancienTitre && editPodcast.qcm_id) {
-          await fetch("/api/podcasts", {
-            method: "PATCH",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ qcm_id: editPodcast.qcm_id, titre: editTitre, dans_podium: editPodcast.dans_podium, renommer: true }),
-          });
-        }
-        showMsg("Podcast mis à jour");
-        setEditPodcast(null);
-        if (enseignantId) await charger(enseignantId);
       }
+
+      // Mettre à jour plan_travail dans tous les cas si le podcast est assigné
+      if (editPodcast.qcm_id) {
+        await fetch("/api/podcasts", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            qcm_id: editPodcast.qcm_id,
+            titre: editTitre,
+            dans_podium: editPodcast.dans_podium,
+            renommer: editTitre !== ancienTitre,
+            contenu: contenuMaj,
+          }),
+        });
+      }
+
+      showMsg("Podcast mis à jour");
+      setEditPodcast(null);
+      if (enseignantId) await charger(enseignantId);
     } finally {
       setEnSauvegarde(false);
     }
+  }
+
+  // ── Désaffectation ──
+  async function desaffecter(p: Podcast) {
+    if (!p.qcm_id) return;
+    await fetch(`/api/podcasts?qcm_id=${p.qcm_id}`, { method: "DELETE" });
+    // Supprimer aussi la config podium
+    showMsg("Podcast désaffecté (conservé en bibliothèque)");
+    setDesaffectation(null);
+    if (enseignantId) await charger(enseignantId);
   }
 
   // ── Suppression ──
@@ -454,6 +474,7 @@ export default function PodcastsEnseignant() {
               : 0;
             const isAssigned = !!p.qcm_id;
             const isDeleting = suppression === key;
+            const isDesaffecting = desaffectation === key;
 
             return (
               <div
@@ -517,11 +538,9 @@ export default function PodcastsEnseignant() {
                     <button onClick={() => setApercuPodcast(p)} title="Aperçu" style={btnStyle("#6B7280")}>
                       <span className="ms" style={{ fontSize: 16 }}>visibility</span>
                     </button>
-                    {p.biblio_id && (
-                      <button onClick={() => ouvrirEdition(p)} title="Modifier" style={btnStyle("#6B7280")}>
-                        <span className="ms" style={{ fontSize: 16 }}>edit</span>
-                      </button>
-                    )}
+                    <button onClick={() => ouvrirEdition(p)} title="Modifier" style={btnStyle("#6B7280")}>
+                      <span className="ms" style={{ fontSize: 16 }}>edit</span>
+                    </button>
                     <button onClick={() => ouvrirAffecter(key)} title="Affecter" style={btnStyle("var(--pb-primary, #0050D4)")}>
                       <span className="ms" style={{ fontSize: 16 }}>send</span>
                     </button>
@@ -538,6 +557,19 @@ export default function PodcastsEnseignant() {
                       >
                         <span className="ms" style={{ fontSize: 16 }}>emoji_events</span>
                       </button>
+                    )}
+                    {/* Désaffecter */}
+                    {isAssigned && (
+                      isDesaffecting ? (
+                        <div style={{ display: "flex", gap: 4 }}>
+                          <button onClick={() => desaffecter(p)} style={{ ...btnStyle("#F59E0B"), background: "#F59E0B", color: "white", border: "none", fontSize: 12, padding: "4px 10px" }}>Confirmer</button>
+                          <button onClick={() => setDesaffectation(null)} style={{ ...btnStyle("#6B7280"), fontSize: 12, padding: "4px 8px" }}>✕</button>
+                        </div>
+                      ) : (
+                        <button onClick={() => setDesaffectation(key)} title="Désaffecter (garder en bibliothèque)" style={btnStyle("#F59E0B")}>
+                          <span className="ms" style={{ fontSize: 16 }}>link_off</span>
+                        </button>
+                      )
                     )}
                     {isDeleting ? (
                       <div style={{ display: "flex", gap: 4 }}>

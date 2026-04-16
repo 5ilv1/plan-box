@@ -124,7 +124,7 @@ export async function GET(req: NextRequest) {
 // PATCH /api/podcasts — met à jour la config podium d'un podcast
 // Si renommer=true, met aussi à jour plan_travail.titre pour toutes les entrées liées
 export async function PATCH(req: NextRequest) {
-  const { qcm_id, dans_podium, titre, renommer } = await req.json();
+  const { qcm_id, dans_podium, titre, renommer, contenu } = await req.json();
   if (!qcm_id) return NextResponse.json({ erreur: "qcm_id requis" }, { status: 400 });
 
   const admin = createAdminClient();
@@ -138,11 +138,14 @@ export async function PATCH(req: NextRequest) {
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
 
-  // Renommer aussi les plan_travail liés à ce qcm_id
-  if (renommer && titre) {
+  // Mettre à jour titre et/ou contenu dans les plan_travail liés
+  const update: Record<string, unknown> = {};
+  if (renommer && titre) update.titre = titre;
+  if (contenu) update.contenu = contenu;
+  if (Object.keys(update).length > 0) {
     await admin
       .from("plan_travail")
-      .update({ titre })
+      .update(update)
       .eq("type", "ressource")
       .contains("contenu", { qcm_id });
   }
