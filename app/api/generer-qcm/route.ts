@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 
+export const maxDuration = 120; // 2 min max (Vercel Pro)
+
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 export async function POST(req: NextRequest) {
