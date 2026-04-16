@@ -69,6 +69,7 @@ export default function PodcastsEnseignant() {
   const [affGroupeIds, setAffGroupeIds] = useState<Set<string>>(new Set());
   const [affMode, setAffMode] = useState<"classe" | "groupes">("classe");
   const [affEnCours, setAffEnCours] = useState(false);
+  const [affEtape, setAffEtape] = useState<"qcm" | "assignation" | null>(null);
   const [affResultat, setAffResultat] = useState<string | null>(null);
 
   // Création
@@ -296,6 +297,7 @@ export default function PodcastsEnseignant() {
 
   async function lancerAffectation(podcast: Podcast) {
     setAffEnCours(true);
+    setAffEtape(null);
     setAffResultat(null);
 
     // Si pas de QCM, en générer un
@@ -306,6 +308,7 @@ export default function PodcastsEnseignant() {
         (t) => t.sous_type === "podcast" && t.transcription && (t.transcription as string).trim().length >= 50
       );
       if (tacheAvecTranscription?.transcription) {
+        setAffEtape("qcm");
         try {
           const qcmRes = await fetch("/api/generer-qcm", {
             method: "POST",
@@ -320,6 +323,7 @@ export default function PodcastsEnseignant() {
       }
     }
 
+    setAffEtape("assignation");
     const body: Record<string, unknown> = {
       type: "ressource",
       titre: podcast.titre,
@@ -338,7 +342,7 @@ export default function PodcastsEnseignant() {
       const json = await res.json();
       if (json.ok) {
         setAffResultat(`Affecté à ${json.nb} élève${json.nb > 1 ? "s" : ""}`);
-        setTimeout(() => { setAffecterKey(null); if (enseignantId) charger(enseignantId); }, 2000);
+        setTimeout(() => { setAffecterKey(null); setAffEtape(null); if (enseignantId) charger(enseignantId); }, 2000);
       } else {
         setAffResultat(`Erreur : ${json.erreur ?? "inconnue"}`);
       }
@@ -346,6 +350,7 @@ export default function PodcastsEnseignant() {
       setAffResultat("Erreur réseau");
     }
     setAffEnCours(false);
+    setAffEtape(null);
   }
 
   // ── Helpers ──
@@ -364,6 +369,7 @@ export default function PodcastsEnseignant() {
 
   return (
     <div style={{ padding: "0 0 40px" }}>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       {/* Message */}
       {message && (
         <div style={{ position: "fixed", top: 20, right: 20, zIndex: 200, background: "#16A34A", color: "white", padding: "10px 20px", borderRadius: 12, fontWeight: 700, fontSize: 14, boxShadow: "0 4px 16px rgba(0,0,0,0.15)" }}>
@@ -567,6 +573,7 @@ export default function PodcastsEnseignant() {
                     affGroupeIds={affGroupeIds}
                     setAffGroupeIds={setAffGroupeIds}
                     affEnCours={affEnCours}
+                    affEtape={affEtape}
                     affResultat={affResultat}
                     onAffecter={() => lancerAffectation(p)}
                     onCancel={() => setAffecterKey(null)}
@@ -905,13 +912,13 @@ function ScoresTable({ scores }: { scores: ScoreEleve[] }) {
 }
 
 function AffectationPanel({
-  podcast, groupes, affDate, setAffDate, affMode, setAffMode, affGroupeIds, setAffGroupeIds, affEnCours, affResultat, onAffecter, onCancel,
+  podcast, groupes, affDate, setAffDate, affMode, setAffMode, affGroupeIds, setAffGroupeIds, affEnCours, affEtape, affResultat, onAffecter, onCancel,
 }: {
   podcast: Podcast; groupes: Groupe[];
   affDate: string; setAffDate: (d: string) => void;
   affMode: "classe" | "groupes"; setAffMode: (m: "classe" | "groupes") => void;
   affGroupeIds: Set<string>; setAffGroupeIds: React.Dispatch<React.SetStateAction<Set<string>>>;
-  affEnCours: boolean; affResultat: string | null;
+  affEnCours: boolean; affEtape: "qcm" | "assignation" | null; affResultat: string | null;
   onAffecter: () => void; onCancel: () => void;
 }) {
   return (
@@ -985,6 +992,38 @@ function AffectationPanel({
         )}
       </div>
 
+      {/* Barre de progression pendant l'affectation */}
+      {affEnCours && (
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+            {(["qcm", "assignation"] as const).map((etape) => {
+              const actif = affEtape === etape;
+              const fait = affEtape === "assignation" && etape === "qcm";
+              return (
+                <div key={etape} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 12, fontWeight: 700, color: fait ? "#16A34A" : actif ? "var(--pb-primary)" : "var(--pb-on-surface-variant)", opacity: fait || actif ? 1 : 0.4 }}>
+                  {fait ? (
+                    <span className="ms" style={{ fontSize: 16, color: "#16A34A" }}>check_circle</span>
+                  ) : actif ? (
+                    <span className="ms" style={{ fontSize: 16, animation: "spin 1s linear infinite" }}>sync</span>
+                  ) : (
+                    <span className="ms" style={{ fontSize: 16 }}>radio_button_unchecked</span>
+                  )}
+                  {etape === "qcm" ? "Génération du QCM" : "Affectation aux élèves"}
+                </div>
+              );
+            })}
+          </div>
+          <div style={{ height: 4, background: "var(--pb-outline-variant, #E0E0FF)", borderRadius: 999, overflow: "hidden" }}>
+            <div style={{
+              height: "100%", borderRadius: 999,
+              background: "var(--pb-primary, #0050D4)",
+              width: affEtape === "qcm" ? "40%" : affEtape === "assignation" ? "80%" : "10%",
+              transition: "width 0.5s ease",
+            }} />
+          </div>
+        </div>
+      )}
+
       <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
         <button
           onClick={onAffecter}
@@ -997,7 +1036,12 @@ function AffectationPanel({
             opacity: affEnCours || (affMode === "groupes" && affGroupeIds.size === 0) ? 0.5 : 1,
           }}
         >
-          {affEnCours ? "Affectation..." : "Affecter"}
+          {affEnCours ? (
+            <span style={{ display: "flex", alignItems: "center", gap: 6 }}>
+              <span className="ms" style={{ fontSize: 16, animation: "spin 1s linear infinite" }}>sync</span>
+              {affEtape === "qcm" ? "Génération QCM…" : "Affectation…"}
+            </span>
+          ) : "Affecter"}
         </button>
         <button
           onClick={onCancel}
