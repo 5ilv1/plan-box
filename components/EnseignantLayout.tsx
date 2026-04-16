@@ -19,6 +19,7 @@ const DEFAULT_NAV_ITEMS = [
   { href: "/enseignant/daily-problem",   label: "Problème du jour", icon: "calculate" },
   { href: "/enseignant/calcul-du-jour",  label: "Calcul du jour",   icon: "function" },
   { href: "/enseignant/atelier-ecriture",label: "Atelier écriture", icon: "edit_note" },
+  { href: "/enseignant/vue-jour",         label: "Vue du jour",      icon: "today" },
   { href: "/enseignant/bilan",           label: "Bilan de classe",  icon: "bar_chart" },
 ];
 

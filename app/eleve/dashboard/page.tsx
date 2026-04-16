@@ -635,8 +635,11 @@ export default function DashboardEleve() {
     weekday: "long", day: "numeric", month: "long",
   });
   const hasDailyProblem = dailyProblem !== null;
-  const totalTaches = blocsAujourdhui.length + (hasDailyProblem ? 1 : 0);
-  const nbFaitAujourd_hui = blocsAujourdhui.filter((b) => b.statut === "fait").length + (hasDailyProblem && dailyProblemSolved ? 1 : 0);
+  const hasCalculJour = calculJour !== null;
+  const totalTaches = blocsAujourdhui.length + (hasDailyProblem ? 1 : 0) + (hasCalculJour ? 1 : 0);
+  const nbFaitAujourd_hui = blocsAujourdhui.filter((b) => b.statut === "fait").length
+    + (hasDailyProblem && dailyProblemSolved ? 1 : 0)
+    + (calculJour?.deja_fait ? 1 : 0);
   const pctJour = totalTaches > 0
     ? Math.round((nbFaitAujourd_hui / totalTaches) * 100)
     : 0;
@@ -1000,6 +1003,38 @@ export default function DashboardEleve() {
                 </div>
               </div>
             )}
+
+            {/* 🏆 Classement Podcasts — toujours visible */}
+            <Link
+              href="/eleve/qcm-classement/global"
+              className="pb-card"
+              style={{
+                display: "flex", alignItems: "center", gap: 14,
+                padding: "16px 20px",
+                background: "linear-gradient(135deg, #1E1B4B, #312E81)",
+                border: "none",
+                textDecoration: "none",
+                color: "white",
+              }}
+            >
+              <div style={{
+                width: 44, height: 44, borderRadius: 12, flexShrink: 0,
+                background: "rgba(245,158,11,0.25)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                fontSize: 26,
+              }}>
+                🏆
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Classement Podcasts
+                </div>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>
+                  Voir le podium de la classe →
+                </div>
+              </div>
+              <span style={{ fontSize: 22, opacity: 0.5 }}>›</span>
+            </Link>
 
             {/* Mes chapitres (Plan Box) */}
             {progressionsSorted.length > 0 && (

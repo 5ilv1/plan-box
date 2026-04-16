@@ -4,6 +4,19 @@ import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { QCMQuestion } from "@/types";
 
+interface LigneGlobale {
+  prenom: string;
+  nom: string;
+  score_total: number;
+  questions_total: number;
+  nb_qcm: number;
+  pct: number;
+}
+
+const MEDAILLES = ["🥇", "🥈", "🥉"];
+const COULEURS_PODIUM = ["#F59E0B", "#94A3B8", "#D97706"];
+const BG_PODIUM = ["#FEF3C7", "#F1F5F9", "#FEF9F0"];
+
 interface ScoreEleve {
   prenom: string;
   nom: string;
@@ -82,6 +95,13 @@ export default function PodcastsEnseignant() {
   // Message
   const [message, setMessage] = useState<string | null>(null);
 
+  // Onglet
+  const [onglet, setOnglet] = useState<"podcasts" | "classement">("podcasts");
+
+  // Classement
+  const [classement, setClassement] = useState<LigneGlobale[]>([]);
+  const [chargementClassement, setChargementClassement] = useState(false);
+
   const charger = useCallback(async (userId: string) => {
     const [podJson, grpJson] = await Promise.all([
       fetch(`/api/podcasts?enseignant_id=${userId}`).then((r) => r.json()),
@@ -107,6 +127,21 @@ export default function PodcastsEnseignant() {
     setMessage(msg);
     setTimeout(() => setMessage(null), 3000);
   }
+
+  const chargerClassement = useCallback(async () => {
+    setChargementClassement(true);
+    try {
+      const res = await fetch("/api/qcm-reponse?global=true");
+      const json = await res.json();
+      setClassement(json.classement ?? []);
+    } finally {
+      setChargementClassement(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (onglet === "classement") chargerClassement();
+  }, [onglet, chargerClassement]);
 
   async function togglePodium(qcm_id: string, current: boolean, titre: string) {
     setSaving(qcm_id);
@@ -197,12 +232,17 @@ export default function PodcastsEnseignant() {
 
   // ── Suppression ──
   async function supprimer(p: Podcast) {
+    // Supprimer l'entrée bibliothèque si elle existe
     if (p.biblio_id) {
       await fetch(`/api/bibliotheque-ressources/${p.biblio_id}`, { method: "DELETE" });
-      showMsg("Podcast supprimé");
-      setSuppression(null);
-      if (enseignantId) await charger(enseignantId);
     }
+    // Supprimer les plan_travail liés (si le podcast a été assigné)
+    if (p.qcm_id) {
+      await fetch(`/api/podcasts?qcm_id=${p.qcm_id}`, { method: "DELETE" });
+    }
+    showMsg("Podcast supprimé");
+    setSuppression(null);
+    if (enseignantId) await charger(enseignantId);
   }
 
   // ── Affectation ──
@@ -292,7 +332,7 @@ export default function PodcastsEnseignant() {
       )}
 
       {/* Header */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 32 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 24, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", marginBottom: 4 }}>
             <span className="ms" style={{ fontSize: 28, verticalAlign: "middle", marginRight: 8 }}>podcasts</span>
@@ -311,8 +351,49 @@ export default function PodcastsEnseignant() {
         </button>
       </div>
 
+      {/* Onglets */}
+      <div style={{ display: "flex", gap: 0, marginBottom: 28, borderBottom: "2px solid var(--pb-outline-variant, #E0E0FF)" }}>
+        {([
+          { key: "podcasts", label: "Podcasts", icon: "podcasts" },
+          { key: "classement", label: "Classement", icon: "emoji_events" },
+        ] as const).map(({ key, label, icon }) => (
+          <button
+            key={key}
+            onClick={() => setOnglet(key)}
+            style={{
+              padding: "10px 20px",
+              border: "none",
+              borderBottom: onglet === key ? "3px solid var(--pb-primary, #0050D4)" : "3px solid transparent",
+              background: "transparent",
+              color: onglet === key ? "var(--pb-primary, #0050D4)" : "var(--pb-on-surface-variant)",
+              fontWeight: onglet === key ? 800 : 600,
+              fontSize: 14,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+              transition: "all 0.15s",
+              marginBottom: -2,
+            }}
+          >
+            <span className="ms" style={{ fontSize: 18 }}>{icon}</span>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Onglet Classement ── */}
+      {onglet === "classement" && (
+        <ClassementPodcasts
+          classement={classement}
+          chargement={chargementClassement}
+          onRefresh={chargerClassement}
+        />
+      )}
+
       {/* Liste */}
-      {allPodcasts.length === 0 ? (
+      {onglet === "podcasts" && (allPodcasts.length === 0 ? (
         <div style={{ textAlign: "center", padding: 40, color: "var(--pb-on-surface-variant)" }}>
           Aucun podcast. Créez-en un avec le bouton ci-dessus.
         </div>
@@ -412,17 +493,15 @@ export default function PodcastsEnseignant() {
                         <span className="ms" style={{ fontSize: 16 }}>emoji_events</span>
                       </button>
                     )}
-                    {p.biblio_id && (
-                      isDeleting ? (
-                        <div style={{ display: "flex", gap: 4 }}>
-                          <button onClick={() => supprimer(p)} style={{ ...btnStyle("#DC2626"), background: "#DC2626", color: "white", border: "none", fontSize: 12, padding: "4px 10px" }}>Confirmer</button>
-                          <button onClick={() => setSuppression(null)} style={{ ...btnStyle("#6B7280"), fontSize: 12, padding: "4px 8px" }}>✕</button>
-                        </div>
-                      ) : (
-                        <button onClick={() => setSuppression(key)} title="Supprimer" style={btnStyle("#DC2626")}>
-                          <span className="ms" style={{ fontSize: 16 }}>delete</span>
-                        </button>
-                      )
+                    {isDeleting ? (
+                      <div style={{ display: "flex", gap: 4 }}>
+                        <button onClick={() => supprimer(p)} style={{ ...btnStyle("#DC2626"), background: "#DC2626", color: "white", border: "none", fontSize: 12, padding: "4px 10px" }}>Confirmer</button>
+                        <button onClick={() => setSuppression(null)} style={{ ...btnStyle("#6B7280"), fontSize: 12, padding: "4px 8px" }}>✕</button>
+                      </div>
+                    ) : (
+                      <button onClick={() => setSuppression(key)} title="Supprimer" style={btnStyle("#DC2626")}>
+                        <span className="ms" style={{ fontSize: 16 }}>delete</span>
+                      </button>
                     )}
                   </div>
 
@@ -474,7 +553,7 @@ export default function PodcastsEnseignant() {
             );
           })}
         </div>
-      )}
+      ))}
 
       {/* ── Modal création ── */}
       {showCreation && (
@@ -820,6 +899,170 @@ function AffectationPanel({
             {affResultat}
           </span>
         )}
+      </div>
+    </div>
+  );
+}
+
+// ── Classement global podcasts ─────────────────────────────────────────────
+
+function ClassementPodcasts({
+  classement, chargement, onRefresh,
+}: {
+  classement: LigneGlobale[];
+  chargement: boolean;
+  onRefresh: () => void;
+}) {
+  if (chargement) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {[1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="skeleton" style={{ height: 56, borderRadius: 12 }} />
+        ))}
+      </div>
+    );
+  }
+
+  if (classement.length === 0) {
+    return (
+      <div style={{ textAlign: "center", padding: "60px 24px", color: "var(--pb-on-surface-variant)" }}>
+        <span className="ms" style={{ fontSize: 48, display: "block", marginBottom: 16, opacity: 0.3 }}>emoji_events</span>
+        <p style={{ fontSize: 15, fontWeight: 600 }}>Aucun résultat pour le moment.</p>
+        <p style={{ fontSize: 13, marginTop: 6 }}>Les élèves doivent d'abord répondre à un podcast pour apparaître ici.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20 }}>
+        <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)" }}>
+          {classement.length} élève{classement.length > 1 ? "s" : ""} au classement
+        </p>
+        <button onClick={onRefresh} className="btn-ghost" style={{ fontSize: 12, display: "flex", alignItems: "center", gap: 4 }}>
+          <span className="ms" style={{ fontSize: 16 }}>refresh</span>
+          Actualiser
+        </button>
+      </div>
+
+      {/* Podium top 3 */}
+      {classement.length >= 1 && (
+        <div style={{
+          display: "flex", alignItems: "flex-end", justifyContent: "center",
+          gap: 10, marginBottom: 32,
+        }}>
+          {/* 2ème */}
+          {classement[1] && (
+            <PodiumCase
+              rang={2} nom={classement[1].prenom}
+              score={classement[1].score_total} total={classement[1].questions_total}
+              nbQcm={classement[1].nb_qcm} pct={classement[1].pct}
+              hauteur={90} medaille={MEDAILLES[1]}
+              couleur={COULEURS_PODIUM[1]} bg={BG_PODIUM[1]}
+            />
+          )}
+          {/* 1er */}
+          <PodiumCase
+            rang={1} nom={classement[0].prenom}
+            score={classement[0].score_total} total={classement[0].questions_total}
+            nbQcm={classement[0].nb_qcm} pct={classement[0].pct}
+            hauteur={120} medaille={MEDAILLES[0]}
+            couleur={COULEURS_PODIUM[0]} bg={BG_PODIUM[0]}
+          />
+          {/* 3ème */}
+          {classement[2] && (
+            <PodiumCase
+              rang={3} nom={classement[2].prenom}
+              score={classement[2].score_total} total={classement[2].questions_total}
+              nbQcm={classement[2].nb_qcm} pct={classement[2].pct}
+              hauteur={70} medaille={MEDAILLES[2]}
+              couleur={COULEURS_PODIUM[2]} bg={BG_PODIUM[2]}
+            />
+          )}
+        </div>
+      )}
+
+      {/* Liste complète */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {classement.map((ligne, i) => {
+          const podium = i < 3;
+          return (
+            <div
+              key={i}
+              style={{
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "12px 16px", borderRadius: 12,
+                background: podium ? BG_PODIUM[i] : "white",
+                border: `1.5px solid ${podium ? COULEURS_PODIUM[i] + "55" : "var(--pb-outline-variant, #E0E0FF)"}`,
+                boxShadow: podium ? "0 2px 8px rgba(0,0,0,0.06)" : "none",
+              }}
+            >
+              <div style={{
+                width: 32, height: 32, borderRadius: "50%", flexShrink: 0,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                background: podium ? COULEURS_PODIUM[i] : "var(--pb-surface-low, #F5F5FF)",
+                fontSize: podium ? 18 : 13, fontWeight: 800,
+                color: podium ? "white" : "var(--pb-on-surface-variant)",
+              }}>
+                {podium ? MEDAILLES[i] : i + 1}
+              </div>
+
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontWeight: 700, fontSize: 14 }}>{ligne.prenom} {ligne.nom}</div>
+                <div style={{ height: 4, background: "var(--pb-outline-variant, #E0E0FF)", borderRadius: 999, marginTop: 4, overflow: "hidden" }}>
+                  <div style={{
+                    height: "100%", width: `${ligne.pct}%`,
+                    background: ligne.pct === 100 ? "#16A34A" : ligne.pct >= 70 ? "#2563EB" : "#F59E0B",
+                    borderRadius: 999, transition: "width 0.5s ease",
+                  }} />
+                </div>
+                <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", marginTop: 3 }}>
+                  {ligne.nb_qcm} podcast{ligne.nb_qcm > 1 ? "s" : ""} · {ligne.score_total}/{ligne.questions_total} questions
+                </div>
+              </div>
+
+              <div style={{ textAlign: "right", flexShrink: 0 }}>
+                <div style={{ fontSize: 18, fontWeight: 900, color: podium ? COULEURS_PODIUM[i] : "var(--pb-on-surface)" }}>
+                  {ligne.pct}%
+                </div>
+                <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontWeight: 600 }}>
+                  {ligne.score_total} pts
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function PodiumCase({
+  nom, score, total, nbQcm, pct, hauteur, medaille, couleur, bg,
+}: {
+  rang: number; nom: string; score: number; total: number; nbQcm: number; pct: number;
+  hauteur: number; medaille: string; couleur: string; bg: string;
+}) {
+  return (
+    <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 4 }}>
+      <div style={{ fontSize: 26 }}>{medaille}</div>
+      <div style={{
+        fontSize: 13, fontWeight: 700,
+        textAlign: "center", maxWidth: 80,
+        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+      }}>
+        {nom}
+      </div>
+      <div style={{ fontSize: 12, fontWeight: 800, color: couleur }}>{score} pts</div>
+      <div style={{ fontSize: 10, color: "var(--pb-on-surface-variant)" }}>{nbQcm} podcast{nbQcm > 1 ? "s" : ""}</div>
+      <div style={{
+        width: "100%", height: hauteur,
+        background: bg, border: `2px solid ${couleur}55`,
+        borderRadius: "8px 8px 0 0",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        fontSize: 16, fontWeight: 900, color: couleur,
+      }}>
+        {pct}%
       </div>
     </div>
   );

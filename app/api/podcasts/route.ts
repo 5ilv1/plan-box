@@ -25,7 +25,7 @@ export async function GET(req: NextRequest) {
     parQcm.set(qcmId, { qcm_id: qcmId, titre: b.titre, date: b.date_assignation, contenu: b.contenu as Record<string, unknown> });
   }
 
-  // 1b. Récupérer les podcasts de la bibliothèque (non encore assignés)
+  // 1b. Récupérer tous les podcasts de la bibliothèque (assignés ou non)
   let biblioRes: Array<{ id: string; titre: string; sous_type: string; contenu: Record<string, unknown>; created_at: string }> = [];
   if (enseignantId) {
     const { data } = await admin
@@ -35,6 +35,12 @@ export async function GET(req: NextRequest) {
       .eq("sous_type", "podcast")
       .order("created_at", { ascending: false });
     biblioRes = (data ?? []) as typeof biblioRes;
+  }
+
+  // Map titre → biblio_id pour retrouver l'entrée bibliothèque des podcasts assignés
+  const biblioParTitre = new Map<string, string>();
+  for (const r of biblioRes) {
+    biblioParTitre.set(r.titre, r.id);
   }
 
   // 2. Récupérer toutes les réponses QCM
@@ -84,6 +90,7 @@ export async function GET(req: NextRequest) {
       : [];
 
     return {
+      biblio_id: biblioParTitre.get(p.titre) ?? null,
       qcm_id: p.qcm_id,
       titre: p.titre,
       date: p.date,
@@ -129,6 +136,28 @@ export async function PATCH(req: NextRequest) {
     );
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+
+  return NextResponse.json({ ok: true });
+}
+
+// DELETE /api/podcasts?qcm_id=xxx — supprime tous les plan_travail liés à ce qcm_id
+export async function DELETE(req: NextRequest) {
+  const qcm_id = new URL(req.url).searchParams.get("qcm_id");
+  if (!qcm_id) return NextResponse.json({ erreur: "qcm_id requis" }, { status: 400 });
+
+  const admin = createAdminClient();
+
+  // Supprimer les plan_travail qui ont ce qcm_id dans leur contenu
+  const { error } = await admin
+    .from("plan_travail")
+    .delete()
+    .eq("type", "ressource")
+    .contains("contenu", { qcm_id });
+
+  if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+
+  // Supprimer aussi la config podium
+  await admin.from("podcast_podium_config").delete().eq("qcm_id", qcm_id);
 
   return NextResponse.json({ ok: true });
 }
