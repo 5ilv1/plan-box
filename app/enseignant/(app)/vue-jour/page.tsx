@@ -283,16 +283,16 @@ export default function VueJourPage() {
                           borderRadius: 10,
                           padding: "9px 12px",
                           marginBottom: 6,
-                          borderLeft: `3px solid ${MATIERE_COULEUR[ch.matiere] ?? "#9CA3AF"}`,
+                          borderLeft: `3px solid ${ch.sous_matiere === "rituel-orthographe" ? "#D97706" : (MATIERE_COULEUR[ch.matiere] ?? "#9CA3AF")}`,
                           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
                         }}>
                           <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
                             <span style={{
                               fontSize: 10, fontWeight: 700, textTransform: "uppercase",
                               letterSpacing: "0.04em",
-                              color: MATIERE_COULEUR[ch.matiere] ?? "#9CA3AF",
+                              color: ch.sous_matiere === "rituel-orthographe" ? "#D97706" : (MATIERE_COULEUR[ch.matiere] ?? "#9CA3AF"),
                             }}>
-                              {ch.sous_matiere || ch.matiere}
+                              {ch.sous_matiere === "rituel-orthographe" ? "Ma P'tite Règle" : (ch.sous_matiere || ch.matiere)}
                             </span>
                           </div>
                           <div style={{

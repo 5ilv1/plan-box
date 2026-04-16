@@ -50,21 +50,45 @@ export async function GET(req: NextRequest) {
   const pbIds = [...new Set(allBlocs.map((b: any) => b.eleve_id).filter(Boolean))] as string[];
   const rbIds = [...new Set(allBlocs.map((b: any) => b.repetibox_eleve_id).filter((id: any) => id != null))] as number[];
 
-  // Récupérer les chapitres actifs par groupe
+  // Chapitres actifs : fenêtre de 10 jours avant la date vue
+  // + P'tite Règle : uniquement la plus récente par groupe
+  const cutoff = new Date(today + "T00:00:00");
+  cutoff.setDate(cutoff.getDate() - 10);
+  const cutoffStr = cutoff.toISOString();
+
   const { data: chapitresData } = await admin
     .from("chapitre_assignation")
-    .select("groupe_id, chapitres(id, titre, matiere, sous_matiere), groupes(nom)")
-    .eq("actif", true)
-    .neq("chapitres.sous_matiere", "rituel-orthographe");
+    .select("groupe_id, chapitres(id, titre, matiere, sous_matiere), groupes(nom), created_at")
+    .eq("actif", true);
 
-  // Map groupe_nom → chapitres
+  // Map groupe_nom → chapitres (max 1 rituel-orthographe = le plus récent)
   const chapitresParGroupe = new Map<string, Array<{ titre: string; matiere: string; sous_matiere: string }>>();
+  const rituelParGroupe = new Map<string, { titre: string; created_at: string }>();
+
   for (const ca of chapitresData ?? []) {
     const groupeNom = (ca as any).groupes?.nom ?? "";
     const ch = (ca as any).chapitres;
-    if (!ch || !groupeNom || ch.sous_matiere === "rituel-orthographe") continue;
+    const caDate: string = (ca as any).created_at ?? "";
+    if (!ch || !groupeNom) continue;
+
+    if (ch.sous_matiere === "rituel-orthographe") {
+      // Garder uniquement la plus récemment assignée par groupe
+      const existing = rituelParGroupe.get(groupeNom);
+      if (!existing || caDate > existing.created_at) {
+        rituelParGroupe.set(groupeNom, { titre: ch.titre, created_at: caDate });
+      }
+    } else {
+      // Uniquement les chapitres assignés dans les 10 derniers jours
+      if (caDate < cutoffStr) continue;
+      if (!chapitresParGroupe.has(groupeNom)) chapitresParGroupe.set(groupeNom, []);
+      chapitresParGroupe.get(groupeNom)!.push({ titre: ch.titre, matiere: ch.matiere ?? "", sous_matiere: ch.sous_matiere ?? "" });
+    }
+  }
+
+  // Ajouter la P'tite Règle de la semaine en tête de chaque groupe
+  for (const [groupeNom, regle] of rituelParGroupe) {
     if (!chapitresParGroupe.has(groupeNom)) chapitresParGroupe.set(groupeNom, []);
-    chapitresParGroupe.get(groupeNom)!.push({ titre: ch.titre, matiere: ch.matiere ?? "", sous_matiere: ch.sous_matiere ?? "" });
+    chapitresParGroupe.get(groupeNom)!.unshift({ titre: regle.titre, matiere: "français", sous_matiere: "rituel-orthographe" });
   }
 
   const [pbRes, rbRes] = await Promise.all([
