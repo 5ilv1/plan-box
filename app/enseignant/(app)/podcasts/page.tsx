@@ -216,11 +216,20 @@ export default function PodcastsEnseignant() {
           contenuMaj = { ...contenuMaj, taches: taches.map((t, i) => i === 0 ? { ...t, url: editUrl } : t) };
         }
         contenuMaj = { ...contenuMaj, matiere: editMatiere || null };
+        const ancienTitre = editPodcast.titre;
         await fetch(`/api/bibliotheque-ressources/${biblioId}`, {
           method: "PATCH",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ titre: editTitre, sous_type: "podcast", matiere: editMatiere || null, contenu: contenuMaj }),
         });
+        // Si le titre a changé et que le podcast est assigné, mettre à jour plan_travail
+        if (editTitre !== ancienTitre && editPodcast.qcm_id) {
+          await fetch("/api/podcasts", {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ qcm_id: editPodcast.qcm_id, titre: editTitre, dans_podium: editPodcast.dans_podium, renommer: true }),
+          });
+        }
         showMsg("Podcast mis à jour");
         setEditPodcast(null);
         if (enseignantId) await charger(enseignantId);
