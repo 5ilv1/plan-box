@@ -131,6 +131,13 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
 
   return (
     <div style={{ marginTop: 24 }}>
+      <style jsx>{`
+        @media (max-width: 720px) {
+          :global(.pb-correction-grid) {
+            grid-template-columns: minmax(0, 1fr) !important;
+          }
+        }
+      `}</style>
       {/* Input caché */}
       <input
         ref={inputRef}
@@ -345,9 +352,19 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                   color: "var(--pb-on-surface-variant)",
                   margin: "0 0 16px",
                 }}>
-                  Les mots en rouge sont les erreurs. Touche un mot pour voir l&apos;indice.
+                  Les mots en rouge sont les erreurs. Touche un mot pour voir l&apos;indice à droite.
                 </p>
 
+                {/* Layout 2 colonnes : texte à gauche, indice à droite */}
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                    gap: 16,
+                    alignItems: "start",
+                  }}
+                  className="pb-correction-grid"
+                >
                 {/* Texte de la dictée */}
                 <div style={{
                   padding: "18px 20px",
@@ -412,15 +429,16 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                   })}
                 </div>
 
-                {/* Panneau d'indice (erreur active) */}
-                {active && activeConfig && (
+                {/* Panneau d'indice — toujours visible, colonne de droite */}
+                {active && activeConfig ? (
                   <div style={{
-                    marginTop: 14,
                     padding: "14px 16px",
                     borderRadius: "1rem",
                     background: "white",
                     border: `2px solid ${activeConfig.color}`,
                     boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                    position: "sticky",
+                    top: 12,
                   }}>
                     <div style={{
                       display: "flex", alignItems: "center", gap: 8, marginBottom: 8,
@@ -474,7 +492,29 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                       💡 {active.indice}
                     </p>
                   </div>
+                ) : (
+                  <div style={{
+                    padding: "18px 20px",
+                    borderRadius: "1rem",
+                    background: "white",
+                    border: "2px dashed rgba(0,0,0,0.12)",
+                    color: "var(--pb-on-surface-variant)",
+                    textAlign: "center",
+                    position: "sticky",
+                    top: 12,
+                  }}>
+                    <span
+                      className="ms"
+                      style={{ fontSize: 36, color: "var(--pb-primary)", opacity: 0.5, display: "block", marginBottom: 8 }}
+                    >
+                      lightbulb
+                    </span>
+                    <p style={{ fontSize: 14, margin: 0, lineHeight: 1.5 }}>
+                      Touche un mot en rouge pour lire l&apos;indice.
+                    </p>
+                  </div>
                 )}
+                </div>
 
                 {/* Mots en trop (insertions de l'élève hors du texte attendu) */}
                 {insertions.length > 0 && (
