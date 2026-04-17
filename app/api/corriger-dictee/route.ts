@@ -101,13 +101,26 @@ interface DiffErreur {
 
 /** Construit la liste des erreurs exhaustives depuis l'alignement. */
 function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreur[]; nb_corrects: number; nb_total: number } {
-  const ops = aligner(att, eleve);
+  const opsRaw = aligner(att, eleve);
   const erreurs: DiffErreur[] = [];
   let nb_corrects = 0;
 
   // Compter nb_total comme nombre de mots (hors ponctuation pure) du texte attendu
   const estPonct = (t: string) => /^[.,;:!?…«»"()]$/.test(t);
   const nb_total = att.filter((t) => !estPonct(t)).length;
+
+  // Trimmer les "ins" isolés en tête (titre/date/nom/prénom) et en queue (signature, notes)
+  // Un bloc de "ins" consécutif avant le premier match/sub ou après le dernier est ignoré.
+  const firstAnchor = opsRaw.findIndex((o) => o.type === "match" || o.type === "sub");
+  let lastAnchor = -1;
+  for (let i = opsRaw.length - 1; i >= 0; i--) {
+    if (opsRaw[i].type === "match" || opsRaw[i].type === "sub") { lastAnchor = i; break; }
+  }
+  const ops = (firstAnchor < 0 || lastAnchor < 0)
+    ? opsRaw
+    : opsRaw.map((o, i) =>
+        (i < firstAnchor || i > lastAnchor) && o.type === "ins" ? null : o
+      ).filter((o): o is Op => o !== null);
 
   for (let k = 0; k < ops.length; k++) {
     const op = ops[k];
@@ -230,6 +243,9 @@ export async function POST(req: NextRequest) {
   const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
   const nbPages = imageBlocks.length;
 
+  // Nombre de mots attendus (sans ponctuation) — repère de calibration pour l'OCR
+  const nbMotsAttendus = texteAttendu.split(/\s+/).filter(Boolean).length;
+
   // ── Étape 1 : TRANSCRIPTION FIDÈLE (vision) ───────────────────────────────
   const promptTranscription = estMots
     ? `Tu es un OCR spécialisé dans l'écriture manuscrite d'enfants de primaire.
@@ -238,12 +254,23 @@ ${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahi
 
 MISSION : transcrire EXACTEMENT ce que l'élève a écrit, MÊME SI C'EST FAUX.
 
-RÈGLES ABSOLUES :
-- Ne CORRIGE JAMAIS les fautes. Reproduis toutes les erreurs : orthographe, accents, majuscules, lettres doublées ou manquantes.
-- Si l'élève a écrit "mason", tu transcris "mason", pas "maison".
-- Si un accent est absent, tu l'omets aussi.
-- Un mot par ligne, dans l'ordre du cahier.
-- Ignore les ratures barrées.
+⚠️ RÈGLES CRITIQUES :
+
+1. NE CORRIGE JAMAIS LES FAUTES.
+   "mason" reste "mason" (pas "maison"). "éléphan" reste "éléphan" (pas "éléphant").
+
+2. ACCENTS — reproduis UNIQUEMENT ce qui est visible.
+   Pas d'accent visible sur un "e" → écris "e" (pas "é" ni "è").
+   N'ajoute JAMAIS un accent par habitude. Regarde chaque "e" individuellement.
+
+3. IGNORE les éléments NON dictés : titre, thème, prénom, nom, date, en-tête.
+   Commence au PREMIER MOT DE LA LISTE DICTÉE.
+
+4. LETTRES HÉSITANTES : quand ambigu, choisis la plus SIMPLE
+   (a plutôt que ai, m plutôt que mm, e plutôt que é).
+
+Un mot par ligne. Ignore les ratures barrées.
+Liste attendue d'environ ${nbMotsAttendus} mot(s).
 
 Réponds UNIQUEMENT avec ce JSON :
 { "transcription": "ligne1\\nligne2\\n..." }`
@@ -253,14 +280,38 @@ ${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahi
 
 MISSION : transcrire EXACTEMENT ce que l'élève a écrit, mot pour mot, MÊME SI C'EST FAUX.
 
-RÈGLES ABSOLUES :
-- Ne CORRIGE JAMAIS les fautes : reproduis les erreurs d'orthographe, d'accord, d'accent, de majuscule, de ponctuation, de lettre doublée.
-- Si l'élève a écrit "il mange" au lieu de "ils mangent", transcris "il mange".
-- Si l'élève a oublié un mot, ne l'invente pas.
-- Si l'élève a ajouté un mot en trop, garde-le.
-- Conserve la ponctuation exacte et la casse.
-- Une seule ligne continue, phrases séparées par leur ponctuation.
-- Ignore les ratures barrées.
+⚠️ RÈGLES CRITIQUES — applique-les STRICTEMENT :
+
+1. NE CORRIGE JAMAIS LES FAUTES.
+   "il mange" reste "il mange" (pas "ils mangent").
+   "enfan" reste "enfan" (pas "enfant").
+   "courure" reste "courure" (pas "coururent").
+   "resta" reste "resta" (pas "restai" ni "restait").
+   Mot oublié → ne l'invente pas. Mot en trop → garde-le.
+
+2. ACCENTS — reproduis UNIQUEMENT ce qui est visible sur la page.
+   Pas d'accent visible sur un "e" → écris "e" (PAS "é" ni "è").
+   Regarde chaque "e" individuellement. N'ajoute JAMAIS un accent par habitude.
+   "eleve" reste "eleve" si aucun accent visible (pas "élève").
+   Inversement, accent à tort → conserve-le.
+
+3. IGNORE tout ce qui n'est pas la dictée elle-même :
+   - TITRE de la dictée (souvent en haut, parfois souligné ou en gros).
+   - Prénom, nom, date, en-tête, signature, notes à côté.
+   - Commence au PREMIER MOT DE LA PREMIÈRE PHRASE DICTÉE.
+   - Termine au dernier mot de la dernière phrase dictée.
+
+4. LETTRES HÉSITANTES : quand ambigu, choisis la plus SIMPLE.
+   - "a" / "ai" ambigu → choisis "a".
+   - "m" / "mm" ambigu → choisis "m".
+   - N'ajoute PAS de lettres parce que ça ferait un vrai mot.
+   - Ne complète PAS une terminaison verbale que tu ne vois pas clairement.
+
+Conserve la ponctuation exacte et la casse.
+Une seule ligne continue, phrases séparées par leur ponctuation.
+Ignore les ratures barrées.
+
+Dictée attendue d'environ ${nbMotsAttendus} mots.
 
 Réponds UNIQUEMENT avec ce JSON :
 { "transcription": "ce que l'élève a vraiment écrit, mot pour mot" }`;
@@ -341,14 +392,45 @@ ${erreurs.map((e, i) => {
 
 Types possibles : lettre_muette | accord_sujet_verbe | accord_adjectif | conjugaison | homophone | mot_oublie | orthographe | majuscule | ponctuation | accent | lettre_doublee | autre
 
-Indices selon l'erreur :
-- Lettre muette → "Essaie de mettre le mot au féminin (ou au pluriel) pour entendre la lettre cachée."
+⚠️ RÈGLES STRICTES DE CLASSIFICATION — ne te trompe pas de type :
+
+• lettre_muette UNIQUEMENT si la différence porte SUR UNE LETTRE FINALE NON PRONONCÉE.
+  Exemples valides : "canar" vs "canard" (d muet), "peti" vs "petit" (t muet), "souri" vs "souris" (s muet).
+  Contre-exemples (PAS lettre_muette) : "canart" vs "canard" (confusion t/d → orthographe),
+  "canard" avec un autre changement à l'intérieur du mot → orthographe.
+  Compare lettre à lettre : la lettre en cause est-elle bien une finale qu'on n'entend pas ?
+  Si NON → choisis orthographe, accord_*, conjugaison ou autre.
+
+• accord_sujet_verbe UNIQUEMENT si la désinence verbale est en cause
+  (ent/ant, s/x final de verbe, ai/a/as…). Exemples : "ils mange" vs "ils mangent".
+
+• accord_adjectif UNIQUEMENT si c'est un adjectif qui change de genre/nombre.
+
+• conjugaison si c'est le radical ou le temps du verbe qui est faux
+  (ex : "courure" vs "coururent" = radical+terminaison, donc conjugaison).
+
+• homophone UNIQUEMENT pour les paires classiques : a/à, et/est, ou/où, son/sont, on/ont,
+  ce/se, ces/ses/c'est/s'est, mais/mes, leur/leurs (possessif vs pronom), la/là.
+
+• accent UNIQUEMENT si le mot est identique SAUF un accent (é/è/ê/à/ô).
+
+• lettre_doublee si une consonne est doublée ou dédoublée à tort (ll/l, tt/t, mm/m).
+
+• majuscule si la seule différence est la casse d'une ou plusieurs lettres.
+
+• mot_oublie pour les MOT OUBLIÉ du diff.
+
+• orthographe pour TOUT LE RESTE (différence interne au mot, lettre ajoutée/retirée au milieu,
+  confusion de lettres qui ne rentre dans aucune catégorie ci-dessus).
+
+Indices (adapte-les au contexte de l'erreur) :
+- Lettre muette → "Mets le mot au féminin ou au pluriel pour entendre la lettre cachée."
 - Accord S/V → "Qui fait l'action ? Singulier ou pluriel ?"
 - Accord adjectif → "Cet adjectif s'accorde avec quel nom ? Genre ? Nombre ?"
 - Conjugaison → "À quel temps est le verbe ? Comment se conjugue-t-il avec ce sujet ?"
 - Homophone → "a/à, et/est, son/sont… Quelle astuce peux-tu utiliser pour vérifier ?"
-- Mot oublié → "Relis ta phrase : il manque un petit mot entre deux mots."
-- Orthographe → "Ce mot est difficile. Essaie de le visualiser lettre par lettre."
+- Mot oublié → "Relis ta phrase : il manque un petit mot ici."
+- Orthographe → "Regarde bien ce mot lettre par lettre, il y a une lettre qui cloche."
 - Majuscule → "Début de phrase ou nom propre : quelle lettre utiliser ?"
 - Ponctuation → "Vérifie la ponctuation ici."
 - Accent → "Écoute la voyelle : aigu, grave ou circonflexe ?"
