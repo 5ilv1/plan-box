@@ -54,6 +54,9 @@ export default function GenererExerciceForm({
   const [matieresDispo, setMatieresDispo] = useState<string[]>([]);
   const [matiere, setMatiere] = useState<string>(dv?.matiere ?? "");
   const [sousMatiere, setSousMatiere] = useState<string>("");
+  // Sous-matière personnalisée : saisie libre quand l'enseignant choisit "Personnalisé"
+  const [sousMatierePerso, setSousMatierePerso] = useState<string>("");
+  const [sousMatiereMode, setSousMatiereMode] = useState<"liste" | "perso">("liste");
   const [chapitreId, setChapitreId] = useState(dv?.chapitreId ?? "");
   const [showCreerChapitre, setShowCreerChapitre] = useState(false);
   const [nouveauChapitreNom, setNouveauChapitreNom] = useState("");
@@ -96,6 +99,8 @@ export default function GenererExerciceForm({
         const liste = (data ?? []) as Chapitre[];
         setChapitres(liste);
         setSousMatiere(""); // réinitialise le filtre sous-matière
+        setSousMatiereMode("liste");
+        setSousMatierePerso("");
         // Pré-sélectionne : defaultValues > defaultChapitreId > "sans chapitre"
         const select = dv?.chapitreId
           ? (liste.find((c) => c.id === dv.chapitreId)?.id ?? "")
@@ -210,31 +215,51 @@ export default function GenererExerciceForm({
         </div>
       </div>
 
-      {/* Sous-matière (visible seulement s'il en existe pour la matière sélectionnée) */}
-      {sousMatieresDispo.length > 0 && (
-        <div className="form-group">
-          <label className="form-label">
-            Sous-matière <span className="text-secondary">(optionnel)</span>
-          </label>
-          <select
+      {/* Sous-matière (liste existante OU saisie libre via "Personnalisé") */}
+      <div className="form-group">
+        <label className="form-label">
+          Sous-matière <span className="text-secondary">(optionnel)</span>
+        </label>
+        <select
+          className="form-input"
+          value={sousMatiereMode === "perso" ? "__perso__" : sousMatiere}
+          onChange={(e) => {
+            const v = e.target.value;
+            if (v === "__perso__") {
+              setSousMatiereMode("perso");
+              setSousMatiere(sousMatierePerso);
+              // Pas de filtre de chapitre pour une sous-matière perso (nouvelle)
+              setChapitreId("");
+              return;
+            }
+            setSousMatiereMode("liste");
+            setSousMatiere(v);
+            // Auto-sélectionne le premier chapitre de la sous-matière choisie
+            const filtered = v ? chapitres.filter(c => c.sous_matiere === v) : chapitres;
+            setChapitreId(filtered[0]?.id ?? "");
+          }}
+        >
+          <option value="">Toutes les sous-matières</option>
+          {sousMatieresDispo.map((sm) => (
+            <option key={sm} value={sm}>{sm}</option>
+          ))}
+          <option value="__perso__">➕ Personnalisé…</option>
+        </select>
+        {sousMatiereMode === "perso" && (
+          <input
+            type="text"
             className="form-input"
-            value={sousMatiere}
+            value={sousMatierePerso}
             onChange={(e) => {
+              setSousMatierePerso(e.target.value);
               setSousMatiere(e.target.value);
-              // Auto-sélectionne le premier chapitre de la sous-matière choisie
-              const filtered = e.target.value
-                ? chapitres.filter(c => c.sous_matiere === e.target.value)
-                : chapitres;
-              setChapitreId(filtered[0]?.id ?? "");
             }}
-          >
-            <option value="">Toutes les sous-matières</option>
-            {sousMatieresDispo.map((sm) => (
-              <option key={sm} value={sm}>{sm}</option>
-            ))}
-          </select>
-        </div>
-      )}
+            placeholder="Ex. Conjugaison, Numération, Géométrie…"
+            style={{ marginTop: 8 }}
+            autoFocus
+          />
+        )}
+      </div>
 
       {/* Chapitre */}
       <div className="form-group">
