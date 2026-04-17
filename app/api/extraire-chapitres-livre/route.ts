@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { PDFParse } from "pdf-parse";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -133,8 +132,13 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
 
 export async function POST(req: Request) {
   try {
-    let pdfBuffer: Buffer;
+    // Trois modes d'entrée :
+    //  1. JSON avec `texteBrut` (préféré : extraction PDF faite côté client via pdfjs)
+    //  2. FormData avec `pdf` (PDF scanné → fallback IA)
+    //  3. JSON avec `pdfBase64` (rétrocompat)
     const contentType = req.headers.get("content-type") ?? "";
+    let texteBrut: string | undefined;
+    let pdfBase64: string | undefined;
 
     if (contentType.includes("multipart/form-data")) {
       const formData = await req.formData();
@@ -148,36 +152,44 @@ export async function POST(req: Request) {
           { status: 413 }
         );
       }
-      pdfBuffer = Buffer.from(await file.arrayBuffer());
+      const buffer = Buffer.from(await file.arrayBuffer());
+      pdfBase64 = buffer.toString("base64");
     } else {
-      // Rétrocompat : base64 via JSON
       const body = await req.json();
-      if (!body.pdfBase64) {
-        return NextResponse.json({ erreur: "PDF manquant." }, { status: 400 });
+      texteBrut = body.texteBrut;
+      pdfBase64 = body.pdfBase64;
+    }
+
+    // ── 1. Texte déjà extrait côté client : détection directe ─────────────
+    if (texteBrut && typeof texteBrut === "string") {
+      const texteNettoye = texteBrut.trim();
+      const nbMotsTotal = texteNettoye.split(/\s+/).filter(Boolean).length;
+
+      if (nbMotsTotal < 200) {
+        return NextResponse.json(
+          { erreur: "Le PDF semble être un scan (trop peu de texte extractible). Utilise le mode manuel chapitre par chapitre." },
+          { status: 400 }
+        );
       }
-      pdfBuffer = Buffer.from(body.pdfBase64, "base64");
+
+      const chapitresDetectes = detecterChapitres(texteNettoye);
+      if (chapitresDetectes.length >= 1) {
+        return NextResponse.json({
+          resultat: { chapitres: chapitresDetectes, source: "local" },
+        });
+      }
+
+      return NextResponse.json(
+        {
+          erreur:
+            "Aucun chapitre détecté automatiquement (le livre n'a peut-être pas de marqueurs clairs). Utilise l'ajout manuel chapitre par chapitre.",
+        },
+        { status: 422 }
+      );
     }
 
-    // ── 1. Extraction locale du texte via pdf-parse ───────────────────────
-    let texteBrut = "";
-    let parser: PDFParse | null = null;
-    try {
-      parser = new PDFParse({ data: new Uint8Array(pdfBuffer) });
-      const parsed = await parser.getText();
-      texteBrut = parsed.text ?? "";
-    } catch (err) {
-      console.error("[extraire-chapitres-livre] pdf-parse échec :", err);
-    } finally {
-      if (parser) await parser.destroy().catch(() => {});
-    }
-
-    const texteNettoye = texteBrut.trim();
-    const nbMotsTotal = texteNettoye.split(/\s+/).filter(Boolean).length;
-
-    // Si le PDF semble être un scan (très peu de texte extractible)
-    if (nbMotsTotal < 200) {
-      console.log("[extraire-chapitres-livre] Peu de texte (", nbMotsTotal, "mots) — fallback IA");
-      const pdfBase64 = pdfBuffer.toString("base64");
+    // ── 2. PDF brut (fallback IA, uniquement pour PDFs scannés) ──────────
+    if (pdfBase64) {
       try {
         const chapitresIA = await extraireViaIA(pdfBase64);
         if (chapitresIA.length === 0) {
@@ -189,29 +201,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // ── 2. Détection des chapitres par regex ───────────────────────────────
-    const chapitresDetectes = detecterChapitres(texteNettoye);
-
-    if (chapitresDetectes.length >= 2) {
-      return NextResponse.json({ resultat: { chapitres: chapitresDetectes, source: "local" } });
-    }
-
-    // ── 3. Fallback IA si détection locale n'a rien trouvé ────────────────
-    console.log("[extraire-chapitres-livre] Détection locale :", chapitresDetectes.length, "chapitres — fallback IA");
-    const pdfBase64 = pdfBuffer.toString("base64");
-    try {
-      const chapitresIA = await extraireViaIA(pdfBase64);
-      if (chapitresIA.length === 0) {
-        return NextResponse.json({ erreur: "Aucun chapitre détecté dans le PDF." }, { status: 500 });
-      }
-      return NextResponse.json({ resultat: { chapitres: chapitresIA, source: "ia" } });
-    } catch (err) {
-      // Si l'IA échoue ET qu'on a au moins 1 chapitre local, on le retourne
-      if (chapitresDetectes.length === 1) {
-        return NextResponse.json({ resultat: { chapitres: chapitresDetectes, source: "local_partiel" } });
-      }
-      return handleExtractionError(err);
-    }
+    return NextResponse.json({ erreur: "texteBrut ou PDF requis." }, { status: 400 });
   } catch (err) {
     console.error("[extraire-chapitres-livre]", err);
     return handleExtractionError(err);

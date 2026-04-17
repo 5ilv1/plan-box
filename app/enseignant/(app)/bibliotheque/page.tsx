@@ -1115,8 +1115,8 @@ export default function PageBibliotheque() {
                 </select>
                 <select className="form-input" value={filtreMatiere} onChange={(e) => setFiltreMatiere(e.target.value)} style={{ fontSize: 13, flex: 1, minWidth: 140 }}>
                   <option value="">Toutes les matières</option>
-                  <option value="maths">Maths</option>
-                  <option value="français">Français</option>
+                  <option value="Maths">Maths</option>
+                  <option value="Français">Français</option>
                 </select>
                 <select className="form-input" value={filtreNiveau} onChange={(e) => setFiltreNiveau(e.target.value)} style={{ fontSize: 13, flex: 1, minWidth: 120 }}>
                   <option value="">Tous les niveaux</option>

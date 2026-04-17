@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
+import { extraireTextePdf } from "@/lib/pdf-extract-client";
 
 interface LectureQuestion {
   id?: number;
@@ -133,13 +134,14 @@ export default function PageChapitreLectureDetail() {
     setEnExtraction(true);
     setErreurUpload("");
     try {
-      // FormData plutôt que base64 JSON : évite de charger le fichier
-      // 2x en mémoire côté navigateur (crash sur gros livres)
-      const formData = new FormData();
-      formData.append("pdf", pdfLivre.file);
+      // Extraction locale du texte dans le navigateur (pdfjs) pour
+      // éviter la limite 4.5 MB de Vercel sur le body serverless.
+      const texteBrut = await extraireTextePdf(pdfLivre.file);
+
       const res = await fetch("/api/extraire-chapitres-livre", {
         method: "POST",
-        body: formData,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ texteBrut }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -152,7 +154,8 @@ export default function PageChapitreLectureDetail() {
       }));
       setChapitresExtraits(extraits);
     } catch (err) {
-      setErreurUpload(err instanceof Error ? err.message : "Erreur réseau.");
+      console.error("[extraireChapitres]", err);
+      setErreurUpload(err instanceof Error ? err.message : "Erreur lors de l'extraction du PDF.");
     } finally {
       setEnExtraction(false);
     }

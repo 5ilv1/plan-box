@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
     .order("created_at", { ascending: false });
 
   if (type) query = query.eq("type", type);
-  if (matiere) query = query.eq("matiere", matiere);
+  if (matiere) query = query.ilike("matiere", matiere);
   if (niveauId) query = query.eq("niveau_id", niveauId);
   if (chapitreId) query = query.eq("chapitre_id", chapitreId);
 
