@@ -11,21 +11,19 @@ interface Erreur {
   indice: string;
 }
 
+interface Segment {
+  type: "ok" | "err" | "missing" | "extra";
+  text: string;
+  idx_erreur: number;
+}
+
 interface ResultatCorrection {
   transcription: string;
   texte_attendu?: string;
+  segments?: Segment[];
   nb_mots_corrects: number;
   nb_mots_total: number;
   erreurs: Erreur[];
-}
-
-/** Tokenise en gardant la ponctuation comme tokens séparés — doit suivre la même logique que la route API. */
-function tokenizerAffichage(s: string): string[] {
-  const out: string[] = [];
-  const re = /[\p{L}\p{N}'\-]+|[.,;:!?…«»"()]/gu;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(s)) !== null) out.push(m[0]);
-  return out;
 }
 
 function estPonctuation(t: string): boolean {
@@ -315,21 +313,9 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
             </p>
           </div>
 
-          {/* Texte attendu avec erreurs surlignées + insertions élève */}
-          {resultat.erreurs.length > 0 && resultat.texte_attendu && (() => {
-            const tokens = tokenizerAffichage(resultat.texte_attendu);
-            // index mot attendu -> index de l'erreur dans resultat.erreurs
-            const erreursParPos = new Map<number, number>();
-            // insertions (mot en trop écrit par l'élève, non présent dans l'attendu)
-            const insertions: { i: number; err: Erreur }[] = [];
-            resultat.erreurs.forEach((e, idx) => {
-              if (typeof e.position === "number" && e.position >= 0) {
-                erreursParPos.set(e.position, idx);
-              } else {
-                insertions.push({ i: idx, err: e });
-              }
-            });
-
+          {/* Transcription élève avec erreurs surlignées */}
+          {resultat.erreurs.length > 0 && resultat.segments && (() => {
+            const segments = resultat.segments!;
             const active = erreurActive !== null ? resultat.erreurs[erreurActive] : null;
             const activeConfig = active
               ? TYPE_ERREUR_LABELS[active.type_erreur] || TYPE_ERREUR_LABELS.autre
@@ -352,77 +338,84 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                   color: "var(--pb-on-surface-variant)",
                   margin: "0 0 16px",
                 }}>
-                  Les mots en rouge sont les erreurs. Touche un mot pour voir l&apos;indice à droite.
+                  C&apos;est ce que tu as écrit. Les mots en rouge sont à revoir — touche un mot pour voir l&apos;indice à droite.
                 </p>
 
                 {/* Layout 2 colonnes : texte à gauche, indice à droite */}
                 <div
                   style={{
                     display: "grid",
-                    gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
-                    gap: 16,
+                    gridTemplateColumns: "minmax(0, 1.3fr) minmax(0, 1fr)",
+                    gap: 20,
                     alignItems: "start",
                   }}
                   className="pb-correction-grid"
                 >
-                {/* Texte de la dictée */}
+                {/* Transcription de l'élève */}
                 <div style={{
-                  padding: "18px 20px",
+                  padding: "20px 24px",
                   borderRadius: "1rem",
                   background: "var(--pb-surface-container, #f5f5f5)",
-                  fontSize: 17,
-                  lineHeight: 1.9,
+                  fontSize: 18,
+                  lineHeight: 2,
                   color: "var(--pb-on-surface)",
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                 }}>
-                  {tokens.map((tok, idxTok) => {
-                    const idxErr = erreursParPos.get(idxTok);
-                    const estErreur = idxErr !== undefined;
-                    const ponct = estPonctuation(tok);
-                    const estActive = estErreur && idxErr === erreurActive;
+                  {segments.map((seg, i) => {
+                    const ponct = estPonctuation(seg.text);
+                    const prevSeg = i > 0 ? segments[i - 1] : null;
+                    const prevText = prevSeg?.text ?? "";
+                    const espaceAvant = i > 0 && !ponct && prevText !== "«" && prevText !== "(" && prevText !== "\"";
 
-                    // Espace inséré avant le token sauf s'il s'agit d'une ponctuation
-                    // ou si le token précédent est une ouvrante.
-                    const prev = idxTok > 0 ? tokens[idxTok - 1] : "";
-                    const espaceAvant = idxTok > 0 && !ponct && prev !== "«" && prev !== "(" && prev !== "\"";
-
-                    if (!estErreur) {
+                    if (seg.type === "ok") {
                       return (
-                        <span key={idxTok}>
+                        <span key={i}>
                           {espaceAvant ? " " : ""}
-                          {tok}
+                          {seg.text}
                         </span>
                       );
                     }
 
-                    const err = resultat.erreurs[idxErr!];
-                    const estMotOublie = err.kind === "del";
+                    const estActive = seg.idx_erreur === erreurActive;
+                    const estMotOublie = seg.type === "missing";
+                    const estMotEnTrop = seg.type === "extra";
+
+                    const styleBtn: React.CSSProperties = {
+                      display: "inline",
+                      padding: "2px 6px",
+                      margin: "0 1px",
+                      borderRadius: 6,
+                      border: estActive ? "2px solid #DC2626" : "none",
+                      background: estActive ? "#fee2e2" : "transparent",
+                      color: "#DC2626",
+                      fontWeight: 700,
+                      fontSize: "inherit",
+                      fontFamily: "inherit",
+                      cursor: "pointer",
+                      textDecoration: estMotEnTrop
+                        ? "line-through"
+                        : estMotOublie
+                          ? "underline dashed"
+                          : "underline",
+                      textDecorationColor: "#DC2626",
+                      textUnderlineOffset: 3,
+                      fontStyle: estMotOublie ? "italic" : "normal",
+                      opacity: estMotOublie ? 0.75 : 1,
+                    };
+
+                    // Pour un mot oublié, on affiche "(mot)" en italique pour le distinguer
+                    const affichage = estMotOublie ? `(${seg.text})` : seg.text;
 
                     return (
-                      <span key={idxTok}>
+                      <span key={i}>
                         {espaceAvant ? " " : ""}
                         <button
                           type="button"
-                          onClick={() => setErreurActive(estActive ? null : idxErr!)}
-                          style={{
-                            display: "inline",
-                            padding: "2px 6px",
-                            margin: "0 1px",
-                            borderRadius: 6,
-                            border: estActive ? "2px solid #DC2626" : "none",
-                            background: estActive ? "#fee2e2" : "transparent",
-                            color: "#DC2626",
-                            fontWeight: 700,
-                            fontSize: "inherit",
-                            fontFamily: "inherit",
-                            cursor: "pointer",
-                            textDecoration: estMotOublie ? "underline dashed" : "underline",
-                            textDecorationColor: "#DC2626",
-                            textUnderlineOffset: 3,
-                          }}
-                          aria-label={`Erreur sur le mot ${tok}`}
+                          onClick={() => setErreurActive(estActive ? null : seg.idx_erreur)}
+                          style={styleBtn}
+                          aria-label={`Erreur sur le mot ${seg.text}`}
                         >
-                          {tok}
+                          {affichage}
                         </button>
                       </span>
                     );
@@ -469,20 +462,26 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                         <span className="ms" style={{ fontSize: 20 }}>close</span>
                       </button>
                     </div>
-                    {active.mot_eleve && (
+                    {active.kind === "del" ? (
+                      <p style={{
+                        fontSize: 14, margin: "0 0 6px",
+                        color: "var(--pb-on-surface-variant)",
+                      }}>
+                        Tu as oublié le mot <strong style={{ color: "#DC2626" }}>« {active.mot_attendu} »</strong>.
+                      </p>
+                    ) : active.kind === "ins" ? (
+                      <p style={{
+                        fontSize: 14, margin: "0 0 6px",
+                        color: "var(--pb-on-surface-variant)",
+                      }}>
+                        Le mot <strong style={{ color: "#DC2626" }}>« {active.mot_eleve} »</strong> est en trop.
+                      </p>
+                    ) : active.mot_eleve && (
                       <p style={{
                         fontSize: 14, margin: "0 0 6px",
                         color: "var(--pb-on-surface-variant)",
                       }}>
                         Tu as écrit : <strong style={{ color: "#DC2626" }}>« {active.mot_eleve} »</strong>
-                      </p>
-                    )}
-                    {active.kind === "del" && (
-                      <p style={{
-                        fontSize: 14, margin: "0 0 6px",
-                        color: "var(--pb-on-surface-variant)",
-                      }}>
-                        Tu as oublié ce mot.
                       </p>
                     )}
                     <p style={{
@@ -516,38 +515,21 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                 )}
                 </div>
 
-                {/* Mots en trop (insertions de l'élève hors du texte attendu) */}
-                {insertions.length > 0 && (
-                  <div style={{
-                    marginTop: 14,
-                    padding: "12px 16px",
-                    borderRadius: "0.75rem",
-                    background: "#fff7ed",
-                    border: "1px solid #fed7aa",
-                  }}>
-                    <p style={{
-                      fontSize: 13, fontWeight: 700,
-                      color: "#9a3412", margin: "0 0 6px",
-                      textTransform: "uppercase", letterSpacing: 0.5,
-                    }}>
-                      Mots en trop
-                    </p>
-                    <p style={{ fontSize: 14, color: "#7c2d12", margin: 0 }}>
-                      {insertions.map((x, k) => (
-                        <span key={k}>
-                          {k > 0 ? ", " : ""}
-                          <span style={{ textDecoration: "line-through" }}>« {x.err.mot_eleve} »</span>
-                        </span>
-                      ))}
-                    </p>
-                  </div>
-                )}
+                <p style={{
+                  fontSize: 12,
+                  color: "var(--pb-on-surface-variant)",
+                  margin: "10px 0 0",
+                  fontStyle: "italic",
+                }}>
+                  Astuce : les mots barrés sont en trop, les mots entre parenthèses
+                  étaient oubliés, les mots soulignés sont mal orthographiés.
+                </p>
               </div>
             );
           })()}
 
-          {/* Fallback : si on n'a pas le texte attendu, afficher l'ancienne liste */}
-          {resultat.erreurs.length > 0 && !resultat.texte_attendu && (
+          {/* Fallback : si on n'a pas de segments, afficher l'ancienne liste */}
+          {resultat.erreurs.length > 0 && !resultat.segments && (
             <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {resultat.erreurs.map((err, i) => {
                 const config = TYPE_ERREUR_LABELS[err.type_erreur] || TYPE_ERREUR_LABELS.autre;

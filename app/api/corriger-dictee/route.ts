@@ -101,10 +101,29 @@ interface DiffErreur {
   position: number;
 }
 
-/** Construit la liste des erreurs exhaustives depuis l'alignement. */
-function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreur[]; nb_corrects: number; nb_total: number } {
+/**
+ * Un segment de rendu : unité à afficher dans le flux de la transcription élève.
+ *  - "ok"      : mot correct (texte écrit par l'élève)
+ *  - "err"     : mot erroné écrit par l'élève → texte = ce qu'il a écrit, idx_erreur pointe dans `erreurs`
+ *  - "missing" : mot oublié → texte = mot attendu (affiché en placeholder), idx_erreur pointe dans `erreurs`
+ *  - "extra"   : mot en trop → texte = ce que l'élève a écrit, idx_erreur pointe dans `erreurs`
+ */
+interface Segment {
+  type: "ok" | "err" | "missing" | "extra";
+  text: string;
+  idx_erreur: number; // -1 si pas d'erreur
+}
+
+/** Construit la liste des erreurs exhaustives et les segments de rendu depuis l'alignement. */
+function construireErreurs(att: string[], eleve: string[]): {
+  erreurs: DiffErreur[];
+  segments: Segment[];
+  nb_corrects: number;
+  nb_total: number;
+} {
   const opsRaw = aligner(att, eleve);
   const erreurs: DiffErreur[] = [];
+  const segments: Segment[] = [];
   let nb_corrects = 0;
 
   // Compter nb_total comme nombre de mots (hors ponctuation pure) du texte attendu
@@ -141,9 +160,11 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
       // Même mot en normalisé : vérifier la casse et les accents exacts
       if (op.expected === op.actual) {
         if (!estPonct(op.expected)) nb_corrects++;
+        segments.push({ type: "ok", text: op.actual, idx_erreur: -1 });
       } else {
         // Différence uniquement de casse ou d'accent
         const memeStrip = stripAccents(op.expected.toLowerCase()) === stripAccents(op.actual.toLowerCase());
+        const idx = erreurs.length;
         erreurs.push({
           mot_eleve: op.actual,
           mot_attendu: op.expected,
@@ -151,9 +172,11 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
           contexte,
           position: posAtt,
         });
+        segments.push({ type: "err", text: op.actual, idx_erreur: idx });
       }
       posAtt++;
     } else if (op.type === "sub") {
+      const idx = erreurs.length;
       erreurs.push({
         mot_eleve: op.actual,
         mot_attendu: op.expected,
@@ -161,8 +184,10 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
         contexte,
         position: posAtt,
       });
+      segments.push({ type: "err", text: op.actual, idx_erreur: idx });
       posAtt++;
     } else if (op.type === "del") {
+      const idx = erreurs.length;
       erreurs.push({
         mot_eleve: "",
         mot_attendu: op.expected,
@@ -170,8 +195,10 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
         contexte,
         position: posAtt,
       });
+      segments.push({ type: "missing", text: op.expected, idx_erreur: idx });
       posAtt++;
     } else if (op.type === "ins") {
+      const idx = erreurs.length;
       erreurs.push({
         mot_eleve: op.actual,
         mot_attendu: "",
@@ -179,11 +206,12 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
         contexte,
         position: -1,
       });
+      segments.push({ type: "extra", text: op.actual, idx_erreur: idx });
       // Pas d'avancée dans `att`
     }
   }
 
-  return { erreurs, nb_corrects, nb_total };
+  return { erreurs, segments, nb_corrects, nb_total };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -366,13 +394,14 @@ Réponds UNIQUEMENT avec ce JSON :
   // ── Étape 2 : DIFF ALGORITHMIQUE (aucune erreur oubliée) ───────────────────
   const tokensAttendus = tokenizer(texteAttendu);
   const tokensEleve    = tokenizer(transcription);
-  const { erreurs, nb_corrects, nb_total } = construireErreurs(tokensAttendus, tokensEleve);
+  const { erreurs, segments, nb_corrects, nb_total } = construireErreurs(tokensAttendus, tokensEleve);
 
   // Pas d'erreurs → court-circuiter
   if (erreurs.length === 0) {
     return NextResponse.json({
       transcription,
       texte_attendu: texteAttendu,
+      segments,
       nb_mots_corrects: nb_corrects,
       nb_mots_total: nb_total,
       erreurs: [],
@@ -499,6 +528,7 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
     return NextResponse.json({
       transcription,
       texte_attendu: texteAttendu,
+      segments,
       nb_mots_corrects: nb_corrects,
       nb_mots_total: nb_total,
       erreurs: erreursFinales,
@@ -522,6 +552,7 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
     return NextResponse.json({
       transcription,
       texte_attendu: texteAttendu,
+      segments,
       nb_mots_corrects: nb_corrects,
       nb_mots_total: nb_total,
       erreurs: erreursFallback,

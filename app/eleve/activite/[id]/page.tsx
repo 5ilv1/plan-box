@@ -524,7 +524,14 @@ export default function PageActivite() {
           </div>
         </nav>
 
-        <main className="eleve-main" style={{ maxWidth: 720, margin: "0 auto", padding: "96px 24px 120px" }}>
+        <main
+          className="eleve-main"
+          style={{
+            maxWidth: (bloc.type === "dictee" || bloc.type === "mots") ? 1100 : 720,
+            margin: "0 auto",
+            padding: "96px 24px 120px",
+          }}
+        >
           <div className="pb-card" style={{ textAlign: "center", padding: "48px 32px" }}>
             {pct !== null ? (
               <>
