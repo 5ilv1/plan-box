@@ -830,7 +830,7 @@ export default function DashboardEleve() {
           <div className="eleve-nav-links">
             {/* liens cachés sur mobile, visibles via bottom-nav */}
             <a href="#aujourd-hui" className="eleve-nav-link active">Aujourd'hui</a>
-            <a href="#chapitres" className="eleve-nav-link">Mes chapitres</a>
+            <a href="#progression" className="eleve-nav-link">Mes chapitres</a>
             <a href="#a-venir" className="eleve-nav-link">À venir</a>
             <Link href="/eleve/bilan" className="eleve-nav-link" style={{ display: "flex", alignItems: "center", gap: 4 }}>
               <span className="ms" style={{ fontSize: 16 }}>bar_chart</span>
@@ -1160,7 +1160,7 @@ export default function DashboardEleve() {
 
             {/* Mes chapitres (Plan Box) */}
             {progressionsSorted.length > 0 && (
-              <div id="chapitres" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div id="progression" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
                 <div>
                   <p className="pb-section-title">Mes chapitres</p>
                   <p className="pb-section-sub">{progressionsSorted.length} chapitre{progressionsSorted.length > 1 ? "s" : ""} en cours</p>
@@ -1857,14 +1857,10 @@ export default function DashboardEleve() {
           <span className="ms" style={{ fontSize: 22 }}>today</span>
           Aujourd'hui
         </a>
-        <a href="#chapitres" className="pb-bottom-nav-item">
-          <span className="ms" style={{ fontSize: 22 }}>menu_book</span>
-          Chapitres
-        </a>
-        <a href="#chapitres" className="pb-bottom-nav-item">
+        <Link href="/eleve/bilan" className="pb-bottom-nav-item">
           <span className="ms" style={{ fontSize: 22 }}>bar_chart</span>
           Progression
-        </a>
+        </Link>
         <button
           onClick={deconnecter}
           className="pb-bottom-nav-item"
