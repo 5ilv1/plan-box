@@ -304,6 +304,7 @@ export type EvalIA = ExerciceIA;
 
 export type TypeBloc =
   | "exercice"
+  | "qcm"
   | "calcul_mental"
   | "mots"
   | "dictee"
@@ -424,6 +425,7 @@ export const TYPE_BLOC_CONFIG: Record<
   { icone: string; libelle: string; couleur: string }
 > = {
   exercice:      { icone: "edit_note",    libelle: "Exercice",      couleur: "#2563EB" },
+  qcm:           { icone: "quiz",         libelle: "QCM",           couleur: "#92400E" },
   calcul_mental: { icone: "calculate",    libelle: "Calcul mental", couleur: "#7C3AED" },
   mots:          { icone: "spellcheck",   libelle: "Mots de la dictée", couleur: "#D97706" },
   dictee:        { icone: "headphones",   libelle: "Dictée",        couleur: "#D97706" },

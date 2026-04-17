@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { TYPE_BLOC_CONFIG, TypeBloc, AssignationSelecteur } from "@/types";
 // AssignationSelector retiré — on utilise un sélecteur simplifié par bloc
 import GenererExerciceForm from "@/components/GenererExerciceForm";
+import GenererQCMForm from "@/components/GenererQCMForm";
 import GenererTexteATrousForm from "@/components/GenererTexteATrousForm";
 import GenererClassementForm from "@/components/GenererClassementForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
@@ -37,6 +38,7 @@ const JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
 
 const TYPES_DISPONIBLES: { type: TypeBloc; label: string; icon: string; color: string; description: string }[] = [
   { type: "exercice", label: "Exercice", icon: "edit_note", color: "#2563EB", description: "Questions-réponses" },
+  { type: "qcm", label: "QCM", icon: "quiz", color: "#92400E", description: "Questions à choix multiple" },
   { type: "lecture", label: "Lecture", icon: "auto_stories", color: "#7C3AED", description: "Texte + QCM" },
   { type: "dictee", label: "Dictée", icon: "headphones", color: "#DC2626", description: "Écoute et écris" },
   { type: "fichier_maths", label: "Fichier maths", icon: "calculate", color: "#0369A1", description: "Page du fichier" },
@@ -765,6 +767,7 @@ export default function NouvelleSemainePage() {
       else {
         const endpoints: Record<string, string> = {
           exercice: "/api/generer-exercice",
+          qcm: "/api/generer-qcm-theme",
           texte_a_trous: "/api/generer-texte-a-trous",
           classement: "/api/generer-classement",
           analyse_phrase: "/api/generer-analyse-phrase",
@@ -1942,6 +1945,12 @@ export default function NouvelleSemainePage() {
                     <GenererExerciceForm
                       onGenerer={(p) => genererEtSauvegarder({ ...p, type: "exercice" })}
                       onPiocherBanque={() => { setShowExoGenerateur(false); setShowExoBanquePicker(true); }}
+                      chargement={exoGenChargement}
+                    />
+                  )}
+                  {typeBloc === "qcm" && (
+                    <GenererQCMForm
+                      onGenerer={(p) => genererEtSauvegarder({ ...p, type: "qcm" })}
                       chargement={exoGenChargement}
                     />
                   )}
