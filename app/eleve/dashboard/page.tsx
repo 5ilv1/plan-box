@@ -136,6 +136,18 @@ function filtrerBlocsConditionnels(blocs: PlanTravail[]): PlanTravail[] {
   });
 }
 
+/**
+ * Dictées et révisions de mots : ne doivent apparaître QUE le jour prévu,
+ * même si l'élève ne les a pas faites. Donc on exclut celles dont la
+ * date_assignation ≠ aujourd'hui (passée comme future).
+ */
+function filtrerDicteesMotsJourStrict(blocs: PlanTravail[], aujourd_hui: string): PlanTravail[] {
+  return blocs.filter((b) => {
+    if (b.type !== "dictee" && b.type !== "mots") return true;
+    return b.date_assignation === aujourd_hui;
+  });
+}
+
 // ─── Cache stale-while-revalidate (sessionStorage) ────────────────────────────
 // Bump la version à chaque changement de shape pour invalider les caches obsolètes.
 const CACHE_VERSION = "v1";
@@ -332,7 +344,10 @@ export default function DashboardEleve() {
 
       supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
 
-      const blocs = filtrerBlocsConditionnels((blocsWeek ?? []) as PlanTravail[]);
+      const blocs = filtrerDicteesMotsJourStrict(
+        filtrerBlocsConditionnels((blocsWeek ?? []) as PlanTravail[]),
+        aujourd_hui,
+      );
       setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
       setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
       setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
@@ -460,7 +475,10 @@ export default function DashboardEleve() {
       const blocsExos: PlanTravail[] = (jsonExos.blocs ?? []).filter((b: PlanTravail) => b.chapitre_id);
       const blocsPodcasts: PlanTravail[] = jsonPodcasts.blocs ?? [];
 
-      const blocsWeekFiltered = filtrerBlocsConditionnels(blocsSemaine);
+      const blocsWeekFiltered = filtrerDicteesMotsJourStrict(
+        filtrerBlocsConditionnels(blocsSemaine),
+        aujourd_hui,
+      );
       setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
       setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
 
@@ -587,7 +605,10 @@ export default function DashboardEleve() {
         blocsWeek = (data ?? []) as PlanTravail[];
       }
 
-      const blocsFiltered = filtrerBlocsConditionnels(blocsWeek);
+      const blocsFiltered = filtrerDicteesMotsJourStrict(
+        filtrerBlocsConditionnels(blocsWeek),
+        aujourd_hui,
+      );
       const nouvsAujourd = blocsFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui);
       const nouvsSemaine = blocsFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui);
 
