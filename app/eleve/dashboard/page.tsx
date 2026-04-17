@@ -136,6 +136,59 @@ function filtrerBlocsConditionnels(blocs: PlanTravail[]): PlanTravail[] {
   });
 }
 
+// ─── Cache stale-while-revalidate (sessionStorage) ────────────────────────────
+// Bump la version à chaque changement de shape pour invalider les caches obsolètes.
+const CACHE_VERSION = "v1";
+const cacheKey = (id: string) => `pb_dash_${CACHE_VERSION}_${id}`;
+
+interface DashCache {
+  savedAt: number;
+  niveauNom: string;
+  progressionsPB: ProgressionComplete[];
+  progressionExos: ProgressionChapitre[];
+  blocsAujourdhui: PlanTravail[];
+  blocsSemaine: PlanTravail[];
+  notifications: Notification[];
+  chapitresRB: Array<{ chapitre_id: number; chapitre_nom: string; nb_cartes_dues: number; token_url: string }>;
+  podcastsQcm: Array<{ id: string; titre: string; qcm_id: string }>;
+  podcastSemaine: { id: string; titre: string; qcm_id: string; fait: boolean } | null;
+  rbEleveId: number | null;
+  ceintureActive: boolean;
+  ceintureInfo: { index: number; nom: string; couleur: string } | null;
+  dailyProblem: { id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null;
+  dailyProblemSolved: boolean;
+  chapitresAssignes: ChapitreAssigne[];
+  calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null;
+}
+
+const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 h : au-delà, on considère obsolète
+
+function chargerCache(id: string): DashCache | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(cacheKey(id));
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as DashCache;
+    if (!parsed.savedAt || Date.now() - parsed.savedAt > CACHE_TTL_MS) {
+      sessionStorage.removeItem(cacheKey(id));
+      return null;
+    }
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function sauverCache(id: string, snap: Omit<DashCache, "savedAt">) {
+  if (typeof window === "undefined") return;
+  try {
+    const payload: DashCache = { ...snap, savedAt: Date.now() };
+    sessionStorage.setItem(cacheKey(id), JSON.stringify(payload));
+  } catch {
+    /* quota plein ou JSON cyclique → ignorer silencieusement */
+  }
+}
+
 // ─── Composant principal ─────────────────────────────────────────────────────
 
 export default function DashboardEleve() {
@@ -187,17 +240,51 @@ export default function DashboardEleve() {
     if (chargementSession) return;
     if (!session) { router.push("/eleve"); return; }
 
+    // 1. HYDRATATION INSTANTANÉE depuis le cache (session précédente).
+    // Si cache présent → on affiche le dashboard en < 50 ms, puis on rafraîchit
+    // en tâche de fond. Sinon → skeleton loader classique.
+    const cache = chargerCache(session.id);
+    if (cache) {
+      setNiveauNom(cache.niveauNom);
+      setProgressionsPB(cache.progressionsPB);
+      setProgressionExos(cache.progressionExos);
+      setBlocsAujourdhui(cache.blocsAujourdhui);
+      setBlocsSemaine(cache.blocsSemaine);
+      setNotifications(cache.notifications);
+      setChapitresRB(cache.chapitresRB);
+      setPodcastsQcm(cache.podcastsQcm);
+      setPodcastSemaine(cache.podcastSemaine);
+      setRbEleveId(cache.rbEleveId);
+      setCeintureActive(cache.ceintureActive);
+      setCeintureInfo(cache.ceintureInfo);
+      setDailyProblem(cache.dailyProblem);
+      setDailyProblemSolved(cache.dailyProblemSolved);
+      setChapitresAssignes(cache.chapitresAssignes);
+      setCalculJour(cache.calculJour);
+      setChargementDonnees(false); // UI visible immédiatement
+    }
+
     abortRef.current?.abort();
     const ctrl = new AbortController();
     abortRef.current = ctrl;
 
+    // 2. RAFRAÎCHISSEMENT RÉSEAU (remplace le cache en arrière-plan).
     if (session.source === "repetibox") {
       chargerRB(parseInt(session.id, 10), ctrl.signal);
     } else {
       chargerPB(session.id, ctrl.signal);
     }
 
-    return () => { ctrl.abort(); };
+    // 3. FILET DE SÉCURITÉ : si aucun cache ET fetch > 8 s, on débloque
+    // l'UI quoi qu'il arrive pour éviter le loader infini (« tourne en boucle »).
+    const timeoutFilet = setTimeout(() => {
+      if (!ctrl.signal.aborted) setChargementDonnees(false);
+    }, 8000);
+
+    return () => {
+      ctrl.abort();
+      clearTimeout(timeoutFilet);
+    };
   }, [chargementSession, session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Chargement Plan Box ─────────────────────────────────────────────────────
@@ -533,6 +620,39 @@ export default function DashboardEleve() {
     };
   }, [chargementDonnees, rafraichirBlocs]);
 
+  // ── Sauvegarde automatique du cache (debounce 500 ms) ───────────────────────
+  // À chaque changement d'état significatif, on met à jour le snapshot
+  // sessionStorage pour la prochaine arrivée sur le dashboard.
+  useEffect(() => {
+    if (chargementDonnees || !session) return;
+    const timer = setTimeout(() => {
+      sauverCache(session.id, {
+        niveauNom,
+        progressionsPB,
+        progressionExos,
+        blocsAujourdhui,
+        blocsSemaine,
+        notifications,
+        chapitresRB,
+        podcastsQcm,
+        podcastSemaine,
+        rbEleveId,
+        ceintureActive,
+        ceintureInfo,
+        dailyProblem,
+        dailyProblemSolved,
+        chapitresAssignes,
+        calculJour,
+      });
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [
+    chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
+    blocsAujourdhui, blocsSemaine, notifications, chapitresRB, podcastsQcm,
+    podcastSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
+    dailyProblemSolved, chapitresAssignes, calculJour,
+  ]);
+
   // ── Actions ─────────────────────────────────────────────────────────────────
   async function marquerFait(id: string) {
     if (session?.source === "repetibox") {
@@ -602,6 +722,10 @@ export default function DashboardEleve() {
   }
 
   async function deconnecter() {
+    // Purger le cache dashboard de l'élève courant avant déconnexion
+    if (session) {
+      try { sessionStorage.removeItem(cacheKey(session.id)); } catch {}
+    }
     await effacerSession();
     // window.location pour forcer un rechargement complet (reset état React + cache Supabase)
     window.location.href = "/eleve";
