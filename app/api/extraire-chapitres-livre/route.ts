@@ -40,7 +40,8 @@ Réponds UNIQUEMENT en JSON valide, sans backticks, avec cette structure :
   ]
 }`;
 
-    const response = await anthropic.messages.create({
+    // Streaming obligatoire pour max_tokens élevé (SDK bloque sinon)
+    const stream = anthropic.messages.stream({
       model: "claude-sonnet-4-6",
       max_tokens: 64000,
       system: systemPrompt,
@@ -55,7 +56,8 @@ Réponds UNIQUEMENT en JSON valide, sans backticks, avec cette structure :
       ],
     });
 
-    const text = (response.content[0] as { type: "text"; text: string }).text;
+    const finalMessage = await stream.finalMessage();
+    const text = (finalMessage.content[0] as { type: "text"; text: string }).text;
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
     const resultat = JSON.parse(cleaned);
 
