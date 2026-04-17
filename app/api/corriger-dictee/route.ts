@@ -3,7 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getServerUser } from "@/lib/server-auth";
 
-export const maxDuration = 60;
+export const maxDuration = 120;
 
 /**
  * POST /api/corriger-dictee
@@ -420,6 +420,97 @@ Réponds UNIQUEMENT avec ce JSON :
   } catch (err: unknown) {
     console.error("[corriger-dictee] Erreur vision:", err);
     return NextResponse.json({ error: "Erreur lors de la lecture de la photo" }, { status: 500 });
+  }
+
+  // ── Étape 1b : VÉRIFICATION ANTI-AUTOCOMPLÉTION ──────────────────────────
+  // Opus a une forte tendance à « corriger » silencieusement les fautes qu'il
+  // lit (biais d'autocomplétion sur les motifs de mots français connus).
+  // Une seconde passe ciblée sur ce biais récupère les fautes ratées
+  // ("courure"→"coururent", "vert"→"vers", "leger"→"léger", etc.).
+  if (!estMots) {
+    const promptVerif = `Tu es relecteur ultra-strict d'un OCR manuscrit d'élève de primaire.
+
+Une PREMIÈRE TRANSCRIPTION a été faite à partir de la photo ci-jointe.
+Elle contient probablement des erreurs où l'OCR a AUTOCOMPLÉTÉ ou
+« CORRIGÉ » inconsciemment les fautes de l'élève — c'est le défaut qu'on
+cherche à éliminer.
+
+PREMIÈRE TRANSCRIPTION À RELIRE :
+"""
+${transcription}
+"""
+
+MISSION : relire l'image MOT PAR MOT. Pour chaque mot de la transcription,
+demande-toi : « Est-ce que ce mot correspond EXACTEMENT aux lettres
+physiquement écrites sur la page ? ».
+
+Si NON → corrige-le pour qu'il corresponde à ce qui est VISIBLE.
+Si OUI → garde-le tel quel.
+
+⚠️ CINQ TYPES D'ERREURS D'OCR À TRAQUER SYSTÉMATIQUEMENT :
+
+1. TERMINAISON VERBALE auto-complétée :
+   Image : "courure" → OCR a dit "coururent" → corrige vers "courure".
+   Image : "resplendissant" → OCR dit "resplendirent" → corrige.
+   Image : "mangais" → OCR dit "mangeais" → corrige.
+
+2. ACCENT AJOUTÉ alors qu'il n'y en a pas sur la page :
+   Image : "leger" (aucun trait au-dessus du e) → OCR dit "léger" → corrige.
+   Image : "apres" → OCR dit "après" → corrige.
+   Image : "s'attarderent" (e sans accent) → OCR dit "s'attardèrent" → corrige.
+   Regarde CHAQUE "e" individuellement avant de valider un accent.
+
+3. ACCENT RETIRÉ alors qu'il y en a un sur la page :
+   Image : "glissèrent" (accent grave visible) → OCR dit "glisserent" → corrige.
+   Un petit trait oblique au-dessus d'un e = accent, à conserver.
+
+4. LETTRE FINALE MUETTE ajoutée fantôme :
+   Image : "vert" → OCR dit "vers" → corrige vers "vert".
+   Image : "bor" → OCR dit "bord" → corrige.
+   Image : "peti" → OCR dit "petit" → corrige.
+
+5. DÉTERMINANT / PETIT MOT substitué :
+   Image : "De" → OCR dit "Deux" ou "Les" → corrige.
+   Image : "le" → OCR dit "les" → corrige.
+   Image : "l'o" → OCR dit "l'eau" → corrige.
+
+NE CORRIGE PAS LES FAUTES D'ORTHOGRAPHE DE L'ÉLÈVE : elles font partie
+de son travail et doivent apparaître telles quelles.
+
+Si la première transcription est déjà correcte, renvoie-la à l'identique.
+
+Réponds UNIQUEMENT avec ce JSON :
+{ "transcription_corrigee": "la transcription finale fidèle à la page" }`;
+
+    try {
+      const respVerif = await anthropic.messages.create({
+        model: "claude-opus-4-20250514",
+        max_tokens: 1500,
+        messages: [
+          {
+            role: "user",
+            content: [
+              ...imageBlocks,
+              { type: "text", text: promptVerif },
+            ],
+          },
+        ],
+      });
+
+      const texteVerif = respVerif.content
+        .filter((b) => b.type === "text")
+        .map((b) => (b as { type: "text"; text: string }).text)
+        .join("");
+
+      const matchVerif = texteVerif.match(/\{[\s\S]*\}/);
+      if (matchVerif) {
+        const corrigee = String(JSON.parse(matchVerif[0]).transcription_corrigee ?? "").trim();
+        if (corrigee) transcription = corrigee;
+      }
+    } catch (err: unknown) {
+      // Si la vérif échoue, on garde la première transcription (dégradation gracieuse)
+      console.error("[corriger-dictee] Erreur vérification:", err);
+    }
   }
 
   // ── Étape 2 : DIFF ALGORITHMIQUE (aucune erreur oubliée) ───────────────────
