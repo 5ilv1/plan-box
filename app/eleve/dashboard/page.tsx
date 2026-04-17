@@ -227,6 +227,8 @@ export default function DashboardEleve() {
   const [dailyProblemSolved, setDailyProblemSolved]    = useState(false);
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
+  const [bibliothequePeutChoisir, setBibliothequePeutChoisir] = useState(false);
+  const [bibliothequeEnCours, setBibliothequeEnCours]         = useState<{ chapitre_id: string; titre: string; auteur: string | null; couverture_url: string | null; pourcentage: number } | null>(null);
 
   // Ref pour accéder à session dans l'intervalle sans le capturer dans la closure
   const sessionRef = useRef(session);
@@ -298,6 +300,24 @@ export default function DashboardEleve() {
       clearTimeout(timeoutFilet);
     };
   }, [chargementSession, session]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // ── Statut bibliothèque (livre en cours / peut choisir) ─────────────────────
+  useEffect(() => {
+    if (!session) return;
+    const ctrl = new AbortController();
+    const qs = session.source === "planbox"
+      ? `eleve_id=${session.id}`
+      : `rb_id=${session.id}`;
+    fetch(`/api/bibliotheque/statut?${qs}`, { signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((json) => {
+        if (ctrl.signal.aborted) return;
+        setBibliothequePeutChoisir(json.peut_choisir ?? false);
+        setBibliothequeEnCours(json.livre_en_cours ?? null);
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [session]);
 
   // ── Chargement Plan Box ─────────────────────────────────────────────────────
   async function chargerPB(eleveId: string, signal: AbortSignal) {
@@ -1088,6 +1108,106 @@ export default function DashboardEleve() {
             )}
 
 {/* Chapitres progressifs déplacés dans "À faire en ligne" */}
+
+            {/* Bibliothèque — livre en cours ou invitation à choisir */}
+            {bibliothequeEnCours ? (
+              <Link
+                href={`/eleve/chapitre/${bibliothequeEnCours.chapitre_id}`}
+                className="pb-card"
+                style={{
+                  display: "block", textDecoration: "none", color: "inherit",
+                  background: "linear-gradient(135deg, #F3E8FF, #E9D5FF)",
+                  border: "1.5px solid rgba(124,58,237,0.25)",
+                  padding: "20px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 12 }}>
+                  <div
+                    style={{
+                      width: 48, height: 66, borderRadius: 6, flexShrink: 0,
+                      background: bibliothequeEnCours.couverture_url
+                        ? `url(${bibliothequeEnCours.couverture_url}) center / cover`
+                        : "linear-gradient(135deg, #7C3AED 0%, #5B21B6 100%)",
+                      boxShadow: "0 3px 8px rgba(0,0,0,0.15)",
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "white",
+                    }}
+                  >
+                    {!bibliothequeEnCours.couverture_url && <span className="ms" style={{ fontSize: 22 }}>menu_book</span>}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 800, color: "#7C3AED", letterSpacing: 0.5, marginBottom: 2, textTransform: "uppercase" }}>
+                      Ma lecture
+                    </div>
+                    <div style={{
+                      fontSize: 15, fontWeight: 800, color: "#4C1D95",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif", lineHeight: 1.2,
+                      overflow: "hidden", textOverflow: "ellipsis",
+                      display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                    }}>
+                      {bibliothequeEnCours.titre}
+                    </div>
+                  </div>
+                </div>
+                <div style={{ height: 5, background: "rgba(124,58,237,0.25)", borderRadius: 999, overflow: "hidden", marginBottom: 6 }}>
+                  <div style={{
+                    height: "100%", background: "#7C3AED",
+                    width: `${bibliothequeEnCours.pourcentage}%`,
+                    transition: "width 0.3s",
+                  }} />
+                </div>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: 12, color: "#5B21B6", fontWeight: 700 }}>
+                    {bibliothequeEnCours.pourcentage}% lu
+                  </span>
+                  <span style={{
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                    background: "#7C3AED", color: "white", padding: "6px 14px",
+                    borderRadius: 999, fontSize: 12, fontWeight: 700,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}>
+                    Continuer →
+                  </span>
+                </div>
+              </Link>
+            ) : bibliothequePeutChoisir && (
+              <Link
+                href="/eleve/bibliotheque"
+                className="pb-card"
+                style={{
+                  display: "block", textDecoration: "none", color: "inherit",
+                  background: "linear-gradient(135deg, #F3E8FF, #DDD6FE)",
+                  border: "1.5px solid rgba(124,58,237,0.25)",
+                  padding: "20px",
+                  position: "relative", overflow: "hidden",
+                }}
+              >
+                <div style={{
+                  position: "absolute", top: -20, right: -10,
+                  fontSize: 90, opacity: 0.12,
+                }}>📚</div>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, position: "relative" }}>
+                  <span className="ms" style={{ fontSize: 28, color: "#7C3AED" }}>auto_stories</span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "#4C1D95" }}>
+                      Choisir ma prochaine lecture
+                    </div>
+                    <div style={{ fontSize: 12, color: "#7C3AED" }}>
+                      Découvre la bibliothèque de la classe
+                    </div>
+                  </div>
+                </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "#7C3AED", color: "white", padding: "8px 18px",
+                  borderRadius: 999, fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  position: "relative",
+                }}>
+                  Voir les livres →
+                </div>
+              </Link>
+            )}
 
             {/* Podcast de la semaine */}
             {podcastSemaine && (

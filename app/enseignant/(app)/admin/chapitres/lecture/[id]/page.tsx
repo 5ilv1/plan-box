@@ -36,6 +36,10 @@ interface Chapitre {
   matiere: string;
   sous_matiere?: string | null;
   niveaux?: { nom: string };
+  couverture_url?: string | null;
+  resume?: string | null;
+  auteur?: string | null;
+  disponible_bibliotheque?: boolean | null;
 }
 
 interface ChapitreExtrait {
@@ -88,8 +92,18 @@ export default function PageChapitreLectureDetail() {
   // Suppression
   const [aSupprimer, setASupprimer] = useState<string | null>(null);
 
+  // Informations du livre (bibliothèque)
+  const [editResume, setEditResume] = useState("");
+  const [editAuteur, setEditAuteur] = useState("");
+  const [editCouverture, setEditCouverture] = useState<string | null>(null);
+  const [editDispo, setEditDispo] = useState(false);
+  const [enUploadCouv, setEnUploadCouv] = useState(false);
+  const [enSauveInfos, setEnSauveInfos] = useState(false);
+  const [infosSauvees, setInfosSauvees] = useState(false);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputManuelRef = useRef<HTMLInputElement>(null);
+  const fileInputCouvRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     charger();
@@ -102,9 +116,72 @@ export default function PageChapitreLectureDetail() {
       fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
       fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
     ]);
-    setChapitre(chapRes.chapitre ?? null);
+    const ch = chapRes.chapitre ?? null;
+    setChapitre(ch);
     setExercices((exRes.exercices ?? []) as Exercice[]);
+    if (ch) {
+      setEditResume(ch.resume ?? "");
+      setEditAuteur(ch.auteur ?? "");
+      setEditCouverture(ch.couverture_url ?? null);
+      setEditDispo(ch.disponible_bibliotheque === true);
+    }
     setChargement(false);
+  }
+
+  async function sauverInfosLivre() {
+    setEnSauveInfos(true);
+    setInfosSauvees(false);
+    try {
+      await fetch("/api/admin/chapitres", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: chapitreId,
+          resume: editResume.trim() || null,
+          auteur: editAuteur.trim() || null,
+          couverture_url: editCouverture,
+          disponible_bibliotheque: editDispo,
+        }),
+      });
+      setInfosSauvees(true);
+      setTimeout(() => setInfosSauvees(false), 2000);
+    } finally {
+      setEnSauveInfos(false);
+    }
+  }
+
+  async function uploadCouverture(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image trop volumineuse (max 5 MB).");
+      return;
+    }
+    setEnUploadCouv(true);
+    try {
+      const presignRes = await fetch("/api/upload-couverture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: file.name }),
+      });
+      const { token, path, publicUrl, error } = await presignRes.json();
+      if (error) throw new Error(error);
+
+      const { createClient } = await import("@/lib/supabase");
+      const supa = createClient();
+      const { error: upErr } = await supa.storage
+        .from("couvertures")
+        .uploadToSignedUrl(path, token, file);
+      if (upErr) throw upErr;
+
+      setEditCouverture(publicUrl);
+    } catch (err) {
+      console.error("[uploadCouverture]", err);
+      alert("Erreur upload : " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setEnUploadCouv(false);
+      if (fileInputCouvRef.current) fileInputCouvRef.current.value = "";
+    }
   }
 
   const niveauLabel = chapitre?.niveaux?.nom ?? "CM1";
@@ -413,6 +490,117 @@ export default function PageChapitreLectureDetail() {
             <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
               Chapitre lecture · {niveauLabel} · {chapitresLus.length} chapitre{chapitresLus.length > 1 ? "s" : ""} du livre
               {evaluationFinale ? " · évaluation finale prête" : ""}
+            </div>
+          </div>
+        </div>
+
+        {/* Informations du livre (bibliothèque) */}
+        <div className="card" style={{ padding: 20, marginBottom: 24 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+            <span className="ms" style={{ fontSize: 22, color: "#7C3AED" }}>menu_book</span>
+            <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Informations du livre</h3>
+            <span style={{ fontSize: 12, color: "var(--text-secondary)", marginLeft: 4 }}>
+              — pour la bibliothèque élève
+            </span>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 20, alignItems: "start" }}>
+            {/* Couverture */}
+            <div>
+              <div
+                style={{
+                  width: 160, height: 220, borderRadius: 10,
+                  background: editCouverture ? `url(${editCouverture}) center / cover` : "linear-gradient(135deg, #F3E8FF 0%, #DDD6FE 100%)",
+                  border: "1px solid var(--border)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: "#7C3AED", fontSize: 40,
+                  marginBottom: 8,
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                }}
+              >
+                {!editCouverture && <span className="ms" style={{ fontSize: 56 }}>image</span>}
+              </div>
+              <input
+                ref={fileInputCouvRef}
+                type="file"
+                accept="image/*"
+                onChange={uploadCouverture}
+                style={{ display: "none" }}
+              />
+              <button
+                className="btn-secondary"
+                onClick={() => fileInputCouvRef.current?.click()}
+                disabled={enUploadCouv}
+                style={{ width: "100%", fontSize: 12, padding: "6px 8px" }}
+              >
+                {enUploadCouv ? "Upload…" : editCouverture ? "Changer" : "Ajouter une couverture"}
+              </button>
+              {editCouverture && (
+                <button
+                  className="btn-ghost"
+                  onClick={() => setEditCouverture(null)}
+                  style={{ width: "100%", fontSize: 11, padding: "4px", marginTop: 4, color: "var(--text-secondary)" }}
+                >
+                  Retirer
+                </button>
+              )}
+            </div>
+
+            {/* Champs */}
+            <div>
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Auteur</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  value={editAuteur}
+                  onChange={(e) => setEditAuteur(e.target.value)}
+                  placeholder="Ex. Roald Dahl"
+                />
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>
+                  Résumé <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(affiché aux élèves)</span>
+                </label>
+                <textarea
+                  className="form-input"
+                  rows={4}
+                  value={editResume}
+                  onChange={(e) => setEditResume(e.target.value)}
+                  style={{ resize: "vertical", lineHeight: 1.5 }}
+                  placeholder="Une courte présentation de l'histoire pour donner envie de lire…"
+                />
+              </div>
+
+              <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, cursor: "pointer" }}>
+                <input
+                  type="checkbox"
+                  checked={editDispo}
+                  onChange={(e) => setEditDispo(e.target.checked)}
+                  style={{ width: 18, height: 18 }}
+                />
+                <div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>Disponible dans la bibliothèque</div>
+                  <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                    Les élèves du niveau {niveauLabel} pourront choisir ce livre.
+                  </div>
+                </div>
+              </label>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <button
+                  className="btn-primary"
+                  onClick={sauverInfosLivre}
+                  disabled={enSauveInfos}
+                  style={{ background: "#7C3AED", borderColor: "#7C3AED" }}
+                >
+                  {enSauveInfos ? "Enregistrement…" : "Enregistrer"}
+                </button>
+                {infosSauvees && (
+                  <span style={{ fontSize: 13, color: "#16A34A", fontWeight: 600 }}>✓ Enregistré</span>
+                )}
+              </div>
             </div>
           </div>
         </div>

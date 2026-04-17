@@ -34,11 +34,20 @@ export async function GET(req: NextRequest) {
     .in("groupe_id", groupeIds)
     .eq("actif", true);
 
-  if (!assignations?.length) {
+  // 2b. Livres choisis par l'élève dans la bibliothèque (auto-assignation)
+  let choixQuery = admin.from("eleve_bibliotheque_choix").select("chapitre_id");
+  if (eleveId) choixQuery = choixQuery.eq("eleve_id", eleveId);
+  else choixQuery = choixQuery.eq("rb_eleve_id", parseInt(rbId!, 10));
+  const { data: choixBiblio } = await choixQuery;
+
+  const chapitreIds = [...new Set([
+    ...(assignations ?? []).map((a) => a.chapitre_id),
+    ...(choixBiblio ?? []).map((c) => c.chapitre_id),
+  ])];
+
+  if (!chapitreIds.length) {
     return NextResponse.json({ chapitres: [] });
   }
-
-  const chapitreIds = [...new Set(assignations.map((a) => a.chapitre_id))];
 
   // 3. Infos chapitres + nb exercices (filtrer par date_debut si définie)
   const today = new Date().toISOString().split("T")[0];

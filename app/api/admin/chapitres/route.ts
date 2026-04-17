@@ -106,6 +106,7 @@ export async function PATCH(req: NextRequest) {
     "titre", "matiere", "sous_matiere", "niveau_id",
     "description", "nb_cartes_eval", "seuil_reussite", "seuil_evaluation", "seuil_exercice", "ordre",
     "date_debut",
+    "couverture_url", "resume", "auteur", "disponible_bibliotheque",
   ];
 
   const champsMaj: Record<string, unknown> = {};
@@ -167,6 +168,7 @@ export async function DELETE(req: NextRequest) {
   // Supprimer les dépendances liées au chapitre
   await admin.from("plan_travail").delete().eq("chapitre_id", id);
   await admin.from("pb_progression").delete().eq("chapitre_id", id);
+  await admin.from("eleve_bibliotheque_choix").delete().eq("chapitre_id", id);
 
   const { error } = await admin.from("chapitres").delete().eq("id", id);
 
