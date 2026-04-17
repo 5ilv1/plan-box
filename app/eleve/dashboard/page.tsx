@@ -620,32 +620,30 @@ export default function DashboardEleve() {
     };
   }, [chargementDonnees, rafraichirBlocs]);
 
-  // ── Sauvegarde automatique du cache (debounce 500 ms) ───────────────────────
+  // ── Sauvegarde automatique du cache (synchrone) ─────────────────────────────
   // À chaque changement d'état significatif, on met à jour le snapshot
-  // sessionStorage pour la prochaine arrivée sur le dashboard.
+  // sessionStorage immédiatement → le cache est toujours frais même si l'élève
+  // navigue très vite après un clic.
   useEffect(() => {
     if (chargementDonnees || !session) return;
-    const timer = setTimeout(() => {
-      sauverCache(session.id, {
-        niveauNom,
-        progressionsPB,
-        progressionExos,
-        blocsAujourdhui,
-        blocsSemaine,
-        notifications,
-        chapitresRB,
-        podcastsQcm,
-        podcastSemaine,
-        rbEleveId,
-        ceintureActive,
-        ceintureInfo,
-        dailyProblem,
-        dailyProblemSolved,
-        chapitresAssignes,
-        calculJour,
-      });
-    }, 500);
-    return () => clearTimeout(timer);
+    sauverCache(session.id, {
+      niveauNom,
+      progressionsPB,
+      progressionExos,
+      blocsAujourdhui,
+      blocsSemaine,
+      notifications,
+      chapitresRB,
+      podcastsQcm,
+      podcastSemaine,
+      rbEleveId,
+      ceintureActive,
+      ceintureInfo,
+      dailyProblem,
+      dailyProblemSolved,
+      chapitresAssignes,
+      calculJour,
+    });
   }, [
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
     blocsAujourdhui, blocsSemaine, notifications, chapitresRB, podcastsQcm,

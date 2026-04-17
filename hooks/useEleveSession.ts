@@ -10,9 +10,36 @@ export interface EleveSession {
   source: "planbox" | "repetibox";
 }
 
+const SESSION_CACHE_KEY = "pb_eleve_session_v1";
+
+function lireSessionCachee(): EleveSession | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(SESSION_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as EleveSession;
+    if (parsed.id && parsed.prenom && parsed.source) return parsed;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function ecrireSessionCache(s: EleveSession | null) {
+  if (typeof window === "undefined") return;
+  try {
+    if (s) sessionStorage.setItem(SESSION_CACHE_KEY, JSON.stringify(s));
+    else sessionStorage.removeItem(SESSION_CACHE_KEY);
+  } catch {
+    /* quota plein → ignorer */
+  }
+}
+
 export function useEleveSession() {
-  const [session, setSession] = useState<EleveSession | null>(null);
-  const [chargement, setChargement] = useState(true);
+  // Hydratation SYNCHRONE depuis le cache au 1er render → pas de loader
+  // quand l'élève revient sur une page après avoir navigué ailleurs.
+  const [session, setSession] = useState<EleveSession | null>(() => lireSessionCachee());
+  const [chargement, setChargement] = useState<boolean>(() => !lireSessionCachee());
 
   useEffect(() => {
     const supabase = createClient();
@@ -38,7 +65,9 @@ export function useEleveSession() {
         if (annule) return;
 
         if (e) {
-          setSession({ id: user.id, prenom: e.prenom as string, nom: e.nom as string, source: "planbox" });
+          const s: EleveSession = { id: user.id, prenom: e.prenom as string, nom: e.nom as string, source: "planbox" };
+          setSession(s);
+          ecrireSessionCache(s);
           setChargement(false);
           return;
         }
@@ -48,7 +77,9 @@ export function useEleveSession() {
           const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
           if (!annule && res.ok) {
             const json = await res.json();
-            setSession({ id: String(json.id), prenom: json.prenom as string, nom: json.nom as string, source: "repetibox" });
+            const s: EleveSession = { id: String(json.id), prenom: json.prenom as string, nom: json.nom as string, source: "repetibox" };
+            setSession(s);
+            ecrireSessionCache(s);
             setChargement(false);
             return;
           }
@@ -58,12 +89,14 @@ export function useEleveSession() {
           // Authentifié mais non reconnu → déconnecter
           await supabase.auth.signOut();
           setSession(null);
+          ecrireSessionCache(null);
           setChargement(false);
         }
       } catch (err) {
         console.error("[useEleveSession] erreur resoudreUser:", err);
         if (!annule) {
           setSession(null);
+          ecrireSessionCache(null);
           setChargement(false);
         }
       }
@@ -81,6 +114,7 @@ export function useEleveSession() {
       } else {
         // Pas de session en cache → pas connecté
         setSession(null);
+        ecrireSessionCache(null);
         setChargement(false);
       }
 
@@ -95,6 +129,7 @@ export function useEleveSession() {
       console.error("[useEleveSession] erreur getSession:", err);
       if (!annule) {
         setSession(null);
+        ecrireSessionCache(null);
         setChargement(false);
       }
       initialResolu = true;
@@ -114,6 +149,7 @@ export function useEleveSession() {
         await resoudreUser(authSession.user);
       } else if (event === "SIGNED_OUT") {
         setSession(null);
+        ecrireSessionCache(null);
         setChargement(false);
       }
     });
@@ -136,6 +172,7 @@ export function useEleveSession() {
       console.warn("[effacerSession] signOut échoué ou timeout:", err);
     }
     setSession(null);
+    ecrireSessionCache(null);
   }
 
   return { session, chargement, effacerSession };
