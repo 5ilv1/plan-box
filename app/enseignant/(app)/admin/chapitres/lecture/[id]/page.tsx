@@ -57,7 +57,7 @@ export default function PageChapitreLectureDetail() {
 
   // Upload livre complet
   const [uploadVisible, setUploadVisible] = useState(false);
-  const [pdfLivre, setPdfLivre] = useState<{ name: string; base64: string } | null>(null);
+  const [pdfLivre, setPdfLivre] = useState<{ name: string; file: File } | null>(null);
   const [enExtraction, setEnExtraction] = useState(false);
   const [chapitresExtraits, setChapitresExtraits] = useState<ChapitreExtrait[] | null>(null);
   const [enGenerationBatch, setEnGenerationBatch] = useState(false);
@@ -118,12 +118,14 @@ export default function PageChapitreLectureDetail() {
   function handlePdfLivre(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      setPdfLivre({ name: file.name, base64: (reader.result as string).split(",")[1] });
-      setErreurUpload("");
-    };
-    reader.readAsDataURL(file);
+    // Contrôle taille côté client (évite les crashs navigateur sur gros fichiers)
+    const TAILLE_MAX_MO = 25;
+    if (file.size > TAILLE_MAX_MO * 1024 * 1024) {
+      setErreurUpload(`PDF trop volumineux (${Math.round(file.size / 1024 / 1024)} MB). Max ${TAILLE_MAX_MO} MB — essaie de compresser le PDF.`);
+      return;
+    }
+    setPdfLivre({ name: file.name, file });
+    setErreurUpload("");
   }
 
   async function extraireChapitres() {
@@ -131,10 +133,13 @@ export default function PageChapitreLectureDetail() {
     setEnExtraction(true);
     setErreurUpload("");
     try {
+      // FormData plutôt que base64 JSON : évite de charger le fichier
+      // 2x en mémoire côté navigateur (crash sur gros livres)
+      const formData = new FormData();
+      formData.append("pdf", pdfLivre.file);
       const res = await fetch("/api/extraire-chapitres-livre", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pdfBase64: pdfLivre.base64 }),
+        body: formData,
       });
       const json = await res.json();
       if (!res.ok) {
@@ -454,8 +459,11 @@ export default function PageChapitreLectureDetail() {
 
             {!chapitresExtraits ? (
               <>
-                <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12 }}>
+                <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 8 }}>
                   Charge le PDF complet du livre. L'IA détectera les chapitres et extraira le texte de chacun. Tu valideras la liste avant de générer les QCM.
+                </p>
+                <p style={{ fontSize: 12, color: "#92400E", background: "#FEF3C7", padding: "8px 12px", borderRadius: 6, marginBottom: 12 }}>
+                  ⚠️ Pour un livre long (&gt;100 pages), tu risques la limite de tokens/min. Préfère alors l'ajout manuel chapitre par chapitre, ou découpe le PDF en parties de ~50 pages.
                 </p>
                 <input
                   ref={fileInputRef}

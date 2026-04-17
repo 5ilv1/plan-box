@@ -5,10 +5,38 @@ const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 export const maxDuration = 300;
 
+// Limite Vercel serverless : ~4.5 MB — on augmente pour cette route
+export const dynamic = "force-dynamic";
+
+// Taille max PDF (Vercel + Anthropic accepte jusqu'à 32 MB)
+const TAILLE_MAX_MO = 25;
+
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { pdfBase64 } = body;
+    let pdfBase64: string | undefined;
+
+    const contentType = req.headers.get("content-type") ?? "";
+
+    if (contentType.includes("multipart/form-data")) {
+      // Mode FormData (préféré pour gros fichiers — évite l'explosion mémoire navigateur)
+      const formData = await req.formData();
+      const file = formData.get("pdf");
+      if (!(file instanceof File)) {
+        return NextResponse.json({ erreur: "PDF manquant." }, { status: 400 });
+      }
+      if (file.size > TAILLE_MAX_MO * 1024 * 1024) {
+        return NextResponse.json(
+          { erreur: `PDF trop volumineux (${Math.round(file.size / 1024 / 1024)} MB). Max ${TAILLE_MAX_MO} MB.` },
+          { status: 413 }
+        );
+      }
+      const buffer = Buffer.from(await file.arrayBuffer());
+      pdfBase64 = buffer.toString("base64");
+    } else {
+      // Ancien mode JSON (rétrocompat)
+      const body = await req.json();
+      pdfBase64 = body.pdfBase64;
+    }
 
     if (!pdfBase64) {
       return NextResponse.json({ erreur: "PDF manquant." }, { status: 400 });
@@ -73,6 +101,23 @@ Réponds UNIQUEMENT en JSON valide, sans backticks, avec cette structure :
     return NextResponse.json({ resultat });
   } catch (err: unknown) {
     console.error("[extraire-chapitres-livre]", err);
+
+    // Erreur de rate limit Anthropic (Tier 1 : 30k tokens/min)
+    const isRateLimit =
+      (err as { status?: number })?.status === 429 ||
+      (err instanceof Error && /rate[_\s-]?limit|429/i.test(err.message));
+
+    if (isRateLimit) {
+      return NextResponse.json(
+        {
+          erreur:
+            "Le livre dépasse la limite de tokens par minute de ton compte Anthropic (30 000 tokens/min au Tier 1). Utilise plutôt le mode « Ajouter un chapitre manuellement » pour traiter le livre chapitre par chapitre, ou divise le PDF en plusieurs parties plus courtes (~50 pages max).",
+          code: "rate_limit",
+        },
+        { status: 429 }
+      );
+    }
+
     const message = err instanceof Error ? err.message : "Erreur interne";
     return NextResponse.json({ erreur: message }, { status: 500 });
   }
