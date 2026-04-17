@@ -241,6 +241,26 @@ export default function DicteePlayer({ phrases, audioCompletUrl, audioPhraseUrls
           </button>
         ))}
       </div>
+
+      {/* ── Bouton "J'ai fini" — permet de passer à la correction sans dépendre de l'écoute ── */}
+      <div style={{ display: "flex", justifyContent: "center", marginTop: 20 }}>
+        <button
+          type="button"
+          onClick={() => { arreter(); setTermine(true); onTermine(); }}
+          style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "12px 28px", borderRadius: 999,
+            background: "#16A34A", color: "white", border: "none",
+            fontSize: 15, fontWeight: 700, cursor: "pointer",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            boxShadow: "0 4px 16px rgba(22,163,74,0.25)",
+            transition: "all 0.2s",
+          }}
+        >
+          <span className="ms" style={{ fontSize: 20 }}>check_circle</span>
+          J&apos;ai fini d&apos;écrire — passer à la correction
+        </button>
+      </div>
     </div>
   );
 }
