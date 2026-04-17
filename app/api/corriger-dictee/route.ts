@@ -48,6 +48,32 @@ function tokenizer(s: string): string[] {
   return out;
 }
 
+/**
+ * Réassemble les élisions françaises séparées par un espace dans la transcription
+ * élève : « l eau » → « l'eau », « d abord » → « d'abord ».
+ * L'OCR produit parfois un espace là où il y a une apostrophe peu visible.
+ * Sans cette étape, l'aligneur voit 2 tokens côté élève face à 1 token attendu
+ * et peut marquer le mot comme « oublié » alors qu'il est bien écrit.
+ */
+function reassemblerElisions(tokens: string[]): string[] {
+  const elisions = new Set(["l", "d", "n", "j", "m", "s", "t", "c", "qu", "lorsqu", "puisqu", "quoiqu", "jusqu"]);
+  const voyelleOuH = /^[aeiouhéèêàâîïôöüûyœæ]/i;
+  const out: string[] = [];
+  let i = 0;
+  while (i < tokens.length) {
+    const cur = tokens[i];
+    const next = tokens[i + 1];
+    if (next && elisions.has(cur.toLowerCase()) && voyelleOuH.test(next)) {
+      out.push(cur + "'" + next);
+      i += 2;
+    } else {
+      out.push(cur);
+      i++;
+    }
+  }
+  return out;
+}
+
 type Op =
   | { type: "match"; expected: string; actual: string }
   | { type: "sub";   expected: string; actual: string }
@@ -398,7 +424,7 @@ Réponds UNIQUEMENT avec ce JSON :
 
   // ── Étape 2 : DIFF ALGORITHMIQUE (aucune erreur oubliée) ───────────────────
   const tokensAttendus = tokenizer(texteAttendu);
-  const tokensEleve    = tokenizer(transcription);
+  const tokensEleve    = reassemblerElisions(tokenizer(transcription));
   const { erreurs, segments, nb_corrects, nb_total } = construireErreurs(tokensAttendus, tokensEleve);
 
   // Pas d'erreurs → court-circuiter
@@ -442,17 +468,26 @@ Types possibles : lettre_muette | accord_sujet_verbe | accord_adjectif | conjuga
 
 ⚠️ RÈGLES STRICTES DE CLASSIFICATION — ne te trompe pas de type :
 
-• lettre_muette UNIQUEMENT si la différence porte SUR UNE LETTRE FINALE NON PRONONCÉE.
-  Exemples valides : "canar" vs "canard" (d muet), "peti" vs "petit" (t muet), "souri" vs "souris" (s muet).
-  Contre-exemples (PAS lettre_muette) : "canart" vs "canard" (confusion t/d → orthographe),
-  "canard" avec un autre changement à l'intérieur du mot → orthographe.
-  Compare lettre à lettre : la lettre en cause est-elle bien une finale qu'on n'entend pas ?
-  Si NON → choisis orthographe, accord_*, conjugaison ou autre.
+• lettre_muette UNIQUEMENT si la lettre finale manquante fait partie de la forme LEXICALE
+  du mot au singulier (c'est une lettre du dictionnaire, pas un marqueur grammatical).
+  Exemples valides : "canar" vs "canard" (d lexical muet), "peti" vs "petit" (t lexical muet),
+  "souri" vs "souris" (s lexical muet, "souris" s'écrit avec s au singulier).
+  ⚠️ NE PAS confondre avec un ACCORD de pluriel :
+    - "canard" vs "canards" → il manque le -s DU PLURIEL → accord_adjectif (ou accord si nom).
+    - "brillant" vs "brillants" → il manque le -s DU PLURIEL → accord_adjectif.
+    - "resplendissant" vs "resplendissants" → -s du pluriel → accord_adjectif.
+  Règle pratique pour le -s ou -x final :
+    • Si le mot au SINGULIER s'écrit déjà avec -s/-x (souris, tapis, nez, prix) → lettre_muette.
+    • Si le -s/-x apparaît uniquement au PLURIEL (canards, brillants, chevaux) → accord_adjectif/accord.
+  Contre-exemples généraux : "canart" vs "canard" (confusion t/d → orthographe),
+  "canard" avec un changement interne → orthographe.
 
 • accord_sujet_verbe UNIQUEMENT si la désinence verbale est en cause
   (ent/ant, s/x final de verbe, ai/a/as…). Exemples : "ils mange" vs "ils mangent".
 
-• accord_adjectif UNIQUEMENT si c'est un adjectif qui change de genre/nombre.
+• accord_adjectif si un adjectif OU un nom change de genre/nombre :
+  pluriel manquant (-s/-x), féminin manquant (-e), etc. Exemples :
+  "canard" vs "canards", "légers" vs "légères", "petit" vs "petite".
 
 • conjugaison si c'est le radical ou le temps du verbe qui est faux
   (ex : "courure" vs "coururent" = radical+terminaison, donc conjugaison).
