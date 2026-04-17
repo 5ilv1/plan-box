@@ -928,6 +928,7 @@ export default function CalculDuJourPage() {
   const [reponse, setReponse] = useState("");
   const [tentative, setTentative] = useState(0);
   const [startTime] = useState(() => Date.now());
+  const [envoi, setEnvoi] = useState(false);
 
   const THEME_COLOR = "#7C3AED";
 
@@ -970,28 +971,32 @@ export default function CalculDuJourPage() {
   }, [chargementSession, session, router]);
 
   const verifier = useCallback(async () => {
-    if (!calcul || !reponse.trim()) return;
+    if (!calcul || !reponse.trim() || envoi) return;
+    setEnvoi(true);
 
-    const res = await fetch("/api/calcul-du-jour/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ calcul_id: calcul.id, reponse_eleve: parseFloat(reponse.replace(",", ".")), temps_reponse: Math.round((Date.now() - startTime) / 1000) }),
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/calcul-du-jour/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ calcul_id: calcul.id, reponse_eleve: parseFloat(reponse.replace(",", ".")), temps_reponse: Math.round((Date.now() - startTime) / 1000) }),
+      });
+      const data = await res.json();
 
-    if (data.correct) {
-      setState("bravo");
-    } else if (data.correction) {
-      // Max tentatives atteint, on a la correction
-      setCalcul((prev) => prev ? { ...prev, reponse: data.correction.reponse } : prev);
-      setTentative(2);
-      setState("correction");
-    } else {
-      setTentative(1);
-      setState("deuxieme_chance");
+      if (data.correct) {
+        setState("bravo");
+      } else if (data.correction) {
+        setCalcul((prev) => prev ? { ...prev, reponse: data.correction.reponse } : prev);
+        setTentative(2);
+        setState("correction");
+      } else {
+        setTentative(1);
+        setState("deuxieme_chance");
+      }
+      setReponse("");
+    } finally {
+      setEnvoi(false);
     }
-    setReponse("");
-  }, [calcul, reponse, tentative]);
+  }, [calcul, reponse, tentative, envoi, startTime]);
 
   // ---- Ecran de chargement ----
   if (chargementSession || state === "chargement") {
@@ -1632,7 +1637,7 @@ export default function CalculDuJourPage() {
 
           <button
             onClick={verifier}
-            disabled={!reponse.trim()}
+            disabled={!reponse.trim() || envoi}
             style={{
               width: "100%",
               padding: "18px",
@@ -1642,14 +1647,14 @@ export default function CalculDuJourPage() {
               borderRadius: 999,
               fontSize: 17,
               fontWeight: 700,
-              cursor: reponse.trim() ? "pointer" : "default",
+              cursor: reponse.trim() && !envoi ? "pointer" : "default",
               fontFamily: "'Plus Jakarta Sans', sans-serif",
-              opacity: reponse.trim() ? 1 : 0.5,
-              boxShadow: reponse.trim() ? `0 4px 16px ${THEME_COLOR}33` : "none",
+              opacity: reponse.trim() && !envoi ? 1 : 0.5,
+              boxShadow: reponse.trim() && !envoi ? `0 4px 16px ${THEME_COLOR}33` : "none",
               transition: "all 0.2s",
             }}
           >
-            Vérifier
+            {envoi ? "Envoi..." : "Vérifier"}
           </button>
 
           <p style={{ textAlign: "center", fontSize: 13, color: "var(--pb-on-surface-variant)", opacity: 0.7, fontWeight: 500 }}>

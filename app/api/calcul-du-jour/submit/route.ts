@@ -72,6 +72,36 @@ export async function POST(request: Request) {
 
   const { data: tentatives } = await tentativeQuery;
 
+  // Protection anti double-submit : ignorer une soumission identique reçue
+  // dans les 2 dernières secondes (évite les doublons lors d'un double-clic /
+  // double-appel en cas de race condition côté client).
+  const reponseNumCheck = parseFloat(String(reponse_eleve));
+  const maintenant = Date.now();
+  const doublon = tentatives?.find((t: any) => {
+    if (!t.created_at) return false;
+    const dt = maintenant - new Date(t.created_at).getTime();
+    return dt < 2000 && Number(t.reponse_eleve) === reponseNumCheck;
+  });
+  if (doublon) {
+    return NextResponse.json({
+      correct: doublon.correct,
+      tentative: doublon.tentative,
+      doublon: true,
+      ...(doublon.correct
+        ? {}
+        : doublon.tentative === 1
+          ? { encore_une_chance: true }
+          : {
+              correction: {
+                nombre1: calcul.nombre1,
+                nombre2: calcul.nombre2,
+                operation: calcul.operation,
+                reponse: calcul.reponse,
+              },
+            }),
+    });
+  }
+
   const nbTentatives = tentatives?.length ?? 0;
 
   // Vérifier si déjà réussi
