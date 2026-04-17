@@ -33,13 +33,18 @@ function normaliserMot(t: string): string {
   return stripAccents(t.toLowerCase()).replace(/[.,;:!?«»"'()]+$/g, "").replace(/^[«»"'()]+/, "");
 }
 
-/** Tokenise en gardant la ponctuation comme tokens séparés (. , ; : ! ? " ' — …). */
+/** Tokenise en gardant la ponctuation comme tokens séparés (. , ; : ! ? " ' — …).
+ *  - Les apostrophes courbes (U+2018/U+2019) sont normalisées en apostrophe droite.
+ *  - Les traits d'union sont traités comme des séparateurs (comme une espace) pour
+ *    éviter que « l'après-midi » (1 token) ne s'aligne mal face à « l'après midi »
+ *    (2 tokens) écrit par l'élève. Cela évite un faux « mot en trop ».
+ */
 function tokenizer(s: string): string[] {
   const out: string[] = [];
-  // Sépare les mots de la ponctuation forte ; garde les apostrophes et tirets internes aux mots.
-  const re = /[\p{L}\p{N}'\-]+|[.,;:!?…«»"()]/gu;
+  const normalise = s.replace(/[\u2018\u2019]/g, "'");
+  const re = /[\p{L}\p{N}']+|[.,;:!?…«»"()]/gu;
   let m: RegExpExecArray | null;
-  while ((m = re.exec(s)) !== null) out.push(m[0]);
+  while ((m = re.exec(normalise)) !== null) out.push(m[0]);
   return out;
 }
 
