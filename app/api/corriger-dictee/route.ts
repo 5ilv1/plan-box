@@ -133,7 +133,7 @@ Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
   let transcription = "";
   try {
     const respVision = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
+      model: "claude-opus-4-20250514",
       max_tokens: 1500,
       messages: [
         {
