@@ -380,6 +380,39 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                     const estMotOublie = seg.type === "missing";
                     const estMotEnTrop = seg.type === "extra";
 
+                    // Mot oublié → badge explicite « mot manquant » pour ne pas passer inaperçu
+                    if (estMotOublie) {
+                      return (
+                        <span key={i}>
+                          {espaceAvant ? " " : ""}
+                          <button
+                            type="button"
+                            onClick={() => setErreurActive(estActive ? null : seg.idx_erreur)}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: 4,
+                              padding: "2px 8px",
+                              margin: "0 2px",
+                              borderRadius: 6,
+                              border: estActive ? "2px solid #DC2626" : "1.5px dashed #DC2626",
+                              background: estActive ? "#fecaca" : "#fee2e2",
+                              color: "#991B1B",
+                              fontWeight: 700,
+                              fontSize: "inherit",
+                              fontFamily: "inherit",
+                              cursor: "pointer",
+                              lineHeight: 1.2,
+                            }}
+                            aria-label={`Mot oublié : ${seg.text}`}
+                          >
+                            <span className="ms" style={{ fontSize: 16 }}>report</span>
+                            mot manquant
+                          </button>
+                        </span>
+                      );
+                    }
+
                     const styleBtn: React.CSSProperties = {
                       display: "inline",
                       padding: "2px 6px",
@@ -392,19 +425,10 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                       fontSize: "inherit",
                       fontFamily: "inherit",
                       cursor: "pointer",
-                      textDecoration: estMotEnTrop
-                        ? "line-through"
-                        : estMotOublie
-                          ? "underline dashed"
-                          : "underline",
+                      textDecoration: estMotEnTrop ? "line-through" : "underline",
                       textDecorationColor: "#DC2626",
                       textUnderlineOffset: 3,
-                      fontStyle: estMotOublie ? "italic" : "normal",
-                      opacity: estMotOublie ? 0.75 : 1,
                     };
-
-                    // Pour un mot oublié, on affiche "(mot)" en italique pour le distinguer
-                    const affichage = estMotOublie ? `(${seg.text})` : seg.text;
 
                     return (
                       <span key={i}>
@@ -415,7 +439,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                           style={styleBtn}
                           aria-label={`Erreur sur le mot ${seg.text}`}
                         >
-                          {affichage}
+                          {seg.text}
                         </button>
                       </span>
                     );
@@ -521,8 +545,9 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                   margin: "10px 0 0",
                   fontStyle: "italic",
                 }}>
-                  Astuce : les mots barrés sont en trop, les mots entre parenthèses
-                  étaient oubliés, les mots soulignés sont mal orthographiés.
+                  Astuce : les mots soulignés sont mal orthographiés, les mots
+                  barrés sont en trop, les badges « mot manquant » indiquent un
+                  mot oublié.
                 </p>
               </div>
             );
