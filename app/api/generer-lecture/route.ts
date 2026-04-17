@@ -6,13 +6,23 @@ const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { niveau, nbQuestions, texte, titre, description, pdfBase64 } = body;
+    const { niveau, nbQuestions, texte, titre, description, pdfBase64, adaptatif } = body;
 
     if (!texte && !pdfBase64) {
       return NextResponse.json({ erreur: "Il faut un texte ou un PDF." }, { status: 400 });
     }
 
-    const nbQ = nbQuestions || 10;
+    // Mode adaptatif : 5-10 questions selon la longueur du texte
+    // <400 mots → 5, <800 → 7, sinon → 10
+    let nbQ: number;
+    if (adaptatif && texte) {
+      const nbMots = texte.split(/\s+/).filter(Boolean).length;
+      if (nbMots < 400) nbQ = 5;
+      else if (nbMots < 800) nbQ = 7;
+      else nbQ = 10;
+    } else {
+      nbQ = nbQuestions || 10;
+    }
 
     const systemPrompt = `Tu es un enseignant de cycle 3 (CE2/CM1/CM2) expert en compréhension de lecture.
 

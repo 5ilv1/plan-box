@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
+import LectureEleve from "@/components/LectureEleve";
 
 interface Question {
   id: number;
@@ -124,6 +125,9 @@ export default function PageExerciceEleve() {
         setEtat("en_cours");
         return;
       } else if (ex.type === "classement") {
+        setEtat("en_cours");
+        return;
+      } else if (ex.type === "lecture") {
         setEtat("en_cours");
         return;
       } else if (ex.type === "analyse_phrase" && Array.isArray(contenu.phrases)) {
@@ -414,6 +418,78 @@ export default function PageExerciceEleve() {
               setValide(false);
               setEtat("resultat");
             }
+          }}
+        />
+      </div>
+    );
+  }
+
+  // ── Lecture : rendu spécial via LectureEleve ──
+  if (exercice?.type === "lecture" && etat === "en_cours") {
+    const contenu = exercice.contenu as Record<string, unknown>;
+    const titre = (contenu.titre as string) ?? exercice.titre;
+    const texte = (contenu.texte as string) ?? "";
+    const questionsLec = (contenu.questions as Array<{ id: number; question: string; choix: string[]; reponse: number }>) ?? [];
+    const estEvalFinale = contenu.est_evaluation_finale === true;
+
+    return (
+      <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px 20px 80px" }}>
+        <div style={{ marginBottom: 20 }}>
+          <button
+            onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--pb-on-surface-variant)", fontSize: 13, marginBottom: 8 }}
+          >
+            ← Retour
+          </button>
+          <h2 style={{ fontSize: 20, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)", marginBottom: 4 }}>
+            {estEvalFinale ? "🏆" : "📖"} {titre}
+          </h2>
+          {estEvalFinale && (
+            <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginTop: 4 }}>
+              Évaluation finale sur l'ensemble du livre — réponds aux 10 questions.
+            </p>
+          )}
+        </div>
+
+        <LectureEleve
+          titre={titre}
+          texte={texte}
+          questions={questionsLec}
+          skipLecture={estEvalFinale}
+          onTermine={async (scoreResult) => {
+            const total = scoreResult.total;
+            const bon = scoreResult.bon;
+
+            // Pour l'éval finale, enregistrer aussi dans evaluation_resultat
+            if (estEvalFinale) {
+              await fetch("/api/chapitres/evaluation-resultat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  chapitre_id: chapitreId,
+                  eleve_id: session?.source === "planbox" ? session.id : undefined,
+                  rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+                  score: bon,
+                  total,
+                }),
+              });
+            }
+
+            await fetch("/api/chapitres/exercices/resultat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                exercice_id: exerciceId,
+                eleve_id: session?.source === "planbox" ? session.id : undefined,
+                rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+                score: bon,
+                total,
+              }),
+            });
+
+            setScore(bon);
+            setValide(total > 0 && (bon / total) >= seuilExo);
+            setEtat("resultat");
           }}
         />
       </div>

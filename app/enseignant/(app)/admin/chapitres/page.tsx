@@ -85,6 +85,15 @@ export default function PageAdminChapitres() {
   const [enAffectation, setEnAffectation] = useState(false);
   const [erreurAffecter, setErreurAffecter] = useState("");
 
+  // Onglet principal : classique | lecture
+  const [ongletPrincipal, setOngletPrincipal] = useState<"classique" | "lecture">("classique");
+  // Modal création chapitre lecture
+  const [nouveauLectureVisible, setNouveauLectureVisible] = useState(false);
+  const [nouveauLectureTitre, setNouveauLectureTitre] = useState("");
+  const [nouveauLectureNiveauId, setNouveauLectureNiveauId] = useState("");
+  const [nouveauLectureEnCours, setNouveauLectureEnCours] = useState(false);
+  const [nouveauLectureErreur, setNouveauLectureErreur] = useState("");
+
   // Filtre matière global
   const [filtreMatiere, setFiltreMatiere] = useState<string>("toutes");
   // Filtres sous-matière par accordéon (clé = matière, valeur = sous-matière sélectionnée)
@@ -458,11 +467,17 @@ export default function PageAdminChapitres() {
     setGhostPos(null);
   }
 
+  // Filtrer selon onglet principal (classique exclut matiere=lecture, lecture garde uniquement celles-ci)
+  const chapitresFiltrésOnglet = chapitres.filter(c =>
+    ongletPrincipal === "lecture" ? c.matiere === "lecture" : c.matiere !== "lecture"
+  );
+  const chapitresLecture = chapitres.filter(c => c.matiere === "lecture");
+
   // Grouper par matière, triés par ordre
-  const matieresDispo = Array.from(new Set(chapitres.map(c => c.matiere)));
+  const matieresDispo = Array.from(new Set(chapitresFiltrésOnglet.map(c => c.matiere)));
   const groupes = matieresDispo.map(matiere => ({
     matiere,
-    items: [...chapitres]
+    items: [...chapitresFiltrésOnglet]
       .filter(c => c.matiere === matiere)
       .sort((a, b) => (a.ordre ?? 999) - (b.ordre ?? 999)),
   }));
@@ -471,16 +486,89 @@ export default function PageAdminChapitres() {
     ? groupes
     : groupes.filter(g => g.matiere === filtreMatiere);
 
+  async function creerChapitreLecture() {
+    if (!nouveauLectureTitre.trim() || !nouveauLectureNiveauId) {
+      setNouveauLectureErreur("Titre du livre et niveau requis.");
+      return;
+    }
+    setNouveauLectureEnCours(true);
+    setNouveauLectureErreur("");
+    const res = await fetch("/api/admin/chapitres", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        titre: nouveauLectureTitre.trim(),
+        matiere: "lecture",
+        sous_matiere: "livre",
+        niveau_id: nouveauLectureNiveauId,
+        description: null,
+        nb_cartes_eval: 10,
+        seuil_reussite: 80,
+      }),
+    });
+    const json = await res.json();
+    setNouveauLectureEnCours(false);
+    if (!res.ok) {
+      setNouveauLectureErreur(json.erreur ?? "Erreur lors de la création.");
+      return;
+    }
+    const id = json.chapitre.id;
+    router.push(`/enseignant/admin/chapitres/lecture/${id}`);
+  }
+
   return (
     <>
       <div className="page">
         <div className="container" style={{ maxWidth: 820 }}>
 
           {/* Titre + action */}
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>📚 Chapitres</h1>
-            <button className="btn-primary" onClick={ouvrirCreation}>
-              + Nouveau chapitre
+            {ongletPrincipal === "classique" ? (
+              <button className="btn-primary" onClick={ouvrirCreation}>
+                + Nouveau chapitre
+              </button>
+            ) : (
+              <button
+                className="btn-primary"
+                onClick={() => {
+                  setNouveauLectureTitre("");
+                  setNouveauLectureNiveauId(niveaux[0]?.id ?? "");
+                  setNouveauLectureErreur("");
+                  setNouveauLectureVisible(true);
+                }}
+                style={{ background: "#7C3AED", borderColor: "#7C3AED" }}
+              >
+                + Nouveau chapitre lecture
+              </button>
+            )}
+          </div>
+
+          {/* Onglets principaux : Classique / Lecture */}
+          <div style={{ display: "flex", gap: 4, marginBottom: 16, background: "#F3F4F6", padding: 4, borderRadius: 10, width: "fit-content" }}>
+            <button
+              onClick={() => setOngletPrincipal("classique")}
+              style={{
+                padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                background: ongletPrincipal === "classique" ? "white" : "transparent",
+                color: ongletPrincipal === "classique" ? "var(--text)" : "var(--text-secondary)",
+                border: "none", cursor: "pointer",
+                boxShadow: ongletPrincipal === "classique" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+              }}
+            >
+              📚 Chapitres classiques
+            </button>
+            <button
+              onClick={() => setOngletPrincipal("lecture")}
+              style={{
+                padding: "7px 16px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                background: ongletPrincipal === "lecture" ? "white" : "transparent",
+                color: ongletPrincipal === "lecture" ? "#7C3AED" : "var(--text-secondary)",
+                border: "none", cursor: "pointer",
+                boxShadow: ongletPrincipal === "lecture" ? "0 1px 2px rgba(0,0,0,0.05)" : "none",
+              }}
+            >
+              📖 Lectures {chapitresLecture.length > 0 && <span style={{ fontSize: 11, opacity: 0.7 }}>({chapitresLecture.length})</span>}
             </button>
           </div>
 
@@ -524,8 +612,14 @@ export default function PageAdminChapitres() {
             <div style={{ textAlign: "center", padding: 60, color: "var(--text-secondary)" }}>Chargement…</div>
           ) : groupesFiltres.length === 0 ? (
             <div className="card" style={{ textAlign: "center", padding: "40px 20px", color: "var(--text-secondary)" }}>
-              <div style={{ fontSize: 40, marginBottom: 12 }}>📚</div>
-              <p>Aucun chapitre. Créez-en un pour commencer.</p>
+              <div style={{ fontSize: 40, marginBottom: 12 }}>
+                {ongletPrincipal === "lecture" ? "📖" : "📚"}
+              </div>
+              <p>
+                {ongletPrincipal === "lecture"
+                  ? "Aucun chapitre lecture. Crée-en un pour commencer un livre."
+                  : "Aucun chapitre. Créez-en un pour commencer."}
+              </p>
             </div>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -604,8 +698,12 @@ export default function PageAdminChapitres() {
 
                         {/* Actions */}
                         <div className="ens-chap-actions" style={{ display: "flex", gap: 4, flexWrap: "wrap" }}>
-                          <Link href={`/enseignant/admin/chapitres/${c.id}`} className="btn-secondary" style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>
-                            Exercices
+                          <Link
+                            href={c.matiere === "lecture" ? `/enseignant/admin/chapitres/lecture/${c.id}` : `/enseignant/admin/chapitres/${c.id}`}
+                            className="btn-secondary"
+                            style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}
+                          >
+                            {c.matiere === "lecture" ? "Ouvrir" : "Exercices"}
                           </Link>
                           <button className="btn-secondary" onClick={() => ouvrirAffecter(c)} style={{ padding: "4px 10px", fontSize: 13, borderRadius: 6 }}>
                             Affecter
@@ -947,6 +1045,72 @@ export default function PageAdminChapitres() {
                   {enSauvegarde ? "Sauvegarde…" : (chapitreEnEdition ? "✓ Enregistrer" : "✓ Créer")}
                 </button>
                 <button className="btn-ghost" onClick={() => setFormVisible(false)} style={{ flex: 1 }}>
+                  Annuler
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal création chapitre lecture */}
+      {nouveauLectureVisible && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: 24,
+        }}>
+          <div className="card" style={{ width: "100%", maxWidth: 460, padding: "28px 24px" }}>
+            <h2 style={{ fontSize: 18, fontWeight: 800, marginBottom: 6, color: "#7C3AED" }}>
+              📖 Nouveau chapitre lecture
+            </h2>
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 18 }}>
+              Un chapitre = un livre. Tu ajouteras ensuite les chapitres du livre un par un (PDF ou texte), puis une évaluation finale sera générée sur l'ensemble de l'histoire.
+            </p>
+
+            {nouveauLectureErreur && (
+              <div style={{ background: "#FEE2E2", color: "#DC2626", padding: "10px 14px", borderRadius: 8, marginBottom: 14, fontSize: 13 }}>
+                {nouveauLectureErreur}
+              </div>
+            )}
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Titre du livre *</label>
+                <input
+                  type="text" className="form-input" autoFocus
+                  value={nouveauLectureTitre}
+                  onChange={(e) => setNouveauLectureTitre(e.target.value)}
+                  placeholder="Ex. Le petit Nicolas"
+                  onKeyDown={(e) => { if (e.key === "Enter" && nouveauLectureTitre.trim() && nouveauLectureNiveauId) creerChapitreLecture(); }}
+                />
+              </div>
+              <div>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Niveau *</label>
+                <select
+                  className="form-input"
+                  value={nouveauLectureNiveauId}
+                  onChange={(e) => setNouveauLectureNiveauId(e.target.value)}
+                >
+                  <option value="">— Choisir —</option>
+                  {niveaux.map((n) => <option key={n.id} value={n.id}>{n.nom}</option>)}
+                </select>
+              </div>
+
+              <div style={{ display: "flex", gap: 10, marginTop: 8 }}>
+                <button
+                  className="btn-primary"
+                  onClick={creerChapitreLecture}
+                  disabled={nouveauLectureEnCours}
+                  style={{ flex: 1, background: "#7C3AED", borderColor: "#7C3AED" }}
+                >
+                  {nouveauLectureEnCours ? "Création…" : "✓ Créer et ajouter les chapitres"}
+                </button>
+                <button
+                  className="btn-ghost"
+                  onClick={() => setNouveauLectureVisible(false)}
+                  disabled={nouveauLectureEnCours}
+                  style={{ flex: 1 }}
+                >
                   Annuler
                 </button>
               </div>

@@ -14,6 +14,7 @@ interface Props {
   texte: string;
   questions: Question[];
   onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean }[]) => void;
+  skipLecture?: boolean;
 }
 
 const COULEURS_CHOIX = [
@@ -32,8 +33,8 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-export default function LectureEleve({ titre, texte, questions, onTermine }: Props) {
-  const [phase, setPhase] = useState<"lecture" | "qcm" | "termine">("lecture");
+export default function LectureEleve({ titre, texte, questions, onTermine, skipLecture }: Props) {
+  const [phase, setPhase] = useState<"lecture" | "qcm" | "termine">(skipLecture ? "qcm" : "lecture");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoix, setSelectedChoix] = useState<number | null>(null);
   const [validated, setValidated] = useState(false);

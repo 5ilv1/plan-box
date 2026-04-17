@@ -14,6 +14,7 @@ interface ExerciceProgression {
   total: number | null;
   valide: boolean;
   debloque: boolean;
+  est_evaluation_finale?: boolean;
 }
 
 interface ChapitreInfo {
@@ -32,6 +33,7 @@ const TYPE_ICONS: Record<string, { icon: string; color: string }> = {
   classement:     { icon: "category",    color: "#9D174D" },
   ecriture_contrainte: { icon: "edit",  color: "#7C3AED" },
   revision:       { icon: "menu_book",   color: "#D97706" },
+  lecture:        { icon: "auto_stories", color: "#7C3AED" },
 };
 
 export default function PageChapitreEleve() {
@@ -80,7 +82,15 @@ export default function PageChapitreEleve() {
 
       const exos = progRes.exercices ?? [];
       setExercices(exos);
-      setEvalDebloquee(exos.length > 0 && exos.every((e: ExerciceProgression) => e.valide));
+      // Pour les chapitres lecture, l'éval finale est un exercice séparé.
+      // Elle est débloquée quand tous les autres exercices sont validés.
+      const estLecture = chapRes.chapitre?.matiere === "lecture";
+      if (estLecture) {
+        const nonEval = exos.filter((e: ExerciceProgression) => !e.est_evaluation_finale);
+        setEvalDebloquee(nonEval.length > 0 && nonEval.every((e: ExerciceProgression) => e.valide));
+      } else {
+        setEvalDebloquee(exos.length > 0 && exos.every((e: ExerciceProgression) => e.valide));
+      }
     } catch (err) {
       if (signal.aborted) return;
       console.error("[charger chapitre]", err);
@@ -158,7 +168,9 @@ export default function PageChapitreEleve() {
           }} />
         )}
 
-        {exercices.map((ex, idx) => {
+        {exercices
+          .filter((ex) => !(chapitre.matiere === "lecture" && ex.est_evaluation_finale))
+          .map((ex, idx) => {
           const typeInfo = TYPE_ICONS[ex.type] ?? TYPE_ICONS.exercice;
           const isLocked = !ex.debloque;
           const isCurrent = ex.debloque && !ex.valide;
@@ -245,6 +257,12 @@ export default function PageChapitreEleve() {
         })}
 
         {/* Évaluation finale */}
+        {(() => {
+          const estLecture = chapitre.matiere === "lecture";
+          const evalLecture = estLecture ? exercices.find((e) => e.est_evaluation_finale) : null;
+          // Pour chapitre lecture sans eval générée : cacher complètement la carte
+          if (estLecture && !evalLecture) return null;
+          return (
         <div style={{
           display: "flex", alignItems: "flex-start", gap: 14, marginTop: 4,
           opacity: evalDebloquee ? 1 : 0.4,
@@ -266,7 +284,12 @@ export default function PageChapitreEleve() {
 
           <div
             onClick={() => {
-              if (evalDebloquee) router.push(`/eleve/chapitre/${chapitreId}/evaluation`);
+              if (!evalDebloquee) return;
+              if (estLecture && evalLecture) {
+                router.push(`/eleve/chapitre/${chapitreId}/exercice/${evalLecture.exercice_id}`);
+              } else {
+                router.push(`/eleve/chapitre/${chapitreId}/evaluation`);
+              }
             }}
             style={{
               flex: 1, padding: "16px 18px", borderRadius: 16,
@@ -292,6 +315,8 @@ export default function PageChapitreEleve() {
             </div>
           </div>
         </div>
+        );
+        })()}
       </div>
     </div>
   );

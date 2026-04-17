@@ -23,9 +23,10 @@ export async function GET(req: NextRequest) {
   const admin = createAdminClient();
 
   // Récupérer les exercices du chapitre, triés par ordre
+  // (contenu inclus pour détecter les exercices "évaluation finale" lecture)
   const { data: exercices, error: errExo } = await admin
     .from("exercice")
-    .select("id, ordre, titre, type")
+    .select("id, ordre, titre, type, contenu")
     .eq("chapitre_id", chapitreId)
     .order("ordre", { ascending: true });
 
@@ -88,6 +89,9 @@ export async function GET(req: NextRequest) {
       debloque = meilleurPrec?.valide ?? false;
     }
 
+    const contenu = (exo as { contenu?: Record<string, unknown> }).contenu ?? {};
+    const estEvalFinale = contenu.est_evaluation_finale === true;
+
     return {
       exercice_id: exo.id,
       ordre: exo.ordre,
@@ -97,6 +101,7 @@ export async function GET(req: NextRequest) {
       total: meilleur?.total ?? null,
       valide,
       debloque,
+      est_evaluation_finale: estEvalFinale,
     };
   });
 
