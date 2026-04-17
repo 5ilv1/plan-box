@@ -96,6 +96,7 @@ export default function NouvelleSemainePage() {
   const dragSemRef = useRef<{
     kind: "type" | "bloc"; value: string;
     startX: number; startY: number; isDragging: boolean;
+    target: Element; pointerId: number;
   } | null>(null);
   const jourColRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const dragOverJourRef = useRef<number | null>(null);
@@ -300,9 +301,14 @@ export default function NouvelleSemainePage() {
   useEffect(() => { handleDropRef.current = handleDropOnJour; });
 
   // Pointer events — compatible iPad
+  // ⚠️ Ne PAS appeler setPointerCapture ici : ça redirige tous les events
+  // (y compris le click final) vers la carte-bloc parent et empêche le click
+  // du titre intérieur (→ ouvrirModale) de se déclencher. On capture seulement
+  // une fois le seuil de drag dépassé, dans onMove.
   function handlePointerDownSem(e: React.PointerEvent, kind: "type" | "bloc", value: string) {
-    e.currentTarget.setPointerCapture(e.pointerId);
-    dragSemRef.current = { kind, value, startX: e.clientX, startY: e.clientY, isDragging: false };
+    const target = e.currentTarget as Element;
+    const pointerId = e.pointerId;
+    dragSemRef.current = { kind, value, startX: e.clientX, startY: e.clientY, isDragging: false, target, pointerId };
   }
 
   useEffect(() => {
@@ -322,6 +328,13 @@ export default function NouvelleSemainePage() {
       if (!d.isDragging) {
         if (Math.hypot(e.clientX - d.startX, e.clientY - d.startY) < DRAG_THRESHOLD_SEM) return;
         d.isDragging = true;
+        // On capture le pointeur SEULEMENT maintenant : avant ça, on laisse
+        // le click natif se propager si l'utilisateur relâche sans bouger.
+        try {
+          if ((d.target as any).setPointerCapture) {
+            (d.target as any).setPointerCapture(d.pointerId);
+          }
+        } catch { /* ignore si l'élément a été démonté */ }
         if (d.kind === "type") setDraggedType(d.value as TypeBloc);
         else setDraggedBloc(d.value);
         document.body.style.userSelect = "none";
