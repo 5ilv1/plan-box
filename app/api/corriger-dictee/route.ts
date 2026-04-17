@@ -97,6 +97,8 @@ interface DiffErreur {
   mot_attendu: string;
   kind: "sub" | "del" | "ins" | "casse" | "ponctuation";
   contexte: string;
+  /** Index du mot attendu dans le tableau `att` ; -1 si c'est une insertion. */
+  position: number;
 }
 
 /** Construit la liste des erreurs exhaustives depuis l'alignement. */
@@ -122,6 +124,9 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
         (i < firstAnchor || i > lastAnchor) && o.type === "ins" ? null : o
       ).filter((o): o is Op => o !== null);
 
+  // Curseur qui suit l'index courant dans le tableau `att` (mots attendus).
+  let posAtt = 0;
+
   for (let k = 0; k < ops.length; k++) {
     const op = ops[k];
     const contexteAvant = ops.slice(Math.max(0, k - 3), k).map((o) =>
@@ -144,29 +149,37 @@ function construireErreurs(att: string[], eleve: string[]): { erreurs: DiffErreu
           mot_attendu: op.expected,
           kind: memeStrip ? "casse" : "sub",
           contexte,
+          position: posAtt,
         });
       }
+      posAtt++;
     } else if (op.type === "sub") {
       erreurs.push({
         mot_eleve: op.actual,
         mot_attendu: op.expected,
         kind: estPonct(op.expected) || estPonct(op.actual) ? "ponctuation" : "sub",
         contexte,
+        position: posAtt,
       });
+      posAtt++;
     } else if (op.type === "del") {
       erreurs.push({
         mot_eleve: "",
         mot_attendu: op.expected,
         kind: estPonct(op.expected) ? "ponctuation" : "del",
         contexte,
+        position: posAtt,
       });
+      posAtt++;
     } else if (op.type === "ins") {
       erreurs.push({
         mot_eleve: op.actual,
         mot_attendu: "",
         kind: estPonct(op.actual) ? "ponctuation" : "ins",
         contexte,
+        position: -1,
       });
+      // Pas d'avancée dans `att`
     }
   }
 
@@ -359,6 +372,7 @@ Réponds UNIQUEMENT avec ce JSON :
   if (erreurs.length === 0) {
     return NextResponse.json({
       transcription,
+      texte_attendu: texteAttendu,
       nb_mots_corrects: nb_corrects,
       nb_mots_total: nb_total,
       erreurs: [],
@@ -474,6 +488,9 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
         "orthographe";
       return {
         mot_eleve: e.mot_eleve,
+        mot_attendu: e.mot_attendu,
+        position: e.position,
+        kind: e.kind,
         type_erreur: c?.type_erreur ?? fallbackType,
         indice: c?.indice ?? "Regarde bien ce mot et compare avec ce que tu as écrit.",
       };
@@ -481,6 +498,7 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
 
     return NextResponse.json({
       transcription,
+      texte_attendu: texteAttendu,
       nb_mots_corrects: nb_corrects,
       nb_mots_total: nb_total,
       erreurs: erreursFinales,
@@ -490,6 +508,9 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
     // Fallback : renvoyer les erreurs sans classification IA
     const erreursFallback = erreurs.map((e) => ({
       mot_eleve: e.mot_eleve,
+      mot_attendu: e.mot_attendu,
+      position: e.position,
+      kind: e.kind,
       type_erreur:
         e.kind === "del" ? "mot_oublie" :
         e.kind === "ins" ? "autre" :
@@ -500,6 +521,7 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
     }));
     return NextResponse.json({
       transcription,
+      texte_attendu: texteAttendu,
       nb_mots_corrects: nb_corrects,
       nb_mots_total: nb_total,
       erreurs: erreursFallback,

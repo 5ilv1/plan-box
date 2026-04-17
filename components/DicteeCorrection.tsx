@@ -4,15 +4,32 @@ import { useRef, useState } from "react";
 
 interface Erreur {
   mot_eleve: string;
+  mot_attendu?: string;
+  position?: number;
+  kind?: "sub" | "del" | "ins" | "casse" | "ponctuation";
   type_erreur: string;
   indice: string;
 }
 
 interface ResultatCorrection {
   transcription: string;
+  texte_attendu?: string;
   nb_mots_corrects: number;
   nb_mots_total: number;
   erreurs: Erreur[];
+}
+
+/** Tokenise en gardant la ponctuation comme tokens séparés — doit suivre la même logique que la route API. */
+function tokenizerAffichage(s: string): string[] {
+  const out: string[] = [];
+  const re = /[\p{L}\p{N}'\-]+|[.,;:!?…«»"()]/gu;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s)) !== null) out.push(m[0]);
+  return out;
+}
+
+function estPonctuation(t: string): boolean {
+  return /^[.,;:!?…«»"()]$/.test(t);
 }
 
 interface Props {
@@ -41,6 +58,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
   const [chargement, setChargement] = useState(false);
   const [resultat, setResultat] = useState<ResultatCorrection | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
+  const [erreurActive, setErreurActive] = useState<number | null>(null);
 
   function ouvrirCamera() {
     inputRef.current?.click();
@@ -59,6 +77,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
 
     setResultat(null);
     setErreur(null);
+    setErreurActive(null);
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -66,12 +85,14 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
     setResultat(null);
     setErreur(null);
+    setErreurActive(null);
   }
 
   function annulerTout() {
     setPhotos([]);
     setResultat(null);
     setErreur(null);
+    setErreurActive(null);
     if (inputRef.current) inputRef.current.value = "";
   }
 
@@ -287,23 +308,207 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
             </p>
           </div>
 
-          {/* Liste des indices */}
-          {resultat.erreurs.length > 0 && (
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <h3 style={{
-                fontFamily: "'Plus Jakarta Sans', sans-serif",
-                fontSize: 16,
-                fontWeight: 700,
-                color: "var(--pb-on-surface)",
-                margin: 0,
-                display: "flex",
-                alignItems: "center",
-                gap: 8,
-              }}>
-                <span className="ms" style={{ fontSize: 20, color: "var(--pb-primary)" }}>lightbulb</span>
-                Indices pour te corriger
-              </h3>
+          {/* Texte attendu avec erreurs surlignées + insertions élève */}
+          {resultat.erreurs.length > 0 && resultat.texte_attendu && (() => {
+            const tokens = tokenizerAffichage(resultat.texte_attendu);
+            // index mot attendu -> index de l'erreur dans resultat.erreurs
+            const erreursParPos = new Map<number, number>();
+            // insertions (mot en trop écrit par l'élève, non présent dans l'attendu)
+            const insertions: { i: number; err: Erreur }[] = [];
+            resultat.erreurs.forEach((e, idx) => {
+              if (typeof e.position === "number" && e.position >= 0) {
+                erreursParPos.set(e.position, idx);
+              } else {
+                insertions.push({ i: idx, err: e });
+              }
+            });
 
+            const active = erreurActive !== null ? resultat.erreurs[erreurActive] : null;
+            const activeConfig = active
+              ? TYPE_ERREUR_LABELS[active.type_erreur] || TYPE_ERREUR_LABELS.autre
+              : null;
+
+            return (
+              <div>
+                <h3 style={{
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  fontSize: 16, fontWeight: 700,
+                  color: "var(--pb-on-surface)",
+                  margin: "0 0 12px",
+                  display: "flex", alignItems: "center", gap: 8,
+                }}>
+                  <span className="ms" style={{ fontSize: 20, color: "var(--pb-primary)" }}>edit_note</span>
+                  Ta dictée corrigée
+                </h3>
+                <p style={{
+                  fontSize: 13,
+                  color: "var(--pb-on-surface-variant)",
+                  margin: "0 0 16px",
+                }}>
+                  Les mots en rouge sont les erreurs. Touche un mot pour voir l&apos;indice.
+                </p>
+
+                {/* Texte de la dictée */}
+                <div style={{
+                  padding: "18px 20px",
+                  borderRadius: "1rem",
+                  background: "var(--pb-surface-container, #f5f5f5)",
+                  fontSize: 17,
+                  lineHeight: 1.9,
+                  color: "var(--pb-on-surface)",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}>
+                  {tokens.map((tok, idxTok) => {
+                    const idxErr = erreursParPos.get(idxTok);
+                    const estErreur = idxErr !== undefined;
+                    const ponct = estPonctuation(tok);
+                    const estActive = estErreur && idxErr === erreurActive;
+
+                    // Espace inséré avant le token sauf s'il s'agit d'une ponctuation
+                    // ou si le token précédent est une ouvrante.
+                    const prev = idxTok > 0 ? tokens[idxTok - 1] : "";
+                    const espaceAvant = idxTok > 0 && !ponct && prev !== "«" && prev !== "(" && prev !== "\"";
+
+                    if (!estErreur) {
+                      return (
+                        <span key={idxTok}>
+                          {espaceAvant ? " " : ""}
+                          {tok}
+                        </span>
+                      );
+                    }
+
+                    const err = resultat.erreurs[idxErr!];
+                    const estMotOublie = err.kind === "del";
+
+                    return (
+                      <span key={idxTok}>
+                        {espaceAvant ? " " : ""}
+                        <button
+                          type="button"
+                          onClick={() => setErreurActive(estActive ? null : idxErr!)}
+                          style={{
+                            display: "inline",
+                            padding: "2px 6px",
+                            margin: "0 1px",
+                            borderRadius: 6,
+                            border: estActive ? "2px solid #DC2626" : "none",
+                            background: estActive ? "#fee2e2" : "transparent",
+                            color: "#DC2626",
+                            fontWeight: 700,
+                            fontSize: "inherit",
+                            fontFamily: "inherit",
+                            cursor: "pointer",
+                            textDecoration: estMotOublie ? "underline dashed" : "underline",
+                            textDecorationColor: "#DC2626",
+                            textUnderlineOffset: 3,
+                          }}
+                          aria-label={`Erreur sur le mot ${tok}`}
+                        >
+                          {tok}
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+
+                {/* Panneau d'indice (erreur active) */}
+                {active && activeConfig && (
+                  <div style={{
+                    marginTop: 14,
+                    padding: "14px 16px",
+                    borderRadius: "1rem",
+                    background: "white",
+                    border: `2px solid ${activeConfig.color}`,
+                    boxShadow: "0 2px 12px rgba(0,0,0,0.06)",
+                  }}>
+                    <div style={{
+                      display: "flex", alignItems: "center", gap: 8, marginBottom: 8,
+                    }}>
+                      <span className="ms" style={{ fontSize: 20, color: activeConfig.color }}>
+                        {activeConfig.icon}
+                      </span>
+                      <span style={{
+                        fontSize: 13, fontWeight: 700,
+                        color: activeConfig.color,
+                        textTransform: "uppercase", letterSpacing: 0.5,
+                      }}>
+                        {activeConfig.label}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setErreurActive(null)}
+                        style={{
+                          marginLeft: "auto",
+                          width: 28, height: 28, borderRadius: "50%",
+                          border: "none", background: "transparent",
+                          cursor: "pointer",
+                          display: "flex", alignItems: "center", justifyContent: "center",
+                          color: "var(--pb-on-surface-variant)",
+                        }}
+                        aria-label="Fermer l'indice"
+                      >
+                        <span className="ms" style={{ fontSize: 20 }}>close</span>
+                      </button>
+                    </div>
+                    {active.mot_eleve && (
+                      <p style={{
+                        fontSize: 14, margin: "0 0 6px",
+                        color: "var(--pb-on-surface-variant)",
+                      }}>
+                        Tu as écrit : <strong style={{ color: "#DC2626" }}>« {active.mot_eleve} »</strong>
+                      </p>
+                    )}
+                    {active.kind === "del" && (
+                      <p style={{
+                        fontSize: 14, margin: "0 0 6px",
+                        color: "var(--pb-on-surface-variant)",
+                      }}>
+                        Tu as oublié ce mot.
+                      </p>
+                    )}
+                    <p style={{
+                      fontSize: 15, margin: 0, lineHeight: 1.5,
+                      color: "var(--pb-on-surface)",
+                    }}>
+                      💡 {active.indice}
+                    </p>
+                  </div>
+                )}
+
+                {/* Mots en trop (insertions de l'élève hors du texte attendu) */}
+                {insertions.length > 0 && (
+                  <div style={{
+                    marginTop: 14,
+                    padding: "12px 16px",
+                    borderRadius: "0.75rem",
+                    background: "#fff7ed",
+                    border: "1px solid #fed7aa",
+                  }}>
+                    <p style={{
+                      fontSize: 13, fontWeight: 700,
+                      color: "#9a3412", margin: "0 0 6px",
+                      textTransform: "uppercase", letterSpacing: 0.5,
+                    }}>
+                      Mots en trop
+                    </p>
+                    <p style={{ fontSize: 14, color: "#7c2d12", margin: 0 }}>
+                      {insertions.map((x, k) => (
+                        <span key={k}>
+                          {k > 0 ? ", " : ""}
+                          <span style={{ textDecoration: "line-through" }}>« {x.err.mot_eleve} »</span>
+                        </span>
+                      ))}
+                    </p>
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+
+          {/* Fallback : si on n'a pas le texte attendu, afficher l'ancienne liste */}
+          {resultat.erreurs.length > 0 && !resultat.texte_attendu && (
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
               {resultat.erreurs.map((err, i) => {
                 const config = TYPE_ERREUR_LABELS[err.type_erreur] || TYPE_ERREUR_LABELS.autre;
                 return (
@@ -316,39 +521,17 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                       borderLeft: `4px solid ${config.color}`,
                     }}
                   >
-                    <div style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 8,
-                      marginBottom: 6,
-                    }}>
-                      <span className="ms" style={{ fontSize: 18, color: config.color }}>
-                        {config.icon}
-                      </span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                      <span className="ms" style={{ fontSize: 18, color: config.color }}>{config.icon}</span>
                       <span style={{
-                        fontSize: 13,
-                        fontWeight: 700,
-                        color: config.color,
-                        textTransform: "uppercase",
-                        letterSpacing: 0.5,
-                      }}>
-                        {config.label}
-                      </span>
+                        fontSize: 13, fontWeight: 700, color: config.color,
+                        textTransform: "uppercase", letterSpacing: 0.5,
+                      }}>{config.label}</span>
                       <span style={{
-                        fontSize: 14,
-                        fontWeight: 600,
-                        color: "var(--pb-on-surface)",
-                        marginLeft: "auto",
-                      }}>
-                        « {err.mot_eleve} »
-                      </span>
+                        fontSize: 14, fontWeight: 600, color: "var(--pb-on-surface)", marginLeft: "auto",
+                      }}>« {err.mot_eleve} »</span>
                     </div>
-                    <p style={{
-                      fontSize: 14,
-                      color: "var(--pb-on-surface-variant)",
-                      margin: 0,
-                      lineHeight: 1.5,
-                    }}>
+                    <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", margin: 0, lineHeight: 1.5 }}>
                       💡 {err.indice}
                     </p>
                   </div>
