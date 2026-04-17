@@ -349,7 +349,7 @@ export default function PodcastsEnseignant() {
       titre: podcast.titre,
       contenu,
       dateAssignation: affDate,
-      periodicite: "jour",
+      periodicite: "semaine",
       groupeIds: affMode === "classe" ? groupes.map((g) => g.id) : Array.from(affGroupeIds),
     };
 
