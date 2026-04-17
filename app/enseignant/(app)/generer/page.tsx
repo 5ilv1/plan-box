@@ -28,12 +28,13 @@ import GenererTexteATrousForm from "@/components/GenererTexteATrousForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
 import GenererClassementForm from "@/components/GenererClassementForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
+import GenererQCMForm from "@/components/GenererQCMForm";
 import ExercicePreview from "@/components/ExercicePreview";
 import DicteePreview from "@/components/DicteePreview";
 import BanqueExercices from "@/components/BanqueExercices";
 import RepetiboxLink from "@/components/RepetiboxLink";
 
-type TypeBloc = "exercice" | "calcul_mental" | "ressource" | "dictee" | "texte_a_trous" | "analyse_phrase" | "classement" | "lecture";
+type TypeBloc = "exercice" | "calcul_mental" | "ressource" | "dictee" | "texte_a_trous" | "analyse_phrase" | "classement" | "lecture" | "qcm";
 type Etape = "formulaire" | "chargement" | "apercu" | "sauvegarde";
 
 interface TexteATrousData {
@@ -62,6 +63,11 @@ interface LectureData {
   questions: { id: number; question: string; choix: string[]; reponse: number }[];
 }
 
+interface QCMData {
+  titre?: string;
+  questions: { question: string; options: string[]; reponse_correcte: number; explication?: string }[];
+}
+
 type ContenuPreview =
   | { type: "exercice"; data: ExerciceIA }
   | { type: "calcul_mental"; data: CalcMentalIA }
@@ -69,7 +75,8 @@ type ContenuPreview =
   | { type: "texte_a_trous"; data: TexteATrousData }
   | { type: "analyse_phrase"; data: AnalysePhraseData }
   | { type: "classement"; data: ClassementData }
-  | { type: "lecture"; data: LectureData };
+  | { type: "lecture"; data: LectureData }
+  | { type: "qcm"; data: QCMData };
 
 // ─── Mapping symboles → opérations ───────────────────────────────────────
 const SYMBOLE_VERS_OP: Record<string, Operation> = {
@@ -149,7 +156,7 @@ function PageGenererInner() {
   const defaultChapitreId = searchParams.get("chapitre") ?? undefined;
   const supabase = createClient();
 
-  const TYPES_VALIDES: TypeBloc[] = ["exercice", "calcul_mental", "ressource", "dictee", "texte_a_trous", "analyse_phrase", "classement", "lecture"];
+  const TYPES_VALIDES: TypeBloc[] = ["exercice", "calcul_mental", "ressource", "dictee", "texte_a_trous", "analyse_phrase", "classement", "lecture", "qcm"];
   const [typeBloc, setTypeBloc] = useState<TypeBloc>("exercice");
 
   // Synchronise le type avec le paramètre URL ?type=... au montage et à chaque changement d'URL
@@ -424,6 +431,25 @@ function PageGenererInner() {
       return;
     }
 
+    // ── QCM ───────────────────────────────────────────────────────────
+    if (params.type === "qcm") {
+      const p = params as any;
+      const res = await fetch("/api/generer-qcm-theme", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(p),
+      });
+      const json = await res.json();
+      if (!res.ok || json.erreur) {
+        setErreur(json.erreur ?? "Erreur lors de la génération.");
+        setEtape("formulaire");
+        return;
+      }
+      setContenu({ type: "qcm", data: json.resultat as QCMData });
+      setEtape("apercu");
+      return;
+    }
+
     // ── Classement ────────────────────────────────────────────────────
     if (params.type === "classement") {
       const p = params as any;
@@ -590,6 +616,12 @@ function PageGenererInner() {
         ...contenuFinal.data,
         genere_par_ia: true,
       };
+    } else if (contenuFinal.type === "qcm") {
+      contenuJsonb = {
+        ...contenuFinal.data,
+        genere_par_ia: true,
+        modele_utilise: "claude-sonnet-4-6",
+      };
     } else if ((contenuFinal.data as any).modeles) {
       // Nouveau format aléatoire — on stocke les modèles, pas les calculs
       contenuJsonb = {
@@ -621,6 +653,8 @@ function PageGenererInner() {
         ? (contenuFinal.data as ClassementData).titre
         : contenuFinal.type === "lecture"
         ? (contenuFinal.data as LectureData).titre
+        : contenuFinal.type === "qcm"
+        ? ((contenuFinal.data as QCMData).titre ?? "QCM")
         : (paramsEnCours as ParamsCalcMental).titrePersonnalise?.trim()
         ? (paramsEnCours as ParamsCalcMental).titrePersonnalise!
         : (paramsEnCours as ParamsCalcMental).consignesSpeciales?.trim()
@@ -716,7 +750,7 @@ function PageGenererInner() {
         matiere: (paramsEnCours as { matiere?: string }).matiere ?? null,
         niveau_id: null,
         chapitre_id: chapitreId,
-        titre: contenuFinal.type === "exercice" ? titre : null,
+        titre: (contenuFinal.type === "exercice" || contenuFinal.type === "qcm") ? titre : null,
         contenu: contenuJsonb,
         nb_utilisations: elevesResolus.length,
       }),
@@ -1144,8 +1178,8 @@ function PageGenererInner() {
             <>
               <div className="tabs" style={{ marginBottom: 0 }}>
                 <button
-                  className={`tab${typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture" ? " active" : ""}`}
-                  onClick={() => { if (typeBloc !== "exercice" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "lecture") setTypeBloc("exercice"); }}
+                  className={`tab${typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture" || typeBloc === "qcm" ? " active" : ""}`}
+                  onClick={() => { if (typeBloc !== "exercice" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "lecture" && typeBloc !== "qcm") setTypeBloc("exercice"); }}
                 >
                   <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>edit_note</span> Exercice
                 </button>
@@ -1171,7 +1205,7 @@ function PageGenererInner() {
               </div>
 
               {/* Sous-sélecteur pour les exercices */}
-              {(typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture") && (
+              {(typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture" || typeBloc === "qcm") && (
                 <div style={{
                   display: "flex", gap: 10, padding: "16px 0 8px",
                   marginBottom: 16, flexWrap: "wrap",
@@ -1268,6 +1302,23 @@ function PageGenererInner() {
                     </div>
                     <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
                       Texte de lecture + questions QCM
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => setTypeBloc("qcm")}
+                    style={{
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
+                      border: typeBloc === "qcm" ? "2px solid #92400E" : "1px solid var(--border)",
+                      background: typeBloc === "qcm" ? "rgba(146,64,14,0.06)" : "white",
+                      cursor: "pointer", textAlign: "left", transition: "all 0.15s",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span className="ms" style={{ fontSize: 22, color: typeBloc === "qcm" ? "#92400E" : "var(--text-secondary)" }}>quiz</span>
+                      <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: typeBloc === "qcm" ? "#92400E" : "var(--text)" }}>QCM</span>
+                    </div>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
+                      Questions à choix multiple sur un thème
                     </p>
                   </button>
                 </div>
@@ -1482,6 +1533,15 @@ function PageGenererInner() {
               />
             )}
 
+            {/* Formulaire QCM */}
+            {etape === "formulaire" && typeBloc === "qcm" && (
+              <GenererQCMForm
+                onGenerer={generer}
+                chargement={chargementEnCours}
+                defaultValues={paramsEnCours?.type === "qcm" ? paramsEnCours as any : undefined}
+              />
+            )}
+
             {/* Aperçu analyse de phrase */}
             {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "analyse_phrase" && contenu?.type === "analyse_phrase" && (
               <div style={{ padding: 24 }}>
@@ -1582,6 +1642,45 @@ function PageGenererInner() {
               </div>
             )}
 
+            {/* Aperçu QCM */}
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "qcm" && contenu?.type === "qcm" && (
+              <div style={{ padding: 24 }}>
+                <h3 style={{ fontWeight: 700, fontSize: "1.125rem", marginBottom: 8 }}>
+                  {contenu.data.titre ?? "QCM"}
+                </h3>
+                <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text-secondary)", marginBottom: 12 }}>
+                  {contenu.data.questions.length} question{contenu.data.questions.length > 1 ? "s" : ""}
+                </p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                  {contenu.data.questions.map((q, i) => (
+                    <div key={i} style={{ padding: "10px 14px", background: "white", borderRadius: 10, border: "1px solid var(--border)", fontSize: "0.8125rem" }}>
+                      <p style={{ fontWeight: 700, margin: "0 0 6px" }}>
+                        <span style={{ color: "#92400E" }}>Q{i + 1}.</span> {q.question}
+                      </p>
+                      <ul style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 2 }}>
+                        {q.options.map((opt, j) => (
+                          <li key={j} style={{ color: j === q.reponse_correcte ? "#16A34A" : "var(--text-secondary)", fontWeight: j === q.reponse_correcte ? 700 : 400 }}>
+                            {String.fromCharCode(65 + j)}. {opt}{j === q.reponse_correcte ? " ✓" : ""}
+                          </li>
+                        ))}
+                      </ul>
+                      {q.explication && (
+                        <p style={{ marginTop: 6, marginBottom: 0, fontSize: "0.75rem", color: "var(--text-secondary)", fontStyle: "italic" }}>
+                          💡 {q.explication}
+                        </p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+                  <button className="btn-ghost" onClick={() => setEtape("formulaire")}>Annuler</button>
+                  <button className="btn-primary" onClick={() => contenu && valider(contenu)} disabled={etape === "sauvegarde" || !contenu} style={{ flex: 1 }}>
+                    {etape === "sauvegarde" ? "Enregistrement..." : "Valider et affecter"}
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Aperçu dictée — navigation si plusieurs */}
             {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "dictee" && dicteeResultats.length > 0 && (
               <div>
@@ -1663,7 +1762,7 @@ function PageGenererInner() {
             )}
 
             {/* Aperçu exercice/calcul/ressource */}
-            {(etape === "apercu" || etape === "sauvegarde") && typeBloc !== "dictee" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "lecture" && contenu && (
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc !== "dictee" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "lecture" && typeBloc !== "qcm" && contenu && (
               <div>
                 <ExercicePreview
                   contenu={contenu as any}
