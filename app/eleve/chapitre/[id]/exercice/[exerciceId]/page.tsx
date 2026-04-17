@@ -456,6 +456,7 @@ export default function PageExerciceEleve() {
           texte={texte}
           questions={questionsLec}
           skipLecture={estEvalFinale}
+          exerciceId={exerciceId}
           onTermine={async (scoreResult) => {
             const total = scoreResult.total;
             const bon = scoreResult.bon;

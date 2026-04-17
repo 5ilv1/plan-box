@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Liseuse from "./Liseuse";
 
 interface Question {
   id: number;
@@ -15,6 +16,7 @@ interface Props {
   questions: Question[];
   onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean }[]) => void;
   skipLecture?: boolean;
+  exerciceId?: string | number;
 }
 
 const COULEURS_CHOIX = [
@@ -33,7 +35,7 @@ function shuffleArray<T>(arr: T[]): T[] {
   return a;
 }
 
-export default function LectureEleve({ titre, texte, questions, onTermine, skipLecture }: Props) {
+export default function LectureEleve({ titre, texte, questions, onTermine, skipLecture, exerciceId }: Props) {
   const [phase, setPhase] = useState<"lecture" | "qcm" | "termine">(skipLecture ? "qcm" : "lecture");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedChoix, setSelectedChoix] = useState<number | null>(null);
@@ -85,37 +87,13 @@ export default function LectureEleve({ titre, texte, questions, onTermine, skipL
   if (phase === "lecture") {
     return (
       <div style={{ padding: "0.5rem 0" }}>
-        {/* Texte de lecture */}
-        <div style={{
-          background: "white", borderRadius: 16, padding: "1.5rem 2rem",
-          border: "1px solid var(--border)", lineHeight: 2,
-          fontSize: "1.0625rem", color: "var(--text)",
-          maxHeight: "60vh", overflowY: "auto",
-          whiteSpace: "pre-wrap",
-        }}>
-          {texte}
-        </div>
-
-        {/* Bouton terminer la lecture */}
-        <div style={{ textAlign: "center", marginTop: 24 }}>
-          <button
-            onClick={() => setPhase("qcm")}
-            style={{
-              padding: "14px 32px", borderRadius: 999,
-              background: "#7C3AED", color: "white",
-              fontWeight: 700, fontSize: "1rem", border: "none",
-              cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-              boxShadow: "0 4px 12px rgba(124,58,237,0.3)",
-              display: "inline-flex", alignItems: "center", gap: 8,
-              transition: "all 0.15s",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "#6D28D9")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "#7C3AED")}
-          >
-            <span className="ms" style={{ fontSize: 20 }}>check_circle</span>
-            J&apos;ai terminé la lecture — Passer aux questions
-          </button>
-        </div>
+        <Liseuse
+          titre={titre}
+          texte={texte}
+          exerciceId={exerciceId}
+          onTermine={() => setPhase("qcm")}
+          actionLabel="J'ai terminé la lecture — Passer aux questions"
+        />
       </div>
     );
   }
@@ -191,61 +169,17 @@ export default function LectureEleve({ titre, texte, questions, onTermine, skipL
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "white", borderRadius: 20,
-              width: "100%", maxWidth: 900, maxHeight: "85vh",
-              display: "flex", flexDirection: "column",
-              boxShadow: "0 20px 60px rgba(0,0,0,0.15)",
-              overflow: "hidden",
-            }}
+            style={{ width: "100%", maxWidth: 900 }}
           >
-            {/* Header modale */}
-            <div style={{
-              padding: "16px 24px", borderBottom: "1px solid var(--border)",
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                <span className="ms" style={{ fontSize: 22, color: "#7C3AED" }}>auto_stories</span>
-                <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: "1.125rem", margin: 0 }}>
-                  {titre}
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowTexte(false)}
-                style={{
-                  width: 36, height: 36, borderRadius: "50%",
-                  background: "var(--bg, #F3F4F6)", border: "none",
-                  cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
-                  transition: "background 0.15s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#E5E7EB")}
-                onMouseLeave={(e) => (e.currentTarget.style.background = "var(--bg, #F3F4F6)")}
-              >
-                <span className="ms" style={{ fontSize: 20, color: "var(--text-secondary)" }}>close</span>
-              </button>
-            </div>
-            {/* Texte */}
-            <div style={{
-              padding: "20px 24px", overflowY: "auto", flex: 1,
-              fontSize: "1rem", lineHeight: 2, whiteSpace: "pre-wrap",
-              color: "var(--text)",
-            }}>
-              {texte}
-            </div>
-            {/* Footer */}
-            <div style={{ padding: "12px 24px", borderTop: "1px solid var(--border)", textAlign: "center" }}>
-              <button
-                onClick={() => setShowTexte(false)}
-                style={{
-                  padding: "10px 28px", borderRadius: 999,
-                  background: "#7C3AED", color: "white", border: "none",
-                  fontWeight: 700, fontSize: "0.875rem", cursor: "pointer",
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                }}
-              >
-                Retour aux questions
-              </button>
-            </div>
+            <Liseuse
+              titre={titre}
+              texte={texte}
+              exerciceId={exerciceId}
+              onClose={() => setShowTexte(false)}
+              onTermine={() => setShowTexte(false)}
+              actionLabel="Retour aux questions"
+              height="min(80vh, 680px)"
+            />
           </div>
         </div>
       )}
