@@ -10,6 +10,14 @@ export const maxDuration = 60;
  * Body: { images: string[] (base64 data-urls), bloc_id: string }
  *   ou  { image: string (base64 data-url), bloc_id: string } pour rétro-compat
  * Retourne: { transcription, erreurs: [{ mot_eleve, type_erreur, indice }] }
+ *
+ * Pipeline en 2 passes (plus fiable qu'une seule passe vision+texte) :
+ *  1. VISION : on demande à Claude de transcrire FIDÈLEMENT ce qu'il voit,
+ *     sans lui montrer le texte attendu (sinon il « lit » le texte attendu
+ *     et rate les fautes de l'élève).
+ *  2. COMPARAISON : on envoie la transcription + le texte attendu à Claude
+ *     en texte pur, et on lui demande de lister toutes les erreurs avec
+ *     indices pédagogiques.
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -77,22 +85,142 @@ export async function POST(req: NextRequest) {
   }
 
   const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
-
   const nbPages = imageBlocks.length;
 
-  const promptDictee = `Tu es un enseignant bienveillant qui corrige la dictée d'un élève de primaire (CE2-CM2).
+  // ───────────────────────────────────────────────────────────────────────────
+  // PASSE 1 — VISION : transcription fidèle (sans montrer le texte attendu)
+  // ───────────────────────────────────────────────────────────────────────────
+  const promptTranscription = estMots
+    ? `Tu es un assistant OCR spécialisé dans l'écriture manuscrite d'enfants.
+
+${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahier"} où un élève de primaire a écrit une liste de mots.
+
+TA MISSION : transcrire EXACTEMENT ce que l'élève a écrit, lettre par lettre, MÊME SI C'EST FAUX.
+
+RÈGLES ABSOLUES :
+- Ne CORRIGE PAS les fautes. Reproduis les erreurs d'orthographe, d'accent, de majuscule, de lettre doublée, etc.
+- Si l'élève a écrit "maison" avec un seul "o" (mason), tu transcris "mason".
+- Si l'élève a oublié un accent, tu l'omets aussi.
+- Si l'écriture est ambiguë entre deux lettres, choisis la lettre qui donnerait le MOT LE PLUS PROCHE d'un mot français existant (mais sans inventer).
+- Un mot par ligne (comme sur le cahier).
+- Ignore les ratures visiblement barrées.
+
+Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
+{
+  "transcription": "ligne1\\nligne2\\n..."
+}`
+    : `Tu es un assistant OCR spécialisé dans l'écriture manuscrite d'enfants.
+
+${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahier"} où un élève de primaire a écrit une dictée.
+
+TA MISSION : transcrire EXACTEMENT ce que l'élève a écrit, mot par mot, MÊME SI C'EST FAUX.
+
+RÈGLES ABSOLUES :
+- Ne CORRIGE PAS les fautes. Reproduis toutes les erreurs : orthographe, accords, accents, majuscules, ponctuation, lettres doublées, mots oubliés, mots en trop, conjugaisons erronées…
+- Si l'élève a écrit "il mange" au lieu de "ils mangent", tu transcris "il mange".
+- Si l'élève a écrit "à" au lieu de "a", tu écris "à".
+- Si un mot est manquant, ne l'invente pas.
+- Si un mot est en trop, garde-le.
+- Conserve la ponctuation et la casse telles qu'écrites.
+- Mets les phrases sur une seule ligne continue, séparées par un espace.
+- Ignore les ratures visiblement barrées.
+
+Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
+{
+  "transcription": "ce que l'élève a vraiment écrit, mot pour mot"
+}`;
+
+  let transcription = "";
+  try {
+    const respVision = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1500,
+      messages: [
+        {
+          role: "user",
+          content: [
+            ...imageBlocks,
+            { type: "text", text: promptTranscription },
+          ],
+        },
+      ],
+    });
+
+    const texteVision = respVision.content
+      .filter((b) => b.type === "text")
+      .map((b) => (b as { type: "text"; text: string }).text)
+      .join("");
+
+    const matchVision = texteVision.match(/\{[\s\S]*\}/);
+    if (!matchVision) {
+      return NextResponse.json({ error: "Transcription IA invalide" }, { status: 500 });
+    }
+    const parsedVision = JSON.parse(matchVision[0]);
+    transcription = String(parsedVision.transcription ?? "").trim();
+    if (!transcription) {
+      return NextResponse.json({ error: "Transcription vide" }, { status: 500 });
+    }
+  } catch (err: unknown) {
+    console.error("[corriger-dictee] Erreur vision:", err);
+    return NextResponse.json({ error: "Erreur lors de la lecture de la photo" }, { status: 500 });
+  }
+
+  // ───────────────────────────────────────────────────────────────────────────
+  // PASSE 2 — COMPARAISON : texte pur, toutes les erreurs listées
+  // ───────────────────────────────────────────────────────────────────────────
+  const promptComparaison = estMots
+    ? `Tu es un enseignant bienveillant qui corrige la dictée de mots d'un élève de primaire (CE2-CM2).
+
+LISTE DES MOTS ATTENDUS (un par ligne) :
+"""
+${texteAttendu}
+"""
+
+CE QUE L'ÉLÈVE A ÉCRIT (transcription fidèle, erreurs comprises) :
+"""
+${transcription}
+"""
+
+TA MISSION : compare mot à mot la transcription à la liste attendue et liste TOUTES les erreurs, sans en oublier.
+
+RÈGLES STRICTES :
+- Ne considère PAS un mot comme correct s'il diffère d'une seule lettre, d'un accent ou d'une majuscule.
+- Pour chaque mot attendu absent ou mal orthographié → une entrée dans "erreurs".
+- Pour chaque mot en trop écrit par l'élève → une entrée avec type "autre".
+- Le champ "nb_mots_corrects" est le nombre de mots de la liste attendue écrits PARFAITEMENT (identiques à la version attendue).
+- Le champ "nb_mots_total" est le nombre total de mots dans la liste attendue.
+
+Types d'erreurs possibles :
+- lettre_muette | accord_adjectif | accent | lettre_doublee | orthographe | majuscule | mot_oublie | autre
+
+Donne un INDICE pédagogique bienveillant qui met l'élève sur la voie SANS donner la réponse.`
+    : `Tu es un enseignant bienveillant qui corrige la dictée d'un élève de primaire (CE2-CM2).
 
 TEXTE ATTENDU DE LA DICTÉE :
 """
 ${texteAttendu}
 """
 
-L'élève a écrit sa dictée sur son cahier. ${nbPages > 1 ? `Voici les ${nbPages} pages de sa dictée.` : "Voici la photo de ce qu'il a écrit."}
+CE QUE L'ÉLÈVE A ÉCRIT (transcription fidèle, erreurs comprises) :
+"""
+${transcription}
+"""
 
-CONSIGNES :
-1. Transcris exactement ce que l'élève a écrit (avec ses erreurs).
-2. Compare avec le texte attendu et identifie chaque erreur.
-3. Pour chaque erreur, donne un INDICE pédagogique qui met l'élève sur la voie SANS donner la réponse. L'indice doit l'aider à trouver la correction lui-même.
+TA MISSION : compare les deux textes mot à mot et liste TOUTES les erreurs de l'élève, sans en oublier une seule.
+
+RÈGLES STRICTES :
+- Parcours le texte attendu de gauche à droite et, pour chaque mot, vérifie s'il correspond EXACTEMENT (orthographe, accent, majuscule, ponctuation) au mot écrit par l'élève.
+- Un mot qui diffère d'une lettre, d'un accent, d'une majuscule ou d'une terminaison d'accord est une ERREUR.
+- Une ponctuation manquante ou erronée est une erreur (type "ponctuation").
+- Un mot absent est une erreur type "mot_oublie".
+- Un mot en trop est une erreur type "autre".
+- Tu dois lister absolument CHAQUE différence. Il vaut mieux trop d'erreurs qu'en oublier.
+
+nb_mots_total = nombre de mots dans le texte attendu.
+nb_mots_corrects = nombre de mots du texte attendu retrouvés à l'identique dans la production de l'élève.
+
+Types d'erreurs possibles :
+- lettre_muette | accord_sujet_verbe | accord_adjectif | conjugaison | homophone | mot_oublie | orthographe | majuscule | ponctuation | accent | lettre_doublee | autre
 
 Types d'indices selon l'erreur :
 - Lettre muette → "Essaie de mettre ce mot au féminin (ou au pluriel) pour entendre la lettre cachée."
@@ -101,83 +229,49 @@ Types d'indices selon l'erreur :
 - Conjugaison → "Ce verbe est du Xe groupe. Comment se conjugue-t-il au [temps] avec [sujet] ?"
 - Homophone → "a/à, et/est, son/sont… Essaie de remplacer par [astuce] pour vérifier."
 - Mot oublié → "Relis ta phrase entre « X » et « Y » : il manque un petit mot."
-- Orthographe lexicale → "Ce mot est difficile ! Il fait partie de ta liste de mots. Essaie de t'en souvenir."
+- Orthographe lexicale → "Ce mot est difficile ! Essaie de t'en souvenir."
 - Majuscule → "En début de phrase ou pour un nom propre, quelle lettre faut-il ?"
-- Ponctuation → "Vérifie la ponctuation à la fin de ta phrase."`;
-
-  const promptMots = `Tu es un enseignant bienveillant qui corrige la dictée de mots d'un élève de primaire (CE2-CM2).
-
-LISTE DES MOTS ATTENDUS (un par ligne) :
-"""
-${texteAttendu}
-"""
-
-L'élève a écrit ces mots sur son cahier. ${nbPages > 1 ? `Voici les ${nbPages} pages.` : "Voici la photo de ce qu'il a écrit."}
-
-CONSIGNES :
-1. Transcris exactement les mots que l'élève a écrits (avec ses erreurs).
-2. Compare chaque mot avec la liste attendue et identifie chaque erreur d'orthographe.
-3. Pour chaque erreur, donne un INDICE pédagogique qui met l'élève sur la voie SANS donner la réponse.
-4. Si un mot de la liste est absent (oublié), signale-le aussi.
-
-Types d'indices :
-- Lettre muette → "Essaie de mettre ce mot au féminin (ou au pluriel) pour entendre la lettre cachée."
-- Accent manquant/mauvais → "Ce mot a un accent. Écoute bien la voyelle : est-ce un accent aigu, grave ou circonflexe ?"
-- Lettre doublée → "Ce mot a une consonne doublée. Écoute bien le son au milieu du mot."
-- Orthographe lexicale → "Ce mot est dans ta liste. Ferme les yeux, essaie de le visualiser lettre par lettre."
-- Mot oublié → "Il manque un mot dans ta liste ! Relis les mots que tu devais apprendre."`;
+- Ponctuation → "Vérifie la ponctuation à la fin de ta phrase."
+- Accent → "Écoute bien la voyelle : aigu, grave ou circonflexe ?"`;
 
   const promptFin = `
 
 Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
 {
-  "transcription": "ce que l'élève a écrit, mot pour mot",
   "nb_mots_corrects": <nombre>,
   "nb_mots_total": <nombre>,
   "erreurs": [
     {
-      "mot_eleve": "ce que l'élève a écrit",
-      "mot_attendu": "ce qui était attendu (pour usage interne, ne sera PAS montré à l'élève)",
+      "mot_eleve": "ce que l'élève a écrit (ou vide si mot oublié)",
+      "mot_attendu": "ce qui était attendu (usage interne, pas montré à l'élève)",
       "type_erreur": "lettre_muette|accord_sujet_verbe|accord_adjectif|conjugaison|homophone|mot_oublie|orthographe|majuscule|ponctuation|accent|lettre_doublee|autre",
-      "indice": "l'indice pédagogique bienveillant"
+      "indice": "indice pédagogique bienveillant, ne donne PAS la réponse"
     }
   ]
 }`;
 
-  const prompt = (estMots ? promptMots : promptDictee) + promptFin;
-
   try {
-    const response = await anthropic.messages.create({
+    const respCompar = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2000,
+      max_tokens: 3000,
       messages: [
-        {
-          role: "user",
-          content: [
-            ...imageBlocks,
-            {
-              type: "text",
-              text: prompt,
-            },
-          ],
-        },
+        { role: "user", content: promptComparaison + promptFin },
       ],
     });
 
-    const texteReponse = response.content
+    const texteCompar = respCompar.content
       .filter((b) => b.type === "text")
       .map((b) => (b as { type: "text"; text: string }).text)
       .join("");
 
-    // Parser le JSON depuis la réponse
-    const jsonMatch = texteReponse.match(/\{[\s\S]*\}/);
+    const jsonMatch = texteCompar.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
       return NextResponse.json({ error: "Réponse IA invalide" }, { status: 500 });
     }
 
     const resultat = JSON.parse(jsonMatch[0]);
 
-    // Retirer mot_attendu des erreurs avant d'envoyer au client (l'élève ne doit pas voir la réponse)
+    // Retirer mot_attendu des erreurs avant d'envoyer au client
     const erreursSansReponse = (resultat.erreurs || []).map((e: Record<string, unknown>) => ({
       mot_eleve: e.mot_eleve,
       type_erreur: e.type_erreur,
@@ -185,13 +279,13 @@ Réponds UNIQUEMENT avec ce JSON (pas de texte autour) :
     }));
 
     return NextResponse.json({
-      transcription: resultat.transcription,
+      transcription,
       nb_mots_corrects: resultat.nb_mots_corrects,
       nb_mots_total: resultat.nb_mots_total,
       erreurs: erreursSansReponse,
     });
   } catch (err: unknown) {
-    console.error("[corriger-dictee] Erreur:", err);
+    console.error("[corriger-dictee] Erreur comparaison:", err);
     return NextResponse.json(
       { error: "Erreur lors de l'analyse de la dictée" },
       { status: 500 },
