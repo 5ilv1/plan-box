@@ -48,17 +48,26 @@ export async function POST(req: NextRequest) {
       couvertureUrl = await uploadCouvertureDepuisUrl(admin, olInfos.couvertureUrlExterne, chapitre_id);
     }
 
-    // 3) Résumé généré par Claude à partir du texte du livre en BDD
+    // 3) Résumé — on privilégie Claude sur le texte réel du livre (en BDD).
+    //    Fallback : description Open Library si pas encore de chapitres générés.
     const texteLivre = await recupererTexteLivre(admin, chapitre_id);
     let resume: string | null = null;
     if (texteLivre && texteLivre.length > 400) {
       resume = await genererResumeIA(titre, texteLivre);
+    }
+    if (!resume && olInfos.description) {
+      resume = olInfos.description;
     }
 
     return NextResponse.json({
       couverture_url: couvertureUrl,
       resume,
       auteur: auteurSaisi ?? olInfos.auteur ?? null,
+      // Hint pour le front : indique pourquoi le résumé peut manquer
+      resume_source: resume
+        ? (texteLivre && texteLivre.length > 400 ? "ia" : "open_library")
+        : null,
+      a_texte_livre: !!(texteLivre && texteLivre.length > 400),
     });
   } catch (err) {
     console.error("[auto-infos]", err);
@@ -69,6 +78,7 @@ export async function POST(req: NextRequest) {
 async function chercherOpenLibrary(titre: string, auteur: string | null): Promise<{
   couvertureUrlExterne: string | null;
   auteur: string | null;
+  description: string | null;
 }> {
   const params = new URLSearchParams({ title: titre, limit: "5" });
   if (auteur) params.set("author", auteur);
@@ -77,7 +87,7 @@ async function chercherOpenLibrary(titre: string, auteur: string | null): Promis
 
   try {
     const res = await fetch(url);
-    if (!res.ok) return { couvertureUrlExterne: null, auteur: null };
+    if (!res.ok) return { couvertureUrlExterne: null, auteur: null, description: null };
     const data = (await res.json()) as { docs?: OpenLibraryDoc[] };
 
     const docs = data.docs ?? [];
@@ -87,19 +97,42 @@ async function chercherOpenLibrary(titre: string, auteur: string | null): Promis
       docs.find((d) => d.cover_i) ??
       docs[0];
 
-    if (!best) return { couvertureUrlExterne: null, auteur: null };
+    if (!best) return { couvertureUrlExterne: null, auteur: null, description: null };
 
     const coverUrl = best.cover_i
       ? `https://covers.openlibrary.org/b/id/${best.cover_i}-L.jpg`
       : null;
 
+    // Description : 2e appel sur /works/{key}.json si on a une key
+    let description: string | null = null;
+    if (best.key) {
+      description = await recupererDescriptionOpenLibrary(best.key);
+    }
+
     return {
       couvertureUrlExterne: coverUrl,
       auteur: best.author_name?.[0] ?? null,
+      description,
     };
   } catch (err) {
     console.warn("[auto-infos] Open Library failed", err);
-    return { couvertureUrlExterne: null, auteur: null };
+    return { couvertureUrlExterne: null, auteur: null, description: null };
+  }
+}
+
+async function recupererDescriptionOpenLibrary(workKey: string): Promise<string | null> {
+  try {
+    const res = await fetch(`https://openlibrary.org${workKey}.json`);
+    if (!res.ok) return null;
+    const data = (await res.json()) as { description?: string | { value?: string } };
+    const desc = data.description;
+    if (!desc) return null;
+    const texte = typeof desc === "string" ? desc : desc.value ?? null;
+    if (!texte || texte.length < 40) return null;
+    // Nettoyer les éventuelles références Wikipedia ou crédits en fin de description
+    return texte.split(/\(\[source\]|--+|\[[12]?\]/)[0].trim();
+  } catch {
+    return null;
   }
 }
 

@@ -173,6 +173,10 @@ export default function PageChapitreLectureDetail() {
       if (json.auteur && !editAuteur.trim()) setEditAuteur(json.auteur);
       if (!json.couverture_url && !json.resume) {
         setErreurAutoInfos("Rien trouvé — complète manuellement.");
+      } else if (!json.resume && !json.a_texte_livre) {
+        setErreurAutoInfos("Couverture OK. Pour un résumé fidèle, génère d'abord au moins un chapitre du livre, puis relance.");
+      } else if (!json.resume) {
+        setErreurAutoInfos("Couverture OK mais résumé non trouvé — complète-le manuellement.");
       }
     } catch (err) {
       setErreurAutoInfos(err instanceof Error ? err.message : "Erreur");
