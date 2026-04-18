@@ -23,7 +23,10 @@ const PREFS_KEY = "liseuse_prefs_v1";
 const pageKey = (id?: string | number) => `liseuse_page_${id}`;
 
 // Nettoie le texte extrait d'un PDF pour éviter les retours à la ligne intempestifs
-// dûs au layout d'origine (colonnes, largeur fixe…). Préserve les vrais paragraphes.
+// dûs au layout d'origine (colonnes, largeur fixe…), tout en préservant :
+//   - les sauts de paragraphe (\n\n)
+//   - les répliques de dialogue (ligne commençant par — – - « ")
+//   - les sauts après une ponctuation de fin de phrase (. ! ? …)
 function nettoyerTexte(texte: string): string {
   return texte
     .replace(/\r\n?/g, "\n")
@@ -33,8 +36,10 @@ function nettoyerTexte(texte: string): string {
     .replace(/\n[ \t]*\d{1,4}[ \t]*\n/g, "\n\n")
     // Marque temporairement les vrais sauts de paragraphe (2+ \n)
     .replace(/\n{2,}/g, "\u0001")
-    // Saut de ligne simple = retour de layout → espace
-    .replace(/\n+/g, " ")
+    // Fusionne UNIQUEMENT les \n "de layout" : ligne précédente ne finit pas
+    // par une ponctuation de fin ET ligne suivante ne démarre pas un dialogue.
+    // Les autres \n sont conservés (répliques, fins de phrases isolées).
+    .replace(/([^.!?…»"）)])[ \t]*\n[ \t]*(?![—–\-«"])/g, "$1 ")
     // Collapse les espaces multiples
     .replace(/[ \t]{2,}/g, " ")
     // Restaure les sauts de paragraphe
