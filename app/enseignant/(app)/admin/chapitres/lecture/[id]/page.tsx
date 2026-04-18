@@ -996,6 +996,40 @@ export default function PageChapitreLectureDetail() {
                     <> Les chapitres déjà générés sont <strong>décochés</strong> — tu peux compléter uniquement les manquants.</>
                   )}
                 </p>
+
+                {/* Regrouper les chapitres courts en une seule passe */}
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "8px 10px", background: "rgba(14,165,233,0.06)", borderRadius: 8, border: "1px solid rgba(14,165,233,0.25)" }}>
+                  <button
+                    onClick={() => {
+                      const SEUIL = 300;
+                      const fusionnes: ChapitreExtrait[] = [];
+                      for (const c of chapitresExtraits) {
+                        const dernier = fusionnes[fusionnes.length - 1];
+                        if (dernier && dernier.nb_mots < SEUIL) {
+                          dernier.titre = `${dernier.titre} · ${c.titre}`;
+                          dernier.texte = `${dernier.texte}\n\n${c.texte}`;
+                          dernier.nb_mots = dernier.nb_mots + c.nb_mots;
+                          dernier.selectionne = dernier.selectionne || c.selectionne;
+                        } else {
+                          fusionnes.push({ ...c });
+                        }
+                      }
+                      fusionnes.forEach((c, i) => { c.ordre = i + 1; });
+                      setChapitresExtraits(fusionnes);
+                    }}
+                    disabled={enGenerationBatch}
+                    style={{
+                      padding: "5px 12px", fontSize: 12, fontWeight: 700,
+                      background: "#0EA5E9", color: "white", border: "none",
+                      borderRadius: 6, cursor: "pointer",
+                    }}
+                  >
+                    ⇣ Regrouper les chapitres courts
+                  </button>
+                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                    fusionne auto les chapitres &lt; 300 mots avec le suivant
+                  </span>
+                </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14, maxHeight: 360, overflowY: "auto", border: "1px solid var(--border)", borderRadius: 8, padding: 8 }}>
                   {chapitresExtraits.map((c, idx) => (
                     <label
@@ -1046,6 +1080,38 @@ export default function PageChapitreLectureDetail() {
                           {c.nb_mots} mots
                         </div>
                       </div>
+                      {idx < chapitresExtraits.length - 1 && (
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const suivant = chapitresExtraits[idx + 1];
+                            const fusionne: ChapitreExtrait = {
+                              ...c,
+                              titre: `${c.titre} · ${suivant.titre}`,
+                              texte: `${c.texte}\n\n${suivant.texte}`,
+                              nb_mots: c.nb_mots + suivant.nb_mots,
+                              selectionne: c.selectionne || suivant.selectionne,
+                            };
+                            const newList = [
+                              ...chapitresExtraits.slice(0, idx),
+                              fusionne,
+                              ...chapitresExtraits.slice(idx + 2),
+                            ];
+                            newList.forEach((x, i) => { x.ordre = i + 1; });
+                            setChapitresExtraits(newList);
+                          }}
+                          disabled={enGenerationBatch}
+                          title="Fusionner avec le chapitre suivant"
+                          style={{
+                            fontSize: 11, fontWeight: 700, color: "#0EA5E9",
+                            background: "transparent", border: "1px solid rgba(14,165,233,0.4)",
+                            padding: "3px 8px", borderRadius: 999, cursor: "pointer",
+                            whiteSpace: "nowrap",
+                          }}
+                        >
+                          ⇣ fusionner
+                        </button>
+                      )}
                     </label>
                   ))}
                 </div>
