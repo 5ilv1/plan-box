@@ -57,6 +57,7 @@ interface ChapitreExtrait {
   texte: string;
   nb_mots: number;
   selectionne: boolean;
+  dejaFait?: boolean;
 }
 
 const NIVEAUX_LABEL: Record<string, string> = { CE2: "CE2", CM1: "CM1", CM2: "CM2" };
@@ -271,10 +272,14 @@ export default function PageChapitreLectureDetail() {
         setErreurUpload(json.erreur ?? "Erreur lors de l'extraction.");
         return;
       }
-      const extraits = (json.resultat.chapitres as Array<{ ordre: number; titre: string; texte: string; nb_mots: number }>).map((c) => ({
-        ...c,
-        selectionne: true,
-      }));
+      // Titres des chapitres déjà générés en BDD (normalisés pour comparaison)
+      const titresDejaGeneres = new Set(
+        chapitresLus.map((e) => (e.titre ?? "").trim().toLowerCase())
+      );
+      const extraits = (json.resultat.chapitres as Array<{ ordre: number; titre: string; texte: string; nb_mots: number }>).map((c) => {
+        const dejaFait = titresDejaGeneres.has(c.titre.trim().toLowerCase());
+        return { ...c, selectionne: !dejaFait, dejaFait };
+      });
       setChapitresExtraits(extraits);
     } catch (err) {
       console.error("[extraireChapitres]", err);
@@ -791,7 +796,10 @@ export default function PageChapitreLectureDetail() {
             ) : (
               <>
                 <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12 }}>
-                  <strong>{chapitresExtraits.length} chapitre{chapitresExtraits.length > 1 ? "s" : ""}</strong> détecté{chapitresExtraits.length > 1 ? "s" : ""}. Décoche ceux que tu ne veux pas garder.
+                  <strong>{chapitresExtraits.length} chapitre{chapitresExtraits.length > 1 ? "s" : ""}</strong> détecté{chapitresExtraits.length > 1 ? "s" : ""}.
+                  {chapitresExtraits.some((c) => c.dejaFait) && (
+                    <> Les chapitres déjà générés sont <strong>décochés</strong> — tu peux compléter uniquement les manquants.</>
+                  )}
                 </p>
                 <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 14, maxHeight: 360, overflowY: "auto", border: "1px solid var(--border)", borderRadius: 8, padding: 8 }}>
                   {chapitresExtraits.map((c, idx) => (
@@ -814,20 +822,31 @@ export default function PageChapitreLectureDetail() {
                         disabled={enGenerationBatch}
                       />
                       <div style={{ flex: 1 }}>
-                        <input
-                          type="text"
-                          value={c.titre}
-                          onChange={(e) => {
-                            const newList = [...chapitresExtraits];
-                            newList[idx] = { ...c, titre: e.target.value };
-                            setChapitresExtraits(newList);
-                          }}
-                          disabled={enGenerationBatch}
-                          style={{
-                            border: "none", background: "transparent", fontWeight: 600,
-                            fontSize: 14, width: "100%", outline: "none", padding: 0,
-                          }}
-                        />
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <input
+                            type="text"
+                            value={c.titre}
+                            onChange={(e) => {
+                              const newList = [...chapitresExtraits];
+                              newList[idx] = { ...c, titre: e.target.value };
+                              setChapitresExtraits(newList);
+                            }}
+                            disabled={enGenerationBatch}
+                            style={{
+                              border: "none", background: "transparent", fontWeight: 600,
+                              fontSize: 14, flex: 1, outline: "none", padding: 0,
+                            }}
+                          />
+                          {c.dejaFait && (
+                            <span style={{
+                              fontSize: 10, fontWeight: 700, color: "#16A34A",
+                              background: "#DCFCE7", padding: "2px 8px", borderRadius: 999,
+                              whiteSpace: "nowrap",
+                            }}>
+                              ✓ déjà généré
+                            </span>
+                          )}
+                        </div>
                         <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
                           {c.nb_mots} mots
                         </div>
