@@ -88,6 +88,14 @@ export default function PageChapitreLectureDetail() {
   const [enAjoutManuel, setEnAjoutManuel] = useState(false);
   const [erreurAjout, setErreurAjout] = useState("");
 
+  // Texte unique (sans chapitres) — évaluation globale sur tout le texte
+  const [ajoutUniqueVisible, setAjoutUniqueVisible] = useState(false);
+  const [ajoutUniqueMode, setAjoutUniqueMode] = useState<"texte" | "pdf">("pdf");
+  const [ajoutUniqueTexte, setAjoutUniqueTexte] = useState("");
+  const [ajoutUniquePdf, setAjoutUniquePdf] = useState<{ name: string; file: File } | null>(null);
+  const [enAjoutUnique, setEnAjoutUnique] = useState(false);
+  const [erreurAjoutUnique, setErreurAjoutUnique] = useState("");
+
   // Édition d'un chapitre lu
   const [editionId, setEditionId] = useState<string | null>(null);
   const [editTitre, setEditTitre] = useState("");
@@ -407,6 +415,85 @@ export default function PageChapitreLectureDetail() {
     }
   }
 
+  // ── Texte unique (sans chapitres) ────────────────────────────────────────
+  function handlePdfUnique(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const TAILLE_MAX_MO = 25;
+    if (file.size > TAILLE_MAX_MO * 1024 * 1024) {
+      setErreurAjoutUnique(`PDF trop volumineux (max ${TAILLE_MAX_MO} MB).`);
+      return;
+    }
+    setAjoutUniquePdf({ name: file.name, file });
+    setErreurAjoutUnique("");
+  }
+
+  async function ajouterTexteUnique() {
+    setEnAjoutUnique(true);
+    setErreurAjoutUnique("");
+    try {
+      let texteComplet = "";
+      if (ajoutUniqueMode === "texte") {
+        if (!ajoutUniqueTexte.trim()) {
+          setErreurAjoutUnique("Colle le texte à évaluer.");
+          setEnAjoutUnique(false);
+          return;
+        }
+        texteComplet = ajoutUniqueTexte;
+      } else {
+        if (!ajoutUniquePdf) {
+          setErreurAjoutUnique("Ajoute un PDF.");
+          setEnAjoutUnique(false);
+          return;
+        }
+        texteComplet = await extraireTextePdf(ajoutUniquePdf.file);
+      }
+
+      const titre = chapitre?.titre ?? "Texte intégral";
+
+      // Utilise l'API éval-lecture pour 10 questions globales sur l'ensemble du texte
+      const genRes = await fetch("/api/generer-eval-lecture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          titreLivre: titre,
+          niveau: niveauPourAPI,
+          chapitres: [{ titre, texte: texteComplet }],
+          nbQuestions: 10,
+        }),
+      });
+      const genJson = await genRes.json();
+      if (!genRes.ok) throw new Error(genJson.erreur ?? "Erreur de génération");
+
+      // Crée un exercice lecture classique (l'élève lit puis fait les 10 questions).
+      // Pas de flag est_evaluation_finale : ça ferait zapper la phase lecture côté élève.
+      await fetch("/api/chapitres/exercices", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chapitre_id: chapitreId,
+          titre,
+          type: "lecture",
+          contenu: {
+            titre,
+            texte: texteComplet,
+            questions: genJson.resultat.questions,
+          },
+          nb_questions: genJson.resultat.questions.length,
+        }),
+      });
+
+      setAjoutUniqueTexte("");
+      setAjoutUniquePdf(null);
+      setAjoutUniqueVisible(false);
+      await charger();
+    } catch (err) {
+      setErreurAjoutUnique(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setEnAjoutUnique(false);
+    }
+  }
+
   // ── Édition chapitre lu ──────────────────────────────────────────────────
   function ouvrirEdition(ex: Exercice) {
     setEditionId(ex.id);
@@ -722,7 +809,7 @@ export default function PageChapitreLectureDetail() {
         </div>
 
         {/* Actions principales */}
-        {!uploadVisible && !ajoutManuelVisible && (
+        {!uploadVisible && !ajoutManuelVisible && !ajoutUniqueVisible && (
           <div style={{ display: "flex", gap: 10, marginBottom: 24, flexWrap: "wrap" }}>
             <button
               className="btn-primary"
@@ -739,6 +826,110 @@ export default function PageChapitreLectureDetail() {
             >
               <span className="ms" style={{ fontSize: 18 }}>add</span>
               Ajouter un chapitre manuellement
+            </button>
+            <button
+              className="btn-secondary"
+              onClick={() => setAjoutUniqueVisible(true)}
+              title="Pour un texte long sans chapitres (nouvelle, court roman) : l'élève lit tout puis répond à 10 questions globales."
+              style={{ display: "flex", alignItems: "center", gap: 6 }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>description</span>
+              Texte unique (sans chapitres)
+            </button>
+          </div>
+        )}
+
+        {/* Texte unique (sans chapitres) */}
+        {ajoutUniqueVisible && (
+          <div className="card" style={{ padding: 20, marginBottom: 24, borderLeft: "4px solid #0EA5E9" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+              <h3 style={{ fontSize: 16, fontWeight: 700, margin: 0 }}>📄 Texte unique (sans chapitres)</h3>
+              <button
+                onClick={() => { setAjoutUniqueVisible(false); setAjoutUniquePdf(null); setAjoutUniqueTexte(""); setErreurAjoutUnique(""); }}
+                className="btn-ghost"
+                style={{ padding: "4px 10px", fontSize: 12 }}
+                disabled={enAjoutUnique}
+              >
+                Fermer
+              </button>
+            </div>
+
+            <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 14 }}>
+              Pour une nouvelle, un court roman ou un texte long non découpé en chapitres. Un seul exercice
+              sera créé : l'élève lira le texte en entier, puis répondra à <strong>10 questions de compréhension globale</strong>.
+            </p>
+
+            {erreurAjoutUnique && (
+              <div style={{ background: "#FEE2E2", color: "#DC2626", padding: "10px 14px", borderRadius: 8, marginBottom: 12, fontSize: 13 }}>
+                {erreurAjoutUnique}
+              </div>
+            )}
+
+            {/* Choix mode */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 14 }}>
+              <button
+                onClick={() => setAjoutUniqueMode("pdf")}
+                disabled={enAjoutUnique}
+                style={{
+                  padding: "7px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                  background: ajoutUniqueMode === "pdf" ? "#0EA5E9" : "white",
+                  color: ajoutUniqueMode === "pdf" ? "white" : "var(--text-secondary)",
+                  border: "1px solid " + (ajoutUniqueMode === "pdf" ? "#0EA5E9" : "var(--border)"),
+                  cursor: "pointer",
+                }}
+              >
+                📎 PDF
+              </button>
+              <button
+                onClick={() => setAjoutUniqueMode("texte")}
+                disabled={enAjoutUnique}
+                style={{
+                  padding: "7px 14px", borderRadius: 8, fontSize: 13, fontWeight: 700,
+                  background: ajoutUniqueMode === "texte" ? "#0EA5E9" : "white",
+                  color: ajoutUniqueMode === "texte" ? "white" : "var(--text-secondary)",
+                  border: "1px solid " + (ajoutUniqueMode === "texte" ? "#0EA5E9" : "var(--border)"),
+                  cursor: "pointer",
+                }}
+              >
+                ✍️ Texte collé
+              </button>
+            </div>
+
+            {/* Zone d'entrée */}
+            {ajoutUniqueMode === "pdf" ? (
+              <div style={{ marginBottom: 14 }}>
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handlePdfUnique}
+                  disabled={enAjoutUnique}
+                  style={{ fontSize: 13 }}
+                />
+                {ajoutUniquePdf && (
+                  <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 6 }}>
+                    📄 {ajoutUniquePdf.name}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <textarea
+                className="form-input"
+                rows={10}
+                value={ajoutUniqueTexte}
+                onChange={(e) => setAjoutUniqueTexte(e.target.value)}
+                disabled={enAjoutUnique}
+                placeholder="Colle ici le texte complet…"
+                style={{ resize: "vertical", marginBottom: 14, fontFamily: "inherit", fontSize: 13, lineHeight: 1.5 }}
+              />
+            )}
+
+            <button
+              className="btn-primary"
+              onClick={ajouterTexteUnique}
+              disabled={enAjoutUnique}
+              style={{ background: "#0EA5E9", borderColor: "#0EA5E9" }}
+            >
+              {enAjoutUnique ? "Génération en cours…" : "✨ Générer les 10 questions"}
             </button>
           </div>
         )}
