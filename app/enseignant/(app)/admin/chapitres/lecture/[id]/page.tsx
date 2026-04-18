@@ -30,11 +30,17 @@ interface Exercice {
   created_at: string;
 }
 
+interface Niveau {
+  id: string;
+  nom: string;
+}
+
 interface Chapitre {
   id: string;
   titre: string;
   matiere: string;
   sous_matiere?: string | null;
+  niveau_id?: string | null;
   niveaux?: { nom: string };
   couverture_url?: string | null;
   resume?: string | null;
@@ -96,6 +102,8 @@ export default function PageChapitreLectureDetail() {
   const [aSupprimer, setASupprimer] = useState<string | null>(null);
 
   // Informations du livre (bibliothèque)
+  const [niveaux, setNiveaux] = useState<Niveau[]>([]);
+  const [editNiveauId, setEditNiveauId] = useState("");
   const [editResume, setEditResume] = useState("");
   const [editAuteur, setEditAuteur] = useState("");
   const [editCouverture, setEditCouverture] = useState<string | null>(null);
@@ -116,14 +124,19 @@ export default function PageChapitreLectureDetail() {
 
   async function charger() {
     setChargement(true);
-    const [chapRes, exRes] = await Promise.all([
+    const { createClient } = await import("@/lib/supabase");
+    const supa = createClient();
+    const [chapRes, exRes, nivRes] = await Promise.all([
       fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
       fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
+      supa.from("niveaux").select("*").order("nom"),
     ]);
     const ch = chapRes.chapitre ?? null;
     setChapitre(ch);
     setExercices((exRes.exercices ?? []) as Exercice[]);
+    setNiveaux((nivRes.data ?? []) as Niveau[]);
     if (ch) {
+      setEditNiveauId(ch.niveau_id ?? "");
       setEditResume(ch.resume ?? "");
       setEditAuteur(ch.auteur ?? "");
       setEditCouverture(ch.couverture_url ?? null);
@@ -142,6 +155,7 @@ export default function PageChapitreLectureDetail() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id: chapitreId,
+          niveau_id: editNiveauId || null,
           resume: editResume.trim() || null,
           auteur: editAuteur.trim() || null,
           couverture_url: editCouverture,
@@ -555,6 +569,20 @@ export default function PageChapitreLectureDetail() {
             {/* Champs */}
             <div>
               <div style={{ marginBottom: 12 }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Niveau</label>
+                <select
+                  className="form-input"
+                  value={editNiveauId}
+                  onChange={(e) => setEditNiveauId(e.target.value)}
+                >
+                  <option value="">— Choisir un niveau —</option>
+                  {niveaux.map((n) => (
+                    <option key={n.id} value={n.id}>{n.nom}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div style={{ marginBottom: 12 }}>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>Auteur</label>
                 <input
                   type="text"
@@ -627,9 +655,7 @@ export default function PageChapitreLectureDetail() {
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 600 }}>Disponible dans la bibliothèque</div>
                   <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                    {editNiveauxCibles.length > 0
-                      ? `Les élèves des niveaux ${editNiveauxCibles.join(", ")} pourront choisir ce livre.`
-                      : `Les élèves du niveau ${niveauLabel} pourront choisir ce livre.`}
+                    Les élèves du niveau sélectionné pourront choisir ce livre.
                   </div>
                 </div>
               </label>
