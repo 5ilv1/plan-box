@@ -99,8 +99,10 @@ function detecterChapitres(texteBrut: string): ChapitreExtrait[] {
  * de 1 pour éviter de confondre avec les numéros de page.
  */
 function detecterChapitresNumeriques(texte: string): Array<{ start: number; end: number; titre: string }> {
-  // Toutes les lignes ne contenant qu'un nombre 1 à 3 chiffres, entourées de lignes vides
-  const pattern = /(?<=\n\s*\n)[ \t]*(\d{1,3})[ \t]*(?=\n\s*\n)/g;
+  // Toutes les lignes ne contenant qu'un nombre 1 à 3 chiffres (entourées de
+  // sauts de ligne ou de sauts de page \f — fréquents dans les PDF où chaque
+  // chapitre commence sur une nouvelle page sans ligne vide avant le titre).
+  const pattern = /(?:^|[\n\f])[ \t\f]*(\d{1,3})[ \t]*(?=[\n\f])/g;
   const candidats: Array<{ start: number; end: number; numero: number }> = [];
   let match: RegExpExecArray | null;
   while ((match = pattern.exec(texte)) !== null) {
