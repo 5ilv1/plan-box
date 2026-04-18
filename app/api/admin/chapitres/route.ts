@@ -106,7 +106,7 @@ export async function PATCH(req: NextRequest) {
     "titre", "matiere", "sous_matiere", "niveau_id",
     "description", "nb_cartes_eval", "seuil_reussite", "seuil_evaluation", "seuil_exercice", "ordre",
     "date_debut",
-    "couverture_url", "resume", "auteur", "disponible_bibliotheque",
+    "couverture_url", "resume", "auteur", "disponible_bibliotheque", "niveaux_cibles",
   ];
 
   const champsMaj: Record<string, unknown> = {};

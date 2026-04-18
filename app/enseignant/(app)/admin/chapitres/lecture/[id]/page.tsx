@@ -40,7 +40,10 @@ interface Chapitre {
   resume?: string | null;
   auteur?: string | null;
   disponible_bibliotheque?: boolean | null;
+  niveaux_cibles?: string[] | null;
 }
+
+const NIVEAUX_DISPONIBLES = ["CE2", "CM1", "CM2"] as const;
 
 interface ChapitreExtrait {
   ordre: number;
@@ -97,6 +100,7 @@ export default function PageChapitreLectureDetail() {
   const [editAuteur, setEditAuteur] = useState("");
   const [editCouverture, setEditCouverture] = useState<string | null>(null);
   const [editDispo, setEditDispo] = useState(false);
+  const [editNiveauxCibles, setEditNiveauxCibles] = useState<string[]>([]);
   const [enUploadCouv, setEnUploadCouv] = useState(false);
   const [enSauveInfos, setEnSauveInfos] = useState(false);
   const [infosSauvees, setInfosSauvees] = useState(false);
@@ -124,6 +128,7 @@ export default function PageChapitreLectureDetail() {
       setEditAuteur(ch.auteur ?? "");
       setEditCouverture(ch.couverture_url ?? null);
       setEditDispo(ch.disponible_bibliotheque === true);
+      setEditNiveauxCibles(Array.isArray(ch.niveaux_cibles) ? ch.niveaux_cibles : []);
     }
     setChargement(false);
   }
@@ -141,6 +146,7 @@ export default function PageChapitreLectureDetail() {
           auteur: editAuteur.trim() || null,
           couverture_url: editCouverture,
           disponible_bibliotheque: editDispo,
+          niveaux_cibles: editNiveauxCibles.length > 0 ? editNiveauxCibles : null,
         }),
       });
       setInfosSauvees(true);
@@ -573,6 +579,44 @@ export default function PageChapitreLectureDetail() {
                 />
               </div>
 
+              <div style={{ marginBottom: 14 }}>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
+                  Niveaux ciblés <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(vide = niveau du chapitre)</span>
+                </label>
+                <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
+                  {NIVEAUX_DISPONIBLES.map((niv) => {
+                    const actif = editNiveauxCibles.includes(niv);
+                    return (
+                      <label
+                        key={niv}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 6,
+                          padding: "6px 12px", borderRadius: 8,
+                          border: `1px solid ${actif ? "#7C3AED" : "var(--border)"}`,
+                          background: actif ? "#F3E8FF" : "transparent",
+                          cursor: "pointer", fontSize: 13, fontWeight: 600,
+                          color: actif ? "#7C3AED" : "var(--text-primary)",
+                        }}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={actif}
+                          onChange={(e) => {
+                            setEditNiveauxCibles((prev) =>
+                              e.target.checked
+                                ? [...prev, niv]
+                                : prev.filter((n) => n !== niv)
+                            );
+                          }}
+                          style={{ width: 14, height: 14 }}
+                        />
+                        {niv}
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+
               <label style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, cursor: "pointer" }}>
                 <input
                   type="checkbox"
@@ -583,7 +627,9 @@ export default function PageChapitreLectureDetail() {
                 <div>
                   <div style={{ fontSize: 14, fontWeight: 600 }}>Disponible dans la bibliothèque</div>
                   <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                    Les élèves du niveau {niveauLabel} pourront choisir ce livre.
+                    {editNiveauxCibles.length > 0
+                      ? `Les élèves des niveaux ${editNiveauxCibles.join(", ")} pourront choisir ce livre.`
+                      : `Les élèves du niveau ${niveauLabel} pourront choisir ce livre.`}
                   </div>
                 </div>
               </label>

@@ -20,33 +20,46 @@ export async function GET(req: NextRequest) {
 
   // Niveau de l'élève (Planbox uniquement)
   let niveauId: string | null = null;
+  let niveauNom: string | null = null;
   if (eleveId) {
     const { data: el } = await admin
       .from("eleves")
-      .select("niveau_id")
+      .select("niveau_id, niveaux(nom)")
       .eq("id", eleveId)
       .maybeSingle();
     niveauId = (el as { niveau_id?: string })?.niveau_id ?? null;
+    niveauNom = (el as { niveaux?: { nom?: string } })?.niveaux?.nom ?? null;
   }
 
   // Chapitres disponibles
-  let chapQuery = admin
+  const { data: chapitres, error } = await admin
     .from("chapitres")
-    .select("id, titre, matiere, couverture_url, resume, auteur, niveau_id, niveaux(nom)")
+    .select("id, titre, matiere, couverture_url, resume, auteur, niveau_id, niveaux_cibles, niveaux(nom)")
     .eq("disponible_bibliotheque", true)
     .eq("matiere", "lecture");
 
-  if (niveauId) chapQuery = chapQuery.eq("niveau_id", niveauId);
-
-  const { data: chapitres, error } = await chapQuery;
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
-  if (!chapitres?.length) {
+
+  // Filtre par niveau :
+  //  - si niveaux_cibles est défini et non vide → le nom du niveau élève doit y figurer
+  //  - sinon fallback rétro-compat sur niveau_id (livre mono-niveau)
+  //  - si l'élève n'a pas de niveau (Repetibox), on retourne tout
+  const chapitresFiltres = (chapitres ?? []).filter((ch) => {
+    if (!niveauId && !niveauNom) return true;
+    const cibles = (ch as { niveaux_cibles?: string[] | null }).niveaux_cibles;
+    if (cibles && cibles.length > 0) {
+      return niveauNom ? cibles.includes(niveauNom) : false;
+    }
+    return niveauId ? ch.niveau_id === niveauId : true;
+  });
+
+  if (!chapitresFiltres.length) {
     return NextResponse.json({ livres: [] });
   }
 
-  const chapIds = chapitres.map((c) => c.id);
+  const chapIds = chapitresFiltres.map((c) => c.id);
 
   // Compte d'exercices par chapitre (hors évaluation finale)
   const { data: exercices } = await admin
@@ -67,7 +80,7 @@ export async function GET(req: NextRequest) {
   const { data: choix } = await choixQuery;
   const choisIds = new Set((choix ?? []).map((c) => c.chapitre_id));
 
-  const livres = chapitres.map((ch) => ({
+  const livres = chapitresFiltres.map((ch) => ({
     id: ch.id,
     titre: ch.titre,
     auteur: (ch as Record<string, unknown>).auteur ?? null,
