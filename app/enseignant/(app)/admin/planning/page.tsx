@@ -162,6 +162,11 @@ export default function PageAdminPlanning() {
   >([]);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
 
+  // Duplication avec régénération IA
+  const [enDuplication, setEnDuplication] = useState(false);
+  const [erreurDuplication, setErreurDuplication] = useState("");
+  const TYPES_DUPLICABLES = new Set(["exercice", "qcm", "texte_a_trous", "calcul_mental", "analyse_phrase", "classement", "ecriture_contrainte", "revision"]);
+
   // Regénération IA
   const [regenMode, setRegenMode]     = useState(false);
   const [regenPrompt, setRegenPrompt] = useState("");
@@ -421,6 +426,29 @@ export default function PageAdminPlanning() {
   function ajouterQuestion() {
     const newId = editQuestions.length > 0 ? Math.max(...editQuestions.map((q) => q.id)) + 1 : 1;
     setEditQuestions((prev) => [...prev, { id: newId, enonce: "", reponse_attendue: "" }]);
+  }
+
+  async function dupliquerBloc() {
+    if (!detail || enDuplication) return;
+    setEnDuplication(true);
+    setErreurDuplication("");
+    try {
+      const blocIds = detail.blocs.map((b) => b.id);
+      const res = await fetch("/api/admin/planning/dupliquer", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocIds }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Erreur");
+      // Refresh du planning pour afficher le nouveau bloc
+      fermerDrawer();
+      await charger();
+    } catch (err) {
+      setErreurDuplication(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setEnDuplication(false);
+    }
   }
 
   async function regenererExercice() {
@@ -1753,6 +1781,17 @@ export default function PageAdminPlanning() {
                       style={{ width: "100%", padding: "9px 12px", fontSize: 13, textAlign: "left" }}>
                       ✏️ Modifier le contenu
                     </button>
+                  )}
+
+                  {TYPES_DUPLICABLES.has(detail.type) && (
+                    <button onClick={dupliquerBloc} disabled={enDuplication} className="btn-ghost"
+                      title="Crée un double du bloc avec de nouveaux items générés par IA (même thème, questions différentes)"
+                      style={{ width: "100%", padding: "9px 12px", fontSize: 13, textAlign: "left" }}>
+                      {enDuplication ? "⏳ Génération de la variante…" : "📄 Dupliquer avec nouvelles questions"}
+                    </button>
+                  )}
+                  {erreurDuplication && (
+                    <div style={{ fontSize: 12, color: "#DC2626", padding: "4px 12px" }}>{erreurDuplication}</div>
                   )}
 
                   {!regenMode ? (
