@@ -112,6 +112,8 @@ export default function PageChapitreLectureDetail() {
   const [enUploadCouv, setEnUploadCouv] = useState(false);
   const [enSauveInfos, setEnSauveInfos] = useState(false);
   const [infosSauvees, setInfosSauvees] = useState(false);
+  const [enAutoInfos, setEnAutoInfos] = useState(false);
+  const [erreurAutoInfos, setErreurAutoInfos] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputManuelRef = useRef<HTMLInputElement>(null);
@@ -144,6 +146,30 @@ export default function PageChapitreLectureDetail() {
       setEditNiveauxCibles(Array.isArray(ch.niveaux_cibles) ? ch.niveaux_cibles : []);
     }
     setChargement(false);
+  }
+
+  async function recupererAutoInfos() {
+    setEnAutoInfos(true);
+    setErreurAutoInfos("");
+    try {
+      const res = await fetch("/api/bibliotheque/auto-infos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chapitre_id: chapitreId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Erreur");
+      if (json.couverture_url) setEditCouverture(json.couverture_url);
+      if (json.resume) setEditResume(json.resume);
+      if (json.auteur && !editAuteur.trim()) setEditAuteur(json.auteur);
+      if (!json.couverture_url && !json.resume) {
+        setErreurAutoInfos("Rien trouvé — complète manuellement.");
+      }
+    } catch (err) {
+      setErreurAutoInfos(err instanceof Error ? err.message : "Erreur");
+    } finally {
+      setEnAutoInfos(false);
+    }
   }
 
   async function sauverInfosLivre() {
@@ -660,7 +686,7 @@ export default function PageChapitreLectureDetail() {
                 </div>
               </label>
 
-              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
                 <button
                   className="btn-primary"
                   onClick={sauverInfosLivre}
@@ -669,8 +695,21 @@ export default function PageChapitreLectureDetail() {
                 >
                   {enSauveInfos ? "Enregistrement…" : "Enregistrer"}
                 </button>
+                <button
+                  className="btn-secondary"
+                  onClick={recupererAutoInfos}
+                  disabled={enAutoInfos}
+                  title="Récupère la couverture et génère un résumé à partir de Google Books et du texte du livre."
+                  style={{ display: "flex", alignItems: "center", gap: 6 }}
+                >
+                  <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
+                  {enAutoInfos ? "Recherche…" : "Récupérer auto"}
+                </button>
                 {infosSauvees && (
                   <span style={{ fontSize: 13, color: "#16A34A", fontWeight: 600 }}>✓ Enregistré</span>
+                )}
+                {erreurAutoInfos && (
+                  <span style={{ fontSize: 13, color: "#DC2626", fontWeight: 600 }}>{erreurAutoInfos}</span>
                 )}
               </div>
             </div>
