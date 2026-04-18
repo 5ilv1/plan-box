@@ -151,7 +151,7 @@ export async function PATCH(req: NextRequest) {
   if (auth.error) return auth.error;
 
   const body = await req.json().catch(() => null);
-  const { blocId, date_assignation, groupe_label, titre, contenu } = body ?? {};
+  const { blocId, date_assignation, date_limite, groupe_label, titre, contenu } = body ?? {};
 
   if (!blocId) {
     return NextResponse.json({ erreur: "blocId requis" }, { status: 400 });
@@ -159,11 +159,12 @@ export async function PATCH(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Mode modification de contenu
-  if (titre !== undefined || contenu !== undefined) {
+  // Mode modification de contenu / titre / date_limite
+  if (titre !== undefined || contenu !== undefined || date_limite !== undefined) {
     const champs: Record<string, unknown> = {};
     if (titre !== undefined) champs.titre = titre;
     if (contenu !== undefined) champs.contenu = contenu;
+    if (date_limite !== undefined) champs.date_limite = date_limite; // null pour retirer
 
     const { error } = await admin.from("plan_travail").update(champs).eq("id", blocId);
     if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });

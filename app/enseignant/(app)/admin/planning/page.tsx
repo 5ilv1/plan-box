@@ -428,6 +428,23 @@ export default function PageAdminPlanning() {
     setEditQuestions((prev) => [...prev, { id: newId, enonce: "", reponse_attendue: "" }]);
   }
 
+  async function retirerDateLimite() {
+    if (!detail) return;
+    await Promise.all(detail.blocs.map((b) =>
+      fetch("/api/admin/planning", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId: b.id, date_limite: null }),
+      })
+    ));
+    const updatedBlocs = detail.blocs.map((b) => ({ ...b, date_limite: null }));
+    setDetail({ ...detail, date_limite: null, blocs: updatedBlocs });
+    setBlocs((prev) => prev.map((b) => {
+      const up = updatedBlocs.find((ub) => ub.id === b.id);
+      return up ?? b;
+    }));
+  }
+
   async function dupliquerBloc() {
     if (!detail || enDuplication) return;
     setEnDuplication(true);
@@ -1765,10 +1782,17 @@ export default function PageAdminPlanning() {
                     );
                   })()}
                   {detail.date_limite && (
-                    <div style={{ marginTop: 8 }}>
+                    <div style={{ marginTop: 8, display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                       <span style={{ padding: "3px 10px", borderRadius: 8, fontSize: 12, background: "#FEE2E2", color: "#DC2626", fontWeight: 700 }}>
                         ⏰ Limite : {new Date(detail.date_limite + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "2-digit", month: "short" })}
                       </span>
+                      <button
+                        onClick={retirerDateLimite}
+                        title="Retirer la date limite"
+                        style={{ background: "none", border: "none", fontSize: 11, color: "#DC2626", cursor: "pointer", textDecoration: "underline", padding: "2px 4px" }}
+                      >
+                        retirer
+                      </button>
                     </div>
                   )}
                 </div>
