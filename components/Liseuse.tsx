@@ -22,6 +22,26 @@ const PADDING_Y = 28;
 const PREFS_KEY = "liseuse_prefs_v1";
 const pageKey = (id?: string | number) => `liseuse_page_${id}`;
 
+// Nettoie le texte extrait d'un PDF pour éviter les retours à la ligne intempestifs
+// dûs au layout d'origine (colonnes, largeur fixe…). Préserve les vrais paragraphes.
+function nettoyerTexte(texte: string): string {
+  return texte
+    .replace(/\r\n?/g, "\n")
+    // Recolle les mots césurés en fin de ligne : "coup-\nure" → "coupure"
+    .replace(/(\p{L})-\n(\p{L})/gu, "$1$2")
+    // Supprime les numéros de page isolés sur leur propre ligne
+    .replace(/\n[ \t]*\d{1,4}[ \t]*\n/g, "\n\n")
+    // Marque temporairement les vrais sauts de paragraphe (2+ \n)
+    .replace(/\n{2,}/g, "\u0001")
+    // Saut de ligne simple = retour de layout → espace
+    .replace(/\n+/g, " ")
+    // Collapse les espaces multiples
+    .replace(/[ \t]{2,}/g, " ")
+    // Restaure les sauts de paragraphe
+    .replace(/\u0001/g, "\n\n")
+    .trim();
+}
+
 interface Props {
   titre: string;
   texte: string;
@@ -146,7 +166,10 @@ export default function Liseuse({ titre, texte, exerciceId, onTermine, actionLab
   const canNext = page < nbPages - 1;
 
   const paragraphes = React.useMemo(() => {
-    return texte.split(/\n\s*\n/).map((p) => p.trim()).filter((p) => p.length > 0);
+    return nettoyerTexte(texte)
+      .split(/\n\s*\n/)
+      .map((p) => p.trim())
+      .filter((p) => p.length > 0);
   }, [texte]);
 
   const progressPct = nbPages > 1 ? Math.round((page / (nbPages - 1)) * 100) : 100;
