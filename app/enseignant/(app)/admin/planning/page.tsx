@@ -157,6 +157,9 @@ export default function PageAdminPlanning() {
   const [editQuestions, setEditQuestions] = useState<
     { id: number; enonce: string; reponse_attendue: string }[]
   >([]);
+  const [editQcm, setEditQcm] = useState<
+    { question: string; options: string[]; reponse_correcte: number; explication?: string }[]
+  >([]);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
 
   // Regénération IA
@@ -373,20 +376,33 @@ export default function PageAdminPlanning() {
   // ── Édition inline ───────────────────────────────────────────────────────────
   function ouvrirEdit() {
     if (!detail) return;
-    const ex = detail.contenu as {
-      consigne?: string;
-      questions?: { id: number; enonce: string; reponse_attendue: string }[];
-    };
     setEditTitre(detail.titre ?? "");
-    setEditConsigne(ex.consigne ?? "");
-    setEditQuestions(ex.questions ?? []);
+
+    if (detail.type === "qcm") {
+      const qcm = detail.contenu as {
+        questions?: { question: string; options: string[]; reponse_correcte: number; explication?: string }[];
+      };
+      setEditQcm(qcm.questions ?? []);
+      setEditConsigne("");
+      setEditQuestions([]);
+    } else {
+      const ex = detail.contenu as {
+        consigne?: string;
+        questions?: { id: number; enonce: string; reponse_attendue: string }[];
+      };
+      setEditConsigne(ex.consigne ?? "");
+      setEditQuestions(ex.questions ?? []);
+      setEditQcm([]);
+    }
     setEditMode(true);
   }
 
   async function sauvegarderEdit() {
     if (!detail) return;
     setEnSauvegarde(true);
-    const nouveauContenu = { ...detail.contenu, consigne: editConsigne, questions: editQuestions };
+    const nouveauContenu = detail.type === "qcm"
+      ? { ...detail.contenu, questions: editQcm }
+      : { ...detail.contenu, consigne: editConsigne, questions: editQuestions };
     await Promise.all(detail.blocs.map((b) =>
       fetch("/api/admin/planning", {
         method: "PATCH",
@@ -1039,33 +1055,77 @@ export default function PageAdminPlanning() {
                   <label className="form-label">Titre</label>
                   <input className="form-input" value={editTitre} onChange={(e) => setEditTitre(e.target.value)} />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Consigne</label>
-                  <textarea className="form-input" rows={2} value={editConsigne}
-                    onChange={(e) => setEditConsigne(e.target.value)} style={{ resize: "vertical" }} />
-                </div>
-                <div className="form-group">
-                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
-                    <label className="form-label" style={{ marginBottom: 0 }}>Questions</label>
-                    <button type="button" onClick={ajouterQuestion}
-                      style={{ fontSize: 12, color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font)" }}>
-                      + Ajouter
-                    </button>
-                  </div>
-                  {editQuestions.map((q, i) => (
-                    <div key={q.id} style={{ marginBottom: 10, padding: 10, background: "var(--bg)", borderRadius: 8, border: "1px solid var(--border)" }}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>Q{i + 1}</span>
-                        <button type="button" onClick={() => setEditQuestions((p) => p.filter((x) => x.id !== q.id))}
-                          style={{ fontSize: 11, color: "var(--error)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font)" }}>✕</button>
-                      </div>
-                      <input className="form-input" style={{ marginBottom: 4, fontSize: 13 }} placeholder="Énoncé" value={q.enonce}
-                        onChange={(e) => setEditQuestions((p) => p.map((x) => x.id === q.id ? { ...x, enonce: e.target.value } : x))} />
-                      <input className="form-input" style={{ fontSize: 13 }} placeholder="Réponse attendue" value={q.reponse_attendue}
-                        onChange={(e) => setEditQuestions((p) => p.map((x) => x.id === q.id ? { ...x, reponse_attendue: e.target.value } : x))} />
+
+                {detail.type === "qcm" ? (
+                  <div className="form-group">
+                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                      <label className="form-label" style={{ marginBottom: 0 }}>Questions QCM</label>
+                      <button type="button" onClick={() => setEditQcm((p) => [...p, { question: "", options: ["", "", "", ""], reponse_correcte: 0, explication: "" }])}
+                        style={{ fontSize: 12, color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font)" }}>
+                        + Ajouter
+                      </button>
                     </div>
-                  ))}
-                </div>
+                    {editQcm.map((q, i) => (
+                      <div key={i} style={{ marginBottom: 10, padding: 10, background: "var(--bg)", borderRadius: 8, border: "1px solid var(--border)" }}>
+                        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                          <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>Q{i + 1}</span>
+                          <button type="button" onClick={() => setEditQcm((p) => p.filter((_, idx) => idx !== i))}
+                            style={{ fontSize: 11, color: "var(--error)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font)" }}>✕</button>
+                        </div>
+                        <input className="form-input" style={{ marginBottom: 6, fontSize: 13 }} placeholder="Question" value={q.question}
+                          onChange={(e) => setEditQcm((p) => p.map((x, idx) => idx === i ? { ...x, question: e.target.value } : x))} />
+                        {q.options.map((opt, j) => (
+                          <div key={j} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                            <input type="radio" name={`correcte-${i}`} checked={q.reponse_correcte === j}
+                              onChange={() => setEditQcm((p) => p.map((x, idx) => idx === i ? { ...x, reponse_correcte: j } : x))}
+                              title="Bonne réponse"
+                            />
+                            <input className="form-input" style={{ flex: 1, fontSize: 13 }}
+                              placeholder={`Option ${String.fromCharCode(65 + j)}`}
+                              value={opt}
+                              onChange={(e) => setEditQcm((p) => p.map((x, idx) => idx === i ? { ...x, options: x.options.map((o, k) => k === j ? e.target.value : o) } : x))}
+                            />
+                          </div>
+                        ))}
+                        <textarea className="form-input" rows={2} style={{ marginTop: 6, fontSize: 13, resize: "vertical" }}
+                          placeholder="Explication (optionnelle)"
+                          value={q.explication ?? ""}
+                          onChange={(e) => setEditQcm((p) => p.map((x, idx) => idx === i ? { ...x, explication: e.target.value } : x))}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <>
+                    <div className="form-group">
+                      <label className="form-label">Consigne</label>
+                      <textarea className="form-input" rows={2} value={editConsigne}
+                        onChange={(e) => setEditConsigne(e.target.value)} style={{ resize: "vertical" }} />
+                    </div>
+                    <div className="form-group">
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 8 }}>
+                        <label className="form-label" style={{ marginBottom: 0 }}>Questions</label>
+                        <button type="button" onClick={ajouterQuestion}
+                          style={{ fontSize: 12, color: "var(--primary)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font)" }}>
+                          + Ajouter
+                        </button>
+                      </div>
+                      {editQuestions.map((q, i) => (
+                        <div key={q.id} style={{ marginBottom: 10, padding: 10, background: "var(--bg)", borderRadius: 8, border: "1px solid var(--border)" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
+                            <span style={{ fontSize: 12, fontWeight: 600, color: "var(--text-secondary)" }}>Q{i + 1}</span>
+                            <button type="button" onClick={() => setEditQuestions((p) => p.filter((x) => x.id !== q.id))}
+                              style={{ fontSize: 11, color: "var(--error)", background: "none", border: "none", cursor: "pointer", fontFamily: "var(--font)" }}>✕</button>
+                          </div>
+                          <input className="form-input" style={{ marginBottom: 4, fontSize: 13 }} placeholder="Énoncé" value={q.enonce}
+                            onChange={(e) => setEditQuestions((p) => p.map((x) => x.id === q.id ? { ...x, enonce: e.target.value } : x))} />
+                          <input className="form-input" style={{ fontSize: 13 }} placeholder="Réponse attendue" value={q.reponse_attendue}
+                            onChange={(e) => setEditQuestions((p) => p.map((x) => x.id === q.id ? { ...x, reponse_attendue: e.target.value } : x))} />
+                        </div>
+                      ))}
+                    </div>
+                  </>
+                )}
                 <div style={{ display: "flex", gap: 8 }}>
                   <button onClick={sauvegarderEdit} disabled={enSauvegarde} className="btn-primary" style={{ flex: 1 }}>
                     {enSauvegarde ? "Sauvegarde…" : "✅ Sauvegarder"}
@@ -1075,9 +1135,20 @@ export default function PageAdminPlanning() {
               </div>
             ) : (() => {
                 const exContenu = detail.contenu as { consigne?: string; questions?: { id: number; enonce: string; reponse_attendue: string; indice?: string }[] };
+                const qcmContenu = detail.contenu as { questions?: { question: string; options: string[]; reponse_correcte: number; explication?: string }[] };
                 const cmContenu = detail.contenu as { calculs?: { id: number; enonce: string; reponse: string | number }[] };
                 const dicteeContenu = detail.contenu as { mots?: { mot: string; definition: string }[]; texte?: string; phrases?: string[] };
                 const motsContenu = detail.contenu as { mots?: { mot: string; definition?: string }[] };
+                const ttContenu = detail.contenu as { consigne?: string; texte_complet?: string; trous?: { mot: string; position?: number; indice?: string }[] };
+                const revContenu = detail.contenu as { introduction?: string; points_cles?: string[]; regle_or?: string; exemples?: string[]; astuce?: string; video_url?: string };
+                const ecContenu = detail.contenu as { sujet?: string; contrainte?: string; instructions?: string; mode?: string };
+                const ecContContenu = detail.contenu as { consigne?: string; contraintes?: string[]; exemple?: string; nb_phrases?: number };
+                const classContenu = detail.contenu as { consigne?: string; categories?: string[]; items?: { texte: string; categorie: string }[] };
+                const lectureContenu = detail.contenu as { titre?: string; texte?: string; questions?: { question: string; choix?: string[]; reponse?: number }[] };
+                const analContenu = detail.contenu as { consigne?: string; phrases?: { phrase: string; analyse?: Record<string, string> }[] };
+                const fichierContenu = detail.contenu as { niveau?: string; numero_page?: string | number; eval?: string };
+                const leconContenu = detail.contenu as { url?: string };
+                const ressContenu = detail.contenu as { matiere?: string; taches?: { titre: string; url?: string }[]; qcm?: unknown };
                 return (
               <>
                 {/* ── Aperçu exercice (vue élève) ── */}
@@ -1112,6 +1183,319 @@ export default function PageAdminPlanning() {
                       <button disabled style={{ width: "100%", padding: "10px", background: "var(--primary)", color: "white", border: "none", borderRadius: 10, fontWeight: 600, fontSize: 14, opacity: 0.5, cursor: "not-allowed" }}>
                         ✅ Valider mes réponses
                       </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu QCM (vue élève) ── */}
+                {detail.type === "qcm" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu QCM
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {(qcmContenu.questions ?? []).map((q, i) => (
+                        <div key={i} style={{ marginBottom: 16, padding: "14px 16px", background: "white", borderRadius: 10, border: "1px solid var(--border)" }}>
+                          <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 10 }}>
+                            {i + 1}. {q.question}
+                          </div>
+                          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                            {(q.options ?? []).map((opt, j) => {
+                              const correcte = j === q.reponse_correcte;
+                              return (
+                                <div key={j} style={{
+                                  padding: "8px 12px", borderRadius: 8, fontSize: 13,
+                                  background: correcte ? "#DCFCE7" : "#F3F4F6",
+                                  border: `1px solid ${correcte ? "#16A34A" : "var(--border)"}`,
+                                  color: correcte ? "#15803D" : "var(--text)",
+                                  fontWeight: correcte ? 700 : 500,
+                                  display: "flex", alignItems: "center", gap: 8,
+                                }}>
+                                  <span style={{ fontWeight: 700, minWidth: 18 }}>{String.fromCharCode(65 + j)}.</span>
+                                  <span style={{ flex: 1 }}>{opt}</span>
+                                  {correcte && <span className="ms" style={{ fontSize: 16, color: "#16A34A" }}>check_circle</span>}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          {q.explication && (
+                            <p style={{ marginTop: 10, fontSize: 12, color: "var(--text-secondary)", fontStyle: "italic", padding: "8px 12px", background: "#FEF3C7", borderRadius: 6 }}>
+                              💡 {q.explication}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu texte à trous ── */}
+                {detail.type === "texte_a_trous" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu texte à trous
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {ttContenu.consigne && (
+                        <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{ttContenu.consigne}</p>
+                      )}
+                      {ttContenu.texte_complet && (
+                        <div style={{ padding: "12px 14px", background: "white", borderRadius: 8, border: "1px solid var(--border)", fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap", marginBottom: 12 }}>
+                          {ttContenu.texte_complet}
+                        </div>
+                      )}
+                      {(ttContenu.trous ?? []).length > 0 && (
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 8 }}>
+                            Mots attendus ({(ttContenu.trous ?? []).length})
+                          </div>
+                          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                            {(ttContenu.trous ?? []).map((t, i) => (
+                              <span key={i} style={{ padding: "4px 10px", borderRadius: 999, background: "#DCFCE7", color: "#15803D", fontSize: 12, fontWeight: 700, border: "1px solid #86EFAC" }}>
+                                {t.mot}
+                                {t.indice && <span style={{ fontWeight: 400, opacity: 0.7, marginLeft: 4 }}>· {t.indice}</span>}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu leçon (révision) ── */}
+                {detail.type === "revision" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu leçon
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {revContenu.introduction && (
+                        <p style={{ fontSize: 14, marginBottom: 12, lineHeight: 1.6 }}>{revContenu.introduction}</p>
+                      )}
+                      {revContenu.regle_or && (
+                        <div style={{ padding: "10px 14px", background: "#FEF3C7", borderRadius: 8, marginBottom: 12, border: "1px solid #F59E0B" }}>
+                          <strong style={{ fontSize: 12, color: "#92400E" }}>✨ Règle d'or</strong>
+                          <p style={{ fontSize: 13, marginTop: 4, marginBottom: 0 }}>{revContenu.regle_or}</p>
+                        </div>
+                      )}
+                      {(revContenu.points_cles ?? []).length > 0 && (
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 6 }}>Points clés</div>
+                          <ul style={{ fontSize: 13, paddingLeft: 20, margin: 0 }}>
+                            {(revContenu.points_cles ?? []).map((p, i) => <li key={i} style={{ marginBottom: 4 }}>{p}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {(revContenu.exemples ?? []).length > 0 && (
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 6 }}>Exemples</div>
+                          <ul style={{ fontSize: 13, paddingLeft: 20, margin: 0 }}>
+                            {(revContenu.exemples ?? []).map((e, i) => <li key={i} style={{ marginBottom: 4 }}>{e}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {revContenu.astuce && (
+                        <p style={{ fontSize: 13, fontStyle: "italic", color: "var(--text-secondary)", marginTop: 8 }}>💡 {revContenu.astuce}</p>
+                      )}
+                      {revContenu.video_url && (
+                        <a href={revContenu.video_url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--primary)", marginTop: 10, display: "inline-block" }}>
+                          🎬 Vidéo associée
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu écriture (simple) ── */}
+                {detail.type === "ecriture" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu écriture
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {ecContenu.sujet && (
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Sujet</div>
+                          <p style={{ fontSize: 14, margin: 0 }}>{ecContenu.sujet}</p>
+                        </div>
+                      )}
+                      {ecContenu.contrainte && (
+                        <div style={{ marginBottom: 10 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Contrainte</div>
+                          <p style={{ fontSize: 14, margin: 0 }}>{ecContenu.contrainte}</p>
+                        </div>
+                      )}
+                      {ecContenu.instructions && (
+                        <div>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 4 }}>Instructions</div>
+                          <p style={{ fontSize: 14, margin: 0, whiteSpace: "pre-wrap" }}>{ecContenu.instructions}</p>
+                        </div>
+                      )}
+                      {ecContenu.mode && (
+                        <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 10 }}>Mode : <strong>{ecContenu.mode}</strong></p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu écriture contrainte ── */}
+                {detail.type === "ecriture_contrainte" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu écriture à contraintes
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {ecContContenu.consigne && <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{ecContContenu.consigne}</p>}
+                      {(ecContContenu.contraintes ?? []).length > 0 && (
+                        <div style={{ marginBottom: 12 }}>
+                          <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 6 }}>Contraintes</div>
+                          <ul style={{ fontSize: 13, paddingLeft: 20, margin: 0 }}>
+                            {(ecContContenu.contraintes ?? []).map((c, i) => <li key={i}>{c}</li>)}
+                          </ul>
+                        </div>
+                      )}
+                      {ecContContenu.exemple && (
+                        <div style={{ padding: "10px 14px", background: "white", borderRadius: 8, border: "1px solid var(--border)", fontSize: 13, fontStyle: "italic" }}>
+                          Exemple : {ecContContenu.exemple}
+                        </div>
+                      )}
+                      {ecContContenu.nb_phrases && (
+                        <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 10 }}>À rédiger : <strong>{ecContContenu.nb_phrases} phrases</strong></p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu classement ── */}
+                {detail.type === "classement" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu classement
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {classContenu.consigne && <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{classContenu.consigne}</p>}
+                      {(classContenu.categories ?? []).length > 0 && (
+                        <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min((classContenu.categories ?? []).length, 3)}, 1fr)`, gap: 8 }}>
+                          {(classContenu.categories ?? []).map((cat) => (
+                            <div key={cat} style={{ padding: 10, background: "white", borderRadius: 8, border: "1px solid var(--border)" }}>
+                              <div style={{ fontSize: 12, fontWeight: 700, marginBottom: 6, textAlign: "center" }}>{cat}</div>
+                              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                {(classContenu.items ?? []).filter((it) => it.categorie === cat).map((it, i) => (
+                                  <span key={i} style={{ fontSize: 12, padding: "4px 8px", background: "#EEF0FE", borderRadius: 6, textAlign: "center" }}>
+                                    {it.texte}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu lecture ── */}
+                {detail.type === "lecture" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu lecture
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {lectureContenu.titre && <p style={{ fontWeight: 700, fontSize: 15, marginBottom: 10 }}>📖 {lectureContenu.titre}</p>}
+                      {lectureContenu.texte && (
+                        <div style={{ padding: "12px 14px", background: "white", borderRadius: 8, border: "1px solid var(--border)", fontSize: 13, lineHeight: 1.6, maxHeight: 200, overflowY: "auto", marginBottom: 10, whiteSpace: "pre-wrap" }}>
+                          {lectureContenu.texte.slice(0, 800)}{lectureContenu.texte.length > 800 ? "…" : ""}
+                        </div>
+                      )}
+                      <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                        {(lectureContenu.questions ?? []).length} question{(lectureContenu.questions ?? []).length > 1 ? "s" : ""} de compréhension
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu analyse de phrase ── */}
+                {detail.type === "analyse_phrase" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu analyse de phrases
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {analContenu.consigne && <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{analContenu.consigne}</p>}
+                      {(analContenu.phrases ?? []).map((p, i) => (
+                        <div key={i} style={{ marginBottom: 10, padding: "10px 14px", background: "white", borderRadius: 8, border: "1px solid var(--border)" }}>
+                          <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{i + 1}. {p.phrase}</p>
+                          {p.analyse && (
+                            <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
+                              {Object.entries(p.analyse).map(([k, v]) => <div key={k}><strong>{k}</strong> : {v}</div>)}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu fichier maths ── */}
+                {detail.type === "fichier_maths" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      <div style={{ fontSize: 13 }}>
+                        📐 Fichier maths {fichierContenu.niveau ? <><strong>· Niveau {fichierContenu.niveau}</strong></> : null}
+                        {fichierContenu.numero_page ? <> · page {fichierContenu.numero_page}</> : null}
+                        {fichierContenu.eval ? <> · <span style={{ color: "#DC2626", fontWeight: 700 }}>évaluation</span></> : null}
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu leçon à copier ── */}
+                {detail.type === "lecon_copier" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      <p style={{ fontSize: 13, marginBottom: 8 }}>✍️ Leçon à copier</p>
+                      {leconContenu.url ? (
+                        <a href={leconContenu.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: 12, color: "var(--primary)" }}>
+                          📎 Voir le document
+                        </a>
+                      ) : (
+                        <p style={{ fontSize: 12, color: "var(--text-secondary)" }}>Aucun document lié.</p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu ressource ── */}
+                {detail.type === "ressource" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                      Aperçu ressource
+                    </div>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      {ressContenu.matiere && <p style={{ fontSize: 12, color: "var(--text-secondary)", marginBottom: 8 }}>Matière : <strong>{ressContenu.matiere}</strong></p>}
+                      {(ressContenu.taches ?? []).length > 0 && (
+                        <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                          {(ressContenu.taches ?? []).map((t, i) => {
+                            const tache = t as { titre?: string; url?: string };
+                            return (
+                              <div key={i} style={{ padding: "8px 12px", background: "white", borderRadius: 8, border: "1px solid var(--border)", fontSize: 13 }}>
+                                {String(tache.titre ?? "")} {tache.url && <a href={tache.url} target="_blank" rel="noopener noreferrer" style={{ color: "var(--primary)", marginLeft: 6 }}>📎</a>}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      {!!ressContenu.qcm && <p style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 8 }}>⭐ QCM associé</p>}
+                    </div>
+                  </div>
+                )}
+
+                {/* ── Aperçu ceinture multiplication ── */}
+                {detail.type === "ceinture_multiplication" && (
+                  <div style={{ marginBottom: 20 }}>
+                    <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
+                      <p style={{ fontSize: 13 }}>🥋 Ceinture de multiplications (entraînement dynamique)</p>
                     </div>
                   </div>
                 )}
@@ -1364,10 +1748,12 @@ export default function PageAdminPlanning() {
                 {/* ── Actions ── */}
                 <div style={{ paddingTop: 12, borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 8 }}>
 
-                  <button onClick={ouvrirEdit} className="btn-ghost"
-                    style={{ width: "100%", padding: "9px 12px", fontSize: 13, textAlign: "left" }}>
-                    ✏️ Modifier le contenu
-                  </button>
+                  {(detail.type === "exercice" || detail.type === "qcm") && (
+                    <button onClick={ouvrirEdit} className="btn-ghost"
+                      style={{ width: "100%", padding: "9px 12px", fontSize: 13, textAlign: "left" }}>
+                      ✏️ Modifier le contenu
+                    </button>
+                  )}
 
                   {!regenMode ? (
                     <button onClick={() => setRegenMode(true)} className="btn-ghost"
