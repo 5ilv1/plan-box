@@ -49,9 +49,10 @@ RÈGLES STRICTES :
 ${!texte && pdfBase64 ? "Le texte est dans le PDF ci-joint. Extrais-le et génère les questions." : ""}
 
 Réponds UNIQUEMENT en JSON valide, sans backticks :
-{
+${pdfBase64 && !texte
+  ? `{
   "titre": "Titre de la lecture",
-  "texte": "Le texte complet tel qu'il sera affiché à l'élève (reformaté proprement, avec paragraphes)",
+  "texte": "Le texte complet extrait du PDF",
   "questions": [
     {
       "id": 1,
@@ -60,13 +61,24 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
       "reponse": 0
     }
   ]
-}
+}`
+  : `{
+  "titre": "Titre de la lecture",
+  "questions": [
+    {
+      "id": 1,
+      "question": "Question claire et précise ?",
+      "choix": ["Réponse A", "Réponse B", "Réponse C", "Réponse D"],
+      "reponse": 0
+    }
+  ]
+}`}
 
 IMPORTANT :
 - "reponse" est l'INDEX (0-3) de la bonne réponse dans le tableau "choix"
-- Le champ "texte" doit contenir le texte complet et bien formaté
 - Si un titre est fourni, utilise-le ; sinon invente un titre pertinent
-- VÉRIFIE que chaque "reponse" correspond bien à la bonne réponse`;
+- VÉRIFIE que chaque "reponse" correspond bien à la bonne réponse${!texte ? `
+- Le champ "texte" doit contenir le texte complet et bien formaté` : ""}`;
 
     const messages: Anthropic.MessageParam[] = [];
 
@@ -94,7 +106,19 @@ IMPORTANT :
 
     const text = (response.content[0] as { type: "text"; text: string }).text;
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    const resultat = JSON.parse(cleaned);
+    let resultat: { titre?: string; texte?: string; questions: Array<{ reponse?: number; choix?: unknown[] }> };
+    try {
+      resultat = JSON.parse(cleaned);
+    } catch (parseErr) {
+      console.error("[generer-lecture] JSON parse failed", {
+        error: parseErr instanceof Error ? parseErr.message : parseErr,
+        start: cleaned.slice(0, 200),
+        end: cleaned.slice(-200),
+      });
+      throw new Error(
+        "La réponse de l'IA n'est pas un JSON valide. Réessaie — ça peut être un souci ponctuel."
+      );
+    }
 
     if (!Array.isArray(resultat.questions) || resultat.questions.length === 0) {
       return NextResponse.json({ erreur: "Aucune question générée." }, { status: 500 });
@@ -107,7 +131,8 @@ IMPORTANT :
 
     // Valider les réponses
     for (const q of resultat.questions) {
-      if (typeof q.reponse !== "number" || q.reponse < 0 || q.reponse >= q.choix.length) {
+      const nbChoix = Array.isArray(q.choix) ? q.choix.length : 0;
+      if (typeof q.reponse !== "number" || q.reponse < 0 || q.reponse >= nbChoix) {
         q.reponse = 0; // Fallback sécurité
       }
     }
