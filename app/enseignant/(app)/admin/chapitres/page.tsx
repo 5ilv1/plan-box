@@ -87,6 +87,19 @@ export default function PageAdminChapitres() {
 
   // Onglet principal : classique | lecture
   const [ongletPrincipal, setOngletPrincipal] = useState<"classique" | "lecture">("classique");
+
+  // Choix des livres par les élèves (onglet lecture)
+  interface ChoixLivre {
+    id: string;
+    choisi_le: string;
+    source: "planbox" | "repetibox";
+    eleve: { prenom: string | null; nom: string | null; niveau: string | null } | null;
+    livre: { id: string; titre: string; auteur: string | null; couverture_url: string | null } | null;
+    progression: { nbValides: number; nbExos: number; pct: number };
+  }
+  const [choixEleves, setChoixEleves] = useState<ChoixLivre[]>([]);
+  const [chargementChoix, setChargementChoix] = useState(false);
+  const [aDesaffecter, setADesaffecter] = useState<ChoixLivre | null>(null);
   // Modal création chapitre lecture
   const [nouveauLectureVisible, setNouveauLectureVisible] = useState(false);
   const [nouveauLectureTitre, setNouveauLectureTitre] = useState("");
@@ -140,6 +153,28 @@ export default function PageAdminChapitres() {
     const matieres = Array.from(new Set(chapitresData.map(c => c.matiere)));
     setAccordeonsOuverts(new Set(matieres));
     setChargement(false);
+
+    chargerChoixEleves();
+  }
+
+  async function chargerChoixEleves() {
+    setChargementChoix(true);
+    try {
+      const res = await fetch("/api/bibliotheque/choix");
+      const json = await res.json();
+      setChoixEleves((json.choix ?? []) as ChoixLivre[]);
+    } finally {
+      setChargementChoix(false);
+    }
+  }
+
+  async function confirmerDesaffectation() {
+    if (!aDesaffecter) return;
+    const res = await fetch(`/api/bibliotheque/choix?id=${aDesaffecter.id}`, { method: "DELETE" });
+    if (res.ok) {
+      setChoixEleves((prev) => prev.filter((c) => c.id !== aDesaffecter.id));
+    }
+    setADesaffecter(null);
   }
 
   function ouvrirCreation() {
@@ -608,6 +643,105 @@ export default function PageAdminChapitres() {
             ))}
           </div>
 
+          {/* Choix des livres par les élèves — uniquement en onglet Lectures */}
+          {ongletPrincipal === "lecture" && (
+            <div className="card" style={{ padding: 20, marginBottom: 20, borderLeft: "4px solid #7C3AED" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                <span className="ms" style={{ fontSize: 22, color: "#7C3AED" }}>group</span>
+                <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>Livres choisis par les élèves</h3>
+                <span style={{ fontSize: 12, color: "var(--text-secondary)", marginLeft: 4 }}>
+                  {chargementChoix ? "…" : `${choixEleves.length} choix`}
+                </span>
+              </div>
+
+              {chargementChoix ? (
+                <div style={{ padding: 20, color: "var(--text-secondary)", fontSize: 13 }}>Chargement…</div>
+              ) : choixEleves.length === 0 ? (
+                <div style={{ padding: 16, color: "var(--text-secondary)", fontSize: 13, textAlign: "center" }}>
+                  Aucun élève n'a encore choisi de livre.
+                </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 12 }}>
+                  {choixEleves.map((c) => {
+                    const nomEleve = c.eleve
+                      ? `${c.eleve.prenom ?? ""} ${c.eleve.nom ?? ""}`.trim() || "Élève inconnu"
+                      : "Élève supprimé";
+                    return (
+                      <div
+                        key={c.id}
+                        style={{
+                          display: "flex", gap: 12, alignItems: "stretch",
+                          padding: 10, borderRadius: 10,
+                          border: "1px solid var(--border)", background: "white",
+                        }}
+                      >
+                        {/* Couverture */}
+                        <div
+                          style={{
+                            width: 56, height: 80, flexShrink: 0, borderRadius: 6,
+                            background: c.livre?.couverture_url
+                              ? `url(${c.livre.couverture_url}) center / cover`
+                              : "linear-gradient(135deg, #F3E8FF 0%, #DDD6FE 100%)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            color: "#7C3AED",
+                            boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
+                          }}
+                        >
+                          {!c.livre?.couverture_url && <span className="ms" style={{ fontSize: 24 }}>menu_book</span>}
+                        </div>
+
+                        {/* Infos */}
+                        <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", justifyContent: "space-between" }}>
+                          <div>
+                            <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text)", marginBottom: 2, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {nomEleve}
+                              {c.eleve?.niveau && (
+                                <span style={{ fontSize: 10, fontWeight: 600, color: "var(--text-secondary)", marginLeft: 6 }}>
+                                  {c.eleve.niveau}
+                                </span>
+                              )}
+                            </div>
+                            <div style={{ fontSize: 12, fontWeight: 600, color: "#4B5563", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                              {c.livre?.titre ?? "Livre supprimé"}
+                            </div>
+                            {c.livre?.auteur && (
+                              <div style={{ fontSize: 11, color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                {c.livre.auteur}
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Progression + action */}
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+                            <div style={{ flex: 1, height: 4, background: "var(--border)", borderRadius: 999, overflow: "hidden" }}>
+                              <div style={{ height: "100%", width: `${c.progression.pct}%`, background: "#7C3AED", transition: "width 0.3s" }} />
+                            </div>
+                            <span style={{ fontSize: 10, fontWeight: 700, color: "var(--text-secondary)", minWidth: 28, textAlign: "right" }}>
+                              {c.progression.nbValides}/{c.progression.nbExos}
+                            </span>
+                            <button
+                              onClick={() => setADesaffecter(c)}
+                              title="Désaffecter ce livre"
+                              aria-label="Désaffecter ce livre"
+                              style={{
+                                padding: "4px 6px", borderRadius: 6,
+                                background: "transparent", border: "1px solid var(--border)",
+                                color: "#DC2626", cursor: "pointer",
+                                display: "flex", alignItems: "center",
+                              }}
+                            >
+                              <span className="ms" style={{ fontSize: 16 }}>close</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
+
           {chargement ? (
             <div style={{ textAlign: "center", padding: 60, color: "var(--text-secondary)" }}>Chargement…</div>
           ) : groupesFiltres.length === 0 ? (
@@ -857,6 +991,32 @@ export default function PageAdminChapitres() {
           )}
         </div>
       </div>
+
+      {/* Modal désaffectation livre élève */}
+      {aDesaffecter && (
+        <div style={{
+          position: "fixed", inset: 0, background: "rgba(0,0,0,0.5)",
+          display: "flex", alignItems: "center", justifyContent: "center", zIndex: 200, padding: 24,
+        }}>
+          <div className="card" style={{ maxWidth: 420, padding: "28px 24px", textAlign: "center" }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>📖</div>
+            <p style={{ fontWeight: 700, marginBottom: 8 }}>Désaffecter ce livre ?</p>
+            <p style={{ fontSize: 14, color: "var(--text-secondary)", marginBottom: 20 }}>
+              L'élève <strong>{aDesaffecter.eleve?.prenom} {aDesaffecter.eleve?.nom}</strong> ne verra plus <strong>« {aDesaffecter.livre?.titre} »</strong> comme livre en cours et pourra en choisir un autre.
+            </p>
+            <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
+              <button className="btn-secondary" onClick={() => setADesaffecter(null)}>Annuler</button>
+              <button
+                className="btn-primary"
+                onClick={confirmerDesaffectation}
+                style={{ background: "#DC2626", borderColor: "#DC2626" }}
+              >
+                Désaffecter
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Modal erreur suppression */}
       {confirmSuppression && (
