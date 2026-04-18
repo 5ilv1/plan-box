@@ -71,11 +71,34 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // 3. Créer un nouveau bloc pour chaque bloc source (mêmes élèves, même date)
+  // 3. Déterminer un titre unique — les contraintes UNIQUE sur
+  //    (eleve_id/rb_eleve_id, date, type, titre) interdisent le doublon.
+  //    On suffixe avec (2), (3)… selon ce qui existe déjà à la même date.
+  const titreOriginal = (source.titre as string).replace(/\s+\(\d+\)\s*$/, "");
+  const { data: dejaExistants } = await admin
+    .from("plan_travail")
+    .select("titre")
+    .eq("date_assignation", source.date_assignation)
+    .eq("type", source.type)
+    .like("titre", `${titreOriginal}%`);
+
+  const suffixesUtilises = new Set<number>();
+  let originalExiste = false;
+  for (const row of dejaExistants ?? []) {
+    const t = row.titre as string;
+    if (t === titreOriginal) originalExiste = true;
+    const m = t.match(/\((\d+)\)\s*$/);
+    if (m) suffixesUtilises.add(parseInt(m[1], 10));
+  }
+  let prochain = 2;
+  while (suffixesUtilises.has(prochain)) prochain++;
+  const nouveauTitre = originalExiste ? `${titreOriginal} (${prochain})` : titreOriginal;
+
+  // 4. Créer un nouveau bloc pour chaque bloc source (mêmes élèves, même date)
   const nouveauxBlocs = sources.map((s) => ({
     eleve_id: s.eleve_id,
     repetibox_eleve_id: s.repetibox_eleve_id,
-    titre: s.titre,
+    titre: nouveauTitre,
     type: s.type,
     contenu: nouveauContenu,
     date_assignation: s.date_assignation,
