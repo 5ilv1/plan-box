@@ -32,8 +32,10 @@ function nettoyerTexte(texte: string): string {
     .replace(/\r\n?/g, "\n")
     // Recolle les mots césurés en fin de ligne : "coup-\nure" → "coupure"
     .replace(/(\p{L})-\n(\p{L})/gu, "$1$2")
-    // Supprime les numéros de page isolés sur leur propre ligne
-    .replace(/\n[ \t]*\d{1,4}[ \t]*\n/g, "\n\n")
+    // Supprime les numéros de page isolés — on exige des LIGNES VIDES
+    // autour (pas seulement un \n) pour ne pas confondre avec des cellules
+    // de tableau qui contiennent aussi des nombres sur leur propre ligne.
+    .replace(/\n\s*\n[ \t]*\d{1,4}[ \t]*\n\s*\n/g, "\n\n")
     // Marque temporairement les vrais sauts de paragraphe (2+ \n)
     .replace(/\n{2,}/g, "\u0001")
     // Fusionne UNIQUEMENT les \n "de layout" : ligne précédente ne finit pas
