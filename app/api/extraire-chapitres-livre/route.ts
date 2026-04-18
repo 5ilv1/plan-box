@@ -62,6 +62,17 @@ function detecterChapitres(texteBrut: string): ChapitreExtrait[] {
     marqueurs.push(...numeriques);
   }
 
+  // Fallback 3 : livres dont les chapitres sont des titres libres placés
+  // en début de page (ex. "Les barbus", "L'œil de verre"…). On détecte les
+  // lignes courtes en tête de page (après \f ou entre deux lignes vides),
+  // qui ne ressemblent pas à une phrase narrative. Les faux positifs
+  // éventuels (pages de garde, dédicace) sont filtrés plus loin par le
+  // seuil "chapitre < 80 mots → skip".
+  if (marqueurs.length < 2) {
+    const titres = detecterChapitresParTitrePage(texte);
+    marqueurs.push(...titres);
+  }
+
   // Dédupliquer et trier par position
   marqueurs.sort((a, b) => a.start - b.start);
   const uniques: typeof marqueurs = [];
@@ -136,6 +147,44 @@ function detecterChapitresNumeriques(texte: string): Array<{ start: number; end:
     end: s.end,
     titre: `Chapitre ${s.numero}`,
   }));
+}
+
+/**
+ * Détecte les chapitres par leur titre libre placé en début de page
+ * (ex. "Les barbus", "L'œil de verre", "La canne truquée"…). Les titres
+ * sont des lignes courtes, isolées (entourées de sauts de page \f ou
+ * lignes vides), ne ressemblant pas à des phrases narratives.
+ */
+function detecterChapitresParTitrePage(texte: string): Array<{ start: number; end: number; titre: string }> {
+  // Normaliser les sauts de page en triple newline pour les distinguer des paragraphes
+  const texteNorm = texte.replace(/\f+/g, "\n\n\n");
+  const candidats: Array<{ start: number; end: number; titre: string }> = [];
+
+  // Ligne courte isolée entourée d'au moins une ligne vide de chaque côté
+  const pattern = /(?:^|\n\n+)[ \t]*([^\n]{2,70})[ \t]*(?=\n\n+)/g;
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(texteNorm)) !== null) {
+    const titre = match[1].trim();
+    if (titre.length < 3 || titre.length > 70) continue;
+    // Pas de tiret de dialogue ni de citation
+    if (/^[—–\-«»"']/.test(titre)) continue;
+    // Pas de ponctuation narrative finale (. , ; :) — on accepte ! et ? pour titres exclamatifs
+    if (/[.,;:]$/.test(titre)) continue;
+    // Doit commencer par une majuscule, un chiffre ou une parenthèse ouvrante
+    if (!/^[A-ZÀ-ÖØ-Þ0-9(]/.test(titre)) continue;
+    // Exclut les titres qui contiennent des connecteurs grammaticaux typiques d'une phrase
+    const hasConnector = /\b(qui|que|dont|mais|car|donc|parce|quand|lorsque|puisque)\b/i.test(titre);
+    if (hasConnector) continue;
+
+    // Recalcule la position dans le texte normalisé
+    const titreStart = match.index + match[0].indexOf(titre);
+    candidats.push({
+      start: titreStart,
+      end: titreStart + titre.length,
+      titre,
+    });
+  }
+  return candidats;
 }
 
 /**
