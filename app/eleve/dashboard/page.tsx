@@ -1830,8 +1830,10 @@ export default function DashboardEleve() {
                     </Link>
                   )}
 
-                  {/* ══ Chapitres progressifs ══ */}
-                  {chapitresAssignes.map((ch) => (
+                  {/* ══ Chapitres progressifs (le livre en cours est déjà affiché en haut via le bloc "Ma lecture") ══ */}
+                  {chapitresAssignes
+                    .filter((ch) => !bibliothequeEnCours || ch.id !== bibliothequeEnCours.chapitre_id)
+                    .map((ch) => (
                     <Link
                       key={`chap-${ch.id}`}
                       href={`/eleve/chapitre/${ch.id}`}
