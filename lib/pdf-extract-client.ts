@@ -35,8 +35,13 @@ export async function extraireTextePdf(file: File): Promise<string> {
     for (const item of content.items as Array<{ str: string; transform?: number[] }>) {
       if (!("str" in item)) continue;
       const y = item.transform?.[5] ?? null;
-      if (lastY !== null && y !== null && Math.abs(y - lastY) > 2) {
-        pageText += "\n";
+      if (lastY !== null && y !== null) {
+        const dy = Math.abs(y - lastY);
+        // Un interligne classique fait ~14-18 px. Au-delà de 25, on considère
+        // un saut de paragraphe / titre isolé et on insère une ligne vide,
+        // ce qui permet à la détection de chapitres d'isoler les titres.
+        if (dy > 25) pageText += "\n\n";
+        else if (dy > 2) pageText += "\n";
       }
       pageText += item.str + " ";
       lastY = y;
