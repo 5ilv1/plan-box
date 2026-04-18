@@ -53,6 +53,15 @@ function detecterChapitres(texteBrut: string): ChapitreExtrait[] {
     }
   }
 
+  // Fallback : si les patterns classiques ont peu/pas trouvé, chercher des
+  // chapitres notés par un simple numéro isolé sur une ligne ("1", "2", "3"…).
+  // On anti-faux-positif en ne gardant QUE les nombres qui forment une
+  // séquence croissante 1, 2, 3, 4… (sinon c'est des numéros de page).
+  if (marqueurs.length < 2) {
+    const numeriques = detecterChapitresNumeriques(texte);
+    marqueurs.push(...numeriques);
+  }
+
   // Dédupliquer et trier par position
   marqueurs.sort((a, b) => a.start - b.start);
   const uniques: typeof marqueurs = [];
@@ -82,6 +91,49 @@ function detecterChapitres(texteBrut: string): ChapitreExtrait[] {
   }
 
   return chapitres;
+}
+
+/**
+ * Détecte les chapitres notés par un simple numéro isolé sur une ligne
+ * ("1", "2", "3"...). Filtre strictement par séquence croissante à partir
+ * de 1 pour éviter de confondre avec les numéros de page.
+ */
+function detecterChapitresNumeriques(texte: string): Array<{ start: number; end: number; titre: string }> {
+  // Toutes les lignes ne contenant qu'un nombre 1 à 3 chiffres, entourées de lignes vides
+  const pattern = /(?<=\n\s*\n)[ \t]*(\d{1,3})[ \t]*(?=\n\s*\n)/g;
+  const candidats: Array<{ start: number; end: number; numero: number }> = [];
+  let match: RegExpExecArray | null;
+  while ((match = pattern.exec(texte)) !== null) {
+    const numero = parseInt(match[1], 10);
+    if (numero < 1 || numero > 300) continue;
+    candidats.push({
+      start: match.index,
+      end: match.index + match[0].length,
+      numero,
+    });
+  }
+
+  if (candidats.length < 2) return [];
+
+  // Ne garder que la plus longue sous-séquence 1, 2, 3, 4...
+  // (les candidats hors séquence sont des numéros de page)
+  const sequence: Array<{ start: number; end: number; numero: number }> = [];
+  let attendu = 1;
+  for (const c of candidats) {
+    if (c.numero === attendu) {
+      sequence.push(c);
+      attendu++;
+    }
+  }
+
+  // Minimum 3 chapitres pour considérer que c'est une vraie table des matières
+  if (sequence.length < 3) return [];
+
+  return sequence.map((s) => ({
+    start: s.start,
+    end: s.end,
+    titre: `Chapitre ${s.numero}`,
+  }));
 }
 
 /**
