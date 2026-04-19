@@ -27,7 +27,18 @@ export default function PageBibliotheque() {
   const router = useRouter();
   const { session, chargement: chargementSession } = useEleveSession();
 
+  interface LivreLu {
+    chapitre_id: string;
+    titre: string;
+    auteur: string | null;
+    couverture_url: string | null;
+    termine_le: string;
+    score: number | null;
+    total: number | null;
+  }
+
   const [livres, setLivres] = useState<Livre[]>([]);
+  const [livresLus, setLivresLus] = useState<LivreLu[]>([]);
   const [enCours, setEnCours] = useState<LivreEnCours | null>(null);
   const [peutChoisir, setPeutChoisir] = useState(false);
   const [chargement, setChargement] = useState(true);
@@ -48,11 +59,13 @@ export default function PageBibliotheque() {
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
       : `rb_id=${session.id}`;
-    const [livresRes, statutRes] = await Promise.all([
+    const [livresRes, statutRes, lusRes] = await Promise.all([
       fetch(`/api/bibliotheque?${qs}`).then((r) => r.json()),
       fetch(`/api/bibliotheque/statut?${qs}`).then((r) => r.json()),
+      fetch(`/api/bibliotheque/lus?${qs}`).then((r) => r.json()),
     ]);
     setLivres(livresRes.livres ?? []);
+    setLivresLus(lusRes.livres ?? []);
     setEnCours(statutRes.livre_en_cours ?? null);
     setPeutChoisir(statutRes.peut_choisir ?? false);
     setChargement(false);
@@ -277,6 +290,85 @@ export default function PageBibliotheque() {
               </button>
             );
           })}
+        </div>
+      )}
+
+      {/* Mes livres lus */}
+      {livresLus.length > 0 && (
+        <div style={{ marginTop: 40 }}>
+          <h2 style={{
+            fontSize: 20, fontWeight: 800, color: "var(--pb-on-surface)",
+            marginBottom: 6, display: "flex", alignItems: "center", gap: 8,
+          }}>
+            <span className="ms" style={{ fontSize: 24, color: "#16A34A" }}>verified</span>
+            Mes livres lus
+            <span style={{ fontSize: 13, fontWeight: 600, color: "var(--pb-on-surface-variant)", marginLeft: 4 }}>
+              ({livresLus.length})
+            </span>
+          </h2>
+          <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 16 }}>
+            Tu as terminé {livresLus.length > 1 ? "ces livres" : "ce livre"}. Bravo ! 🎉
+          </p>
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 14,
+          }}>
+            {livresLus.map((l) => {
+              const date = new Date(l.termine_le).toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+              const pct = l.score != null && l.total ? Math.round((l.score / l.total) * 100) : null;
+              return (
+                <div
+                  key={l.chapitre_id}
+                  style={{
+                    display: "flex", flexDirection: "column", alignItems: "center",
+                    padding: 8, opacity: 0.95,
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative", width: "100%", aspectRatio: "2/3",
+                      borderRadius: 10,
+                      background: l.couverture_url
+                        ? `url(${l.couverture_url}) center / cover`
+                        : "linear-gradient(135deg, #16A34A 0%, #15803D 100%)",
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.12)",
+                      marginBottom: 8,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      color: "white",
+                      overflow: "hidden",
+                    }}
+                  >
+                    {!l.couverture_url && (
+                      <div style={{ padding: 10, fontSize: 12, fontWeight: 700, textAlign: "center", lineHeight: 1.3 }}>
+                        {l.titre}
+                      </div>
+                    )}
+                    <span style={{
+                      position: "absolute", top: 6, right: 6,
+                      background: "rgba(22,163,74,0.95)", color: "white",
+                      fontSize: 10, fontWeight: 800, letterSpacing: 0.5,
+                      padding: "3px 8px", borderRadius: 999,
+                      display: "flex", alignItems: "center", gap: 3,
+                    }}>
+                      <span className="ms" style={{ fontSize: 12 }}>check</span>
+                      lu
+                    </span>
+                  </div>
+                  <div style={{
+                    fontSize: 12, fontWeight: 700, color: "var(--pb-on-surface)",
+                    lineHeight: 1.25, textAlign: "center", marginBottom: 2,
+                    display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}>
+                    {l.titre}
+                  </div>
+                  <div style={{ fontSize: 10, color: "var(--pb-on-surface-variant)", textAlign: "center" }}>
+                    terminé le {date}
+                    {pct !== null && <> · {pct}%</>}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
 

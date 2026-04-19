@@ -80,16 +80,28 @@ export async function GET(req: NextRequest) {
   const { data: choix } = await choixQuery;
   const choisIds = new Set((choix ?? []).map((c) => c.chapitre_id));
 
-  const livres = chapitresFiltres.map((ch) => ({
-    id: ch.id,
-    titre: ch.titre,
-    auteur: (ch as Record<string, unknown>).auteur ?? null,
-    resume: (ch as Record<string, unknown>).resume ?? null,
-    couverture_url: (ch as Record<string, unknown>).couverture_url ?? null,
-    niveau: (ch as Record<string, unknown>).niveaux,
-    nb_chapitres: nbExosMap[ch.id] ?? 0,
-    deja_choisi: choisIds.has(ch.id),
-  }));
+  // Livres terminés (éval finale validée) : on les exclut de la liste à choisir.
+  // Ils apparaîtront séparément dans la section "Mes livres lus".
+  let evalQuery = admin.from("evaluation_resultat").select("chapitre_id, reussi");
+  if (eleveId) evalQuery = evalQuery.eq("eleve_id", eleveId);
+  else evalQuery = evalQuery.eq("rb_eleve_id", parseInt(rbId!, 10));
+  const { data: evals } = await evalQuery;
+  const termines = new Set(
+    (evals ?? []).filter((e) => e.reussi).map((e) => e.chapitre_id)
+  );
+
+  const livres = chapitresFiltres
+    .filter((ch) => !termines.has(ch.id))
+    .map((ch) => ({
+      id: ch.id,
+      titre: ch.titre,
+      auteur: (ch as Record<string, unknown>).auteur ?? null,
+      resume: (ch as Record<string, unknown>).resume ?? null,
+      couverture_url: (ch as Record<string, unknown>).couverture_url ?? null,
+      niveau: (ch as Record<string, unknown>).niveaux,
+      nb_chapitres: nbExosMap[ch.id] ?? 0,
+      deja_choisi: choisIds.has(ch.id),
+    }));
 
   return NextResponse.json({ livres });
 }
