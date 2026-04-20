@@ -22,8 +22,7 @@ import QCMEleve from "@/components/QCMEleve";
 import DicteeCorrection from "@/components/DicteeCorrection";
 import CeintureMultiplication from "@/components/CeintureMultiplication";
 import { FonctionGram } from "@/types";
-import dynamic from "next/dynamic";
-const PdfViewer = dynamic(() => import("@/components/PdfViewer"), { ssr: false });
+// PDF affiché via iframe natif (compatible Safari iOS / anciens iPad)
 
 type EtatActivite = "chargement" | "pret" | "en_cours" | "termine" | "erreur";
 
@@ -1005,10 +1004,14 @@ export default function PageActivite() {
                     </a>
                   </div>
 
-                  {/* Aperçu PDF — rendu via PDF.js, sans barre d'outils */}
+                  {/* Aperçu PDF — rendu via iframe natif (compatible Safari iOS / anciens iPad) */}
                   {leconUrl && (
-                    <div className="pb-card" style={{ padding: 12, overflow: "hidden", borderRadius: 16, border: "1px solid var(--pb-outline-variant)" }}>
-                      <PdfViewer url={leconUrl} hauteur={600} />
+                    <div className="pb-card" style={{ padding: 0, overflow: "hidden", borderRadius: 16, border: "1px solid var(--pb-outline-variant)" }}>
+                      <iframe
+                        src={leconUrl}
+                        title="Leçon à copier"
+                        style={{ width: "100%", height: 600, border: "none", display: "block" }}
+                      />
                     </div>
                   )}
 
