@@ -10,8 +10,9 @@ import ProgrammeJourView from "@/components/dashboard/ProgrammeJourView";
 import ProgressionElevesView from "@/components/dashboard/ProgressionElevesView";
 import FeedbackView from "@/components/dashboard/FeedbackView";
 import CeinturesView from "@/components/dashboard/CeinturesView";
+import SuiviJourView from "@/components/dashboard/SuiviJourView";
 
-type TabSidebar = "blocs" | "eleves" | "feedback" | "ceintures";
+type TabSidebar = "blocs" | "suivi" | "eleves" | "feedback" | "ceintures";
 
 interface ThemeEcriture {
   id: string | null;
@@ -436,6 +437,7 @@ export default function DashboardEnseignant() {
       <div className="ens-view-tabs">
         {([
           { key: "blocs" as const, label: "Programme du jour" },
+          { key: "suivi" as const, label: "Suivi du jour" },
           { key: "feedback" as const, label: "Feedback" },
           { key: "eleves" as const, label: "Progression élèves" },
           { key: "ceintures" as const, label: "Ceintures" },
@@ -496,6 +498,7 @@ export default function DashboardEnseignant() {
         </div>
       )}
 
+      {activeTab === "suivi" && <SuiviJourView />}
       {activeTab === "feedback" && <FeedbackView />}
       {activeTab === "eleves" && <ProgressionElevesView />}
       {activeTab === "ceintures" && <CeinturesView />}

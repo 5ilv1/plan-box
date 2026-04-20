@@ -1,0 +1,536 @@
+"use client";
+
+import { useEffect, useState, useCallback } from "react";
+import { TYPE_BLOC_CONFIG } from "@/types";
+
+interface EleveLigne {
+  id: string;
+  source: "planbox" | "repetibox";
+  prenom: string;
+  nom: string;
+  niveau: string;
+  blocs: Array<{
+    id: string;
+    type: string;
+    titre: string;
+    statut: string;
+    contenu: unknown;
+    chapitre_id: string | null;
+  }>;
+}
+
+interface BlocCol {
+  cle: string;
+  type: string;
+  titre: string;
+  chapitre_id: string | null;
+  nbEleves: number;
+}
+
+interface DetailCellule {
+  eleve: EleveLigne;
+  col: BlocCol;
+  bloc: EleveLigne["blocs"][number] | null;
+}
+
+function couleurStatut(type: string, statut: string, contenu: unknown): { bg: string; fg: string; label: string; icone: string } {
+  if (statut === "fait") {
+    const c = contenu as Record<string, unknown> | null;
+    const score = c?.score_eleve as number | undefined;
+    const total = c?.score_total as number | undefined;
+    if (score != null && total && total > 0) {
+      const pct = (score / total) * 100;
+      if (pct >= 80) return { bg: "#DCFCE7", fg: "#15803D", label: `${score}/${total}`, icone: "check_circle" };
+      if (pct >= 50) return { bg: "#FEF3C7", fg: "#B45309", label: `${score}/${total}`, icone: "error" };
+      return { bg: "#FEE2E2", fg: "#B91C1C", label: `${score}/${total}`, icone: "cancel" };
+    }
+    return { bg: "#DCFCE7", fg: "#15803D", label: "Fait", icone: "check" };
+  }
+  if (statut === "en_cours") return { bg: "#DBEAFE", fg: "#1D4ED8", label: "En cours", icone: "hourglass_empty" };
+  return { bg: "#F3F4F6", fg: "#6B7280", label: "À faire", icone: "radio_button_unchecked" };
+}
+
+export default function SuiviJourView() {
+  const [date, setDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
+  const [eleves, setEleves] = useState<EleveLigne[]>([]);
+  const [blocsCols, setBlocsCols] = useState<BlocCol[]>([]);
+  const [chargement, setChargement] = useState(true);
+  const [detail, setDetail] = useState<DetailCellule | null>(null);
+
+  const charger = useCallback(async () => {
+    setChargement(true);
+    const res = await fetch(`/api/admin/suivi-jour?date=${date}`);
+    const json = await res.json();
+    setEleves(json.eleves ?? []);
+    setBlocsCols(json.blocsUniques ?? []);
+    setChargement(false);
+  }, [date]);
+
+  useEffect(() => { charger(); }, [charger]);
+
+  async function toggleStatut() {
+    if (!detail?.bloc) return;
+    const nouveauStatut = detail.bloc.statut === "fait" ? "a_faire" : "fait";
+    if (detail.eleve.source === "repetibox") {
+      const rbId = parseInt(detail.eleve.id.replace("rb_", ""), 10);
+      await fetch("/api/mon-plan-travail", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId: detail.bloc.id, statut: nouveauStatut, eleveRbId: rbId }),
+      });
+    } else {
+      const { createClient } = await import("@/lib/supabase");
+      const supa = createClient();
+      await supa.from("plan_travail").update({ statut: nouveauStatut }).eq("id", detail.bloc.id);
+    }
+    setDetail(null);
+    await charger();
+  }
+
+  return (
+    <div>
+      {/* En-tête avec sélecteur de date */}
+      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
+        <div>
+          <h3 className="ens-section-title" style={{ marginBottom: 4 }}>Suivi du jour</h3>
+          <p className="text-secondary text-sm" style={{ margin: 0 }}>
+            Avancement de chaque élève sur les blocs assignés pour cette journée.
+          </p>
+        </div>
+        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
+          <input
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            className="form-input"
+            style={{ padding: "8px 12px", fontSize: 14, marginBottom: 0 }}
+          />
+          <button
+            onClick={() => setDate(new Date().toISOString().split("T")[0])}
+            className="btn-ghost"
+            style={{ padding: "8px 14px", fontSize: 13 }}
+          >
+            Aujourd&apos;hui
+          </button>
+        </div>
+      </div>
+
+      {!chargement && eleves.length > 0 && (() => {
+        const totalAssignes = eleves.reduce((s, e) => s + e.blocs.length, 0);
+        const nbFaits = eleves.reduce((s, e) => s + e.blocs.filter((b) => b.statut === "fait").length, 0);
+        const nbEnCours = eleves.reduce((s, e) => s + e.blocs.filter((b) => b.statut === "en_cours").length, 0);
+        const nbAFaire = totalAssignes - nbFaits - nbEnCours;
+        const pct = totalAssignes > 0 ? (nbFaits / totalAssignes) * 100 : 0;
+        // Arc SVG : circonférence = 2πr avec r=42 → 263.89
+        const r = 42;
+        const circ = 2 * Math.PI * r;
+        const dashFait = (pct / 100) * circ;
+        return (
+          <div className="card" style={{
+            padding: 20, marginBottom: 20, display: "flex", alignItems: "center",
+            gap: 24, flexWrap: "wrap",
+          }}>
+            {/* Graphique circulaire */}
+            <div style={{ position: "relative", width: 120, height: 120, flexShrink: 0 }}>
+              <svg width="120" height="120" viewBox="0 0 120 120">
+                <circle cx="60" cy="60" r={r} fill="none" stroke="#F3F4F6" strokeWidth="14" />
+                <circle
+                  cx="60" cy="60" r={r} fill="none" stroke="#16A34A" strokeWidth="14"
+                  strokeLinecap="round"
+                  strokeDasharray={`${dashFait} ${circ}`}
+                  transform="rotate(-90 60 60)"
+                  style={{ transition: "stroke-dasharray 0.6s ease" }}
+                />
+              </svg>
+              <div style={{
+                position: "absolute", inset: 0,
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              }}>
+                <div style={{ fontSize: 28, fontWeight: 800, color: "#15803D", lineHeight: 1 }}>
+                  {Math.round(pct)}%
+                </div>
+                <div style={{ fontSize: 10, color: "var(--text-secondary)", fontWeight: 600, marginTop: 2 }}>
+                  complétés
+                </div>
+              </div>
+            </div>
+
+            {/* Stats détaillées */}
+            <div style={{ flex: 1, minWidth: 240 }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+                Taux de complétion
+              </div>
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#16A34A", display: "inline-block" }} />
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>{nbFaits}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Faits</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#1D4ED8", display: "inline-block" }} />
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>{nbEnCours}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>En cours</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#9CA3AF", display: "inline-block" }} />
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>{nbAFaire}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>À faire</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, paddingLeft: 12, borderLeft: "1px solid var(--border)" }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>{eleves.length}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Élève{eleves.length > 1 ? "s" : ""}</div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: 16 }}>{blocsCols.length}</div>
+                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Bloc{blocsCols.length > 1 ? "s" : ""}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {chargement ? (
+        <div style={{ padding: 60, textAlign: "center", color: "var(--text-secondary)" }}>Chargement…</div>
+      ) : eleves.length === 0 ? (
+        <div className="card" style={{ padding: 40, textAlign: "center", color: "var(--text-secondary)" }}>
+          Aucun bloc assigné pour cette date.
+        </div>
+      ) : (
+        <div style={{ overflowX: "auto", border: "1px solid var(--border)", borderRadius: 12, background: "white" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+            <thead>
+              <tr>
+                <th style={{
+                  position: "sticky", left: 0, zIndex: 2,
+                  background: "white", textAlign: "left", padding: "10px 14px",
+                  borderBottom: "2px solid var(--border)", borderRight: "1px solid var(--border)",
+                  fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--text-secondary)",
+                  minWidth: 160,
+                }}>
+                  Élève
+                </th>
+                {blocsCols.map((col) => {
+                  const cfg = (TYPE_BLOC_CONFIG as Record<string, { icone: string; libelle: string; couleur: string }>)[col.type] ?? { icone: "assignment", libelle: col.type, couleur: "#6B7280" };
+                  return (
+                    <th
+                      key={col.cle}
+                      style={{
+                        padding: "10px 8px", textAlign: "center", minWidth: 120,
+                        borderBottom: "2px solid var(--border)",
+                        background: "white",
+                      }}
+                      title={col.titre}
+                    >
+                      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 3 }}>
+                        <span className="ms" style={{ fontSize: 18, color: cfg.couleur }}>{cfg.icone}</span>
+                        <span style={{
+                          fontSize: 11, fontWeight: 700, color: "var(--text)",
+                          maxWidth: 130, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                        }}>
+                          {col.titre}
+                        </span>
+                      </div>
+                    </th>
+                  );
+                })}
+              </tr>
+            </thead>
+            <tbody>
+              {eleves.map((eleve, idx) => {
+                const nbFaits = eleve.blocs.filter((b) => b.statut === "fait").length;
+                const nbBlocs = eleve.blocs.length;
+                return (
+                  <tr key={eleve.id} style={{ background: idx % 2 === 0 ? "white" : "#F9FAFB" }}>
+                    <td style={{
+                      position: "sticky", left: 0, zIndex: 1,
+                      background: idx % 2 === 0 ? "white" : "#F9FAFB",
+                      padding: "10px 14px", borderRight: "1px solid var(--border)",
+                      borderBottom: "1px solid var(--border)",
+                      whiteSpace: "nowrap",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                        <div>
+                          <div style={{ fontWeight: 700, fontSize: 13 }}>{eleve.prenom}</div>
+                          <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                            {eleve.niveau} · {nbFaits}/{nbBlocs}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    {blocsCols.map((col) => {
+                      const bloc = eleve.blocs.find((b) => b.type === col.type && b.titre === col.titre && (b.chapitre_id ?? "") === (col.chapitre_id ?? ""));
+                      const estAssigne = !!bloc;
+                      return (
+                        <td
+                          key={col.cle}
+                          style={{
+                            padding: "8px", textAlign: "center",
+                            borderBottom: "1px solid var(--border)",
+                            opacity: estAssigne ? 1 : 0.25,
+                          }}
+                        >
+                          {bloc ? (
+                            (() => {
+                              const c = couleurStatut(bloc.type, bloc.statut, bloc.contenu);
+                              return (
+                                <button
+                                  onClick={() => setDetail({ eleve, col, bloc })}
+                                  title={`${c.label} — clique pour détails`}
+                                  style={{
+                                    background: c.bg, color: c.fg, border: "none",
+                                    padding: "5px 10px", borderRadius: 999, cursor: "pointer",
+                                    fontWeight: 700, fontSize: 11,
+                                    display: "inline-flex", alignItems: "center", gap: 4,
+                                  }}
+                                >
+                                  <span className="ms" style={{ fontSize: 14 }}>{c.icone}</span>
+                                  {c.label}
+                                </button>
+                              );
+                            })()
+                          ) : (
+                            <span style={{ fontSize: 16, color: "#D1D5DB" }}>—</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* Drawer de détail */}
+      {detail && detail.bloc && (
+        <DetailDrawer detail={detail} onClose={() => setDetail(null)} onToggleStatut={toggleStatut} />
+      )}
+    </div>
+  );
+}
+
+function DetailDrawer({
+  detail, onClose, onToggleStatut,
+}: {
+  detail: DetailCellule;
+  onClose: () => void;
+  onToggleStatut: () => void;
+}) {
+  const bloc = detail.bloc!;
+  const c = (bloc.contenu ?? {}) as Record<string, unknown>;
+  const cfg = (TYPE_BLOC_CONFIG as Record<string, { icone: string; libelle: string; couleur: string }>)[bloc.type] ?? { icone: "assignment", libelle: bloc.type, couleur: "#6B7280" };
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+        display: "flex", alignItems: "flex-end", justifyContent: "center",
+        padding: 0,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "white", borderRadius: "20px 20px 0 0",
+          width: "100%", maxWidth: 720, maxHeight: "85vh", overflowY: "auto",
+          padding: 24, boxShadow: "0 -20px 60px rgba(0,0,0,0.25)",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+          <div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <span className="ms" style={{ fontSize: 20, color: cfg.couleur }}>{cfg.icone}</span>
+              <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>{bloc.titre}</h3>
+            </div>
+            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+              {detail.eleve.prenom} {detail.eleve.nom} · {detail.eleve.niveau}
+            </div>
+          </div>
+          <button onClick={onClose} className="btn-ghost" style={{ padding: "4px 10px" }}>✕</button>
+        </div>
+
+        {/* Statut */}
+        <div style={{ marginBottom: 16 }}>
+          <span style={{
+            fontSize: 12, fontWeight: 700, padding: "4px 12px", borderRadius: 999,
+            background: bloc.statut === "fait" ? "#DCFCE7" : bloc.statut === "en_cours" ? "#DBEAFE" : "#F3F4F6",
+            color: bloc.statut === "fait" ? "#15803D" : bloc.statut === "en_cours" ? "#1D4ED8" : "#6B7280",
+          }}>
+            {bloc.statut === "fait" ? "✓ Fait" : bloc.statut === "en_cours" ? "⏳ En cours" : "○ À faire"}
+          </span>
+        </div>
+
+        {/* Contenu spécifique par type */}
+        <DetailContenu bloc={bloc} />
+
+        {/* Bouton toggle statut */}
+        <div style={{ marginTop: 20, paddingTop: 16, borderTop: "1px solid var(--border)" }}>
+          <button
+            onClick={onToggleStatut}
+            className="btn-primary"
+            style={{
+              width: "100%", padding: "10px 16px",
+              background: bloc.statut === "fait" ? "#F59E0B" : "#16A34A",
+              borderColor: bloc.statut === "fait" ? "#F59E0B" : "#16A34A",
+              fontWeight: 700,
+            }}
+          >
+            {bloc.statut === "fait" ? "↺ Remettre à faire" : "✓ Marquer comme fait"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
+  if (!bloc) return null;
+  const c = (bloc.contenu ?? {}) as Record<string, unknown>;
+
+  // QCM — affichage des questions + choix + réponse correcte
+  if (bloc.type === "qcm" && Array.isArray(c.questions)) {
+    const questions = c.questions as Array<{ question: string; options: string[]; reponse_correcte: number; reponse_eleve?: number; explication?: string }>;
+    const reponsesEleve = c.reponses_eleve as number[] | undefined;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {questions.map((q, i) => {
+          const repEleve = reponsesEleve?.[i] ?? q.reponse_eleve;
+          const estCorrecte = repEleve != null && repEleve === q.reponse_correcte;
+          const aRepondu = repEleve != null && repEleve !== -1;
+          return (
+            <div key={i} style={{ padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "#F9FAFB" }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>
+                {i + 1}. {q.question}
+                {aRepondu && (
+                  <span style={{
+                    marginLeft: 8, fontSize: 11, fontWeight: 700,
+                    color: estCorrecte ? "#15803D" : "#B91C1C",
+                  }}>
+                    {estCorrecte ? "✓" : "✗"}
+                  </span>
+                )}
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                {q.options.map((opt, j) => {
+                  const estBonne = j === q.reponse_correcte;
+                  const choisi = repEleve === j;
+                  const bg = estBonne ? "#DCFCE7" : choisi ? "#FEE2E2" : "transparent";
+                  const color = estBonne ? "#15803D" : choisi ? "#B91C1C" : "var(--text)";
+                  return (
+                    <div key={j} style={{
+                      padding: "6px 10px", borderRadius: 6, fontSize: 12,
+                      background: bg, color, fontWeight: estBonne || choisi ? 700 : 400,
+                      display: "flex", alignItems: "center", gap: 6,
+                    }}>
+                      <span>{String.fromCharCode(65 + j)}.</span>
+                      <span style={{ flex: 1 }}>{opt}</span>
+                      {estBonne && <span style={{ fontSize: 10 }}>bonne réponse</span>}
+                      {choisi && !estBonne && <span style={{ fontSize: 10 }}>choix élève</span>}
+                    </div>
+                  );
+                })}
+              </div>
+              {q.explication && (
+                <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 6, fontStyle: "italic" }}>
+                  💡 {q.explication}
+                </p>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
+
+  // Exercice — questions à trous avec réponses élève
+  if ((bloc.type === "exercice" || bloc.type === "texte_a_trous") && Array.isArray(c.questions)) {
+    const questions = c.questions as Array<{ id?: number; enonce?: string; reponse_attendue?: string; reponse_eleve?: string; correcte?: boolean }>;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {questions.map((q, i) => (
+          <div key={i} style={{ padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "#F9FAFB" }}>
+            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>{i + 1}. {q.enonce ?? ""}</div>
+            {q.reponse_eleve != null && (
+              <div style={{ display: "flex", gap: 10, fontSize: 12, alignItems: "center" }}>
+                <span style={{
+                  padding: "4px 10px", borderRadius: 6, fontWeight: 700,
+                  background: q.correcte ? "#DCFCE7" : "#FEE2E2",
+                  color: q.correcte ? "#15803D" : "#B91C1C",
+                }}>
+                  Élève : {String(q.reponse_eleve)} {q.correcte ? "✓" : "✗"}
+                </span>
+                {!q.correcte && q.reponse_attendue && (
+                  <span style={{ padding: "4px 10px", borderRadius: 6, background: "#DCFCE7", color: "#15803D", fontWeight: 700 }}>
+                    Attendu : {q.reponse_attendue}
+                  </span>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Calcul mental — même logique
+  if (bloc.type === "calcul_mental" && Array.isArray(c.calculs)) {
+    const calculs = c.calculs as Array<{ enonce?: string; reponse?: string | number; reponse_eleve?: string | number; correcte?: boolean }>;
+    return (
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8 }}>
+        {calculs.map((q, i) => (
+          <div key={i} style={{
+            padding: 10, borderRadius: 8, fontSize: 13,
+            border: "1px solid var(--border)",
+            background: q.correcte === true ? "#DCFCE7" : q.correcte === false ? "#FEE2E2" : "#F9FAFB",
+          }}>
+            <div style={{ fontWeight: 700 }}>{q.enonce}</div>
+            <div style={{ fontSize: 11, marginTop: 4 }}>
+              {q.reponse_eleve != null
+                ? <>Élève : <strong>{String(q.reponse_eleve)}</strong> {q.correcte ? "✓" : `✗ (attendu ${q.reponse})`}</>
+                : <span style={{ color: "var(--text-secondary)" }}>Pas encore répondu</span>
+              }
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
+  // Score simple
+  const score = c.score_eleve as number | undefined;
+  const total = c.score_total as number | undefined;
+  if (score != null && total != null) {
+    return (
+      <div style={{ padding: 16, borderRadius: 10, background: "#F3F4F6", textAlign: "center" }}>
+        <div style={{ fontSize: 28, fontWeight: 800, color: "var(--primary)" }}>
+          {score} / {total}
+        </div>
+        <div style={{ fontSize: 12, color: "var(--text-secondary)", marginTop: 4 }}>
+          Score obtenu
+        </div>
+      </div>
+    );
+  }
+
+  // Fallback
+  return (
+    <div style={{ fontSize: 13, color: "var(--text-secondary)", padding: 12, background: "#F9FAFB", borderRadius: 8 }}>
+      Pas de détail à afficher pour ce type de bloc.
+    </div>
+  );
+}
