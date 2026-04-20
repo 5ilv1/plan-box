@@ -125,6 +125,12 @@ function BlocEditeur({
     onDeleted();
   }
 
+  async function remettreAFaire() {
+    await supabase.from("plan_travail").update({ statut: "a_faire" }).eq("id", bloc.id);
+    setMessageSucces("Bloc remis à faire");
+    setTimeout(() => { setMessageSucces(""); onSaved(); }, 1200);
+  }
+
   async function enregistrerBiblio() {
     setEnregistrementBiblio(true);
     const { data: { user } } = await supabase.auth.getUser();
@@ -205,6 +211,22 @@ function BlocEditeur({
           )}
         </div>
       </div>
+
+      {/* Remettre à faire si déjà fait */}
+      {bloc.statut === "fait" && (
+        <button
+          onClick={remettreAFaire}
+          style={{
+            width: "100%", padding: "7px 10px", borderRadius: 6, cursor: "pointer",
+            background: "white", color: "#D97706", border: "1.5px solid #F59E0B",
+            fontWeight: 700, fontSize: 12, fontFamily: "var(--font)",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+          }}
+        >
+          <span className="ms" style={{ fontSize: 16 }}>restart_alt</span>
+          Remettre à faire (l'élève pourra le refaire)
+        </button>
+      )}
 
       {/* Actions */}
       <div style={{ display: "flex", gap: 6 }}>
