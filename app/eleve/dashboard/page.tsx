@@ -1402,7 +1402,7 @@ export default function DashboardEleve() {
               {(() => {
                 const isPapier = (b: PlanTravail) => {
                   if (b.type === "ecriture" && (b.contenu as any)?.mode === "semaine") return false; // en ligne
-                  return ["dictee", "fichier_maths", "lecon_copier", "ecriture"].includes(b.type);
+                  return ["dictee", "mots", "fichier_maths", "lecon_copier", "ecriture"].includes(b.type);
                 };
                 const blocsPapier = blocsAujourdhui.filter(isPapier);
                 const blocsEnLigneLibres = blocsLibres.filter((b) => !isPapier(b));
@@ -1463,6 +1463,8 @@ export default function DashboardEleve() {
                             ? "À copier sur ton cahier"
                             : b.type === "ecriture"
                             ? "Écriture créative • À écrire sur ton cahier"
+                            : b.type === "mots"
+                            ? "Mots à apprendre • Écris-les plusieurs fois sur ton cahier"
                             : "Dictée • À écrire sur ton cahier";
                           return (
                             <div
