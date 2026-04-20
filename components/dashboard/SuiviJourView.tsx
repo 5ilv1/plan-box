@@ -535,6 +535,117 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
     );
   }
 
+  // Écriture — sujet, contrainte, et texte(s) produit(s) par l'élève
+  if (bloc.type === "ecriture") {
+    const sujet = c.sujet as string | undefined;
+    const contrainte = c.contrainte as string | undefined;
+    const afficherContrainte = c.afficher_contrainte !== false;
+    // Le mode "semaine" découpe en texte_jour1..3 et texte_final ; le mode "jour" peut n'avoir qu'un texte
+    const textes: Array<{ label: string; texte: string; erreurs?: unknown }> = [];
+    for (let i = 1; i <= 4; i++) {
+      const t = c[`texte_jour${i}`] as string | undefined;
+      if (t && t.trim()) textes.push({ label: `Jour ${i}`, texte: t, erreurs: c[`erreurs_jour${i}`] });
+    }
+    const final = c.texte_final as string | undefined;
+    if (final && final.trim()) textes.push({ label: "Version finale", texte: final });
+
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {sujet && (
+          <div style={{ padding: "10px 14px", borderRadius: 10, background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#4338CA", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+              Sujet
+            </div>
+            <div style={{ fontSize: 14 }}>{sujet}</div>
+          </div>
+        )}
+        {afficherContrainte && contrainte && (
+          <div style={{ padding: "10px 14px", borderRadius: 10, background: "#FEF3C7", border: "1px solid #FDE68A" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+              Contrainte
+            </div>
+            <div style={{ fontSize: 14 }}>{contrainte}</div>
+          </div>
+        )}
+
+        {textes.length === 0 ? (
+          <div style={{ fontSize: 13, color: "var(--text-secondary)", padding: 12, background: "#F9FAFB", borderRadius: 8, textAlign: "center" }}>
+            L&apos;élève n&apos;a encore rien écrit.
+          </div>
+        ) : (
+          textes.map((t, i) => {
+            const nbMots = t.texte.split(/\s+/).filter(Boolean).length;
+            return (
+              <div key={i} style={{ padding: 14, borderRadius: 10, border: "1px solid var(--border)", background: "white" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 8 }}>
+                  <span style={{ fontSize: 11, fontWeight: 800, padding: "3px 10px", borderRadius: 999, background: "#EEF2FF", color: "#4338CA" }}>
+                    {t.label}
+                  </span>
+                  <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                    {nbMots} mot{nbMots > 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div style={{
+                  fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap",
+                  fontFamily: "'Lora', Georgia, serif",
+                  color: "var(--text)",
+                }}>
+                  {t.texte}
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+    );
+  }
+
+  // Écriture à contraintes — consigne + texte produit
+  if (bloc.type === "ecriture_contrainte") {
+    const consigne = c.consigne as string | undefined;
+    const contraintes = c.contraintes as string[] | undefined;
+    const texte = (c.texte_eleve ?? c.texte_final ?? c.reponse_eleve) as string | undefined;
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        {consigne && (
+          <div style={{ padding: "10px 14px", borderRadius: 10, background: "#EEF2FF", border: "1px solid #C7D2FE" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#4338CA", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+              Consigne
+            </div>
+            <div style={{ fontSize: 14 }}>{consigne}</div>
+          </div>
+        )}
+        {contraintes && contraintes.length > 0 && (
+          <div style={{ padding: "10px 14px", borderRadius: 10, background: "#FEF3C7", border: "1px solid #FDE68A" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#B45309", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 4 }}>
+              Contraintes
+            </div>
+            <ul style={{ fontSize: 13, paddingLeft: 18, margin: 0 }}>
+              {contraintes.map((c, i) => <li key={i}>{c}</li>)}
+            </ul>
+          </div>
+        )}
+        {texte && texte.trim() ? (
+          <div style={{ padding: 14, borderRadius: 10, border: "1px solid var(--border)", background: "white" }}>
+            <div style={{ fontSize: 11, fontWeight: 700, color: "#4338CA", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 6 }}>
+              Texte de l&apos;élève
+            </div>
+            <div style={{
+              fontSize: 14, lineHeight: 1.6, whiteSpace: "pre-wrap",
+              fontFamily: "'Lora', Georgia, serif",
+            }}>
+              {texte}
+            </div>
+          </div>
+        ) : (
+          <div style={{ fontSize: 13, color: "var(--text-secondary)", padding: 12, background: "#F9FAFB", borderRadius: 8, textAlign: "center" }}>
+            L&apos;élève n&apos;a encore rien écrit.
+          </div>
+        )}
+      </div>
+    );
+  }
+
   // Score simple
   const score = c.score_eleve as number | undefined;
   const total = c.score_total as number | undefined;
