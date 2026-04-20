@@ -56,6 +56,7 @@ export default function SuiviJourView() {
   const [blocsCols, setBlocsCols] = useState<BlocCol[]>([]);
   const [chargement, setChargement] = useState(true);
   const [detail, setDetail] = useState<DetailCellule | null>(null);
+  const [detailEleve, setDetailEleve] = useState<EleveLigne | null>(null);
 
   const charger = useCallback(async () => {
     setChargement(true);
@@ -255,18 +256,26 @@ export default function SuiviJourView() {
                     <td style={{
                       position: "sticky", left: 0, zIndex: 1,
                       background: idx % 2 === 0 ? "white" : "#F9FAFB",
-                      padding: "10px 14px", borderRight: "1px solid var(--border)",
+                      padding: 0, borderRight: "1px solid var(--border)",
                       borderBottom: "1px solid var(--border)",
                       whiteSpace: "nowrap",
                     }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                        <div>
-                          <div style={{ fontWeight: 700, fontSize: 13 }}>{eleve.prenom}</div>
-                          <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
-                            {eleve.niveau} · {nbFaits}/{nbBlocs}
-                          </div>
+                      <button
+                        onClick={() => setDetailEleve(eleve)}
+                        title={`Voir le détail de ${eleve.prenom}`}
+                        style={{
+                          width: "100%", padding: "10px 14px",
+                          background: "transparent", border: "none", cursor: "pointer",
+                          textAlign: "left", fontFamily: "inherit",
+                        }}
+                      >
+                        <div style={{ fontWeight: 700, fontSize: 13, color: "var(--primary)" }}>
+                          {eleve.prenom}
                         </div>
-                      </div>
+                        <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                          {eleve.niveau} · {nbFaits}/{nbBlocs}
+                        </div>
+                      </button>
                     </td>
                     {blocsCols.map((col) => {
                       const bloc = eleve.blocs.find((b) => b.type === col.type && b.titre === col.titre && (b.chapitre_id ?? "") === (col.chapitre_id ?? ""));
@@ -313,9 +322,24 @@ export default function SuiviJourView() {
         </div>
       )}
 
-      {/* Drawer de détail */}
+      {/* Drawer de détail cellule */}
       {detail && detail.bloc && (
         <DetailDrawer detail={detail} onClose={() => setDetail(null)} onToggleStatut={toggleStatut} />
+      )}
+
+      {/* Drawer de détail élève (au clic sur le prénom) */}
+      {detailEleve && (
+        <DetailEleveDrawer
+          eleve={detailEleve}
+          onClose={() => setDetailEleve(null)}
+          onOuvrirBloc={(bloc) => {
+            const col = blocsCols.find((c) => c.type === bloc.type && c.titre === bloc.titre && (c.chapitre_id ?? "") === (bloc.chapitre_id ?? ""));
+            if (col) {
+              setDetailEleve(null);
+              setDetail({ eleve: detailEleve, col, bloc });
+            }
+          }}
+        />
       )}
     </div>
   );
@@ -531,6 +555,221 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
   return (
     <div style={{ fontSize: 13, color: "var(--text-secondary)", padding: 12, background: "#F9FAFB", borderRadius: 8 }}>
       Pas de détail à afficher pour ce type de bloc.
+    </div>
+  );
+}
+
+// ── Drawer du détail d'un élève — panel latéral droit avec tous ses blocs ──
+function DetailEleveDrawer({
+  eleve,
+  onClose,
+  onOuvrirBloc,
+}: {
+  eleve: EleveLigne;
+  onClose: () => void;
+  onOuvrirBloc: (bloc: EleveLigne["blocs"][number]) => void;
+}) {
+  // Statistiques globales pour cet élève
+  const nbFaits = eleve.blocs.filter((b) => b.statut === "fait").length;
+  const nbEnCours = eleve.blocs.filter((b) => b.statut === "en_cours").length;
+  const nbTotal = eleve.blocs.length;
+  const pct = nbTotal > 0 ? (nbFaits / nbTotal) * 100 : 0;
+
+  // Moyenne des scores (pour les blocs avec score)
+  const blocsScorés = eleve.blocs
+    .map((b) => {
+      const c = (b.contenu ?? {}) as Record<string, unknown>;
+      const score = c.score_eleve as number | undefined;
+      const total = c.score_total as number | undefined;
+      if (score != null && total && total > 0) return { bloc: b, pct: (score / total) * 100, score, total };
+      return null;
+    })
+    .filter((x): x is { bloc: EleveLigne["blocs"][number]; pct: number; score: number; total: number } => x !== null);
+
+  const moyenneScore = blocsScorés.length > 0
+    ? Math.round(blocsScorés.reduce((s, b) => s + b.pct, 0) / blocsScorés.length)
+    : null;
+
+  const alertes = blocsScorés.filter((b) => b.pct < 50);
+  const nonFaits = nbTotal - nbFaits - nbEnCours;
+
+  const r = 46;
+  const circ = 2 * Math.PI * r;
+  const dash = (pct / 100) * circ;
+  const dashMoyenne = moyenneScore != null ? (moyenneScore / 100) * circ : 0;
+
+  return (
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9998,
+        background: "rgba(0,0,0,0.45)", backdropFilter: "blur(4px)",
+        display: "flex", justifyContent: "flex-end",
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "white", width: "100%", maxWidth: 560, height: "100vh",
+          overflowY: "auto", padding: 24,
+          boxShadow: "-20px 0 60px rgba(0,0,0,0.25)",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 20 }}>
+          <div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, margin: 0 }}>{eleve.prenom} {eleve.nom}</h2>
+            <div style={{ fontSize: 13, color: "var(--text-secondary)", marginTop: 2 }}>
+              {eleve.niveau} · {nbTotal} bloc{nbTotal > 1 ? "s" : ""} aujourd&apos;hui
+            </div>
+          </div>
+          <button onClick={onClose} className="btn-ghost" style={{ padding: "4px 10px" }}>✕</button>
+        </div>
+
+        {/* Alerte si scores faibles */}
+        {alertes.length > 0 && (
+          <div style={{
+            padding: "12px 14px", borderRadius: 10, marginBottom: 16,
+            background: "#FEE2E2", border: "1px solid #FCA5A5",
+            display: "flex", alignItems: "center", gap: 10,
+          }}>
+            <span className="ms" style={{ fontSize: 22, color: "#DC2626" }}>warning</span>
+            <div style={{ fontSize: 13, color: "#991B1B" }}>
+              <strong>{alertes.length} exercice{alertes.length > 1 ? "s" : ""} en difficulté</strong>
+              {" "}(score &lt; 50%). À revoir avec l&apos;élève.
+            </div>
+          </div>
+        )}
+
+        {/* Graphiques ronds : complétion + moyenne score */}
+        <div style={{ display: "flex", gap: 20, marginBottom: 20 }}>
+          {/* Taux de complétion */}
+          <div style={{
+            flex: 1, padding: 16, borderRadius: 12, background: "#F9FAFB",
+            border: "1px solid var(--border)",
+            display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+          }}>
+            <div style={{ position: "relative", width: 110, height: 110 }}>
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle cx="55" cy="55" r={r} fill="none" stroke="#E5E7EB" strokeWidth="10" />
+                <circle
+                  cx="55" cy="55" r={r} fill="none" stroke="#16A34A" strokeWidth="10"
+                  strokeLinecap="round"
+                  strokeDasharray={`${dash} ${circ}`}
+                  transform="rotate(-90 55 55)"
+                />
+              </svg>
+              <div style={{
+                position: "absolute", inset: 0,
+                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+              }}>
+                <div style={{ fontSize: 24, fontWeight: 800, color: "#15803D", lineHeight: 1 }}>{Math.round(pct)}%</div>
+                <div style={{ fontSize: 9, color: "var(--text-secondary)", fontWeight: 600, marginTop: 2 }}>complétés</div>
+              </div>
+            </div>
+            <div style={{ fontSize: 11, color: "var(--text-secondary)", textAlign: "center" }}>
+              {nbFaits} fait{nbFaits > 1 ? "s" : ""} · {nbEnCours} en cours · {nonFaits} à faire
+            </div>
+          </div>
+
+          {/* Moyenne de score */}
+          {moyenneScore != null && (
+            <div style={{
+              flex: 1, padding: 16, borderRadius: 12, background: "#F9FAFB",
+              border: "1px solid var(--border)",
+              display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+            }}>
+              <div style={{ position: "relative", width: 110, height: 110 }}>
+                <svg width="110" height="110" viewBox="0 0 110 110">
+                  <circle cx="55" cy="55" r={r} fill="none" stroke="#E5E7EB" strokeWidth="10" />
+                  <circle
+                    cx="55" cy="55" r={r} fill="none"
+                    stroke={moyenneScore >= 80 ? "#16A34A" : moyenneScore >= 50 ? "#F59E0B" : "#DC2626"}
+                    strokeWidth="10"
+                    strokeLinecap="round"
+                    strokeDasharray={`${dashMoyenne} ${circ}`}
+                    transform="rotate(-90 55 55)"
+                  />
+                </svg>
+                <div style={{
+                  position: "absolute", inset: 0,
+                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+                }}>
+                  <div style={{
+                    fontSize: 24, fontWeight: 800, lineHeight: 1,
+                    color: moyenneScore >= 80 ? "#15803D" : moyenneScore >= 50 ? "#B45309" : "#B91C1C",
+                  }}>
+                    {moyenneScore}%
+                  </div>
+                  <div style={{ fontSize: 9, color: "var(--text-secondary)", fontWeight: 600, marginTop: 2 }}>réussite</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 11, color: "var(--text-secondary)", textAlign: "center" }}>
+                moyenne sur {blocsScorés.length} exercice{blocsScorés.length > 1 ? "s" : ""} noté{blocsScorés.length > 1 ? "s" : ""}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Liste des blocs */}
+        <div style={{ fontSize: 11, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
+          Blocs du jour
+        </div>
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {eleve.blocs.map((bloc) => {
+            const c = (bloc.contenu ?? {}) as Record<string, unknown>;
+            const score = c.score_eleve as number | undefined;
+            const total = c.score_total as number | undefined;
+            const pctBloc = score != null && total && total > 0 ? Math.round((score / total) * 100) : null;
+            const enDifficulte = pctBloc != null && pctBloc < 50;
+            const cfg = (TYPE_BLOC_CONFIG as Record<string, { icone: string; libelle: string; couleur: string }>)[bloc.type] ?? { icone: "assignment", libelle: bloc.type, couleur: "#6B7280" };
+            const statutCouleur = bloc.statut === "fait"
+              ? (pctBloc != null && pctBloc < 50 ? "#DC2626" : pctBloc != null && pctBloc < 80 ? "#F59E0B" : "#16A34A")
+              : bloc.statut === "en_cours" ? "#1D4ED8" : "#9CA3AF";
+            return (
+              <button
+                key={bloc.id}
+                onClick={() => onOuvrirBloc(bloc)}
+                style={{
+                  width: "100%", padding: "12px 14px", borderRadius: 10,
+                  border: enDifficulte ? "1.5px solid #FCA5A5" : "1px solid var(--border)",
+                  background: enDifficulte ? "#FEF2F2" : "white",
+                  cursor: "pointer", textAlign: "left", fontFamily: "inherit",
+                  display: "flex", alignItems: "center", gap: 12,
+                }}
+              >
+                <span className="ms" style={{ fontSize: 22, color: cfg.couleur, flexShrink: 0 }}>{cfg.icone}</span>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ fontWeight: 700, fontSize: 13, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {bloc.titre}
+                    {enDifficulte && <span className="ms" style={{ fontSize: 14, color: "#DC2626", marginLeft: 6, verticalAlign: "middle" }}>warning</span>}
+                  </div>
+                  <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                    {cfg.libelle} · {bloc.statut === "fait" ? "Fait" : bloc.statut === "en_cours" ? "En cours" : "À faire"}
+                  </div>
+                </div>
+                {pctBloc != null ? (
+                  <div style={{
+                    flexShrink: 0, minWidth: 48, textAlign: "center",
+                    padding: "4px 10px", borderRadius: 999,
+                    background: pctBloc >= 80 ? "#DCFCE7" : pctBloc >= 50 ? "#FEF3C7" : "#FEE2E2",
+                    color: pctBloc >= 80 ? "#15803D" : pctBloc >= 50 ? "#B45309" : "#B91C1C",
+                    fontWeight: 800, fontSize: 12,
+                  }}>
+                    {pctBloc}%
+                  </div>
+                ) : (
+                  <span style={{
+                    width: 10, height: 10, borderRadius: "50%", background: statutCouleur,
+                    flexShrink: 0,
+                  }} />
+                )}
+                <span className="ms" style={{ fontSize: 18, color: "var(--text-secondary)", flexShrink: 0 }}>chevron_right</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
