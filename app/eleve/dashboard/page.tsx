@@ -1504,15 +1504,15 @@ export default function DashboardEleve() {
                                   textDecoration: estFait ? "line-through" : "none",
                                   marginBottom: 3,
                                 }}>
-                                  {b.type === "dictee" ? `Dictée — ${b.titre}` : b.type === "lecon_copier" ? `Leçon — ${b.titre}` : b.type === "ecriture" ? `Écriture — ${b.titre.replace("Écriture — ", "")}` : b.type === "fichier_maths" ? (page ? `Fichier de Maths P${page}` : b.titre) : b.titre}
+                                  {b.type === "dictee" ? `Dictée — ${b.titre}` : b.type === "mots" ? `Mots — ${b.titre.replace(/^Mots — /, "")}` : b.type === "lecon_copier" ? `Leçon — ${b.titre}` : b.type === "ecriture" ? `Écriture — ${b.titre.replace("Écriture — ", "")}` : b.type === "fichier_maths" ? (page ? `Fichier de Maths P${page}` : b.titre) : b.titre}
                                 </div>
                                 <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
                                   {sousTitre}
                                 </div>
                               </div>
 
-                              {/* Bouton accès activité — dictée, leçon à copier et écriture */}
-                              {(b.type === "dictee" || b.type === "lecon_copier" || b.type === "ecriture") && b.contenu && !estFait && (
+                              {/* Bouton accès activité — dictée, mots, leçon à copier et écriture */}
+                              {(b.type === "dictee" || b.type === "mots" || b.type === "lecon_copier" || b.type === "ecriture") && b.contenu && !estFait && (
                                 <Link
                                   href={`/eleve/activite/${b.id}`}
                                   className="pb-btn primary"
