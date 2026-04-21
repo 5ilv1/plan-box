@@ -3,6 +3,11 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getServerUser } from "@/lib/server-auth";
 import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
+import {
+  loggerErreurs,
+  exemplesValidesPertinents,
+  casRejetePertinents,
+} from "@/lib/dictee-feedback";
 
 export const maxDuration = 60;
 
@@ -322,6 +327,30 @@ export async function POST(req: NextRequest) {
   const niveau = await niveauDepuisBloc(admin, bloc.eleve_id, contenu);
   const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
+  // Few-shot : exemples que l'enseignant a déjà validés / corrigés / rejetés
+  // sur des mots similaires. L'IA apprend au fil des revues hebdomadaires.
+  const motsAttendus = erreurs.map((e) => e.mot_attendu).filter((s): s is string => !!s);
+  const [exemplesValides, casRejetes] = await Promise.all([
+    exemplesValidesPertinents(admin, { motsAttendus, niveau, limite: 15 }),
+    casRejetePertinents(admin, { motsAttendus, niveau, limite: 8 }),
+  ]);
+
+  const blocExemples = exemplesValides.length > 0
+    ? `\n\nEXEMPLES DE CLASSIFICATIONS DÉJÀ VALIDÉES PAR L'ENSEIGNANT (applique la même logique si le cas revient) :\n${exemplesValides
+        .map((e, i) =>
+          `${i + 1}. attendu="${e.mot_attendu}" écrit="${e.mot_eleve}" → type="${e.type_erreur}" — indice="${e.indice}"${e.statut === "corrige" ? " [corrigé manuellement]" : ""}`,
+        )
+        .join("\n")}`
+    : "";
+
+  const blocRejetes = casRejetes.length > 0
+    ? `\n\n⚠️ CAS DÉJÀ REJETÉS PAR L'ENSEIGNANT (ce n'étaient PAS des fautes — évite de re-signaler des cas identiques, ou classe "autre" avec un indice neutre) :\n${casRejetes
+        .map((r, i) =>
+          `${i + 1}. attendu="${r.mot_attendu}" écrit="${r.mot_eleve}"${r.commentaire ? ` — raison: "${r.commentaire}"` : ""}`,
+        )
+        .join("\n")}`
+    : "";
+
   const systemDynamique = `Tu es un enseignant de français bienveillant en ${niveau} (${niveau === "CE2" ? "8-9" : niveau === "CM1" ? "9-10" : "10-11"} ans). Tu t'appuies sur le référentiel cycle 3 fourni en amont.
 
 Pour chaque erreur de dictée détectée automatiquement par le diff, tu dois :
@@ -394,7 +423,7 @@ ${erreurs.map((e, i) => {
               : e.kind === "ponctuation" ? "PONCTUATION"
               : "DIFFÉRENT";
   return `${i}. [${label}] attendu="${e.mot_attendu}" écrit="${e.mot_eleve}" contexte="${e.contexte}"`;
-}).join("\n")}`;
+}).join("\n")}${blocExemples}${blocRejetes}`;
 
   try {
     const resp = await anthropic.messages.create({
@@ -431,6 +460,22 @@ ${erreurs.map((e, i) => {
       };
     });
 
+    // Log pour la revue hebdomadaire enseignant (statut=null → en attente)
+    await loggerErreurs(admin, {
+      bloc_id,
+      eleve_id: bloc.eleve_id,
+      repetibox_eleve_id: bloc.repetibox_eleve_id,
+      niveau,
+      erreurs: erreursFinales.map((e, i) => ({
+        mot_attendu: e.mot_attendu,
+        mot_eleve: e.mot_eleve,
+        contexte: erreurs[i].contexte,
+        kind: e.kind,
+        type_erreur_ia: e.type_erreur,
+        indice_ia: e.indice,
+      })),
+    });
+
     return NextResponse.json({
       transcription,
       texte_attendu: texteAttendu,
@@ -450,6 +495,22 @@ ${erreurs.map((e, i) => {
       type_erreur: fallbackType(e),
       indice: "Regarde bien ce mot et compare avec ce que tu as écrit.",
     }));
+
+    await loggerErreurs(admin, {
+      bloc_id,
+      eleve_id: bloc.eleve_id,
+      repetibox_eleve_id: bloc.repetibox_eleve_id,
+      niveau,
+      erreurs: erreursFallback.map((e, i) => ({
+        mot_attendu: e.mot_attendu,
+        mot_eleve: e.mot_eleve,
+        contexte: erreurs[i].contexte,
+        kind: e.kind,
+        type_erreur_ia: e.type_erreur,
+        indice_ia: e.indice,
+      })),
+    });
+
     return NextResponse.json({
       transcription,
       texte_attendu: texteAttendu,

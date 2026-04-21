@@ -623,12 +623,22 @@ export default function PageDictees() {
               <h1 style={{ fontSize: 22, fontWeight: 800, marginBottom: 4 }}><span className="ms" style={{ fontSize: 22, verticalAlign: "middle" }}>headphones</span> Dictées</h1>
               <p className="text-secondary text-sm">Tableau des mots et bibliothèque audio.</p>
             </div>
-            <Link
-              href="/enseignant/generer?type=dictee"
-              className="btn-primary-sm"
-            >
-              Nouvelle dictée
-            </Link>
+            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+              <Link
+                href="/enseignant/dictees/revue-ia"
+                className="pb-btn surface"
+                style={{ padding: "8px 14px", fontSize: 13 }}
+              >
+                <span className="ms" style={{ fontSize: 18 }}>rate_review</span>
+                Revue IA
+              </Link>
+              <Link
+                href="/enseignant/generer?type=dictee"
+                className="btn-primary-sm"
+              >
+                Nouvelle dictée
+              </Link>
+            </div>
           </div>
 
           {/* Onglets vue */}
