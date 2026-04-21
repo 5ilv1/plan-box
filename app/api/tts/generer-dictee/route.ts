@@ -53,17 +53,19 @@ export async function POST(req: NextRequest) {
         audio_phrases_urls: audioPhraseUrls,
       })
       .eq("id", dictee_id)
-      .select("titre, niveau_etoiles")
+      .select("titre, niveau_etoiles, dictee_parent_id")
       .single();
 
     // 4. Mettre à jour plan_travail.contenu pour que les élèves voient les URLs audio
-    // On cible les blocs dictée ayant le même titre et le même niveau_etoiles
-    if (dicteeRow?.titre) {
+    // On cible les blocs dictée ayant le même dictee_parent_id et le même niveau_etoiles.
+    // IMPORTANT : on ne filtre PAS par titre — plusieurs dictées d'un même batch peuvent
+    // partager le titre (thème de la semaine), ce qui provoquerait un swap d'audio entre jours.
+    if (dicteeRow?.dictee_parent_id) {
       const { data: blocsAPatcher } = await admin
         .from("plan_travail")
         .select("id, contenu")
         .eq("type", "dictee")
-        .eq("titre", dicteeRow.titre)
+        .filter("contenu->>dictee_parent_id", "eq", dicteeRow.dictee_parent_id)
         .filter("contenu->niveau_etoiles", "eq", niveau_etoiles);
 
       if (blocsAPatcher && blocsAPatcher.length > 0) {
