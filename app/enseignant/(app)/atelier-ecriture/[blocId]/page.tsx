@@ -301,7 +301,21 @@ export default function EnseignantAtelierBloc({
               }
             : prev
         );
-        setSuggestionsIA([]);
+        // Recale les suggestions IA dont l'extrait existe encore dans le nouveau texte ;
+        // les autres (dont l'extrait a été modifié/supprimé) sont retirées.
+        setSuggestionsIA((prev) => {
+          const rescale: SuggestionIA[] = [];
+          let curseur = 0;
+          for (const s of prev) {
+            const idx = brouillonTexte.indexOf(s.extrait, curseur);
+            const pos = idx >= 0 ? idx : brouillonTexte.indexOf(s.extrait);
+            if (pos < 0) continue;
+            rescale.push({ ...s, debut: pos, fin: pos + s.extrait.length });
+            curseur = pos + s.extrait.length;
+          }
+          return rescale;
+        });
+        setIaEditIndex(null);
         setEditionTexte(false);
       }
     } catch {}
