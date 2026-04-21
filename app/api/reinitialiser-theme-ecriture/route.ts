@@ -155,19 +155,17 @@ export async function POST(req: Request) {
         sujet: theme.sujet,
         contrainte,
         instructions: mode === "semaine"
-          ? "Atelier d'écriture sur 4 jours : J1 Premier jet · J2 Correction · J3 Correction · J4 Finalisation"
+          ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
           : "Écris ton texte sur ton cahier d'écrivain.",
         afficher_contrainte: true,
         mode,
       };
       if (mode === "semaine") {
-        contenu.texte_jour1 = "";
-        contenu.texte_jour2 = "";
-        contenu.texte_jour3 = "";
+        contenu.texte_courant = "";
+        contenu.historique = [];
+        contenu.annotations = [];
         contenu.texte_final = "";
-        contenu.erreurs_jour2 = [];
-        contenu.erreurs_jour3 = [];
-        contenu.erreurs_jour4 = [];
+        contenu.date_envoi = null;
       }
 
       const blocBase = {

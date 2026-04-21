@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { normaliserContenuEcriture } from "@/lib/ecriture-normaliser";
 
 /**
  * GET /api/ecriture/textes-finaux
@@ -89,7 +90,7 @@ export async function GET() {
 
   // Construire la réponse
   const textes = blocsSemaine.map((b: any) => {
-    const contenu = b.contenu as any;
+    const contenu = normaliserContenuEcriture(b.contenu as Record<string, unknown>);
     const eleveInfo = b.repetibox_eleve_id
       ? rbMap.get(b.repetibox_eleve_id)
       : pbMap.get(b.eleve_id);
@@ -100,13 +101,12 @@ export async function GET() {
       nom: eleveInfo?.nom ?? "",
       classe: eleveInfo?.classe ?? "",
       statut: b.statut,
-      texteJour1: contenu?.texte_jour1 ?? "",
-      texteJour2: contenu?.texte_jour2 ?? "",
-      texteJour3: contenu?.texte_jour3 ?? "",
-      texteFinal: contenu?.texte_final ?? "",
-      nbErreursJour2: (contenu?.erreurs_jour2 as any[])?.length ?? 0,
-      nbErreursJour3: (contenu?.erreurs_jour3 as any[])?.length ?? 0,
-      nbErreursJour4: (contenu?.erreurs_jour4 as any[])?.length ?? 0,
+      texteCourant: contenu.texte_courant,
+      texteFinal: contenu.texte_final,
+      dateEnvoi: contenu.date_envoi,
+      historique: contenu.historique,
+      nbAnnotations: contenu.annotations.length,
+      nbAnnotationsNouvelles: contenu.annotations.filter((a) => a.statut === "nouvelle").length,
     };
   }).sort((a: any, b: any) => a.prenom.localeCompare(b.prenom));
 

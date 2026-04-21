@@ -74,7 +74,7 @@ Réponds UNIQUEMENT en JSON sans backticks :
   // Mode semaine
   return `Tu génères des sujets d'écriture CRÉATIVE ET IMAGINATIVE pour des élèves de ${niveaux} dans une école primaire française.
 
-⚠️ IMPORTANT : il s'agit d'un ATELIER D'ÉCRITURE SUR 4 JOURS — un vrai projet de rédaction. L'élève écrira un premier jet (J1), le corrigera (J2-J3) puis le finalisera (J4). Le sujet doit être assez RICHE et OUVERT pour soutenir un texte développé (10-20 lignes).
+⚠️ IMPORTANT : il s'agit d'un ATELIER D'ÉCRITURE SUR LA SEMAINE — un vrai projet de rédaction. L'élève écrit un premier jet lundi, retravaille son texte chaque jour (correction, enrichissement) et l'envoie le vendredi. Le sujet doit être assez RICHE et OUVERT pour soutenir un texte développé (10-20 lignes).
 
 ▶ TYPE D'ÉCRITURE IMPOSÉ : « ${typeImpose} »
 Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.

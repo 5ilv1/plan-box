@@ -497,11 +497,8 @@ export default function PageActivite() {
   const typeSubtitle = (() => {
     if (bloc.type === "ecriture" && (bloc.contenu as any)?.mode === "semaine") {
       const day = new Date().getDay();
-      if (day === 1) return "J1 — Premier jet : écris ton histoire";
-      if (day === 2) return "J2 — Correction : corrige les erreurs identifiées";
-      if (day === 4) return "J3 — Amélioration : continue à corriger et développer";
-      if (day === 5) return "J4 — Finalisation : termine et rends ton texte";
-      return "Atelier d\u2019écriture sur 4 jours";
+      if (day === 5) return "Vendredi · relis, corrige et envoie ton texte à la maîtresse";
+      return "Écris, corrige ton texte et reviens le retravailler chaque jour";
     }
     return badgeCfg.subtitle;
   })();

@@ -540,14 +540,40 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
     const sujet = c.sujet as string | undefined;
     const contrainte = c.contrainte as string | undefined;
     const afficherContrainte = c.afficher_contrainte !== false;
-    // Le mode "semaine" découpe en texte_jour1..3 et texte_final ; le mode "jour" peut n'avoir qu'un texte
-    const textes: Array<{ label: string; texte: string; erreurs?: unknown }> = [];
-    for (let i = 1; i <= 4; i++) {
-      const t = c[`texte_jour${i}`] as string | undefined;
-      if (t && t.trim()) textes.push({ label: `Jour ${i}`, texte: t, erreurs: c[`erreurs_jour${i}`] });
+    const estSemaine = c.mode === "semaine";
+
+    // Mode semaine : texte_courant + historique (nouveau modèle) avec fallback sur texte_jour1..3
+    const textes: Array<{ label: string; texte: string }> = [];
+    if (estSemaine) {
+      const historique = Array.isArray(c.historique) ? (c.historique as Array<{ date: string; texte: string }>) : [];
+      for (const h of historique) {
+        if (h.texte?.trim()) {
+          const label = new Date(h.date).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "short" });
+          textes.push({ label: label.charAt(0).toUpperCase() + label.slice(1), texte: h.texte });
+        }
+      }
+      // Fallback ancien format
+      if (textes.length === 0) {
+        for (let i = 1; i <= 3; i++) {
+          const t = c[`texte_jour${i}`] as string | undefined;
+          if (t && t.trim()) textes.push({ label: `Jour ${i}`, texte: t });
+        }
+      }
+      // Texte courant en cours d'édition (distinct de l'historique daté)
+      const courant = (c.texte_courant as string | undefined)?.trim();
+      if (courant && (textes.length === 0 || textes[textes.length - 1]?.texte !== courant)) {
+        textes.push({ label: "Texte actuel", texte: courant });
+      }
+      const final = c.texte_final as string | undefined;
+      if (final && final.trim()) textes.push({ label: "Version envoyée", texte: final });
+    } else {
+      // Mode jour ou autre : on affiche le texte courant / final
+      const single = ((c.texte_courant as string) || (c.texte_final as string) || "").trim();
+      if (single) textes.push({ label: "Texte", texte: single });
     }
-    const final = c.texte_final as string | undefined;
-    if (final && final.trim()) textes.push({ label: "Version finale", texte: final });
+
+    const annotations = Array.isArray(c.annotations) ? (c.annotations as Array<{ statut: string }>) : [];
+    const nbAnnot = annotations.length;
 
     return (
       <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
@@ -566,6 +592,25 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
             </div>
             <div style={{ fontSize: 14 }}>{contrainte}</div>
           </div>
+        )}
+
+        {estSemaine && (
+          <a
+            href={`/enseignant/atelier-ecriture/${bloc.id}`}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "space-between",
+              padding: "10px 14px", borderRadius: 10,
+              background: "linear-gradient(135deg, #7C3AED, #4338CA)",
+              color: "white", textDecoration: "none", fontWeight: 700, fontSize: 13,
+            }}
+          >
+            <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
+              <span className="ms" style={{ fontSize: 18 }}>edit_note</span>
+              Annoter le texte · proposer des corrections
+              {nbAnnot > 0 && <span style={{ opacity: 0.85, fontWeight: 500 }}>({nbAnnot})</span>}
+            </span>
+            <span className="ms" style={{ fontSize: 18 }}>arrow_forward</span>
+          </a>
         )}
 
         {textes.length === 0 ? (

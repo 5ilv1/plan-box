@@ -580,10 +580,10 @@ export default function NouvelleSemainePage() {
 
       const titreBase = modalTitre.trim() || "Atelier écriture — Thème de la semaine";
       const JOURS_ATELIER = [
-        { jour: 0, label: "J1 Premier jet",   icon: "edit_note" },
-        { jour: 1, label: "J2 Correction",    icon: "spellcheck" },
-        { jour: 3, label: "J3 Amélioration",  icon: "rate_review" },
-        { jour: 4, label: "J4 Finalisation",  icon: "task_alt" },
+        { jour: 0, label: "Lundi",    icon: "edit_note" },
+        { jour: 1, label: "Mardi",    icon: "edit" },
+        { jour: 3, label: "Jeudi",    icon: "edit" },
+        { jour: 4, label: "Vendredi — envoi", icon: "send" },
       ];
 
       setBlocs((prev) => {
@@ -744,17 +744,15 @@ export default function NouvelleSemainePage() {
           mode,
           afficher_contrainte: true,
           instructions: mode === "semaine"
-            ? "Atelier d'écriture sur 4 jours : J1 Premier jet · J2 Correction · J3 Correction · J4 Finalisation"
+            ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
             : "Écris ton texte sur ton cahier d'écrivain.",
         };
         if (mode === "semaine") {
-          contenuData.texte_jour1 = "";
-          contenuData.texte_jour2 = "";
-          contenuData.texte_jour3 = "";
+          contenuData.texte_courant = "";
+          contenuData.historique = [];
+          contenuData.annotations = [];
           contenuData.texte_final = "";
-          contenuData.erreurs_jour2 = [];
-          contenuData.erreurs_jour3 = [];
-          contenuData.erreurs_jour4 = [];
+          contenuData.date_envoi = null;
           contenuData._periodicite = "semaine";
         }
         if (!params.titre) {
@@ -806,10 +804,10 @@ export default function NouvelleSemainePage() {
           : { groupeIds: modalAssignation as string[], eleveUids: [], groupeNoms: groupesPB.filter((g) => (modalAssignation as string[]).includes(g.id)).map((g) => g.nom) };
 
         const JOURS_ATELIER = [
-          { jour: 0, label: "J1 Premier jet" },
-          { jour: 1, label: "J2 Correction" },
-          { jour: 3, label: "J3 Amélioration" },
-          { jour: 4, label: "J4 Finalisation" },
+          { jour: 0, label: "Lundi" },
+          { jour: 1, label: "Mardi" },
+          { jour: 3, label: "Jeudi" },
+          { jour: 4, label: "Vendredi — envoi" },
         ];
 
         setBlocs((prev) => {
@@ -2068,7 +2066,7 @@ export default function NouvelleSemainePage() {
                       <p style={{ fontSize: 12, color: "var(--text-secondary)", margin: 0, lineHeight: 1.5 }}>
                         {ecritureMode === "jour"
                           ? "Écrit court de quelques lignes, ancré dans le quotidien (description, portrait, observation…). Visible uniquement le jour assigné."
-                          : "Projet d'écriture sur 4 jours (premier jet → corrections → finalisation). Thème d'imagination (récit, conte, aventure…). Visible toute la semaine."}
+                          : "Projet d'écriture sur la semaine : l'élève écrit, corrige et retravaille son texte du lundi au jeudi, puis l'envoie le vendredi. Thème d'imagination (récit, conte, aventure…). Visible toute la semaine."}
                       </p>
 
                       {ecritureTheme ? (

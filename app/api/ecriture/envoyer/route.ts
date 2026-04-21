@@ -4,19 +4,19 @@ import {
   normaliserContenuEcriture,
   majHistorique,
   dateStr,
+  estVendredi,
 } from "@/lib/ecriture-normaliser";
 
 /**
- * POST /api/ecriture/sauvegarder
+ * POST /api/ecriture/envoyer
  *
- * Sauvegarde le texte courant de l'élève pour l'atelier d'écriture mode semaine.
- * Met à jour `texte_courant` et ajoute/met à jour l'entrée du jour dans
- * l'historique (snapshot).
+ * Finalise le texte de l'atelier d'écriture : pose `texte_final` + `date_envoi`
+ * et passe le bloc au statut "fait". N'est autorisé que le vendredi.
  *
  * Body : {
  *   blocId: string,
  *   texte: string,
- *   eleveRbId?: number  // sécurité élèves Repetibox
+ *   eleveRbId?: number
  * }
  */
 export async function POST(req: NextRequest) {
@@ -27,15 +27,22 @@ export async function POST(req: NextRequest) {
     eleveRbId?: number;
   };
 
-  if (!blocId || texte === undefined) {
+  if (!blocId || !texte?.trim()) {
     return NextResponse.json({ erreur: "blocId et texte requis" }, { status: 400 });
+  }
+
+  if (!estVendredi()) {
+    return NextResponse.json(
+      { erreur: "L'envoi n'est ouvert que le vendredi" },
+      { status: 403 }
+    );
   }
 
   const admin = createAdminClient();
 
   const { data: bloc, error } = await admin
     .from("plan_travail")
-    .select("id, contenu, repetibox_eleve_id, eleve_id, statut")
+    .select("id, contenu, repetibox_eleve_id, eleve_id")
     .eq("id", blocId)
     .single();
 
@@ -43,32 +50,25 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Bloc introuvable" }, { status: 404 });
   }
 
-  // Sécurité : l'élève Repetibox ne peut toucher qu'à ses propres blocs
   if (eleveRbId && bloc.repetibox_eleve_id !== eleveRbId) {
     return NextResponse.json({ erreur: "Accès refusé" }, { status: 403 });
   }
 
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
 
-  // Une fois le texte envoyé, plus de modification possible
   if (contenu.date_envoi && contenu.texte_final.trim().length > 0) {
     return NextResponse.json({ erreur: "Texte déjà envoyé" }, { status: 409 });
   }
 
+  const aujourdhui = dateStr();
   contenu.texte_courant = texte;
-
-  // Snapshot du jour : on remplace (ou crée) l'entrée de la date d'aujourd'hui
-  if (texte.trim().length > 0) {
-    contenu.historique = majHistorique(contenu.historique, texte, dateStr());
-  }
-
-  // Statut : passe en "en_cours" dès qu'on a du texte
-  let statut = bloc.statut;
-  if (texte.trim().length > 0 && statut === "a_faire") statut = "en_cours";
+  contenu.texte_final = texte;
+  contenu.date_envoi = aujourdhui;
+  contenu.historique = majHistorique(contenu.historique, texte, aujourdhui);
 
   await admin
     .from("plan_travail")
-    .update({ contenu, statut })
+    .update({ contenu, statut: "fait" })
     .eq("id", blocId);
 
   return NextResponse.json({ ok: true });
