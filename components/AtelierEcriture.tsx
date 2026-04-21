@@ -2,6 +2,14 @@
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 
+type ErreurIA = {
+  mot: string;
+  type: string;
+  position: number;
+  indice: string;
+  correction?: string;
+};
+
 interface Annotation {
   id: string;
   date: string;
@@ -68,8 +76,6 @@ export default function AtelierEcriture({
 
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedTexte = useRef(getTexteCourantInitial(contenu));
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const highlightRef = useRef<HTMLDivElement>(null);
 
   const vendredi = estVendredi();
 
@@ -121,7 +127,7 @@ export default function AtelierEcriture({
   // ── Analyser le texte (bouton "Corrige-moi") ──
   const [analyseEnCours, setAnalyseEnCours] = useState(false);
   const [analyseMessage, setAnalyseMessage] = useState<string>("");
-  const [erreursIA, setErreursIA] = useState<Array<{ mot: string; type: string; position: number; indice: string; correction?: string }>>([]);
+  const [erreursIA, setErreursIA] = useState<ErreurIA[]>([]);
   const analyser = useCallback(async () => {
     if (!texte.trim()) return;
     setAnalyseEnCours(true);
@@ -220,76 +226,11 @@ export default function AtelierEcriture({
     [annotationsActives]
   );
 
-  // ── Segments highlight : on découpe le texte selon les annotations actives ──
-  const segments = useMemo(() => {
-    if (annotationsActives.length === 0 && erreursIA.length === 0) {
-      return [{ text: texte, type: "normal" as const }];
-    }
-
-    type Seg = { text: string; type: "normal" } | { text: string; type: "annotation"; ann: Annotation } | { text: string; type: "erreur"; erreur: typeof erreursIA[number] };
-
-    // Construire la liste de marquages valides (extrait trouvé dans le texte courant)
-    const marks: Array<{ debut: number; fin: number; kind: "annotation" | "erreur"; ann?: Annotation; erreur?: typeof erreursIA[number] }> = [];
-
-    for (const a of annotationsActives) {
-      // On tente d'abord la position stockée, puis une recherche textuelle si l'élève a modifié le texte autour
-      if (
-        a.debut >= 0 &&
-        a.fin <= texte.length &&
-        texte.slice(a.debut, a.fin) === a.extrait
-      ) {
-        marks.push({ debut: a.debut, fin: a.fin, kind: "annotation", ann: a });
-      } else {
-        const idx = texte.indexOf(a.extrait);
-        if (idx >= 0) {
-          marks.push({ debut: idx, fin: idx + a.extrait.length, kind: "annotation", ann: a });
-        }
-      }
-    }
-
-    for (const e of erreursIA) {
-      if (e.position >= 0 && texte.substring(e.position, e.position + e.mot.length).toLowerCase() === e.mot.toLowerCase()) {
-        marks.push({ debut: e.position, fin: e.position + e.mot.length, kind: "erreur", erreur: e });
-      } else {
-        const idx = texte.toLowerCase().indexOf(e.mot.toLowerCase());
-        if (idx >= 0) marks.push({ debut: idx, fin: idx + e.mot.length, kind: "erreur", erreur: e });
-      }
-    }
-
-    marks.sort((a, b) => a.debut - b.debut);
-
-    const result: Seg[] = [];
-    let offset = 0;
-    for (const m of marks) {
-      if (m.debut < offset) continue; // chevauchement → skip
-      if (m.debut > offset) {
-        result.push({ text: texte.slice(offset, m.debut), type: "normal" });
-      }
-      const chunk = texte.slice(m.debut, m.fin);
-      if (m.kind === "annotation") {
-        result.push({ text: chunk, type: "annotation", ann: m.ann! });
-      } else {
-        result.push({ text: chunk, type: "erreur", erreur: m.erreur! });
-      }
-      offset = m.fin;
-    }
-    if (offset < texte.length) {
-      result.push({ text: texte.slice(offset), type: "normal" });
-    }
-    return result;
-  }, [texte, annotationsActives, erreursIA]);
-
   const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
 
-  // Clic sur un passage annoté : trouver l'annotation correspondant à la position cliquée
-  function onClickHighlight(e: React.MouseEvent<HTMLDivElement>) {
-    const target = e.target as HTMLElement;
-    const id = target.getAttribute("data-annotation-id");
-    if (!id) return;
-    const ann = annotationsActives.find((a) => a.id === id);
-    if (!ann) return;
+  // Ouvrir une annotation depuis la liste (et la marquer comme lue)
+  function ouvrirAnnotation(ann: Annotation) {
     setAnnotationOuverte(ann);
-    // Marquer comme lue
     if (ann.statut === "nouvelle") {
       fetch("/api/enseignant/ecriture/annotation", {
         method: "PATCH",
@@ -300,6 +241,25 @@ export default function AtelierEcriture({
         prev.map((a) => (a.id === ann.id ? { ...a, statut: "lue" as const } : a))
       );
     }
+  }
+
+  // Appliquer une correction d'erreur IA : remplacer le mot par la correction
+  function appliquerCorrection(erreur: ErreurIA) {
+    if (!erreur.correction) return;
+    // Localiser le mot : position stockée si elle correspond, sinon recherche insensible à la casse
+    let pos = erreur.position;
+    if (
+      pos < 0 ||
+      pos + erreur.mot.length > texte.length ||
+      texte.substring(pos, pos + erreur.mot.length).toLowerCase() !== erreur.mot.toLowerCase()
+    ) {
+      pos = texte.toLowerCase().indexOf(erreur.mot.toLowerCase());
+    }
+    if (pos < 0) return;
+    const avant = texte.slice(0, pos);
+    const apres = texte.slice(pos + erreur.mot.length);
+    setTexte(avant + erreur.correction + apres);
+    setErreursIA((prev) => prev.filter((e) => e !== erreur));
   }
 
   // ── Vue : texte envoyé (lecture seule) ──
@@ -367,89 +327,21 @@ export default function AtelierEcriture({
 
       {/* ── Zone d'édition ── */}
       <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-        <div style={{ position: "relative", minHeight: 320 }}>
-          {/* Couche highlights (derrière) */}
-          <div
-            ref={highlightRef}
-            aria-hidden
-            onClick={onClickHighlight}
-            style={{
-              position: "absolute", inset: 0, padding: "20px",
-              borderRadius: 14, border: "1.5px solid transparent",
-              fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
-              whiteSpace: "pre-wrap", wordWrap: "break-word",
-              overflow: "hidden", pointerEvents: "none",
-              color: "var(--pb-on-surface)",
-            }}
-          >
-            {segments.map((s, i) => {
-              if (s.type === "normal") return <span key={i}>{s.text}</span>;
-              if (s.type === "annotation") {
-                const statut = s.ann.statut;
-                return (
-                  <mark
-                    key={i}
-                    data-annotation-id={s.ann.id}
-                    style={{
-                      background: statut === "nouvelle" ? "rgba(67,56,202,0.18)" : "rgba(67,56,202,0.1)",
-                      color: "#4338CA",
-                      borderBottom: statut === "nouvelle" ? "2px solid #4338CA" : "2px dashed #4338CA",
-                      borderRadius: 3, padding: "1px 0",
-                      fontWeight: 600,
-                      pointerEvents: "auto", cursor: "pointer",
-                    }}
-                  >
-                    {s.text}
-                  </mark>
-                );
-              }
-              // erreur IA
-              return (
-                <mark
-                  key={i}
-                  style={{
-                    background: "rgba(220,38,38,0.15)",
-                    color: "#DC2626",
-                    borderBottom: "2px solid #DC2626",
-                    borderRadius: 3, padding: "1px 0",
-                    fontWeight: 600,
-                  }}
-                >
-                  {s.text}
-                </mark>
-              );
-            })}
-          </div>
-
-          {/* Textarea transparent (devant) */}
-          <textarea
-            ref={textareaRef}
-            value={texte}
-            onChange={(e) => {
-              setTexte(e.target.value);
-              // Reset erreurs IA car positions invalides
-              if (erreursIA.length > 0) setErreursIA([]);
-            }}
-            placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour, jusqu'à vendredi."
-            style={{
-              position: "relative", zIndex: 1,
-              width: "100%", minHeight: 320, padding: "20px",
-              borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
-              fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
-              color: (annotationsActives.length > 0 || erreursIA.length > 0) ? "transparent" : "var(--pb-on-surface)",
-              caretColor: "var(--pb-on-surface)",
-              background: "transparent", resize: "vertical",
-              outline: "none", transition: "border-color 0.2s",
-            }}
-            onFocus={(e) => { e.currentTarget.style.borderColor = "#7C3AED"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
-            onScroll={(e) => {
-              if (highlightRef.current) {
-                highlightRef.current.scrollTop = e.currentTarget.scrollTop;
-              }
-            }}
-          />
-        </div>
+        <textarea
+          value={texte}
+          onChange={(e) => setTexte(e.target.value)}
+          placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour, jusqu'à vendredi."
+          style={{
+            width: "100%", minHeight: 320, padding: "20px",
+            borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
+            fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
+            color: "var(--pb-on-surface)",
+            background: "white", resize: "vertical",
+            outline: "none", transition: "border-color 0.2s",
+          }}
+          onFocus={(e) => { e.currentTarget.style.borderColor = "#7C3AED"; }}
+          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
+        />
 
         {/* Barre de statut */}
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--pb-on-surface-variant)", padding: "0 4px", flexWrap: "wrap", gap: 6 }}>
@@ -476,6 +368,63 @@ export default function AtelierEcriture({
         </div>
       </div>
 
+      {/* ── Liste des erreurs IA ── */}
+      {erreursIA.length > 0 && (
+        <div style={{
+          background: "#FEF2F2", border: "1.5px solid #FECACA",
+          borderRadius: 14, padding: "14px 18px",
+        }}>
+          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#B91C1C", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+            <span className="ms" style={{ fontSize: 18 }}>spellcheck</span>
+            {erreursIA.length} erreur{erreursIA.length > 1 ? "s" : ""} à corriger
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {erreursIA.map((e, i) => (
+              <div
+                key={i}
+                style={{
+                  background: "white", border: "1px solid #FECACA",
+                  borderRadius: 10, padding: "10px 14px",
+                  display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+                  fontFamily: "Manrope, sans-serif",
+                }}
+              >
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#DC2626" }}>
+                  {e.mot}
+                </span>
+                {e.correction && (
+                  <>
+                    <span className="ms" style={{ fontSize: 18, color: "#9CA3AF" }}>arrow_forward</span>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: "#059669" }}>
+                      {e.correction}
+                    </span>
+                  </>
+                )}
+                <span style={{ fontSize: 12, color: "#6B7280", flex: 1, minWidth: 120 }}>
+                  {e.indice}
+                </span>
+                {e.correction && (
+                  <button
+                    type="button"
+                    onClick={() => appliquerCorrection(e)}
+                    style={{
+                      background: "#059669", color: "white", border: "none",
+                      borderRadius: 8, padding: "8px 14px", fontSize: 13, fontWeight: 700,
+                      cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      display: "flex", alignItems: "center", gap: 4,
+                      minHeight: 36,
+                    }}
+                  >
+                    <span className="ms" style={{ fontSize: 16 }}>check</span>
+                    Corriger
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* ── Liste des annotations enseignant (résumé) ── */}
       {annotationsActives.length > 0 && (
         <div style={{
@@ -490,11 +439,12 @@ export default function AtelierEcriture({
             {annotationsActives.map((a) => (
               <button
                 key={a.id}
-                onClick={() => setAnnotationOuverte(a)}
+                onClick={() => ouvrirAnnotation(a)}
                 style={{
                   textAlign: "left", background: "white", border: "1px solid #DDD6FE",
-                  borderRadius: 10, padding: "10px 14px", cursor: "pointer",
+                  borderRadius: 10, padding: "12px 14px", cursor: "pointer",
                   display: "flex", alignItems: "center", gap: 10, fontFamily: "Manrope, sans-serif",
+                  minHeight: 44,
                 }}
               >
                 <span style={{
