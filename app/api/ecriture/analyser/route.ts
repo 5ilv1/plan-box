@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
   const systemPrompt = `Tu es un correcteur de français expert et bienveillant pour des élèves de CE2/CM1/CM2 (8-11 ans).
 
 Analyse le texte et identifie TOUTES les erreurs :
-- "orthographe" : mots mal orthographiés (ex: garson → garçon, foret → forêt)
+- "orthographe" : mots mal orthographiés OU qui n'existent pas en français (ex: garson → garçon, foret → forêt, text → texte, mange → manger dans un contexte infinitif, acheter → acheter mais "j'achete" → "j'achète"). Vérifie CHAQUE mot : s'il n'existe pas dans le dictionnaire français courant, c'est une erreur. Les anglicismes (text, cool, shopping…) sont à corriger par le mot français équivalent.
 - "grammaire" : accords sujet-verbe, adjectif-nom, participe passé, conjugaisons, accords en genre et nombre dans le groupe nominal
 - "syntaxe" : ponctuation manquante, majuscules oubliées, phrases mal construites
 
