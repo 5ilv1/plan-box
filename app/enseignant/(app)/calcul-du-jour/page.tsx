@@ -301,6 +301,10 @@ export default function CalculDuJourPage() {
                           margin: "16px 0 12px",
                         }}>
                           {calcul.nombre1} {formatOperateur(calcul.operation)} {calcul.nombre2}
+                          {" = "}
+                          <span style={{ color: "var(--primary)" }}>
+                            {String(calcul.reponse).replace(".", ",")}
+                          </span>
                         </div>
                         <div style={{
                           fontSize: 13,
