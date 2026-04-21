@@ -38,12 +38,39 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ suggestions: [] });
   }
 
+  const admin = createAdminClient();
   let niveau: "CE2" | "CM1" | "CM2" = "CM1";
   if (blocId) {
     try {
-      niveau = await niveauEleveDepuisBloc(createAdminClient(), blocId);
+      niveau = await niveauEleveDepuisBloc(admin, blocId);
     } catch {}
   }
+
+  // Corrections déjà posées par l'enseignant — enrichissent le référentiel
+  let correctionsEnseignant = "";
+  try {
+    const { data: rows } = await admin
+      .from("ecriture_corrections_enseignant")
+      .select("extrait, suggestion, commentaire")
+      .order("created_at", { ascending: false })
+      .limit(200);
+    if (rows && rows.length > 0) {
+      // Dédupe sur (extrait, suggestion) pour éviter la répétition
+      const vues = new Set<string>();
+      const lignes: string[] = [];
+      for (const r of rows) {
+        const key = `${r.extrait}→${r.suggestion}`;
+        if (vues.has(key)) continue;
+        vues.add(key);
+        lignes.push(
+          `- « ${r.extrait} » → « ${r.suggestion} »${r.commentaire ? ` (${r.commentaire})` : ""}`
+        );
+      }
+      if (lignes.length > 0) {
+        correctionsEnseignant = `\n\n## Corrections déjà posées par l'enseignant sur des textes précédents\n\nPrends-les comme référence : ce sont les erreurs et tournures que l'enseignant corrige habituellement dans sa classe. Applique la même exigence et, quand un cas similaire apparaît, inspire-toi du commentaire pédagogique associé.\n\n${lignes.join("\n")}`;
+      }
+    }
+  } catch {}
 
   const systemDynamique = `Tu es un professeur des écoles qui corrige le texte d'un élève de ${niveau} (${niveau === "CE2" ? "8-9" : niveau === "CM1" ? "9-10" : "10-11"} ans).
 
@@ -83,6 +110,15 @@ RÈGLES CRITIQUES :
           text: REFERENCE_CYCLE3,
           cache_control: { type: "ephemeral" },
         },
+        ...(correctionsEnseignant
+          ? [
+              {
+                type: "text" as const,
+                text: correctionsEnseignant,
+                cache_control: { type: "ephemeral" as const },
+              },
+            ]
+          : []),
         {
           type: "text",
           text: systemDynamique,

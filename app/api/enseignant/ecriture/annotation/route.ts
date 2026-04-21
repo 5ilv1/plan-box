@@ -75,6 +75,15 @@ export async function POST(req: NextRequest) {
 
   await admin.from("plan_travail").update({ contenu }).eq("id", blocId);
 
+  // Enrichit le référentiel enseignant pour les prochaines suggestions IA
+  await admin.from("ecriture_corrections_enseignant").insert(
+    nouvelles.map((a) => ({
+      extrait: a.extrait,
+      suggestion: a.suggestion,
+      commentaire: a.commentaire ?? null,
+    }))
+  );
+
   return NextResponse.json({ ok: true, annotations: nouvelles });
 }
 

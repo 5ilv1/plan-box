@@ -76,6 +76,13 @@ export default function EnseignantAtelierBloc({
   // IA
   const [iaEnCours, setIaEnCours] = useState(false);
   const [suggestionsIA, setSuggestionsIA] = useState<SuggestionIA[]>([]);
+  const [iaEditIndex, setIaEditIndex] = useState<number | null>(null);
+  const [iaExtraitEnCours, setIaExtraitEnCours] = useState(false);
+
+  // Édition du texte
+  const [editionTexte, setEditionTexte] = useState(false);
+  const [brouillonTexte, setBrouillonTexte] = useState("");
+  const [sauvegardeTexte, setSauvegardeTexte] = useState(false);
 
   const texteRef = useRef<HTMLDivElement>(null);
 
@@ -134,6 +141,34 @@ export default function EnseignantAtelierBloc({
     setSelection({ debut: idx, fin: idx + text.length, extrait: text });
     setFormSuggestion("");
     setFormCommentaire("");
+    setIaEditIndex(null);
+  }
+
+  function editerSuggestionDepuisTexte(idx: number) {
+    const s = suggestionsIA[idx];
+    if (!s) return;
+    // Recale la position réelle dans le texte (au cas où)
+    let debut = s.debut;
+    let fin = s.fin;
+    if (texteAffiche.slice(debut, fin) !== s.extrait) {
+      const pos = texteAffiche.indexOf(s.extrait);
+      if (pos >= 0) {
+        debut = pos;
+        fin = pos + s.extrait.length;
+      }
+    }
+    setSelection({ debut, fin, extrait: s.extrait });
+    setFormSuggestion(s.suggestion);
+    setFormCommentaire(s.commentaire ?? "");
+    setIaEditIndex(idx);
+    window.getSelection()?.removeAllRanges();
+  }
+
+  function annulerFormulaire() {
+    setSelection(null);
+    setFormSuggestion("");
+    setFormCommentaire("");
+    setIaEditIndex(null);
   }
 
   async function enregistrerAnnotation() {
@@ -157,10 +192,17 @@ export default function EnseignantAtelierBloc({
         }),
       });
       if (res.ok) {
+        const data = await res.json();
+        const nouvelles: Annotation[] = data.annotations ?? [];
+        if (iaEditIndex !== null) {
+          const idx = iaEditIndex;
+          setSuggestionsIA((prev) => prev.filter((_, i) => i !== idx));
+        }
+        setContenu((prev) => (prev ? { ...prev, annotations: [...prev.annotations, ...nouvelles] } : prev));
         setSelection(null);
         setFormSuggestion("");
         setFormCommentaire("");
-        await charger();
+        setIaEditIndex(null);
       }
     } catch {}
     setEnregistrement(false);
@@ -168,12 +210,14 @@ export default function EnseignantAtelierBloc({
 
   async function supprimerAnnotation(id: string) {
     if (!confirm("Supprimer cette annotation ?")) return;
-    await fetch("/api/enseignant/ecriture/annotation", {
+    const res = await fetch("/api/enseignant/ecriture/annotation", {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ blocId, id }),
     });
-    await charger();
+    if (res.ok) {
+      setContenu((prev) => (prev ? { ...prev, annotations: prev.annotations.filter((a) => a.id !== id) } : prev));
+    }
   }
 
   // ── Suggestions IA ──
@@ -195,7 +239,9 @@ export default function EnseignantAtelierBloc({
     setIaEnCours(false);
   }
 
-  async function validerSuggestionIA(s: SuggestionIA) {
+  async function validerSuggestionIA(idx: number) {
+    const s = suggestionsIA[idx];
+    if (!s || !s.suggestion.trim()) return;
     const res = await fetch("/api/enseignant/ecriture/annotation", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -206,37 +252,152 @@ export default function EnseignantAtelierBloc({
             debut: s.debut,
             fin: s.fin,
             extrait: s.extrait,
-            suggestion: s.suggestion,
-            commentaire: s.commentaire,
+            suggestion: s.suggestion.trim(),
+            commentaire: s.commentaire.trim() || undefined,
           },
         ],
       }),
     });
     if (res.ok) {
-      setSuggestionsIA((prev) => prev.filter((x) => x !== s));
-      await charger();
+      const data = await res.json();
+      const nouvelles: Annotation[] = data.annotations ?? [];
+      setSuggestionsIA((prev) => prev.filter((_, i) => i !== idx));
+      setContenu((prev) => (prev ? { ...prev, annotations: [...prev.annotations, ...nouvelles] } : prev));
     }
   }
 
-  function rejeterSuggestionIA(s: SuggestionIA) {
-    setSuggestionsIA((prev) => prev.filter((x) => x !== s));
+  function rejeterSuggestionIA(idx: number) {
+    setSuggestionsIA((prev) => prev.filter((_, i) => i !== idx));
   }
 
-  // ── Affichage highlights (annotations existantes + sélection en cours) ──
+  function modifierSuggestionIA(idx: number, champ: "suggestion" | "commentaire", valeur: string) {
+    setSuggestionsIA((prev) => prev.map((s, i) => (i === idx ? { ...s, [champ]: valeur } : s)));
+  }
+
+  function demarrerEditionTexte() {
+    if (!contenu) return;
+    setBrouillonTexte(contenu.texte_courant);
+    setEditionTexte(true);
+    setSelection(null);
+    setIaEditIndex(null);
+  }
+
+  async function enregistrerEditionTexte() {
+    if (!contenu) return;
+    setSauvegardeTexte(true);
+    try {
+      const res = await fetch("/api/enseignant/ecriture/texte", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId, texte: brouillonTexte }),
+      });
+      if (res.ok) {
+        setContenu((prev) =>
+          prev
+            ? {
+                ...prev,
+                texte_courant: brouillonTexte,
+                texte_final: prev.date_envoi && prev.texte_final ? brouillonTexte : prev.texte_final,
+              }
+            : prev
+        );
+        setSuggestionsIA([]);
+        setEditionTexte(false);
+      }
+    } catch {}
+    setSauvegardeTexte(false);
+  }
+
+  function annulerEditionTexte() {
+    setEditionTexte(false);
+    setBrouillonTexte("");
+  }
+
+  async function proposerIAExtrait() {
+    if (!selection?.extrait || !contenu) return;
+    setIaExtraitEnCours(true);
+    try {
+      const res = await fetch("/api/enseignant/ecriture/suggestion-extrait", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blocId,
+          extrait: selection.extrait,
+          contexte: contenu.texte_courant,
+          sujet: contenu.sujet,
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.suggestion) setFormSuggestion(data.suggestion);
+        if (data.commentaire) setFormCommentaire(data.commentaire);
+      }
+    } catch {}
+    setIaExtraitEnCours(false);
+  }
+
+  async function validerToutesSuggestionsIA() {
+    const valides = suggestionsIA.filter((s) => s.suggestion.trim());
+    if (valides.length === 0) return;
+    const res = await fetch("/api/enseignant/ecriture/annotation", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        blocId,
+        annotations: valides.map((s) => ({
+          debut: s.debut,
+          fin: s.fin,
+          extrait: s.extrait,
+          suggestion: s.suggestion.trim(),
+          commentaire: s.commentaire.trim() || undefined,
+        })),
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const nouvelles: Annotation[] = data.annotations ?? [];
+      setSuggestionsIA([]);
+      setContenu((prev) => (prev ? { ...prev, annotations: [...prev.annotations, ...nouvelles] } : prev));
+    }
+  }
+
+  // ── Affichage highlights (annotations existantes + suggestions IA en attente) ──
   const segments = useMemo(() => {
     if (!contenu) return [];
-    type Seg = { text: string; type: "normal" } | { text: string; type: "annotation"; ann: Annotation };
-    if (contenu.annotations.length === 0 || vueTexte !== "courant") {
+    type Seg =
+      | { text: string; type: "normal" }
+      | { text: string; type: "annotation"; ann: Annotation }
+      | { text: string; type: "ia"; sug: SuggestionIA };
+    if (vueTexte !== "courant") {
       return [{ text: texteAffiche, type: "normal" as const }] as Seg[];
     }
-    const marks: { debut: number; fin: number; ann: Annotation }[] = [];
+    type Mark =
+      | { debut: number; fin: number; kind: "annotation"; ann: Annotation }
+      | { debut: number; fin: number; kind: "ia"; sug: SuggestionIA };
+    const marks: Mark[] = [];
     for (const a of contenu.annotations) {
       if (texteAffiche.slice(a.debut, a.fin) === a.extrait) {
-        marks.push({ debut: a.debut, fin: a.fin, ann: a });
+        marks.push({ debut: a.debut, fin: a.fin, kind: "annotation", ann: a });
       } else {
         const idx = texteAffiche.indexOf(a.extrait);
-        if (idx >= 0) marks.push({ debut: idx, fin: idx + a.extrait.length, ann: a });
+        if (idx >= 0) marks.push({ debut: idx, fin: idx + a.extrait.length, kind: "annotation", ann: a });
       }
+    }
+    for (const s of suggestionsIA) {
+      let debut = s.debut;
+      let fin = s.fin;
+      if (texteAffiche.slice(debut, fin) !== s.extrait) {
+        const idx = texteAffiche.indexOf(s.extrait);
+        if (idx < 0) continue;
+        debut = idx;
+        fin = idx + s.extrait.length;
+      }
+      // Skip si déjà couvert par une annotation posée
+      const chevauche = marks.some((m) => m.kind === "annotation" && debut < m.fin && fin > m.debut);
+      if (!chevauche) marks.push({ debut, fin, kind: "ia", sug: s });
+    }
+    if (marks.length === 0) {
+      return [{ text: texteAffiche, type: "normal" as const }] as Seg[];
     }
     marks.sort((a, b) => a.debut - b.debut);
     const result: Seg[] = [];
@@ -244,12 +405,16 @@ export default function EnseignantAtelierBloc({
     for (const m of marks) {
       if (m.debut < offset) continue;
       if (m.debut > offset) result.push({ text: texteAffiche.slice(offset, m.debut), type: "normal" });
-      result.push({ text: texteAffiche.slice(m.debut, m.fin), type: "annotation", ann: m.ann });
+      if (m.kind === "annotation") {
+        result.push({ text: texteAffiche.slice(m.debut, m.fin), type: "annotation", ann: m.ann });
+      } else {
+        result.push({ text: texteAffiche.slice(m.debut, m.fin), type: "ia", sug: m.sug });
+      }
       offset = m.fin;
     }
     if (offset < texteAffiche.length) result.push({ text: texteAffiche.slice(offset), type: "normal" });
     return result;
-  }, [contenu, texteAffiche, vueTexte]);
+  }, [contenu, texteAffiche, vueTexte, suggestionsIA]);
 
   if (loading) {
     return <div className="skeleton" style={{ height: 200, borderRadius: 16 }} />;
@@ -353,15 +518,79 @@ export default function EnseignantAtelierBloc({
       )}
 
       {/* Zone texte + panneau annotations */}
-      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(280px, 1fr)", gap: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1.6fr) minmax(320px, 1fr)", gap: 20, alignItems: "start" }}>
 
         {/* Texte de l'élève */}
-        <div>
-          {vueTexte === "courant" && !envoye && (
-            <p style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", marginBottom: 8, fontStyle: "italic" }}>
-              Sélectionne un passage pour proposer une correction. L&apos;élève la verra en temps réel.
-            </p>
+        <div style={{ position: "sticky", top: 12 }}>
+          {vueTexte === "courant" && (
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+              <p style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", margin: 0, fontStyle: "italic", flex: 1, minWidth: 200 }}>
+                Sélectionne un passage pour proposer une correction.
+                {envoye
+                  ? " Le texte a été envoyé : tes annotations resteront visibles pour l'élève."
+                  : " L\u2019élève la verra en temps réel."}
+              </p>
+              {!editionTexte && (
+                <button
+                  onClick={demarrerEditionTexte}
+                  style={{
+                    background: "white", color: "#4338CA",
+                    border: "1px solid #C4B5FD", borderRadius: 8,
+                    padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                    display: "inline-flex", alignItems: "center", gap: 4,
+                  }}
+                  title="Corriger directement le texte de l'élève"
+                >
+                  <span className="ms" style={{ fontSize: 14 }}>edit</span>
+                  Éditer le texte
+                </button>
+              )}
+            </div>
           )}
+          {editionTexte ? (
+            <div>
+              <textarea
+                value={brouillonTexte}
+                onChange={(e) => setBrouillonTexte(e.target.value)}
+                autoFocus
+                style={{
+                  width: "100%",
+                  background: "#FFFBEB",
+                  border: "1.5px solid #FCD34D",
+                  borderRadius: 14, padding: "20px 24px",
+                  fontSize: 15, lineHeight: 1.9, fontFamily: "'Lora', Georgia, serif",
+                  color: "var(--pb-on-surface)",
+                  minHeight: 320, resize: "vertical",
+                }}
+              />
+              <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", marginTop: 8 }}>
+                <button
+                  onClick={annulerEditionTexte}
+                  disabled={sauvegardeTexte}
+                  style={{
+                    background: "white", color: "#6B7280",
+                    border: "1px solid #ddd", borderRadius: 8,
+                    padding: "6px 14px", fontSize: 12, fontWeight: 600,
+                    cursor: sauvegardeTexte ? "not-allowed" : "pointer",
+                  }}
+                >
+                  Annuler
+                </button>
+                <button
+                  onClick={enregistrerEditionTexte}
+                  disabled={sauvegardeTexte || brouillonTexte === contenu.texte_courant}
+                  style={{
+                    background: "#4338CA", color: "white", border: "none",
+                    borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 700,
+                    cursor: (sauvegardeTexte || brouillonTexte === contenu.texte_courant) ? "not-allowed" : "pointer",
+                    opacity: (sauvegardeTexte || brouillonTexte === contenu.texte_courant) ? 0.5 : 1,
+                  }}
+                >
+                  {sauvegardeTexte ? "Sauvegarde…" : "Enregistrer"}
+                </button>
+              </div>
+            </div>
+          ) : (
           <div
             ref={texteRef}
             onMouseUp={onMouseUpTexte}
@@ -372,38 +601,65 @@ export default function EnseignantAtelierBloc({
               fontSize: 15, lineHeight: 1.9, fontFamily: "'Lora', Georgia, serif",
               color: "var(--pb-on-surface)", whiteSpace: "pre-wrap",
               minHeight: 320,
-              userSelect: vueTexte === "courant" && !envoye ? "text" : "auto",
-              cursor: vueTexte === "courant" && !envoye ? "text" : "default",
+              userSelect: vueTexte === "courant" ? "text" : "auto",
+              cursor: vueTexte === "courant" ? "text" : "default",
             }}
           >
             {texteAffiche.trim() ? (
-              segments.map((s, i) =>
-                s.type === "normal" ? (
-                  <span key={i}>{s.text}</span>
-                ) : (
+              segments.map((s, i) => {
+                if (s.type === "normal") return <span key={i}>{s.text}</span>;
+                if (s.type === "annotation") {
+                  return (
+                    <mark
+                      key={i}
+                      style={{
+                        background: STATUT_COULEURS[s.ann.statut].bg,
+                        color: STATUT_COULEURS[s.ann.statut].fg,
+                        borderBottom: `2px solid ${STATUT_COULEURS[s.ann.statut].fg}`,
+                        padding: "1px 0", borderRadius: 2, fontWeight: 600,
+                      }}
+                      title={`${s.ann.suggestion}${s.ann.commentaire ? " · " + s.ann.commentaire : ""}`}
+                    >
+                      {s.text}
+                    </mark>
+                  );
+                }
+                const iaIdx = suggestionsIA.indexOf(s.sug);
+                const estEnEdition = iaIdx !== -1 && iaIdx === iaEditIndex;
+                return (
                   <mark
                     key={i}
-                    style={{
-                      background: STATUT_COULEURS[s.ann.statut].bg,
-                      color: STATUT_COULEURS[s.ann.statut].fg,
-                      borderBottom: `2px solid ${STATUT_COULEURS[s.ann.statut].fg}`,
-                      padding: "1px 0", borderRadius: 2, fontWeight: 600,
+                    onMouseDown={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                     }}
-                    title={`${s.ann.suggestion}${s.ann.commentaire ? " · " + s.ann.commentaire : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (iaIdx !== -1) editerSuggestionDepuisTexte(iaIdx);
+                    }}
+                    style={{
+                      background: estEnEdition ? "#FDE68A" : "#FEF3C7",
+                      color: "#7C3AED",
+                      borderBottom: `2px ${estEnEdition ? "solid" : "dashed"} #7C3AED`,
+                      padding: "1px 2px", borderRadius: 2, fontWeight: 600,
+                      cursor: "pointer",
+                    }}
+                    title={`Clique pour retoucher : ${s.sug.suggestion}${s.sug.commentaire ? " · " + s.sug.commentaire : ""}`}
                   >
                     {s.text}
                   </mark>
-                )
-              )
+                );
+              })
             ) : (
               <p style={{ color: "var(--pb-on-surface-variant)", fontStyle: "italic", margin: 0 }}>
                 Pas encore de texte.
               </p>
             )}
           </div>
+          )}
 
           {/* Bouton IA */}
-          {vueTexte === "courant" && !envoye && contenu.texte_courant.trim() && (
+          {!editionTexte && vueTexte === "courant" && contenu.texte_courant.trim() && (
             <div style={{ marginTop: 12 }}>
               <button
                 onClick={genererSuggestionsIA}
@@ -424,72 +680,43 @@ export default function EnseignantAtelierBloc({
             </div>
           )}
 
-          {/* Liste suggestions IA en attente de validation */}
-          {suggestionsIA.length > 0 && (
-            <div style={{ marginTop: 16 }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#7C3AED", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>
-                Suggestions IA ({suggestionsIA.length}) — valide celles que tu veux poser
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {suggestionsIA.map((s, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      background: "white", border: "1.5px solid #DDD6FE", borderRadius: 12,
-                      padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8,
-                    }}
-                  >
-                    <div style={{ fontSize: 13 }}>
-                      <span style={{ color: "#991B1B", fontStyle: "italic" }}>« {s.extrait} »</span>
-                      <span className="ms" style={{ fontSize: 14, color: "#6B7280", margin: "0 6px", verticalAlign: "middle" }}>arrow_right_alt</span>
-                      <span style={{ color: "#166534", fontWeight: 700 }}>« {s.suggestion} »</span>
-                    </div>
-                    {s.commentaire && (
-                      <div style={{ fontSize: 12, color: "#4338CA", fontStyle: "italic" }}>
-                        {s.commentaire}
-                      </div>
-                    )}
-                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
-                      <button
-                        onClick={() => rejeterSuggestionIA(s)}
-                        style={{
-                          background: "white", color: "#6B7280",
-                          border: "1px solid #ddd", borderRadius: 8,
-                          padding: "4px 12px", fontSize: 12, fontWeight: 600, cursor: "pointer",
-                        }}
-                      >
-                        Ignorer
-                      </button>
-                      <button
-                        onClick={() => validerSuggestionIA(s)}
-                        style={{
-                          background: "#4338CA", color: "white", border: "none",
-                          borderRadius: 8, padding: "4px 14px", fontSize: 12,
-                          fontWeight: 700, cursor: "pointer",
-                        }}
-                      >
-                        Poser cette annotation
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Panneau latéral : form sélection + liste annotations */}
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-          {selection && vueTexte === "courant" && !envoye && (
+          {selection && vueTexte === "courant" && (
             <div style={{
-              background: "#F5F3FF", border: "1.5px solid #C4B5FD",
+              background: iaEditIndex !== null ? "#FEF3C7" : "#F5F3FF",
+              border: `1.5px solid ${iaEditIndex !== null ? "#FCD34D" : "#C4B5FD"}`,
               borderRadius: 14, padding: "16px 18px",
             }}>
-              <div style={{ fontSize: 12, fontWeight: 700, color: "#4338CA", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
-                Nouvelle annotation
+              <div style={{ fontSize: 12, fontWeight: 700, color: iaEditIndex !== null ? "#92400E" : "#4338CA", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                {iaEditIndex !== null && <span className="ms" style={{ fontSize: 14 }}>auto_awesome</span>}
+                {iaEditIndex !== null ? "Suggestion IA — retouche puis pose" : "Nouvelle annotation"}
               </div>
-              <div style={{ fontSize: 13, fontStyle: "italic", color: "#6B21A8", marginBottom: 10 }}>
-                « {selection.extrait} »
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 13, fontStyle: "italic", color: "#6B21A8" }}>
+                  « {selection.extrait} »
+                </div>
+                {iaEditIndex === null && (
+                  <button
+                    onClick={proposerIAExtrait}
+                    disabled={iaExtraitEnCours}
+                    style={{
+                      background: "linear-gradient(135deg, #7C3AED, #4338CA)",
+                      color: "white", border: "none", borderRadius: 8,
+                      padding: "4px 10px", fontSize: 11, fontWeight: 700,
+                      cursor: iaExtraitEnCours ? "not-allowed" : "pointer",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                      opacity: iaExtraitEnCours ? 0.6 : 1,
+                    }}
+                    title="Demander une proposition IA pour ce passage"
+                  >
+                    <span className="ms" style={{ fontSize: 14 }}>auto_awesome</span>
+                    {iaExtraitEnCours ? "IA…" : "Proposition IA"}
+                  </button>
+                )}
               </div>
               <input
                 type="text"
@@ -506,16 +733,16 @@ export default function EnseignantAtelierBloc({
                 value={formCommentaire}
                 onChange={(e) => setFormCommentaire(e.target.value)}
                 placeholder="Commentaire pédagogique (optionnel)"
-                rows={2}
+                rows={Math.max(3, Math.ceil((formCommentaire.length || 0) / 60))}
                 style={{
-                  width: "100%", padding: "8px 12px", fontSize: 13,
+                  width: "100%", padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
                   border: "1px solid var(--pb-outline-variant, #ccc)", borderRadius: 8,
                   marginBottom: 10, fontFamily: "inherit", resize: "vertical",
                 }}
               />
               <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
                 <button
-                  onClick={() => setSelection(null)}
+                  onClick={annulerFormulaire}
                   style={{
                     background: "white", color: "#6B7280",
                     border: "1px solid #ddd", borderRadius: 8,
@@ -536,6 +763,104 @@ export default function EnseignantAtelierBloc({
                 >
                   {enregistrement ? "Envoi…" : "Poser"}
                 </button>
+              </div>
+            </div>
+          )}
+
+          {/* Suggestions IA éditables */}
+          {suggestionsIA.length > 0 && (
+            <div>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: "#7C3AED", textTransform: "uppercase", letterSpacing: "0.06em", display: "inline-flex", alignItems: "center", gap: 4 }}>
+                  <span className="ms" style={{ fontSize: 14 }}>auto_awesome</span>
+                  Suggestions IA ({suggestionsIA.length})
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  <button
+                    onClick={() => setSuggestionsIA([])}
+                    style={{
+                      background: "white", color: "#6B7280",
+                      border: "1px solid #ddd", borderRadius: 8,
+                      padding: "4px 10px", fontSize: 12, fontWeight: 600, cursor: "pointer",
+                    }}
+                  >
+                    Tout ignorer
+                  </button>
+                  <button
+                    onClick={validerToutesSuggestionsIA}
+                    style={{
+                      background: "#4338CA", color: "white", border: "none",
+                      borderRadius: 8, padding: "4px 12px", fontSize: 12,
+                      fontWeight: 700, cursor: "pointer",
+                      display: "inline-flex", alignItems: "center", gap: 4,
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}
+                  >
+                    <span className="ms" style={{ fontSize: 16 }}>done_all</span>
+                    Tout valider
+                  </button>
+                </div>
+              </div>
+              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                {suggestionsIA.map((s, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      background: "white", border: "1.5px solid #DDD6FE", borderRadius: 10,
+                      padding: "10px 12px", display: "flex", flexDirection: "column", gap: 6,
+                    }}
+                  >
+                    <div style={{ fontSize: 12, color: "#991B1B", fontStyle: "italic" }}>
+                      « {s.extrait} »
+                    </div>
+                    <input
+                      type="text"
+                      value={s.suggestion}
+                      onChange={(e) => modifierSuggestionIA(i, "suggestion", e.target.value)}
+                      placeholder="Proposition de correction"
+                      style={{
+                        width: "100%", padding: "6px 10px", fontSize: 13, fontWeight: 600,
+                        color: "#166534", background: "#F0FDF4",
+                        border: "1px solid #BBF7D0", borderRadius: 8, fontFamily: "inherit",
+                      }}
+                    />
+                    <textarea
+                      value={s.commentaire}
+                      onChange={(e) => modifierSuggestionIA(i, "commentaire", e.target.value)}
+                      placeholder="Commentaire pédagogique (optionnel)"
+                      rows={Math.max(2, Math.ceil((s.commentaire?.length ?? 0) / 40))}
+                      style={{
+                        width: "100%", padding: "6px 10px", fontSize: 12, lineHeight: 1.4,
+                        color: "#4338CA", fontStyle: "italic",
+                        border: "1px solid #E0E7FF", borderRadius: 8, fontFamily: "inherit", resize: "vertical",
+                      }}
+                    />
+                    <div style={{ display: "flex", gap: 6, justifyContent: "flex-end" }}>
+                      <button
+                        onClick={() => rejeterSuggestionIA(i)}
+                        style={{
+                          background: "white", color: "#6B7280",
+                          border: "1px solid #ddd", borderRadius: 6,
+                          padding: "3px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer",
+                        }}
+                      >
+                        Ignorer
+                      </button>
+                      <button
+                        onClick={() => validerSuggestionIA(i)}
+                        disabled={!s.suggestion.trim()}
+                        style={{
+                          background: "#4338CA", color: "white", border: "none",
+                          borderRadius: 6, padding: "3px 12px", fontSize: 11,
+                          fontWeight: 700, cursor: s.suggestion.trim() ? "pointer" : "not-allowed",
+                          opacity: s.suggestion.trim() ? 1 : 0.5,
+                        }}
+                      >
+                        Poser
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           )}
