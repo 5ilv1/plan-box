@@ -120,19 +120,33 @@ export default function AtelierEcriture({
 
   // ── Analyser le texte (bouton "Corrige-moi") ──
   const [analyseEnCours, setAnalyseEnCours] = useState(false);
+  const [analyseMessage, setAnalyseMessage] = useState<string>("");
   const [erreursIA, setErreursIA] = useState<Array<{ mot: string; type: string; position: number; indice: string; correction?: string }>>([]);
   const analyser = useCallback(async () => {
     if (!texte.trim()) return;
     setAnalyseEnCours(true);
+    setAnalyseMessage("");
     try {
       const res = await fetch("/api/ecriture/analyser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ texte, jour: 2, sujet }),
       });
-      const data = await res.json();
-      setErreursIA(data.erreurs ?? []);
-    } catch {}
+      if (!res.ok) {
+        setAnalyseMessage("Erreur lors de l'analyse, réessaie.");
+      } else {
+        const data = await res.json();
+        const erreurs = data.erreurs ?? [];
+        setErreursIA(erreurs);
+        if (erreurs.length === 0) {
+          setAnalyseMessage("Bravo ! Je n'ai trouvé aucune erreur dans ton texte.");
+        } else {
+          setAnalyseMessage("");
+        }
+      }
+    } catch {
+      setAnalyseMessage("Problème réseau, réessaie dans un instant.");
+    }
     setAnalyseEnCours(false);
   }, [texte, sujet]);
 
@@ -497,6 +511,35 @@ export default function AtelierEcriture({
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* ── Feedback analyse ── */}
+      {analyseEnCours && (
+        <div style={{
+          background: "#EEF2FF", border: "1.5px solid #C7D2FE",
+          borderRadius: 12, padding: "12px 16px",
+          display: "flex", alignItems: "center", gap: 10,
+        }}>
+          <span className="ms" style={{ fontSize: 20, color: "#4338CA", animation: "spin 1s linear infinite" }}>sync</span>
+          <span style={{ fontSize: 13, color: "#4338CA", fontWeight: 600 }}>
+            Analyse de ton texte en cours… quelques secondes.
+          </span>
+        </div>
+      )}
+      {analyseMessage && !analyseEnCours && (
+        <div style={{
+          background: erreursIA.length === 0 ? "#F0FDF4" : "#FEF3C7",
+          border: `1.5px solid ${erreursIA.length === 0 ? "#BBF7D0" : "#FDE68A"}`,
+          borderRadius: 12, padding: "12px 16px",
+          display: "flex", alignItems: "center", gap: 10,
+        }}>
+          <span className="ms" style={{ fontSize: 20, color: erreursIA.length === 0 ? "#059669" : "#B45309" }}>
+            {erreursIA.length === 0 ? "check_circle" : "info"}
+          </span>
+          <span style={{ fontSize: 13, color: erreursIA.length === 0 ? "#166534" : "#92400E", fontWeight: 600 }}>
+            {analyseMessage}
+          </span>
         </div>
       )}
 
