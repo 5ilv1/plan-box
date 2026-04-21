@@ -53,7 +53,8 @@ const TYPE_ERREUR_LABELS: Record<string, { label: string; icon: string; color: s
 export default function DicteeCorrection({ blocId, onFermer }: Props) {
   const inputRef = useRef<HTMLInputElement>(null);
   const [photos, setPhotos] = useState<{ url: string; base64: string }[]>([]);
-  const [chargement, setChargement] = useState(false);
+  const [transcription, setTranscription] = useState<string | null>(null);
+  const [chargement, setChargement] = useState<"idle" | "transcription" | "correction">("idle");
   const [resultat, setResultat] = useState<ResultatCorrection | null>(null);
   const [erreur, setErreur] = useState<string | null>(null);
   const [erreurActive, setErreurActive] = useState<number | null>(null);
@@ -73,6 +74,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
     };
     reader.readAsDataURL(file);
 
+    setTranscription(null);
     setResultat(null);
     setErreur(null);
     setErreurActive(null);
@@ -81,6 +83,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
 
   function supprimerPhoto(index: number) {
     setPhotos((prev) => prev.filter((_, i) => i !== index));
+    setTranscription(null);
     setResultat(null);
     setErreur(null);
     setErreurActive(null);
@@ -88,19 +91,21 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
 
   function annulerTout() {
     setPhotos([]);
+    setTranscription(null);
     setResultat(null);
     setErreur(null);
     setErreurActive(null);
     if (inputRef.current) inputRef.current.value = "";
   }
 
-  async function envoyer() {
+  // Étape 1 : photo → transcription OCR brute (à valider par l'élève)
+  async function lireLaPhoto() {
     if (photos.length === 0) return;
-    setChargement(true);
+    setChargement("transcription");
     setErreur(null);
 
     try {
-      const res = await fetch("/api/corriger-dictee", {
+      const res = await fetch("/api/corriger-dictee/transcrire", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -111,7 +116,37 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Erreur lors de l'analyse");
+        throw new Error(data.error || "Erreur lors de la lecture");
+      }
+
+      const data: { transcription: string } = await res.json();
+      setTranscription(data.transcription);
+    } catch (err: unknown) {
+      setErreur(err instanceof Error ? err.message : "Erreur inconnue");
+    } finally {
+      setChargement("idle");
+    }
+  }
+
+  // Étape 2 : transcription validée par l'élève → correction
+  async function corriger() {
+    if (!transcription || !transcription.trim()) return;
+    setChargement("correction");
+    setErreur(null);
+
+    try {
+      const res = await fetch("/api/corriger-dictee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          transcription,
+          bloc_id: blocId,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Erreur lors de la correction");
       }
 
       const data: ResultatCorrection = await res.json();
@@ -119,7 +154,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
     } catch (err: unknown) {
       setErreur(err instanceof Error ? err.message : "Erreur inconnue");
     } finally {
-      setChargement(false);
+      setChargement("idle");
     }
   }
 
@@ -174,8 +209,8 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
         </button>
       )}
 
-      {/* ── Preview photos ── */}
-      {photos.length > 0 && !resultat && (
+      {/* ── Preview photos (avant lecture OCR) ── */}
+      {photos.length > 0 && transcription === null && !resultat && (
         <div>
           <div style={{ display: "flex", gap: 10, marginBottom: 16 }}>
             {photos.map((photo, i) => (
@@ -194,7 +229,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
                 </div>
                 <button
                   onClick={() => supprimerPhoto(i)}
-                  disabled={chargement}
+                  disabled={chargement !== "idle"}
                   style={{
                     position: "absolute", top: 6, right: 6,
                     width: 28, height: 28, borderRadius: "50%",
@@ -221,7 +256,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
             {photos.length < 2 && (
               <button
                 onClick={ouvrirCamera}
-                disabled={chargement}
+                disabled={chargement !== "idle"}
                 className="pb-btn surface"
                 style={{ flex: 1 }}
               >
@@ -231,7 +266,7 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
             )}
             <button
               onClick={annulerTout}
-              disabled={chargement}
+              disabled={chargement !== "idle"}
               className="pb-btn surface"
               style={{ flex: 1 }}
             >
@@ -239,20 +274,97 @@ export default function DicteeCorrection({ blocId, onFermer }: Props) {
               Reprendre
             </button>
             <button
-              onClick={envoyer}
-              disabled={chargement}
+              onClick={lireLaPhoto}
+              disabled={chargement !== "idle"}
               className="pb-btn primary"
               style={{ flex: 2 }}
             >
-              {chargement ? (
+              {chargement === "transcription" ? (
                 <>
                   <span className="ms spin" style={{ fontSize: 18 }}>progress_activity</span>
-                  Analyse en cours…
+                  Je lis ton cahier…
+                </>
+              ) : (
+                <>
+                  <span className="ms" style={{ fontSize: 18 }}>visibility</span>
+                  Lire ma dictée
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ── Validation de la transcription par l'élève ── */}
+      {transcription !== null && !resultat && (
+        <div>
+          <div style={{
+            padding: "14px 16px",
+            marginBottom: 14,
+            borderRadius: "1rem",
+            background: "rgba(0,80,212,0.06)",
+            border: "1px solid rgba(0,80,212,0.18)",
+          }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+              <span className="ms" style={{ fontSize: 20, color: "var(--pb-primary)" }}>visibility</span>
+              <span style={{
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                fontSize: 15, fontWeight: 700,
+                color: "var(--pb-primary)",
+              }}>
+                Voici ce que j&apos;ai lu sur ta feuille
+              </span>
+            </div>
+            <p style={{ fontSize: 13, margin: 0, color: "var(--pb-on-surface-variant)", lineHeight: 1.5 }}>
+              Relis attentivement. Si j&apos;ai mal lu un mot, corrige-le pour qu&apos;il corresponde <strong>exactement</strong> à ce que tu as écrit sur ton cahier (fautes comprises — je corrigerai ensuite).
+            </p>
+          </div>
+
+          <textarea
+            value={transcription}
+            onChange={(e) => setTranscription(e.target.value)}
+            disabled={chargement !== "idle"}
+            style={{
+              width: "100%",
+              minHeight: 180,
+              padding: "14px 16px",
+              borderRadius: "1rem",
+              border: "1.5px solid var(--pb-outline-variant, #ccc)",
+              fontSize: 15,
+              lineHeight: 1.7,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              color: "var(--pb-on-surface)",
+              background: "white",
+              resize: "vertical",
+              outline: "none",
+            }}
+          />
+
+          <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+            <button
+              onClick={annulerTout}
+              disabled={chargement !== "idle"}
+              className="pb-btn surface"
+              style={{ flex: 1 }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>photo_camera</span>
+              Reprendre la photo
+            </button>
+            <button
+              onClick={corriger}
+              disabled={chargement !== "idle" || !transcription.trim()}
+              className="pb-btn primary"
+              style={{ flex: 2 }}
+            >
+              {chargement === "correction" ? (
+                <>
+                  <span className="ms spin" style={{ fontSize: 18 }}>progress_activity</span>
+                  Je corrige…
                 </>
               ) : (
                 <>
                   <span className="ms" style={{ fontSize: 18 }}>auto_fix_high</span>
-                  Vérifier ma dictée
+                  C&apos;est bon, corrige ma dictée
                 </>
               )}
             </button>
