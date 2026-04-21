@@ -544,9 +544,15 @@ export default function AtelierEcriture({
       )}
 
       {/* ── Boutons d'action ── */}
-      <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap", position: "relative", zIndex: 10 }}>
         <button
-          onClick={analyser}
+          type="button"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log("[AtelierEcriture] click Corriger mon texte, texte.length=", texte.length, "analyseEnCours=", analyseEnCours);
+            analyser();
+          }}
           disabled={analyseEnCours || !texte.trim()}
           style={{
             background: "white", color: "#7C3AED",
@@ -556,6 +562,7 @@ export default function AtelierEcriture({
             fontFamily: "'Plus Jakarta Sans', sans-serif",
             display: "flex", alignItems: "center", gap: 6,
             opacity: (analyseEnCours || !texte.trim()) ? 0.5 : 1,
+            position: "relative", zIndex: 10, pointerEvents: "auto",
           }}
         >
           <span className="ms" style={{ fontSize: 18 }}>spellcheck</span>
