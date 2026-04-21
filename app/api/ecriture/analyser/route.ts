@@ -1,8 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { createAdminClient } from "@/lib/supabase-admin";
+import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
+import { niveauEleveDepuisBloc } from "@/lib/ecriture-niveau-eleve";
 
+/**
+ * POST /api/ecriture/analyser
+ *
+ * Analyse le texte de l'élève et retourne la liste des erreurs détectées.
+ *
+ * Body : {
+ *   texte: string,
+ *   sujet?: string,
+ *   blocId?: string,                // pour récupérer le niveau de l'élève
+ *   erreurs_precedentes?: Erreur[], // rétro-compat
+ *   jour?: number                   // rétro-compat (ignoré dans le nouveau flux)
+ * }
+ */
 export async function POST(req: NextRequest) {
-  let body: any;
+  let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
@@ -10,79 +26,91 @@ export async function POST(req: NextRequest) {
   }
 
   const texte = body.texte as string;
-  const erreurs_precedentes = body.erreurs_precedentes as any[] | undefined;
-  const jour = body.jour as number;
   const sujet = body.sujet as string | undefined;
+  const blocId = body.blocId as string | undefined;
+  const erreurs_precedentes = body.erreurs_precedentes as Array<{ mot: string; type: string; indice?: string; correction?: string }> | undefined;
 
-  if (!texte || !jour) {
+  if (!texte?.trim()) {
     return NextResponse.json({ erreurs: [] }, { status: 400 });
+  }
+
+  // Récupérer le niveau de l'élève (CE2 / CM1 / CM2) si on a le bloc
+  let niveau: "CE2" | "CM1" | "CM2" = "CM1";
+  if (blocId) {
+    try {
+      niveau = await niveauEleveDepuisBloc(createAdminClient(), blocId);
+    } catch {}
   }
 
   let contextePrecedent = "";
   if (erreurs_precedentes && erreurs_precedentes.length > 0) {
-    contextePrecedent = "\n\nERREURS DU JOUR PRÉCÉDENT (encore présentes = donner la correction) :\n" +
-      erreurs_precedentes.map((e: any, i: number) =>
-        `${i + 1}. [${e.type}] "${e.mot}" — Indice : "${e.indice}" — Correction : "${e.correction}"`
-      ).join("\n") +
-      "\n\nSi une de ces erreurs est ENCORE dans le texte, mets la correction dans le champ 'correction'.";
+    contextePrecedent =
+      "\n\nERREURS DÉJÀ SIGNALÉES PRÉCÉDEMMENT (si encore présentes, mets la correction dans le champ 'correction') :\n" +
+      erreurs_precedentes
+        .map(
+          (e, i) =>
+            `${i + 1}. [${e.type}] "${e.mot}"${e.indice ? ` — Indice : "${e.indice}"` : ""}${e.correction ? ` — Correction : "${e.correction}"` : ""}`
+        )
+        .join("\n");
   }
 
-  const systemPrompt = `Tu es un correcteur de français expert et bienveillant pour des élèves de CE2/CM1/CM2 (8-11 ans).
+  const systemDynamique = `Tu es un correcteur de français expert et bienveillant pour un élève de ${niveau} (${niveau === "CE2" ? "8-9" : niveau === "CM1" ? "9-10" : "10-11"} ans).
 
-Analyse le texte et identifie TOUTES les erreurs :
-- "orthographe" : mots mal orthographiés OU qui n'existent pas en français (ex: garson → garçon, foret → forêt, text → texte, mange → manger dans un contexte infinitif, acheter → acheter mais "j'achete" → "j'achète"). Vérifie CHAQUE mot : s'il n'existe pas dans le dictionnaire français courant, c'est une erreur. Les anglicismes (text, cool, shopping…) sont à corriger par le mot français équivalent.
-- "grammaire" : accords sujet-verbe, adjectif-nom, participe passé, conjugaisons, accords en genre et nombre dans le groupe nominal
+Analyse le texte et identifie TOUTES les erreurs du niveau ${niveau} en t'appuyant sur le référentiel fourni en amont. Adapte ton exigence au niveau : ne signale pas des notions qui dépassent le programme de ${niveau}.
+
+Catégories :
+- "orthographe" : mots mal orthographiés OU qui n'existent pas en français (anglicismes, fautes lexicales)
+- "grammaire" : accords, conjugaisons, accords en genre/nombre dans le groupe nominal
 - "syntaxe" : ponctuation manquante, majuscules oubliées, phrases mal construites
 
-RÈGLES D'ACCORD — TRÈS IMPORTANT :
-- Accord sujet-verbe : "il marchais" → "il marchait" (imparfait 3e pers. = -ait)
-- Accord dans le groupe nominal : "les arbres était très grand" → "les arbres étaient très grands" (pluriel !)
-- Un adjectif s'accorde en genre et nombre avec le nom : "arbres grands", "maison grande"
-- Imparfait : je -ais, tu -ais, il -ait, nous -ions, vous -iez, ils -aient
-- Si le sujet est "il" et le verbe finit en "-ais", c'est une erreur → correction "-ait"
-
-RÈGLE CRITIQUE — SIGNALER CHAQUE OCCURRENCE :
-- Si un mot erroné apparaît PLUSIEURS FOIS dans le texte, signale CHAQUE occurrence séparément
-- Utilise le champ "position" pour distinguer les occurrences (position = index du caractère dans le texte)
-- Exemple : si "avais" (au lieu de "avait") apparaît 3 fois, retourne 3 objets distincts avec des positions différentes
+RÈGLE CRITIQUE — POSITIONS EXACTES :
+- Signale CHAQUE occurrence séparément si un mot erroné apparaît plusieurs fois
+- "position" = index EXACT du premier caractère du mot dans le texte (commence à 0)
+- texte.substring(position, position + mot.length).toLowerCase() doit être égal au mot signalé (en minuscule)
 
 Pour CHAQUE erreur, retourne un objet JSON :
 - "mot" : le mot erroné tel qu'il apparaît dans le texte
 - "type" : "orthographe" | "grammaire" | "syntaxe"
-- "position" : index EXACT du premier caractère du mot dans le texte (commence à 0)
-- "indice" : indice pédagogique SANS donner la réponse
-- "correction" : forme correcte (UNIQUEMENT si erreur signalée hier et persistante)
+- "position" : index exact du premier caractère du mot
+- "indice" : indice pédagogique adapté au niveau ${niveau}, SANS donner la réponse la 1re fois
+- "correction" : forme correcte (UNIQUEMENT si erreur déjà signalée auparavant et toujours présente)
 ${contextePrecedent}
 
-IMPORTANT :
-- Signale TOUTES les erreurs, y compris les répétitions d'une même faute
-- Vérifie les accords en nombre (singulier/pluriel) dans TOUT le texte
-- Ne signale PAS un mot correct comme erreur
-- Ne signale PAS les choix stylistiques
-- Vocabulaire adapté aux 8-11 ans, encourageant
-- Maximum 20 erreurs
-- Retourne UNIQUEMENT un JSON array, rien d'autre`;
+Maximum 20 erreurs, priorise les plus pédagogiques.
+Retourne UNIQUEMENT un JSON array, rien d'autre.`;
 
   try {
     const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2000,
-      system: systemPrompt,
-      messages: [{
-        role: "user",
-        content: `${sujet ? `Sujet : "${sujet}"\n\n` : ""}Texte (Jour ${jour}) :\n\n${texte}`,
-      }],
+      system: [
+        {
+          type: "text",
+          text: REFERENCE_CYCLE3,
+          cache_control: { type: "ephemeral" },
+        },
+        {
+          type: "text",
+          text: systemDynamique,
+        },
+      ],
+      messages: [
+        {
+          role: "user",
+          content: `${sujet ? `Sujet : "${sujet}"\n\n` : ""}Niveau : ${niveau}\n\nTexte à corriger :\n\n${texte}`,
+        },
+      ],
     });
 
-    const text = (response.content[0] as any).text;
-    const jsonMatch = text.match(/\[[\s\S]*\]/);
+    const rawText = (response.content[0] as { type: string; text: string }).text;
+    const jsonMatch = rawText.match(/\[[\s\S]*\]/);
     if (!jsonMatch) {
       return NextResponse.json({ erreurs: [] });
     }
 
     const erreurs = JSON.parse(jsonMatch[0]);
-    return NextResponse.json({ erreurs });
+    return NextResponse.json({ erreurs, niveau });
   } catch (err) {
     console.error("[ecriture/analyser]", err);
     return NextResponse.json({ erreurs: [] });

@@ -185,7 +185,7 @@ export default function EnseignantAtelierBloc({
       const res = await fetch("/api/enseignant/ecriture/suggestions-ia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texte: contenu.texte_courant, sujet: contenu.sujet }),
+        body: JSON.stringify({ texte: contenu.texte_courant, sujet: contenu.sujet, blocId }),
       });
       if (res.ok) {
         const data = await res.json();

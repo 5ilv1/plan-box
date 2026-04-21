@@ -130,7 +130,7 @@ export default function AtelierEcriture({
       const res = await fetch("/api/ecriture/analyser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texte, jour: 2, sujet }),
+        body: JSON.stringify({ texte, sujet, blocId }),
       });
       if (!res.ok) {
         setAnalyseMessage("Erreur lors de l'analyse, réessaie.");
