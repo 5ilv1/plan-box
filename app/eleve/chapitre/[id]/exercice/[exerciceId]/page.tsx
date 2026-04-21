@@ -237,6 +237,7 @@ export default function PageExerciceEleve() {
           contraintes: contenu.contraintes,
           nb_phrases: contenu.nb_phrases ?? 3,
           tentative,
+          exerciceId,
         }),
       });
       const analyse = await res.json();
