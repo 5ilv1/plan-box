@@ -628,6 +628,12 @@ export default function PageAdminEleves() {
 
                           {/* Actions */}
                           <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
+                            <Link
+                              href={`/enseignant/eleves/${eleve.uid}/performance`}
+                              className="btn-ghost"
+                              title="Voir les performances"
+                              style={{ fontSize: 12, padding: "4px 10px", color: "var(--primary)", textDecoration: "none", display: "inline-flex", alignItems: "center" }}
+                            ><span className="ms" style={{ fontSize: 16 }}>insights</span></Link>
                             {!isPB && (
                               <button className="btn-ghost"
                                 onClick={() => setEditRB(isEditingRB ? null : { id: eRB.id, groupeIds: eRB.groupes.map((g) => g.id) })}

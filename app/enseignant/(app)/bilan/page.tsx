@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 
 type DifficulteGlobale = "elevee" | "moderee" | "faible" | "ok";
@@ -364,6 +365,25 @@ export default function BilanEnseignantPage() {
                   </div>
                 </div>
                 <div style={{ padding: "16px 20px" }}>
+                  <Link
+                    href={`/enseignant/eleves/${selectedEleve.source === "planbox" ? `pb_${selectedEleve.eleveId}` : selectedEleve.eleveId}/performance`}
+                    style={{
+                      display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                      padding: "10px 14px",
+                      marginBottom: 16,
+                      background: "var(--ens-primary)",
+                      color: "white",
+                      borderRadius: 8,
+                      fontSize: 13,
+                      fontWeight: 700,
+                      textDecoration: "none",
+                      transition: "background 0.15s",
+                    }}
+                  >
+                    <span className="ms" style={{ fontSize: 18 }}>insights</span>
+                    Voir les performances détaillées
+                  </Link>
+
                   <div style={{ marginBottom: 16 }}>
                     <div style={{ fontSize: 10, fontWeight: 700, color: "var(--ens-on-surface-variant)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 8 }}>Statistiques</div>
                     {[
