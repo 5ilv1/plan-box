@@ -8,241 +8,151 @@ export const maxDuration = 120;
 /**
  * POST /api/corriger-dictee
  * Body: { images: string[] (base64 data-urls), bloc_id: string }
- * Retourne: { transcription, nb_mots_corrects, nb_mots_total,
- *             erreurs: [{ mot_eleve, type_erreur, indice }] }
  *
- * Pipeline en 3 étapes :
- *  1. VISION (Opus) : transcription fidèle de la copie sans montrer le texte
- *     attendu (sinon le modèle « lit » le texte attendu et rate les fautes).
- *  2. DIFF ALGORITHMIQUE : on compare mot à mot transcription vs texte attendu
- *     avec un alignement Levenshtein. Aucune erreur ne peut être « oubliée ».
- *  3. CLASSIFICATION (Sonnet) : un unique appel IA classe les erreurs
- *     (lettre muette, accord S/V, homophone…) et produit l'indice pédagogique.
+ * Pipeline en 2 étapes :
+ *  1. ALIGNEMENT (Opus vision) : le modèle voit l'image ET le texte attendu,
+ *     et rend un alignement mot-à-mot (correct / faux / oublié / en_trop).
+ *     Grâce au guide du texte attendu, l'OCR n'invente pas d'erreurs
+ *     fantômes d'alignement comme le faisait le Needleman-Wunsch aveugle.
+ *  2. CLASSIFICATION (Sonnet) : classe chaque erreur (lettre muette,
+ *     accord S/V, homophone…) et produit l'indice pédagogique.
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Helpers de diff
+// Types
 // ─────────────────────────────────────────────────────────────────────────────
 
-function stripAccents(s: string): string {
-  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-}
-
-/** Clé de comparaison lâche : minuscules, sans accent, sans ponctuation de fin. */
-function normaliserMot(t: string): string {
-  return stripAccents(t.toLowerCase()).replace(/[.,;:!?«»"'()]+$/g, "").replace(/^[«»"'()]+/, "");
-}
-
-/** Tokenise en gardant la ponctuation comme tokens séparés (. , ; : ! ? " ' — …).
- *  - Les apostrophes courbes (U+2018/U+2019) sont normalisées en apostrophe droite.
- *  - Les traits d'union sont traités comme des séparateurs (comme une espace) pour
- *    éviter que « l'après-midi » (1 token) ne s'aligne mal face à « l'après midi »
- *    (2 tokens) écrit par l'élève. Cela évite un faux « mot en trop ».
- */
-function tokenizer(s: string): string[] {
-  const out: string[] = [];
-  const normalise = s.replace(/[\u2018\u2019]/g, "'");
-  const re = /[\p{L}\p{N}']+|[.,;:!?…«»"()]/gu;
-  let m: RegExpExecArray | null;
-  while ((m = re.exec(normalise)) !== null) out.push(m[0]);
-  return out;
-}
-
-/**
- * Réassemble les élisions françaises séparées par un espace dans la transcription
- * élève : « l eau » → « l'eau », « d abord » → « d'abord ».
- * L'OCR produit parfois un espace là où il y a une apostrophe peu visible.
- * Sans cette étape, l'aligneur voit 2 tokens côté élève face à 1 token attendu
- * et peut marquer le mot comme « oublié » alors qu'il est bien écrit.
- */
-function reassemblerElisions(tokens: string[]): string[] {
-  const elisions = new Set(["l", "d", "n", "j", "m", "s", "t", "c", "qu", "lorsqu", "puisqu", "quoiqu", "jusqu"]);
-  const voyelleOuH = /^[aeiouhéèêàâîïôöüûyœæ]/i;
-  const out: string[] = [];
-  let i = 0;
-  while (i < tokens.length) {
-    const cur = tokens[i];
-    const next = tokens[i + 1];
-    if (next && elisions.has(cur.toLowerCase()) && voyelleOuH.test(next)) {
-      out.push(cur + "'" + next);
-      i += 2;
-    } else {
-      out.push(cur);
-      i++;
-    }
-  }
-  return out;
-}
-
-type Op =
-  | { type: "match"; expected: string; actual: string }
-  | { type: "sub";   expected: string; actual: string }
-  | { type: "del";   expected: string }   // oublié par l'élève
-  | { type: "ins";   actual: string };    // en trop
-
-/** Alignement Needleman-Wunsch sur des tokens, avec normalisation lâche. */
-function aligner(att: string[], eleve: string[]): Op[] {
-  const n = att.length, m = eleve.length;
-  const dp: number[][] = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
-  for (let i = 0; i <= n; i++) dp[i][0] = i;
-  for (let j = 0; j <= m; j++) dp[0][j] = j;
-
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      const same = normaliserMot(att[i - 1]) === normaliserMot(eleve[j - 1]);
-      dp[i][j] = Math.min(
-        dp[i - 1][j - 1] + (same ? 0 : 1),
-        dp[i - 1][j] + 1,
-        dp[i][j - 1] + 1,
-      );
-    }
-  }
-
-  const ops: Op[] = [];
-  let i = n, j = m;
-  while (i > 0 || j > 0) {
-    if (i > 0 && j > 0) {
-      const same = normaliserMot(att[i - 1]) === normaliserMot(eleve[j - 1]);
-      if (dp[i][j] === dp[i - 1][j - 1] + (same ? 0 : 1)) {
-        ops.push(same
-          ? { type: "match", expected: att[i - 1], actual: eleve[j - 1] }
-          : { type: "sub",   expected: att[i - 1], actual: eleve[j - 1] });
-        i--; j--; continue;
-      }
-    }
-    if (i > 0 && dp[i][j] === dp[i - 1][j] + 1) {
-      ops.push({ type: "del", expected: att[i - 1] });
-      i--; continue;
-    }
-    if (j > 0 && dp[i][j] === dp[i][j - 1] + 1) {
-      ops.push({ type: "ins", actual: eleve[j - 1] });
-      j--; continue;
-    }
-    break;
-  }
-  return ops.reverse();
-}
+type TokenAligne =
+  | { type: "correct"; attendu: string; ecrit: string }
+  | { type: "faux";    attendu: string; ecrit: string }
+  | { type: "oublie";  attendu: string }
+  | { type: "en_trop"; ecrit: string };
 
 interface DiffErreur {
   mot_eleve: string;
   mot_attendu: string;
   kind: "sub" | "del" | "ins" | "casse" | "ponctuation";
   contexte: string;
-  /** Index du mot attendu dans le tableau `att` ; -1 si c'est une insertion. */
   position: number;
 }
 
-/**
- * Un segment de rendu : unité à afficher dans le flux de la transcription élève.
- *  - "ok"      : mot correct (texte écrit par l'élève)
- *  - "err"     : mot erroné écrit par l'élève → texte = ce qu'il a écrit, idx_erreur pointe dans `erreurs`
- *  - "missing" : mot oublié → texte = mot attendu (affiché en placeholder), idx_erreur pointe dans `erreurs`
- *  - "extra"   : mot en trop → texte = ce que l'élève a écrit, idx_erreur pointe dans `erreurs`
- */
 interface Segment {
   type: "ok" | "err" | "missing" | "extra";
   text: string;
-  idx_erreur: number; // -1 si pas d'erreur
+  idx_erreur: number;
 }
 
-/** Construit la liste des erreurs exhaustives et les segments de rendu depuis l'alignement. */
-function construireErreurs(att: string[], eleve: string[]): {
+// ─────────────────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────────────────
+
+function stripAccents(s: string): string {
+  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+function estPonct(t: string): boolean {
+  return /^[.,;:!?…«»"()\-—]$/.test(t);
+}
+
+function motOuPonct(t: TokenAligne): string {
+  return t.type === "en_trop" ? t.ecrit : t.attendu;
+}
+
+/** Construit erreurs + segments à partir de l'alignement IA. */
+function construireSortie(tokens: TokenAligne[]): {
   erreurs: DiffErreur[];
   segments: Segment[];
   nb_corrects: number;
   nb_total: number;
 } {
-  const opsRaw = aligner(att, eleve);
   const erreurs: DiffErreur[] = [];
   const segments: Segment[] = [];
   let nb_corrects = 0;
-
-  // Compter nb_total comme nombre de mots (hors ponctuation pure) du texte attendu
-  const estPonct = (t: string) => /^[.,;:!?…«»"()]$/.test(t);
-  const nb_total = att.filter((t) => !estPonct(t)).length;
-
-  // Trimmer les "ins" isolés en tête (titre/date/nom/prénom) et en queue (signature, notes)
-  // Un bloc de "ins" consécutif avant le premier match/sub ou après le dernier est ignoré.
-  const firstAnchor = opsRaw.findIndex((o) => o.type === "match" || o.type === "sub");
-  let lastAnchor = -1;
-  for (let i = opsRaw.length - 1; i >= 0; i--) {
-    if (opsRaw[i].type === "match" || opsRaw[i].type === "sub") { lastAnchor = i; break; }
-  }
-  const ops = (firstAnchor < 0 || lastAnchor < 0)
-    ? opsRaw
-    : opsRaw.map((o, i) =>
-        (i < firstAnchor || i > lastAnchor) && o.type === "ins" ? null : o
-      ).filter((o): o is Op => o !== null);
-
-  // Curseur qui suit l'index courant dans le tableau `att` (mots attendus).
+  let nb_total = 0;
   let posAtt = 0;
 
-  for (let k = 0; k < ops.length; k++) {
-    const op = ops[k];
-    const contexteAvant = ops.slice(Math.max(0, k - 3), k).map((o) =>
-      o.type === "ins" ? o.actual : "expected" in o ? o.expected : ""
-    ).filter(Boolean).join(" ");
-    const contexteApres = ops.slice(k + 1, k + 4).map((o) =>
-      o.type === "ins" ? o.actual : "expected" in o ? o.expected : ""
-    ).filter(Boolean).join(" ");
-    const contexte = `${contexteAvant} …ICI… ${contexteApres}`.trim();
+  for (let k = 0; k < tokens.length; k++) {
+    const t = tokens[k];
 
-    if (op.type === "match") {
-      // Même mot en normalisé : vérifier la casse et les accents exacts
-      if (op.expected === op.actual) {
-        if (!estPonct(op.expected)) nb_corrects++;
-        segments.push({ type: "ok", text: op.actual, idx_erreur: -1 });
+    // Contexte : 3 mots autour, toutes catégories confondues
+    const avant = tokens.slice(Math.max(0, k - 3), k).map(motOuPonct).filter(Boolean).join(" ");
+    const apres = tokens.slice(k + 1, k + 4).map(motOuPonct).filter(Boolean).join(" ");
+    const contexte = `${avant} …ICI… ${apres}`.trim();
+
+    if (t.type === "correct") {
+      if (!estPonct(t.attendu)) nb_total++;
+      if (t.attendu === t.ecrit) {
+        if (!estPonct(t.attendu)) nb_corrects++;
+        segments.push({ type: "ok", text: t.ecrit, idx_erreur: -1 });
       } else {
-        // Différence uniquement de casse ou d'accent
-        const memeStrip = stripAccents(op.expected.toLowerCase()) === stripAccents(op.actual.toLowerCase());
+        // Model a dit correct mais diffère : accent ou casse seulement.
+        const memeStrip = stripAccents(t.attendu.toLowerCase()) === stripAccents(t.ecrit.toLowerCase());
         const idx = erreurs.length;
         erreurs.push({
-          mot_eleve: op.actual,
-          mot_attendu: op.expected,
+          mot_eleve: t.ecrit,
+          mot_attendu: t.attendu,
           kind: memeStrip ? "casse" : "sub",
           contexte,
           position: posAtt,
         });
-        segments.push({ type: "err", text: op.actual, idx_erreur: idx });
+        segments.push({ type: "err", text: t.ecrit, idx_erreur: idx });
       }
       posAtt++;
-    } else if (op.type === "sub") {
+    } else if (t.type === "faux") {
+      if (!estPonct(t.attendu)) nb_total++;
+      const memeStrip = stripAccents(t.attendu.toLowerCase()) === stripAccents(t.ecrit.toLowerCase());
       const idx = erreurs.length;
       erreurs.push({
-        mot_eleve: op.actual,
-        mot_attendu: op.expected,
-        kind: estPonct(op.expected) || estPonct(op.actual) ? "ponctuation" : "sub",
+        mot_eleve: t.ecrit,
+        mot_attendu: t.attendu,
+        kind: estPonct(t.attendu) || estPonct(t.ecrit)
+          ? "ponctuation"
+          : memeStrip ? "casse" : "sub",
         contexte,
         position: posAtt,
       });
-      segments.push({ type: "err", text: op.actual, idx_erreur: idx });
+      segments.push({ type: "err", text: t.ecrit, idx_erreur: idx });
       posAtt++;
-    } else if (op.type === "del") {
+    } else if (t.type === "oublie") {
+      if (!estPonct(t.attendu)) nb_total++;
       const idx = erreurs.length;
       erreurs.push({
         mot_eleve: "",
-        mot_attendu: op.expected,
-        kind: estPonct(op.expected) ? "ponctuation" : "del",
+        mot_attendu: t.attendu,
+        kind: estPonct(t.attendu) ? "ponctuation" : "del",
         contexte,
         position: posAtt,
       });
-      segments.push({ type: "missing", text: op.expected, idx_erreur: idx });
+      segments.push({ type: "missing", text: t.attendu, idx_erreur: idx });
       posAtt++;
-    } else if (op.type === "ins") {
+    } else {
+      // en_trop
       const idx = erreurs.length;
       erreurs.push({
-        mot_eleve: op.actual,
+        mot_eleve: t.ecrit,
         mot_attendu: "",
-        kind: estPonct(op.actual) ? "ponctuation" : "ins",
+        kind: estPonct(t.ecrit) ? "ponctuation" : "ins",
         contexte,
         position: -1,
       });
-      segments.push({ type: "extra", text: op.actual, idx_erreur: idx });
-      // Pas d'avancée dans `att`
+      segments.push({ type: "extra", text: t.ecrit, idx_erreur: idx });
     }
   }
 
   return { erreurs, segments, nb_corrects, nb_total };
+}
+
+/** Classification de repli si l'IA échoue : utilise kind + diff accent/casse. */
+function fallbackType(e: DiffErreur): string {
+  if (e.kind === "del") return "mot_oublie";
+  if (e.kind === "ins") return "autre";
+  if (e.kind === "ponctuation") return "ponctuation";
+  if (e.kind === "casse") {
+    const aMin = e.mot_attendu.toLowerCase();
+    const eMin = e.mot_eleve.toLowerCase();
+    return aMin === eMin ? "majuscule" : "accent";
+  }
+  return "orthographe";
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -295,7 +205,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Contenu de référence introuvable" }, { status: 400 });
   }
 
-  // Extraire les images (data-urls base64)
+  // Préparer les images (base64 data-urls)
   const imageBlocks: { type: "image"; source: { type: "base64"; media_type: "image/jpeg" | "image/png" | "image/webp" | "image/gif"; data: string } }[] = [];
   for (const img of imageList) {
     const match = img.match(/^data:(image\/\w+);base64,(.+)$/);
@@ -315,273 +225,152 @@ export async function POST(req: NextRequest) {
   const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
   const nbPages = imageBlocks.length;
 
-  // Nombre de mots attendus (sans ponctuation) — repère de calibration pour l'OCR
-  const nbMotsAttendus = texteAttendu.split(/\s+/).filter(Boolean).length;
+  // ── Étape 1 : ALIGNEMENT IA (image + texte attendu → tokens alignés) ──────
+  const promptAlign = estMots
+    ? `Tu es correcteur de dictée pour un élève de primaire (CE2-CM2).
 
-  // ── Étape 1 : TRANSCRIPTION FIDÈLE (vision) ───────────────────────────────
-  const promptTranscription = estMots
-    ? `Tu es un OCR spécialisé dans l'écriture manuscrite d'enfants de primaire.
+LISTE DE MOTS DICTÉE (ce qui DEVAIT être écrit) :
+"""
+${texteAttendu}
+"""
 
-${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahier"} où un élève a écrit une liste de mots.
+${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier.` : "Voici la photo d'un cahier."}
 
-MISSION : transcrire EXACTEMENT ce que l'élève a écrit, mot pour mot, MÊME SI C'EST FAUX.
+MISSION : pour chaque mot de la liste, regarde la photo et reporte ce que l'élève a RÉELLEMENT écrit.
 
-⚠️ RÈGLES CRITIQUES — applique-les STRICTEMENT :
+⚠️ RÈGLE D'OR : tu regardes la PHOTO, pas la liste attendue. La liste sert juste de guide d'alignement (ordre et nombre de mots). Si l'élève a fait une faute, tu DOIS la reporter telle quelle — c'est tout l'intérêt de ton travail.
 
-1. NE CORRIGE JAMAIS LES FAUTES.
-   "mason" reste "mason" (pas "maison").
-   "éléphan" reste "éléphan" (pas "éléphant").
-   "peti" reste "peti" (pas "petit").
-   "canar" reste "canar" (pas "canard").
-   "vert" reste "vert" (pas "vers").
-   Mot oublié → ne l'invente pas. Mot illisible → écris ce que tu crois voir.
+Pour chaque mot attendu, choisis UN seul type :
+- "correct" — l'élève a écrit EXACTEMENT ce mot (mêmes lettres, mêmes accents, même casse).
+- "faux"    — l'élève a écrit quelque chose de différent (faute, accent manquant, lettre ajoutée ou retirée…). Dans "ecrit", mets EXACTEMENT ce qu'il a tracé sur la page.
+- "oublie"  — l'élève n'a rien écrit pour ce mot (ligne vide ou sautée).
 
-2. ACCENTS — reproduis UNIQUEMENT ce qui est visible sur la page.
-   Pas d'accent visible sur un "e" → écris "e" (PAS "é" ni "è").
-   Regarde chaque "e" individuellement. N'ajoute JAMAIS un accent par habitude.
-   "eleve" reste "eleve" si aucun accent visible (pas "élève").
-   "leger" reste "leger" si aucun trait au-dessus (pas "léger").
-   Inversement, accent à tort → conserve-le.
+Si l'élève a écrit un mot de plus qui n'est PAS dans la liste (ajout), insère un token "en_trop" à la bonne position.
 
-3. IGNORE les éléments NON dictés : titre, thème, prénom, nom, date, en-tête, signature, notes à côté.
-   Commence au PREMIER MOT DE LA LISTE DICTÉE.
+⚠️ PIÈGES À ÉVITER (ton rôle est de VOIR les fautes, pas de les effacer) :
 
-4. LETTRES HÉSITANTES : quand ambigu, choisis la plus SIMPLE.
-   - "a" / "ai" ambigu → choisis "a".
-   - "m" / "mm" ambigu → choisis "m".
-   - "l" / "ll" ambigu → choisis "l".
-   - N'ajoute PAS de lettres parce que ça ferait un vrai mot.
-   - Ne complète PAS une lettre finale muette que tu ne vois pas clairement
-     (ex : si tu vois "peti", ne complète pas en "petit").
+1. Accent AJOUTÉ à tort. Un "e" sans aucun trait visible au-dessus → écris "e", PAS "é" ni "è".
+   "eleve" reste "eleve" si aucun accent visible.
+   "leger" reste "leger" si rien au-dessus du e.
+2. Lettre finale muette AJOUTÉE à tort. Si tu vois "peti" sans "t" à la fin → écris "peti", PAS "petit".
+   "canar" sans "d" → "canar". "bor" sans "d" → "bor". "vert" ne devient pas "vers".
+3. Consonne DOUBLÉE imaginée. "aler" reste "aler" si tu ne vois qu'un "l".
+4. En cas d'hésitation entre 2 lectures, choisis la plus SIMPLE (celle qui ferait une faute) plutôt que la forme correcte. C'est normal qu'un élève fasse des fautes — c'est une dictée.
 
-Un mot par ligne. Respecte la casse. Ignore les ratures barrées.
-Liste attendue d'environ ${nbMotsAttendus} mot(s).
+IGNORE : titre, prénom, nom, date, numérotation, en-tête, signature, notes à côté.
 
-Réponds UNIQUEMENT avec ce JSON :
-{ "transcription": "ligne1\\nligne2\\n..." }`
-    : `Tu es un OCR spécialisé dans l'écriture manuscrite d'enfants de primaire.
+Réponds UNIQUEMENT avec ce JSON (les tokens dans l'ordre de la liste dictée, "en_trop" insérés à la bonne place) :
+{
+  "tokens": [
+    { "type": "correct", "attendu": "maison",  "ecrit": "maison" },
+    { "type": "faux",    "attendu": "éléphant", "ecrit": "éléphan" },
+    { "type": "oublie",  "attendu": "petit" },
+    { "type": "en_trop", "ecrit": "chat" }
+  ]
+}`
+    : `Tu es correcteur de dictée pour un élève de primaire (CE2-CM2).
 
-${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahier"} où un élève a écrit une dictée.
+TEXTE DICTÉ (ce qui DEVAIT être écrit) :
+"""
+${texteAttendu}
+"""
 
-MISSION : transcrire EXACTEMENT ce que l'élève a écrit, mot pour mot, MÊME SI C'EST FAUX.
+${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier.` : "Voici la photo d'un cahier."}
 
-⚠️ RÈGLES CRITIQUES — applique-les STRICTEMENT :
+MISSION : pour chaque mot (et signe de ponctuation) du texte attendu, regarde la photo et reporte ce que l'élève a RÉELLEMENT écrit à cet emplacement.
 
-1. NE CORRIGE JAMAIS LES FAUTES.
-   "il mange" reste "il mange" (pas "ils mangent").
-   "enfan" reste "enfan" (pas "enfant").
-   "courure" reste "courure" (pas "coururent").
-   "resta" reste "resta" (pas "restai" ni "restait").
-   Mot oublié → ne l'invente pas. Mot en trop → garde-le.
+⚠️ RÈGLE D'OR : tu regardes la PHOTO, pas le texte attendu. Le texte attendu sert uniquement de guide d'alignement (ordre des mots). Si l'élève a fait une faute, tu DOIS la reporter telle quelle — c'est tout l'intérêt de ton travail.
 
-2. ACCENTS — reproduis UNIQUEMENT ce qui est visible sur la page.
-   Pas d'accent visible sur un "e" → écris "e" (PAS "é" ni "è").
-   Regarde chaque "e" individuellement. N'ajoute JAMAIS un accent par habitude.
-   "eleve" reste "eleve" si aucun accent visible (pas "élève").
-   Inversement, accent à tort → conserve-le.
+Pour chaque mot ou ponctuation attendu, choisis UN seul type :
+- "correct" — l'élève a écrit EXACTEMENT ce mot (mêmes lettres, mêmes accents, même casse).
+- "faux"    — l'élève a écrit quelque chose de différent (faute, conjugaison, accord, accent, homophone…). Dans "ecrit", mets EXACTEMENT ce qu'il a tracé.
+- "oublie"  — l'élève a sauté ce mot (absent de sa copie).
 
-3. IGNORE tout ce qui n'est pas la dictée elle-même :
-   - TITRE de la dictée (souvent en haut, parfois souligné ou en gros).
-   - Prénom, nom, date, en-tête, signature, notes à côté.
-   - Commence au PREMIER MOT DE LA PREMIÈRE PHRASE DICTÉE.
-   - Termine au dernier mot de la dernière phrase dictée.
+Si l'élève a écrit un mot en plus qui n'est PAS dans le texte attendu, insère un token "en_trop" à la position où il l'a écrit.
 
-4. LETTRES HÉSITANTES : quand ambigu, choisis la plus SIMPLE.
-   - "a" / "ai" ambigu → choisis "a".
-   - "m" / "mm" ambigu → choisis "m".
-   - N'ajoute PAS de lettres parce que ça ferait un vrai mot.
-   - Ne complète PAS une terminaison verbale que tu ne vois pas clairement.
+⚠️ PIÈGES À ÉVITER (ton rôle est de VOIR les fautes, pas de les effacer) :
 
-Conserve la ponctuation exacte et la casse.
-Une seule ligne continue, phrases séparées par leur ponctuation.
-Ignore les ratures barrées.
+1. Accent AJOUTÉ à tort. Un "e" sans aucun trait visible → écris "e", PAS "é"/"è"/"ê".
+   "eleve" reste "eleve" si aucun accent visible. "apres" reste "apres" si rien sur le e.
+2. Accent RETIRÉ à tort. Un "é" avec un petit trait oblique visible → conserve l'accent.
+3. Terminaison verbale AUTO-COMPLÉTÉE. "courure" sans "nt" final → "courure", PAS "coururent".
+   "mangais" sans "e" après le g → "mangais", PAS "mangeais".
+4. Lettre finale muette ajoutée fantôme. "vert" sans "s" final → "vert", PAS "vers".
+5. Petit mot substitué. "Le" ne devient pas "Les" sans "s" visible. "l'o" ne devient pas "l'eau" sans "eau" visible.
+6. En cas d'hésitation entre 2 lectures, choisis la plus SIMPLE (celle qui ferait une faute) plutôt que la forme correcte. C'est normal qu'un élève fasse des fautes.
 
-Dictée attendue d'environ ${nbMotsAttendus} mots.
+Ponctuation : aligne chaque signe (, . ; : ! ? …) comme un token à part. Casse : respecte majuscules/minuscules de la photo.
 
-Réponds UNIQUEMENT avec ce JSON :
-{ "transcription": "ce que l'élève a vraiment écrit, mot pour mot" }`;
+IGNORE tout ce qui n'est pas la dictée : titre, prénom, nom, date, en-tête, signature, notes en marge. Commence au PREMIER MOT DE LA PREMIÈRE PHRASE DICTÉE, termine au dernier.
 
-  let transcription = "";
+Réponds UNIQUEMENT avec ce JSON (tokens dans l'ordre strict du texte attendu, "en_trop" à l'emplacement exact) :
+{
+  "tokens": [
+    { "type": "correct", "attendu": "Le",     "ecrit": "Le" },
+    { "type": "correct", "attendu": "chat",   "ecrit": "chat" },
+    { "type": "faux",    "attendu": "mange",  "ecrit": "mangent" },
+    { "type": "oublie",  "attendu": "lentement" },
+    { "type": "en_trop", "ecrit": "donc" },
+    { "type": "correct", "attendu": ".",      "ecrit": "." }
+  ]
+}`;
+
+  let tokens: TokenAligne[] = [];
   try {
-    const respVision = await anthropic.messages.create({
+    const respAlign = await anthropic.messages.create({
       model: "claude-opus-4-20250514",
-      max_tokens: 1500,
+      max_tokens: 4000,
       messages: [
         {
           role: "user",
           content: [
             ...imageBlocks,
-            { type: "text", text: promptTranscription },
+            { type: "text", text: promptAlign },
           ],
         },
       ],
     });
 
-    const texteVision = respVision.content
+    const texteAlign = respAlign.content
       .filter((b) => b.type === "text")
       .map((b) => (b as { type: "text"; text: string }).text)
       .join("");
 
-    const matchVision = texteVision.match(/\{[\s\S]*\}/);
-    if (!matchVision) {
-      return NextResponse.json({ error: "Transcription IA invalide" }, { status: 500 });
+    const match = texteAlign.match(/\{[\s\S]*\}/);
+    if (!match) {
+      console.error("[corriger-dictee] JSON introuvable dans la réponse d'alignement");
+      return NextResponse.json({ error: "Alignement IA invalide" }, { status: 500 });
     }
-    transcription = String(JSON.parse(matchVision[0]).transcription ?? "").trim();
-    if (!transcription) {
-      return NextResponse.json({ error: "Transcription vide" }, { status: 500 });
+
+    const parsed = JSON.parse(match[0]);
+    const raw: unknown[] = Array.isArray(parsed.tokens) ? parsed.tokens : [];
+    tokens = raw.filter((t): t is TokenAligne => {
+      if (!t || typeof t !== "object") return false;
+      const o = t as Record<string, unknown>;
+      if (o.type === "correct" || o.type === "faux") {
+        return typeof o.attendu === "string" && typeof o.ecrit === "string";
+      }
+      if (o.type === "oublie")  return typeof o.attendu === "string";
+      if (o.type === "en_trop") return typeof o.ecrit === "string";
+      return false;
+    });
+
+    if (tokens.length === 0) {
+      return NextResponse.json({ error: "Alignement vide" }, { status: 500 });
     }
   } catch (err: unknown) {
-    console.error("[corriger-dictee] Erreur vision:", err);
+    console.error("[corriger-dictee] Erreur alignement:", err);
     return NextResponse.json({ error: "Erreur lors de la lecture de la photo" }, { status: 500 });
   }
 
-  // ── Étape 1b : VÉRIFICATION ANTI-AUTOCOMPLÉTION ──────────────────────────
-  // Opus a une forte tendance à « corriger » silencieusement les fautes qu'il
-  // lit (biais d'autocomplétion sur les motifs de mots français connus).
-  // Une seconde passe ciblée sur ce biais récupère les fautes ratées
-  // (mots : "peti"→"petit", "canar"→"canard", "leger"→"léger" ;
-  //  dictée : "courure"→"coururent", "vert"→"vers", etc.).
-  const promptVerif = estMots
-    ? `Tu es relecteur ultra-strict d'un OCR manuscrit d'élève de primaire.
+  // ── Étape 2 : Construction erreurs + segments ─────────────────────────────
+  const { erreurs, segments, nb_corrects, nb_total } = construireSortie(tokens);
 
-Une PREMIÈRE TRANSCRIPTION d'une LISTE DE MOTS a été faite à partir de la
-photo ci-jointe. Elle contient probablement des erreurs où l'OCR a
-AUTOCOMPLÉTÉ ou « CORRIGÉ » inconsciemment les fautes de l'élève — c'est le
-défaut qu'on cherche à éliminer.
-
-PREMIÈRE TRANSCRIPTION À RELIRE (un mot par ligne) :
-"""
-${transcription}
-"""
-
-MISSION : relire l'image MOT PAR MOT. Pour chaque mot de la transcription,
-demande-toi : « Est-ce que ce mot correspond EXACTEMENT aux lettres
-physiquement écrites sur la page ? ».
-
-Si NON → corrige-le pour qu'il corresponde à ce qui est VISIBLE.
-Si OUI → garde-le tel quel.
-
-⚠️ QUATRE TYPES D'ERREURS D'OCR À TRAQUER SYSTÉMATIQUEMENT :
-
-1. LETTRE FINALE MUETTE ajoutée fantôme (le PIÈGE PRINCIPAL sur les listes de mots) :
-   Image : "peti" → OCR a dit "petit" → corrige vers "peti".
-   Image : "canar" → OCR dit "canard" → corrige vers "canar".
-   Image : "vert" → OCR dit "vers" → corrige vers "vert".
-   Image : "bor" → OCR dit "bord" → corrige.
-   Image : "lai" → OCR dit "lait" → corrige.
-   Regarde bien la FIN du mot : ne complète pas une lettre que tu ne vois pas.
-
-2. ACCENT AJOUTÉ alors qu'il n'y en a pas sur la page :
-   Image : "leger" (aucun trait au-dessus du e) → OCR dit "léger" → corrige.
-   Image : "apres" → OCR dit "après" → corrige.
-   Image : "eleve" → OCR dit "élève" → corrige.
-   Regarde CHAQUE "e" individuellement avant de valider un accent.
-
-3. ACCENT RETIRÉ alors qu'il y en a un sur la page :
-   Image : "école" (accent aigu visible) → OCR dit "ecole" → corrige.
-   Un petit trait oblique au-dessus d'un e = accent, à conserver.
-
-4. CONSONNE DOUBLÉE ajoutée ou retirée à tort :
-   Image : "aler" → OCR dit "aller" → corrige vers "aler".
-   Image : "balon" → OCR dit "ballon" → corrige vers "balon".
-   Image : "homme" (deux m visibles) → OCR dit "home" → corrige.
-
-NE CORRIGE PAS LES FAUTES D'ORTHOGRAPHE DE L'ÉLÈVE : elles font partie
-de son travail et doivent apparaître telles quelles.
-
-Un mot par ligne, même format que la première transcription.
-Si la première transcription est déjà correcte, renvoie-la à l'identique.
-
-Réponds UNIQUEMENT avec ce JSON :
-{ "transcription_corrigee": "ligne1\\nligne2\\n..." }`
-    : `Tu es relecteur ultra-strict d'un OCR manuscrit d'élève de primaire.
-
-Une PREMIÈRE TRANSCRIPTION a été faite à partir de la photo ci-jointe.
-Elle contient probablement des erreurs où l'OCR a AUTOCOMPLÉTÉ ou
-« CORRIGÉ » inconsciemment les fautes de l'élève — c'est le défaut qu'on
-cherche à éliminer.
-
-PREMIÈRE TRANSCRIPTION À RELIRE :
-"""
-${transcription}
-"""
-
-MISSION : relire l'image MOT PAR MOT. Pour chaque mot de la transcription,
-demande-toi : « Est-ce que ce mot correspond EXACTEMENT aux lettres
-physiquement écrites sur la page ? ».
-
-Si NON → corrige-le pour qu'il corresponde à ce qui est VISIBLE.
-Si OUI → garde-le tel quel.
-
-⚠️ CINQ TYPES D'ERREURS D'OCR À TRAQUER SYSTÉMATIQUEMENT :
-
-1. TERMINAISON VERBALE auto-complétée :
-   Image : "courure" → OCR a dit "coururent" → corrige vers "courure".
-   Image : "resplendissant" → OCR dit "resplendirent" → corrige.
-   Image : "mangais" → OCR dit "mangeais" → corrige.
-
-2. ACCENT AJOUTÉ alors qu'il n'y en a pas sur la page :
-   Image : "leger" (aucun trait au-dessus du e) → OCR dit "léger" → corrige.
-   Image : "apres" → OCR dit "après" → corrige.
-   Image : "s'attarderent" (e sans accent) → OCR dit "s'attardèrent" → corrige.
-   Regarde CHAQUE "e" individuellement avant de valider un accent.
-
-3. ACCENT RETIRÉ alors qu'il y en a un sur la page :
-   Image : "glissèrent" (accent grave visible) → OCR dit "glisserent" → corrige.
-   Un petit trait oblique au-dessus d'un e = accent, à conserver.
-
-4. LETTRE FINALE MUETTE ajoutée fantôme :
-   Image : "vert" → OCR dit "vers" → corrige vers "vert".
-   Image : "bor" → OCR dit "bord" → corrige.
-   Image : "peti" → OCR dit "petit" → corrige.
-
-5. DÉTERMINANT / PETIT MOT substitué :
-   Image : "De" → OCR dit "Deux" ou "Les" → corrige.
-   Image : "le" → OCR dit "les" → corrige.
-   Image : "l'o" → OCR dit "l'eau" → corrige.
-
-NE CORRIGE PAS LES FAUTES D'ORTHOGRAPHE DE L'ÉLÈVE : elles font partie
-de son travail et doivent apparaître telles quelles.
-
-Si la première transcription est déjà correcte, renvoie-la à l'identique.
-
-Réponds UNIQUEMENT avec ce JSON :
-{ "transcription_corrigee": "la transcription finale fidèle à la page" }`;
-
-  try {
-    const respVerif = await anthropic.messages.create({
-      model: "claude-opus-4-20250514",
-      max_tokens: 1500,
-      messages: [
-        {
-          role: "user",
-          content: [
-            ...imageBlocks,
-            { type: "text", text: promptVerif },
-          ],
-        },
-      ],
-    });
-
-    const texteVerif = respVerif.content
-      .filter((b) => b.type === "text")
-      .map((b) => (b as { type: "text"; text: string }).text)
-      .join("");
-
-    const matchVerif = texteVerif.match(/\{[\s\S]*\}/);
-    if (matchVerif) {
-      const corrigee = String(JSON.parse(matchVerif[0]).transcription_corrigee ?? "").trim();
-      if (corrigee) transcription = corrigee;
-    }
-  } catch (err: unknown) {
-    // Si la vérif échoue, on garde la première transcription (dégradation gracieuse)
-    console.error("[corriger-dictee] Erreur vérification:", err);
-  }
-
-  // ── Étape 2 : DIFF ALGORITHMIQUE (aucune erreur oubliée) ───────────────────
-  const tokensAttendus = tokenizer(texteAttendu);
-  const tokensEleve    = reassemblerElisions(tokenizer(transcription));
-  const { erreurs, segments, nb_corrects, nb_total } = construireErreurs(tokensAttendus, tokensEleve);
+  // Transcription reconstruite pour affichage (ce que l'élève a écrit)
+  const transcription = tokens
+    .map((t) => t.type === "oublie" ? "" : t.ecrit)
+    .filter(Boolean)
+    .join(" ");
 
   // Pas d'erreurs → court-circuiter
   if (erreurs.length === 0) {
@@ -596,7 +385,7 @@ Réponds UNIQUEMENT avec ce JSON :
   }
 
   // ── Étape 3 : CLASSIFICATION IA des erreurs détectées ─────────────────────
-  const promptClassif = `Tu es un enseignant bienveillant de primaire (CE2-CM2). Pour chaque erreur détectée automatiquement, tu dois :
+  const promptClassif = `Tu es un enseignant bienveillant de primaire (CE2-CM2). Pour chaque erreur détectée, tu dois :
 1. Classer le TYPE d'erreur.
 2. Donner un INDICE pédagogique court qui met l'élève sur la voie SANS donner la réponse.
 
@@ -622,47 +411,42 @@ ${erreurs.map((e, i) => {
 
 Types possibles : lettre_muette | accord_sujet_verbe | accord_adjectif | conjugaison | homophone | mot_oublie | orthographe | majuscule | ponctuation | accent | lettre_doublee | autre
 
-⚠️ RÈGLES STRICTES DE CLASSIFICATION — ne te trompe pas de type :
+⚠️ RÈGLES STRICTES DE CLASSIFICATION :
 
-• lettre_muette UNIQUEMENT si la lettre finale manquante fait partie de la forme LEXICALE
-  du mot au singulier (c'est une lettre du dictionnaire, pas un marqueur grammatical).
-  Exemples valides : "canar" vs "canard" (d lexical muet), "peti" vs "petit" (t lexical muet),
-  "souri" vs "souris" (s lexical muet, "souris" s'écrit avec s au singulier).
+• lettre_muette UNIQUEMENT si la lettre finale manquante est une lettre LEXICALE
+  du mot au singulier (dans le dictionnaire, pas un marqueur grammatical).
+  Valides : "canar" vs "canard" (d lexical), "peti" vs "petit" (t lexical),
+  "souri" vs "souris" (s lexical — souris s'écrit avec s au singulier).
   ⚠️ NE PAS confondre avec un ACCORD de pluriel :
-    - "canard" vs "canards" → il manque le -s DU PLURIEL → accord_adjectif (ou accord si nom).
-    - "brillant" vs "brillants" → il manque le -s DU PLURIEL → accord_adjectif.
-    - "resplendissant" vs "resplendissants" → -s du pluriel → accord_adjectif.
-  Règle pratique pour le -s ou -x final :
-    • Si le mot au SINGULIER s'écrit déjà avec -s/-x (souris, tapis, nez, prix) → lettre_muette.
-    • Si le -s/-x apparaît uniquement au PLURIEL (canards, brillants, chevaux) → accord_adjectif/accord.
-  Contre-exemples généraux : "canart" vs "canard" (confusion t/d → orthographe),
-  "canard" avec un changement interne → orthographe.
+    - "canard" vs "canards" → -s DU PLURIEL → accord_adjectif (ou accord).
+    - "brillant" vs "brillants" → -s pluriel → accord_adjectif.
+  Règle : si le SINGULIER s'écrit déjà avec -s/-x (souris, tapis, prix, nez) → lettre_muette.
+          Si le -s/-x apparaît seulement au PLURIEL → accord_adjectif/accord.
 
 • accord_sujet_verbe UNIQUEMENT si la désinence verbale est en cause
-  (ent/ant, s/x final de verbe, ai/a/as…). Exemples : "ils mange" vs "ils mangent".
+  (ent/ant, s/x final de verbe, ai/a/as…). Ex : "ils mange" vs "ils mangent".
 
 • accord_adjectif si un adjectif OU un nom change de genre/nombre :
-  pluriel manquant (-s/-x), féminin manquant (-e), etc. Exemples :
-  "canard" vs "canards", "légers" vs "légères", "petit" vs "petite".
+  pluriel manquant, féminin manquant, etc. Ex : "canard" vs "canards", "petit" vs "petite".
 
 • conjugaison si c'est le radical ou le temps du verbe qui est faux
   (ex : "courure" vs "coururent" = radical+terminaison, donc conjugaison).
 
-• homophone UNIQUEMENT pour les paires classiques : a/à, et/est, ou/où, son/sont, on/ont,
-  ce/se, ces/ses/c'est/s'est, mais/mes, leur/leurs (possessif vs pronom), la/là.
+• homophone UNIQUEMENT pour paires classiques : a/à, et/est, ou/où, son/sont, on/ont,
+  ce/se, ces/ses/c'est/s'est, mais/mes, leur/leurs, la/là.
 
 • accent UNIQUEMENT si le mot est identique SAUF un accent (é/è/ê/à/ô).
 
 • lettre_doublee si une consonne est doublée ou dédoublée à tort (ll/l, tt/t, mm/m).
 
-• majuscule si la seule différence est la casse d'une ou plusieurs lettres.
+• majuscule si la seule différence est la casse.
 
-• mot_oublie pour les MOT OUBLIÉ du diff.
+• mot_oublie pour les MOT OUBLIÉ.
 
-• orthographe pour TOUT LE RESTE (différence interne au mot, lettre ajoutée/retirée au milieu,
+• orthographe pour TOUT LE RESTE (différence interne, lettre ajoutée/retirée au milieu,
   confusion de lettres qui ne rentre dans aucune catégorie ci-dessus).
 
-Indices (adapte-les au contexte de l'erreur) :
+Indices (adapte au contexte) :
 - Lettre muette → "Mets le mot au féminin ou au pluriel pour entendre la lettre cachée."
 - Accord S/V → "Qui fait l'action ? Singulier ou pluriel ?"
 - Accord adjectif → "Cet adjectif s'accorde avec quel nom ? Genre ? Nombre ?"
@@ -675,7 +459,7 @@ Indices (adapte-les au contexte de l'erreur) :
 - Accent → "Écoute la voyelle : aigu, grave ou circonflexe ?"
 - Lettre doublée → "Cette consonne est-elle doublée ? Écoute le son."
 
-Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
+Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, même ordre) :
 {
   "classifications": [
     { "index": 0, "type_erreur": "...", "indice": "..." },
@@ -702,21 +486,14 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
     const classifParIndex = new Map<number, { type_erreur: string; indice: string }>();
     for (const c of classifications) classifParIndex.set(c.index, c);
 
-    // Retour final : une entrée par erreur du diff, même si Claude en a loupé une à la classification
     const erreursFinales = erreurs.map((e, i) => {
       const c = classifParIndex.get(i);
-      const fallbackType =
-        e.kind === "del" ? "mot_oublie" :
-        e.kind === "ins" ? "autre" :
-        e.kind === "casse" ? "majuscule" :
-        e.kind === "ponctuation" ? "ponctuation" :
-        "orthographe";
       return {
         mot_eleve: e.mot_eleve,
         mot_attendu: e.mot_attendu,
         position: e.position,
         kind: e.kind,
-        type_erreur: c?.type_erreur ?? fallbackType,
+        type_erreur: c?.type_erreur ?? fallbackType(e),
         indice: c?.indice ?? "Regarde bien ce mot et compare avec ce que tu as écrit.",
       };
     });
@@ -737,12 +514,7 @@ Réponds UNIQUEMENT avec ce JSON (une entrée par erreur, dans le même ordre) :
       mot_attendu: e.mot_attendu,
       position: e.position,
       kind: e.kind,
-      type_erreur:
-        e.kind === "del" ? "mot_oublie" :
-        e.kind === "ins" ? "autre" :
-        e.kind === "casse" ? "majuscule" :
-        e.kind === "ponctuation" ? "ponctuation" :
-        "orthographe",
+      type_erreur: fallbackType(e),
       indice: "Regarde bien ce mot et compare avec ce que tu as écrit.",
     }));
     return NextResponse.json({
