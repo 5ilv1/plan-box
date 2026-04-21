@@ -63,7 +63,7 @@ export default function GenererLectureForm({ onGenerer, chargement, defaultValue
     if (!nouveauChapitreNom.trim()) return;
     setCreationEnCours(true);
     const { data, error } = await supabase
-      .from("chapitres").insert({ titre: nouveauChapitreNom.trim(), matiere: "Français" })
+      .from("chapitres").insert({ titre: nouveauChapitreNom.trim(), matiere: "Français", sous_matiere: "lecture" })
       .select("id, titre, matiere").single();
     if (data && !error) {
       setChapitres((prev) => [...prev, data]);

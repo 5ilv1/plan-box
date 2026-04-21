@@ -200,8 +200,8 @@ export default function PageAdminChapitres() {
   }
 
   async function sauvegarder() {
-    if (!form.titre.trim() || !form.matiere || !form.niveau_id) {
-      setErreur("Titre, matière et niveau sont requis.");
+    if (!form.titre.trim() || !form.matiere || !form.niveau_id || !form.sous_matiere.trim()) {
+      setErreur("Titre, matière, sous-matière et niveau sont requis.");
       return;
     }
     setEnSauvegarde(true);
@@ -209,8 +209,8 @@ export default function PageAdminChapitres() {
 
     const methode = chapitreEnEdition ? "PATCH" : "POST";
     const body = chapitreEnEdition
-      ? { id: chapitreEnEdition.id, ...form, sous_matiere: form.sous_matiere || null }
-      : { ...form, sous_matiere: form.sous_matiere || null };
+      ? { id: chapitreEnEdition.id, ...form, sous_matiere: form.sous_matiere.trim() }
+      : { ...form, sous_matiere: form.sous_matiere.trim() };
 
     const res = await fetch("/api/admin/chapitres", {
       method: methode,
@@ -1146,21 +1146,25 @@ export default function PageAdminChapitres() {
 
               <div>
                 <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>
-                  Sous-matière <span style={{ fontWeight: 400, color: "var(--text-secondary)" }}>(optionnel)</span>
+                  Sous-matière *
                 </label>
                 <input
                   list="sous-matieres-list"
                   type="text"
+                  required
                   className="form-input"
                   value={form.sous_matiere}
                   onChange={(e) => setForm((f) => ({ ...f, sous_matiere: e.target.value }))}
-                  placeholder="Ex. Calcul, Numération, Géométrie…"
+                  placeholder="Ex. Calcul, Numération, Géométrie, Orthographe, Conjugaison…"
                 />
                 <datalist id="sous-matieres-list">
                   {Array.from(new Set(chapitres.map(c => c.sous_matiere).filter(Boolean))).map((s) => (
                     <option key={s as string} value={s as string} />
                   ))}
                 </datalist>
+                <div style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 4 }}>
+                  Obligatoire — permet de suivre la performance par sous-domaine dans le bilan.
+                </div>
               </div>
 
               <div>

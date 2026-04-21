@@ -78,7 +78,7 @@ export default function GenererClassementForm({ onGenerer, chargement, defaultVa
     if (!nouveauChapitreNom.trim()) return;
     setCreationEnCours(true);
     const { data, error } = await supabase
-      .from("chapitres").insert({ titre: nouveauChapitreNom.trim(), matiere: "Français" })
+      .from("chapitres").insert({ titre: nouveauChapitreNom.trim(), matiere: "Français", sous_matiere: "classement" })
       .select("id, titre, matiere").single();
     if (data && !error) {
       setChapitres((prev) => [...prev, data]);

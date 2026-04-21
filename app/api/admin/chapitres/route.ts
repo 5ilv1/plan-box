@@ -47,9 +47,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   const { titre, matiere, sous_matiere, niveau_id, description, nb_cartes_eval, seuil_reussite } = body ?? {};
 
-  if (!titre?.trim() || !matiere || !niveau_id) {
+  if (!titre?.trim() || !matiere || !niveau_id || !sous_matiere?.trim()) {
     return NextResponse.json(
-      { erreur: "Champs requis : titre, matiere, niveau_id" },
+      { erreur: "Champs requis : titre, matiere, sous_matiere, niveau_id" },
       { status: 400 }
     );
   }
@@ -72,7 +72,7 @@ export async function POST(req: NextRequest) {
     .insert({
       titre: titre.trim(),
       matiere,
-      sous_matiere: sous_matiere?.trim() || null,
+      sous_matiere: sous_matiere.trim(),
       niveau_id,
       description: description?.trim() ?? null,
       nb_cartes_eval: nb_cartes_eval ?? 20,
@@ -116,6 +116,18 @@ export async function PATCH(req: NextRequest) {
 
   if (Object.keys(champsMaj).length === 0) {
     return NextResponse.json({ erreur: "Aucun champ à mettre à jour" }, { status: 400 });
+  }
+
+  // sous_matiere ne peut pas être vidée via PATCH
+  if ("sous_matiere" in champsMaj) {
+    const sm = champsMaj.sous_matiere;
+    if (typeof sm !== "string" || !sm.trim()) {
+      return NextResponse.json(
+        { erreur: "La sous-matière est requise et ne peut pas être vide." },
+        { status: 400 }
+      );
+    }
+    champsMaj.sous_matiere = sm.trim();
   }
 
   const admin = createAdminClient();
