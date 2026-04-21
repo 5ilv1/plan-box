@@ -324,24 +324,37 @@ export async function POST(req: NextRequest) {
 
 ${nbPages > 1 ? `Voici ${nbPages} pages d'un cahier` : "Voici la photo d'un cahier"} où un élève a écrit une liste de mots.
 
-MISSION : transcrire EXACTEMENT ce que l'élève a écrit, MÊME SI C'EST FAUX.
+MISSION : transcrire EXACTEMENT ce que l'élève a écrit, mot pour mot, MÊME SI C'EST FAUX.
 
-⚠️ RÈGLES CRITIQUES :
+⚠️ RÈGLES CRITIQUES — applique-les STRICTEMENT :
 
 1. NE CORRIGE JAMAIS LES FAUTES.
-   "mason" reste "mason" (pas "maison"). "éléphan" reste "éléphan" (pas "éléphant").
+   "mason" reste "mason" (pas "maison").
+   "éléphan" reste "éléphan" (pas "éléphant").
+   "peti" reste "peti" (pas "petit").
+   "canar" reste "canar" (pas "canard").
+   "vert" reste "vert" (pas "vers").
+   Mot oublié → ne l'invente pas. Mot illisible → écris ce que tu crois voir.
 
-2. ACCENTS — reproduis UNIQUEMENT ce qui est visible.
-   Pas d'accent visible sur un "e" → écris "e" (pas "é" ni "è").
-   N'ajoute JAMAIS un accent par habitude. Regarde chaque "e" individuellement.
+2. ACCENTS — reproduis UNIQUEMENT ce qui est visible sur la page.
+   Pas d'accent visible sur un "e" → écris "e" (PAS "é" ni "è").
+   Regarde chaque "e" individuellement. N'ajoute JAMAIS un accent par habitude.
+   "eleve" reste "eleve" si aucun accent visible (pas "élève").
+   "leger" reste "leger" si aucun trait au-dessus (pas "léger").
+   Inversement, accent à tort → conserve-le.
 
-3. IGNORE les éléments NON dictés : titre, thème, prénom, nom, date, en-tête.
+3. IGNORE les éléments NON dictés : titre, thème, prénom, nom, date, en-tête, signature, notes à côté.
    Commence au PREMIER MOT DE LA LISTE DICTÉE.
 
-4. LETTRES HÉSITANTES : quand ambigu, choisis la plus SIMPLE
-   (a plutôt que ai, m plutôt que mm, e plutôt que é).
+4. LETTRES HÉSITANTES : quand ambigu, choisis la plus SIMPLE.
+   - "a" / "ai" ambigu → choisis "a".
+   - "m" / "mm" ambigu → choisis "m".
+   - "l" / "ll" ambigu → choisis "l".
+   - N'ajoute PAS de lettres parce que ça ferait un vrai mot.
+   - Ne complète PAS une lettre finale muette que tu ne vois pas clairement
+     (ex : si tu vois "peti", ne complète pas en "petit").
 
-Un mot par ligne. Ignore les ratures barrées.
+Un mot par ligne. Respecte la casse. Ignore les ratures barrées.
 Liste attendue d'environ ${nbMotsAttendus} mot(s).
 
 Réponds UNIQUEMENT avec ce JSON :
@@ -426,9 +439,62 @@ Réponds UNIQUEMENT avec ce JSON :
   // Opus a une forte tendance à « corriger » silencieusement les fautes qu'il
   // lit (biais d'autocomplétion sur les motifs de mots français connus).
   // Une seconde passe ciblée sur ce biais récupère les fautes ratées
-  // ("courure"→"coururent", "vert"→"vers", "leger"→"léger", etc.).
-  if (!estMots) {
-    const promptVerif = `Tu es relecteur ultra-strict d'un OCR manuscrit d'élève de primaire.
+  // (mots : "peti"→"petit", "canar"→"canard", "leger"→"léger" ;
+  //  dictée : "courure"→"coururent", "vert"→"vers", etc.).
+  const promptVerif = estMots
+    ? `Tu es relecteur ultra-strict d'un OCR manuscrit d'élève de primaire.
+
+Une PREMIÈRE TRANSCRIPTION d'une LISTE DE MOTS a été faite à partir de la
+photo ci-jointe. Elle contient probablement des erreurs où l'OCR a
+AUTOCOMPLÉTÉ ou « CORRIGÉ » inconsciemment les fautes de l'élève — c'est le
+défaut qu'on cherche à éliminer.
+
+PREMIÈRE TRANSCRIPTION À RELIRE (un mot par ligne) :
+"""
+${transcription}
+"""
+
+MISSION : relire l'image MOT PAR MOT. Pour chaque mot de la transcription,
+demande-toi : « Est-ce que ce mot correspond EXACTEMENT aux lettres
+physiquement écrites sur la page ? ».
+
+Si NON → corrige-le pour qu'il corresponde à ce qui est VISIBLE.
+Si OUI → garde-le tel quel.
+
+⚠️ QUATRE TYPES D'ERREURS D'OCR À TRAQUER SYSTÉMATIQUEMENT :
+
+1. LETTRE FINALE MUETTE ajoutée fantôme (le PIÈGE PRINCIPAL sur les listes de mots) :
+   Image : "peti" → OCR a dit "petit" → corrige vers "peti".
+   Image : "canar" → OCR dit "canard" → corrige vers "canar".
+   Image : "vert" → OCR dit "vers" → corrige vers "vert".
+   Image : "bor" → OCR dit "bord" → corrige.
+   Image : "lai" → OCR dit "lait" → corrige.
+   Regarde bien la FIN du mot : ne complète pas une lettre que tu ne vois pas.
+
+2. ACCENT AJOUTÉ alors qu'il n'y en a pas sur la page :
+   Image : "leger" (aucun trait au-dessus du e) → OCR dit "léger" → corrige.
+   Image : "apres" → OCR dit "après" → corrige.
+   Image : "eleve" → OCR dit "élève" → corrige.
+   Regarde CHAQUE "e" individuellement avant de valider un accent.
+
+3. ACCENT RETIRÉ alors qu'il y en a un sur la page :
+   Image : "école" (accent aigu visible) → OCR dit "ecole" → corrige.
+   Un petit trait oblique au-dessus d'un e = accent, à conserver.
+
+4. CONSONNE DOUBLÉE ajoutée ou retirée à tort :
+   Image : "aler" → OCR dit "aller" → corrige vers "aler".
+   Image : "balon" → OCR dit "ballon" → corrige vers "balon".
+   Image : "homme" (deux m visibles) → OCR dit "home" → corrige.
+
+NE CORRIGE PAS LES FAUTES D'ORTHOGRAPHE DE L'ÉLÈVE : elles font partie
+de son travail et doivent apparaître telles quelles.
+
+Un mot par ligne, même format que la première transcription.
+Si la première transcription est déjà correcte, renvoie-la à l'identique.
+
+Réponds UNIQUEMENT avec ce JSON :
+{ "transcription_corrigee": "ligne1\\nligne2\\n..." }`
+    : `Tu es relecteur ultra-strict d'un OCR manuscrit d'élève de primaire.
 
 Une PREMIÈRE TRANSCRIPTION a été faite à partir de la photo ci-jointe.
 Elle contient probablement des erreurs où l'OCR a AUTOCOMPLÉTÉ ou
@@ -482,35 +548,34 @@ Si la première transcription est déjà correcte, renvoie-la à l'identique.
 Réponds UNIQUEMENT avec ce JSON :
 { "transcription_corrigee": "la transcription finale fidèle à la page" }`;
 
-    try {
-      const respVerif = await anthropic.messages.create({
-        model: "claude-opus-4-20250514",
-        max_tokens: 1500,
-        messages: [
-          {
-            role: "user",
-            content: [
-              ...imageBlocks,
-              { type: "text", text: promptVerif },
-            ],
-          },
-        ],
-      });
+  try {
+    const respVerif = await anthropic.messages.create({
+      model: "claude-opus-4-20250514",
+      max_tokens: 1500,
+      messages: [
+        {
+          role: "user",
+          content: [
+            ...imageBlocks,
+            { type: "text", text: promptVerif },
+          ],
+        },
+      ],
+    });
 
-      const texteVerif = respVerif.content
-        .filter((b) => b.type === "text")
-        .map((b) => (b as { type: "text"; text: string }).text)
-        .join("");
+    const texteVerif = respVerif.content
+      .filter((b) => b.type === "text")
+      .map((b) => (b as { type: "text"; text: string }).text)
+      .join("");
 
-      const matchVerif = texteVerif.match(/\{[\s\S]*\}/);
-      if (matchVerif) {
-        const corrigee = String(JSON.parse(matchVerif[0]).transcription_corrigee ?? "").trim();
-        if (corrigee) transcription = corrigee;
-      }
-    } catch (err: unknown) {
-      // Si la vérif échoue, on garde la première transcription (dégradation gracieuse)
-      console.error("[corriger-dictee] Erreur vérification:", err);
+    const matchVerif = texteVerif.match(/\{[\s\S]*\}/);
+    if (matchVerif) {
+      const corrigee = String(JSON.parse(matchVerif[0]).transcription_corrigee ?? "").trim();
+      if (corrigee) transcription = corrigee;
     }
+  } catch (err: unknown) {
+    // Si la vérif échoue, on garde la première transcription (dégradation gracieuse)
+    console.error("[corriger-dictee] Erreur vérification:", err);
   }
 
   // ── Étape 2 : DIFF ALGORITHMIQUE (aucune erreur oubliée) ───────────────────
