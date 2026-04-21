@@ -547,12 +547,7 @@ export default function AtelierEcriture({
       <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap", position: "relative", zIndex: 10 }}>
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log("[AtelierEcriture] click Corriger mon texte, texte.length=", texte.length, "analyseEnCours=", analyseEnCours);
-            analyser();
-          }}
+          onClick={analyser}
           disabled={analyseEnCours || !texte.trim()}
           style={{
             background: "white", color: "#7C3AED",
