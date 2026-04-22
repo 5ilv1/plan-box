@@ -442,7 +442,7 @@ export default function AtelierEcriture({
                           padding: "4px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer",
                         }}
                       >
-                        Garder
+                        Laisser
                       </button>
                       <button
                         onClick={() => appliquerAnnotation(a)}
@@ -453,7 +453,7 @@ export default function AtelierEcriture({
                         }}
                       >
                         <span className="ms" style={{ fontSize: 14 }}>check</span>
-                        Appliquer
+                        Modifier
                       </button>
                     </>
                   )}
