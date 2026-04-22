@@ -650,7 +650,12 @@ export default function PageActivite() {
 
             {/* Fin de dictée / mots — message + panneau correction si enseignant l'a diffusée */}
             {(bloc.type === "dictee" || (bloc.type === "mots" && !!(bloc.contenu as Record<string, unknown>)?.mots_semaine)) && (() => {
-              const correctionDiffusee = !!bloc.correction_diffusee_le;
+              // Panneau correction visible UNIQUEMENT le jour de la dictée
+              // (disparaît automatiquement le lendemain, même si l'enseignant
+              // a oublié d'annuler la diffusion)
+              const dNow = new Date();
+              const aujourdhui = `${dNow.getFullYear()}-${String(dNow.getMonth() + 1).padStart(2, "0")}-${String(dNow.getDate()).padStart(2, "0")}`;
+              const correctionDiffusee = !!bloc.correction_diffusee_le && bloc.date_assignation === aujourdhui;
               const texteAttendu = bloc.type === "dictee"
                 ? (dictee?.texte || dictee?.phrases?.map((p) => p.texte).join(" ") || "")
                 : (() => {
