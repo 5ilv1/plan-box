@@ -14,12 +14,34 @@ export async function GET(req: NextRequest) {
   if (auth.error) return auth.error;
 
   const url = new URL(req.url);
+  const portee = url.searchParams.get("portee") ?? "semaine"; // 'semaine' | 'jours'
   const joursRaw = parseInt(url.searchParams.get("jours") ?? "7", 10);
   const jours = Math.min(Math.max(isNaN(joursRaw) ? 7 : joursRaw, 1), 90);
 
-  const depuis = new Date();
-  depuis.setDate(depuis.getDate() - jours);
-  const depuisIso = depuis.toISOString().split("T")[0];
+  // Calcul de la fenêtre : par défaut "cette semaine" (lundi → dimanche).
+  // Alternative "jours" = les N derniers jours jusqu'à aujourd'hui (sans futur).
+  const aujourdhui = new Date();
+  const toIsoDate = (d: Date) => d.toISOString().split("T")[0];
+
+  let depuisIso: string;
+  let jusquIso: string;
+
+  if (portee === "semaine") {
+    // Europe : lundi = premier jour. Date#getDay() : dimanche=0, lundi=1…samedi=6
+    const jour = aujourdhui.getDay();
+    const decalLundi = jour === 0 ? 6 : jour - 1;
+    const lundi = new Date(aujourdhui);
+    lundi.setDate(aujourdhui.getDate() - decalLundi);
+    const dimanche = new Date(lundi);
+    dimanche.setDate(lundi.getDate() + 6);
+    depuisIso = toIsoDate(lundi);
+    jusquIso = toIsoDate(dimanche);
+  } else {
+    const depuis = new Date(aujourdhui);
+    depuis.setDate(aujourdhui.getDate() - jours);
+    depuisIso = toIsoDate(depuis);
+    jusquIso = toIsoDate(aujourdhui);
+  }
 
   const admin = createAdminClient();
   const { data, error } = await admin
@@ -27,6 +49,7 @@ export async function GET(req: NextRequest) {
     .select("id, titre, date_assignation, statut, correction_diffusee_le, contenu, eleve_id, repetibox_eleve_id")
     .eq("type", "dictee")
     .gte("date_assignation", depuisIso)
+    .lte("date_assignation", jusquIso)
     .order("date_assignation", { ascending: false })
     .limit(500);
 

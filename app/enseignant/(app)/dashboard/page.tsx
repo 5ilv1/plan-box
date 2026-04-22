@@ -322,7 +322,7 @@ function WidgetCorrectionsDictee() {
   async function charger() {
     setChargement(true);
     try {
-      const res = await fetch("/api/enseignant/diffuser-correction-dictee?jours=7");
+      const res = await fetch("/api/enseignant/diffuser-correction-dictee?portee=semaine");
       const data = await res.json();
       setDictees(data.dictees ?? []);
     } catch (err) {
