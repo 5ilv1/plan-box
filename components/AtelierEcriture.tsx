@@ -200,8 +200,21 @@ export default function AtelierEcriture({
   // ── Appliquer une annotation (remplace l'extrait par la suggestion) ──
   async function appliquerAnnotation(ann: Annotation) {
     if (verrouille) return;
-    const avant = texte.slice(0, ann.debut);
-    const apres = texte.slice(ann.fin);
+    // Les positions stockées sont celles au moment de la pose par l'enseignant.
+    // Le texte a pu bouger depuis : on recale via l'extrait si besoin.
+    let debut = ann.debut;
+    let fin = ann.fin;
+    if (texte.slice(debut, fin) !== ann.extrait) {
+      const idx = texte.indexOf(ann.extrait);
+      if (idx < 0) {
+        alert("Le passage à corriger n'existe plus dans ton texte.");
+        return;
+      }
+      debut = idx;
+      fin = idx + ann.extrait.length;
+    }
+    const avant = texte.slice(0, debut);
+    const apres = texte.slice(fin);
     const nouveauTexte = avant + ann.suggestion + apres;
     setTexte(nouveauTexte);
     // Marquer comme acceptée
