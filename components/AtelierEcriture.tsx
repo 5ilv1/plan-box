@@ -85,7 +85,6 @@ export default function AtelierEcriture({
   // ── Auto-save 2s après dernière frappe ──
   useEffect(() => {
     if (apercu) return;
-    if (verrouille) return;
     if (texte === lastSavedTexte.current) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(async () => {
@@ -115,7 +114,6 @@ export default function AtelierEcriture({
   // ── Polling annotations toutes les 20s ──
   useEffect(() => {
     if (apercu) return;
-    if (verrouille) return;
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/ecriture/annotations?blocId=${blocId}`);
@@ -274,31 +272,6 @@ export default function AtelierEcriture({
     setErreursIA((prev) => prev.filter((e) => e !== erreur));
   }
 
-  // ── Vue : texte envoyé (lecture seule) ──
-  if (verrouille) {
-    return (
-      <div style={{ padding: "32px 24px", textAlign: "center" }}>
-        <span className="ms" style={{ fontSize: 56, color: "#059669", display: "block", marginBottom: 12 }}>task_alt</span>
-        <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 20, marginBottom: 8 }}>
-          Texte envoyé !
-        </h3>
-        <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", marginBottom: 20 }}>
-          Bravo, ton texte est rendu à la maîtresse.
-        </p>
-        <div style={{
-          textAlign: "left", background: "var(--pb-surface-container-low, #f5f5ff)",
-          borderRadius: 14, padding: "18px 22px", maxHeight: 320, overflowY: "auto",
-        }}>
-          <p style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "var(--pb-on-surface-variant)", marginBottom: 8 }}>
-            Ton texte final · {nbMots} mot{nbMots > 1 ? "s" : ""}
-          </p>
-          <p style={{ fontSize: 14, lineHeight: 1.7, color: "var(--pb-on-surface)", whiteSpace: "pre-wrap", margin: 0 }}>
-            {texte}
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -306,19 +279,26 @@ export default function AtelierEcriture({
       {/* ── En-tête ── */}
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap",
-        background: "rgba(124,58,237,0.08)", borderRadius: 14, padding: "12px 18px",
-        border: "1.5px solid rgba(124,58,237,0.2)",
+        background: verrouille ? "rgba(5,150,105,0.08)" : "rgba(124,58,237,0.08)",
+        borderRadius: 14, padding: "12px 18px",
+        border: `1.5px solid ${verrouille ? "rgba(5,150,105,0.25)" : "rgba(124,58,237,0.2)"}`,
       }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <span className="ms" style={{ fontSize: 24, color: "#7C3AED" }}>edit_note</span>
+          <span className="ms" style={{ fontSize: 24, color: verrouille ? "#059669" : "#7C3AED" }}>
+            {verrouille ? "task_alt" : "edit_note"}
+          </span>
           <div>
-            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, color: "#7C3AED" }}>
-              Atelier d&apos;écriture — {vendredi ? "Jour d'envoi" : "Écris et corrige ton texte"}
+            <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, color: verrouille ? "#059669" : "#7C3AED" }}>
+              {verrouille
+                ? "Texte envoyé — tu peux encore corriger"
+                : `Atelier d'écriture — ${vendredi ? "Jour d'envoi" : "Écris et corrige ton texte"}`}
             </div>
             <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-              {vendredi
-                ? "Clique sur « Envoyer » quand tu es prêt"
-                : "Tu peux écrire, corriger et revenir demain"}
+              {verrouille
+                ? "Applique les corrections de la maîtresse pour améliorer ton texte"
+                : vendredi
+                  ? "Clique sur « Envoyer » quand tu es prêt"
+                  : "Tu peux écrire, corriger et revenir demain"}
             </div>
           </div>
         </div>
@@ -526,7 +506,7 @@ export default function AtelierEcriture({
           {analyseEnCours ? "Analyse..." : "Corriger mon texte"}
         </button>
 
-        {vendredi && (
+        {vendredi && !verrouille && (
           <button
             onClick={envoyer}
             disabled={envoiEnCours || !texte.trim()}

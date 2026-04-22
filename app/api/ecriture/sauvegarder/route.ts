@@ -49,13 +49,14 @@ export async function POST(req: NextRequest) {
   }
 
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
-
-  // Une fois le texte envoyé, plus de modification possible
-  if (contenu.date_envoi && contenu.texte_final.trim().length > 0) {
-    return NextResponse.json({ erreur: "Texte déjà envoyé" }, { status: 409 });
-  }
+  const dejaEnvoye = !!contenu.date_envoi && contenu.texte_final.trim().length > 0;
 
   contenu.texte_courant = texte;
+  // Après envoi, l'élève peut encore appliquer les corrections de l'enseignant —
+  // on garde texte_final aligné sur texte_courant.
+  if (dejaEnvoye) {
+    contenu.texte_final = texte;
+  }
 
   // Snapshot du jour : on remplace (ou crée) l'entrée de la date d'aujourd'hui
   if (texte.trim().length > 0) {
