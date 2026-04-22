@@ -479,6 +479,20 @@ export default function EnseignantAtelierBloc({
               )}
             </p>
           </div>
+          <Link
+            href={`/enseignant/atelier-ecriture/${blocId}/apercu-eleve`}
+            style={{
+              background: "white", color: "#4338CA",
+              border: "1px solid #C4B5FD", borderRadius: 10,
+              padding: "6px 12px", fontSize: 12, fontWeight: 600,
+              textDecoration: "none",
+              display: "inline-flex", alignItems: "center", gap: 6,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            <span className="ms" style={{ fontSize: 16 }}>visibility</span>
+            Voir comme l&apos;élève
+          </Link>
         </div>
       </div>
 

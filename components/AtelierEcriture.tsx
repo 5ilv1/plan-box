@@ -29,6 +29,8 @@ interface Props {
   contenu: Record<string, unknown>;
   eleveRbId?: number;
   onTermine: () => void;
+  /** Mode aperçu enseignant : désactive sauvegarde, polling, envoi et PATCH statut. */
+  apercu?: boolean;
 }
 
 function getTexteCourantInitial(c: Record<string, unknown>): string {
@@ -64,6 +66,7 @@ export default function AtelierEcriture({
   contenu,
   eleveRbId,
   onTermine,
+  apercu = false,
 }: Props) {
   const [texte, setTexte] = useState(() => getTexteCourantInitial(contenu));
   const [annotations, setAnnotations] = useState<Annotation[]>(() =>
@@ -81,6 +84,7 @@ export default function AtelierEcriture({
 
   // ── Auto-save 2s après dernière frappe ──
   useEffect(() => {
+    if (apercu) return;
     if (verrouille) return;
     if (texte === lastSavedTexte.current) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -110,6 +114,7 @@ export default function AtelierEcriture({
 
   // ── Polling annotations toutes les 20s ──
   useEffect(() => {
+    if (apercu) return;
     if (verrouille) return;
     const interval = setInterval(async () => {
       try {
@@ -158,6 +163,7 @@ export default function AtelierEcriture({
 
   // ── Envoyer le texte final (vendredi uniquement) ──
   async function envoyer() {
+    if (apercu) return;
     if (!vendredi || !texte.trim()) return;
     if (!confirm("Es-tu sûr de vouloir envoyer ton texte à la maîtresse ? Tu ne pourras plus le modifier après.")) {
       return;
@@ -190,13 +196,15 @@ export default function AtelierEcriture({
     setTexte(nouveauTexte);
     setAnnotationOuverte(null);
     // Marquer comme acceptée
-    try {
-      await fetch("/api/enseignant/ecriture/annotation", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocId, id: ann.id, statut: "acceptee", eleveRbId }),
-      });
-    } catch {}
+    if (!apercu) {
+      try {
+        await fetch("/api/enseignant/ecriture/annotation", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ blocId, id: ann.id, statut: "acceptee", eleveRbId }),
+        });
+      } catch {}
+    }
     setAnnotations((prev) =>
       prev.map((a) => (a.id === ann.id ? { ...a, statut: "acceptee" as const } : a))
     );
@@ -204,13 +212,15 @@ export default function AtelierEcriture({
 
   async function garderMonTexte(ann: Annotation) {
     setAnnotationOuverte(null);
-    try {
-      await fetch("/api/enseignant/ecriture/annotation", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocId, id: ann.id, statut: "ignoree", eleveRbId }),
-      });
-    } catch {}
+    if (!apercu) {
+      try {
+        await fetch("/api/enseignant/ecriture/annotation", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ blocId, id: ann.id, statut: "ignoree", eleveRbId }),
+        });
+      } catch {}
+    }
     setAnnotations((prev) =>
       prev.map((a) => (a.id === ann.id ? { ...a, statut: "ignoree" as const } : a))
     );
@@ -232,14 +242,16 @@ export default function AtelierEcriture({
   function ouvrirAnnotation(ann: Annotation) {
     setAnnotationOuverte(ann);
     if (ann.statut === "nouvelle") {
-      fetch("/api/enseignant/ecriture/annotation", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocId, id: ann.id, statut: "lue", eleveRbId }),
-      }).catch(() => {});
-      setAnnotations((prev) =>
-        prev.map((a) => (a.id === ann.id ? { ...a, statut: "lue" as const } : a))
-      );
+      if (!apercu) {
+        fetch("/api/enseignant/ecriture/annotation", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ blocId, id: ann.id, statut: "lue", eleveRbId }),
+        }).catch(() => {});
+        setAnnotations((prev) =>
+          prev.map((a) => (a.id === ann.id ? { ...a, statut: "lue" as const } : a))
+        );
+      }
     }
   }
 
