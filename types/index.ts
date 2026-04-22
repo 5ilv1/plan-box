@@ -373,6 +373,8 @@ export interface PlanTravail {
   statut: StatutBloc;
   chapitre_id: string | null;
   created_at: string;
+  /** Timestamp de diffusion de la correction (dictée). Null tant que l'enseignant ne l'a pas diffusée. */
+  correction_diffusee_le?: string | null;
   // Jointures optionnelles
   chapitres?: Chapitre;
   eleves?: Eleve;

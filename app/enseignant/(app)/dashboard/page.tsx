@@ -303,6 +303,158 @@ function WidgetThemeEcriture() {
   );
 }
 
+interface DicteeDiffusable {
+  dictee_parent_id: string;
+  date_assignation: string;
+  titre: string;
+  niveau_etoiles: number | null;
+  nb_eleves: number;
+  nb_faits: number;
+  correction_diffusee_le: string | null;
+  blocs_ids: string[];
+}
+
+function WidgetCorrectionsDictee() {
+  const [dictees, setDictees] = useState<DicteeDiffusable[]>([]);
+  const [chargement, setChargement] = useState(true);
+  const [enAction, setEnAction] = useState<string | null>(null);
+
+  async function charger() {
+    setChargement(true);
+    try {
+      const res = await fetch("/api/enseignant/diffuser-correction-dictee?jours=7");
+      const data = await res.json();
+      setDictees(data.dictees ?? []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setChargement(false);
+    }
+  }
+
+  useEffect(() => { charger(); }, []);
+
+  async function diffuser(d: DicteeDiffusable, diffuser: boolean) {
+    const key = `${d.dictee_parent_id}|${d.date_assignation}`;
+    setEnAction(key);
+    try {
+      const res = await fetch("/api/enseignant/diffuser-correction-dictee", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          dictee_parent_id: d.dictee_parent_id,
+          date_assignation: d.date_assignation,
+          diffuser,
+        }),
+      });
+      if (!res.ok) throw new Error("Échec diffusion");
+      // Mise à jour optimiste
+      setDictees((prev) =>
+        prev.map((x) =>
+          x.dictee_parent_id === d.dictee_parent_id && x.date_assignation === d.date_assignation
+            ? { ...x, correction_diffusee_le: diffuser ? new Date().toISOString() : null }
+            : x,
+        ),
+      );
+    } catch (err) {
+      console.error(err);
+      alert("Erreur lors de la diffusion");
+    } finally {
+      setEnAction(null);
+    }
+  }
+
+  if (chargement) return null;
+  if (dictees.length === 0) return null;
+
+  // On n'affiche que les 5 plus récentes pour ne pas encombrer
+  const afficher = dictees.slice(0, 5);
+
+  return (
+    <div style={{
+      background: "linear-gradient(135deg, #7c3aed0a, #7c3aed14)",
+      border: "1.5px solid rgba(124,58,237,0.22)",
+      borderRadius: 20,
+      padding: "16px 20px",
+      marginBottom: 20,
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
+        <span className="ms" style={{ fontSize: 18, color: "#7c3aed" }}>spellcheck</span>
+        <span style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#5b21b6" }}>
+          Corrections de dictée
+        </span>
+      </div>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+        {afficher.map((d) => {
+          const key = `${d.dictee_parent_id}|${d.date_assignation}`;
+          const diffusee = !!d.correction_diffusee_le;
+          const enCours = enAction === key;
+          const dateFr = new Date(d.date_assignation).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+          return (
+            <div
+              key={key}
+              style={{
+                display: "flex", alignItems: "center", gap: 12,
+                padding: "8px 12px", borderRadius: 12,
+                background: "white",
+                border: "1px solid rgba(124,58,237,0.12)",
+                flexWrap: "wrap",
+              }}
+            >
+              <div style={{ flex: 1, minWidth: 180 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)" }}>
+                  {d.titre}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", marginTop: 2 }}>
+                  {dateFr}
+                  {d.niveau_etoiles ? ` · ${"⭐".repeat(d.niveau_etoiles)}` : ""}
+                  {` · ${d.nb_faits}/${d.nb_eleves} élève${d.nb_eleves > 1 ? "s" : ""} fait${d.nb_faits > 1 ? "s" : ""}`}
+                </div>
+              </div>
+              {diffusee ? (
+                <button
+                  onClick={() => diffuser(d, false)}
+                  disabled={enCours}
+                  style={{
+                    padding: "6px 12px", borderRadius: 999, fontSize: 12,
+                    fontWeight: 600, cursor: enCours ? "wait" : "pointer",
+                    border: "1px solid #d1d5db", background: "white",
+                    color: "#4b5563",
+                    display: "flex", alignItems: "center", gap: 4,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 14, color: "#16a34a" }}>check_circle</span>
+                  Diffusée · annuler
+                </button>
+              ) : (
+                <button
+                  onClick={() => diffuser(d, true)}
+                  disabled={enCours}
+                  style={{
+                    padding: "6px 14px", borderRadius: 999, fontSize: 12,
+                    fontWeight: 700, cursor: enCours ? "wait" : "pointer",
+                    border: "none", background: "#7c3aed",
+                    color: "white",
+                    display: "flex", alignItems: "center", gap: 4,
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 14 }}>send</span>
+                  Diffuser la correction
+                </button>
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <p style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", marginTop: 10, marginBottom: 0 }}>
+        Les élèves voient alors le texte attendu dans leur bloc dictée avec des consignes de relecture.
+      </p>
+    </div>
+  );
+}
+
 function WidgetCeintures() {
   const [config, setConfig] = useState<{ id: string; nom: string; actif: boolean }[]>([]);
 
@@ -459,6 +611,7 @@ export default function DashboardEnseignant() {
           <div>
             <h3 className="ens-section-title">Programme du jour</h3>
             <WidgetThemeEcriture />
+            <WidgetCorrectionsDictee />
             <WidgetCeintures />
             <ProgrammeJourView />
           </div>

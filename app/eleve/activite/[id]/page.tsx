@@ -19,7 +19,9 @@ import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import ClassementEleve from "@/components/ClassementEleve";
 import LectureEleve from "@/components/LectureEleve";
 import QCMEleve from "@/components/QCMEleve";
-import DicteeCorrection from "@/components/DicteeCorrection";
+// DicteeCorrection (OCR + correction auto) — conservé mais débranché du flux élève
+// en attendant d'être fiabilisé. Cf. commit désactivation dictée.
+// import DicteeCorrection from "@/components/DicteeCorrection";
 import CeintureMultiplication from "@/components/CeintureMultiplication";
 import { FonctionGram } from "@/types";
 // PDF affiché via iframe natif (compatible Safari iOS / anciens iPad)
@@ -646,15 +648,87 @@ export default function PageActivite() {
               </div>
             )}
 
-            {/* Correction dictée / mots par photo (uniquement mots du lundi = mots_semaine, pas les révisions tapées sur tablette) */}
-            {(bloc.type === "dictee" || (bloc.type === "mots" && !!(bloc.contenu as Record<string, unknown>)?.mots_semaine)) && (
-              <div style={{ textAlign: "left" }}>
-                <DicteeCorrection
-                  blocId={bloc.id.toString()}
-                  onFermer={() => router.push("/eleve/dashboard")}
-                />
-              </div>
-            )}
+            {/* Fin de dictée / mots — message + panneau correction si enseignant l'a diffusée */}
+            {(bloc.type === "dictee" || (bloc.type === "mots" && !!(bloc.contenu as Record<string, unknown>)?.mots_semaine)) && (() => {
+              const correctionDiffusee = !!bloc.correction_diffusee_le;
+              const texteAttendu = bloc.type === "dictee"
+                ? (dictee?.texte || dictee?.phrases?.map((p) => p.texte).join(" ") || "")
+                : (() => {
+                    const c = bloc.contenu as Record<string, unknown> | null;
+                    const mots = (c?.mots as { mot: string; pronom?: string }[] | undefined) ?? [];
+                    return mots.map((m) => m.pronom ? `${m.pronom} ${m.mot}` : m.mot).join("\n");
+                  })();
+              const estDictee = bloc.type === "dictee";
+              return (
+                <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 16 }}>
+                  {/* Message fin de dictée */}
+                  <div style={{
+                    padding: "18px 22px",
+                    borderRadius: "1rem",
+                    background: "linear-gradient(135deg, #e0f2fe, #bae6fd)",
+                    border: "1px solid rgba(14,165,233,0.25)",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span className="ms" style={{ fontSize: 26, color: "#0369a1" }}>assignment_turned_in</span>
+                      <span style={{
+                        fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        fontSize: 17, fontWeight: 800, color: "#0c4a6e",
+                      }}>
+                        {estDictee ? "Dictée terminée !" : "Mots terminés !"}
+                      </span>
+                    </div>
+                    <p style={{ fontSize: 14, margin: 0, color: "#075985", lineHeight: 1.5 }}>
+                      N&apos;oublie pas de donner ton cahier au maître pour la correction. Vous la reverrez ensemble tout à l&apos;heure.
+                    </p>
+                  </div>
+
+                  {/* Panneau de correction — visible quand l'enseignant l'a diffusée */}
+                  {correctionDiffusee && texteAttendu && (
+                    <div style={{
+                      padding: "20px 24px",
+                      borderRadius: "1rem",
+                      background: "white",
+                      border: "2px solid #7c3aed",
+                      boxShadow: "0 2px 12px rgba(124,58,237,0.08)",
+                    }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                        <span className="ms" style={{ fontSize: 26, color: "#7c3aed" }}>spellcheck</span>
+                        <span style={{
+                          fontFamily: "'Plus Jakarta Sans', sans-serif",
+                          fontSize: 17, fontWeight: 800, color: "#5b21b6",
+                        }}>
+                          Correction de la {estDictee ? "dictée" : "liste de mots"}
+                        </span>
+                      </div>
+
+                      <ol style={{
+                        fontSize: 13, color: "var(--pb-on-surface-variant)",
+                        margin: "0 0 14px", paddingLeft: 18, lineHeight: 1.6,
+                      }}>
+                        <li>Prends ton cahier et un stylo <strong>vert</strong> (ou d&apos;une autre couleur).</li>
+                        <li>Lis le texte ci-dessous, mot par mot.</li>
+                        <li>Compare avec ce que tu as écrit. Pour chaque différence, <strong>souligne</strong> le mot dans ton cahier et <strong>recopie</strong> la bonne orthographe à côté.</li>
+                        <li>Vérifie les <strong>accents</strong>, la <strong>ponctuation</strong>, et les <strong>majuscules</strong> de début de phrase.</li>
+                      </ol>
+
+                      <div style={{
+                        padding: "16px 18px",
+                        borderRadius: "0.75rem",
+                        background: "#faf5ff",
+                        border: "1px solid #e9d5ff",
+                        fontFamily: estDictee ? "Georgia, 'Times New Roman', serif" : "'Plus Jakarta Sans', sans-serif",
+                        fontSize: 17,
+                        lineHeight: 1.9,
+                        color: "#1f2937",
+                        whiteSpace: estDictee ? "normal" : "pre-line",
+                      }}>
+                        {texteAttendu}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
 
             <Link href="/eleve/dashboard" className="pb-btn primary" style={{ width: "100%", marginTop: (bloc.type === "dictee" || bloc.type === "mots") ? 16 : 0 }}>
               <span className="ms" style={{ fontSize: 18 }}>home</span>
