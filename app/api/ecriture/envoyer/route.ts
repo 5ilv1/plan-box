@@ -4,38 +4,30 @@ import {
   normaliserContenuEcriture,
   majHistorique,
   dateStr,
-  estVendredi,
 } from "@/lib/ecriture-normaliser";
 
 /**
  * POST /api/ecriture/envoyer
  *
- * Finalise le texte de l'atelier d'écriture : pose `texte_final` + `date_envoi`
- * et passe le bloc au statut "fait". N'est autorisé que le vendredi.
+ * Deux types d'envoi :
+ *   - `final: false` (défaut) → premier envoi : l'enseignant peut corriger,
+ *     l'élève peut encore modifier son texte en appliquant les annotations.
+ *   - `final: true` → version finale : verrouille définitivement le texte
+ *     (pose `date_version_finale`). L'élève ne peut plus rien modifier.
  *
- * Body : {
- *   blocId: string,
- *   texte: string,
- *   eleveRbId?: number
- * }
+ * Body : { blocId, texte, eleveRbId?, final? }
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { blocId, texte, eleveRbId } = body as {
+  const { blocId, texte, eleveRbId, final } = body as {
     blocId?: string;
     texte?: string;
     eleveRbId?: number;
+    final?: boolean;
   };
 
   if (!blocId || !texte?.trim()) {
     return NextResponse.json({ erreur: "blocId et texte requis" }, { status: 400 });
-  }
-
-  if (!estVendredi()) {
-    return NextResponse.json(
-      { erreur: "L'envoi n'est ouvert que le vendredi" },
-      { status: 403 }
-    );
   }
 
   const admin = createAdminClient();
@@ -56,14 +48,19 @@ export async function POST(req: NextRequest) {
 
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
 
-  if (contenu.date_envoi && contenu.texte_final.trim().length > 0) {
-    return NextResponse.json({ erreur: "Texte déjà envoyé" }, { status: 409 });
+  if (contenu.date_version_finale) {
+    return NextResponse.json({ erreur: "Version finale déjà validée" }, { status: 409 });
   }
 
   const aujourdhui = dateStr();
   contenu.texte_courant = texte;
   contenu.texte_final = texte;
-  contenu.date_envoi = aujourdhui;
+  if (!contenu.date_envoi) {
+    contenu.date_envoi = aujourdhui;
+  }
+  if (final) {
+    contenu.date_version_finale = aujourdhui;
+  }
   contenu.historique = majHistorique(contenu.historique, texte, aujourdhui);
 
   await admin

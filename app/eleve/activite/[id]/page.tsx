@@ -499,7 +499,7 @@ export default function PageActivite() {
   const typeSubtitle = (() => {
     if (bloc.type === "ecriture" && (bloc.contenu as any)?.mode === "semaine") {
       const day = new Date().getDay();
-      if (day === 5) return "Vendredi · relis, corrige et envoie ton texte à la maîtresse";
+      if (day === 5) return "Vendredi · relis une dernière fois et envoie ta version finale";
       return "Écris, corrige ton texte et reviens le retravailler chaque jour";
     }
     return badgeCfg.subtitle;

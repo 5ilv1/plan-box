@@ -41,6 +41,9 @@ export interface ContenuEcritureSemaine {
   annotations: AnnotationEnseignant[];
   texte_final: string;
   date_envoi: string | null;
+  /** Date de verrouillage définitif (vendredi). Une fois posée, le texte
+   *  ne peut plus être modifié par l'élève. */
+  date_version_finale?: string | null;
   // Anciens champs — conservés pour rollback tant qu'on n'a pas fait le cleanup
   texte_jour1?: string;
   texte_jour2?: string;
@@ -115,6 +118,8 @@ export function normaliserContenuEcriture(
     date_envoi = dateStr();
   }
 
+  const date_version_finale = (c.date_version_finale as string | null | undefined) ?? null;
+
   return {
     mode: "semaine",
     sujet,
@@ -126,6 +131,7 @@ export function normaliserContenuEcriture(
     annotations,
     texte_final: tf,
     date_envoi,
+    date_version_finale,
     // On conserve les anciens champs tels quels
     texte_jour1: t1,
     texte_jour2: t2,

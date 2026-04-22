@@ -210,7 +210,7 @@ export default function PageBibliotheque() {
         >
           <div style={{ fontSize: 40, marginBottom: 10 }}>📖</div>
           <div style={{ fontSize: 15, fontWeight: 600, marginBottom: 4 }}>Aucun livre disponible pour le moment</div>
-          <div style={{ fontSize: 13 }}>Reviens plus tard, ta maîtresse ajoutera de nouveaux livres.</div>
+          <div style={{ fontSize: 13 }}>Reviens plus tard, ton maître ajoutera de nouveaux livres.</div>
         </div>
       ) : (
         <div

@@ -58,6 +58,10 @@ function estEnvoye(c: Record<string, unknown>): boolean {
   return !!envoi && tf.trim().length > 0;
 }
 
+function estFinalise(c: Record<string, unknown>): boolean {
+  return !!c.date_version_finale;
+}
+
 export default function AtelierEcriture({
   blocId,
   sujet,
@@ -72,19 +76,22 @@ export default function AtelierEcriture({
   const [annotations, setAnnotations] = useState<Annotation[]>(() =>
     getAnnotationsInitiales(contenu)
   );
-  const [annotationOuverte, setAnnotationOuverte] = useState<Annotation | null>(null);
   const [autoSaveStatus, setAutoSaveStatus] = useState<"" | "saving" | "saved">("");
   const [envoiEnCours, setEnvoiEnCours] = useState(false);
-  const [verrouille, setVerrouille] = useState(() => estEnvoye(contenu));
+  const [envoye, setEnvoye] = useState(() => estEnvoye(contenu));
+  const [finalise, setFinalise] = useState(() => estFinalise(contenu));
 
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedTexte = useRef(getTexteCourantInitial(contenu));
 
   const vendredi = estVendredi();
+  // Édition bloquée si finalisé OU si on est vendredi et déjà envoyé
+  const verrouille = finalise || (vendredi && envoye);
 
   // ── Auto-save 2s après dernière frappe ──
   useEffect(() => {
     if (apercu) return;
+    if (verrouille) return;
     if (texte === lastSavedTexte.current) return;
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     autoSaveTimer.current = setTimeout(async () => {
@@ -159,11 +166,14 @@ export default function AtelierEcriture({
     setAnalyseEnCours(false);
   }, [texte, sujet]);
 
-  // ── Envoyer le texte final (vendredi uniquement) ──
-  async function envoyer() {
+  // ── Envoyer le texte (premier envoi ou version finale) ──
+  async function envoyer(final: boolean = false) {
     if (apercu) return;
-    if (!vendredi || !texte.trim()) return;
-    if (!confirm("Es-tu sûr de vouloir envoyer ton texte à la maîtresse ? Tu ne pourras plus le modifier après.")) {
+    if (!texte.trim()) return;
+    const question = final
+      ? "Es-tu sûr de vouloir envoyer ta version finale ? Tu ne pourras plus rien modifier après."
+      : "Es-tu sûr de vouloir envoyer ton texte au maître ? Il pourra le corriger et tu pourras encore le retravailler.";
+    if (!confirm(question)) {
       return;
     }
     setEnvoiEnCours(true);
@@ -171,10 +181,11 @@ export default function AtelierEcriture({
       const res = await fetch("/api/ecriture/envoyer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocId, texte, eleveRbId }),
+        body: JSON.stringify({ blocId, texte, eleveRbId, final }),
       });
       if (res.ok) {
-        setVerrouille(true);
+        setEnvoye(true);
+        if (final) setFinalise(true);
         onTermine();
       } else {
         const data = await res.json();
@@ -188,11 +199,11 @@ export default function AtelierEcriture({
 
   // ── Appliquer une annotation (remplace l'extrait par la suggestion) ──
   async function appliquerAnnotation(ann: Annotation) {
+    if (verrouille) return;
     const avant = texte.slice(0, ann.debut);
     const apres = texte.slice(ann.fin);
     const nouveauTexte = avant + ann.suggestion + apres;
     setTexte(nouveauTexte);
-    setAnnotationOuverte(null);
     // Marquer comme acceptée
     if (!apercu) {
       try {
@@ -209,7 +220,6 @@ export default function AtelierEcriture({
   }
 
   async function garderMonTexte(ann: Annotation) {
-    setAnnotationOuverte(null);
     if (!apercu) {
       try {
         await fetch("/api/enseignant/ecriture/annotation", {
@@ -235,23 +245,6 @@ export default function AtelierEcriture({
   );
 
   const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
-
-  // Ouvrir une annotation depuis la liste (et la marquer comme lue)
-  function ouvrirAnnotation(ann: Annotation) {
-    setAnnotationOuverte(ann);
-    if (ann.statut === "nouvelle") {
-      if (!apercu) {
-        fetch("/api/enseignant/ecriture/annotation", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ blocId, id: ann.id, statut: "lue", eleveRbId }),
-        }).catch(() => {});
-        setAnnotations((prev) =>
-          prev.map((a) => (a.id === ann.id ? { ...a, statut: "lue" as const } : a))
-        );
-      }
-    }
-  }
 
   // Appliquer une correction d'erreur IA : remplacer le mot par la correction
   function appliquerCorrection(erreur: ErreurIA) {
@@ -289,16 +282,22 @@ export default function AtelierEcriture({
           </span>
           <div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, color: verrouille ? "#059669" : "#7C3AED" }}>
-              {verrouille
-                ? "Texte envoyé — tu peux encore corriger"
-                : `Atelier d'écriture — ${vendredi ? "Jour d'envoi" : "Écris et corrige ton texte"}`}
+              {finalise
+                ? "Version finale envoyée"
+                : envoye
+                  ? vendredi
+                    ? "Vendredi — relis et envoie ta version finale"
+                    : "Texte envoyé — tu peux encore corriger"
+                  : "Atelier d'écriture — Écris et envoie quand tu es prêt"}
             </div>
             <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-              {verrouille
-                ? "Applique les corrections de la maîtresse pour améliorer ton texte"
-                : vendredi
-                  ? "Clique sur « Envoyer » quand tu es prêt"
-                  : "Tu peux écrire, corriger et revenir demain"}
+              {finalise
+                ? "Ton texte est définitivement rendu."
+                : envoye
+                  ? vendredi
+                    ? "Tu ne peux plus modifier le texte. Clique sur « Envoyer la version finale »."
+                    : "Applique les corrections du maître pour améliorer ton texte"
+                  : "Clique sur « Envoyer au maître » quand tu penses avoir terminé"}
             </div>
           </div>
         </div>
@@ -312,26 +311,38 @@ export default function AtelierEcriture({
             border: "1.5px solid #C7D2FE",
           }}>
             <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
-            {nbNouvelles} correction{nbNouvelles > 1 ? "s" : ""} de la maîtresse
+            {nbNouvelles} correction{nbNouvelles > 1 ? "s" : ""} du maître
           </div>
         )}
       </div>
 
-      {/* ── Zone d'édition ── */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+      {/* ── Grille texte + propositions ── */}
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: annotationsActives.length > 0 ? "minmax(0, 1.6fr) minmax(260px, 1fr)" : "1fr",
+          gap: 16,
+          alignItems: "start",
+        }}
+      >
+
+      {/* ── Zone d'édition (colonne gauche) ── */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "sticky", top: 12 }}>
         <textarea
           value={texte}
           onChange={(e) => setTexte(e.target.value)}
-          placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour, jusqu'à vendredi."
+          readOnly={verrouille}
+          placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour."
           style={{
             width: "100%", minHeight: 320, padding: "20px",
             borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
             fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
             color: "var(--pb-on-surface)",
-            background: "white", resize: "vertical",
+            background: verrouille ? "#FAFAFA" : "white", resize: "vertical",
             outline: "none", transition: "border-color 0.2s",
+            cursor: verrouille ? "default" : "text",
           }}
-          onFocus={(e) => { e.currentTarget.style.borderColor = "#7C3AED"; }}
+          onFocus={(e) => { if (!verrouille) e.currentTarget.style.borderColor = "#7C3AED"; }}
           onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
         />
 
@@ -359,6 +370,101 @@ export default function AtelierEcriture({
           )}
         </div>
       </div>
+
+      {/* ── Colonne droite : propositions du maître en cartes ── */}
+      {annotationsActives.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{
+            background: "#F5F3FF", border: "1.5px solid #DDD6FE",
+            borderRadius: 12, padding: "10px 12px",
+            display: "flex", alignItems: "center", gap: 6,
+            fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#4338CA",
+          }}>
+            <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
+            Propositions du maître ({annotationsActives.length})
+          </div>
+          {annotationsActives.map((a) => {
+            const estNouvelle = a.statut === "nouvelle";
+            return (
+              <div
+                key={a.id}
+                style={{
+                  background: "white", border: "1.5px solid #DDD6FE",
+                  borderRadius: 12, padding: "10px 12px",
+                  display: "flex", flexDirection: "column", gap: 6,
+                  fontFamily: "Manrope, sans-serif",
+                }}
+                onMouseEnter={() => {
+                  if (estNouvelle && !apercu) {
+                    fetch("/api/enseignant/ecriture/annotation", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ blocId, id: a.id, statut: "lue", eleveRbId }),
+                    }).catch(() => {});
+                    setAnnotations((prev) =>
+                      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
+                    );
+                  }
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 999,
+                    background: estNouvelle ? "#4338CA" : "#A5B4FC",
+                    color: "white",
+                  }}>
+                    {estNouvelle ? "Nouvelle" : "Lue"}
+                  </span>
+                </div>
+                <div style={{ fontSize: 13, fontStyle: "italic", color: "#991B1B" }}>
+                  « {a.extrait} »
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 700, color: "#166534" }}>
+                  → « {a.suggestion} »
+                </div>
+                {a.commentaire && (
+                  <div style={{ fontSize: 12, color: "#4338CA", fontStyle: "italic", lineHeight: 1.4 }}>
+                    {a.commentaire}
+                  </div>
+                )}
+                <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", marginTop: 2 }}>
+                  {verrouille ? (
+                    <span style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
+                      Lecture seule
+                    </span>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => garderMonTexte(a)}
+                        style={{
+                          background: "white", color: "var(--pb-on-surface-variant)",
+                          border: "1px solid var(--pb-outline-variant, #ddd)", borderRadius: 8,
+                          padding: "4px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer",
+                        }}
+                      >
+                        Garder
+                      </button>
+                      <button
+                        onClick={() => appliquerAnnotation(a)}
+                        style={{
+                          background: "#4338CA", color: "white", border: "none",
+                          borderRadius: 8, padding: "4px 12px", fontSize: 11, fontWeight: 700,
+                          cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4,
+                        }}
+                      >
+                        <span className="ms" style={{ fontSize: 14 }}>check</span>
+                        Appliquer
+                      </button>
+                    </>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      </div> {/* fin grille */}
 
       {/* ── Liste des erreurs IA ── */}
       {erreursIA.length > 0 && (
@@ -417,45 +523,6 @@ export default function AtelierEcriture({
         </div>
       )}
 
-      {/* ── Liste des annotations enseignant (résumé) ── */}
-      {annotationsActives.length > 0 && (
-        <div style={{
-          background: "#F5F3FF", border: "1.5px solid #DDD6FE",
-          borderRadius: 14, padding: "14px 18px",
-        }}>
-          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#4338CA", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
-            <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
-            Propositions de la maîtresse
-          </div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {annotationsActives.map((a) => (
-              <button
-                key={a.id}
-                onClick={() => ouvrirAnnotation(a)}
-                style={{
-                  textAlign: "left", background: "white", border: "1px solid #DDD6FE",
-                  borderRadius: 10, padding: "12px 14px", cursor: "pointer",
-                  display: "flex", alignItems: "center", gap: 10, fontFamily: "Manrope, sans-serif",
-                  minHeight: 44,
-                }}
-              >
-                <span style={{
-                  fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 999,
-                  background: a.statut === "nouvelle" ? "#4338CA" : "#A5B4FC",
-                  color: "white", flexShrink: 0,
-                }}>
-                  {a.statut === "nouvelle" ? "Nouvelle" : "Lue"}
-                </span>
-                <span style={{ fontSize: 13, fontWeight: 600, color: "#4338CA", textDecoration: "underline" }}>
-                  « {a.extrait.length > 40 ? a.extrait.slice(0, 40) + "…" : a.extrait} »
-                </span>
-                <span className="ms" style={{ fontSize: 18, color: "#6B7280", marginLeft: "auto" }}>chevron_right</span>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* ── Feedback analyse ── */}
       {analyseEnCours && (
         <div style={{
@@ -506,9 +573,9 @@ export default function AtelierEcriture({
           {analyseEnCours ? "Analyse..." : "Corriger mon texte"}
         </button>
 
-        {vendredi && !verrouille && (
+        {!finalise && !envoye && (
           <button
-            onClick={envoyer}
+            onClick={() => envoyer(false)}
             disabled={envoiEnCours || !texte.trim()}
             style={{
               background: "#059669", color: "white", border: "none",
@@ -520,7 +587,25 @@ export default function AtelierEcriture({
             }}
           >
             <span className="ms" style={{ fontSize: 18 }}>send</span>
-            {envoiEnCours ? "Envoi..." : "Envoyer à la maîtresse"}
+            {envoiEnCours ? "Envoi..." : "Envoyer au maître"}
+          </button>
+        )}
+
+        {!finalise && envoye && vendredi && (
+          <button
+            onClick={() => envoyer(true)}
+            disabled={envoiEnCours || !texte.trim()}
+            style={{
+              background: "linear-gradient(135deg, #059669, #047857)", color: "white", border: "none",
+              borderRadius: 12, padding: "10px 24px", fontSize: 14,
+              fontWeight: 700, cursor: (envoiEnCours || !texte.trim()) ? "not-allowed" : "pointer",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              opacity: (envoiEnCours || !texte.trim()) ? 0.5 : 1,
+              display: "flex", alignItems: "center", gap: 6,
+            }}
+          >
+            <span className="ms" style={{ fontSize: 18 }}>task_alt</span>
+            {envoiEnCours ? "Envoi..." : "Envoyer la version finale"}
           </button>
         )}
       </div>
@@ -539,92 +624,6 @@ export default function AtelierEcriture({
         </div>
       )}
 
-      {/* ── Modale annotation ── */}
-      {annotationOuverte && (
-        <div
-          onClick={() => setAnnotationOuverte(null)}
-          style={{
-            position: "fixed", inset: 0, zIndex: 1000,
-            background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
-            display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
-          }}
-        >
-          <div
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              background: "white", borderRadius: 20, padding: "28px 32px",
-              maxWidth: 480, width: "100%", boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
-              <span className="ms" style={{ fontSize: 24, color: "#4338CA" }}>auto_awesome</span>
-              <h3 style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 17, margin: 0 }}>
-                Proposition de la maîtresse
-              </h3>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#6B7280", marginBottom: 6 }}>
-                Ton texte
-              </div>
-              <div style={{
-                background: "#FEF2F2", border: "1px solid #FECACA", borderRadius: 10,
-                padding: "10px 14px", fontSize: 14, color: "#991B1B", fontStyle: "italic",
-              }}>
-                « {annotationOuverte.extrait} »
-              </div>
-            </div>
-
-            <div style={{ marginBottom: 16 }}>
-              <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#6B7280", marginBottom: 6 }}>
-                Proposition
-              </div>
-              <div style={{
-                background: "#F0FDF4", border: "1px solid #BBF7D0", borderRadius: 10,
-                padding: "10px 14px", fontSize: 14, color: "#166534", fontWeight: 600,
-              }}>
-                « {annotationOuverte.suggestion} »
-              </div>
-            </div>
-
-            {annotationOuverte.commentaire && (
-              <div style={{
-                background: "#EEF2FF", border: "1px solid #C7D2FE", borderRadius: 10,
-                padding: "10px 14px", fontSize: 13, color: "#3730A3", marginBottom: 20,
-                lineHeight: 1.5,
-              }}>
-                {annotationOuverte.commentaire}
-              </div>
-            )}
-
-            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-              <button
-                onClick={() => garderMonTexte(annotationOuverte)}
-                style={{
-                  background: "white", color: "var(--pb-on-surface-variant)",
-                  border: "1.5px solid var(--pb-outline-variant, #ddd)", borderRadius: 10,
-                  padding: "8px 16px", fontSize: 13, fontWeight: 700,
-                  cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-                }}
-              >
-                Garder mon texte
-              </button>
-              <button
-                onClick={() => appliquerAnnotation(annotationOuverte)}
-                style={{
-                  background: "#4338CA", color: "white", border: "none",
-                  borderRadius: 10, padding: "8px 18px", fontSize: 13, fontWeight: 700,
-                  cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  display: "flex", alignItems: "center", gap: 6,
-                }}
-              >
-                <span className="ms" style={{ fontSize: 16 }}>check</span>
-                Appliquer la correction
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

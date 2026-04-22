@@ -51,6 +51,11 @@ export async function POST(req: NextRequest) {
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
   const dejaEnvoye = !!contenu.date_envoi && contenu.texte_final.trim().length > 0;
 
+  // Version finale verrouillée : plus aucune modification possible
+  if (contenu.date_version_finale) {
+    return NextResponse.json({ erreur: "Version finale verrouillée" }, { status: 409 });
+  }
+
   contenu.texte_courant = texte;
   // Après envoi, l'élève peut encore appliquer les corrections de l'enseignant —
   // on garde texte_final aligné sur texte_courant.
