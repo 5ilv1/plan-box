@@ -433,22 +433,67 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
   if (!bloc) return null;
   const c = (bloc.contenu ?? {}) as Record<string, unknown>;
 
-  // QCM — uniquement les réponses de l'élève (la question est masquée)
-  if (bloc.type === "qcm" && Array.isArray(c.questions)) {
-    const questions = c.questions as Array<{ question: string; options: string[]; reponse_correcte: number; reponse_eleve?: number; explication?: string }>;
-    const reponsesEleve = c.reponses_eleve as number[] | undefined;
+  // QCM / Exercice / Texte à trous / Calcul mental — uniquement les réponses élèves
+  // Les réponses sont toutes stockées dans c.reponses_eleve (tableau {id, reponse, correcte})
+  if (bloc.type === "qcm" || bloc.type === "exercice" || bloc.type === "texte_a_trous" || bloc.type === "calcul_mental") {
+    const reponsesEleve = Array.isArray(c.reponses_eleve)
+      ? (c.reponses_eleve as Array<{ id?: number; reponse?: string | number; correcte?: boolean | null }>)
+      : [];
+
+    // Source pour les attendus
+    const questions = Array.isArray(c.questions)
+      ? (c.questions as Array<{ id?: number; enonce?: string; reponse_attendue?: string; options?: string[]; reponse_correcte?: number }>)
+      : [];
+    const trous = Array.isArray(c.trous)
+      ? (c.trous as Array<{ position?: number; mot?: string }>)
+      : [];
+    const calculs = Array.isArray(c.calculs)
+      ? (c.calculs as Array<{ id?: number; enonce?: string; reponse?: string | number }>)
+      : [];
+
+    function getAttendu(rep: { id?: number }, idx: number): string | null {
+      if (bloc!.type === "qcm") {
+        const q = questions[idx];
+        if (q?.options && q.reponse_correcte != null) return q.options[q.reponse_correcte] ?? null;
+        return null;
+      }
+      if (bloc!.type === "exercice") {
+        const q = questions.find((qq) => qq.id === rep.id) ?? questions[idx];
+        return q?.reponse_attendue ?? null;
+      }
+      if (bloc!.type === "texte_a_trous") {
+        const t = trous[idx];
+        return t?.mot ? t.mot.replace(/[.,;:!?'"()]/g, "") : null;
+      }
+      if (bloc!.type === "calcul_mental") {
+        const q = calculs.find((c) => c.id === rep.id) ?? calculs[idx];
+        return q?.reponse != null ? String(q.reponse) : null;
+      }
+      return null;
+    }
+
+    if (reponsesEleve.length === 0) {
+      return (
+        <div style={{ fontSize: 13, color: "var(--text-secondary)", padding: 12, background: "#F9FAFB", borderRadius: 8, textAlign: "center" }}>
+          L&apos;élève n&apos;a pas encore enregistré de réponse.
+        </div>
+      );
+    }
+
+    const grille = bloc.type === "calcul_mental";
+
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {questions.map((q, i) => {
-          const repEleve = reponsesEleve?.[i] ?? q.reponse_eleve;
-          const estCorrecte = repEleve != null && repEleve === q.reponse_correcte;
-          const aRepondu = repEleve != null && repEleve !== -1;
-          const optionEleve = aRepondu ? q.options[repEleve!] : null;
-          const bonneOption = q.options[q.reponse_correcte];
+      <div style={grille
+        ? { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 6 }
+        : { display: "flex", flexDirection: "column", gap: 6 }
+      }>
+        {reponsesEleve.map((rep, i) => {
+          const aRepondu = rep.reponse != null && String(rep.reponse).trim() !== "";
+          const attendu = getAttendu(rep, i);
           return (
             <div key={i} style={{
               padding: "8px 12px", borderRadius: 8, fontSize: 13,
-              background: !aRepondu ? "#F9FAFB" : estCorrecte ? "#DCFCE7" : "#FEE2E2",
+              background: !aRepondu ? "#F9FAFB" : rep.correcte ? "#DCFCE7" : "#FEE2E2",
               border: "1px solid var(--border)",
               display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
             }}>
@@ -459,89 +504,16 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
                 <>
                   <span style={{
                     fontWeight: 700,
-                    color: estCorrecte ? "#15803D" : "#B91C1C",
+                    color: rep.correcte ? "#15803D" : "#B91C1C",
                   }}>
-                    {estCorrecte ? "✓" : "✗"} {String.fromCharCode(65 + repEleve!)}. {optionEleve}
+                    {rep.correcte ? "✓" : "✗"} {String(rep.reponse)}
                   </span>
-                  {!estCorrecte && (
+                  {!rep.correcte && attendu && (
                     <span style={{ fontSize: 12, color: "#15803D", fontWeight: 600 }}>
-                      → attendu : {String.fromCharCode(65 + q.reponse_correcte)}. {bonneOption}
+                      → attendu : {attendu}
                     </span>
                   )}
                 </>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // Exercice — uniquement les réponses élève
-  if ((bloc.type === "exercice" || bloc.type === "texte_a_trous") && Array.isArray(c.questions)) {
-    const questions = c.questions as Array<{ id?: number; enonce?: string; reponse_attendue?: string; reponse_eleve?: string; correcte?: boolean }>;
-    return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
-        {questions.map((q, i) => {
-          const aRepondu = q.reponse_eleve != null && String(q.reponse_eleve).trim() !== "";
-          return (
-            <div key={i} style={{
-              padding: "8px 12px", borderRadius: 8, fontSize: 13,
-              background: !aRepondu ? "#F9FAFB" : q.correcte ? "#DCFCE7" : "#FEE2E2",
-              border: "1px solid var(--border)",
-              display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
-            }}>
-              <span style={{ fontWeight: 700, color: "var(--text-secondary)", minWidth: 22 }}>{i + 1}.</span>
-              {!aRepondu ? (
-                <span style={{ color: "var(--text-secondary)", fontStyle: "italic" }}>Pas de réponse</span>
-              ) : (
-                <>
-                  <span style={{
-                    fontWeight: 700,
-                    color: q.correcte ? "#15803D" : "#B91C1C",
-                  }}>
-                    {q.correcte ? "✓" : "✗"} {String(q.reponse_eleve)}
-                  </span>
-                  {!q.correcte && q.reponse_attendue && (
-                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 600 }}>
-                      → attendu : {q.reponse_attendue}
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    );
-  }
-
-  // Calcul mental — uniquement les réponses
-  if (bloc.type === "calcul_mental" && Array.isArray(c.calculs)) {
-    const calculs = c.calculs as Array<{ enonce?: string; reponse?: string | number; reponse_eleve?: string | number; correcte?: boolean }>;
-    return (
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 6 }}>
-        {calculs.map((q, i) => {
-          const aRepondu = q.reponse_eleve != null && String(q.reponse_eleve).trim() !== "";
-          return (
-            <div key={i} style={{
-              padding: "8px 10px", borderRadius: 8, fontSize: 13,
-              border: "1px solid var(--border)",
-              background: !aRepondu ? "#F9FAFB" : q.correcte ? "#DCFCE7" : "#FEE2E2",
-              display: "flex", alignItems: "center", gap: 6,
-            }}>
-              <span style={{ fontWeight: 700, color: "var(--text-secondary)", minWidth: 22 }}>{i + 1}.</span>
-              {!aRepondu ? (
-                <span style={{ color: "var(--text-secondary)", fontStyle: "italic", fontSize: 12 }}>—</span>
-              ) : (
-                <span style={{ fontWeight: 700, color: q.correcte ? "#15803D" : "#B91C1C" }}>
-                  {q.correcte ? "✓" : "✗"} {String(q.reponse_eleve)}
-                  {!q.correcte && q.reponse != null && (
-                    <span style={{ marginLeft: 6, color: "#15803D", fontWeight: 600, fontSize: 12 }}>
-                      ({q.reponse})
-                    </span>
-                  )}
-                </span>
               )}
             </div>
           );
