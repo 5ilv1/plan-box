@@ -262,14 +262,11 @@ export default function AtelierEcriture({
     () => annotations.filter((a) => a.statut !== "acceptee" && a.statut !== "ignoree"),
     [annotations]
   );
-  const nbNouvelles = useMemo(
-    () => annotationsActives.filter((a) => a.statut === "nouvelle").length,
-    [annotationsActives]
-  );
 
   const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
 
   // Positions en cours des annotations du maître (recalées sur le texte actuel)
+  // Ne garde que celles dont l'extrait est toujours présent dans le texte.
   const teacherRanges = useMemo(() => {
     const ranges: Array<{ debut: number; fin: number; id: string }> = [];
     for (const a of annotationsActives) {
@@ -285,6 +282,19 @@ export default function AtelierEcriture({
     }
     return ranges;
   }, [annotationsActives, texte]);
+
+  // Annotations affichées dans le panneau bleu : uniquement celles encore
+  // applicables (extrait présent dans le texte), pour rester cohérent avec
+  // le surlignage.
+  const annotationsAffichees = useMemo(() => {
+    const idsApplicables = new Set(teacherRanges.map((t) => t.id));
+    return annotationsActives.filter((a) => idsApplicables.has(a.id));
+  }, [annotationsActives, teacherRanges]);
+
+  const nbNouvelles = useMemo(
+    () => annotationsAffichees.filter((a) => a.statut === "nouvelle").length,
+    [annotationsAffichees]
+  );
 
   // Erreurs IA visibles = pas déjà couvertes par une annotation du maître
   const erreursIAVisibles = useMemo(() => {
@@ -567,17 +577,17 @@ export default function AtelierEcriture({
       )}
 
       {/* ── Propositions du maître ── */}
-      {annotationsActives.length > 0 && (
+      {annotationsAffichees.length > 0 && (
         <div style={{
           background: "#EFF6FF", border: "1.5px solid #BFDBFE",
           borderRadius: 14, padding: "14px 18px",
         }}>
           <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#1D4ED8", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
             <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
-            {annotationsActives.length} correction{annotationsActives.length > 1 ? "s" : ""} du maître
+            {annotationsAffichees.length} correction{annotationsAffichees.length > 1 ? "s" : ""} du maître
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {annotationsActives.map((a) => (
+            {annotationsAffichees.map((a) => (
               <div
                 key={a.id}
                 style={{
