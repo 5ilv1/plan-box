@@ -261,27 +261,84 @@ export default function AtelierEcriture({
 
   const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
 
-  // Segments pour la couche de surlignage (mots signalés par l'IA en rouge gras)
-  const segmentsErreurs = useMemo(() => {
-    if (erreursIA.length === 0) return null;
-    const mots = Array.from(new Set(erreursIA.map((e) => e.mot).filter(Boolean)));
-    if (mots.length === 0) return null;
-    // Les plus longs d'abord pour éviter qu'un mot court matche à l'intérieur d'un plus long
-    mots.sort((a, b) => b.length - a.length);
-    const escaped = mots.map((m) => m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    // Bordures "non-lettre" avec Unicode property escapes pour gérer les accents.
-    // (?<![\p{L}\p{M}]) = pas précédé d'une lettre ou marque de combinaison
-    // (?![\p{L}\p{M}]) = pas suivi non plus
-    const pattern = new RegExp(
-      `(?<![\\p{L}\\p{M}])(${escaped.join("|")})(?![\\p{L}\\p{M}])`,
-      "giu"
-    );
-    const parts = texte.split(pattern);
-    return parts.map((p, i) => (i % 2 === 1
-      ? <span key={i} style={{ color: "#DC2626", fontWeight: 800 }}>{p}</span>
-      : <span key={i}>{p}</span>
-    ));
-  }, [texte, erreursIA]);
+  // Positions en cours des annotations du maître (recalées sur le texte actuel)
+  const teacherRanges = useMemo(() => {
+    const ranges: Array<{ debut: number; fin: number; id: string }> = [];
+    for (const a of annotationsActives) {
+      let debut = a.debut;
+      let fin = a.fin;
+      if (texte.slice(debut, fin) !== a.extrait) {
+        const idx = texte.indexOf(a.extrait);
+        if (idx < 0) continue;
+        debut = idx;
+        fin = idx + a.extrait.length;
+      }
+      ranges.push({ debut, fin, id: a.id });
+    }
+    return ranges;
+  }, [annotationsActives, texte]);
+
+  // Erreurs IA visibles = pas déjà couvertes par une annotation du maître
+  const erreursIAVisibles = useMemo(() => {
+    if (teacherRanges.length === 0) return erreursIA;
+    return erreursIA.filter((e) => {
+      if (!e.mot) return true;
+      let pos = e.position;
+      if (
+        pos < 0 ||
+        pos + e.mot.length > texte.length ||
+        texte.substring(pos, pos + e.mot.length).toLowerCase() !== e.mot.toLowerCase()
+      ) {
+        pos = texte.toLowerCase().indexOf(e.mot.toLowerCase());
+      }
+      if (pos < 0) return true;
+      const fin = pos + e.mot.length;
+      return !teacherRanges.some((t) => pos < t.fin && fin > t.debut);
+    });
+  }, [erreursIA, teacherRanges, texte]);
+
+  // Segments pour la couche de surlignage : rouge = IA, bleu = maître
+  const segmentsMarques = useMemo(() => {
+    type Mark = { debut: number; fin: number; type: "teacher" | "ia" };
+    const marks: Mark[] = teacherRanges.map((t) => ({ debut: t.debut, fin: t.fin, type: "teacher" as const }));
+
+    // Chaque occurrence de chaque mot IA visible (avec bordures de mot unicode)
+    for (const e of erreursIAVisibles) {
+      if (!e.mot) continue;
+      const escaped = e.mot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const pattern = new RegExp(
+        `(?<![\\p{L}\\p{M}])${escaped}(?![\\p{L}\\p{M}])`,
+        "giu"
+      );
+      let m: RegExpExecArray | null;
+      while ((m = pattern.exec(texte)) !== null) {
+        const debut = m.index;
+        const fin = m.index + m[0].length;
+        const chevauche = marks.some((mk) => debut < mk.fin && fin > mk.debut);
+        if (!chevauche) marks.push({ debut, fin, type: "ia" });
+      }
+    }
+
+    if (marks.length === 0) return null;
+    marks.sort((a, b) => a.debut - b.debut);
+
+    type Seg = { text: string; type: "normal" } | { text: string; type: "ia" | "teacher" };
+    const result: Seg[] = [];
+    let offset = 0;
+    for (const m of marks) {
+      if (m.debut < offset) continue;
+      if (m.debut > offset) result.push({ text: texte.slice(offset, m.debut), type: "normal" });
+      result.push({ text: texte.slice(m.debut, m.fin), type: m.type });
+      offset = m.fin;
+    }
+    if (offset < texte.length) result.push({ text: texte.slice(offset), type: "normal" });
+
+    return result.map((s, i) => {
+      if (s.type === "normal") return <span key={i}>{s.text}</span>;
+      if (s.type === "ia") return <span key={i} style={{ color: "#DC2626", fontWeight: 800 }}>{s.text}</span>;
+      return <span key={i} style={{ color: "#2563EB", fontWeight: 800 }}>{s.text}</span>;
+    });
+  }, [texte, erreursIAVisibles, teacherRanges]);
 
   // Appliquer une correction d'erreur IA : remplacer le mot par la correction
   function appliquerCorrection(erreur: ErreurIA) {
@@ -353,18 +410,8 @@ export default function AtelierEcriture({
         )}
       </div>
 
-      {/* ── Grille texte + propositions ── */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: annotationsActives.length > 0 ? "minmax(0, 1.6fr) minmax(260px, 1fr)" : "1fr",
-          gap: 16,
-          alignItems: "start",
-        }}
-      >
-
-      {/* ── Zone d'édition (colonne gauche) ── */}
-      <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "sticky", top: 12 }}>
+      {/* ── Zone d'édition ── */}
+      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <div
           style={{
             position: "relative",
@@ -374,7 +421,7 @@ export default function AtelierEcriture({
             transition: "border-color 0.2s",
           }}
         >
-          {segmentsErreurs && (
+          {segmentsMarques && (
             <div
               ref={overlayRef}
               aria-hidden
@@ -392,7 +439,7 @@ export default function AtelierEcriture({
                 zIndex: 2,
               }}
             >
-              {segmentsErreurs}
+              {segmentsMarques}
               {/* espace insécable final pour que la hauteur de la dernière ligne soit cohérente */}
               {"\u200B"}
             </div>
@@ -416,7 +463,7 @@ export default function AtelierEcriture({
               fontSize: 15, lineHeight: 1.8,
               fontFamily: "Manrope, sans-serif", fontWeight: 400,
               letterSpacing: "normal",
-              color: segmentsErreurs ? "transparent" : "var(--pb-on-surface)",
+              color: segmentsMarques ? "transparent" : "var(--pb-on-surface)",
               caretColor: "var(--pb-on-surface)",
               background: "transparent",
               resize: "vertical", outline: "none",
@@ -446,121 +493,26 @@ export default function AtelierEcriture({
               </span>
             )}
           </div>
-          {erreursIA.length > 0 && (
+          {erreursIAVisibles.length > 0 && (
             <span style={{ color: "#DC2626", fontWeight: 600 }}>
-              {erreursIA.length} erreur{erreursIA.length > 1 ? "s" : ""} à corriger
+              {erreursIAVisibles.length} erreur{erreursIAVisibles.length > 1 ? "s" : ""} à corriger
             </span>
           )}
         </div>
       </div>
 
-      {/* ── Colonne droite : propositions du maître en cartes ── */}
-      {annotationsActives.length > 0 && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{
-            background: "#F5F3FF", border: "1.5px solid #DDD6FE",
-            borderRadius: 12, padding: "10px 12px",
-            display: "flex", alignItems: "center", gap: 6,
-            fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#4338CA",
-          }}>
-            <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
-            Propositions du maître ({annotationsActives.length})
-          </div>
-          {annotationsActives.map((a) => {
-            const estNouvelle = a.statut === "nouvelle";
-            return (
-              <div
-                key={a.id}
-                style={{
-                  background: "white", border: "1.5px solid #DDD6FE",
-                  borderRadius: 12, padding: "10px 12px",
-                  display: "flex", flexDirection: "column", gap: 6,
-                  fontFamily: "Manrope, sans-serif",
-                }}
-                onMouseEnter={() => {
-                  if (estNouvelle && !apercu) {
-                    fetch("/api/enseignant/ecriture/annotation", {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ blocId, id: a.id, statut: "lue", eleveRbId }),
-                    }).catch(() => {});
-                    setAnnotations((prev) =>
-                      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
-                    );
-                  }
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                  <span style={{
-                    fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 999,
-                    background: estNouvelle ? "#4338CA" : "#A5B4FC",
-                    color: "white",
-                  }}>
-                    {estNouvelle ? "Nouvelle" : "Lue"}
-                  </span>
-                </div>
-                <div style={{ fontSize: 13, fontStyle: "italic", color: "#991B1B" }}>
-                  « {a.extrait} »
-                </div>
-                <div style={{ fontSize: 13, fontWeight: 700, color: "#166534" }}>
-                  → « {a.suggestion} »
-                </div>
-                {a.commentaire && (
-                  <div style={{ fontSize: 12, color: "#4338CA", fontStyle: "italic", lineHeight: 1.4 }}>
-                    {a.commentaire}
-                  </div>
-                )}
-                <div style={{ display: "flex", gap: 6, justifyContent: "flex-end", marginTop: 2 }}>
-                  {verrouille ? (
-                    <span style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
-                      Lecture seule
-                    </span>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => garderMonTexte(a)}
-                        style={{
-                          background: "white", color: "var(--pb-on-surface-variant)",
-                          border: "1px solid var(--pb-outline-variant, #ddd)", borderRadius: 8,
-                          padding: "4px 10px", fontSize: 11, fontWeight: 600, cursor: "pointer",
-                        }}
-                      >
-                        Laisser
-                      </button>
-                      <button
-                        onClick={() => appliquerAnnotation(a)}
-                        style={{
-                          background: "#4338CA", color: "white", border: "none",
-                          borderRadius: 8, padding: "4px 12px", fontSize: 11, fontWeight: 700,
-                          cursor: "pointer", display: "inline-flex", alignItems: "center", gap: 4,
-                        }}
-                      >
-                        <span className="ms" style={{ fontSize: 14 }}>check</span>
-                        Modifier
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      </div> {/* fin grille */}
-
       {/* ── Liste des erreurs IA ── */}
-      {erreursIA.length > 0 && (
+      {erreursIAVisibles.length > 0 && (
         <div style={{
           background: "#FEF2F2", border: "1.5px solid #FECACA",
           borderRadius: 14, padding: "14px 18px",
         }}>
           <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#B91C1C", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
             <span className="ms" style={{ fontSize: 18 }}>spellcheck</span>
-            {erreursIA.length} erreur{erreursIA.length > 1 ? "s" : ""} à corriger
+            {erreursIAVisibles.length} erreur{erreursIAVisibles.length > 1 ? "s" : ""} à corriger
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-            {erreursIA.map((e, i) => (
+            {erreursIAVisibles.map((e, i) => (
               <div
                 key={i}
                 style={{
@@ -599,6 +551,88 @@ export default function AtelierEcriture({
                     <span className="ms" style={{ fontSize: 16 }}>check</span>
                     Corriger
                   </button>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* ── Propositions du maître ── */}
+      {annotationsActives.length > 0 && (
+        <div style={{
+          background: "#EFF6FF", border: "1.5px solid #BFDBFE",
+          borderRadius: 14, padding: "14px 18px",
+        }}>
+          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#1D4ED8", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
+            <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
+            {annotationsActives.length} correction{annotationsActives.length > 1 ? "s" : ""} du maître
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {annotationsActives.map((a) => (
+              <div
+                key={a.id}
+                style={{
+                  background: "white", border: "1px solid #BFDBFE",
+                  borderRadius: 10, padding: "10px 14px",
+                  display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+                  fontFamily: "Manrope, sans-serif",
+                }}
+                onMouseEnter={() => {
+                  if (a.statut === "nouvelle" && !apercu) {
+                    fetch("/api/enseignant/ecriture/annotation", {
+                      method: "PATCH",
+                      headers: { "Content-Type": "application/json" },
+                      body: JSON.stringify({ blocId, id: a.id, statut: "lue", eleveRbId }),
+                    }).catch(() => {});
+                    setAnnotations((prev) =>
+                      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
+                    );
+                  }
+                }}
+              >
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#1D4ED8" }}>
+                  {a.extrait}
+                </span>
+                <span className="ms" style={{ fontSize: 18, color: "#9CA3AF" }}>arrow_forward</span>
+                <span style={{ fontSize: 15, fontWeight: 800, color: "#059669" }}>
+                  {a.suggestion}
+                </span>
+                {a.commentaire && (
+                  <span style={{ fontSize: 12, color: "#1E40AF", fontStyle: "italic", flex: 1, minWidth: 120 }}>
+                    {a.commentaire}
+                  </span>
+                )}
+                {!verrouille && (
+                  <div style={{ display: "flex", gap: 6 }}>
+                    <button
+                      type="button"
+                      onClick={() => garderMonTexte(a)}
+                      style={{
+                        background: "white", color: "var(--pb-on-surface-variant)",
+                        border: "1px solid var(--pb-outline-variant, #ddd)", borderRadius: 8,
+                        padding: "6px 12px", fontSize: 12, fontWeight: 600,
+                        cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        minHeight: 36,
+                      }}
+                    >
+                      Laisser
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => appliquerAnnotation(a)}
+                      style={{
+                        background: "#1D4ED8", color: "white", border: "none",
+                        borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 700,
+                        cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+                        display: "inline-flex", alignItems: "center", gap: 4,
+                        minHeight: 36,
+                      }}
+                    >
+                      <span className="ms" style={{ fontSize: 14 }}>check</span>
+                      Modifier
+                    </button>
+                  </div>
                 )}
               </div>
             ))}
