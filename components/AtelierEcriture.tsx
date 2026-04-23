@@ -265,8 +265,16 @@ export default function AtelierEcriture({
     if (erreursIA.length === 0) return null;
     const mots = Array.from(new Set(erreursIA.map((e) => e.mot).filter(Boolean)));
     if (mots.length === 0) return null;
+    // Les plus longs d'abord pour éviter qu'un mot court matche à l'intérieur d'un plus long
+    mots.sort((a, b) => b.length - a.length);
     const escaped = mots.map((m) => m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
-    const pattern = new RegExp(`(${escaped.join("|")})`, "giu");
+    // Bordures "non-lettre" avec Unicode property escapes pour gérer les accents.
+    // (?<![\p{L}\p{M}]) = pas précédé d'une lettre ou marque de combinaison
+    // (?![\p{L}\p{M}]) = pas suivi non plus
+    const pattern = new RegExp(
+      `(?<![\\p{L}\\p{M}])(${escaped.join("|")})(?![\\p{L}\\p{M}])`,
+      "giu"
+    );
     const parts = texte.split(pattern);
     return parts.map((p, i) => (i % 2 === 1
       ? <span key={i} style={{ color: "#DC2626", fontWeight: 800 }}>{p}</span>
