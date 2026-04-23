@@ -377,9 +377,16 @@ function DetailDrawer({
         {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
           <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4, flexWrap: "wrap" }}>
               <span className="ms" style={{ fontSize: 20, color: cfg.couleur }}>{cfg.icone}</span>
               <h3 style={{ fontSize: 16, fontWeight: 800, margin: 0 }}>{bloc.titre}</h3>
+              <span style={{
+                fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.04em",
+                padding: "3px 8px", borderRadius: 999,
+                background: `${cfg.couleur}1A`, color: cfg.couleur,
+              }}>
+                {cfg.libelle}
+              </span>
             </div>
             <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
               {detail.eleve.prenom} {detail.eleve.nom} · {detail.eleve.niveau}
@@ -426,53 +433,42 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
   if (!bloc) return null;
   const c = (bloc.contenu ?? {}) as Record<string, unknown>;
 
-  // QCM — affichage des questions + choix + réponse correcte
+  // QCM — uniquement les réponses de l'élève (la question est masquée)
   if (bloc.type === "qcm" && Array.isArray(c.questions)) {
     const questions = c.questions as Array<{ question: string; options: string[]; reponse_correcte: number; reponse_eleve?: number; explication?: string }>;
     const reponsesEleve = c.reponses_eleve as number[] | undefined;
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
         {questions.map((q, i) => {
           const repEleve = reponsesEleve?.[i] ?? q.reponse_eleve;
           const estCorrecte = repEleve != null && repEleve === q.reponse_correcte;
           const aRepondu = repEleve != null && repEleve !== -1;
+          const optionEleve = aRepondu ? q.options[repEleve!] : null;
+          const bonneOption = q.options[q.reponse_correcte];
           return (
-            <div key={i} style={{ padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "#F9FAFB" }}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>
-                {i + 1}. {q.question}
-                {aRepondu && (
+            <div key={i} style={{
+              padding: "8px 12px", borderRadius: 8, fontSize: 13,
+              background: !aRepondu ? "#F9FAFB" : estCorrecte ? "#DCFCE7" : "#FEE2E2",
+              border: "1px solid var(--border)",
+              display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+            }}>
+              <span style={{ fontWeight: 700, color: "var(--text-secondary)", minWidth: 22 }}>{i + 1}.</span>
+              {!aRepondu ? (
+                <span style={{ color: "var(--text-secondary)", fontStyle: "italic" }}>Pas de réponse</span>
+              ) : (
+                <>
                   <span style={{
-                    marginLeft: 8, fontSize: 11, fontWeight: 700,
+                    fontWeight: 700,
                     color: estCorrecte ? "#15803D" : "#B91C1C",
                   }}>
-                    {estCorrecte ? "✓" : "✗"}
+                    {estCorrecte ? "✓" : "✗"} {String.fromCharCode(65 + repEleve!)}. {optionEleve}
                   </span>
-                )}
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                {q.options.map((opt, j) => {
-                  const estBonne = j === q.reponse_correcte;
-                  const choisi = repEleve === j;
-                  const bg = estBonne ? "#DCFCE7" : choisi ? "#FEE2E2" : "transparent";
-                  const color = estBonne ? "#15803D" : choisi ? "#B91C1C" : "var(--text)";
-                  return (
-                    <div key={j} style={{
-                      padding: "6px 10px", borderRadius: 6, fontSize: 12,
-                      background: bg, color, fontWeight: estBonne || choisi ? 700 : 400,
-                      display: "flex", alignItems: "center", gap: 6,
-                    }}>
-                      <span>{String.fromCharCode(65 + j)}.</span>
-                      <span style={{ flex: 1 }}>{opt}</span>
-                      {estBonne && <span style={{ fontSize: 10 }}>bonne réponse</span>}
-                      {choisi && !estBonne && <span style={{ fontSize: 10 }}>choix élève</span>}
-                    </div>
-                  );
-                })}
-              </div>
-              {q.explication && (
-                <p style={{ fontSize: 11, color: "var(--text-secondary)", marginTop: 6, fontStyle: "italic" }}>
-                  💡 {q.explication}
-                </p>
+                  {!estCorrecte && (
+                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 600 }}>
+                      → attendu : {String.fromCharCode(65 + q.reponse_correcte)}. {bonneOption}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           );
@@ -481,56 +477,75 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
     );
   }
 
-  // Exercice — questions à trous avec réponses élève
+  // Exercice — uniquement les réponses élève
   if ((bloc.type === "exercice" || bloc.type === "texte_a_trous") && Array.isArray(c.questions)) {
     const questions = c.questions as Array<{ id?: number; enonce?: string; reponse_attendue?: string; reponse_eleve?: string; correcte?: boolean }>;
     return (
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {questions.map((q, i) => (
-          <div key={i} style={{ padding: 12, borderRadius: 10, border: "1px solid var(--border)", background: "#F9FAFB" }}>
-            <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 6 }}>{i + 1}. {q.enonce ?? ""}</div>
-            {q.reponse_eleve != null && (
-              <div style={{ display: "flex", gap: 10, fontSize: 12, alignItems: "center" }}>
-                <span style={{
-                  padding: "4px 10px", borderRadius: 6, fontWeight: 700,
-                  background: q.correcte ? "#DCFCE7" : "#FEE2E2",
-                  color: q.correcte ? "#15803D" : "#B91C1C",
-                }}>
-                  Élève : {String(q.reponse_eleve)} {q.correcte ? "✓" : "✗"}
-                </span>
-                {!q.correcte && q.reponse_attendue && (
-                  <span style={{ padding: "4px 10px", borderRadius: 6, background: "#DCFCE7", color: "#15803D", fontWeight: 700 }}>
-                    Attendu : {q.reponse_attendue}
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {questions.map((q, i) => {
+          const aRepondu = q.reponse_eleve != null && String(q.reponse_eleve).trim() !== "";
+          return (
+            <div key={i} style={{
+              padding: "8px 12px", borderRadius: 8, fontSize: 13,
+              background: !aRepondu ? "#F9FAFB" : q.correcte ? "#DCFCE7" : "#FEE2E2",
+              border: "1px solid var(--border)",
+              display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
+            }}>
+              <span style={{ fontWeight: 700, color: "var(--text-secondary)", minWidth: 22 }}>{i + 1}.</span>
+              {!aRepondu ? (
+                <span style={{ color: "var(--text-secondary)", fontStyle: "italic" }}>Pas de réponse</span>
+              ) : (
+                <>
+                  <span style={{
+                    fontWeight: 700,
+                    color: q.correcte ? "#15803D" : "#B91C1C",
+                  }}>
+                    {q.correcte ? "✓" : "✗"} {String(q.reponse_eleve)}
                   </span>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+                  {!q.correcte && q.reponse_attendue && (
+                    <span style={{ fontSize: 12, color: "#15803D", fontWeight: 600 }}>
+                      → attendu : {q.reponse_attendue}
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        })}
       </div>
     );
   }
 
-  // Calcul mental — même logique
+  // Calcul mental — uniquement les réponses
   if (bloc.type === "calcul_mental" && Array.isArray(c.calculs)) {
     const calculs = c.calculs as Array<{ enonce?: string; reponse?: string | number; reponse_eleve?: string | number; correcte?: boolean }>;
     return (
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 8 }}>
-        {calculs.map((q, i) => (
-          <div key={i} style={{
-            padding: 10, borderRadius: 8, fontSize: 13,
-            border: "1px solid var(--border)",
-            background: q.correcte === true ? "#DCFCE7" : q.correcte === false ? "#FEE2E2" : "#F9FAFB",
-          }}>
-            <div style={{ fontWeight: 700 }}>{q.enonce}</div>
-            <div style={{ fontSize: 11, marginTop: 4 }}>
-              {q.reponse_eleve != null
-                ? <>Élève : <strong>{String(q.reponse_eleve)}</strong> {q.correcte ? "✓" : `✗ (attendu ${q.reponse})`}</>
-                : <span style={{ color: "var(--text-secondary)" }}>Pas encore répondu</span>
-              }
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 6 }}>
+        {calculs.map((q, i) => {
+          const aRepondu = q.reponse_eleve != null && String(q.reponse_eleve).trim() !== "";
+          return (
+            <div key={i} style={{
+              padding: "8px 10px", borderRadius: 8, fontSize: 13,
+              border: "1px solid var(--border)",
+              background: !aRepondu ? "#F9FAFB" : q.correcte ? "#DCFCE7" : "#FEE2E2",
+              display: "flex", alignItems: "center", gap: 6,
+            }}>
+              <span style={{ fontWeight: 700, color: "var(--text-secondary)", minWidth: 22 }}>{i + 1}.</span>
+              {!aRepondu ? (
+                <span style={{ color: "var(--text-secondary)", fontStyle: "italic", fontSize: 12 }}>—</span>
+              ) : (
+                <span style={{ fontWeight: 700, color: q.correcte ? "#15803D" : "#B91C1C" }}>
+                  {q.correcte ? "✓" : "✗"} {String(q.reponse_eleve)}
+                  {!q.correcte && q.reponse != null && (
+                    <span style={{ marginLeft: 6, color: "#15803D", fontWeight: 600, fontSize: 12 }}>
+                      ({q.reponse})
+                    </span>
+                  )}
+                </span>
+              )}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     );
   }
