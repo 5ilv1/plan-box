@@ -297,36 +297,25 @@ export default function AtelierEcriture({
   );
 
   // Erreurs IA encore valides :
-  //  - le mot doit toujours être proche de la position stockée (±5 chars
-  //    pour tolérer une petite imprécision de l'IA)
-  //  - s'il n'y est plus du tout, l'erreur a été corrigée → on la jette
+  //  - retrouve le mot à la position stockée, sinon via indexOf dans le texte
+  //  - si le mot n'est nulle part, l'erreur a été corrigée → on la jette
   //  - la position ne doit pas chevaucher une annotation du maître
-  //
-  // Renvoie chaque erreur avec sa position recalée.
   const erreursIAVisibles = useMemo(() => {
     return erreursIA
       .map((e): ErreurIA | null => {
         if (!e.mot) return null;
         const motLower = e.mot.toLowerCase();
-        const matchesAt = (p: number) =>
-          p >= 0 &&
-          p + e.mot.length <= texte.length &&
-          texte.substring(p, p + e.mot.length).toLowerCase() === motLower;
-
         let pos = e.position;
-        if (!matchesAt(pos)) {
-          let found = -1;
-          for (let offset = 1; offset <= 5 && found < 0; offset++) {
-            if (matchesAt(pos - offset)) found = pos - offset;
-            else if (matchesAt(pos + offset)) found = pos + offset;
-          }
-          if (found < 0) return null;
-          pos = found;
+        const valid =
+          pos >= 0 &&
+          pos + e.mot.length <= texte.length &&
+          texte.substring(pos, pos + e.mot.length).toLowerCase() === motLower;
+        if (!valid) {
+          pos = texte.toLowerCase().indexOf(motLower);
+          if (pos < 0) return null;
         }
-
         const fin = pos + e.mot.length;
         if (teacherRanges.some((t) => pos < t.fin && fin > t.debut)) return null;
-
         return { ...e, position: pos };
       })
       .filter((e): e is ErreurIA => e !== null);
