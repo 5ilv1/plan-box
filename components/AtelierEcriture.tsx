@@ -84,6 +84,7 @@ export default function AtelierEcriture({
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedTexte = useRef(getTexteCourantInitial(contenu));
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   const vendredi = estVendredi();
   // Édition bloquée si finalisé OU si on est vendredi et déjà envoyé
@@ -364,40 +365,69 @@ export default function AtelierEcriture({
 
       {/* ── Zone d'édition (colonne gauche) ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "sticky", top: 12 }}>
-        {segmentsErreurs && (
-          <div style={{
-            background: "#FEF2F2",
-            border: "1.5px solid #FECACA",
-            borderRadius: 14, padding: "16px 20px",
-            fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
-            color: "var(--pb-on-surface)",
-            whiteSpace: "pre-wrap", wordWrap: "break-word",
-          }}>
-            <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em", color: "#B91C1C", marginBottom: 8 }}>
-              Ton texte — les mots à corriger sont en rouge
-            </div>
-            {segmentsErreurs}
-          </div>
-        )}
-        <textarea
-          ref={textareaRef}
-          value={texte}
-          onChange={(e) => setTexte(e.target.value)}
-          readOnly={verrouille}
-          placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour."
+        <div
           style={{
-            width: "100%", minHeight: 320, padding: "20px",
-            borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
-            fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
-            color: "var(--pb-on-surface)",
-            background: verrouille ? "#FAFAFA" : "white", resize: "vertical",
-            outline: "none", transition: "border-color 0.2s",
-            cursor: verrouille ? "default" : "text",
-            boxSizing: "border-box",
+            position: "relative",
+            background: verrouille ? "#FAFAFA" : "white",
+            borderRadius: 14,
+            border: "1.5px solid var(--pb-outline-variant, #ccc)",
+            transition: "border-color 0.2s",
           }}
-          onFocus={(e) => { if (!verrouille) e.currentTarget.style.borderColor = "#7C3AED"; }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
-        />
+        >
+          {segmentsErreurs && (
+            <div
+              ref={overlayRef}
+              aria-hidden
+              style={{
+                position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                padding: "20px",
+                margin: 0,
+                fontSize: 15, lineHeight: 1.8,
+                fontFamily: "Manrope, sans-serif", fontWeight: 400,
+                letterSpacing: "normal",
+                color: "var(--pb-on-surface)",
+                whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word",
+                overflow: "hidden", pointerEvents: "none",
+                boxSizing: "border-box",
+                zIndex: 2,
+              }}
+            >
+              {segmentsErreurs}
+              {/* espace insécable final pour que la hauteur de la dernière ligne soit cohérente */}
+              {"\u200B"}
+            </div>
+          )}
+          <textarea
+            ref={textareaRef}
+            value={texte}
+            onChange={(e) => setTexte(e.target.value)}
+            readOnly={verrouille}
+            placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour."
+            onScroll={(e) => {
+              if (overlayRef.current) {
+                overlayRef.current.scrollTop = e.currentTarget.scrollTop;
+              }
+            }}
+            style={{
+              display: "block",
+              width: "100%", minHeight: 320, padding: "20px",
+              margin: 0,
+              borderRadius: 14, border: "none",
+              fontSize: 15, lineHeight: 1.8,
+              fontFamily: "Manrope, sans-serif", fontWeight: 400,
+              letterSpacing: "normal",
+              color: segmentsErreurs ? "transparent" : "var(--pb-on-surface)",
+              caretColor: "var(--pb-on-surface)",
+              background: "transparent",
+              resize: "vertical", outline: "none",
+              cursor: verrouille ? "default" : "text",
+              boxSizing: "border-box",
+              position: "relative", zIndex: 1,
+            }}
+            onFocus={(e) => { if (!verrouille) e.currentTarget.parentElement!.style.borderColor = "#7C3AED"; }}
+            onBlur={(e) => { e.currentTarget.parentElement!.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
+          />
+        </div>
 
         {/* Barre de statut */}
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--pb-on-surface-variant)", padding: "0 4px", flexWrap: "wrap", gap: 6 }}>
