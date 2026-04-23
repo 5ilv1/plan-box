@@ -83,6 +83,8 @@ export default function AtelierEcriture({
 
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedTexte = useRef(getTexteCourantInitial(contenu));
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
 
   const vendredi = estVendredi();
   // Édition bloquée si finalisé OU si on est vendredi et déjà envoyé
@@ -259,6 +261,20 @@ export default function AtelierEcriture({
 
   const nbMots = texte.trim() ? texte.trim().split(/\s+/).length : 0;
 
+  // Segments pour la couche de surlignage (mots signalés par l'IA en rouge gras)
+  const segmentsErreurs = useMemo(() => {
+    if (erreursIA.length === 0) return null;
+    const mots = Array.from(new Set(erreursIA.map((e) => e.mot).filter(Boolean)));
+    if (mots.length === 0) return null;
+    const escaped = mots.map((m) => m.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+    const pattern = new RegExp(`(${escaped.join("|")})`, "giu");
+    const parts = texte.split(pattern);
+    return parts.map((p, i) => (i % 2 === 1
+      ? <span key={i} style={{ color: "#DC2626", fontWeight: 800 }}>{p}</span>
+      : <span key={i}>{p}</span>
+    ));
+  }, [texte, erreursIA]);
+
   // Appliquer une correction d'erreur IA : remplacer le mot par la correction
   function appliquerCorrection(erreur: ErreurIA) {
     if (!erreur.correction) return;
@@ -341,23 +357,52 @@ export default function AtelierEcriture({
 
       {/* ── Zone d'édition (colonne gauche) ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "sticky", top: 12 }}>
-        <textarea
-          value={texte}
-          onChange={(e) => setTexte(e.target.value)}
-          readOnly={verrouille}
-          placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour."
-          style={{
-            width: "100%", minHeight: 320, padding: "20px",
-            borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
-            fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
-            color: "var(--pb-on-surface)",
-            background: verrouille ? "#FAFAFA" : "white", resize: "vertical",
-            outline: "none", transition: "border-color 0.2s",
-            cursor: verrouille ? "default" : "text",
-          }}
-          onFocus={(e) => { if (!verrouille) e.currentTarget.style.borderColor = "#7C3AED"; }}
-          onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
-        />
+        <div style={{ position: "relative" }}>
+          {segmentsErreurs && (
+            <div
+              ref={overlayRef}
+              aria-hidden
+              style={{
+                position: "absolute", inset: 0,
+                padding: "20px",
+                borderRadius: 14, border: "1.5px solid transparent",
+                fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
+                color: "var(--pb-on-surface)",
+                whiteSpace: "pre-wrap", wordWrap: "break-word",
+                overflow: "hidden", pointerEvents: "none",
+                boxSizing: "border-box",
+              }}
+            >
+              {segmentsErreurs}
+            </div>
+          )}
+          <textarea
+            ref={textareaRef}
+            value={texte}
+            onChange={(e) => setTexte(e.target.value)}
+            readOnly={verrouille}
+            placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour."
+            onScroll={() => {
+              if (overlayRef.current && textareaRef.current) {
+                overlayRef.current.scrollTop = textareaRef.current.scrollTop;
+                overlayRef.current.scrollLeft = textareaRef.current.scrollLeft;
+              }
+            }}
+            style={{
+              width: "100%", minHeight: 320, padding: "20px",
+              borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
+              fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
+              color: segmentsErreurs ? "transparent" : "var(--pb-on-surface)",
+              caretColor: "var(--pb-on-surface)",
+              background: verrouille ? "#FAFAFA" : "white", resize: "vertical",
+              outline: "none", transition: "border-color 0.2s",
+              cursor: verrouille ? "default" : "text",
+              position: "relative", zIndex: 1, boxSizing: "border-box",
+            }}
+            onFocus={(e) => { if (!verrouille) e.currentTarget.style.borderColor = "#7C3AED"; }}
+            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
+          />
+        </div>
 
         {/* Barre de statut */}
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--pb-on-surface-variant)", padding: "0 4px", flexWrap: "wrap", gap: 6 }}>
