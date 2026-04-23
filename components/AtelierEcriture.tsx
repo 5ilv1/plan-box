@@ -357,7 +357,12 @@ export default function AtelierEcriture({
 
       {/* ── Zone d'édition (colonne gauche) ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8, position: "sticky", top: 12 }}>
-        <div style={{ position: "relative" }}>
+        <div style={{
+          position: "relative",
+          background: verrouille ? "#FAFAFA" : "white",
+          borderRadius: 14,
+          border: "1.5px solid var(--pb-outline-variant, #ccc)",
+        }}>
           {segmentsErreurs && (
             <div
               ref={overlayRef}
@@ -365,12 +370,12 @@ export default function AtelierEcriture({
               style={{
                 position: "absolute", inset: 0,
                 padding: "20px",
-                borderRadius: 14, border: "1.5px solid transparent",
                 fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
                 color: "var(--pb-on-surface)",
-                whiteSpace: "pre-wrap", wordWrap: "break-word",
+                whiteSpace: "pre-wrap", wordWrap: "break-word", overflowWrap: "break-word",
                 overflow: "hidden", pointerEvents: "none",
                 boxSizing: "border-box",
+                zIndex: 0,
               }}
             >
               {segmentsErreurs}
@@ -390,17 +395,18 @@ export default function AtelierEcriture({
             }}
             style={{
               width: "100%", minHeight: 320, padding: "20px",
-              borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
+              borderRadius: 14, border: "none",
               fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
               color: segmentsErreurs ? "transparent" : "var(--pb-on-surface)",
               caretColor: "var(--pb-on-surface)",
-              background: verrouille ? "#FAFAFA" : "white", resize: "vertical",
-              outline: "none", transition: "border-color 0.2s",
+              background: "transparent", resize: "vertical",
+              outline: "none",
               cursor: verrouille ? "default" : "text",
               position: "relative", zIndex: 1, boxSizing: "border-box",
+              display: "block",
             }}
-            onFocus={(e) => { if (!verrouille) e.currentTarget.style.borderColor = "#7C3AED"; }}
-            onBlur={(e) => { e.currentTarget.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
+            onFocus={(e) => { if (!verrouille) e.currentTarget.parentElement!.style.borderColor = "#7C3AED"; }}
+            onBlur={(e) => { e.currentTarget.parentElement!.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
           />
         </div>
 
