@@ -85,6 +85,8 @@ export default function AtelierEcriture({
   const lastSavedTexte = useRef(getTexteCourantInitial(contenu));
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
+  // Statuts décidés localement par l'élève, que le polling ne doit pas écraser
+  const statutsLocauxRef = useRef<Map<string, Annotation["statut"]>>(new Map());
 
   const vendredi = estVendredi();
   // Édition bloquée si finalisé OU si on est vendredi et déjà envoyé
@@ -129,7 +131,13 @@ export default function AtelierEcriture({
         if (!res.ok) return;
         const data = await res.json();
         if (Array.isArray(data.annotations)) {
-          setAnnotations(data.annotations);
+          // Préserve les statuts décidés localement par l'élève (accepte/ignore/lue)
+          // pour que le polling ne fasse pas réapparaître une annotation déjà traitée.
+          const merged = (data.annotations as Annotation[]).map((a) => {
+            const override = statutsLocauxRef.current.get(a.id);
+            return override ? { ...a, statut: override } : a;
+          });
+          setAnnotations(merged);
         }
       } catch {}
     }, 20000);
@@ -218,35 +226,35 @@ export default function AtelierEcriture({
     const avant = texte.slice(0, debut);
     const apres = texte.slice(fin);
     const nouveauTexte = avant + ann.suggestion + apres;
+    // Mise à jour optimiste immédiate : l'annotation disparaît sans attendre le réseau
     setTexte(nouveauTexte);
-    // Marquer comme acceptée
-    if (!apercu) {
-      try {
-        await fetch("/api/enseignant/ecriture/annotation", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ blocId, id: ann.id, statut: "acceptee", eleveRbId }),
-        });
-      } catch {}
-    }
+    statutsLocauxRef.current.set(ann.id, "acceptee");
     setAnnotations((prev) =>
       prev.map((a) => (a.id === ann.id ? { ...a, statut: "acceptee" as const } : a))
     );
+    // Sync serveur en arrière-plan
+    if (!apercu) {
+      fetch("/api/enseignant/ecriture/annotation", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId, id: ann.id, statut: "acceptee", eleveRbId }),
+      }).catch(() => {});
+    }
   }
 
   async function garderMonTexte(ann: Annotation) {
-    if (!apercu) {
-      try {
-        await fetch("/api/enseignant/ecriture/annotation", {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ blocId, id: ann.id, statut: "ignoree", eleveRbId }),
-        });
-      } catch {}
-    }
+    // Optimiste : on marque immédiatement et on laisse la requête partir en arrière-plan
+    statutsLocauxRef.current.set(ann.id, "ignoree");
     setAnnotations((prev) =>
       prev.map((a) => (a.id === ann.id ? { ...a, statut: "ignoree" as const } : a))
     );
+    if (!apercu) {
+      fetch("/api/enseignant/ecriture/annotation", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId, id: ann.id, statut: "ignoree", eleveRbId }),
+      }).catch(() => {});
+    }
   }
 
   // Annotations actives = non acceptées, non ignorées
@@ -580,14 +588,15 @@ export default function AtelierEcriture({
                 }}
                 onMouseEnter={() => {
                   if (a.statut === "nouvelle" && !apercu) {
+                    statutsLocauxRef.current.set(a.id, "lue");
+                    setAnnotations((prev) =>
+                      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
+                    );
                     fetch("/api/enseignant/ecriture/annotation", {
                       method: "PATCH",
                       headers: { "Content-Type": "application/json" },
                       body: JSON.stringify({ blocId, id: a.id, statut: "lue", eleveRbId }),
                     }).catch(() => {});
-                    setAnnotations((prev) =>
-                      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
-                    );
                   }
                 }}
               >
