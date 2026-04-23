@@ -296,20 +296,22 @@ export default function AtelierEcriture({
     [annotationsAffichees]
   );
 
-  // Erreurs IA visibles = pas déjà couvertes par une annotation du maître
+  // Erreurs IA encore valides :
+  //  - le mot doit TOUJOURS être à la position stockée par l'IA (sinon c'est
+  //    que l'élève a déjà corrigé ce passage — manuellement ou via le maître)
+  //  - la position ne doit pas chevaucher une annotation du maître
+  //
+  // Renvoie chaque erreur enrichie de sa position actuelle (stable ou retrouvée
+  // juste à côté).
   const erreursIAVisibles = useMemo(() => {
-    if (teacherRanges.length === 0) return erreursIA;
     return erreursIA.filter((e) => {
-      if (!e.mot) return true;
-      let pos = e.position;
-      if (
-        pos < 0 ||
-        pos + e.mot.length > texte.length ||
-        texte.substring(pos, pos + e.mot.length).toLowerCase() !== e.mot.toLowerCase()
-      ) {
-        pos = texte.toLowerCase().indexOf(e.mot.toLowerCase());
+      if (!e.mot) return false;
+      const pos = e.position;
+      if (pos < 0 || pos + e.mot.length > texte.length) return false;
+      if (texte.substring(pos, pos + e.mot.length).toLowerCase() !== e.mot.toLowerCase()) {
+        // Le mot n'est plus à cette position → l'erreur a été corrigée
+        return false;
       }
-      if (pos < 0) return true;
       const fin = pos + e.mot.length;
       return !teacherRanges.some((t) => pos < t.fin && fin > t.debut);
     });
@@ -320,21 +322,16 @@ export default function AtelierEcriture({
     type Mark = { debut: number; fin: number; type: "teacher" | "ia" };
     const marks: Mark[] = teacherRanges.map((t) => ({ debut: t.debut, fin: t.fin, type: "teacher" as const }));
 
-    // Chaque occurrence de chaque mot IA visible (avec bordures de mot unicode)
+    // Pour chaque erreur IA, on surligne la position EXACTE signalée par l'IA,
+    // pas toutes les occurrences du mot (éviter les faux positifs sur un "a"
+    // valide par exemple).
     for (const e of erreursIAVisibles) {
       if (!e.mot) continue;
-      const escaped = e.mot.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-      const pattern = new RegExp(
-        `(?<![\\p{L}\\p{M}])${escaped}(?![\\p{L}\\p{M}])`,
-        "giu"
-      );
-      let m: RegExpExecArray | null;
-      while ((m = pattern.exec(texte)) !== null) {
-        const debut = m.index;
-        const fin = m.index + m[0].length;
-        const chevauche = marks.some((mk) => debut < mk.fin && fin > mk.debut);
-        if (!chevauche) marks.push({ debut, fin, type: "ia" });
-      }
+      const debut = e.position;
+      const fin = debut + e.mot.length;
+      if (debut < 0 || fin > texte.length) continue;
+      const chevauche = marks.some((mk) => debut < mk.fin && fin > mk.debut);
+      if (!chevauche) marks.push({ debut, fin, type: "ia" });
     }
 
     if (marks.length === 0) return null;
