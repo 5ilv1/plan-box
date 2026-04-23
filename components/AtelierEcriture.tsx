@@ -297,24 +297,39 @@ export default function AtelierEcriture({
   );
 
   // Erreurs IA encore valides :
-  //  - le mot doit TOUJOURS être à la position stockée par l'IA (sinon c'est
-  //    que l'élève a déjà corrigé ce passage — manuellement ou via le maître)
+  //  - le mot doit toujours être proche de la position stockée (±5 chars
+  //    pour tolérer une petite imprécision de l'IA)
+  //  - s'il n'y est plus du tout, l'erreur a été corrigée → on la jette
   //  - la position ne doit pas chevaucher une annotation du maître
   //
-  // Renvoie chaque erreur enrichie de sa position actuelle (stable ou retrouvée
-  // juste à côté).
+  // Renvoie chaque erreur avec sa position recalée.
   const erreursIAVisibles = useMemo(() => {
-    return erreursIA.filter((e) => {
-      if (!e.mot) return false;
-      const pos = e.position;
-      if (pos < 0 || pos + e.mot.length > texte.length) return false;
-      if (texte.substring(pos, pos + e.mot.length).toLowerCase() !== e.mot.toLowerCase()) {
-        // Le mot n'est plus à cette position → l'erreur a été corrigée
-        return false;
-      }
-      const fin = pos + e.mot.length;
-      return !teacherRanges.some((t) => pos < t.fin && fin > t.debut);
-    });
+    return erreursIA
+      .map((e): ErreurIA | null => {
+        if (!e.mot) return null;
+        const motLower = e.mot.toLowerCase();
+        const matchesAt = (p: number) =>
+          p >= 0 &&
+          p + e.mot.length <= texte.length &&
+          texte.substring(p, p + e.mot.length).toLowerCase() === motLower;
+
+        let pos = e.position;
+        if (!matchesAt(pos)) {
+          let found = -1;
+          for (let offset = 1; offset <= 5 && found < 0; offset++) {
+            if (matchesAt(pos - offset)) found = pos - offset;
+            else if (matchesAt(pos + offset)) found = pos + offset;
+          }
+          if (found < 0) return null;
+          pos = found;
+        }
+
+        const fin = pos + e.mot.length;
+        if (teacherRanges.some((t) => pos < t.fin && fin > t.debut)) return null;
+
+        return { ...e, position: pos };
+      })
+      .filter((e): e is ErreurIA => e !== null);
   }, [erreursIA, teacherRanges, texte]);
 
   // Segments pour la couche de surlignage : rouge = IA, bleu = maître
