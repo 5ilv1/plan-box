@@ -44,6 +44,7 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
   if (type === "exercice")       return { label: "Exercice", tagClass: "primary", icon: "edit_note", subtitle: "Lis bien les consignes et réponds aux questions" };
   if (type === "calcul_mental")  return { label: "Calcul mental", tagClass: "primary", icon: "calculate", subtitle: "Calcule de tête le plus vite possible" };
   if (type === "dictee")         return { label: "Dictée", tagClass: "secondary", icon: "headphones", subtitle: "Écoute bien attentivement et écris ce que tu entends dans ton cahier" };
+  if (type === "correction_dictee") return { label: "Correction de la dictée", tagClass: "secondary", icon: "spellcheck", subtitle: "Relis ta dictée et corrige tes erreurs sur ton cahier" };
   if (type === "mots")           return { label: "Mots de la dictée", tagClass: "secondary", icon: "spellcheck", subtitle: "Lis et apprends les mots importants de la semaine" };
   if (type === "fichier_maths")  return { label: "Fichier de maths", tagClass: "primary", icon: "menu_book", subtitle: "Ouvre ton fichier et fais les exercices demandés" };
   if (type === "lecon_copier")   return { label: "Leçon à copier", tagClass: "secondary", icon: "book_2", subtitle: "Copie la leçon soigneusement dans ton cahier" };
@@ -436,6 +437,9 @@ export default function PageActivite() {
   const qcmData = bloc.type === "qcm" ? (bloc.contenu as unknown as { titre?: string; questions: { question: string; options: string[]; reponse_correcte: number; explication?: string }[] }) : null;
   const ressource  = bloc.type === "ressource" ? (bloc.contenu as unknown as RessourceIA) : null;
   const dictee     = bloc.type === "dictee" ? (bloc.contenu as unknown as DicteeContenu) : null;
+  const correctionDictee = bloc.type === "correction_dictee"
+    ? (bloc.contenu as unknown as { parent_bloc_id?: string; titre?: string; texte?: string; niveau_etoiles?: number })
+    : null;
 
   // ── Noms propres à noter (non présents dans les mots à apprendre) ──
   // Mots fonctionnels français pouvant débuter une phrase sans être des noms propres
@@ -648,92 +652,29 @@ export default function PageActivite() {
               </div>
             )}
 
-            {/* Fin de dictée / mots — message + panneau correction si enseignant l'a diffusée */}
-            {(bloc.type === "dictee" || (bloc.type === "mots" && !!(bloc.contenu as Record<string, unknown>)?.mots_semaine)) && (() => {
-              // Panneau correction visible UNIQUEMENT le jour de la dictée
-              // (disparaît automatiquement le lendemain, même si l'enseignant
-              // a oublié d'annuler la diffusion)
-              const dNow = new Date();
-              const aujourdhui = `${dNow.getFullYear()}-${String(dNow.getMonth() + 1).padStart(2, "0")}-${String(dNow.getDate()).padStart(2, "0")}`;
-              const correctionDiffusee = !!bloc.correction_diffusee_le && bloc.date_assignation === aujourdhui;
-              const texteAttendu = bloc.type === "dictee"
-                ? (dictee?.texte || dictee?.phrases?.map((p) => p.texte).join(" ") || "")
-                : (() => {
-                    const c = bloc.contenu as Record<string, unknown> | null;
-                    const mots = (c?.mots as { mot: string; pronom?: string }[] | undefined) ?? [];
-                    return mots.map((m) => m.pronom ? `${m.pronom} ${m.mot}` : m.mot).join("\n");
-                  })();
-              const estDictee = bloc.type === "dictee";
-              return (
-                <div style={{ textAlign: "left", display: "flex", flexDirection: "column", gap: 16 }}>
-                  {/* Message fin de dictée */}
-                  <div style={{
-                    padding: "18px 22px",
-                    borderRadius: "1rem",
-                    background: "linear-gradient(135deg, #e0f2fe, #bae6fd)",
-                    border: "1px solid rgba(14,165,233,0.25)",
+            {/* Fin de dictée / mots — message "donne ton cahier au maître" */}
+            {(bloc.type === "dictee" || (bloc.type === "mots" && !!(bloc.contenu as Record<string, unknown>)?.mots_semaine)) && (
+              <div style={{
+                textAlign: "left",
+                padding: "18px 22px",
+                borderRadius: "1rem",
+                background: "linear-gradient(135deg, #e0f2fe, #bae6fd)",
+                border: "1px solid rgba(14,165,233,0.25)",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                  <span className="ms" style={{ fontSize: 26, color: "#0369a1" }}>assignment_turned_in</span>
+                  <span style={{
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    fontSize: 17, fontWeight: 800, color: "#0c4a6e",
                   }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                      <span className="ms" style={{ fontSize: 26, color: "#0369a1" }}>assignment_turned_in</span>
-                      <span style={{
-                        fontFamily: "'Plus Jakarta Sans', sans-serif",
-                        fontSize: 17, fontWeight: 800, color: "#0c4a6e",
-                      }}>
-                        {estDictee ? "Dictée terminée !" : "Mots terminés !"}
-                      </span>
-                    </div>
-                    <p style={{ fontSize: 14, margin: 0, color: "#075985", lineHeight: 1.5 }}>
-                      N&apos;oublie pas de donner ton cahier au maître pour la correction. Vous la reverrez ensemble tout à l&apos;heure.
-                    </p>
-                  </div>
-
-                  {/* Panneau de correction — visible quand l'enseignant l'a diffusée */}
-                  {correctionDiffusee && texteAttendu && (
-                    <div style={{
-                      padding: "20px 24px",
-                      borderRadius: "1rem",
-                      background: "white",
-                      border: "2px solid #7c3aed",
-                      boxShadow: "0 2px 12px rgba(124,58,237,0.08)",
-                    }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                        <span className="ms" style={{ fontSize: 26, color: "#7c3aed" }}>spellcheck</span>
-                        <span style={{
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          fontSize: 17, fontWeight: 800, color: "#5b21b6",
-                        }}>
-                          Correction de la {estDictee ? "dictée" : "liste de mots"}
-                        </span>
-                      </div>
-
-                      <ol style={{
-                        fontSize: 13, color: "var(--pb-on-surface-variant)",
-                        margin: "0 0 14px", paddingLeft: 18, lineHeight: 1.6,
-                      }}>
-                        <li>Prends ton cahier et un stylo <strong>vert</strong> (ou d&apos;une autre couleur).</li>
-                        <li>Lis le texte ci-dessous, mot par mot.</li>
-                        <li>Compare avec ce que tu as écrit. Pour chaque différence, <strong>souligne</strong> le mot dans ton cahier et <strong>recopie</strong> la bonne orthographe à côté.</li>
-                        <li>Vérifie les <strong>accents</strong>, la <strong>ponctuation</strong>, et les <strong>majuscules</strong> de début de phrase.</li>
-                      </ol>
-
-                      <div style={{
-                        padding: "16px 18px",
-                        borderRadius: "0.75rem",
-                        background: "#faf5ff",
-                        border: "1px solid #e9d5ff",
-                        fontFamily: estDictee ? "Georgia, 'Times New Roman', serif" : "'Plus Jakarta Sans', sans-serif",
-                        fontSize: 17,
-                        lineHeight: 1.9,
-                        color: "#1f2937",
-                        whiteSpace: estDictee ? "normal" : "pre-line",
-                      }}>
-                        {texteAttendu}
-                      </div>
-                    </div>
-                  )}
+                    {bloc.type === "dictee" ? "Dictée terminée !" : "Mots terminés !"}
+                  </span>
                 </div>
-              );
-            })()}
+                <p style={{ fontSize: 14, margin: 0, color: "#075985", lineHeight: 1.5 }}>
+                  N&apos;oublie pas de donner ton cahier au maître pour la correction. Quand il la diffusera, un bloc <strong>Correction</strong> apparaîtra sur ton tableau de bord.
+                </p>
+              </div>
+            )}
 
             <Link href="/eleve/dashboard" className="pb-btn primary" style={{ width: "100%", marginTop: (bloc.type === "dictee" || bloc.type === "mots") ? 16 : 0 }}>
               <span className="ms" style={{ fontSize: 18 }}>home</span>
@@ -825,6 +766,67 @@ export default function PageActivite() {
                   audioPhraseUrls={dictee.audio_phrases_urls}
                   onTermine={() => marquerFait().then(() => setEtat("termine"))}
                 />
+              </div>
+            )}
+
+            {/* ── Correction de la dictée (texte attendu + consignes) ── */}
+            {correctionDictee && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+                <div style={{
+                  padding: "20px 24px",
+                  borderRadius: "1rem",
+                  background: "white",
+                  border: "2px solid #7c3aed",
+                  boxShadow: "0 2px 12px rgba(124,58,237,0.08)",
+                }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                    <span className="ms" style={{ fontSize: 26, color: "#7c3aed" }}>spellcheck</span>
+                    <span style={{
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      fontSize: 17, fontWeight: 800, color: "#5b21b6",
+                    }}>
+                      Relis ta dictée et corrige tes erreurs
+                    </span>
+                  </div>
+
+                  <ol style={{
+                    fontSize: 14, color: "var(--pb-on-surface-variant)",
+                    margin: "0 0 18px", paddingLeft: 18, lineHeight: 1.7,
+                  }}>
+                    <li>Prends ton cahier et un stylo <strong>vert</strong> (ou d&apos;une autre couleur).</li>
+                    <li>Lis le texte ci-dessous, mot par mot.</li>
+                    <li>Compare avec ce que tu as écrit. Pour chaque différence, <strong>souligne</strong> le mot dans ton cahier et <strong>recopie</strong> la bonne orthographe à côté.</li>
+                    <li>Vérifie les <strong>accents</strong>, la <strong>ponctuation</strong> et les <strong>majuscules</strong> de début de phrase.</li>
+                  </ol>
+
+                  {correctionDictee.texte ? (
+                    <div style={{
+                      padding: "18px 20px",
+                      borderRadius: "0.75rem",
+                      background: "#faf5ff",
+                      border: "1px solid #e9d5ff",
+                      fontFamily: "Georgia, 'Times New Roman', serif",
+                      fontSize: 18,
+                      lineHeight: 1.95,
+                      color: "#1f2937",
+                    }}>
+                      {correctionDictee.texte}
+                    </div>
+                  ) : (
+                    <div style={{ fontSize: 14, fontStyle: "italic", color: "#991b1b" }}>
+                      Texte attendu indisponible. Demande à ton maître.
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  onClick={() => marquerFait().then(() => setEtat("termine"))}
+                  className="pb-btn primary"
+                  style={{ width: "100%", padding: "14px 20px", fontSize: 15 }}
+                >
+                  <span className="ms" style={{ fontSize: 20 }}>check_circle</span>
+                  J&apos;ai relu et corrigé ma dictée
+                </button>
               </div>
             )}
 

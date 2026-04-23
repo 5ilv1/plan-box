@@ -1402,7 +1402,7 @@ export default function DashboardEleve() {
               {(() => {
                 const isPapier = (b: PlanTravail) => {
                   if (b.type === "ecriture" && (b.contenu as any)?.mode === "semaine") return false; // en ligne
-                  return ["dictee", "mots", "fichier_maths", "lecon_copier", "ecriture"].includes(b.type);
+                  return ["dictee", "mots", "correction_dictee", "fichier_maths", "lecon_copier", "ecriture"].includes(b.type);
                 };
                 const blocsPapier = blocsAujourdhui.filter(isPapier);
                 const blocsEnLigneLibres = blocsLibres.filter((b) => !isPapier(b));
@@ -1465,6 +1465,8 @@ export default function DashboardEleve() {
                             ? "Écriture créative • À écrire sur ton cahier"
                             : b.type === "mots"
                             ? "Mots à apprendre • Écris-les plusieurs fois sur ton cahier"
+                            : b.type === "correction_dictee"
+                            ? "Relis et corrige ta dictée sur ton cahier"
                             : "Dictée • À écrire sur ton cahier";
                           return (
                             <div
@@ -1504,15 +1506,15 @@ export default function DashboardEleve() {
                                   textDecoration: estFait ? "line-through" : "none",
                                   marginBottom: 3,
                                 }}>
-                                  {b.type === "dictee" ? `Dictée — ${b.titre}` : b.type === "mots" ? `Mots — ${b.titre.replace(/^Mots — /, "")}` : b.type === "lecon_copier" ? `Leçon — ${b.titre}` : b.type === "ecriture" ? `Écriture — ${b.titre.replace("Écriture — ", "")}` : b.type === "fichier_maths" ? (page ? `Fichier de Maths P${page}` : b.titre) : b.titre}
+                                  {b.type === "dictee" ? `Dictée — ${b.titre}` : b.type === "correction_dictee" ? b.titre : b.type === "mots" ? `Mots — ${b.titre.replace(/^Mots — /, "")}` : b.type === "lecon_copier" ? `Leçon — ${b.titre}` : b.type === "ecriture" ? `Écriture — ${b.titre.replace("Écriture — ", "")}` : b.type === "fichier_maths" ? (page ? `Fichier de Maths P${page}` : b.titre) : b.titre}
                                 </div>
                                 <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
                                   {sousTitre}
                                 </div>
                               </div>
 
-                              {/* Bouton accès activité — dictée, mots, leçon à copier et écriture */}
-                              {(b.type === "dictee" || b.type === "mots" || b.type === "lecon_copier" || b.type === "ecriture") && b.contenu && !estFait && (
+                              {/* Bouton accès activité — dictée, correction, mots, leçon à copier et écriture */}
+                              {(b.type === "dictee" || b.type === "correction_dictee" || b.type === "mots" || b.type === "lecon_copier" || b.type === "ecriture") && b.contenu && !estFait && (
                                 <Link
                                   href={`/eleve/activite/${b.id}`}
                                   className="pb-btn primary"

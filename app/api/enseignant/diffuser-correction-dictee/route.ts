@@ -118,13 +118,18 @@ export async function GET(req: NextRequest) {
 /**
  * POST /api/enseignant/diffuser-correction-dictee
  * Body: { dictee_parent_id: string, date_assignation: string, diffuser?: boolean }
+ *       ou { bloc_id: string, diffuser?: boolean }
  *
- * Met à jour tous les blocs plan_travail de type "dictee" correspondants :
- *  - diffuser=true (défaut) → correction_diffusee_le = now()
- *  - diffuser=false        → correction_diffusee_le = null (annulation)
+ * Quand diffuser=true :
+ *  - Marque correction_diffusee_le = now() sur les blocs dictée ciblés
+ *  - Crée un VRAI bloc plan_travail de type "correction_dictee" pour chaque
+ *    élève concerné (pas de doublon si déjà existant)
+ *  → les élèves voient apparaître "Correction de la dictée" dans leur
+ *    section "À faire sur le cahier" du dashboard.
  *
- * Les élèves voient alors (ou cachent) le panneau "Correction de la dictée"
- * qui affiche le texte attendu + les consignes de relecture.
+ * Quand diffuser=false :
+ *  - Remet correction_diffusee_le = null
+ *  - Supprime les blocs correction_dictee associés
  */
 export async function POST(req: NextRequest) {
   const auth = await requireEnseignant();
@@ -147,16 +152,16 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // Cible : soit un bloc précis, soit tous les blocs d'une dictée pour une date
-  let query = admin
+  // ── Étape 1 : récupérer les dictées cibles (pour alimenter la création / suppression des blocs correction) ──
+  let selectQuery = admin
     .from("plan_travail")
-    .update({ correction_diffusee_le: nouvelleValeur })
+    .select("id, titre, date_assignation, eleve_id, repetibox_eleve_id, groupe_label, chapitre_id, contenu")
     .eq("type", "dictee");
 
   if (body.bloc_id) {
-    query = query.eq("id", body.bloc_id);
+    selectQuery = selectQuery.eq("id", body.bloc_id);
   } else if (body.dictee_parent_id && body.date_assignation) {
-    query = query
+    selectQuery = selectQuery
       .eq("contenu->>dictee_parent_id", body.dictee_parent_id)
       .eq("date_assignation", body.date_assignation);
   } else {
@@ -166,16 +171,120 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const { error, data } = await query.select("id");
+  const { data: cibles, error: erreurSelect } = await selectQuery;
+  if (erreurSelect) {
+    console.error("[diffuser-correction-dictee][select]", erreurSelect);
+    return NextResponse.json({ erreur: "Erreur lecture" }, { status: 500 });
+  }
 
-  if (error) {
-    console.error("[diffuser-correction-dictee]", error);
+  type Cible = {
+    id: string;
+    titre: string;
+    date_assignation: string;
+    eleve_id: string | null;
+    repetibox_eleve_id: number | null;
+    groupe_label: string | null;
+    chapitre_id: string | null;
+    contenu: {
+      dictee_parent_id?: string;
+      titre?: string;
+      texte?: string;
+      phrases?: { id: number; texte: string }[];
+      niveau_etoiles?: number;
+    } | null;
+  };
+  const ciblesTyped = (cibles ?? []) as Cible[];
+
+  if (ciblesTyped.length === 0) {
+    return NextResponse.json({ ok: true, blocs_mis_a_jour: 0, corrections_creees: 0, diffuse: diffuser });
+  }
+
+  // ── Étape 2 : mise à jour du flag correction_diffusee_le ──
+  const idsDictee = ciblesTyped.map((c) => c.id);
+  const { error: erreurUpd } = await admin
+    .from("plan_travail")
+    .update({ correction_diffusee_le: nouvelleValeur })
+    .in("id", idsDictee);
+
+  if (erreurUpd) {
+    console.error("[diffuser-correction-dictee][update]", erreurUpd);
     return NextResponse.json({ erreur: "Erreur mise à jour" }, { status: 500 });
+  }
+
+  let correctionsCreees = 0;
+  let correctionsSupprimees = 0;
+
+  if (diffuser) {
+    // ── Étape 3a : créer les blocs correction_dictee manquants ──
+    // Un correction_dictee existe-t-il déjà pour chaque dictée cible ?
+    const { data: existants } = await admin
+      .from("plan_travail")
+      .select("contenu")
+      .eq("type", "correction_dictee")
+      .in("contenu->>parent_bloc_id", idsDictee);
+
+    const dejaCrees = new Set<string>();
+    for (const e of (existants ?? []) as { contenu: { parent_bloc_id?: string } | null }[]) {
+      const pid = e.contenu?.parent_bloc_id;
+      if (pid) dejaCrees.add(pid);
+    }
+
+    const aCreer = ciblesTyped
+      .filter((c) => !dejaCrees.has(c.id))
+      .map((c) => {
+        const texteAttendu = c.contenu?.texte
+          || c.contenu?.phrases?.map((p) => p.texte).join(" ")
+          || "";
+        return {
+          titre: `Correction — ${c.contenu?.titre ?? c.titre}`,
+          type: "correction_dictee" as const,
+          eleve_id: c.eleve_id,
+          repetibox_eleve_id: c.repetibox_eleve_id,
+          date_assignation: c.date_assignation,
+          statut: "a_faire" as const,
+          chapitre_id: c.chapitre_id,
+          groupe_label: c.groupe_label,
+          contenu: {
+            parent_bloc_id: c.id,
+            dictee_parent_id: c.contenu?.dictee_parent_id ?? null,
+            titre: c.contenu?.titre ?? c.titre,
+            texte: texteAttendu,
+            niveau_etoiles: c.contenu?.niveau_etoiles ?? null,
+          },
+        };
+      });
+
+    if (aCreer.length > 0) {
+      const { error: erreurIns, data: inseres } = await admin
+        .from("plan_travail")
+        .insert(aCreer)
+        .select("id");
+      if (erreurIns) {
+        console.error("[diffuser-correction-dictee][insert]", erreurIns);
+      } else {
+        correctionsCreees = inseres?.length ?? 0;
+      }
+    }
+  } else {
+    // ── Étape 3b : supprimer les blocs correction_dictee associés ──
+    const { error: erreurDel, data: supprimes } = await admin
+      .from("plan_travail")
+      .delete()
+      .eq("type", "correction_dictee")
+      .in("contenu->>parent_bloc_id", idsDictee)
+      .select("id");
+    if (erreurDel) {
+      console.error("[diffuser-correction-dictee][delete]", erreurDel);
+    } else {
+      correctionsSupprimees = supprimes?.length ?? 0;
+    }
   }
 
   return NextResponse.json({
     ok: true,
-    blocs_mis_a_jour: data?.length ?? 0,
+    blocs_mis_a_jour: ciblesTyped.length,
+    corrections_creees: correctionsCreees,
+    corrections_supprimees: correctionsSupprimees,
     diffuse: diffuser,
   });
 }

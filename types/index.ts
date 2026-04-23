@@ -308,6 +308,7 @@ export type TypeBloc =
   | "calcul_mental"
   | "mots"
   | "dictee"
+  | "correction_dictee"
   | "media"
   | "eval"
   | "libre"
@@ -431,6 +432,7 @@ export const TYPE_BLOC_CONFIG: Record<
   calcul_mental: { icone: "calculate",    libelle: "Calcul mental", couleur: "#7C3AED" },
   mots:          { icone: "spellcheck",   libelle: "Mots de la dictée", couleur: "#D97706" },
   dictee:        { icone: "headphones",   libelle: "Dictée",        couleur: "#D97706" },
+  correction_dictee: { icone: "spellcheck", libelle: "Correction de la dictée", couleur: "#7C3AED" },
   media:         { icone: "play_circle",  libelle: "Média",         couleur: "#059669" },
   eval:          { icone: "quiz",         libelle: "Évaluation",    couleur: "#DC2626" },
   libre:         { icone: "draw",         libelle: "Libre",         couleur: "#6B7280" },
