@@ -125,7 +125,7 @@ export async function GET() {
   // Sélectionner un problème aléatoire
   const hasPlus = elevePB ? false : (eleveRB as any)?.niveau_plus === true;
   const niveauxFiltre = niveau === "CM2"
-    ? (hasPlus ? ["CM2", "CM2+"] : ["CM2"])
+    ? (hasPlus ? ["CM2", "CM2+", "CM1"] : ["CM2", "CM1"])
     : niveau === "CE2"
       ? ["CE2"]
       : (hasPlus ? ["CM1", "CM1+"] : ["CM1"]);

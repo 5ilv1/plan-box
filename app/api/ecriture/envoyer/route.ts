@@ -19,12 +19,12 @@ import {
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { blocId, texte, eleveRbId, final } = body as {
+  const { blocId, texte, eleveRbId } = body as {
     blocId?: string;
     texte?: string;
     eleveRbId?: number;
-    final?: boolean;
   };
+  const estFinal = body?.final === true;
 
   if (!blocId || !texte?.trim()) {
     return NextResponse.json({ erreur: "blocId et texte requis" }, { status: 400 });
@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
   if (!contenu.date_envoi) {
     contenu.date_envoi = aujourdhui;
   }
-  if (final) {
+  if (estFinal) {
     contenu.date_version_finale = aujourdhui;
   }
   contenu.historique = majHistorique(contenu.historique, texte, aujourdhui);

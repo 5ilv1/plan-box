@@ -177,10 +177,10 @@ export default function AtelierEcriture({
   }, [texte, sujet]);
 
   // ── Envoyer le texte (premier envoi ou version finale) ──
-  async function envoyer(final: boolean = false) {
+  async function envoyer(estFinal: boolean = false) {
     if (apercu) return;
     if (!texte.trim()) return;
-    const question = final
+    const question = estFinal
       ? "Es-tu sûr de vouloir envoyer ta version finale ? Tu ne pourras plus rien modifier après."
       : "Es-tu sûr de vouloir envoyer ton texte au maître ? Il pourra le corriger et tu pourras encore le retravailler.";
     if (!confirm(question)) {
@@ -191,11 +191,11 @@ export default function AtelierEcriture({
       const res = await fetch("/api/ecriture/envoyer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocId, texte, eleveRbId, final }),
+        body: JSON.stringify({ blocId, texte, eleveRbId, final: estFinal }),
       });
       if (res.ok) {
         setEnvoye(true);
-        if (final) setFinalise(true);
+        if (estFinal) setFinalise(true);
         onTermine();
       } else {
         const data = await res.json();
