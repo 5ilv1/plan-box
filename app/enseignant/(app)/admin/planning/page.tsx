@@ -453,6 +453,20 @@ export default function PageAdminPlanning() {
     }));
   }
 
+  async function changerDateRapidement(nouvelleDate: string) {
+    if (!detail || !nouvelleDate || nouvelleDate === detail.date_assignation) return;
+    await Promise.all(detail.blocs.map((b) =>
+      fetch("/api/admin/planning", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId: b.id, date_assignation: nouvelleDate }),
+      })
+    ));
+    const updatedBlocs = detail.blocs.map((b) => ({ ...b, date_assignation: nouvelleDate }));
+    setDetail({ ...detail, date_assignation: nouvelleDate, blocs: updatedBlocs });
+    setBlocs((prev) => prev.map((b) => updatedBlocs.find((ub) => ub.id === b.id) ?? b));
+  }
+
   async function dupliquerBloc() {
     if (!detail || enDuplication) return;
     setEnDuplication(true);
@@ -1087,9 +1101,15 @@ export default function PageAdminPlanning() {
                   {detail.titre ?? (detail.type === "calcul_mental" ? "Calcul mental" : "Sans titre")}
                 </h3>
                 <div style={{ display: "flex", gap: 8, flexWrap: "wrap", alignItems: "center" }}>
-                  <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                    {new Date(detail.date_assignation + "T12:00:00Z").toLocaleDateString("fr-FR", { weekday: "long", day: "2-digit", month: "long" })}
-                  </span>
+                  <label style={{ display: "inline-flex", alignItems: "center", gap: 4, fontSize: 12, color: "var(--text-secondary)" }} title="Modifier la date d'affectation">
+                    <span className="ms" style={{ fontSize: 14 }}>event</span>
+                    <input
+                      type="date"
+                      value={detail.date_assignation}
+                      onChange={(e) => changerDateRapidement(e.target.value)}
+                      style={{ fontSize: 12, padding: "3px 6px", borderRadius: 6, border: "1px solid var(--border)", background: "white", fontFamily: "inherit", color: "var(--text)" }}
+                    />
+                  </label>
                   {/* Groupe ou élèves */}
                   {detail.blocs[0]?.groupe_label ? (
                     <span style={{ fontSize: 12, fontWeight: 700, padding: "2px 8px", borderRadius: 6, background: "#D4DAFC", color: "#1642A3" }}>
