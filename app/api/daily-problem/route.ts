@@ -138,7 +138,27 @@ export async function GET() {
     .in("niveau", niveauxFiltre)
     .eq("difficulte", "semaine")
     .not("reponse", "is", null)
-    .limit(20);
+    .limit(50);
+
+  // Déduplication : un problème ne doit pas être retiré deux fois dans l'année scolaire
+  const now = new Date();
+  const schoolYearStart = new Date(
+    now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1,
+    8, 1
+  ).toISOString().split("T")[0];
+
+  const { data: alreadyPicked } = await admin
+    .from("daily_problems")
+    .select("problem_id")
+    .eq("niveau", niveau)
+    .gte("date", schoolYearStart);
+  const excluded = new Set((alreadyPicked ?? []).map((r: any) => r.problem_id));
+
+  const pickFrom = (pool: any[]) => {
+    const eligible = pool.filter((p) => !excluded.has(p.id));
+    const source = eligible.length > 0 ? eligible : pool;
+    return source[Math.floor(Math.random() * source.length)];
+  };
 
   if (!problems || problems.length === 0) {
     // Fallback : même période, toutes semaines
@@ -149,11 +169,11 @@ export async function GET() {
       .in("niveau", niveauxFiltre)
       .eq("difficulte", "semaine")
       .not("reponse", "is", null)
-      .limit(20);
+      .limit(50);
 
     if (!fallback || fallback.length === 0) return NextResponse.json({ noSchool: true });
 
-    const selected = fallback[Math.floor(Math.random() * fallback.length)];
+    const selected = pickFrom(fallback);
     await admin.from("daily_problems").upsert(
       { date: today, niveau, problem_id: selected.id },
       { onConflict: "date,niveau" }
@@ -164,7 +184,7 @@ export async function GET() {
     });
   }
 
-  const selected = problems[Math.floor(Math.random() * problems.length)];
+  const selected = pickFrom(problems);
   await admin.from("daily_problems").upsert(
     { date: today, niveau, problem_id: selected.id },
     { onConflict: "date,niveau" }
