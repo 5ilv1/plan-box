@@ -80,7 +80,8 @@ Pour CHAQUE suggestion, retourne un objet JSON :
 RÈGLES CRITIQUES :
 - Les indices "debut" et "fin" doivent être EXACTS : texte.slice(debut, fin) === extrait
 - Vise un passage court (1 à 6 mots maximum)
-- Maximum 10 suggestions
+- Parcours le texte du DÉBUT à la FIN, sans t'arrêter au milieu — même les textes longs doivent être corrigés jusqu'au dernier mot.
+- Pas de limite arbitraire : signale toutes les erreurs importantes pour le niveau ${niveau} (jusqu'à 40 max)
 - Priorise les suggestions les plus utiles pédagogiquement pour un élève de ${niveau}
 - Commentaire encourageant, jamais négatif
 - Ne propose PAS de suggestion pour ce qui est correct ou pour un simple choix stylistique légitime
@@ -90,7 +91,7 @@ RÈGLES CRITIQUES :
     const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 3000,
+      max_tokens: 8000,
       system: [
         { type: "text", text: REFERENCE_CYCLE3, cache_control: { type: "ephemeral" } },
         ...(correctionsEnseignant
