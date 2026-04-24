@@ -132,13 +132,22 @@ export default function EnseignantAtelierBloc({
       setSelection(null);
       return;
     }
-    // Retrouver la position absolue dans texteAffiche
-    const idx = texteAffiche.indexOf(text);
-    if (idx < 0) {
+    // Position ABSOLUE de la sélection dans le texte (via un range du début
+    // du container jusqu'au début de la sélection). Évite le bug du indexOf
+    // qui tombait toujours sur la 1re occurrence quand le mot apparaît
+    // plusieurs fois (ex : deux « c'est » dans le texte).
+    let debut = texteAffiche.indexOf(text); // fallback si le range échoue
+    try {
+      const preRange = document.createRange();
+      preRange.selectNodeContents(texteRef.current);
+      preRange.setEnd(range.startContainer, range.startOffset);
+      debut = preRange.toString().length;
+    } catch {}
+    if (debut < 0) {
       setSelection(null);
       return;
     }
-    setSelection({ debut: idx, fin: idx + text.length, extrait: text });
+    setSelection({ debut, fin: debut + text.length, extrait: text });
     setFormSuggestion("");
     setFormCommentaire("");
     setIaEditIndex(null);
