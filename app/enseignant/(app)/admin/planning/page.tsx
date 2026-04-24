@@ -338,25 +338,32 @@ export default function PageAdminPlanning() {
   // ── Suppression assignation ──────────────────────────────────────────────────
   async function supprimerAssignation(mode: "un" | "tous", id?: string) {
     setEnSuppression(true);
+    // IDs supprimés en local (mise à jour optimiste, pas de rechargement)
+    let idsSupprimes: string[] = [];
     if (mode === "un" && id) {
+      idsSupprimes = [id];
       await fetch(`/api/admin/planning?id=${id}`, { method: "DELETE" });
     } else if (mode === "tous" && detail) {
+      const aSupprimer = detail.blocs.filter((b) => b.statut !== "fait");
+      idsSupprimes = aSupprimer.map((b) => b.id);
       await Promise.all(
-        detail.blocs
-          .filter((b) => b.statut !== "fait")
-          .map((b) => fetch(`/api/admin/planning?id=${b.id}`, { method: "DELETE" }))
+        aSupprimer.map((b) => fetch(`/api/admin/planning?id=${b.id}`, { method: "DELETE" }))
       );
+    }
+    if (idsSupprimes.length > 0) {
+      const set = new Set(idsSupprimes);
+      setBlocs((prev) => prev.filter((b) => !set.has(b.id)));
     }
     setASupprimer(null);
     setEnSuppression(false);
     fermerDrawer();
-    charger();
   }
 
   // ── Suppression banque ───────────────────────────────────────────────────────
   async function supprimerBanque() {
     if (!detail) return;
     setEnSuppressionBanque(true);
+    const idsSupprimes = detail.blocs.map((b) => b.id);
     try {
       const params = new URLSearchParams();
       if (detail.chapitre_id) params.set("chapitre_id", detail.chapitre_id);
@@ -370,11 +377,12 @@ export default function PageAdminPlanning() {
           fetch(`/api/admin/planning?id=${b.id}`, { method: "DELETE" })
         ));
       }
+      const set = new Set(idsSupprimes);
+      setBlocs((prev) => prev.filter((b) => !set.has(b.id)));
     } finally {
       setEnSuppressionBanque(false);
       setSupprimerBanqueConfirm(false);
       fermerDrawer();
-      charger();
     }
   }
 
@@ -616,12 +624,16 @@ export default function PageAdminPlanning() {
     async function supprimerGroupe(e: React.MouseEvent) {
       e.stopPropagation();
       if (!confirm(`Supprimer "${g.titre}" pour tous les élèves ?`)) return;
-      await fetch("/api/admin/supprimer-bloc-planning", {
+      // Mise à jour optimiste : retirer les blocs du groupe avant la requête
+      const idsSupprimes = new Set(g.blocs.map((b) => b.id));
+      setBlocs((prev) => prev.filter((b) => !idsSupprimes.has(b.id)));
+      const res = await fetch("/api/admin/supprimer-bloc-planning", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: g.type, titre: g.titre, date: g.date_assignation }),
       });
-      charger();
+      // Rollback en cas d'échec
+      if (!res.ok) charger();
     }
 
     return (
