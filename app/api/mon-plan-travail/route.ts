@@ -60,7 +60,26 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ erreur: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ blocs: data ?? [] });
+  let blocs = data ?? [];
+
+  // Report : quand on interroge la semaine (debut+fin sans types), inclure
+  // les ressources (podcasts, docs…) des semaines précédentes encore non terminées.
+  if (debut && fin && !types) {
+    const { data: report } = await admin
+      .from("plan_travail")
+      .select("*, chapitres(id, titre, matiere)")
+      .eq("repetibox_eleve_id", rbId)
+      .eq("type", "ressource")
+      .lt("date_assignation", debut)
+      .neq("statut", "fait")
+      .order("date_assignation", { ascending: false })
+      .limit(50);
+    if (report && report.length > 0) {
+      blocs = [...blocs, ...report];
+    }
+  }
+
+  return NextResponse.json({ blocs });
 }
 
 // PATCH /api/mon-plan-travail

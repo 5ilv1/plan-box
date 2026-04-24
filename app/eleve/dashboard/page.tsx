@@ -329,6 +329,7 @@ export default function DashboardEleve() {
         { data: eleveData },
         { data: progressionsData },
         { data: blocsWeek },
+        { data: blocsReportes },
         { data: blocsExos },
         { data: podcastData },
         { data: notifsData },
@@ -340,6 +341,13 @@ export default function DashboardEleve() {
           .gte("date_assignation", debut)
           .lte("date_assignation", fin)
           .order("created_at", { ascending: true }),
+        supabase.from("plan_travail").select("*, chapitres(*)")
+          .eq("eleve_id", eleveId)
+          .eq("type", "ressource")
+          .lt("date_assignation", debut)
+          .neq("statut", "fait")
+          .order("date_assignation", { ascending: false })
+          .limit(50),
         supabase.from("plan_travail").select("id, type, statut, chapitre_id, chapitres(titre)")
           .eq("eleve_id", eleveId)
           .in("type", ["exercice", "calcul_mental", "eval"])
@@ -365,11 +373,15 @@ export default function DashboardEleve() {
       supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
 
       const blocs = filtrerDicteesMotsJourStrict(
-        filtrerBlocsConditionnels((blocsWeek ?? []) as PlanTravail[]),
+        filtrerBlocsConditionnels([
+          ...((blocsWeek ?? []) as PlanTravail[]),
+          ...((blocsReportes ?? []) as PlanTravail[]),
+        ]),
         aujourd_hui,
       );
-      setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-      setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
+      const estReporte = (b: PlanTravail) => b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
+      setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporte(b)));
+      setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui && !estReporte(b)));
       setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
 
       const podcasts = ((podcastData ?? []) as any[])
@@ -499,8 +511,9 @@ export default function DashboardEleve() {
         filtrerBlocsConditionnels(blocsSemaine),
         aujourd_hui,
       );
-      setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui));
-      setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui));
+      const estReporteRB = (b: PlanTravail) => b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
+      setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporteRB(b)));
+      setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui && !estReporteRB(b)));
 
       setProgressionExos(groupParChapitre(blocsExos));
 
@@ -614,23 +627,35 @@ export default function DashboardEleve() {
         const json = await res.json();
         blocsWeek = json.blocs ?? [];
       } else {
-        const { data } = await supabase
-          .from("plan_travail")
-          .select("*, chapitres(*)")
-          .eq("eleve_id", s.id)
-          .gte("date_assignation", debut)
-          .lte("date_assignation", fin)
-          .order("created_at", { ascending: true });
+        const [{ data: dataWeek }, { data: dataReportes }] = await Promise.all([
+          supabase
+            .from("plan_travail")
+            .select("*, chapitres(*)")
+            .eq("eleve_id", s.id)
+            .gte("date_assignation", debut)
+            .lte("date_assignation", fin)
+            .order("created_at", { ascending: true }),
+          supabase
+            .from("plan_travail")
+            .select("*, chapitres(*)")
+            .eq("eleve_id", s.id)
+            .eq("type", "ressource")
+            .lt("date_assignation", debut)
+            .neq("statut", "fait")
+            .order("date_assignation", { ascending: false })
+            .limit(50),
+        ]);
         if (signal?.aborted) return;
-        blocsWeek = (data ?? []) as PlanTravail[];
+        blocsWeek = [...((dataWeek ?? []) as PlanTravail[]), ...((dataReportes ?? []) as PlanTravail[])];
       }
 
       const blocsFiltered = filtrerDicteesMotsJourStrict(
         filtrerBlocsConditionnels(blocsWeek),
         aujourd_hui,
       );
-      const nouvsAujourd = blocsFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui);
-      const nouvsSemaine = blocsFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui);
+      const estReporteRafraichi = (b: PlanTravail) => b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
+      const nouvsAujourd = blocsFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporteRafraichi(b));
+      const nouvsSemaine = blocsFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui && !estReporteRafraichi(b));
 
       if (!signal?.aborted) {
         setBlocsAujourdhui((prev) => sigBlocs(nouvsAujourd) !== sigBlocs(prev) ? nouvsAujourd : prev);
