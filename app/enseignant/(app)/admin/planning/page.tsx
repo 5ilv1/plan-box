@@ -41,6 +41,7 @@ interface GroupeBloc {
   date_limite: string | null;
   chapitre_id: string | null;
   contenu: Record<string, unknown>;
+  groupe_label: string | null;
   blocs: BlocPlanning[];
 }
 
@@ -107,7 +108,7 @@ const DRAG_THRESHOLD = 6;
 function grouperBlocs(blocs: BlocPlanning[]): GroupeBloc[] {
   const map = new Map<string, GroupeBloc>();
   for (const b of blocs) {
-    const key = `${b.date_assignation}||${b.titre ?? ""}||${b.type}`;
+    const key = `${b.date_assignation}||${b.titre ?? ""}||${b.type}||${b.groupe_label ?? ""}`;
     if (!map.has(key)) {
       map.set(key, {
         key,
@@ -117,6 +118,7 @@ function grouperBlocs(blocs: BlocPlanning[]): GroupeBloc[] {
         date_limite: b.date_limite,
         chapitre_id: b.chapitre_id,
         contenu: b.contenu,
+        groupe_label: b.groupe_label,
         blocs: [],
       });
     }
@@ -644,7 +646,7 @@ export default function PageAdminPlanning() {
       const res = await fetch("/api/admin/supprimer-bloc-planning", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: g.type, titre: g.titre, date: g.date_assignation }),
+        body: JSON.stringify({ type: g.type, titre: g.titre, date: g.date_assignation, groupe_label: g.groupe_label }),
       });
       // Rollback en cas d'échec
       if (!res.ok) charger();
@@ -1222,7 +1224,7 @@ export default function PageAdminPlanning() {
                 const ecContContenu = detail.contenu as { consigne?: string; contraintes?: string[]; exemple?: string; nb_phrases?: number };
                 const classContenu = detail.contenu as { consigne?: string; categories?: string[]; items?: { texte: string; categorie: string }[] };
                 const lectureContenu = detail.contenu as { titre?: string; texte?: string; questions?: { question: string; choix?: string[]; reponse?: number }[] };
-                const analContenu = detail.contenu as { consigne?: string; phrases?: { phrase: string; analyse?: Record<string, string> }[] };
+                const analContenu = detail.contenu as { consigne?: string; phrases?: { texte?: string; phrase?: string; groupes?: { mots: string; fonction: string }[]; analyse?: Record<string, string> }[] };
                 const fichierContenu = detail.contenu as { niveau?: string; numero_page?: string | number; eval?: string };
                 const leconContenu = detail.contenu as { url?: string };
                 const ressContenu = detail.contenu as { matiere?: string; taches?: { titre: string; url?: string }[]; qcm?: unknown };
@@ -1502,8 +1504,17 @@ export default function PageAdminPlanning() {
                       {analContenu.consigne && <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 12 }}>{analContenu.consigne}</p>}
                       {(analContenu.phrases ?? []).map((p, i) => (
                         <div key={i} style={{ marginBottom: 10, padding: "10px 14px", background: "white", borderRadius: 8, border: "1px solid var(--border)" }}>
-                          <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{i + 1}. {p.phrase}</p>
-                          {p.analyse && (
+                          <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 6 }}>{i + 1}. {p.texte ?? p.phrase}</p>
+                          {Array.isArray(p.groupes) && p.groupes.length > 0 && (
+                            <div style={{ fontSize: 12, color: "var(--text-secondary)", display: "flex", flexWrap: "wrap", gap: 6 }}>
+                              {p.groupes.map((g, j) => (
+                                <span key={j} style={{ padding: "2px 8px", background: "var(--bg)", borderRadius: 6, border: "1px solid var(--border)" }}>
+                                  <strong>{g.fonction}</strong> : {g.mots}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                          {p.analyse && !p.groupes && (
                             <div style={{ fontSize: 12, color: "var(--text-secondary)" }}>
                               {Object.entries(p.analyse).map(([k, v]) => <div key={k}><strong>{k}</strong> : {v}</div>)}
                             </div>
