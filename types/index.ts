@@ -176,6 +176,24 @@ export interface AnalysePhraseIA {
   phrases: PhraseAnalyse[];
 }
 
+// --- Problèmes de maths ---
+
+export interface ProblemeMaths {
+  id: number;
+  enonce: string;
+  resultat_attendu: string;            // ex: "2 h 35 min", "12,50 €", "48"
+  phrase_reponse_attendue: string;     // ex: "Le train arrive à 11 h 45."
+  mots_cles: string[];                 // mots devant figurer dans la phrase réponse (permissif)
+  indice: string;                      // piste pour avancer
+}
+
+export interface ProblemeMathsIA {
+  titre: string;
+  theme: string;
+  consigne: string;
+  problemes: ProblemeMaths[];
+}
+
 // --- Dictées ---
 
 export interface PhraseDict {
@@ -321,6 +339,7 @@ export type TypeBloc =
   | "analyse_phrase"
   | "classement"
   | "lecture"
+  | "probleme_maths"
   | "ceinture_multiplication";
 
 export type SousTypeRessource =
@@ -445,6 +464,7 @@ export const TYPE_BLOC_CONFIG: Record<
   analyse_phrase: { icone: "schema",      libelle: "Analyse de phrase", couleur: "#6D28D9" },
   classement:     { icone: "category",    libelle: "Classement",        couleur: "#0369A1" },
   lecture:         { icone: "auto_stories", libelle: "Lecture",          couleur: "#7C3AED" },
+  probleme_maths:  { icone: "functions",    libelle: "Problèmes de maths", couleur: "#0F766E" },
   ceinture_multiplication: { icone: "military_tech", libelle: "Ceintures de multiplications", couleur: "#F59E0B" },
 };
 

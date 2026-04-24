@@ -32,6 +32,7 @@ export default function AtelierEcriturePage() {
   const [contrainte, setContrainte] = useState("");
   const [semaine, setSemaine] = useState("");
   const [textes, setTextes] = useState<TexteEleve[]>([]);
+  const [correctionEnCours, setCorrectionEnCours] = useState(false);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -56,6 +57,105 @@ export default function AtelierEcriturePage() {
 
   function nbMots(txt: string): number {
     return txt.trim() ? txt.trim().split(/\s+/).length : 0;
+  }
+
+  /** Remplace les ** ** par <strong> pour le rendu HTML, en échappant le reste. */
+  function rendreTexteCorrige(src: string): string {
+    // On échappe d'abord le HTML, puis on re-transforme **...** en <strong>
+    const esc = src
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    return esc.replace(/\*\*([^*]+)\*\*/g, '<strong style="color:#B91C1C;">$1</strong>');
+  }
+
+  async function corrigerTous() {
+    const actifs = textes.filter((t) => (t.texteFinal || t.texteCourant).trim().length > 0);
+    if (actifs.length === 0) return;
+    setCorrectionEnCours(true);
+    try {
+      const res = await fetch("/api/enseignant/ecriture/corriger-batch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blocs: actifs.map((t) => ({
+            id: t.id,
+            prenom: t.prenom,
+            texte: t.texteFinal || t.texteCourant,
+          })),
+        }),
+      });
+      if (!res.ok) {
+        alert("La correction IA a échoué.");
+        setCorrectionEnCours(false);
+        return;
+      }
+      const { resultats } = (await res.json()) as {
+        resultats: Array<{
+          id: string;
+          prenom: string;
+          texteCorrige: string;
+          nbCorrections: number;
+          nbMotsOrigine: number;
+          pourcentageJuste: number;
+        }>;
+      };
+      // Construit le PDF
+      const parId = new Map(resultats.map((r) => [r.id, r]));
+      const items = actifs.map((t) => {
+        const r = parId.get(t.id);
+        const texteAffiche = r ? r.texteCorrige : t.texteFinal || t.texteCourant;
+        const badge = r
+          ? `<span style="font-size: 12px; color: ${r.pourcentageJuste >= 90 ? "#059669" : r.pourcentageJuste >= 70 ? "#B45309" : "#B91C1C"}; font-weight: 700; margin-left: 8px;">${r.pourcentageJuste}% · ${r.nbCorrections} correction${r.nbCorrections > 1 ? "s" : ""}</span>`
+          : "";
+        return `
+          <div style="padding: 16px 0; page-break-inside: avoid;">
+            <div style="display: flex; align-items: baseline; gap: 12px; margin-bottom: 6px; flex-wrap: wrap;">
+              <h3 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 800; margin: 0;">${t.prenom} ${t.nom}</h3>
+              <span style="font-size: 12px; color: #888;">${t.classe}</span>
+              ${badge}
+            </div>
+            <div style="font-size: 13px; line-height: 1.8; white-space: pre-wrap; padding-left: 12px; border-left: 3px solid #7C3AED;">${rendreTexteCorrige(texteAffiche)}</div>
+          </div>
+        `;
+      });
+      const content = items.join('<hr style="border: none; border-top: 1px solid #ddd; margin: 8px 0;">');
+
+      const iframe = document.createElement("iframe");
+      iframe.style.position = "fixed";
+      iframe.style.left = "-9999px";
+      iframe.style.width = "0";
+      iframe.style.height = "0";
+      document.body.appendChild(iframe);
+      const doc = iframe.contentDocument ?? iframe.contentWindow?.document;
+      if (!doc) { setCorrectionEnCours(false); return; }
+      doc.open();
+      doc.write(`
+        <html><head><title>Textes corrigés — Atelier d'écriture</title>
+        <style>
+          @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&family=Manrope:wght@400;600&display=swap');
+          body { font-family: 'Manrope', sans-serif; padding: 40px; color: #222; }
+          @page { size: A4; margin: 15mm 20mm; }
+        </style></head><body>
+        <div style="margin-bottom: 20px; border-bottom: 2px solid #7C3AED; padding-bottom: 12px;">
+          <h1 style="font-family: 'Plus Jakarta Sans', sans-serif; font-size: 20px; margin: 0 0 4px;">Atelier d'écriture — ${semaine} — Version corrigée</h1>
+          <p style="font-size: 13px; color: #555; margin: 0;"><strong>Sujet :</strong> ${sujet}</p>
+          <p style="font-size: 12px; color: #777; margin: 6px 0 0;">Les mots en <strong style="color:#B91C1C;">rouge gras</strong> ont été corrigés par l'IA.</p>
+        </div>
+        ${content}
+        </body></html>
+      `);
+      doc.close();
+      iframe.onload = () => {
+        setTimeout(() => {
+          iframe.contentWindow?.print();
+          setTimeout(() => document.body.removeChild(iframe), 1000);
+        }, 300);
+      };
+    } catch {
+      alert("Erreur réseau lors de la correction.");
+    }
+    setCorrectionEnCours(false);
   }
 
   function imprimerTous() {
@@ -120,10 +220,25 @@ export default function AtelierEcriturePage() {
           </p>
         </div>
         {textes.length > 0 && (
-          <button className="btn-primary-sm" onClick={imprimerTous}>
-            <span className="ms" style={{ fontSize: 18 }}>print</span>
-            Imprimer tous les textes
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
+            <button className="btn-primary-sm" onClick={imprimerTous}>
+              <span className="ms" style={{ fontSize: 18 }}>print</span>
+              Imprimer tous les textes
+            </button>
+            <button
+              className="btn-primary-sm"
+              onClick={corrigerTous}
+              disabled={correctionEnCours}
+              style={{
+                background: "linear-gradient(135deg, #7C3AED, #4338CA)",
+                opacity: correctionEnCours ? 0.6 : 1,
+                cursor: correctionEnCours ? "not-allowed" : "pointer",
+              }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>auto_fix_high</span>
+              {correctionEnCours ? "Correction en cours…" : "Corriger tous les textes"}
+            </button>
+          </div>
         )}
       </div>
 

@@ -19,6 +19,7 @@ import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import ClassementEleve from "@/components/ClassementEleve";
 import LectureEleve from "@/components/LectureEleve";
 import QCMEleve from "@/components/QCMEleve";
+import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
 // DicteeCorrection (OCR + correction auto) — conservé mais débranché du flux élève
 // en attendant d'être fiabilisé. Cf. commit désactivation dictée.
 // import DicteeCorrection from "@/components/DicteeCorrection";
@@ -54,6 +55,7 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
   if (type === "classement") return { label: "Classement", tagClass: "primary", icon: "category", subtitle: "Classe les éléments dans les bonnes catégories" };
   if (type === "lecture") return { label: "Lecture", tagClass: "secondary", icon: "auto_stories", subtitle: "Lis le texte puis réponds aux questions" };
   if (type === "qcm") return { label: "QCM", tagClass: "primary", icon: "quiz", subtitle: "Choisis la bonne réponse pour chaque question" };
+  if (type === "probleme_maths") return { label: "Problèmes de maths", tagClass: "primary", icon: "functions", subtitle: "Lis, calcule, puis écris ta phrase réponse" };
   if (type === "ceinture_multiplication") return { label: "Ceintures de multiplications", tagClass: "primary", icon: "military_tech", subtitle: "Entraîne-toi et passe tes ceintures !" };
   if (type === "ressource") {
     const st = ressource?.sous_type ?? (ressource?.taches?.[0]?.sous_type);
@@ -435,6 +437,7 @@ export default function PageActivite() {
   const classementData = bloc.type === "classement" ? (bloc.contenu as unknown as { titre: string; consigne: string; categories: string[]; items: { texte: string; categorie: string }[] }) : null;
   const lectureData = bloc.type === "lecture" ? (bloc.contenu as unknown as { titre: string; texte: string; questions: { id: number; question: string; choix: string[]; reponse: number }[] }) : null;
   const qcmData = bloc.type === "qcm" ? (bloc.contenu as unknown as { titre?: string; questions: { question: string; options: string[]; reponse_correcte: number; explication?: string }[] }) : null;
+  const problemeMaths = bloc.type === "probleme_maths" ? (bloc.contenu as unknown as { titre: string; theme: string; consigne: string; problemes: { id: number; enonce: string; resultat_attendu: string; phrase_reponse_attendue: string; mots_cles: string[]; indice: string }[] }) : null;
   const ressource  = bloc.type === "ressource" ? (bloc.contenu as unknown as RessourceIA) : null;
   const dictee     = bloc.type === "dictee" ? (bloc.contenu as unknown as DicteeContenu) : null;
   const correctionDictee = bloc.type === "correction_dictee"
@@ -1024,6 +1027,29 @@ export default function PageActivite() {
               </div>
             )}
 
+            {/* ── Problèmes de maths ── */}
+            {problemeMaths && (etat as string) === "en_cours" && (
+              <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
+                <ProblemeMathsEleve
+                  titre={problemeMaths.titre}
+                  theme={problemeMaths.theme}
+                  consigne={problemeMaths.consigne}
+                  problemes={problemeMaths.problemes}
+                  onTermine={(score, rep) => {
+                    marquerFait(score, score.bon / score.total >= 0.7 ? "fait" : "en_cours", rep);
+                  }}
+                />
+              </div>
+            )}
+            {problemeMaths && (etat as string) === "termine" && (
+              <div className="pb-card" style={{ textAlign: "center", padding: "32px 24px" }}>
+                <span className="ms" style={{ fontSize: 48, color: "#16A34A" }}>check_circle</span>
+                <p style={{ fontWeight: 800, fontSize: 20, color: "#16A34A", marginTop: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Problèmes terminés !
+                </p>
+              </div>
+            )}
+
             {/* ── Ceintures de multiplications ── */}
             {bloc.type === "ceinture_multiplication" && (
               <div className="pb-card" style={{ padding: "24px 20px" }}>
@@ -1164,7 +1190,7 @@ export default function PageActivite() {
             ) : null}
 
             {/* Fallback */}
-            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !lectureData && !qcmData && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && bloc.type !== "ceinture_multiplication" && (
+            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !lectureData && !qcmData && !problemeMaths && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && bloc.type !== "ceinture_multiplication" && (
               <div className="pb-card" style={{ textAlign: "center", padding: "48px 32px" }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
                 <p style={{ color: "var(--pb-on-surface-variant)", marginBottom: 28 }}>
