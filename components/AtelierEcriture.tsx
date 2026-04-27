@@ -83,8 +83,8 @@ export default function AtelierEcriture({
 
   const autoSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const lastSavedTexte = useRef(getTexteCourantInitial(contenu));
-  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
-  const overlayRef = useRef<HTMLDivElement | null>(null);
+  const editorRef = useRef<HTMLDivElement | null>(null);
+  const lastInternalTexte = useRef<string>(getTexteCourantInitial(contenu));
   // Statuts décidés localement par l'élève, que le polling ne doit pas écraser
   const statutsLocauxRef = useRef<Map<string, Annotation["statut"]>>(new Map());
 
@@ -321,14 +321,11 @@ export default function AtelierEcriture({
       .filter((e): e is ErreurIA => e !== null);
   }, [erreursIA, teacherRanges, texte]);
 
-  // Segments pour la couche de surlignage : rouge = IA, bleu = maître
-  const segmentsMarques = useMemo(() => {
+  // HTML surligné pour le contentEditable : rouge = IA, bleu = maître
+  const htmlSurligne = useMemo(() => {
     type Mark = { debut: number; fin: number; type: "teacher" | "ia" };
     const marks: Mark[] = teacherRanges.map((t) => ({ debut: t.debut, fin: t.fin, type: "teacher" as const }));
 
-    // Pour chaque erreur IA, on surligne la position EXACTE signalée par l'IA,
-    // pas toutes les occurrences du mot (éviter les faux positifs sur un "a"
-    // valide par exemple).
     for (const e of erreursIAVisibles) {
       if (!e.mot) continue;
       const debut = e.position;
@@ -338,26 +335,67 @@ export default function AtelierEcriture({
       if (!chevauche) marks.push({ debut, fin, type: "ia" });
     }
 
-    if (marks.length === 0) return null;
+    const escape = (s: string) =>
+      s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+    if (marks.length === 0) return escape(texte);
     marks.sort((a, b) => a.debut - b.debut);
 
-    type Seg = { text: string; type: "normal" } | { text: string; type: "ia" | "teacher" };
-    const result: Seg[] = [];
+    let html = "";
     let offset = 0;
     for (const m of marks) {
       if (m.debut < offset) continue;
-      if (m.debut > offset) result.push({ text: texte.slice(offset, m.debut), type: "normal" });
-      result.push({ text: texte.slice(m.debut, m.fin), type: m.type });
+      if (m.debut > offset) html += escape(texte.slice(offset, m.debut));
+      const seg = escape(texte.slice(m.debut, m.fin));
+      const color = m.type === "ia" ? "#DC2626" : "#2563EB";
+      html += `<span style="color:${color};font-weight:800;">${seg}</span>`;
       offset = m.fin;
     }
-    if (offset < texte.length) result.push({ text: texte.slice(offset), type: "normal" });
-
-    return result.map((s, i) => {
-      if (s.type === "normal") return <span key={i}>{s.text}</span>;
-      if (s.type === "ia") return <span key={i} style={{ color: "#DC2626", fontWeight: 800 }}>{s.text}</span>;
-      return <span key={i} style={{ color: "#2563EB", fontWeight: 800 }}>{s.text}</span>;
-    });
+    if (offset < texte.length) html += escape(texte.slice(offset));
+    return html;
   }, [texte, erreursIAVisibles, teacherRanges]);
+
+  // Sync HTML surligné dans le contentEditable, en préservant la position du
+  // curseur. On n'écrit dans le DOM que si le contenu HTML attendu diffère.
+  useEffect(() => {
+    const el = editorRef.current;
+    if (!el) return;
+    if (el.innerHTML === htmlSurligne) return;
+    // Sauve la position du curseur (offset caractère depuis le début du div)
+    let caretOffset: number | null = null;
+    if (document.activeElement === el) {
+      const sel = window.getSelection();
+      if (sel && sel.rangeCount > 0) {
+        const range = sel.getRangeAt(0);
+        if (el.contains(range.endContainer)) {
+          const pre = document.createRange();
+          pre.selectNodeContents(el);
+          pre.setEnd(range.endContainer, range.endOffset);
+          caretOffset = pre.toString().length;
+        }
+      }
+    }
+    el.innerHTML = htmlSurligne;
+    // Restaure le curseur
+    if (caretOffset !== null) {
+      const walker = document.createTreeWalker(el, NodeFilter.SHOW_TEXT);
+      let charsLeft = caretOffset;
+      let node: Node | null;
+      while ((node = walker.nextNode())) {
+        const len = node.textContent?.length ?? 0;
+        if (charsLeft <= len) {
+          const range = document.createRange();
+          range.setStart(node, charsLeft);
+          range.collapse(true);
+          const sel = window.getSelection();
+          sel?.removeAllRanges();
+          sel?.addRange(range);
+          break;
+        }
+        charsLeft -= len;
+      }
+    }
+  }, [htmlSurligne]);
 
   // Appliquer une correction d'erreur IA : remplacer le mot par la correction
   function appliquerCorrection(erreur: ErreurIA) {
@@ -429,71 +467,33 @@ export default function AtelierEcriture({
         )}
       </div>
 
-      {/* ── Zone d'édition ── */}
+      {/* ── Zone d'édition (contentEditable avec surlignage inline) ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
         <div
-          style={{
-            position: "relative",
-            background: verrouille ? "#FAFAFA" : "white",
-            borderRadius: 14,
-            border: "1.5px solid var(--pb-outline-variant, #ccc)",
-            transition: "border-color 0.2s",
+          ref={editorRef}
+          contentEditable={!verrouille && !apercu}
+          suppressContentEditableWarning
+          spellCheck={false}
+          onInput={(e) => {
+            if (verrouille || apercu) return;
+            const t = (e.currentTarget as HTMLDivElement).innerText;
+            lastInternalTexte.current = t;
+            setTexte(t);
           }}
-        >
-          {segmentsMarques && (
-            <div
-              ref={overlayRef}
-              aria-hidden
-              style={{
-                position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
-                padding: "20px",
-                margin: 0,
-                fontSize: 15, lineHeight: 1.8,
-                fontFamily: "Manrope, sans-serif", fontWeight: 400,
-                letterSpacing: "normal",
-                color: "var(--pb-on-surface)",
-                whiteSpace: "pre-wrap", wordBreak: "break-word", overflowWrap: "break-word",
-                overflow: "hidden", pointerEvents: "none",
-                boxSizing: "border-box",
-                zIndex: 2,
-              }}
-            >
-              {segmentsMarques}
-              {/* espace insécable final pour que la hauteur de la dernière ligne soit cohérente */}
-              {"\u200B"}
-            </div>
-          )}
-          <textarea
-            ref={textareaRef}
-            value={texte}
-            onChange={(e) => setTexte(e.target.value)}
-            readOnly={verrouille}
-            placeholder="Écris ton texte ici. Tu peux revenir le retravailler chaque jour."
-            onScroll={(e) => {
-              if (overlayRef.current) {
-                overlayRef.current.scrollTop = e.currentTarget.scrollTop;
-              }
-            }}
-            style={{
-              display: "block",
-              width: "100%", minHeight: 320, padding: "20px",
-              margin: 0,
-              borderRadius: 14, border: "none",
-              fontSize: 15, lineHeight: 1.8,
-              fontFamily: "Manrope, sans-serif", fontWeight: 400,
-              letterSpacing: "normal",
-              color: segmentsMarques ? "transparent" : "var(--pb-on-surface)",
-              caretColor: "var(--pb-on-surface)",
-              background: "transparent",
-              resize: "vertical", outline: "none",
-              cursor: verrouille ? "default" : "text",
-              boxSizing: "border-box",
-              position: "relative", zIndex: 1,
-            }}
-            onFocus={(e) => { if (!verrouille) e.currentTarget.parentElement!.style.borderColor = "#7C3AED"; }}
-            onBlur={(e) => { e.currentTarget.parentElement!.style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
-          />
-        </div>
+          onFocus={(e) => { if (!verrouille) (e.currentTarget as HTMLDivElement).style.borderColor = "#7C3AED"; }}
+          onBlur={(e) => { (e.currentTarget as HTMLDivElement).style.borderColor = "var(--pb-outline-variant, #ccc)"; }}
+          style={{
+            width: "100%", minHeight: 320, padding: "20px",
+            borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ccc)",
+            fontSize: 15, lineHeight: 1.8, fontFamily: "Manrope, sans-serif",
+            color: "var(--pb-on-surface)",
+            background: verrouille ? "#FAFAFA" : "white",
+            outline: "none", transition: "border-color 0.2s",
+            cursor: verrouille ? "default" : "text",
+            whiteSpace: "pre-wrap", wordBreak: "break-word",
+            boxSizing: "border-box",
+          }}
+        />
 
         {/* Barre de statut */}
         <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "var(--pb-on-surface-variant)", padding: "0 4px", flexWrap: "wrap", gap: 6 }}>
