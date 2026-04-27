@@ -481,7 +481,7 @@ export default function PageEvaluationFinale() {
 
           <div style={{ display: "flex", gap: 10, justifyContent: "center" }}>
             <button
-              onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+              onClick={() => router.push(reussi ? "/eleve/dashboard" : `/eleve/chapitre/${chapitreId}`)}
               style={{
                 padding: "12px 24px", borderRadius: 12, fontSize: 15, fontWeight: 700,
                 background: reussi ? "#22C55E" : "var(--pb-primary)",
@@ -489,7 +489,7 @@ export default function PageEvaluationFinale() {
                 fontFamily: "'Plus Jakarta Sans', sans-serif",
               }}
             >
-              {reussi ? "🏆 Retour au chapitre" : "← Retour au parcours"}
+              {reussi ? "🏆 Retour au tableau de bord" : "← Retour au parcours"}
             </button>
           </div>
         </div>
