@@ -1641,6 +1641,9 @@ export default function DashboardEleve() {
                           const chapNom = (b as any).chapitres?.titre;
                           const desc = chapNom ?? DESC[b.type] ?? "";
                           const isEcritureSemaine = b.type === "ecriture" && (b.contenu as any)?.mode === "semaine";
+                          const ecritureSemaineFinalisee = isEcritureSemaine && !!(b.contenu as any)?.date_version_finale;
+                          // L'écriture semaine n'est vraiment terminée qu'après la version finale
+                          const visuellementFait = estFait && (!isEcritureSemaine || ecritureSemaineFinalisee);
                           const peutCommencer = (TYPES_INTERACTIFS.includes(b.type) || isEcritureSemaine) && b.contenu;
                           // Score précédent et badge 2e chance
                           const contenuBloc = (b.contenu as Record<string, unknown>) ?? {};
@@ -1659,7 +1662,7 @@ export default function DashboardEleve() {
                                 borderLeft: `4px solid ${cat.color}`,
                                 display: "flex",
                                 flexDirection: "column",
-                                opacity: estFait ? 0.65 : 1,
+                                opacity: visuellementFait ? 0.65 : 1,
                                 minHeight: 160,
                                 position: "relative",
                                 overflow: "hidden",
@@ -1699,7 +1702,7 @@ export default function DashboardEleve() {
                                     fontSize: 17, fontWeight: 800,
                                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                                     color: "var(--pb-on-surface)", marginBottom: 8,
-                                    textDecoration: estFait ? "line-through" : "none",
+                                    textDecoration: visuellementFait ? "line-through" : "none",
                                   }}>
                                     {b.titre}
                                   </div>
@@ -1734,7 +1737,7 @@ export default function DashboardEleve() {
                                       className="pb-btn primary"
                                       style={{ padding: "10px 20px", fontSize: 14, borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 }}
                                     >
-                                      {isEcritureSemaine && estFait ? "Voir les corrections →" : pctPrecedent !== null ? "Réessayer →" : "Commencer →"}
+                                      {isEcritureSemaine && estFait ? "Continuer →" : pctPrecedent !== null ? "Réessayer →" : "Commencer →"}
                                     </Link>
                                   </div>
                                 ) : (
