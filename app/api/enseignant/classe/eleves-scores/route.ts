@@ -50,14 +50,14 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Repetibox via eleve_groupe → groupes.nom ───────────────────────────
-  // Mapping rb_id → niveau (CE2/CM1/CM2)
+  // (groupes.id est un UUID, eleve_groupe.repetibox_eleve_id un integer)
   const niveauParRb = new Map<number, string>();
   const { data: groupesNiveaux } = await admin
     .from("groupes")
     .select("id, nom")
     .in("nom", ["CE2", "CM1", "CM2"]);
-  const groupeIdToNiv = new Map<number, string>(
-    (groupesNiveaux ?? []).map((g) => [g.id as number, g.nom as string])
+  const groupeIdToNiv = new Map<string, string>(
+    (groupesNiveaux ?? []).map((g) => [g.id as string, g.nom as string])
   );
   if (groupeIdToNiv.size > 0) {
     const { data: liens } = await admin
@@ -66,8 +66,8 @@ export async function GET(req: NextRequest) {
       .in("groupe_id", [...groupeIdToNiv.keys()]);
     for (const l of liens ?? []) {
       const rb = (l as { repetibox_eleve_id?: number }).repetibox_eleve_id;
-      const gid = (l as { groupe_id?: number }).groupe_id;
-      if (typeof rb === "number" && typeof gid === "number") {
+      const gid = (l as { groupe_id?: string }).groupe_id;
+      if (typeof rb === "number" && typeof gid === "string") {
         const niv = groupeIdToNiv.get(gid);
         if (niv) niveauParRb.set(rb, niv);
       }

@@ -100,9 +100,9 @@ async function recupererCible(
     const { data: rbList } = await admin.from("eleve").select("id");
     for (const e of rbList ?? []) cible.rb_ids.push(e.id as number);
   } else {
-    // 1. trouver les groupe.id correspondant au niveau
+    // groupes.id est un UUID, donc string
     const { data: groupes } = await admin.from("groupes").select("id").eq("nom", niveauFiltre);
-    const groupeIds = (groupes ?? []).map((g) => g.id as number);
+    const groupeIds = (groupes ?? []).map((g) => g.id as string);
     if (groupeIds.length > 0) {
       const { data: liens } = await admin
         .from("eleve_groupe")

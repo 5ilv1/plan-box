@@ -196,12 +196,15 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
   const lignesFr = SOUS_FR.map((nom) => {
     if (nom === "Lecture") {
       const nb = data.lecture.nb_blocs_faits;
+      const pct = data.domaines["Lecture"]?.score ?? null;
       return ligneSous(
         nom,
-        null,
-        <span style={{ fontSize: 12, fontWeight: 700, color: "#4338CA" }}>
-          {nb} bloc{nb > 1 ? "s" : ""}
-        </span>
+        pct,
+        nb > 0 ? (
+          <span style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
+            {nb} livre{nb > 1 ? "s" : ""}
+          </span>
+        ) : undefined
       );
     }
     return ligneSous(nom, data.domaines[nom]?.score ?? null);

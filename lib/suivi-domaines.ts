@@ -40,6 +40,7 @@ function libelleTypeBloc(type: string): string | null {
   if (type === "calcul_mental") return "Calcul";
   if (type === "probleme_maths") return "Problèmes";
   if (type === "ecriture") return "Écriture";
+  if (type === "lecture") return "Lecture";
   return null;
 }
 
@@ -180,6 +181,17 @@ export async function calculerDomaines(
     ajouter(carte, "Calcul", row.correct ? 1 : 0, 1);
   }
 
+  // ── 5. problem_attempts → "Problèmes" (clé : student_id = auth UUID) ─
+  const authMap = await recupererAuthIds(admin, cible);
+  if (authMap.size > 0) {
+    let q = admin.from("problem_attempts").select("student_id, solved").in("student_id", [...authMap.keys()]);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    const { data: problems } = await q;
+    for (const row of (problems ?? []) as Array<{ student_id: string; solved: boolean }>) {
+      ajouter(carte, "Problèmes", row.solved ? 1 : 0, 1);
+    }
+  }
+
   return finaliser(carte);
 }
 
@@ -199,8 +211,31 @@ export function scoreMatiereDepuis(
   return { score: Math.round(sumPond / nbTotal), nb_essais: nbTotal };
 }
 
-export const SOUS_DOMAINES_FR = ["Conjugaison", "Vocabulaire", "Grammaire", "Orthographe", "Écriture"];
+export const SOUS_DOMAINES_FR = ["Conjugaison", "Vocabulaire", "Grammaire", "Orthographe", "Écriture", "Lecture"];
 export const SOUS_DOMAINES_MATHS = ["Calcul", "Problèmes"];
+
+/**
+ * Helper : récupère le mapping auth_id → uid pour les élèves d'une cohorte.
+ * Utilisé pour interroger les tables qui clé sur l'auth UUID
+ * (problem_attempts, etc.).
+ */
+async function recupererAuthIds(
+  admin: SupabaseClient,
+  cible: CibleEleves
+): Promise<Map<string, string>> {
+  const map = new Map<string, string>();
+  // PB : eleves.id === auth_id
+  for (const id of cible.pb_ids) map.set(id, `pb_${id}`);
+  // RB : eleve.auth_id à charger
+  if (cible.rb_ids.length > 0) {
+    const { data } = await admin.from("eleve").select("id, auth_id").in("id", cible.rb_ids);
+    for (const e of data ?? []) {
+      const auth = (e as { auth_id?: string }).auth_id;
+      if (auth) map.set(auth, `rb_${e.id as number}`);
+    }
+  }
+  return map;
+}
 
 /**
  * Variante batch : agrège les domaines pour CHAQUE élève d'une cohorte
@@ -343,6 +378,19 @@ export async function calculerDomainesParEleve(
       const uid = row.eleve_id ? uidPB(row.eleve_id) : row.rb_eleve_id !== null ? uidRB(row.rb_eleve_id) : null;
       if (!uid) continue;
       ajouter(carte(uid), "Calcul", row.correct ? 1 : 0, 1);
+    }
+  }
+
+  // ── 5. problem_attempts → "Problèmes" (auth_id → uid) ─────────────────
+  const authMap = await recupererAuthIds(admin, cible);
+  if (authMap.size > 0) {
+    let q = admin.from("problem_attempts").select("student_id, solved").in("student_id", [...authMap.keys()]);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    const { data: problems } = await q;
+    for (const row of (problems ?? []) as Array<{ student_id: string; solved: boolean }>) {
+      const uid = authMap.get(row.student_id);
+      if (!uid) continue;
+      ajouter(carte(uid), "Problèmes", row.solved ? 1 : 0, 1);
     }
   }
 
