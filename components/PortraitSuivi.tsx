@@ -14,9 +14,8 @@ interface SuiviResp {
   };
   ceinture: { index: number; nom: string; couleur: string } | null;
   lecture: { nb_blocs_faits: number };
-  forces: string[];
-  faiblesses: string[];
   niveau: string | null;
+  cibleType?: "eleve" | "classe";
 }
 
 type Periode = "jour" | "semaine" | "mois" | "trimestre" | "all";
@@ -70,6 +69,9 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
   const [chargement, setChargement] = useState(true);
   const [eleves, setEleves] = useState<ElevesScores["eleves"]>([]);
   const [chargementEleves, setChargementEleves] = useState(false);
+  const [forces, setForces] = useState<string[]>([]);
+  const [faiblesses, setFaiblesses] = useState<string[]>([]);
+  const [iaChargement, setIaChargement] = useState(false);
 
   const url = useMemo(() => {
     const params = new URLSearchParams({ periode });
@@ -85,12 +87,39 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
 
   useEffect(() => {
     setChargement(true);
+    setForces([]);
+    setFaiblesses([]);
     fetch(url)
       .then((r) => r.json())
       .then((d) => setData(d))
       .catch(() => {})
       .finally(() => setChargement(false));
   }, [url]);
+
+  // IA forces/faiblesses : fetchée APRÈS data, en parallèle de la liste élèves
+  useEffect(() => {
+    if (!data) return;
+    const domainesIA = Object.entries(data.domaines)
+      .map(([libelle, v]) => ({ libelle, pourcentage: v.score }))
+      .filter((d) => d.pourcentage !== null);
+    if (domainesIA.length < 3) return;
+    setIaChargement(true);
+    const ctx = data.cibleType === "eleve"
+      ? `de l'élève ${data.titre}${data.niveau ? ` (${data.niveau})` : ""}`
+      : `de la classe ${data.niveau ? `(${data.niveau})` : "(niveaux mélangés)"}`;
+    fetch("/api/enseignant/suivi/ia", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ domaines: domainesIA, contexte: ctx }),
+    })
+      .then((r) => r.json())
+      .then((d) => {
+        setForces(d.forces ?? []);
+        setFaiblesses(d.faiblesses ?? []);
+      })
+      .catch(() => {})
+      .finally(() => setIaChargement(false));
+  }, [data]);
 
   // Liste des élèves de la cohorte (vue classe seulement)
   useEffect(() => {
@@ -317,12 +346,14 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
               <span style={{ fontSize: 20, lineHeight: 1 }}>+</span>
               Points forts
             </div>
-            {data.forces.length > 0 ? (
+            {forces.length > 0 ? (
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-                {data.forces.map((f, i) => (
+                {forces.map((f, i) => (
                   <li key={i} style={{ fontSize: 13, color: "#166534", lineHeight: 1.4 }}>· {f}</li>
                 ))}
               </ul>
+            ) : iaChargement ? (
+              <p style={{ fontSize: 13, fontStyle: "italic", color: "#166534aa", margin: 0 }}>Analyse en cours…</p>
             ) : (
               <p style={{ fontSize: 13, fontStyle: "italic", color: "#166534aa", margin: 0 }}>
                 Pas encore assez de données.
@@ -342,12 +373,14 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
               <span style={{ fontSize: 24, lineHeight: 0.7, fontWeight: 900 }}>−</span>
               Points à travailler
             </div>
-            {data.faiblesses.length > 0 ? (
+            {faiblesses.length > 0 ? (
               <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
-                {data.faiblesses.map((f, i) => (
+                {faiblesses.map((f, i) => (
                   <li key={i} style={{ fontSize: 13, color: "#991B1B", lineHeight: 1.4 }}>· {f}</li>
                 ))}
               </ul>
+            ) : iaChargement ? (
+              <p style={{ fontSize: 13, fontStyle: "italic", color: "#991B1Baa", margin: 0 }}>Analyse en cours…</p>
             ) : (
               <p style={{ fontSize: 13, fontStyle: "italic", color: "#991B1Baa", margin: 0 }}>
                 Pas encore assez de données.
@@ -407,7 +440,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                 <div></div>
               </div>
               {eleves.map((e) => {
-                const href = `/enseignant/eleves/${e.uid}/performance`;
+                const href = `/enseignant/eleves/${e.uid}/performance?from=bilan`;
                 return (
                   <Link
                     key={e.uid}

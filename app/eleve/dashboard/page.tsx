@@ -403,12 +403,12 @@ export default function DashboardEleve() {
       }
       if (podcastsBlocs.length > 0) {
         const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
-        const { data: reponses } = await supabase
-          .from("qcm_reponse")
-          .select("qcm_id")
-          .in("qcm_id", qcmIds)
-          .eq("eleve_id", eleveId);
-        const faits = new Set((reponses ?? []).map((r: any) => r.qcm_id));
+        const resFaits = await fetch(
+          `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&eleve_id=${encodeURIComponent(eleveId)}`,
+          { signal },
+        );
+        const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
+        const faits = new Set<string>(jsonFaits.faits ?? []);
         if (!signal.aborted) {
           setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
             id: bloc.id,
@@ -545,12 +545,12 @@ export default function DashboardEleve() {
       }
       if (podcastsBlocs.length > 0) {
         const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
-        const { data: reponses } = await supabase
-          .from("qcm_reponse")
-          .select("qcm_id")
-          .in("qcm_id", qcmIds)
-          .eq("repetibox_eleve_id", rbId);
-        const faits = new Set((reponses ?? []).map((r: any) => r.qcm_id));
+        const resFaits = await fetch(
+          `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&rb_id=${rbId}`,
+          { signal },
+        );
+        const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
+        const faits = new Set<string>(jsonFaits.faits ?? []);
         if (!signal.aborted) {
           setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
             id: bloc.id,
@@ -1253,8 +1253,9 @@ export default function DashboardEleve() {
               </Link>
             )}
 
-            {/* Podcasts à écouter (semaine en cours + reportés non terminés) */}
-            {podcastsSemaine.map((p) => (
+            {/* Podcasts à écouter (semaine en cours + reportés non terminés).
+                Une fois que l'élève a répondu au QCM, le bloc est masqué. */}
+            {podcastsSemaine.filter((p) => !p.fait).map((p) => (
               <div key={p.id} className="pb-card" style={{
                 background: p.fait
                   ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"

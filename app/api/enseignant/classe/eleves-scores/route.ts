@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { requireEnseignant } from "@/lib/server-auth";
 import {
-  calculerDomaines,
+  calculerDomainesParEleve,
   scoreMatiereDepuis,
   SOUS_DOMAINES_FR,
   SOUS_DOMAINES_MATHS,
@@ -88,30 +88,25 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // ── Pour chaque élève : domaines + scores matière ──────────────────────
-  // Parallélisation par lots de 8 pour ne pas saturer
+  // ── Calcul batch en 4 requêtes pour tous les élèves d'un coup ──────────
   type Resultat = EleveRow & { francais_pct: number | null; maths_pct: number | null; nb_essais: number };
-  const resultats: Resultat[] = [];
-  const taille = 8;
-  for (let i = 0; i < eleves.length; i += taille) {
-    const lot = eleves.slice(i, i + taille);
-    const sortie = await Promise.all(lot.map(async (e) => {
-      const cible = e.source === "planbox"
-        ? { pb_ids: [e.uid.slice(3)], rb_ids: [] as number[] }
-        : { pb_ids: [] as string[], rb_ids: [parseInt(e.uid.slice(3), 10)] };
-      const carte = await calculerDomaines(admin, cible, dateDebut);
-      const fr = scoreMatiereDepuis(carte, SOUS_DOMAINES_FR);
-      const ma = scoreMatiereDepuis(carte, SOUS_DOMAINES_MATHS);
-      return {
-        ...e,
-        francais_pct: fr.score,
-        maths_pct: ma.score,
-        nb_essais: fr.nb_essais + ma.nb_essais,
-      };
-    }));
-    resultats.push(...sortie);
-  }
+  const cible = {
+    pb_ids: eleves.filter((e) => e.source === "planbox").map((e) => e.uid.slice(3)),
+    rb_ids: eleves.filter((e) => e.source === "repetibox").map((e) => parseInt(e.uid.slice(3), 10)),
+  };
+  const cartes = await calculerDomainesParEleve(admin, cible, dateDebut);
 
+  const resultats: Resultat[] = eleves.map((e) => {
+    const c = cartes.get(e.uid) ?? {};
+    const fr = scoreMatiereDepuis(c, SOUS_DOMAINES_FR);
+    const ma = scoreMatiereDepuis(c, SOUS_DOMAINES_MATHS);
+    return {
+      ...e,
+      francais_pct: fr.score,
+      maths_pct: ma.score,
+      nb_essais: fr.nb_essais + ma.nb_essais,
+    };
+  });
   resultats.sort((a, b) => a.prenom.localeCompare(b.prenom));
 
   return NextResponse.json({ eleves: resultats });

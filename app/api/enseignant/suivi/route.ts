@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { requireEnseignant } from "@/lib/server-auth";
 import { CEINTURES } from "@/lib/ceintures";
@@ -190,48 +189,6 @@ export async function GET(req: NextRequest) {
     nbLectures = count ?? 0;
   }
 
-  // Forces / faiblesses IA
-  let forces: string[] = [];
-  let faiblesses: string[] = [];
-  try {
-    const filtres = [...SOUS_DOMAINES_FR, ...SOUS_DOMAINES_MATHS]
-      .map((lib) => ({ libelle: lib, pourcentage: carte[lib]?.score ?? null }))
-      .filter((d) => d.pourcentage !== null);
-    if (filtres.length >= 3) {
-      const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
-      const cibleStr = niveauUnique ? `de ${niveauUnique}` : "(niveaux mélangés)";
-      const acteur = inclureCeinture ? "un élève" : "la classe";
-      const rep = await anthropic.messages.create({
-        model: "claude-sonnet-4-6",
-        max_tokens: 800,
-        messages: [
-          {
-            role: "user",
-            content: `Tu analyses les résultats de ${acteur} ${cibleStr}. Voici les pourcentages de réussite par sous-domaine :
-${filtres.map((d) => `- ${d.libelle} : ${d.pourcentage}%`).join("\n")}
-
-Donne 3 FORCES et 3 FAIBLESSES, formulées comme des phrases courtes destinées au maître pour piloter sa pédagogie. Reste factuel.
-
-Retourne UNIQUEMENT un JSON :
-{
-  "forces": ["...", "...", "..."],
-  "faiblesses": ["...", "...", "..."]
-}`,
-          },
-        ],
-      });
-      const raw = (rep.content[0] as { type: string; text: string }).text;
-      const m = raw.match(/\{[\s\S]*\}/);
-      if (m) {
-        const parsed = JSON.parse(m[0]) as { forces?: string[]; faiblesses?: string[] };
-        forces = (parsed.forces ?? []).slice(0, 3);
-        faiblesses = (parsed.faiblesses ?? []).slice(0, 3);
-      }
-    }
-  } catch (err) {
-    console.error("[suivi/ia]", err);
-  }
-
   return NextResponse.json({
     titre,
     sousTitre,
@@ -243,8 +200,7 @@ Retourne UNIQUEMENT un JSON :
     },
     ceinture,
     lecture: { nb_blocs_faits: nbLectures },
-    forces,
-    faiblesses,
     niveau: niveauUnique,
+    cibleType: inclureCeinture ? "eleve" : "classe",
   });
 }
