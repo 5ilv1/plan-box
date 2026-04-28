@@ -16,6 +16,14 @@ interface SuiviResp {
   lecture: { nb_blocs_faits: number };
   niveau: string | null;
   cibleType?: "eleve" | "classe";
+  chapitresValides?: Array<{
+    id: string;
+    titre: string;
+    matiere: string;
+    sous_matiere: string | null;
+    pourcentage: number;
+    date: string;
+  }>;
 }
 
 type Periode = "jour" | "semaine" | "mois" | "trimestre" | "all";
@@ -414,6 +422,59 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
           </div>
         </div>
       </div>
+
+      {/* Chapitres validés (vue élève seulement) */}
+      {cible === "eleve" && (data.chapitresValides ?? []).length > 0 && (
+        <div style={{ marginTop: 24 }}>
+          <h2 style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 16,
+            marginBottom: 10,
+            display: "flex", alignItems: "center", gap: 8,
+          }}>
+            <span className="ms" style={{ fontSize: 22, color: "#16A34A" }}>verified</span>
+            Chapitres validés ({(data.chapitresValides ?? []).length})
+          </h2>
+          <div style={{
+            display: "grid", gap: 8,
+            gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+          }}>
+            {(data.chapitresValides ?? []).map((c) => (
+              <div
+                key={c.id}
+                style={{
+                  background: "white", border: "1.5px solid #BBF7D0", borderRadius: 12,
+                  padding: "10px 14px",
+                  display: "flex", flexDirection: "column", gap: 4,
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                  <span style={{
+                    fontSize: 10, fontWeight: 700, padding: "2px 8px", borderRadius: 999,
+                    background: "#DCFCE7", color: "#166534",
+                    textTransform: "uppercase", letterSpacing: "0.06em",
+                  }}>
+                    {c.matiere}
+                  </span>
+                  {c.sous_matiere && (
+                    <span style={{ fontSize: 10, color: "var(--pb-on-surface-variant)" }}>
+                      · {c.sous_matiere}
+                    </span>
+                  )}
+                  <span style={{ marginLeft: "auto", fontSize: 12, fontWeight: 800, color: couleurPct(c.pourcentage) }}>
+                    {c.pourcentage}%
+                  </span>
+                </div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: "var(--pb-on-surface)" }}>
+                  {c.titre}
+                </div>
+                <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
+                  Validé le {new Date(c.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" })}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Liste des élèves (vue classe seulement) */}
       {cible === "classe" && (

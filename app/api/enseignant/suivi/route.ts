@@ -169,6 +169,45 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Chapitres validés (uniquement pour vue élève) : evaluation_resultat.reussi = true
+  let chapitresValides: Array<{ id: string; titre: string; matiere: string; sous_matiere: string | null; pourcentage: number; date: string }> = [];
+  if (inclureCeinture) {
+    const colEval = cible.rb_ids.length > 0 ? "rb_eleve_id" : "eleve_id";
+    const valEval = cible.rb_ids.length > 0 ? cible.rb_ids[0] as number | string : cible.pb_ids[0];
+    const { data: evals } = await admin
+      .from("evaluation_resultat")
+      .select("chapitre_id, pourcentage, created_at, reussi")
+      .eq(colEval, valEval)
+      .eq("reussi", true)
+      .order("created_at", { ascending: false });
+    if (evals && evals.length > 0) {
+      // Garde le meilleur résultat par chapitre
+      const parChap = new Map<string, { pct: number; date: string }>();
+      for (const e of evals as Array<{ chapitre_id: string; pourcentage: number; created_at: string }>) {
+        const cur = parChap.get(e.chapitre_id);
+        if (!cur || e.pourcentage > cur.pct) {
+          parChap.set(e.chapitre_id, { pct: e.pourcentage, date: e.created_at });
+        }
+      }
+      const chapIds = [...parChap.keys()];
+      const { data: chaps } = await admin
+        .from("chapitres")
+        .select("id, titre, matiere, sous_matiere")
+        .in("id", chapIds);
+      chapitresValides = (chaps ?? []).map((c) => {
+        const r = parChap.get(c.id as string)!;
+        return {
+          id: c.id as string,
+          titre: c.titre as string,
+          matiere: c.matiere as string,
+          sous_matiere: (c.sous_matiere as string | null) ?? null,
+          pourcentage: r.pct,
+          date: r.date,
+        };
+      }).sort((a, b) => b.date.localeCompare(a.date));
+    }
+  }
+
   // Lecture : nb blocs lecture faits sur la cible
   let nbLectures = 0;
   if (inclureLecture) {
@@ -202,5 +241,6 @@ export async function GET(req: NextRequest) {
     lecture: { nb_blocs_faits: nbLectures },
     niveau: niveauUnique,
     cibleType: inclureCeinture ? "eleve" : "classe",
+    chapitresValides,
   });
 }
