@@ -34,6 +34,7 @@ const ETOILES_TO_NIVEAU: Record<number, string> = {
 function getDateDebut(periode: string): string | null {
   const today = new Date();
   const d = new Date(today);
+  if (periode === "jour")    { d.setHours(0, 0, 0, 0); return d.toISOString(); }
   if (periode === "semaine") { d.setDate(today.getDate() - 7); return d.toISOString(); }
   if (periode === "mois")    { d.setMonth(today.getMonth() - 1); return d.toISOString(); }
   if (periode === "trimestre") { d.setMonth(today.getMonth() - 3); return d.toISOString(); }
