@@ -147,11 +147,11 @@ export async function GET(req: NextRequest) {
   const fr = scoreMatiereDepuis(carte, SOUS_DOMAINES_FR);
   const maths = scoreMatiereDepuis(carte, SOUS_DOMAINES_MATHS);
 
-  // Ceinture (1 seul élève)
+  // Ceinture (1 seul élève) — la colonne est repetibox_eleve_id, pas rb_eleve_id
   let ceinture: { index: number; nom: string; couleur: string } | null = null;
   if (inclureCeinture && cibleId) {
     const filtre = cible.rb_ids.length > 0
-      ? { col: "rb_eleve_id", val: cible.rb_ids[0] as number | string }
+      ? { col: "repetibox_eleve_id", val: cible.rb_ids[0] as number | string }
       : { col: "eleve_id", val: cible.pb_ids[0] };
     const { data: c } = await admin
       .from("ceinture_resultat")
