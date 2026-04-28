@@ -23,8 +23,6 @@ function getDateDebut(periode: string): string | null {
   return null;
 }
 
-const ETOILES_TO_NIVEAU: Record<number, string> = { 1: "CE2", 2: "CM1", 3: "CM2", 4: "CM2" };
-
 export async function GET(req: NextRequest) {
   const auth = await requireEnseignant();
   if (auth.error) return auth.error;
@@ -34,11 +32,10 @@ export async function GET(req: NextRequest) {
   const dateDebut = getDateDebut(periode);
   const admin = createAdminClient();
 
-  // ── Construire la liste des élèves de la cohorte ───────────────────────
   type EleveRow = { uid: string; prenom: string; nom: string; niveau: string | null; source: "planbox" | "repetibox" };
   const eleves: EleveRow[] = [];
 
-  // PB
+  // ── PlanBox via eleves.niveau_id → niveaux.nom ─────────────────────────
   const { data: pbList } = await admin.from("eleves").select("id, prenom, nom, niveaux(nom)");
   for (const e of pbList ?? []) {
     const niv = ((e as unknown as { niveaux?: { nom?: string } }).niveaux?.nom) ?? null;
@@ -52,20 +49,43 @@ export async function GET(req: NextRequest) {
     });
   }
 
-  // RB
-  const etoilesCibles = niveau === "tous" ? [1, 2, 3, 4]
-    : niveau === "CE2" ? [1] : niveau === "CM1" ? [2] : niveau === "CM2" ? [3, 4] : [];
-  if (etoilesCibles.length > 0) {
-    const { data: rbList } = await admin.from("eleve").select("id, prenom, nom, niveau_etoiles").in("niveau_etoiles", etoilesCibles);
-    for (const e of rbList ?? []) {
-      eleves.push({
-        uid: `rb_${e.id as number}`,
-        prenom: (e.prenom as string) ?? "",
-        nom: ((e as unknown as { nom?: string }).nom) ?? "",
-        niveau: ETOILES_TO_NIVEAU[(e.niveau_etoiles as number) ?? 0] ?? null,
-        source: "repetibox",
-      });
+  // ── Repetibox via eleve_groupe → groupes.nom ───────────────────────────
+  // Mapping rb_id → niveau (CE2/CM1/CM2)
+  const niveauParRb = new Map<number, string>();
+  const { data: groupesNiveaux } = await admin
+    .from("groupes")
+    .select("id, nom")
+    .in("nom", ["CE2", "CM1", "CM2"]);
+  const groupeIdToNiv = new Map<number, string>(
+    (groupesNiveaux ?? []).map((g) => [g.id as number, g.nom as string])
+  );
+  if (groupeIdToNiv.size > 0) {
+    const { data: liens } = await admin
+      .from("eleve_groupe")
+      .select("repetibox_eleve_id, groupe_id")
+      .in("groupe_id", [...groupeIdToNiv.keys()]);
+    for (const l of liens ?? []) {
+      const rb = (l as { repetibox_eleve_id?: number }).repetibox_eleve_id;
+      const gid = (l as { groupe_id?: number }).groupe_id;
+      if (typeof rb === "number" && typeof gid === "number") {
+        const niv = groupeIdToNiv.get(gid);
+        if (niv) niveauParRb.set(rb, niv);
+      }
     }
+  }
+
+  const { data: rbList } = await admin.from("eleve").select("id, prenom, nom");
+  for (const e of rbList ?? []) {
+    const rb = e.id as number;
+    const niv = niveauParRb.get(rb) ?? null;
+    if (niveau !== "tous" && niv !== niveau) continue;
+    eleves.push({
+      uid: `rb_${rb}`,
+      prenom: (e.prenom as string) ?? "",
+      nom: ((e as unknown as { nom?: string }).nom) ?? "",
+      niveau: niv,
+      source: "repetibox",
+    });
   }
 
   // ── Pour chaque élève : domaines + scores matière ──────────────────────

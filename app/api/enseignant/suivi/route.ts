@@ -30,7 +30,18 @@ function getDateDebut(periode: string): string | null {
   return null;
 }
 
-const ETOILES_TO_NIVEAU: Record<number, string> = { 1: "CE2", 2: "CM1", 3: "CM2", 4: "CM2" };
+/** Récupère le niveau (CE2/CM1/CM2) d'un élève RB via eleve_groupe → groupes.nom */
+async function niveauRb(admin: ReturnType<typeof createAdminClient>, rbId: number): Promise<string | null> {
+  const { data } = await admin
+    .from("eleve_groupe")
+    .select("groupes(nom)")
+    .eq("repetibox_eleve_id", rbId);
+  for (const r of data ?? []) {
+    const nom = ((r as unknown as { groupes?: { nom?: string } }).groupes?.nom) ?? null;
+    if (nom === "CE2" || nom === "CM1" || nom === "CM2") return nom;
+  }
+  return null;
+}
 
 async function recupererCible(
   admin: ReturnType<typeof createAdminClient>,
@@ -42,7 +53,7 @@ async function recupererCible(
   niveauUnique: string | null;
   inclureCeinture: boolean;
   inclureLecture: boolean;
-  cibleId: string | null; // pour ceinture / lecture (1 seul élève)
+  cibleId: string | null;
 }> {
   const type = searchParams.get("cible") ?? "eleve";
 
@@ -55,10 +66,10 @@ async function recupererCible(
     if (id.startsWith("rb_")) {
       const rb = parseInt(id.slice(3), 10);
       cible.rb_ids = [rb];
-      const { data } = await admin.from("eleve").select("prenom, nom, niveau_etoiles").eq("id", rb).maybeSingle();
+      const { data } = await admin.from("eleve").select("prenom, nom").eq("id", rb).maybeSingle();
       if (data) {
         titre = `${data.prenom ?? ""} ${data.nom ?? ""}`.trim();
-        niveau = ETOILES_TO_NIVEAU[(data.niveau_etoiles as number) ?? 0] ?? null;
+        niveau = await niveauRb(admin, rb);
         sousTitre = niveau;
       }
     } else {
@@ -78,27 +89,41 @@ async function recupererCible(
   const niveauFiltre = searchParams.get("niveau") ?? "tous";
   const cible: CibleEleves = { pb_ids: [], rb_ids: [] };
 
-  // PlanBox
-  let qPB = admin.from("eleves").select("id, niveaux(nom)");
-  const { data: pbList } = await qPB;
+  // PlanBox via eleves.niveau_id → niveaux.nom
+  const { data: pbList } = await admin.from("eleves").select("id, niveaux(nom)");
   for (const e of pbList ?? []) {
     const niv = ((e as unknown as { niveaux?: { nom?: string } }).niveaux?.nom) ?? null;
     if (niveauFiltre === "tous" || niv === niveauFiltre) cible.pb_ids.push(e.id as string);
   }
 
-  // Repetibox
-  const etoilesCibles = niveauFiltre === "tous"
-    ? [1, 2, 3, 4]
-    : niveauFiltre === "CE2" ? [1] : niveauFiltre === "CM1" ? [2] : niveauFiltre === "CM2" ? [3, 4] : [];
-  if (etoilesCibles.length > 0) {
-    const { data: rbList } = await admin.from("eleve").select("id").in("niveau_etoiles", etoilesCibles);
+  // Repetibox via eleve_groupe → groupes.nom
+  if (niveauFiltre === "tous") {
+    const { data: rbList } = await admin.from("eleve").select("id");
     for (const e of rbList ?? []) cible.rb_ids.push(e.id as number);
+  } else {
+    // 1. trouver les groupe.id correspondant au niveau
+    const { data: groupes } = await admin.from("groupes").select("id").eq("nom", niveauFiltre);
+    const groupeIds = (groupes ?? []).map((g) => g.id as number);
+    if (groupeIds.length > 0) {
+      const { data: liens } = await admin
+        .from("eleve_groupe")
+        .select("repetibox_eleve_id")
+        .in("groupe_id", groupeIds);
+      const ids = new Set<number>();
+      for (const l of liens ?? []) {
+        const id = (l as { repetibox_eleve_id?: number }).repetibox_eleve_id;
+        if (typeof id === "number") ids.add(id);
+      }
+      cible.rb_ids = [...ids];
+    }
   }
 
   return {
     cible,
     titre: niveauFiltre === "tous" ? "Toute la classe" : niveauFiltre,
-    sousTitre: niveauFiltre === "tous" ? `${cible.pb_ids.length + cible.rb_ids.length} élèves` : `Niveau ${niveauFiltre}`,
+    sousTitre: niveauFiltre === "tous"
+      ? `${cible.pb_ids.length + cible.rb_ids.length} élèves`
+      : `Niveau ${niveauFiltre} · ${cible.pb_ids.length + cible.rb_ids.length} élèves`,
     niveauUnique: niveauFiltre === "tous" ? null : niveauFiltre,
     inclureCeinture: false,
     inclureLecture: true,
