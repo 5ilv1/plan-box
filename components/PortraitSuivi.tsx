@@ -59,6 +59,9 @@ interface ElevesScores {
     francais_pct: number | null;
     maths_pct: number | null;
     nb_essais: number;
+    nb_blocs_faits: number;
+    nb_blocs_totaux: number;
+    avancement_pct: number | null;
   }>;
 }
 
@@ -430,7 +433,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
             }}>
               {/* Header */}
               <div style={{
-                display: "grid", gridTemplateColumns: "1fr 90px 110px 110px 60px",
+                display: "grid", gridTemplateColumns: "1fr 80px 130px 100px 100px 50px",
                 padding: "10px 14px", background: "#F9FAFB",
                 fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
                 color: "var(--pb-on-surface-variant)",
@@ -438,6 +441,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
               }}>
                 <div>Élève</div>
                 <div>Niveau</div>
+                <div style={{ textAlign: "right" }}>Avancement</div>
                 <div style={{ textAlign: "right" }}>Français</div>
                 <div style={{ textAlign: "right" }}>Maths</div>
                 <div></div>
@@ -449,7 +453,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                     key={e.uid}
                     href={href}
                     style={{
-                      display: "grid", gridTemplateColumns: "1fr 90px 110px 110px 60px",
+                      display: "grid", gridTemplateColumns: "1fr 80px 130px 100px 100px 50px",
                       padding: "10px 14px", fontSize: 14, alignItems: "center",
                       borderBottom: "1px solid #F3F4F6", textDecoration: "none",
                       color: "var(--pb-on-surface)",
@@ -468,6 +472,14 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                     </div>
                     <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
                       {e.niveau ?? "—"}
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ fontWeight: 700, color: couleurPct(e.avancement_pct), fontSize: 14 }}>
+                        {e.avancement_pct !== null ? `${e.avancement_pct}%` : "—"}
+                      </div>
+                      <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
+                        {e.nb_blocs_faits}/{e.nb_blocs_totaux}
+                      </div>
                     </div>
                     <div style={{ textAlign: "right", fontWeight: 700, color: couleurPct(e.francais_pct) }}>
                       {e.francais_pct !== null ? `${e.francais_pct}%` : "—"}

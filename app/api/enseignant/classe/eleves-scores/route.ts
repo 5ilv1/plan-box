@@ -89,22 +89,60 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Calcul batch en 4 requêtes pour tous les élèves d'un coup ──────────
-  type Resultat = EleveRow & { francais_pct: number | null; maths_pct: number | null; nb_essais: number };
+  type Resultat = EleveRow & {
+    francais_pct: number | null;
+    maths_pct: number | null;
+    nb_essais: number;
+    nb_blocs_faits: number;
+    nb_blocs_totaux: number;
+    avancement_pct: number | null;
+  };
   const cible = {
     pb_ids: eleves.filter((e) => e.source === "planbox").map((e) => e.uid.slice(3)),
     rb_ids: eleves.filter((e) => e.source === "repetibox").map((e) => parseInt(e.uid.slice(3), 10)),
   };
   const cartes = await calculerDomainesParEleve(admin, cible, dateDebut);
 
+  // ── Avancement : exercices faits / proposés ──────────────────────────
+  // 2 requêtes (PB + RB) pour récupérer (eleve_id, statut) puis group en JS.
+  const dateJour = dateDebut?.split("T")[0] ?? null;
+  const blocsParUid = new Map<string, { total: number; faits: number }>();
+  const incr = (uid: string, statut: string) => {
+    let s = blocsParUid.get(uid);
+    if (!s) { s = { total: 0, faits: 0 }; blocsParUid.set(uid, s); }
+    s.total++;
+    if (statut === "fait") s.faits++;
+  };
+  if (cible.pb_ids.length > 0) {
+    let q = admin.from("plan_travail").select("eleve_id, statut").in("eleve_id", cible.pb_ids);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    const { data } = await q;
+    for (const r of (data ?? []) as Array<{ eleve_id: string; statut: string }>) {
+      incr(`pb_${r.eleve_id}`, r.statut);
+    }
+  }
+  if (cible.rb_ids.length > 0) {
+    let q = admin.from("plan_travail").select("repetibox_eleve_id, statut").in("repetibox_eleve_id", cible.rb_ids);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    const { data } = await q;
+    for (const r of (data ?? []) as Array<{ repetibox_eleve_id: number; statut: string }>) {
+      incr(`rb_${r.repetibox_eleve_id}`, r.statut);
+    }
+  }
+
   const resultats: Resultat[] = eleves.map((e) => {
     const c = cartes.get(e.uid) ?? {};
     const fr = scoreMatiereDepuis(c, SOUS_DOMAINES_FR);
     const ma = scoreMatiereDepuis(c, SOUS_DOMAINES_MATHS);
+    const blocs = blocsParUid.get(e.uid) ?? { total: 0, faits: 0 };
     return {
       ...e,
       francais_pct: fr.score,
       maths_pct: ma.score,
       nb_essais: fr.nb_essais + ma.nb_essais,
+      nb_blocs_faits: blocs.faits,
+      nb_blocs_totaux: blocs.total,
+      avancement_pct: blocs.total > 0 ? Math.round((blocs.faits / blocs.total) * 100) : null,
     };
   });
   resultats.sort((a, b) => a.prenom.localeCompare(b.prenom));
