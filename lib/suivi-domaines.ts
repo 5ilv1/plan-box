@@ -56,6 +56,13 @@ function ajouter(carte: CarteDomaines, libelle: string, score: number, total: nu
   slot.nb_essais = newNb;
 }
 
+/** Renvoie le meilleur résultat parmi plusieurs tentatives (par % décroissant). */
+function estMeilleur(a: { score: number; total: number }, b: { score: number; total: number }): boolean {
+  const pa = a.total > 0 ? a.score / a.total : 0;
+  const pb = b.total > 0 ? b.score / b.total : 0;
+  return pa >= pb;
+}
+
 function finaliser(carte: CarteDomaines): CarteDomaines {
   const out: CarteDomaines = {};
   for (const [k, v] of Object.entries(carte)) {
@@ -94,8 +101,14 @@ export async function calculerDomaines(
   for (const r of exoResults) for (const row of r.data ?? []) lignesExo.push(row);
 
   if (lignesExo.length > 0) {
+    // Garde le meilleur résultat par exercice (un élève peut refaire)
+    const meilleurExo = new Map<string, { score: number; total: number }>();
+    for (const r of lignesExo) {
+      const cur = meilleurExo.get(r.exercice_id);
+      if (!cur || estMeilleur(r, cur)) meilleurExo.set(r.exercice_id, { score: r.score, total: r.total });
+    }
     // Charger les exercices et leurs chapitres
-    const exoIds = [...new Set(lignesExo.map((l) => l.exercice_id))];
+    const exoIds = [...meilleurExo.keys()];
     const { data: exos } = await admin.from("exercice").select("id, chapitre_id").in("id", exoIds);
     const chapIds = [...new Set((exos ?? []).map((e) => e.chapitre_id as string).filter(Boolean))];
     const { data: chaps } = chapIds.length > 0
@@ -104,12 +117,12 @@ export async function calculerDomaines(
     const exoToChap = new Map<string, string>((exos ?? []).map((e) => [e.id as string, e.chapitre_id as string]));
     const chapToSm = new Map<string, string | null>((chaps ?? []).map((c) => [c.id as string, c.sous_matiere as string | null]));
 
-    for (const r of lignesExo) {
-      const chap = exoToChap.get(r.exercice_id);
+    for (const [exoId, best] of meilleurExo) {
+      const chap = exoToChap.get(exoId);
       if (!chap) continue;
       const lib = libelleSousMatiere(chapToSm.get(chap) ?? null);
       if (!lib) continue;
-      ajouter(carte, lib, r.score, r.total);
+      ajouter(carte, lib, best.score, best.total);
     }
   }
 
@@ -130,13 +143,19 @@ export async function calculerDomaines(
   for (const r of evalResults) for (const row of r.data ?? []) lignesEval.push(row);
 
   if (lignesEval.length > 0) {
-    const chapIds = [...new Set(lignesEval.map((l) => l.chapitre_id))];
+    // Meilleur résultat par chapitre
+    const meilleurEval = new Map<string, { score: number; total: number }>();
+    for (const r of lignesEval) {
+      const cur = meilleurEval.get(r.chapitre_id);
+      if (!cur || estMeilleur(r, cur)) meilleurEval.set(r.chapitre_id, { score: r.score, total: r.total });
+    }
+    const chapIds = [...meilleurEval.keys()];
     const { data: chaps } = await admin.from("chapitres").select("id, sous_matiere").in("id", chapIds);
     const chapToSm = new Map<string, string | null>((chaps ?? []).map((c) => [c.id as string, c.sous_matiere as string | null]));
-    for (const r of lignesEval) {
-      const lib = libelleSousMatiere(chapToSm.get(r.chapitre_id) ?? null);
+    for (const [chapId, best] of meilleurEval) {
+      const lib = libelleSousMatiere(chapToSm.get(chapId) ?? null);
       if (!lib) continue;
-      ajouter(carte, lib, r.score, r.total);
+      ajouter(carte, lib, best.score, best.total);
     }
   }
 
@@ -165,20 +184,33 @@ export async function calculerDomaines(
   }
 
   // ── 4. calcul_jour_resultat → "Calcul" ───────────────────────────────
-  const calcQueries: Array<Promise<{ data: Array<{ correct: boolean }> | null }>> = [];
+  // Plusieurs tentatives par calcul possible : on garde le meilleur résultat
+  // par (eleve, calcul_id) : 1 si au moins une tentative correcte, 0 sinon.
+  const calcQueries: Array<Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null; calcul_id: string }> | null }>> = [];
   if (cible.pb_ids.length > 0) {
-    let q = admin.from("calcul_jour_resultat").select("correct").in("eleve_id", cible.pb_ids);
+    let q = admin.from("calcul_jour_resultat").select("correct, eleve_id, rb_eleve_id, calcul_id").in("eleve_id", cible.pb_ids);
     if (dateDebut) q = q.gte("created_at", dateDebut);
-    calcQueries.push(q as unknown as Promise<{ data: Array<{ correct: boolean }> | null }>);
+    calcQueries.push(q as unknown as Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null; calcul_id: string }> | null }>);
   }
   if (cible.rb_ids.length > 0) {
-    let q = admin.from("calcul_jour_resultat").select("correct").in("rb_eleve_id", cible.rb_ids);
+    let q = admin.from("calcul_jour_resultat").select("correct, eleve_id, rb_eleve_id, calcul_id").in("rb_eleve_id", cible.rb_ids);
     if (dateDebut) q = q.gte("created_at", dateDebut);
-    calcQueries.push(q as unknown as Promise<{ data: Array<{ correct: boolean }> | null }>);
+    calcQueries.push(q as unknown as Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null; calcul_id: string }> | null }>);
   }
   const calcResults = await Promise.all(calcQueries);
+  // Aggrégation par (uid, calcul_id) → max(correct)
+  const meilleurParCalcul = new Map<string, boolean>();
   for (const r of calcResults) for (const row of r.data ?? []) {
-    ajouter(carte, "Calcul", row.correct ? 1 : 0, 1);
+    const uid = row.eleve_id ?? (row.rb_eleve_id !== null ? `rb_${row.rb_eleve_id}` : null);
+    if (!uid) continue;
+    const key = `${uid}|${row.calcul_id}`;
+    const ancien = meilleurParCalcul.get(key);
+    if (ancien === undefined || (!ancien && row.correct)) {
+      meilleurParCalcul.set(key, row.correct);
+    }
+  }
+  for (const correct of meilleurParCalcul.values()) {
+    ajouter(carte, "Calcul", correct ? 1 : 0, 1);
   }
 
   // ── 5. problem_attempts → "Problèmes" (clé : student_id = auth UUID) ─
@@ -293,14 +325,22 @@ export async function calculerDomainesParEleve(
     }
   }
 
+  // Garde le meilleur résultat par (uid, exercice)
+  const meilleurExoEleve = new Map<string, { score: number; total: number; exoId: string }>();
   for (const r of exoRows) {
-    const chap = exoToChap.get(r.exercice_id);
+    const uid = r.eleve_id ? uidPB(r.eleve_id) : r.rb_eleve_id !== null ? uidRB(r.rb_eleve_id) : null;
+    if (!uid) continue;
+    const key = `${uid}|${r.exercice_id}`;
+    const cur = meilleurExoEleve.get(key);
+    if (!cur || estMeilleur(r, cur)) meilleurExoEleve.set(key, { score: r.score, total: r.total, exoId: r.exercice_id });
+  }
+  for (const [key, best] of meilleurExoEleve) {
+    const uid = key.split("|")[0];
+    const chap = exoToChap.get(best.exoId);
     if (!chap) continue;
     const lib = libelleSousMatiere(chapToSm.get(chap) ?? null);
     if (!lib) continue;
-    const uid = r.eleve_id ? uidPB(r.eleve_id) : r.rb_eleve_id !== null ? uidRB(r.rb_eleve_id) : null;
-    if (!uid) continue;
-    ajouter(carte(uid), lib, r.score, r.total);
+    ajouter(carte(uid), lib, best.score, best.total);
   }
 
   // ── 2. evaluation_resultat ────────────────────────────────────────────
@@ -326,12 +366,20 @@ export async function calculerDomainesParEleve(
     for (const c of chaps ?? []) chapToSm.set(c.id as string, c.sous_matiere as string | null);
   }
 
+  // Garde le meilleur résultat par (uid, chapitre)
+  const meilleurEvalEleve = new Map<string, { score: number; total: number; chapId: string }>();
   for (const r of evalRows) {
-    const lib = libelleSousMatiere(chapToSm.get(r.chapitre_id) ?? null);
-    if (!lib) continue;
     const uid = r.eleve_id ? uidPB(r.eleve_id) : r.rb_eleve_id !== null ? uidRB(r.rb_eleve_id) : null;
     if (!uid) continue;
-    ajouter(carte(uid), lib, r.score, r.total);
+    const key = `${uid}|${r.chapitre_id}`;
+    const cur = meilleurEvalEleve.get(key);
+    if (!cur || estMeilleur(r, cur)) meilleurEvalEleve.set(key, { score: r.score, total: r.total, chapId: r.chapitre_id });
+  }
+  for (const [key, best] of meilleurEvalEleve) {
+    const uid = key.split("|")[0];
+    const lib = libelleSousMatiere(chapToSm.get(best.chapId) ?? null);
+    if (!lib) continue;
+    ajouter(carte(uid), lib, best.score, best.total);
   }
 
   // ── 3. plan_travail blocs avec score ──────────────────────────────────
@@ -360,25 +408,34 @@ export async function calculerDomainesParEleve(
     }
   }
 
-  // ── 4. calcul_jour_resultat → "Calcul" ───────────────────────────────
-  const calcQ: Array<Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null }> | null }>> = [];
+  // ── 4. calcul_jour_resultat → "Calcul" (meilleur résultat par calcul) ─
+  const calcQ: Array<Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null; calcul_id: string }> | null }>> = [];
   if (cible.pb_ids.length > 0) {
-    let q = admin.from("calcul_jour_resultat").select("correct, eleve_id, rb_eleve_id").in("eleve_id", cible.pb_ids);
+    let q = admin.from("calcul_jour_resultat").select("correct, eleve_id, rb_eleve_id, calcul_id").in("eleve_id", cible.pb_ids);
     if (dateDebut) q = q.gte("created_at", dateDebut);
-    calcQ.push(q as unknown as Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null }> | null }>);
+    calcQ.push(q as unknown as Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null; calcul_id: string }> | null }>);
   }
   if (cible.rb_ids.length > 0) {
-    let q = admin.from("calcul_jour_resultat").select("correct, eleve_id, rb_eleve_id").in("rb_eleve_id", cible.rb_ids);
+    let q = admin.from("calcul_jour_resultat").select("correct, eleve_id, rb_eleve_id, calcul_id").in("rb_eleve_id", cible.rb_ids);
     if (dateDebut) q = q.gte("created_at", dateDebut);
-    calcQ.push(q as unknown as Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null }> | null }>);
+    calcQ.push(q as unknown as Promise<{ data: Array<{ correct: boolean; eleve_id: string | null; rb_eleve_id: number | null; calcul_id: string }> | null }>);
   }
   const calcR = await Promise.all(calcQ);
+  const meilleurParCalculParEleve = new Map<string, boolean>();
   for (const r of calcR) {
     for (const row of r.data ?? []) {
       const uid = row.eleve_id ? uidPB(row.eleve_id) : row.rb_eleve_id !== null ? uidRB(row.rb_eleve_id) : null;
       if (!uid) continue;
-      ajouter(carte(uid), "Calcul", row.correct ? 1 : 0, 1);
+      const key = `${uid}|${row.calcul_id}`;
+      const ancien = meilleurParCalculParEleve.get(key);
+      if (ancien === undefined || (!ancien && row.correct)) {
+        meilleurParCalculParEleve.set(key, row.correct);
+      }
     }
+  }
+  for (const [key, correct] of meilleurParCalculParEleve) {
+    const uid = key.split("|")[0];
+    ajouter(carte(uid), "Calcul", correct ? 1 : 0, 1);
   }
 
   // ── 5. problem_attempts → "Problèmes" (auth_id → uid) ─────────────────
