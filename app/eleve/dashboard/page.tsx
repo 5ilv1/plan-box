@@ -163,7 +163,7 @@ interface DashCache {
   notifications: Notification[];
   chapitresRB: Array<{ chapitre_id: number; chapitre_nom: string; nb_cartes_dues: number; token_url: string }>;
   podcastsQcm: Array<{ id: string; titre: string; qcm_id: string }>;
-  podcastSemaine: { id: string; titre: string; qcm_id: string; fait: boolean } | null;
+  podcastsSemaine: Array<{ id: string; titre: string; qcm_id: string; fait: boolean; reporte: boolean }>;
   rbEleveId: number | null;
   ceintureActive: boolean;
   ceintureInfo: { index: number; nom: string; couleur: string } | null;
@@ -216,7 +216,7 @@ export default function DashboardEleve() {
   const [notifications, setNotifications]           = useState<Notification[]>([]);
   const [chapitresRB, setChapitresRB]               = useState<Array<{ chapitre_id: number; chapitre_nom: string; nb_cartes_dues: number; token_url: string }>>([]);
   const [podcastsQcm, setPodcastsQcm]               = useState<Array<{ id: string; titre: string; qcm_id: string }>>([]);
-  const [podcastSemaine, setPodcastSemaine]           = useState<{ id: string; titre: string; qcm_id: string; fait: boolean } | null>(null);
+  const [podcastsSemaine, setPodcastsSemaine]         = useState<Array<{ id: string; titre: string; qcm_id: string; fait: boolean; reporte: boolean }>>([]);
   const [chargementDonnees, setChargementDonnees]   = useState(true);
   const [accordeonsOuverts, setAccordeonsOuverts]   = useState<Set<string>>(new Set());
   const [rbEleveId, setRbEleveId]                   = useState<number | null>(null);
@@ -267,7 +267,7 @@ export default function DashboardEleve() {
       setNotifications(cache.notifications);
       setChapitresRB(cache.chapitresRB);
       setPodcastsQcm(cache.podcastsQcm);
-      setPodcastSemaine(cache.podcastSemaine);
+      setPodcastsSemaine(cache.podcastsSemaine);
       setRbEleveId(cache.rbEleveId);
       setCeintureActive(cache.ceintureActive);
       setCeintureInfo(cache.ceintureInfo);
@@ -390,26 +390,36 @@ export default function DashboardEleve() {
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: b.contenu.qcm_id as string }));
       setPodcastsQcm(podcasts);
 
-      // Podcast de la semaine : chercher un podcast assigné cette semaine
-      const podcastCetteSemaine = blocs.find(
-        (b) => b.type === "ressource" && (b.contenu as any)?.qcm_id
-      );
-      if (podcastCetteSemaine) {
-        const qcmId = (podcastCetteSemaine.contenu as any).qcm_id as string;
+      // Podcasts à présenter dans le bloc latéral : ceux de la semaine + ceux
+      // reportés des semaines précédentes (non terminés). Déduplication par qcm_id.
+      const podcastsBlocs: Array<{ bloc: PlanTravail; reporte: boolean }> = [];
+      const vusQcm = new Set<string>();
+      for (const b of blocs) {
+        if (b.type !== "ressource") continue;
+        const qcmId = (b.contenu as any)?.qcm_id as string | undefined;
+        if (!qcmId || vusQcm.has(qcmId)) continue;
+        vusQcm.add(qcmId);
+        podcastsBlocs.push({ bloc: b, reporte: b.date_assignation < debut });
+      }
+      if (podcastsBlocs.length > 0) {
+        const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
         const { data: reponses } = await supabase
           .from("qcm_reponse")
-          .select("id")
-          .eq("qcm_id", qcmId)
-          .eq("eleve_id", eleveId)
-          .limit(1);
+          .select("qcm_id")
+          .in("qcm_id", qcmIds)
+          .eq("eleve_id", eleveId);
+        const faits = new Set((reponses ?? []).map((r: any) => r.qcm_id));
         if (!signal.aborted) {
-          setPodcastSemaine({
-            id: podcastCetteSemaine.id,
-            titre: podcastCetteSemaine.titre,
-            qcm_id: qcmId,
-            fait: (reponses ?? []).length > 0,
-          });
+          setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
+            id: bloc.id,
+            titre: bloc.titre,
+            qcm_id: (bloc.contenu as any).qcm_id as string,
+            fait: faits.has((bloc.contenu as any).qcm_id),
+            reporte,
+          })));
         }
+      } else if (!signal.aborted) {
+        setPodcastsSemaine([]);
       }
 
       const rbId = (eleveData as any)?.repetibox_eleve_id;
@@ -523,26 +533,35 @@ export default function DashboardEleve() {
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
       setPodcastsQcm(podcastsRB);
 
-      // Podcast de la semaine
-      const podcastCetteSemaine = blocsWeekFiltered.find(
-        (b) => b.type === "ressource" && (b.contenu as any)?.qcm_id
-      );
-      if (podcastCetteSemaine) {
-        const qcmId = (podcastCetteSemaine.contenu as any).qcm_id as string;
+      // Podcasts à présenter dans le bloc latéral : ceux de la semaine + reportés.
+      const podcastsBlocs: Array<{ bloc: PlanTravail; reporte: boolean }> = [];
+      const vusQcm = new Set<string>();
+      for (const b of blocsWeekFiltered) {
+        if (b.type !== "ressource") continue;
+        const qcmId = (b.contenu as any)?.qcm_id as string | undefined;
+        if (!qcmId || vusQcm.has(qcmId)) continue;
+        vusQcm.add(qcmId);
+        podcastsBlocs.push({ bloc: b, reporte: b.date_assignation < debut });
+      }
+      if (podcastsBlocs.length > 0) {
+        const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
         const { data: reponses } = await supabase
           .from("qcm_reponse")
-          .select("id")
-          .eq("qcm_id", qcmId)
-          .eq("repetibox_eleve_id", rbId)
-          .limit(1);
+          .select("qcm_id")
+          .in("qcm_id", qcmIds)
+          .eq("repetibox_eleve_id", rbId);
+        const faits = new Set((reponses ?? []).map((r: any) => r.qcm_id));
         if (!signal.aborted) {
-          setPodcastSemaine({
-            id: podcastCetteSemaine.id,
-            titre: podcastCetteSemaine.titre,
-            qcm_id: qcmId,
-            fait: (reponses ?? []).length > 0,
-          });
+          setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
+            id: bloc.id,
+            titre: bloc.titre,
+            qcm_id: (bloc.contenu as any).qcm_id as string,
+            fait: faits.has((bloc.contenu as any).qcm_id),
+            reporte,
+          })));
         }
+      } else if (!signal.aborted) {
+        setPodcastsSemaine([]);
       }
 
       // Requêtes secondaires avec signal
@@ -701,7 +720,7 @@ export default function DashboardEleve() {
       notifications,
       chapitresRB,
       podcastsQcm,
-      podcastSemaine,
+      podcastsSemaine,
       rbEleveId,
       ceintureActive,
       ceintureInfo,
@@ -713,7 +732,7 @@ export default function DashboardEleve() {
   }, [
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
     blocsAujourdhui, blocsSemaine, notifications, chapitresRB, podcastsQcm,
-    podcastSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
+    podcastsSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
     dailyProblemSolved, chapitresAssignes, calculJour,
   ]);
 
@@ -1234,63 +1253,65 @@ export default function DashboardEleve() {
               </Link>
             )}
 
-            {/* Podcast de la semaine */}
-            {podcastSemaine && (
-              <div className="pb-card" style={{
-                background: podcastSemaine.fait
+            {/* Podcasts à écouter (semaine en cours + reportés non terminés) */}
+            {podcastsSemaine.map((p) => (
+              <div key={p.id} className="pb-card" style={{
+                background: p.fait
                   ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
-                  : "linear-gradient(135deg, #EFF6FF, #DBEAFE)",
-                border: `1.5px solid ${podcastSemaine.fait ? "rgba(22,163,74,0.25)" : "rgba(59,130,246,0.25)"}`,
+                  : p.reporte
+                    ? "linear-gradient(135deg, #FFF7ED, #FFEDD5)"
+                    : "linear-gradient(135deg, #EFF6FF, #DBEAFE)",
+                border: `1.5px solid ${p.fait ? "rgba(22,163,74,0.25)" : p.reporte ? "rgba(234,88,12,0.3)" : "rgba(59,130,246,0.25)"}`,
                 padding: "20px",
               }}>
                 <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <span className="ms" style={{ fontSize: 28, color: podcastSemaine.fait ? "#16A34A" : "#3B82F6" }}>
-                    {podcastSemaine.fait ? "check_circle" : "podcasts"}
+                  <span className="ms" style={{ fontSize: 28, color: p.fait ? "#16A34A" : p.reporte ? "#EA580C" : "#3B82F6" }}>
+                    {p.fait ? "check_circle" : "podcasts"}
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: podcastSemaine.fait ? "#166534" : "#1E40AF" }}>
-                      Podcast de la semaine
+                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: p.fait ? "#166534" : p.reporte ? "#9A3412" : "#1E40AF" }}>
+                      {p.reporte && !p.fait ? "Podcast à rattraper" : "Podcast de la semaine"}
                     </div>
                     <div style={{
-                      fontSize: 12, color: podcastSemaine.fait ? "#15803D" : "#2563EB",
+                      fontSize: 12, color: p.fait ? "#15803D" : p.reporte ? "#C2410C" : "#2563EB",
                       overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
                     }}>
-                      {podcastSemaine.titre}
+                      {p.titre}
                     </div>
                   </div>
                 </div>
                 <Link
-                  href={podcastSemaine.fait ? `/eleve/qcm-classement/${podcastSemaine.qcm_id}` : `/eleve/activite/${podcastSemaine.id}`}
+                  href={p.fait ? `/eleve/qcm-classement/${p.qcm_id}` : `/eleve/activite/${p.id}`}
                   style={{
                     display: "inline-flex", alignItems: "center", gap: 6,
-                    background: podcastSemaine.fait ? "#16A34A" : "#3B82F6",
+                    background: p.fait ? "#16A34A" : p.reporte ? "#EA580C" : "#3B82F6",
                     color: "white", padding: "8px 18px",
                     borderRadius: 999, fontSize: 13, fontWeight: 700,
                     fontFamily: "'Plus Jakarta Sans', sans-serif",
                     textDecoration: "none",
                   }}
                 >
-                  {podcastSemaine.fait ? "Voir le classement →" : "Écouter & répondre →"}
+                  {p.fait ? "Voir le classement →" : "Écouter & répondre →"}
                 </Link>
                 {/* Liens podiums */}
-                <div style={{ display: "flex", gap: 10, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${podcastSemaine.fait ? "rgba(22,163,74,0.15)" : "rgba(59,130,246,0.15)"}` }}>
+                <div style={{ display: "flex", gap: 10, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${p.fait ? "rgba(22,163,74,0.15)" : p.reporte ? "rgba(234,88,12,0.18)" : "rgba(59,130,246,0.15)"}` }}>
                   <Link
-                    href={`/eleve/qcm-classement/${podcastSemaine.qcm_id}`}
-                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: podcastSemaine.fait ? "#166534" : "#1E40AF", textDecoration: "none" }}
+                    href={`/eleve/qcm-classement/${p.qcm_id}`}
+                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: p.fait ? "#166534" : p.reporte ? "#9A3412" : "#1E40AF", textDecoration: "none" }}
                   >
                     <span className="ms" style={{ fontSize: 16 }}>emoji_events</span>
                     Podium podcast
                   </Link>
                   <Link
                     href="/eleve/qcm-classement/global"
-                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: podcastSemaine.fait ? "#166534" : "#1E40AF", textDecoration: "none" }}
+                    style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: p.fait ? "#166534" : p.reporte ? "#9A3412" : "#1E40AF", textDecoration: "none" }}
                   >
                     <span className="ms" style={{ fontSize: 16 }}>leaderboard</span>
                     Classement global
                   </Link>
                 </div>
               </div>
-            )}
+            ))}
 
             {/* 🏆 Classement Podcasts — toujours visible */}
             <Link
@@ -1703,7 +1724,9 @@ export default function DashboardEleve() {
                               </div>
 
                               {/* Action */}
-                              {!estFait && (
+                              {/* Écriture semaine : toujours accessible même après envoi
+                                  (l'élève doit pouvoir appliquer les corrections du maître) */}
+                              {(!estFait || isEcritureSemaine) && (
                                 peutCommencer ? (
                                   <div style={{ marginTop: "auto", paddingTop: 16 }}>
                                     <Link
@@ -1711,7 +1734,7 @@ export default function DashboardEleve() {
                                       className="pb-btn primary"
                                       style={{ padding: "10px 20px", fontSize: 14, borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 }}
                                     >
-                                      {pctPrecedent !== null ? "Réessayer →" : "Commencer →"}
+                                      {isEcritureSemaine && estFait ? "Voir les corrections →" : pctPrecedent !== null ? "Réessayer →" : "Commencer →"}
                                     </Link>
                                   </div>
                                 ) : (
