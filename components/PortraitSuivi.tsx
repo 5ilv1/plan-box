@@ -30,7 +30,9 @@ const PERIODES: Array<{ value: Periode; label: string }> = [
 ];
 
 const SOUS_FR = ["Conjugaison", "Vocabulaire", "Grammaire", "Orthographe", "Écriture", "Lecture"];
-const SOUS_MATHS = ["Calcul", "Problèmes", "Tables ×"];
+// Tables × = ceinture multiplication, uniquement par élève
+const SOUS_MATHS_ELEVE = ["Calcul", "Problèmes", "Tables ×"];
+const SOUS_MATHS_CLASSE = ["Calcul", "Problèmes"];
 
 const couleurPct = (p: number | null | undefined): string => {
   if (p === null || p === undefined) return "#9CA3AF";
@@ -48,11 +50,26 @@ interface Props {
   retourLabel?: string;
 }
 
+interface ElevesScores {
+  eleves: Array<{
+    uid: string;
+    prenom: string;
+    nom: string;
+    niveau: string | null;
+    source: "planbox" | "repetibox";
+    francais_pct: number | null;
+    maths_pct: number | null;
+    nb_essais: number;
+  }>;
+}
+
 export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retourHref, retourLabel }: Props) {
   const [periode, setPeriode] = useState<Periode>("all");
   const [niveau, setNiveau] = useState<"tous" | "CE2" | "CM1" | "CM2">(niveauInitial);
   const [data, setData] = useState<SuiviResp | null>(null);
   const [chargement, setChargement] = useState(true);
+  const [eleves, setEleves] = useState<ElevesScores["eleves"]>([]);
+  const [chargementEleves, setChargementEleves] = useState(false);
 
   const url = useMemo(() => {
     const params = new URLSearchParams({ periode });
@@ -74,6 +91,17 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
       .catch(() => {})
       .finally(() => setChargement(false));
   }, [url]);
+
+  // Liste des élèves de la cohorte (vue classe seulement)
+  useEffect(() => {
+    if (cible !== "classe") return;
+    setChargementEleves(true);
+    fetch(`/api/enseignant/classe/eleves-scores?niveau=${niveau}&periode=${periode}`)
+      .then((r) => r.json())
+      .then((d) => setEleves(d.eleves ?? []))
+      .catch(() => setEleves([]))
+      .finally(() => setChargementEleves(false));
+  }, [cible, niveau, periode]);
 
   if (chargement && !data) {
     return <div className="skeleton" style={{ height: 400, borderRadius: 16 }} />;
@@ -150,27 +178,11 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
     return ligneSous(nom, data.domaines[nom]?.score ?? null);
   });
 
-  // Lignes Maths
-  const lignesMaths = SOUS_MATHS.map((nom) => {
+  // Lignes Maths — Tables × seulement en mode élève
+  const sousMaths = cible === "eleve" ? SOUS_MATHS_ELEVE : SOUS_MATHS_CLASSE;
+  const lignesMaths = sousMaths.map((nom) => {
     if (nom === "Tables ×") {
       const c = data.ceinture;
-      if (cible === "classe") {
-        return (
-          <div
-            key={nom}
-            style={{
-              display: "flex", alignItems: "center", justifyContent: "space-between",
-              padding: "8px 14px", fontSize: 14,
-              borderBottom: "1px solid #F3F4F6",
-            }}
-          >
-            <span style={{ color: "var(--pb-on-surface)", fontWeight: 500 }}>{nom}</span>
-            <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
-              Voir « Ceintures » dans le dashboard
-            </span>
-          </div>
-        );
-      }
       return (
         <div
           key={nom}
@@ -363,6 +375,85 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
           </div>
         </div>
       </div>
+
+      {/* Liste des élèves (vue classe seulement) */}
+      {cible === "classe" && (
+        <div style={{ marginTop: 24 }}>
+          <h2 style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 16,
+            marginBottom: 10,
+          }}>
+            Élèves ({eleves.length})
+          </h2>
+          {chargementEleves && eleves.length === 0 ? (
+            <div className="skeleton" style={{ height: 240, borderRadius: 12 }} />
+          ) : (
+            <div style={{
+              background: "white", borderRadius: 14, border: "1.5px solid var(--pb-outline-variant, #ddd)",
+              overflow: "hidden",
+            }}>
+              {/* Header */}
+              <div style={{
+                display: "grid", gridTemplateColumns: "1fr 90px 110px 110px 60px",
+                padding: "10px 14px", background: "#F9FAFB",
+                fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+                color: "var(--pb-on-surface-variant)",
+                borderBottom: "1.5px solid var(--pb-outline-variant, #ddd)",
+              }}>
+                <div>Élève</div>
+                <div>Niveau</div>
+                <div style={{ textAlign: "right" }}>Français</div>
+                <div style={{ textAlign: "right" }}>Maths</div>
+                <div></div>
+              </div>
+              {eleves.map((e) => {
+                const href = `/enseignant/eleves/${e.uid}/performance`;
+                return (
+                  <Link
+                    key={e.uid}
+                    href={href}
+                    style={{
+                      display: "grid", gridTemplateColumns: "1fr 90px 110px 110px 60px",
+                      padding: "10px 14px", fontSize: 14, alignItems: "center",
+                      borderBottom: "1px solid #F3F4F6", textDecoration: "none",
+                      color: "var(--pb-on-surface)",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                      <div style={{
+                        width: 32, height: 32, borderRadius: "50%",
+                        background: "linear-gradient(135deg, #7C3AED, #4338CA)",
+                        color: "white", display: "flex", alignItems: "center", justifyContent: "center",
+                        fontWeight: 800, fontSize: 13,
+                      }}>
+                        {(e.prenom[0] ?? "?").toUpperCase()}
+                      </div>
+                      <span style={{ fontWeight: 600 }}>{e.prenom} {e.nom}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                      {e.niveau ?? "—"}
+                    </div>
+                    <div style={{ textAlign: "right", fontWeight: 700, color: couleurPct(e.francais_pct) }}>
+                      {e.francais_pct !== null ? `${e.francais_pct}%` : "—"}
+                    </div>
+                    <div style={{ textAlign: "right", fontWeight: 700, color: couleurPct(e.maths_pct) }}>
+                      {e.maths_pct !== null ? `${e.maths_pct}%` : "—"}
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <span className="ms" style={{ fontSize: 18, color: "var(--pb-on-surface-variant)" }}>chevron_right</span>
+                    </div>
+                  </Link>
+                );
+              })}
+              {eleves.length === 0 && !chargementEleves && (
+                <div style={{ padding: 20, fontSize: 13, color: "var(--pb-on-surface-variant)", fontStyle: "italic", textAlign: "center" }}>
+                  Aucun élève dans cette cohorte.
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 }

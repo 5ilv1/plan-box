@@ -6,27 +6,23 @@
  *   - plan_travail.contenu.score_eleve/score_total (blocs hors chapitre :
  *     dictée, mots, calcul_mental, probleme_maths)
  *   - calcul_jour_resultat (1/1 par essai correct)
- *
- * Renvoie un dictionnaire { libelle → { score, nb_essais } }.
  */
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 export interface ScoreSousDomaine {
-  score: number | null; // 0-100, null si aucun essai
-  nb_essais: number; // nb d'évaluations cumulées
+  score: number | null;
+  nb_essais: number;
 }
 
 export type CarteDomaines = Record<string, ScoreSousDomaine>;
 
-/** Cibles d'élèves pour les filtres SQL */
 export interface CibleEleves {
-  pb_ids: string[]; // UUIDs auth
-  rb_ids: number[]; // entiers Repetibox
+  pb_ids: string[];
+  rb_ids: number[];
 }
 
-/** Mapping sous_matiere DB → libellé canonique côté UI */
-function libelleSousMatiere(sm: string | null): string | null {
+function libelleSousMatiere(sm: string | null | undefined): string | null {
   if (!sm) return null;
   const norm = sm.trim();
   if (norm === "Conjugaison") return "Conjugaison";
@@ -39,12 +35,11 @@ function libelleSousMatiere(sm: string | null): string | null {
   return norm;
 }
 
-/** Mapping type de bloc plan_travail → libellé sous-domaine */
 function libelleTypeBloc(type: string): string | null {
   if (type === "dictee" || type === "mots") return "Orthographe";
   if (type === "calcul_mental") return "Calcul";
   if (type === "probleme_maths") return "Problèmes";
-  if (type === "ecriture") return "Écriture"; // optionnel
+  if (type === "ecriture") return "Écriture";
   return null;
 }
 
@@ -52,12 +47,11 @@ function ajouter(carte: CarteDomaines, libelle: string, score: number, total: nu
   if (total <= 0) return;
   if (!carte[libelle]) carte[libelle] = { score: 0, nb_essais: 0 };
   const slot = carte[libelle];
-  // Stocke une moyenne pondérée : sum*total / nb_total
-  const ancienScore = slot.score ?? 0;
+  const ancien = slot.score ?? 0;
   const ancienNb = slot.nb_essais;
   const newNb = ancienNb + total;
-  const newScore = ancienNb === 0 ? (score / total) * 100 : ((ancienScore * ancienNb) + (score / total) * 100 * total) / newNb;
-  slot.score = newScore;
+  const pct = (score / total) * 100;
+  slot.score = ancienNb === 0 ? pct : ((ancien * ancienNb) + pct * total) / newNb;
   slot.nb_essais = newNb;
 }
 
@@ -72,107 +66,123 @@ function finaliser(carte: CarteDomaines): CarteDomaines {
   return out;
 }
 
-/**
- * Renvoie la carte des scores par sous-domaine pour un ou plusieurs élèves.
- * Si plusieurs élèves : moyenne pondérée par nb d'essais (chaque essai = 1 voix).
- */
 export async function calculerDomaines(
   admin: SupabaseClient,
   cible: CibleEleves,
   dateDebut: string | null
 ): Promise<CarteDomaines> {
   const carte: CarteDomaines = {};
-  const hasCible = cible.pb_ids.length > 0 || cible.rb_ids.length > 0;
-  if (!hasCible) return carte;
+  if (cible.pb_ids.length === 0 && cible.rb_ids.length === 0) return carte;
 
-  // ── 1. exercice_resultat → sous_matiere ────────────────────────────────
-  let qExo = admin
-    .from("exercice_resultat")
-    .select("score, total, exercice:exercice_id (chapitre:chapitre_id (sous_matiere))");
-  if (cible.pb_ids.length > 0 && cible.rb_ids.length > 0) {
-    qExo = qExo.or(`eleve_id.in.(${cible.pb_ids.join(",")}),rb_eleve_id.in.(${cible.rb_ids.join(",")})`);
-  } else if (cible.pb_ids.length > 0) {
-    qExo = qExo.in("eleve_id", cible.pb_ids);
-  } else {
-    qExo = qExo.in("rb_eleve_id", cible.rb_ids);
-  }
-  if (dateDebut) qExo = qExo.gte("created_at", dateDebut);
-  const { data: rowsExo } = await qExo;
-  for (const r of rowsExo ?? []) {
-    const r2 = r as unknown as { score: number; total: number; exercice?: { chapitre?: { sous_matiere?: string } } };
-    const lib = libelleSousMatiere(r2.exercice?.chapitre?.sous_matiere ?? null);
-    if (!lib || r2.total <= 0) continue;
-    ajouter(carte, lib, r2.score, r2.total);
-  }
+  const dateJour = dateDebut?.split("T")[0] ?? null;
 
-  // ── 2. evaluation_resultat → sous_matiere via chapitre_id ──────────────
-  let qEval = admin
-    .from("evaluation_resultat")
-    .select("score, total, chapitre:chapitre_id (sous_matiere)");
-  if (cible.pb_ids.length > 0 && cible.rb_ids.length > 0) {
-    qEval = qEval.or(`eleve_id.in.(${cible.pb_ids.join(",")}),rb_eleve_id.in.(${cible.rb_ids.join(",")})`);
-  } else if (cible.pb_ids.length > 0) {
-    qEval = qEval.in("eleve_id", cible.pb_ids);
-  } else {
-    qEval = qEval.in("rb_eleve_id", cible.rb_ids);
+  // ── 1. exercice_resultat : 2 requêtes (PB + RB) ──────────────────────
+  const exoQueries: Array<Promise<{ data: Array<{ exercice_id: string; score: number; total: number }> | null }>> = [];
+  if (cible.pb_ids.length > 0) {
+    let q = admin.from("exercice_resultat").select("exercice_id, score, total").in("eleve_id", cible.pb_ids);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    exoQueries.push(q as unknown as Promise<{ data: Array<{ exercice_id: string; score: number; total: number }> | null }>);
   }
-  if (dateDebut) qEval = qEval.gte("created_at", dateDebut);
-  const { data: rowsEval } = await qEval;
-  for (const r of rowsEval ?? []) {
-    const r2 = r as unknown as { score: number; total: number; chapitre?: { sous_matiere?: string } };
-    const lib = libelleSousMatiere(r2.chapitre?.sous_matiere ?? null);
-    if (!lib || r2.total <= 0) continue;
-    ajouter(carte, lib, r2.score, r2.total);
+  if (cible.rb_ids.length > 0) {
+    let q = admin.from("exercice_resultat").select("exercice_id, score, total").in("rb_eleve_id", cible.rb_ids);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    exoQueries.push(q as unknown as Promise<{ data: Array<{ exercice_id: string; score: number; total: number }> | null }>);
+  }
+  const exoResults = await Promise.all(exoQueries);
+  const lignesExo: Array<{ exercice_id: string; score: number; total: number }> = [];
+  for (const r of exoResults) for (const row of r.data ?? []) lignesExo.push(row);
+
+  if (lignesExo.length > 0) {
+    // Charger les exercices et leurs chapitres
+    const exoIds = [...new Set(lignesExo.map((l) => l.exercice_id))];
+    const { data: exos } = await admin.from("exercice").select("id, chapitre_id").in("id", exoIds);
+    const chapIds = [...new Set((exos ?? []).map((e) => e.chapitre_id as string).filter(Boolean))];
+    const { data: chaps } = chapIds.length > 0
+      ? await admin.from("chapitres").select("id, sous_matiere").in("id", chapIds)
+      : { data: [] };
+    const exoToChap = new Map<string, string>((exos ?? []).map((e) => [e.id as string, e.chapitre_id as string]));
+    const chapToSm = new Map<string, string | null>((chaps ?? []).map((c) => [c.id as string, c.sous_matiere as string | null]));
+
+    for (const r of lignesExo) {
+      const chap = exoToChap.get(r.exercice_id);
+      if (!chap) continue;
+      const lib = libelleSousMatiere(chapToSm.get(chap) ?? null);
+      if (!lib) continue;
+      ajouter(carte, lib, r.score, r.total);
+    }
   }
 
-  // ── 3. plan_travail blocs avec score (par type → sous-domaine) ─────────
-  let qBloc = admin
-    .from("plan_travail")
-    .select("type, contenu, date_assignation")
-    .eq("statut", "fait")
-    .not("contenu->score_eleve", "is", null);
-  if (cible.pb_ids.length > 0 && cible.rb_ids.length > 0) {
-    qBloc = qBloc.or(`eleve_id.in.(${cible.pb_ids.join(",")}),repetibox_eleve_id.in.(${cible.rb_ids.join(",")})`);
-  } else if (cible.pb_ids.length > 0) {
-    qBloc = qBloc.in("eleve_id", cible.pb_ids);
-  } else {
-    qBloc = qBloc.in("repetibox_eleve_id", cible.rb_ids);
+  // ── 2. evaluation_resultat ────────────────────────────────────────────
+  const evalQueries: Array<Promise<{ data: Array<{ chapitre_id: string; score: number; total: number }> | null }>> = [];
+  if (cible.pb_ids.length > 0) {
+    let q = admin.from("evaluation_resultat").select("chapitre_id, score, total").in("eleve_id", cible.pb_ids);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    evalQueries.push(q as unknown as Promise<{ data: Array<{ chapitre_id: string; score: number; total: number }> | null }>);
   }
-  if (dateDebut) qBloc = qBloc.gte("date_assignation", dateDebut.split("T")[0]);
-  const { data: rowsBloc } = await qBloc;
-  for (const r of rowsBloc ?? []) {
-    const r2 = r as unknown as { type: string; contenu: { score_eleve?: number; score_total?: number } };
-    const lib = libelleTypeBloc(r2.type);
-    if (!lib) continue;
-    const se = r2.contenu?.score_eleve;
-    const st = r2.contenu?.score_total;
-    if (typeof se !== "number" || typeof st !== "number" || st <= 0) continue;
-    ajouter(carte, lib, se, st);
+  if (cible.rb_ids.length > 0) {
+    let q = admin.from("evaluation_resultat").select("chapitre_id, score, total").in("rb_eleve_id", cible.rb_ids);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    evalQueries.push(q as unknown as Promise<{ data: Array<{ chapitre_id: string; score: number; total: number }> | null }>);
+  }
+  const evalResults = await Promise.all(evalQueries);
+  const lignesEval: Array<{ chapitre_id: string; score: number; total: number }> = [];
+  for (const r of evalResults) for (const row of r.data ?? []) lignesEval.push(row);
+
+  if (lignesEval.length > 0) {
+    const chapIds = [...new Set(lignesEval.map((l) => l.chapitre_id))];
+    const { data: chaps } = await admin.from("chapitres").select("id, sous_matiere").in("id", chapIds);
+    const chapToSm = new Map<string, string | null>((chaps ?? []).map((c) => [c.id as string, c.sous_matiere as string | null]));
+    for (const r of lignesEval) {
+      const lib = libelleSousMatiere(chapToSm.get(r.chapitre_id) ?? null);
+      if (!lib) continue;
+      ajouter(carte, lib, r.score, r.total);
+    }
   }
 
-  // ── 4. calcul_jour_resultat → "Calcul" ─────────────────────────────────
-  let qCalc = admin.from("calcul_jour_resultat").select("correct");
-  if (cible.pb_ids.length > 0 && cible.rb_ids.length > 0) {
-    qCalc = qCalc.or(`eleve_id.in.(${cible.pb_ids.join(",")}),rb_eleve_id.in.(${cible.rb_ids.join(",")})`);
-  } else if (cible.pb_ids.length > 0) {
-    qCalc = qCalc.in("eleve_id", cible.pb_ids);
-  } else {
-    qCalc = qCalc.in("rb_eleve_id", cible.rb_ids);
+  // ── 3. plan_travail blocs avec score (par type) ───────────────────────
+  const blocQueries: Array<Promise<{ data: Array<{ type: string; contenu: Record<string, unknown> }> | null }>> = [];
+  if (cible.pb_ids.length > 0) {
+    let q = admin.from("plan_travail").select("type, contenu").in("eleve_id", cible.pb_ids).eq("statut", "fait").not("contenu->score_eleve", "is", null);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    blocQueries.push(q as unknown as Promise<{ data: Array<{ type: string; contenu: Record<string, unknown> }> | null }>);
   }
-  if (dateDebut) qCalc = qCalc.gte("created_at", dateDebut);
-  const { data: rowsCalc } = await qCalc;
-  for (const r of rowsCalc ?? []) {
-    const r2 = r as unknown as { correct: boolean };
-    ajouter(carte, "Calcul", r2.correct ? 1 : 0, 1);
+  if (cible.rb_ids.length > 0) {
+    let q = admin.from("plan_travail").select("type, contenu").in("repetibox_eleve_id", cible.rb_ids).eq("statut", "fait").not("contenu->score_eleve", "is", null);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    blocQueries.push(q as unknown as Promise<{ data: Array<{ type: string; contenu: Record<string, unknown> }> | null }>);
+  }
+  const blocResults = await Promise.all(blocQueries);
+  for (const r of blocResults) {
+    for (const row of r.data ?? []) {
+      const lib = libelleTypeBloc(row.type);
+      if (!lib) continue;
+      const se = row.contenu?.score_eleve;
+      const st = row.contenu?.score_total;
+      if (typeof se !== "number" || typeof st !== "number" || st <= 0) continue;
+      ajouter(carte, lib, se, st);
+    }
+  }
+
+  // ── 4. calcul_jour_resultat → "Calcul" ───────────────────────────────
+  const calcQueries: Array<Promise<{ data: Array<{ correct: boolean }> | null }>> = [];
+  if (cible.pb_ids.length > 0) {
+    let q = admin.from("calcul_jour_resultat").select("correct").in("eleve_id", cible.pb_ids);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    calcQueries.push(q as unknown as Promise<{ data: Array<{ correct: boolean }> | null }>);
+  }
+  if (cible.rb_ids.length > 0) {
+    let q = admin.from("calcul_jour_resultat").select("correct").in("rb_eleve_id", cible.rb_ids);
+    if (dateDebut) q = q.gte("created_at", dateDebut);
+    calcQueries.push(q as unknown as Promise<{ data: Array<{ correct: boolean }> | null }>);
+  }
+  const calcResults = await Promise.all(calcQueries);
+  for (const r of calcResults) for (const row of r.data ?? []) {
+    ajouter(carte, "Calcul", row.correct ? 1 : 0, 1);
   }
 
   return finaliser(carte);
 }
 
-/**
- * Calcule le score global d'une matière à partir de la carte des sous-domaines.
- * Pondéré par nb_essais.
- */
 export function scoreMatiereDepuis(
   carte: CarteDomaines,
   sousLibelles: string[]
