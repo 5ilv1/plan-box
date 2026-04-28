@@ -196,6 +196,7 @@ export async function GET() {
 
     if (dernierResultat?.correct) {
       return NextResponse.json({
+        id: existingCalcul.id,
         deja_fait: true,
         correct: true,
         reponse: existingCalcul.reponse,
