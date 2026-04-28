@@ -195,8 +195,13 @@ export default function AtelierEcriture({
       });
       if (res.ok) {
         setEnvoye(true);
-        if (estFinal) setFinalise(true);
-        onTermine();
+        if (estFinal) {
+          setFinalise(true);
+          // Seul l'envoi de la version finale ferme le bloc côté élève.
+          // Le premier envoi laisse la page active pour appliquer les
+          // corrections du maître.
+          onTermine();
+        }
       } else {
         const data = await res.json();
         alert(data.erreur ?? "Erreur lors de l'envoi");
