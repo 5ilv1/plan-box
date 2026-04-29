@@ -96,7 +96,9 @@ export async function POST(request: Request) {
     .maybeSingle();
 
   if (existing) {
-    await admin.from("calcul_jour_resultat").delete().eq("calcul_id", existing.id);
+    // On supprime uniquement le calcul ; les résultats des élèves restent
+    // dans la BDD (FK ON DELETE SET NULL) et continuent à compter dans
+    // les bilans, même si le calcul lui-même est régénéré.
     await admin.from("calcul_jour").delete().eq("id", existing.id);
   }
 
