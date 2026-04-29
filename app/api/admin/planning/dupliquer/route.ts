@@ -17,6 +17,7 @@ const TYPES_REGENERABLES = new Set([
   "classement",
   "ecriture_contrainte",
   "revision",
+  "probleme_maths",
 ]);
 
 /**

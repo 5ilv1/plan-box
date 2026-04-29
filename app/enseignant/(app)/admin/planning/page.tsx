@@ -167,7 +167,7 @@ export default function PageAdminPlanning() {
   // Duplication avec régénération IA
   const [enDuplication, setEnDuplication] = useState(false);
   const [erreurDuplication, setErreurDuplication] = useState("");
-  const TYPES_DUPLICABLES = new Set(["exercice", "qcm", "texte_a_trous", "calcul_mental", "analyse_phrase", "classement", "ecriture_contrainte", "revision"]);
+  const TYPES_DUPLICABLES = new Set(["exercice", "qcm", "texte_a_trous", "calcul_mental", "analyse_phrase", "classement", "ecriture_contrainte", "revision", "probleme_maths"]);
 
   // Regénération IA
   const [regenMode, setRegenMode]     = useState(false);
