@@ -105,16 +105,18 @@ export async function GET() {
     .eq("niveau", niveau)
     .maybeSingle();
 
-  // Vérifier si l'élève a une tentative (y compris validation enseignant)
-  const { data: attemptData } = await admin
-    .from("problem_attempts")
-    .select("solved, attempts, hints_used")
-    .eq("student_id", user.id)
-    .eq("date", today)
-    .maybeSingle();
-
   if (existing?.math_problems) {
     const p = existing.math_problems as any;
+    // Tentative ciblée sur le problème courant (sinon, après régénération,
+    // une vieille tentative remontait comme serverAttempt du nouveau problème).
+    const { data: attemptData } = await admin
+      .from("problem_attempts")
+      .select("solved, attempts, hints_used")
+      .eq("student_id", user.id)
+      .eq("date", today)
+      .eq("problem_id", p.id)
+      .maybeSingle();
+
     return NextResponse.json({
       id: p.id, enonce: p.enonce, categorie: p.categorie,
       periode: p.periode, semaine: p.semaine, niveau: p.niveau,

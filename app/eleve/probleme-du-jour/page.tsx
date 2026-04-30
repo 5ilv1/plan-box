@@ -87,31 +87,36 @@ export default function ProblemeJourPage() {
         if (data.noSchool || data.error) { setState("no_school"); return; }
         setProblem(data);
 
+        // L'état sauvegardé n'est pertinent que pour le problème en cours
+        // (sinon, après une régénération, l'élève resterait bloqué sur
+        // « exhausted » ou « correct » de l'ancien problème).
+        const savedForCurrent = saved && saved.problemId === data.id ? saved : null;
+
         // Priorité 1 : si le serveur dit que c'est résolu (validation enseignant)
         if (data.serverAttempt?.solved) {
           setState("correct");
-          setAttempts(data.serverAttempt.attempts ?? saved?.attempts ?? 0);
-          setHintsUsed(data.serverAttempt.hintsUsed ?? saved?.hintsUsed ?? 0);
+          setAttempts(data.serverAttempt.attempts ?? savedForCurrent?.attempts ?? 0);
+          setHintsUsed(data.serverAttempt.hintsUsed ?? savedForCurrent?.hintsUsed ?? 0);
           // Synchroniser le localStorage
           saveLocalState(session!.id, {
             solved: true,
-            attempts: data.serverAttempt.attempts ?? saved?.attempts ?? 0,
-            hintsUsed: data.serverAttempt.hintsUsed ?? saved?.hintsUsed ?? 0,
+            attempts: data.serverAttempt.attempts ?? savedForCurrent?.attempts ?? 0,
+            hintsUsed: data.serverAttempt.hintsUsed ?? savedForCurrent?.hintsUsed ?? 0,
             problemId: data.id,
             state: "correct",
           });
-        } else if (saved?.solved) {
+        } else if (savedForCurrent?.solved) {
           setState("correct");
-          setAttempts(saved.attempts);
-          setHintsUsed(saved.hintsUsed);
-        } else if (saved?.state === "exhausted") {
+          setAttempts(savedForCurrent.attempts);
+          setHintsUsed(savedForCurrent.hintsUsed);
+        } else if (savedForCurrent?.state === "exhausted") {
           setState("exhausted");
-          setAttempts(saved.attempts);
-          setHintsUsed(saved.hintsUsed);
-        } else if (saved && saved.attempts > 0) {
+          setAttempts(savedForCurrent.attempts);
+          setHintsUsed(savedForCurrent.hintsUsed);
+        } else if (savedForCurrent && savedForCurrent.attempts > 0) {
           setState("incorrect");
-          setAttempts(saved.attempts);
-          setHintsUsed(saved.hintsUsed);
+          setAttempts(savedForCurrent.attempts);
+          setHintsUsed(savedForCurrent.hintsUsed);
         } else {
           setState("idle");
         }
