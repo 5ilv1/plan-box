@@ -477,7 +477,7 @@ export default function DashboardEleve() {
         .then((r) => r.json())
         .then((json) => {
           if (signal.aborted) return;
-          if (json.id) setCalculJour(json);
+          setCalculJour(json.id ? json : null);
         })
         .catch(() => {});
     } catch (err) {
@@ -613,7 +613,7 @@ export default function DashboardEleve() {
         .then((r) => r.json())
         .then((json) => {
           if (signal.aborted) return;
-          if (json.id) setCalculJour(json);
+          setCalculJour(json.id ? json : null);
         })
         .catch(() => {});
     } catch (err) {
