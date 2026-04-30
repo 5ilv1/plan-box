@@ -469,6 +469,9 @@ export default function DashboardEleve() {
               const saved = localStorage.getItem(`dpd_${eleveId}_${new Date().toISOString().split("T")[0]}`);
               if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
             }
+          } else {
+            setDailyProblem(null);
+            setDailyProblemSolved(false);
           }
         })
         .catch(() => {});
@@ -605,6 +608,9 @@ export default function DashboardEleve() {
               const saved = localStorage.getItem(`dpd_${rbId}_${new Date().toISOString().split("T")[0]}`);
               if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
             }
+          } else {
+            setDailyProblem(null);
+            setDailyProblemSolved(false);
           }
         })
         .catch(() => {});
