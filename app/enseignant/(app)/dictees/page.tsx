@@ -152,46 +152,66 @@ function genererPDFTrous(batch: Batch) {
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: Arial, Helvetica, sans-serif; font-size: 11pt; color: #111; }
-  .page { padding: 20mm 18mm 16mm; min-height: 100vh; page-break-after: always; }
+  /* Une page = une dictée à trous (jour × niveau).
+     page-break-after garantit qu'on passe à la page suivante après chaque dictée.
+     break-inside: avoid empêche un éventuel split d'un même bloc. */
+  .page {
+    padding: 20mm 18mm 16mm;
+    page-break-after: always;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   .page:last-child { page-break-after: avoid; }
   h1 { text-align: center; color: #1e3a5f; font-size: 13pt; font-weight: bold; margin-bottom: 12pt; }
   .consigne { font-style: italic; font-size: 10pt; color: #555; margin-bottom: 18pt; }
-  .niveau-titre { color: #2563EB; font-weight: bold; font-size: 11pt; margin-top: 20pt; margin-bottom: 10pt; }
-  .phrase { line-height: 2.6; font-size: 11pt; }
+  .niveau-titre { color: #2563EB; font-weight: bold; font-size: 11pt; margin-bottom: 10pt; }
+  .phrase {
+    line-height: 2.6;
+    font-size: 11pt;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
   @media print {
-    .page { page-break-after: always; }
+    .page {
+      page-break-after: always;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
     .page:last-child { page-break-after: avoid; }
   }
 </style>
 </head>
 <body>`;
 
+  // Chaque (jour × niveau) génère SA page : une dictée à trous = une page.
+  // Plus aucune dictée ne peut être coupée entre deux pages physiques.
   batch.jours.forEach((jour, jIdx) => {
     const isLast = jIdx === batch.jours.length - 1;
     const jourNom = JOURS_NOMS_PDF[jIdx] ?? `Dictée ${jIdx + 1}`;
     const bilanStr = isLast ? " – Bilan" : "";
-    const titre = `Dictées à trous – ${jourNom}${bilanStr} – ${batch.theme}`;
 
     const niveauxTries = [1, 2, 3, 4].filter((e) =>
       jour.niveaux.some((n) => n.niveau_etoiles === e)
     );
 
-    html += `<div class="page">
-<h1>${titre}</h1>
-<p class="consigne">Complète avec les mots appris et les verbes conjugués.</p>\n`;
-
     for (const etoiles of niveauxTries) {
       const niv = jour.niveaux.find((n) => n.niveau_etoiles === etoiles);
       if (!niv) continue;
       const label = NIVEAUX_LABELS[etoiles] ?? `Niveau ${etoiles}`;
-      html += `<p class="niveau-titre">${label}</p>\n`;
+      const titre = `Dictée à trous – ${jourNom}${bilanStr} – ${label} – ${batch.theme}`;
+
+      html += `<div class="page">
+<h1>${titre}</h1>
+<p class="consigne">Complète avec les mots appris et les verbes conjugués.</p>
+<p class="niveau-titre">${label}</p>\n`;
+
       niv.phrases.forEach((p) => {
         const avecTrous = genereTrous(p.texte, niv.mots);
         html += `<p class="phrase">${avecTrous}</p>\n`;
       });
-    }
 
-    html += `</div>\n`;
+      html += `</div>\n`;
+    }
   });
 
   html += `</body></html>`;
