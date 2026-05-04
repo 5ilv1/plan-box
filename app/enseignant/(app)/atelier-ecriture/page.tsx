@@ -24,6 +24,21 @@ interface TexteEleve {
   nbAnnotationsNouvelles: number;
 }
 
+function lundiCourant(): string {
+  const now = new Date();
+  const day = now.getDay();
+  const diffToMonday = day === 0 ? -6 : 1 - day;
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diffToMonday);
+  return monday.toISOString().split("T")[0];
+}
+
+function decalerLundi(lundi: string, deltaSemaines: number): string {
+  const d = new Date(`${lundi}T00:00:00Z`);
+  d.setUTCDate(d.getUTCDate() + deltaSemaines * 7);
+  return d.toISOString().split("T")[0];
+}
+
 export default function AtelierEcriturePage() {
   const router = useRouter();
   const supabase = createClient();
@@ -31,6 +46,7 @@ export default function AtelierEcriturePage() {
   const [sujet, setSujet] = useState("");
   const [contrainte, setContrainte] = useState("");
   const [semaine, setSemaine] = useState("");
+  const [lundi, setLundi] = useState<string>(lundiCourant());
   const [textes, setTextes] = useState<TexteEleve[]>([]);
   const [correctionEnCours, setCorrectionEnCours] = useState(false);
 
@@ -42,7 +58,8 @@ export default function AtelierEcriturePage() {
         router.push("/enseignant");
         return;
       }
-      fetch("/api/ecriture/textes-finaux")
+      setLoading(true);
+      fetch(`/api/ecriture/textes-finaux?semaine=${lundi}`)
         .then((r) => r.json())
         .then((data) => {
           setSujet(data.sujet ?? "");
@@ -53,7 +70,10 @@ export default function AtelierEcriturePage() {
         .catch(() => {})
         .finally(() => setLoading(false));
     });
-  }, [router, supabase]);
+  }, [router, supabase, lundi]);
+
+  const lundiAujourd_hui = lundiCourant();
+  const estSemaineCourante = lundi === lundiAujourd_hui;
 
   function nbMots(txt: string): number {
     return txt.trim() ? txt.trim().split(/\s+/).length : 0;
@@ -215,9 +235,53 @@ export default function AtelierEcriturePage() {
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
         <div>
           <h2 className="ens-page-title" style={{ marginBottom: 4 }}>Atelier d&apos;écriture</h2>
-          <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)" }}>
-            Semaine du {semaine} — {textes.length} élève{textes.length > 1 ? "s" : ""} · {finalises} envoyé{finalises > 1 ? "s" : ""}
-          </p>
+          <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+            <button
+              type="button"
+              onClick={() => setLundi(decalerLundi(lundi, -1))}
+              title="Semaine précédente"
+              aria-label="Semaine précédente"
+              style={{
+                background: "none", border: "1px solid var(--pb-outline-variant, #ddd)",
+                borderRadius: 8, padding: "2px 8px", cursor: "pointer",
+                display: "inline-flex", alignItems: "center",
+              }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>chevron_left</span>
+            </button>
+            <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", margin: 0, minWidth: 0 }}>
+              Semaine du {semaine || "…"}{estSemaineCourante ? " (en cours)" : ""} — {textes.length} élève{textes.length > 1 ? "s" : ""} · {finalises} envoyé{finalises > 1 ? "s" : ""}
+            </p>
+            <button
+              type="button"
+              onClick={() => setLundi(decalerLundi(lundi, 1))}
+              disabled={estSemaineCourante}
+              title="Semaine suivante"
+              aria-label="Semaine suivante"
+              style={{
+                background: "none", border: "1px solid var(--pb-outline-variant, #ddd)",
+                borderRadius: 8, padding: "2px 8px",
+                cursor: estSemaineCourante ? "not-allowed" : "pointer",
+                opacity: estSemaineCourante ? 0.4 : 1,
+                display: "inline-flex", alignItems: "center",
+              }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>chevron_right</span>
+            </button>
+            {!estSemaineCourante && (
+              <button
+                type="button"
+                onClick={() => setLundi(lundiAujourd_hui)}
+                style={{
+                  background: "none", border: "none", cursor: "pointer",
+                  fontSize: 12, color: "var(--pb-primary)", fontWeight: 600,
+                  padding: "2px 6px",
+                }}
+              >
+                Aujourd&apos;hui
+              </button>
+            )}
+          </div>
         </div>
         {textes.length > 0 && (
           <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
@@ -265,8 +329,12 @@ export default function AtelierEcriturePage() {
       {textes.length === 0 ? (
         <div style={{ textAlign: "center", padding: "3rem", color: "var(--pb-on-surface-variant)" }}>
           <span className="ms" style={{ fontSize: 48, display: "block", marginBottom: 12, opacity: 0.3 }}>edit_note</span>
-          <p style={{ fontWeight: 600 }}>Aucun atelier d&apos;écriture cette semaine</p>
-          <p style={{ fontSize: 13 }}>Activez le mode semaine et affectez un thème pour commencer.</p>
+          <p style={{ fontWeight: 600 }}>
+            {estSemaineCourante ? "Aucun atelier d'écriture cette semaine" : "Aucun atelier d'écriture pour cette semaine"}
+          </p>
+          {estSemaineCourante && (
+            <p style={{ fontSize: 13 }}>Activez le mode semaine et affectez un thème pour commencer.</p>
+          )}
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { normaliserContenuEcriture } from "@/lib/ecriture-normaliser";
 
@@ -7,16 +7,25 @@ import { normaliserContenuEcriture } from "@/lib/ecriture-normaliser";
  *
  * Retourne les textes d'écriture de la semaine (mode semaine),
  * avec le texte final, le prénom, le nom et la classe de chaque élève.
+ *
+ * Query : ?semaine=YYYY-MM-DD (lundi de la semaine voulue). Si absent,
+ * utilise la semaine courante.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   const admin = createAdminClient();
 
-  // Bornes de la semaine courante
-  const now = new Date();
-  const day = now.getDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
+  // Bornes de la semaine demandée (param) ou courante
+  const semaineParam = req.nextUrl.searchParams.get("semaine");
+  let monday: Date;
+  if (semaineParam && /^\d{4}-\d{2}-\d{2}$/.test(semaineParam)) {
+    monday = new Date(`${semaineParam}T00:00:00Z`);
+  } else {
+    const now = new Date();
+    const day = now.getDay();
+    const diffToMonday = day === 0 ? -6 : 1 - day;
+    monday = new Date(now);
+    monday.setDate(now.getDate() + diffToMonday);
+  }
   const sunday = new Date(monday);
   sunday.setDate(monday.getDate() + 6);
   const mondayStr = monday.toISOString().split("T")[0];
@@ -31,13 +40,23 @@ export async function GET() {
     .lte("date_assignation", sundayStr);
 
   if (!blocs || blocs.length === 0) {
-    return NextResponse.json({ textes: [], sujet: null });
+    return NextResponse.json({
+      textes: [],
+      sujet: null,
+      lundi: mondayStr,
+      semaine: `${monday.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} — ${sunday.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`,
+    });
   }
 
   // Filtrer les blocs mode semaine
   const blocsSemaine = blocs.filter((b: any) => (b.contenu as any)?.mode === "semaine");
   if (blocsSemaine.length === 0) {
-    return NextResponse.json({ textes: [], sujet: null });
+    return NextResponse.json({
+      textes: [],
+      sujet: null,
+      lundi: mondayStr,
+      semaine: `${monday.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} — ${sunday.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`,
+    });
   }
 
   const sujet = (blocsSemaine[0].contenu as any)?.sujet ?? "";
@@ -114,6 +133,7 @@ export async function GET() {
     sujet,
     contrainte,
     semaine: `${monday.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} — ${sunday.toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}`,
+    lundi: mondayStr,
     textes,
   });
 }
