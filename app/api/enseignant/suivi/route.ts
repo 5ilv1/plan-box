@@ -144,9 +144,6 @@ export async function GET(req: NextRequest) {
   // Carte des sous-domaines
   const carte: CarteDomaines = await calculerDomaines(admin, cible, dateDebut);
 
-  const fr = scoreMatiereDepuis(carte, SOUS_DOMAINES_FR);
-  const maths = scoreMatiereDepuis(carte, SOUS_DOMAINES_MATHS);
-
   // Ceinture (1 seul élève) — la colonne est repetibox_eleve_id, pas rb_eleve_id
   let ceinture: { index: number; nom: string; couleur: string } | null = null;
   if (inclureCeinture && cibleId) {
@@ -248,6 +245,16 @@ export async function GET(req: NextRequest) {
   const pctMotsJustes = nbMotsEcrits > 0
     ? Math.max(0, Math.round((1 - nbMotsCorriges / nbMotsEcrits) * 100))
     : null;
+
+  // Injecte l'écriture dans la carte des domaines pour qu'elle pèse sur le
+  // score global Français. Pondération = nb de mots écrits.
+  if (pctMotsJustes !== null && nbMotsEcrits > 0) {
+    carte["Écriture"] = { score: pctMotsJustes, nb_essais: nbMotsEcrits };
+  }
+
+  // Scores matières — calculés APRÈS l'injection écriture pour qu'elle compte
+  const fr = scoreMatiereDepuis(carte, SOUS_DOMAINES_FR);
+  const maths = scoreMatiereDepuis(carte, SOUS_DOMAINES_MATHS);
 
   // Lecture : nb blocs lecture faits sur la cible
   let nbLectures = 0;

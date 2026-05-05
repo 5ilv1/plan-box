@@ -180,10 +180,18 @@ export async function GET(req: NextRequest) {
 
   const resultats: Resultat[] = eleves.map((e) => {
     const c = cartes.get(e.uid) ?? {};
-    const fr = scoreMatiereDepuis(c, SOUS_DOMAINES_FR);
-    const ma = scoreMatiereDepuis(c, SOUS_DOMAINES_MATHS);
     const blocs = blocsParUid.get(e.uid) ?? { total: 0, faits: 0 };
     const ec = ecritureParUid.get(e.uid) ?? { mots: 0, corriges: 0 };
+    const pctJustes = ec.mots > 0
+      ? Math.max(0, Math.round((1 - ec.corriges / ec.mots) * 100))
+      : null;
+    // Injecte l'écriture dans la carte de l'élève pour qu'elle pèse dans
+    // le score Français global (pondération par nb de mots).
+    if (pctJustes !== null) {
+      c["Écriture"] = { score: pctJustes, nb_essais: ec.mots };
+    }
+    const fr = scoreMatiereDepuis(c, SOUS_DOMAINES_FR);
+    const ma = scoreMatiereDepuis(c, SOUS_DOMAINES_MATHS);
     return {
       ...e,
       francais_pct: fr.score,
@@ -193,7 +201,7 @@ export async function GET(req: NextRequest) {
       nb_blocs_totaux: blocs.total,
       avancement_pct: blocs.total > 0 ? Math.round((blocs.faits / blocs.total) * 100) : null,
       nb_mots_ecriture: ec.mots,
-      pct_mots_justes: ec.mots > 0 ? Math.max(0, Math.round((1 - ec.corriges / ec.mots) * 100)) : null,
+      pct_mots_justes: pctJustes,
     };
   });
   resultats.sort((a, b) => a.prenom.localeCompare(b.prenom));
