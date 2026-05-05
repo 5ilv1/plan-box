@@ -47,15 +47,26 @@ export async function POST(req: NextRequest) {
 
 Tu t'appuies sur le référentiel cycle 3 fourni en amont. Adapte ton exigence au niveau ${niveau} : ne pénalise pas sur des notions qui dépassent son programme (pas de subjonctif pour un CE2, pas d'accord complexe du participe passé pour un CE2/CM1).
 
-Un élève de ${niveau} devait écrire ${nb_phrases || 3} phrases en respectant cette consigne :
-"${consigne}"
+Un élève de ${niveau} devait écrire ${nb_phrases || 3} phrases.
 
-Les contraintes à vérifier :
+⚠️ DISTINCTION IMPORTANTE entre la consigne et les contraintes :
+
+CONSIGNE (cadre / inspiration, NON évaluée) :
+"${consigne}"
+→ La consigne donne juste un thème pour que l'élève ait quelque chose à raconter.
+   Si l'élève dérive du thème (ex : la consigne parle d'une excursion sur la
+   rivière mais l'élève raconte une journée à la piscine, ou même une histoire
+   sans rapport), c'est OK. Le but est qu'il PRATIQUE la compétence de langue,
+   pas qu'il colle au thème.
+
+CONTRAINTES DE LANGUE (les seules qui comptent pour le score) :
 ${(contraintes as string[]).map((c: string, i: number) => `${i + 1}. ${c}`).join("\n")}
+→ Ce sont les compétences à entraîner (temps, accords, mots imposés, etc.).
+   C'est UNIQUEMENT sur ces contraintes que tu évalues le texte.
 
 ${estDeuxiemeTentative
   ? `C'est la DEUXIÈME tentative. Donne les corrections directes (mot_erroné → mot_correct).
-Si les seules erreurs restantes sont mineures (contexte un peu libre, vocabulaire créatif), VALIDE le texte.`
+Si les seules erreurs restantes sont mineures, VALIDE le texte.`
   : `C'est la PREMIÈRE tentative.
 Donne des indices courts et bienveillants pour aider l'élève à se corriger lui-même, adaptés au niveau ${niveau}.`}
 
@@ -72,19 +83,43 @@ Réponds en JSON valide :
     }
   ],
   "commentaire": "commentaire encourageant (1-2 phrases) adapté au niveau ${niveau}",
-  "score": <contraintes respectées / total>
+  "score": <contraintes de LANGUE respectées / total contraintes de LANGUE>
 }
 
-Règles :
-- Ne signale QUE les vraies erreurs de langue du niveau ${niveau} : orthographe, conjugaison, grammaire au programme
-- IMPORTANT : Les contraintes d'utilisation de mots (ex: "Utiliser « est » au moins une fois") s'évaluent sur L'ENSEMBLE du texte, PAS phrase par phrase. Si le mot apparaît dans N'IMPORTE QUELLE phrase, la contrainte est respectée. Ne signale PAS l'absence d'un mot dans une phrase si ce mot est présent dans une autre phrase.
-- Pour les contraintes de CONTEXTE/THÈME : sois TOLÉRANT. Si l'élève parle de nager pendant une excursion en bateau, c'est acceptable. Ne sanctionne le contexte que s'il est complètement hors sujet.
-- Vérifie le nombre de phrases (doit être ${nb_phrases || 3})
-- Chaque erreur DOIT avoir "mot_concerne" avec le mot exact
-- L'indice doit être court (max 15 mots) et adapté au niveau ${niveau}
-- Sois encourageant et bienveillant — c'est un enfant !
-- Si tout est correct ou si les erreurs restantes sont mineures, "valide" = true et "erreurs" = []
-- Réponds UNIQUEMENT en JSON valide, sans markdown`;
+⚠️ RÈGLES STRICTES :
+
+1. THÈME / CONTEXTE / SUJET de la consigne → JAMAIS pénalisé.
+   - Ne crée jamais d'erreur "contrainte_non_respectee" pour un écart de thème.
+   - Le score ne tient JAMAIS compte de la fidélité au thème.
+   - Si l'élève écrit "Je vais aller à la piscine demain" alors que la consigne
+     parlait d'excursion sur la rivière → la contrainte "futur simple" est
+     respectée, point. C'est validé.
+
+2. Contraintes de LANGUE = seules évaluées :
+   - Temps verbal demandé (futur, imparfait, passé composé…) → vérifie qu'au
+     moins une partie du texte utilise ce temps. Tolérant : un mélange est OK
+     tant que le temps cible apparaît clairement.
+   - Mots à utiliser (ex : "utiliser 'est' au moins une fois") → évalué sur
+     L'ENSEMBLE du texte, pas phrase par phrase. Si le mot est dans n'importe
+     quelle phrase, c'est respecté.
+   - Accords, ponctuation, structure de phrase → seulement si c'est une
+     contrainte explicite ET au programme du niveau ${niveau}.
+
+3. Erreurs de langue (orthographe / conjugaison / grammaire) :
+   - Ne signale QUE les vraies erreurs au programme du niveau ${niveau}.
+   - Chaque erreur DOIT avoir "mot_concerne" avec le mot exact.
+   - L'indice doit être court (max 15 mots) et adapté au niveau.
+
+4. Nombre de phrases :
+   - Doit être ${nb_phrases || 3}. Si différent, type="nombre_phrases".
+   - Tolère ± 1 phrase si le texte est cohérent.
+
+5. Validation finale :
+   - "valide" = true dès que toutes les contraintes de LANGUE sont respectées
+     et qu'il n'y a pas d'erreur grave d'orthographe/grammaire au programme.
+   - Sois encourageant et bienveillant — c'est un enfant !
+
+Réponds UNIQUEMENT en JSON valide, sans markdown.`;
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
