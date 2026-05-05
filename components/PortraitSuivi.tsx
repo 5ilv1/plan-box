@@ -19,6 +19,7 @@ interface SuiviResp {
     nb_mots_ecrits: number;
     nb_mots_corriges: number;
     pct_mots_justes: number | null;
+    nb_mots_moyen: number;
   };
   niveau: string | null;
   cibleType?: "eleve" | "classe";
@@ -76,6 +77,8 @@ interface ElevesScores {
     nb_blocs_faits: number;
     nb_blocs_totaux: number;
     avancement_pct: number | null;
+    nb_mots_ecriture: number;
+    pct_mots_justes: number | null;
   }>;
 }
 
@@ -433,12 +436,12 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                 Atelier d&apos;écriture
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                <span style={{ color: "var(--pb-on-surface-variant)" }}>Mots écrits</span>
-                <span style={{ fontWeight: 700 }}>{data.ecriture.nb_mots_ecrits}</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                <span style={{ color: "var(--pb-on-surface-variant)" }}>Mots corrigés</span>
-                <span style={{ fontWeight: 700, color: "#DC2626" }}>{data.ecriture.nb_mots_corriges}</span>
+                <span style={{ color: "var(--pb-on-surface-variant)" }}>
+                  {cible === "classe" ? "Mots / texte (moyenne)" : "Mots écrits"}
+                </span>
+                <span style={{ fontWeight: 700 }}>
+                  {cible === "classe" ? data.ecriture.nb_mots_moyen : data.ecriture.nb_mots_ecrits}
+                </span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
                 <span style={{ color: "var(--pb-on-surface-variant)" }}>Mots justes</span>
@@ -447,7 +450,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                 </span>
               </div>
               <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontStyle: "italic", marginTop: 2 }}>
-                sur {data.ecriture.nb_blocs} texte{data.ecriture.nb_blocs > 1 ? "s" : ""}
+                {data.ecriture.nb_blocs} texte{data.ecriture.nb_blocs > 1 ? "s" : ""} · {data.ecriture.nb_mots_corriges} mot{data.ecriture.nb_mots_corriges > 1 ? "s" : ""} corrigé{data.ecriture.nb_mots_corriges > 1 ? "s" : ""}
               </div>
             </div>
           )}
@@ -544,7 +547,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
             }}>
               {/* Header */}
               <div style={{
-                display: "grid", gridTemplateColumns: "1fr 80px 130px 100px 100px 50px",
+                display: "grid", gridTemplateColumns: "1fr 70px 110px 90px 90px 110px 40px",
                 padding: "10px 14px", background: "#F9FAFB",
                 fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
                 color: "var(--pb-on-surface-variant)",
@@ -555,6 +558,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                 <div style={{ textAlign: "right" }}>Avancement</div>
                 <div style={{ textAlign: "right" }}>Français</div>
                 <div style={{ textAlign: "right" }}>Maths</div>
+                <div style={{ textAlign: "right" }}>Écriture</div>
                 <div></div>
               </div>
               {eleves.map((e) => {
@@ -564,7 +568,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                     key={e.uid}
                     href={href}
                     style={{
-                      display: "grid", gridTemplateColumns: "1fr 80px 130px 100px 100px 50px",
+                      display: "grid", gridTemplateColumns: "1fr 70px 110px 90px 90px 110px 40px",
                       padding: "10px 14px", fontSize: 14, alignItems: "center",
                       borderBottom: "1px solid #F3F4F6", textDecoration: "none",
                       color: "var(--pb-on-surface)",
@@ -597,6 +601,20 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                     </div>
                     <div style={{ textAlign: "right", fontWeight: 700, color: couleurPct(e.maths_pct) }}>
                       {e.maths_pct !== null ? `${e.maths_pct}%` : "—"}
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      {e.nb_mots_ecriture > 0 ? (
+                        <>
+                          <div style={{ fontWeight: 700, fontSize: 14, color: couleurPct(e.pct_mots_justes) }}>
+                            {e.pct_mots_justes !== null ? `${e.pct_mots_justes}%` : "—"}
+                          </div>
+                          <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
+                            {e.nb_mots_ecriture} mots
+                          </div>
+                        </>
+                      ) : (
+                        <span style={{ color: "var(--pb-on-surface-variant)", fontSize: 13 }}>—</span>
+                      )}
                     </div>
                     <div style={{ textAlign: "right" }}>
                       <span className="ms" style={{ fontSize: 18, color: "var(--pb-on-surface-variant)" }}>chevron_right</span>

@@ -285,6 +285,8 @@ export async function GET(req: NextRequest) {
       nb_mots_ecrits: nbMotsEcrits,
       nb_mots_corriges: nbMotsCorriges,
       pct_mots_justes: pctMotsJustes,
+      // Pour la vue classe : moyenne par texte (plus parlant que la somme)
+      nb_mots_moyen: nbBlocsEcriture > 0 ? Math.round(nbMotsEcrits / nbBlocsEcriture) : 0,
     },
     niveau: niveauUnique,
     cibleType: inclureCeinture ? "eleve" : "classe",

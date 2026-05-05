@@ -96,6 +96,8 @@ export async function GET(req: NextRequest) {
     nb_blocs_faits: number;
     nb_blocs_totaux: number;
     avancement_pct: number | null;
+    nb_mots_ecriture: number;
+    pct_mots_justes: number | null;
   };
   const cible = {
     pb_ids: eleves.filter((e) => e.source === "planbox").map((e) => e.uid.slice(3)),
@@ -136,11 +138,52 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // ── Atelier d'écriture : nb mots et % justes par élève ───────────────
+  const compterMots = (s: string) => {
+    const t = s?.trim() ?? "";
+    return t ? t.split(/\s+/).length : 0;
+  };
+  type EcritureStat = { mots: number; corriges: number };
+  const ecritureParUid = new Map<string, EcritureStat>();
+  const ajouterEcriture = (uid: string, contenu: Record<string, unknown>) => {
+    if (contenu.mode !== "semaine") return;
+    const texte = (contenu.texte_final as string)?.trim() || (contenu.texte_courant as string) || "";
+    const mots = compterMots(texte);
+    if (mots === 0) return;
+    let s = ecritureParUid.get(uid);
+    if (!s) { s = { mots: 0, corriges: 0 }; ecritureParUid.set(uid, s); }
+    s.mots += mots;
+    const annotations = Array.isArray(contenu.annotations)
+      ? (contenu.annotations as Array<{ extrait?: string; statut?: string }>)
+      : [];
+    for (const a of annotations) {
+      if (a.statut === "ignoree") continue;
+      s.corriges += compterMots(a.extrait ?? "");
+    }
+  };
+  if (cible.pb_ids.length > 0) {
+    let q = admin.from("plan_travail").select("eleve_id, contenu").eq("type", "ecriture").eq("statut", "fait").in("eleve_id", cible.pb_ids);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    const { data } = await q;
+    for (const r of (data ?? []) as Array<{ eleve_id: string; contenu: Record<string, unknown> }>) {
+      ajouterEcriture(`pb_${r.eleve_id}`, r.contenu ?? {});
+    }
+  }
+  if (cible.rb_ids.length > 0) {
+    let q = admin.from("plan_travail").select("repetibox_eleve_id, contenu").eq("type", "ecriture").eq("statut", "fait").in("repetibox_eleve_id", cible.rb_ids);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    const { data } = await q;
+    for (const r of (data ?? []) as Array<{ repetibox_eleve_id: number; contenu: Record<string, unknown> }>) {
+      ajouterEcriture(`rb_${r.repetibox_eleve_id}`, r.contenu ?? {});
+    }
+  }
+
   const resultats: Resultat[] = eleves.map((e) => {
     const c = cartes.get(e.uid) ?? {};
     const fr = scoreMatiereDepuis(c, SOUS_DOMAINES_FR);
     const ma = scoreMatiereDepuis(c, SOUS_DOMAINES_MATHS);
     const blocs = blocsParUid.get(e.uid) ?? { total: 0, faits: 0 };
+    const ec = ecritureParUid.get(e.uid) ?? { mots: 0, corriges: 0 };
     return {
       ...e,
       francais_pct: fr.score,
@@ -149,6 +192,8 @@ export async function GET(req: NextRequest) {
       nb_blocs_faits: blocs.faits,
       nb_blocs_totaux: blocs.total,
       avancement_pct: blocs.total > 0 ? Math.round((blocs.faits / blocs.total) * 100) : null,
+      nb_mots_ecriture: ec.mots,
+      pct_mots_justes: ec.mots > 0 ? Math.max(0, Math.round((1 - ec.corriges / ec.mots) * 100)) : null,
     };
   });
   resultats.sort((a, b) => a.prenom.localeCompare(b.prenom));
