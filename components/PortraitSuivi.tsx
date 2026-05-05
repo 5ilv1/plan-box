@@ -298,6 +298,16 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
           </div>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+          {cible === "eleve" && id && (
+            <Link
+              href={`/enseignant/eleves/${id}/exercices`}
+              className="pb-btn surface"
+              style={{ padding: "6px 12px", fontSize: 13 }}
+            >
+              <span className="ms" style={{ fontSize: 16 }}>fact_check</span>
+              Voir les exercices
+            </Link>
+          )}
           {cible === "eleve" && data.niveau && (
             <span style={{
               padding: "6px 14px", borderRadius: 12,
