@@ -109,15 +109,6 @@ export default function QCMPlayer({
     }, 380);
   }
 
-  function recommencer() {
-    setReponsesChoisies(Array(questions.length).fill(null));
-    setIndex(0);
-    setSortie(null);
-    setReponseValidee(null);
-    setScore(null);
-    setPhase("quiz");
-  }
-
   // ── Résultat ────────────────────────────────────────────────────────────────
   if (phase === "resultat" && score) {
     const pct = Math.round((score.bon / score.total) * 100);
@@ -186,19 +177,6 @@ export default function QCMPlayer({
         </div>
 
         <div style={{ display: "flex", gap: 10 }}>
-          <button
-            onClick={recommencer}
-            style={{
-              flex: 1, padding: "12px 16px", borderRadius: "0.75rem",
-              background: "var(--pb-surface-low, #F3F4F6)", border: "1.5px solid var(--pb-outline-variant, #D1D5DB)",
-              fontWeight: 700, fontSize: 14, cursor: "pointer",
-              display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
-              fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface, #333)",
-            }}
-          >
-            <span className="ms" style={{ fontSize: 18 }}>refresh</span>
-            Refaire le quiz
-          </button>
           <Link
             href={`/eleve/qcm-classement/${qcm_id}`}
             style={{

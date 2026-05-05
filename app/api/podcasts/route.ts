@@ -49,16 +49,13 @@ export async function GET(req: NextRequest) {
     .select("qcm_id, prenom, nom, score, total, eleve_id, repetibox_eleve_id, created_at")
     .order("created_at", { ascending: true });
 
-  // Grouper par qcm_id → par élève (meilleur score)
+  // Grouper par qcm_id → par élève (première réponse, data trié par created_at ASC)
   const scoresParQcm = new Map<string, Map<string, { prenom: string; nom: string; score: number; total: number; eleve_id: string | null; repetibox_eleve_id: number | null; created_at: string }>>();
   for (const r of reponses ?? []) {
     if (!scoresParQcm.has(r.qcm_id)) scoresParQcm.set(r.qcm_id, new Map());
     const eleves = scoresParQcm.get(r.qcm_id)!;
     const key = r.eleve_id ?? (r.repetibox_eleve_id ? `rb_${r.repetibox_eleve_id}` : `${r.prenom}_${r.nom}`);
-    const existing = eleves.get(key);
-    if (!existing || r.score > existing.score) {
-      eleves.set(key, r);
-    }
+    if (!eleves.has(key)) eleves.set(key, r);
   }
 
   // 3. Récupérer la config podium

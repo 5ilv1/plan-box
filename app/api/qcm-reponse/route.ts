@@ -33,6 +33,20 @@ export async function POST(req: NextRequest) {
 
   const admin = createAdminClient();
 
+  // Verrou : un élève ne peut répondre qu'une seule fois à un QCM de podcast
+  if (eleve_id || repetibox_eleve_id) {
+    let verrou = admin.from("qcm_reponse").select("id").eq("qcm_id", qcm_id).limit(1);
+    if (eleve_id) verrou = verrou.eq("eleve_id", eleve_id);
+    else verrou = verrou.eq("repetibox_eleve_id", repetibox_eleve_id);
+    const { data: dejaRepondu } = await verrou;
+    if (dejaRepondu && dejaRepondu.length > 0) {
+      return NextResponse.json(
+        { erreur: "Tu as déjà répondu à ce questionnaire.", deja_repondu: true },
+        { status: 409 }
+      );
+    }
+  }
+
   const { error } = await admin.from("qcm_reponse").insert({
     qcm_id,
     plan_travail_id: plan_travail_id || null,
@@ -93,8 +107,8 @@ export async function GET(req: NextRequest) {
         elevesMap.set(key, { prenom: r.prenom, nom: r.nom, scoresParQcm: new Map() });
       }
       const eleve = elevesMap.get(key)!;
-      const existing = eleve.scoresParQcm.get(r.qcm_id);
-      if (!existing || r.score > existing.score) {
+      // Garder uniquement la première réponse (data trié par created_at ASC)
+      if (!eleve.scoresParQcm.has(r.qcm_id)) {
         eleve.scoresParQcm.set(r.qcm_id, { score: r.score, total: r.total });
       }
     }
@@ -132,23 +146,17 @@ export async function GET(req: NextRequest) {
     .from("qcm_reponse")
     .select("prenom, nom, score, total, eleve_id, repetibox_eleve_id, created_at")
     .eq("qcm_id", qcm_id)
-    .order("score", { ascending: false })
     .order("created_at", { ascending: true });
 
   if (error) {
     return NextResponse.json({ erreur: error.message }, { status: 500 });
   }
 
-  // Dédupliquer : garder le meilleur score par élève
+  // Dédupliquer : garder la première réponse de chaque élève
   const seen = new Map<string, typeof data[0]>();
   for (const r of data ?? []) {
     const key = r.eleve_id ?? (r.repetibox_eleve_id ? `rb_${r.repetibox_eleve_id}` : `${r.prenom}_${r.nom}`);
-    if (!seen.has(key)) {
-      seen.set(key, r);
-    } else {
-      const existing = seen.get(key)!;
-      if (r.score > existing.score) seen.set(key, r);
-    }
+    if (!seen.has(key)) seen.set(key, r);
   }
 
   const classement = [...seen.values()].sort((a, b) => b.score - a.score || a.created_at.localeCompare(b.created_at));

@@ -1710,10 +1710,26 @@ function RessourceEleve({
 }) {
   const [qcmVisible, setQcmVisible] = useState(false);
   const [qcmTermine, setQcmTermine] = useState(false);
+  const [dejaRepondu, setDejaRepondu] = useState(false);
   const [audioEcoute, setAudioEcoute] = useState(false);
 
   const hasQcm = !!(data.qcm && data.qcm.length > 0 && data.qcm_id);
   const hasAudio = data.taches?.some(t => t.url && /\.(mp3|ogg|wav|m4a|aac)(\?|$)/i.test(t.url)) ?? false;
+
+  useEffect(() => {
+    if (!hasQcm || !data.qcm_id || !session) return;
+    const params = new URLSearchParams({ qcm_ids: data.qcm_id });
+    if (session.source === "planbox") params.set("eleve_id", session.id);
+    else params.set("rb_id", session.id);
+    fetch(`/api/qcm-reponse/faits?${params.toString()}`)
+      .then((r) => r.json())
+      .then((json) => {
+        if (Array.isArray(json.faits) && json.faits.includes(data.qcm_id)) {
+          setDejaRepondu(true);
+        }
+      })
+      .catch(() => {});
+  }, [hasQcm, data.qcm_id, session]);
 
   function handleQcmTermine(score: number, total: number, reponses?: { id: number; reponse: string; correcte: boolean }[]) {
     setQcmTermine(true);
@@ -1753,7 +1769,35 @@ function RessourceEleve({
 
         {hasQcm && (
           <div style={{ display: "flex", flexDirection: "column", gap: 10, marginTop: 4 }}>
-            {!qcmVisible && !qcmTermine && (
+            {dejaRepondu && !qcmTermine && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <div style={{
+                  display: "flex", alignItems: "center", gap: 8,
+                  padding: "12px 16px", borderRadius: "0.875rem",
+                  background: "#DCFCE7", border: "1.5px solid #86EFAC",
+                  fontSize: 13, color: "#166534", fontWeight: 600,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}>
+                  <span className="ms" style={{ fontSize: 18, color: "#16A34A" }}>check_circle</span>
+                  Tu as déjà répondu à ce questionnaire.
+                </div>
+                <Link
+                  href={`/eleve/qcm-classement/${data.qcm_id}`}
+                  style={{
+                    display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+                    padding: "14px 16px", borderRadius: "1rem",
+                    background: "rgba(248,160,16,0.1)", color: "var(--pb-tertiary)",
+                    fontWeight: 700, fontSize: 14, textDecoration: "none",
+                    border: "1.5px solid rgba(248,160,16,0.3)",
+                    fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 18, color: "#D97706" }}>emoji_events</span>
+                  Voir le podium
+                </Link>
+              </div>
+            )}
+            {!dejaRepondu && !qcmVisible && !qcmTermine && (
               <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                 {hasAudio && !audioEcoute && (
                   <div style={{
