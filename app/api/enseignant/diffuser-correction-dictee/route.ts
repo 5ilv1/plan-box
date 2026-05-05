@@ -229,6 +229,12 @@ export async function POST(req: NextRequest) {
       if (pid) dejaCrees.add(pid);
     }
 
+    // La correction apparaît dans le tableau de bord élève le JOUR DE LA
+    // DIFFUSION, pas le jour de la dictée originale. Si le maître diffuse
+    // jeudi après-midi, les élèves la voient jeudi. S'il diffuse plus tard
+    // ou plus tôt, ça suit la décision du maître.
+    const aujourdhuiParis = new Date().toLocaleDateString("fr-CA", { timeZone: "Europe/Paris" });
+
     const aCreer = ciblesTyped
       .filter((c) => !dejaCrees.has(c.id))
       .map((c) => {
@@ -240,7 +246,7 @@ export async function POST(req: NextRequest) {
           type: "correction_dictee" as const,
           eleve_id: c.eleve_id,
           repetibox_eleve_id: c.repetibox_eleve_id,
-          date_assignation: c.date_assignation,
+          date_assignation: aujourdhuiParis,
           statut: "a_faire" as const,
           chapitre_id: c.chapitre_id,
           groupe_label: c.groupe_label,
@@ -250,6 +256,7 @@ export async function POST(req: NextRequest) {
             titre: c.contenu?.titre ?? c.titre,
             texte: texteAttendu,
             niveau_etoiles: c.contenu?.niveau_etoiles ?? null,
+            origine_date_assignation: c.date_assignation,
           },
         };
       });
