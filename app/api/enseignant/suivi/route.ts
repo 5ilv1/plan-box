@@ -208,6 +208,47 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // ── Atelier d'écriture : nb mots écrits + % mots justes ─────────────
+  // Pour chaque bloc ecriture mode semaine : on compte les mots du texte
+  // (final si envoyé, sinon courant) et on soustrait les mots couverts
+  // par les annotations actives du maître.
+  let nbMotsEcrits = 0;
+  let nbMotsCorriges = 0;
+  let nbBlocsEcriture = 0;
+  {
+    let qE = admin.from("plan_travail").select("contenu, type").eq("type", "ecriture").eq("statut", "fait");
+    if (cible.pb_ids.length > 0 && cible.rb_ids.length > 0) {
+      qE = qE.or(`eleve_id.in.(${cible.pb_ids.join(",")}),repetibox_eleve_id.in.(${cible.rb_ids.join(",")})`);
+    } else if (cible.pb_ids.length > 0) {
+      qE = qE.in("eleve_id", cible.pb_ids);
+    } else if (cible.rb_ids.length > 0) {
+      qE = qE.in("repetibox_eleve_id", cible.rb_ids);
+    }
+    if (dateDebut) qE = qE.gte("date_assignation", dateDebut.split("T")[0]);
+    const { data: blocsEc } = await qE;
+    const compterMots = (s: string) => {
+      const t = s?.trim() ?? "";
+      return t ? t.split(/\s+/).length : 0;
+    };
+    for (const b of (blocsEc ?? []) as Array<{ contenu: Record<string, unknown> }>) {
+      const c = b.contenu ?? {};
+      if (c.mode !== "semaine") continue;
+      const texte = (c.texte_final as string)?.trim() || (c.texte_courant as string) || "";
+      const nbMotsBloc = compterMots(texte);
+      if (nbMotsBloc === 0) continue;
+      nbBlocsEcriture++;
+      nbMotsEcrits += nbMotsBloc;
+      const annotations = Array.isArray(c.annotations) ? (c.annotations as Array<{ extrait?: string; statut?: string }>) : [];
+      for (const a of annotations) {
+        if (a.statut === "ignoree") continue; // l'élève a choisi de garder
+        nbMotsCorriges += compterMots(a.extrait ?? "");
+      }
+    }
+  }
+  const pctMotsJustes = nbMotsEcrits > 0
+    ? Math.max(0, Math.round((1 - nbMotsCorriges / nbMotsEcrits) * 100))
+    : null;
+
   // Lecture : nb blocs lecture faits sur la cible
   let nbLectures = 0;
   if (inclureLecture) {
@@ -239,6 +280,12 @@ export async function GET(req: NextRequest) {
     },
     ceinture,
     lecture: { nb_blocs_faits: nbLectures },
+    ecriture: {
+      nb_blocs: nbBlocsEcriture,
+      nb_mots_ecrits: nbMotsEcrits,
+      nb_mots_corriges: nbMotsCorriges,
+      pct_mots_justes: pctMotsJustes,
+    },
     niveau: niveauUnique,
     cibleType: inclureCeinture ? "eleve" : "classe",
     chapitresValides,

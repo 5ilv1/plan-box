@@ -14,6 +14,12 @@ interface SuiviResp {
   };
   ceinture: { index: number; nom: string; couleur: string } | null;
   lecture: { nb_blocs_faits: number };
+  ecriture?: {
+    nb_blocs: number;
+    nb_mots_ecrits: number;
+    nb_mots_corriges: number;
+    pct_mots_justes: number | null;
+  };
   niveau: string | null;
   cibleType?: "eleve" | "classe";
   chapitresValides?: Array<{
@@ -411,6 +417,40 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
               </p>
             )}
           </div>
+
+          {data.ecriture && data.ecriture.nb_blocs > 0 && (
+            <div style={{
+              background: "linear-gradient(135deg, rgba(124,58,237,0.04), rgba(124,58,237,0.10))",
+              border: "1.5px solid rgba(124,58,237,0.2)",
+              borderRadius: 14, padding: "12px 16px",
+              display: "flex", flexDirection: "column", gap: 6,
+            }}>
+              <div style={{
+                fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+                color: "#7C3AED", display: "flex", alignItems: "center", gap: 4,
+              }}>
+                <span className="ms" style={{ fontSize: 14 }}>edit_note</span>
+                Atelier d&apos;écriture
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                <span style={{ color: "var(--pb-on-surface-variant)" }}>Mots écrits</span>
+                <span style={{ fontWeight: 700 }}>{data.ecriture.nb_mots_ecrits}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                <span style={{ color: "var(--pb-on-surface-variant)" }}>Mots corrigés</span>
+                <span style={{ fontWeight: 700, color: "#DC2626" }}>{data.ecriture.nb_mots_corriges}</span>
+              </div>
+              <div style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
+                <span style={{ color: "var(--pb-on-surface-variant)" }}>Mots justes</span>
+                <span style={{ fontWeight: 800, color: couleurPct(data.ecriture.pct_mots_justes) }}>
+                  {data.ecriture.pct_mots_justes !== null ? `${data.ecriture.pct_mots_justes}%` : "—"}
+                </span>
+              </div>
+              <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontStyle: "italic", marginTop: 2 }}>
+                sur {data.ecriture.nb_blocs} texte{data.ecriture.nb_blocs > 1 ? "s" : ""}
+              </div>
+            </div>
+          )}
 
           <div style={{
             background: "white", border: "1.5px solid var(--pb-outline-variant, #ddd)",
