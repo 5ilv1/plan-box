@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { ParamsGeneration } from "@/types";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
+import { requireEnseignant } from "@/lib/server-auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -61,6 +63,11 @@ Règles :
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+  const limited = rateLimit(req, { key: "generer-exercice", max: 20, windowSec: 60, identifier: auth.user.id });
+  if (limited) return limited;
+
   try {
     const params: ParamsGeneration = await req.json();
 

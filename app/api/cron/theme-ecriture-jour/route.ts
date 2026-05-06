@@ -74,7 +74,10 @@ export async function GET(req: Request) {
 
   await fetch(`${base}/api/affecter-theme-ecriture`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.CRON_SECRET}`,
+    },
     body: JSON.stringify({ theme_id: theme.id }),
   });
 

@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { ParamsDictee } from "@/types";
+import { requireEnseignant } from "@/lib/server-auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export const maxDuration = 120; // 2 minutes — génération 3 jours × 4 niveaux peut être longue
 
@@ -144,6 +146,11 @@ ${joursLabels.map((j) => `    { "scene": "Scène du ${j} (3-5 mots)", "niveaux":
 }
 
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+  const limited = rateLimit(req, { key: "generer-dictee", max: 5, windowSec: 60, identifier: auth.user.id });
+  if (limited) return limited;
+
   try {
     const params: ParamsDictee = await req.json();
 

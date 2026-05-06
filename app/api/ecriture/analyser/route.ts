@@ -3,6 +3,8 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
 import { niveauEleveDepuisBloc } from "@/lib/ecriture-niveau-eleve";
+import { getServerUser } from "@/lib/server-auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 /**
  * POST /api/ecriture/analyser
@@ -18,6 +20,13 @@ import { niveauEleveDepuisBloc } from "@/lib/ecriture-niveau-eleve";
  * }
  */
 export async function POST(req: NextRequest) {
+  const user = await getServerUser();
+  if (!user) {
+    return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
+  }
+  const limited = rateLimit(req, { key: "ecriture-analyser", max: 30, windowSec: 60, identifier: user.id });
+  if (limited) return limited;
+
   let body: Record<string, unknown>;
   try {
     body = await req.json();

@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignantOrCron } from "@/lib/server-auth";
 
 export async function POST(req: Request) {
+  const auth = await requireEnseignantOrCron(req);
+  if (auth.error) return auth.error;
   try {
     const { theme_id } = await req.json();
     if (!theme_id) {
@@ -167,6 +170,8 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const auth = await requireEnseignantOrCron(req);
+  if (auth.error) return auth.error;
   try {
     const { theme_id, sujet, contrainte, afficher_contrainte, mode } = await req.json();
     if (!theme_id) {

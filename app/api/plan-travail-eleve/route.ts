@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/plan-travail-eleve?eleveId=<uuid>&debut=<YYYY-MM-DD>&fin=<YYYY-MM-DD>
 // GET /api/plan-travail-eleve?eleveId=rb_<N>&debut=<YYYY-MM-DD>&fin=<YYYY-MM-DD>
 export async function GET(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const { searchParams } = new URL(req.url);
   const eleveId = searchParams.get("eleveId");
   const debut = searchParams.get("debut");

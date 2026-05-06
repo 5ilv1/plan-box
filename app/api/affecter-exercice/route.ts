@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // POST /api/affecter-exercice
 // Body : { type, titre, contenu, chapitreId?, groupeIds?, eleveUids?, dateAssignation, dateLimite?, periodicite? }
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 

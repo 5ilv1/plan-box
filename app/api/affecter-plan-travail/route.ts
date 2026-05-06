@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * POST /api/affecter-plan-travail
@@ -7,6 +8,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
  * Utilise le client admin pour bypasser les RLS.
  */
 export async function POST(req: Request) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json();
   const { elevesResolus, titre, type, contenu, dateAssignation, dateLimite, periodicite, chapitreId, groupeLabel } = body;
 

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/repetibox-eleves
@@ -9,6 +10,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
  * Route serveur uniquement — clé secrète jamais exposée au navigateur.
  */
 export async function GET() {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
 
   const { data, error } = await admin

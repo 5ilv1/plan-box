@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireProprietaireOuEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/ceinture-active?eleve_id=UUID ou ?rb_id=5
@@ -12,6 +13,13 @@ export async function GET(req: NextRequest) {
   if (!eleveId && !rbId) {
     return NextResponse.json({ actif: false });
   }
+
+  const rbIdNum = rbId ? parseInt(rbId, 10) : null;
+  const auth = await requireProprietaireOuEnseignant(
+    eleveId,
+    rbIdNum != null && !isNaN(rbIdNum) ? rbIdNum : null,
+  );
+  if (auth.error) return auth.error;
 
   const admin = createAdminClient();
 

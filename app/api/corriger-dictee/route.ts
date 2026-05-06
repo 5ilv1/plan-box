@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getServerUser } from "@/lib/server-auth";
+import { rateLimit } from "@/lib/rate-limit";
 import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
 import {
   loggerErreurs,
@@ -261,6 +262,13 @@ async function niveauDepuisBloc(
 // ─────────────────────────────────────────────────────────────────────────────
 
 export async function POST(req: NextRequest) {
+  const user = await getServerUser();
+  if (!user) {
+    return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+  }
+  const limited = rateLimit(req, { key: "corriger-dictee", max: 10, windowSec: 60, identifier: user.id });
+  if (limited) return limited;
+
   const body = await req.json();
   const bloc_id: string | undefined = body.bloc_id;
   const transcription: string = String(body.transcription ?? "").trim();
@@ -280,9 +288,16 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Bloc introuvable" }, { status: 404 });
   }
 
-  if (bloc.eleve_id) {
-    const user = await getServerUser();
-    if (!user || user.id !== bloc.eleve_id) {
+  if (bloc.eleve_id && user.id !== bloc.eleve_id) {
+    return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+  }
+  if (bloc.repetibox_eleve_id != null) {
+    const { data: eleveRow } = await admin
+      .from("eleve")
+      .select("auth_id")
+      .eq("id", bloc.repetibox_eleve_id)
+      .maybeSingle();
+    if (!eleveRow || eleveRow.auth_id !== user.id) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
     }
   }

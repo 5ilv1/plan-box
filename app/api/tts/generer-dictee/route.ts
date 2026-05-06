@@ -35,15 +35,17 @@ export async function POST(req: NextRequest) {
       return publicUrl;
     }
 
-    // 1. Audio complet (légèrement ralenti)
-    const audioCompletUrl = await genererEtUploader(texte_complet, `${base}/complet.mp3`);
-
-    // 2. Audio par phrase (encore plus lent, en séquentiel pour ne pas surcharger l'API)
-    const audioPhraseUrls: { id: number; url: string }[] = [];
-    for (const phrase of phrases as { id: number; texte: string }[]) {
-      const url = await genererEtUploader(phrase.texte, `${base}/phrase_${phrase.id}.mp3`, true);
-      audioPhraseUrls.push({ id: phrase.id, url });
-    }
+    // 1. Audio complet (légèrement ralenti) + 2. Audio par phrase, en parallèle
+    const phrasesArr = phrases as { id: number; texte: string }[];
+    const [audioCompletUrl, audioPhraseUrls] = await Promise.all([
+      genererEtUploader(texte_complet, `${base}/complet.mp3`),
+      Promise.all(
+        phrasesArr.map(async (phrase) => ({
+          id: phrase.id,
+          url: await genererEtUploader(phrase.texte, `${base}/phrase_${phrase.id}.mp3`, true),
+        })),
+      ),
+    ]);
 
     // 3. Mettre à jour la table dictees
     const { data: dicteeRow } = await admin

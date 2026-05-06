@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
+import { requireEnseignant } from "@/lib/server-auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -10,6 +12,9 @@ const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
    Liste toutes les règles (chapitres sous_matiere = "rituel-orthographe")
    ────────────────────────────────────────────────────── */
 export async function GET(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const enseignantId = req.nextUrl.searchParams.get("enseignant_id");
   const admin = createAdminClient();
 
@@ -70,6 +75,11 @@ export async function GET(req: NextRequest) {
    Body: { titre, regle, astuce, exemple, niveau_id, groupe_ids? }
    ────────────────────────────────────────────────────── */
 export async function POST(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+  const limited = rateLimit(req, { key: "ma-ptite-regle", max: 5, windowSec: 60, identifier: auth.user.id });
+  if (limited) return limited;
+
   try {
     const body = await req.json();
     const { titre, regle, astuce, exemple, niveau_id, groupe_ids, date_debut,
@@ -129,28 +139,30 @@ export async function POST(req: NextRequest) {
     const exercicesDefs = getExercicesDefs(categorie, titre, regle, mots_cibles);
 
     const niveauNom = "CM1-CM2";
-    const results: { jour: string; ok: boolean; titre?: string }[] = [];
 
-    for (let i = 0; i < exercicesDefs.length; i++) {
-      const def = exercicesDefs[i];
-      try {
+    // Génération IA en parallèle, puis insertion (préserve l'ordre via `ordre: i + 1`)
+    const settled = await Promise.allSettled(
+      exercicesDefs.map(async (def, i) => {
         // Exercice d'écriture : contenu statique, pas de génération IA
         if (def.type === "ecriture_contrainte") {
           const contraintes = genererContraintesEcriture(categorie, titre, regle, mots_cibles);
-          await admin.from("exercice").insert({
-            chapitre_id: chapitre.id,
-            titre: def.label,
-            type: def.type,
-            contenu: {
-              consigne: `Écris 3 phrases en utilisant correctement « ${titre} ».\nRappel : ${regle}`,
-              contraintes,
-              nb_phrases: 3,
+          return {
+            i,
+            def,
+            row: {
+              chapitre_id: chapitre.id,
+              titre: def.label,
+              type: def.type,
+              contenu: {
+                consigne: `Écris 3 phrases en utilisant correctement « ${titre} ».\nRappel : ${regle}`,
+                contraintes,
+                nb_phrases: 3,
+              },
+              nb_questions: 3,
+              ordre: i + 1,
             },
-            nb_questions: 3,
-            ordre: i + 1,
-          });
-          results.push({ jour: def.jour, ok: true, titre: def.label });
-          continue;
+            displayedTitre: def.label,
+          };
         }
 
         const generated = await genererExerciceRegle(
@@ -166,13 +178,11 @@ export async function POST(req: NextRequest) {
           categorie,
         );
 
-        // Tronquer au nombre cible si on a demandé plus (pour compenser le filtre)
         const nbCible = (def as any).nbCible ?? def.nb;
         if (Array.isArray(generated.contenu.questions) && generated.contenu.questions.length > nbCible) {
           generated.contenu.questions = generated.contenu.questions.slice(0, nbCible);
         }
 
-        // Calculer le vrai nombre de questions/trous
         let nbFinal = def.nb;
         if (Array.isArray(generated.contenu.questions)) {
           nbFinal = generated.contenu.questions.length;
@@ -180,20 +190,37 @@ export async function POST(req: NextRequest) {
           nbFinal = generated.contenu.trous.length;
         }
 
-        await admin.from("exercice").insert({
-          chapitre_id: chapitre.id,
-          titre: def.label,
-          type: def.type,
-          contenu: generated.contenu,
-          nb_questions: nbFinal,
-          ordre: i + 1,
-        });
+        return {
+          i,
+          def,
+          row: {
+            chapitre_id: chapitre.id,
+            titre: def.label,
+            type: def.type,
+            contenu: generated.contenu,
+            nb_questions: nbFinal,
+            ordre: i + 1,
+          },
+          displayedTitre: generated.titre,
+        };
+      }),
+    );
 
-        results.push({ jour: def.jour, ok: true, titre: generated.titre });
-      } catch (err) {
-        console.error(`[ma-ptite-regle] erreur génération ${def.jour}:`, err);
-        results.push({ jour: def.jour, ok: false });
+    const rowsAInserer: Record<string, unknown>[] = [];
+    const results: { jour: string; ok: boolean; titre?: string }[] = new Array(exercicesDefs.length);
+    settled.forEach((res, idx) => {
+      const def = exercicesDefs[idx];
+      if (res.status === "fulfilled") {
+        rowsAInserer.push(res.value.row);
+        results[idx] = { jour: def.jour, ok: true, titre: res.value.displayedTitre };
+      } else {
+        console.error(`[ma-ptite-regle] erreur génération ${def.jour}:`, res.reason);
+        results[idx] = { jour: def.jour, ok: false };
       }
+    });
+
+    if (rowsAInserer.length > 0) {
+      await admin.from("exercice").insert(rowsAInserer);
     }
 
     // 4. Assigner aux groupes si fournis
@@ -218,6 +245,9 @@ export async function POST(req: NextRequest) {
    Modifie un chapitre rituel. Body: { id, date_debut? }
    ────────────────────────────────────────────────────── */
 export async function PATCH(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const body = await req.json();
   const { id, date_debut } = body;
 
@@ -242,6 +272,9 @@ export async function PATCH(req: NextRequest) {
    Supprime un chapitre rituel et ses exercices
    ────────────────────────────────────────────────────── */
 export async function DELETE(req: NextRequest) {
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const id = req.nextUrl.searchParams.get("id");
   if (!id) return NextResponse.json({ error: "id requis" }, { status: 400 });
 
