@@ -267,6 +267,52 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Aucun élève trouvé pour les assignations" }, { status: 400 });
   }
 
+  // ── Garde-fou anti-doublon "mots de la semaine" ──────────────────────────
+  // Un élève ne doit avoir qu'UN SEUL bloc mots_semaine par date (lundi). Si on
+  // replanifie une semaine avec un nouveau thème de dictée, on doit retirer
+  // le ou les anciens blocs mots_semaine de la même semaine avant l'insert,
+  // sinon le élève voit deux jeux de mots à apprendre (cf bug du 11 mai 2026).
+  const motsSemaineInserts = inserts.filter(
+    (i) => i.type === "mots" && (i.contenu as Record<string, unknown> | null)?.mots_semaine === true,
+  );
+
+  if (motsSemaineInserts.length > 0) {
+    const eleveDatesPB = new Map<string, Set<string>>(); // eleve_id (PB) → dates
+    const eleveDatesRB = new Map<number, Set<string>>(); // rb_eleve_id → dates
+    for (const m of motsSemaineInserts) {
+      const d = m.date_assignation as string;
+      if (m.eleve_id) {
+        if (!eleveDatesPB.has(m.eleve_id)) eleveDatesPB.set(m.eleve_id, new Set());
+        eleveDatesPB.get(m.eleve_id)!.add(d);
+      } else if (m.repetibox_eleve_id != null) {
+        if (!eleveDatesRB.has(m.repetibox_eleve_id)) eleveDatesRB.set(m.repetibox_eleve_id, new Set());
+        eleveDatesRB.get(m.repetibox_eleve_id)!.add(d);
+      }
+    }
+
+    // Pour chaque (élève, date), supprimer les blocs mots_semaine existants.
+    // On filtre côté serveur sur contenu->>'mots_semaine' = 'true' pour ne pas
+    // toucher aux blocs "Révision mots" qui n'ont pas ce flag.
+    for (const [eleveId, dates] of eleveDatesPB.entries()) {
+      await admin
+        .from("plan_travail")
+        .delete()
+        .eq("type", "mots")
+        .eq("eleve_id", eleveId)
+        .in("date_assignation", [...dates])
+        .filter("contenu->>mots_semaine", "eq", "true");
+    }
+    for (const [rbId, dates] of eleveDatesRB.entries()) {
+      await admin
+        .from("plan_travail")
+        .delete()
+        .eq("type", "mots")
+        .eq("repetibox_eleve_id", rbId)
+        .in("date_assignation", [...dates])
+        .filter("contenu->>mots_semaine", "eq", "true");
+    }
+  }
+
   // Insérer par lots de 100 — ignorer les doublons
   let totalInserted = 0;
   let totalSkipped = 0;
