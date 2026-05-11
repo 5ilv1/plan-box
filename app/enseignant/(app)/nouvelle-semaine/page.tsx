@@ -520,6 +520,9 @@ export default function NouvelleSemainePage() {
           jour: 1, // mardi
           assignation,
           contenu: {
+            // dictee_parent_id permet à planifier-semaine de filtrer les mots
+            // selon le niveau étoiles de chaque élève
+            dictee_parent_id: batch.parentIds[0] ?? batch.parentIds[1] ?? null,
             batch_id: batch.batchId,
             theme: batch.theme,
             mots: motsUniques,
@@ -554,6 +557,7 @@ export default function NouvelleSemainePage() {
           jour: 3, // jeudi
           assignation,
           contenu: {
+            dictee_parent_id: batch.parentIds[0] ?? batch.parentIds[1] ?? null,
             batch_id: batch.batchId,
             theme: batch.theme,
             mots: motsUniques,

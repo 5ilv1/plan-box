@@ -85,6 +85,9 @@ export async function POST(req: Request) {
   }
 
   // ── Résoudre le niveau étoiles de chaque élève (PB + RB) ──
+  // Concerne les blocs de type "dictee" ET "mots" qui ont un dictee_parent_id,
+  // car les mots de la semaine sont aussi spécifiques au niveau (cf bug observé
+  // le 5 mai : tous les élèves recevaient la liste de mots du niveau 4).
   const isDicteePresent = dicteeParentIds.length > 0;
   const niveauParEleve = new Map<string, number>(); // eleve_id | "rb_X" → étoiles
 
@@ -92,7 +95,7 @@ export async function POST(req: Request) {
     // Récupérer tous les eleve_ids et rb_ids des groupes concernés
     const tousGroupeIdsDictee = [...new Set(
       blocs
-        .filter((b: any) => b.type === "dictee" && b.contenu?.dictee_parent_id)
+        .filter((b: any) => (b.type === "dictee" || b.type === "mots") && b.contenu?.dictee_parent_id)
         .flatMap((b: any) => b.assignation?.groupeIds ?? [])
     )];
 
@@ -222,6 +225,24 @@ export async function POST(req: Request) {
             audio_phrases_urls: nivContenu.audio_phrases_urls,
             dictee_parent_id: dicteeParentId,
             batch_id: contenuBrut.batch_id,
+          };
+        }
+      }
+
+      // ── Mots de la semaine + Révision : personnaliser par niveau étoiles ──
+      // Le client envoie une liste fusionnée (tous niveaux) pour le bloc mots ;
+      // ici on la remplace par la liste du NIVEAU de l'élève. Sans ça, tous
+      // les élèves voyaient les 17 mots du niveau 4 (bug du 5 mai 2026).
+      if (isDictee && bloc.type === "mots" && dicteeNiveaux && dicteeNiveaux.size > 0) {
+        const eleveKey = eleve.eleve_id ?? `rb_${eleve.repetibox_eleve_id}`;
+        const etoiles = niveauParEleve.get(eleveKey) ?? 2;
+        const nivContenu = dicteeNiveaux.get(etoiles) ?? dicteeNiveaux.values().next().value;
+
+        if (nivContenu) {
+          contenuFinal = {
+            ...contenuFinal,
+            niveau_etoiles: nivContenu.niveau_etoiles,
+            mots: nivContenu.mots,
           };
         }
       }
