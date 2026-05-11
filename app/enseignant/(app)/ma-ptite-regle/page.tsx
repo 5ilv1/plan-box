@@ -170,6 +170,235 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
+/* ── Impression : 8 mini-fiches par page A4 portrait ───────────────────── */
+
+// Imprime du HTML via un iframe invisible (pas d'onglet about:blank)
+function imprimerHTML(html: string) {
+  const iframe = document.createElement("iframe");
+  iframe.style.cssText = "position:fixed;width:0;height:0;border:none;opacity:0;pointer-events:none";
+  document.body.appendChild(iframe);
+  const doc = iframe.contentWindow?.document;
+  if (!doc) { document.body.removeChild(iframe); return; }
+  doc.open(); doc.write(html); doc.close();
+  iframe.contentWindow?.focus();
+  setTimeout(() => {
+    iframe.contentWindow?.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  }, 350);
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function formatDateFr(iso: string): string {
+  const d = new Date(iso);
+  return d.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+}
+
+function genererImpressionTraces(regles: Regle[], periodeLabel: string) {
+  // Extrait { titre, regle, astuce, exemple } pour chaque règle
+  type Fiche = { titre: string; date: string; regle: string; astuce: string; exemple: string };
+  const fiches: Fiche[] = regles.map((r) => {
+    const titreSansPrefix = r.titre.replace(/^Ma P'tite Règle\s*:\s*/i, "").trim();
+    const revisionExo = r.exercices.find((e) => e.type === "revision");
+    const c = (revisionExo?.contenu ?? {}) as Record<string, unknown>;
+    const astuce = (c.astuce as string) ?? "";
+    let exemple = "";
+    const exemples = c.exemples as { lignes?: string[][] }[] | undefined;
+    if (Array.isArray(exemples) && exemples.length > 0) {
+      const lignes = exemples[0].lignes;
+      if (Array.isArray(lignes) && lignes.length > 0 && Array.isArray(lignes[0])) {
+        exemple = lignes[0][0] ?? "";
+      }
+    }
+    return {
+      titre: titreSansPrefix,
+      date: r.date_debut ? formatDateFr(r.date_debut) : "",
+      regle: r.description ?? "",
+      astuce,
+      exemple,
+    };
+  });
+
+  // Découper en pages de 8
+  const pages: Fiche[][] = [];
+  for (let i = 0; i < fiches.length; i += 8) {
+    pages.push(fiches.slice(i, i + 8));
+  }
+
+  const renderFiche = (f: Fiche, idx: number) => `
+    <div class="fiche">
+      <div class="fiche-header">
+        <span class="fiche-num">${idx + 1}</span>
+        <div class="fiche-titre-bloc">
+          <div class="fiche-titre">${escapeHtml(f.titre)}</div>
+          ${f.date ? `<div class="fiche-date">${escapeHtml(f.date)}</div>` : ""}
+        </div>
+      </div>
+      <div class="fiche-section">
+        <div class="fiche-label">La règle</div>
+        <div class="fiche-texte">${escapeHtml(f.regle)}</div>
+      </div>
+      ${f.astuce ? `
+      <div class="fiche-section fiche-astuce">
+        <div class="fiche-label">Astuce</div>
+        <div class="fiche-texte">${escapeHtml(f.astuce)}</div>
+      </div>` : ""}
+      ${f.exemple ? `
+      <div class="fiche-section fiche-exemple">
+        <div class="fiche-label">Exemple</div>
+        <div class="fiche-texte fiche-exemple-txt">${escapeHtml(f.exemple)}</div>
+      </div>` : ""}
+    </div>`;
+
+  const renderPage = (page: Fiche[], pageIdx: number) => {
+    const debutIdx = pageIdx * 8;
+    return `
+      <div class="page">
+        <header class="page-header">
+          <div class="page-titre">Ma P'tite Règle — Traces écrites — ${escapeHtml(periodeLabel)}</div>
+          <div class="page-pagination">Page ${pageIdx + 1} / ${pages.length}</div>
+        </header>
+        <div class="grille">
+          ${page.map((f, i) => renderFiche(f, debutIdx + i)).join("\n")}
+        </div>
+      </div>`;
+  };
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Ma P'tite Règle — ${escapeHtml(periodeLabel)}</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  @page { size: A4 portrait; margin: 8mm; }
+  body {
+    font-family: -apple-system, "Plus Jakarta Sans", "Manrope", BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: #111827;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    page-break-after: always;
+    break-inside: avoid;
+    height: 281mm; /* 297 - 2×8 marges */
+    display: flex;
+    flex-direction: column;
+  }
+  .page:last-child { page-break-after: avoid; }
+
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 4mm;
+    margin-bottom: 4mm;
+    border-bottom: 1.5px solid #7C3AED;
+  }
+  .page-titre {
+    font-size: 12pt;
+    font-weight: 800;
+    color: #5B21B6;
+    letter-spacing: -0.01em;
+  }
+  .page-pagination {
+    font-size: 9pt;
+    color: #6B7280;
+  }
+
+  .grille {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: repeat(4, 1fr);
+    gap: 4mm;
+    flex: 1;
+  }
+
+  .fiche {
+    border: 1.5px solid #DDD6FE;
+    border-radius: 3mm;
+    padding: 3mm 3.5mm;
+    background: #FAF5FF;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5mm;
+    overflow: hidden;
+    break-inside: avoid;
+  }
+
+  .fiche-header {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+    padding-bottom: 1.5mm;
+    border-bottom: 1px dashed #C4B5FD;
+  }
+  .fiche-num {
+    flex-shrink: 0;
+    width: 6.5mm;
+    height: 6.5mm;
+    border-radius: 50%;
+    background: #7C3AED;
+    color: white;
+    font-weight: 800;
+    font-size: 9pt;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .fiche-titre-bloc { flex: 1; min-width: 0; }
+  .fiche-titre {
+    font-size: 10.5pt;
+    font-weight: 800;
+    color: #4C1D95;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .fiche-date {
+    font-size: 7.5pt;
+    color: #6B7280;
+    margin-top: 0.5mm;
+  }
+
+  .fiche-section { display: flex; flex-direction: column; gap: 0.5mm; }
+  .fiche-label {
+    font-size: 7pt;
+    font-weight: 800;
+    color: #7C3AED;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .fiche-texte {
+    font-size: 8.5pt;
+    line-height: 1.3;
+    color: #1F2937;
+  }
+  .fiche-astuce .fiche-texte {
+    background: white;
+    border-left: 2px solid #FBBF24;
+    padding: 1mm 2mm;
+    border-radius: 0 1mm 1mm 0;
+  }
+  .fiche-exemple-txt {
+    font-style: italic;
+    color: #374151;
+  }
+</style>
+</head>
+<body>
+${pages.map((p, i) => renderPage(p, i)).join("\n")}
+</body>
+</html>`;
+}
+
 /* ── Page principale ─────────────────────────────── */
 
 export default function MaPtiteRegle() {
@@ -431,7 +660,28 @@ export default function MaPtiteRegle() {
             {regles.length} règle{regles.length > 1 ? "s" : ""} · Rituels orthographe hebdomadaires
           </p>
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+          <button
+            onClick={() => {
+              if (regles.length === 0) return;
+              // Période 5 = règles avec date_debut entre 20 avril et 4 juillet.
+              // À défaut on imprime ce qui est affiché.
+              const dansP5 = regles.filter(
+                (r) => r.date_debut && r.date_debut >= "2026-04-20" && r.date_debut <= "2026-07-04",
+              );
+              const cibles = dansP5.length > 0 ? dansP5 : regles;
+              const sorted = [...cibles].sort((a, b) =>
+                (a.date_debut ?? "").localeCompare(b.date_debut ?? ""),
+              );
+              imprimerHTML(genererImpressionTraces(sorted, dansP5.length > 0 ? "Période 5" : "Toutes les règles"));
+            }}
+            disabled={regles.length === 0}
+            style={{ ...btnStyle("#7C3AED"), background: "#F5F3FF" }}
+            title="Imprimer les traces écrites (8 fiches par page A4)"
+          >
+            <span className="ms" style={{ fontSize: 16 }}>print</span>
+            Imprimer les traces
+          </button>
           <button
             onClick={() => setShowTemplates(true)}
             style={{ ...btnStyle("#7C3AED"), background: "#F5F3FF" }}
