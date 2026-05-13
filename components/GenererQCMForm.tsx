@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AssignationSelecteur } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
+import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
 
 interface Props {
   onGenerer: (params: any) => void;
@@ -35,8 +36,12 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
   const dv = defaultValues;
 
   const [niveau, setNiveau] = useState(dv?.niveau ?? "CM1");
-  const [matiere, setMatiere] = useState(dv?.matiere ?? "");
-  const [sousMatiere, setSousMatiere] = useState(dv?.sous_matiere ?? "");
+  const [mcv, setMcv] = useState<MatiereChapitreValue>({
+    matiere: dv?.matiere ?? "",
+    sousMatiere: dv?.sous_matiere ?? "",
+    chapitreId: dv?.chapitreId ?? "",
+    chapitreTitre: dv?.chapitreTitre ?? "",
+  });
   const [theme, setTheme] = useState(dv?.theme ?? "");
   const [consigne, setConsigne] = useState(dv?.consigne ?? "");
   const [titre, setTitre] = useState(dv?.titre ?? "");
@@ -48,7 +53,7 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!theme.trim() && !sousMatiere.trim() && !consigne.trim()) {
+    if (!theme.trim() && !mcv.sousMatiere.trim() && !consigne.trim()) {
       alert("Précise au moins un thème, une sous-matière ou une consigne.");
       return;
     }
@@ -56,8 +61,10 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
     onGenerer({
       type: "qcm" as const,
       niveau,
-      matiere,
-      sous_matiere: sousMatiere,
+      matiere: mcv.matiere,
+      sous_matiere: mcv.sousMatiere,
+      chapitreId: mcv.chapitreId || null,
+      chapitreTitre: mcv.chapitreId ? (mcv.chapitreTitre || "Non spécifié") : "Sans chapitre",
       theme,
       consigne,
       titre: titre || undefined,
@@ -71,6 +78,8 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
 
   return (
     <form onSubmit={handleSubmit} style={{ padding: "16px 0" }}>
+      <MatiereChapitreSelector value={mcv} onChange={setMcv} />
+
       <div className="grid-2" style={{ marginBottom: 16 }}>
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="form-label">Niveau</label>
@@ -89,27 +98,6 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
             max={20}
             value={nbQuestions}
             onChange={(e) => setNbQuestions(parseInt(e.target.value) || 10)}
-          />
-        </div>
-      </div>
-
-      <div className="grid-2" style={{ marginBottom: 16 }}>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Matière (optionnel)</label>
-          <input
-            className="form-input"
-            value={matiere}
-            onChange={(e) => setMatiere(e.target.value)}
-            placeholder="Ex : Sciences, Histoire…"
-          />
-        </div>
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Sous-matière / notion (optionnel)</label>
-          <input
-            className="form-input"
-            value={sousMatiere}
-            onChange={(e) => setSousMatiere(e.target.value)}
-            placeholder="Ex : les volcans, la Gaule…"
           />
         </div>
       </div>

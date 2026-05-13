@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
+import { useState } from "react";
 import { AssignationSelecteur } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
+import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
 
 interface Props {
   onGenerer: (params: any) => void;
@@ -38,7 +38,6 @@ function lundiDeSemaine(semaine: string): string {
 
 export default function GenererTexteATrousForm({ onGenerer, chargement, defaultValues }: Props) {
   const dv = defaultValues;
-  const supabase = createClient();
 
   const [mode, setMode] = useState<"ia" | "manuel">(dv?.mode ?? "ia");
   const [niveau, setNiveau] = useState(dv?.niveau ?? "CM1");
@@ -46,45 +45,18 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
   const [description, setDescription] = useState(dv?.description ?? "");
   const [theme, setTheme] = useState(dv?.theme ?? "");
   const [texteManuel, setTexteManuel] = useState(dv?.texteManuel ?? "");
-  const [matiere, setMatiere] = useState(dv?.matiere ?? "Français");
+  const [mcv, setMcv] = useState<MatiereChapitreValue>({
+    matiere: dv?.matiere ?? "",
+    sousMatiere: dv?.sousMatiere ?? "",
+    chapitreId: dv?.chapitreId ?? "",
+    chapitreTitre: dv?.chapitreTitre ?? "",
+  });
   const [pdfModele, setPdfModele] = useState<{ name: string; base64: string } | null>(null);
   const [assignation, setAssignation] = useState<AssignationSelecteur>(dv?.assignation ?? ASSIGNATION_VIDE);
   const [periodicite, setPeriodicite] = useState<"jour" | "semaine">(dv?.periodicite ?? "jour");
   const [dateAssignation, setDateAssignation] = useState(dv?.dateAssignation ?? new Date().toISOString().split("T")[0]);
   const [semaineAssignation, setSemaineAssignation] = useState(semaineCourante());
   const [dateLimite, setDateLimite] = useState("");
-
-  // Chapitres pour éventuelle association
-  const [chapitres, setChapitres] = useState<{ id: string; titre: string; matiere: string }[]>([]);
-  const [chapitreId, setChapitreId] = useState(dv?.chapitreId ?? "");
-  const [showCreerChapitre, setShowCreerChapitre] = useState(false);
-  const [nouveauChapitreNom, setNouveauChapitreNom] = useState("");
-  const [creationEnCours, setCreationEnCours] = useState(false);
-
-  useEffect(() => {
-    supabase
-      .from("chapitres")
-      .select("id, titre, matiere")
-      .order("matiere")
-      .then(({ data }) => setChapitres(data ?? []));
-  }, [supabase]);
-
-  async function creerChapitre() {
-    if (!nouveauChapitreNom.trim()) return;
-    setCreationEnCours(true);
-    const { data, error } = await supabase
-      .from("chapitres")
-      .insert({ titre: nouveauChapitreNom.trim(), matiere: "Français" })
-      .select("id, titre, matiere")
-      .single();
-    if (data && !error) {
-      setChapitres((prev) => [...prev, data]);
-      setChapitreId(data.id);
-      setShowCreerChapitre(false);
-      setNouveauChapitreNom("");
-    }
-    setCreationEnCours(false);
-  }
 
   function handlePdf(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -115,13 +87,15 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
       type: "texte_a_trous" as const,
       mode,
       niveau,
-      matiere,
+      matiere: mcv.matiere,
+      sousMatiere: mcv.sousMatiere,
       objectif,
       description,
       theme: theme.trim() || undefined,
       texteManuel: mode === "manuel" ? texteManuel : undefined,
       pdfBase64: pdfModele?.base64,
-      chapitreId: chapitreId || undefined,
+      chapitreId: mcv.chapitreId || null,
+      chapitreTitre: mcv.chapitreId ? (mcv.chapitreTitre || "Non spécifié") : "Sans chapitre",
       assignation,
       dateAssignation: dateEff,
       dateLimite,
@@ -131,6 +105,8 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
 
   return (
     <form onSubmit={handleSubmit}>
+      <MatiereChapitreSelector value={mcv} onChange={setMcv} matiereParDefaut="Français" />
+
       {/* Mode : IA ou Manuel */}
       <div className="form-group">
         <label className="form-label">Mode de création</label>
@@ -150,29 +126,13 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
         </div>
       </div>
 
-      <div className="grid-2" style={{ marginBottom: 16 }}>
-        {/* Matière */}
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Matière</label>
-          <select className="form-input" value={matiere} onChange={(e) => setMatiere(e.target.value)}>
-            <option value="Français">Français</option>
-            <option value="Mathématiques">Mathématiques</option>
-            <option value="Histoire">Histoire</option>
-            <option value="Géographie">Géographie</option>
-            <option value="Sciences">Sciences</option>
-            <option value="Autre">Autre</option>
-          </select>
-        </div>
-
-        {/* Niveau */}
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Niveau</label>
-          <select className="form-input" value={niveau} onChange={(e) => setNiveau(e.target.value)}>
-            <option value="CE2">CE2</option>
-            <option value="CM1">CM1</option>
-            <option value="CM2">CM2</option>
-          </select>
-        </div>
+      <div className="form-group">
+        <label className="form-label">Niveau</label>
+        <select className="form-input" value={niveau} onChange={(e) => setNiveau(e.target.value)}>
+          <option value="CE2">CE2</option>
+          <option value="CM1">CM1</option>
+          <option value="CM2">CM2</option>
+        </select>
       </div>
 
       {mode === "ia" ? (
@@ -254,61 +214,6 @@ export default function GenererTexteATrousForm({ onGenerer, chargement, defaultV
           </p>
         </div>
       )}
-
-      {/* Chapitre (optionnel) */}
-      <div className="form-group">
-        <label className="form-label">Chapitre (optionnel)</label>
-        <div style={{ display: "flex", gap: 8 }}>
-          <select className="form-input" value={chapitreId} onChange={(e) => setChapitreId(e.target.value)} style={{ flex: 1 }}>
-            <option value="">Sans chapitre</option>
-            {chapitres.map((c) => (
-              <option key={c.id} value={c.id}>{c.matiere} — {c.titre}</option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={() => setShowCreerChapitre(!showCreerChapitre)}
-            style={{
-              padding: "0 14px", borderRadius: 8, border: "1.5px solid var(--primary)",
-              background: showCreerChapitre ? "var(--primary)" : "transparent",
-              color: showCreerChapitre ? "white" : "var(--primary)",
-              cursor: "pointer", fontWeight: 700, fontSize: 18, lineHeight: 1,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.15s",
-            }}
-            title="Créer un nouveau chapitre"
-          >
-            +
-          </button>
-        </div>
-        {showCreerChapitre && (
-          <div style={{
-            marginTop: 10, padding: "12px 16px",
-            background: "var(--blue-50, #EFF6FF)", border: "1.5px solid var(--blue-200, #BFDBFE)",
-            borderRadius: 10, display: "flex", gap: 8, alignItems: "center",
-          }}>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Nom du nouveau chapitre"
-              value={nouveauChapitreNom}
-              onChange={(e) => setNouveauChapitreNom(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); creerChapitre(); } }}
-              style={{ flex: 1, marginBottom: 0 }}
-              autoFocus
-            />
-            <button
-              type="button"
-              onClick={creerChapitre}
-              disabled={!nouveauChapitreNom.trim() || creationEnCours}
-              className="pb-btn primary"
-              style={{ padding: "8px 16px", fontSize: 13, borderRadius: 8, whiteSpace: "nowrap" }}
-            >
-              {creationEnCours ? "…" : "Créer"}
-            </button>
-          </div>
-        )}
-      </div>
 
       {/* Assignation */}
       <AssignationSelector value={assignation} onChange={setAssignation} />

@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase";
-import { Chapitre, AssignationSelecteur, ParamsExercice } from "@/types";
+import { useState } from "react";
+import { AssignationSelecteur, ParamsExercice } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
+import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
 
 interface GenererExerciceFormProps {
   onGenerer: (params: ParamsExercice) => void;
@@ -47,20 +47,14 @@ export default function GenererExerciceForm({
   defaultChapitreId,
   defaultValues,
 }: GenererExerciceFormProps) {
-  const supabase = createClient();
   const dv = defaultValues;
 
-  const [chapitres, setChapitres] = useState<Chapitre[]>([]);
-  const [matieresDispo, setMatieresDispo] = useState<string[]>([]);
-  const [matiere, setMatiere] = useState<string>(dv?.matiere ?? "");
-  const [sousMatiere, setSousMatiere] = useState<string>("");
-  // Sous-matière personnalisée : saisie libre quand l'enseignant choisit "Personnalisé"
-  const [sousMatierePerso, setSousMatierePerso] = useState<string>("");
-  const [sousMatiereMode, setSousMatiereMode] = useState<"liste" | "perso">("liste");
-  const [chapitreId, setChapitreId] = useState(dv?.chapitreId ?? "");
-  const [showCreerChapitre, setShowCreerChapitre] = useState(false);
-  const [nouveauChapitreNom, setNouveauChapitreNom] = useState("");
-  const [creationEnCours, setCreationEnCours] = useState(false);
+  const [mcv, setMcv] = useState<MatiereChapitreValue>({
+    matiere: dv?.matiere ?? "",
+    sousMatiere: "",
+    chapitreId: dv?.chapitreId ?? "",
+    chapitreTitre: dv?.chapitreTitre ?? "",
+  });
   const [nbQuestions, setNbQuestions] = useState(dv?.nbQuestions ?? 5);
   const [difficulte, setDifficulte] = useState<"facile" | "moyen" | "difficile">(dv?.difficulte ?? "moyen");
   const [contexte, setContexte] = useState(dv?.contexte ?? "");
@@ -73,90 +67,20 @@ export default function GenererExerciceForm({
   const [semaineAssignation, setSemaineAssignation] = useState(semaineCourante());
   const [dateLimite, setDateLimite] = useState("");
 
-  // Charge les matières disponibles au montage
-  useEffect(() => {
-    supabase
-      .from("chapitres")
-      .select("matiere")
-      .order("matiere")
-      .then(({ data }) => {
-        const ms = Array.from(new Set((data ?? []).map((c: { matiere: string }) => c.matiere))).sort();
-        setMatieresDispo(ms);
-        if (ms.length > 0) setMatiere(ms[0]);
-      });
-  }, []);
-
-  // Recharge les chapitres à chaque changement de matière
-  useEffect(() => {
-    if (!matiere) return;
-    supabase
-      .from("chapitres")
-      .select("*")
-      .eq("matiere", matiere)
-      .order("ordre", { nullsFirst: false })
-      .order("titre")
-      .then(({ data }) => {
-        const liste = (data ?? []) as Chapitre[];
-        setChapitres(liste);
-        setSousMatiere(""); // réinitialise le filtre sous-matière
-        setSousMatiereMode("liste");
-        setSousMatierePerso("");
-        // Pré-sélectionne : defaultValues > defaultChapitreId > "sans chapitre"
-        const select = dv?.chapitreId
-          ? (liste.find((c) => c.id === dv.chapitreId)?.id ?? "")
-          : defaultChapitreId
-            ? (liste.find((c) => c.id === defaultChapitreId)?.id ?? "")
-            : "";
-        setChapitreId(select);
-      });
-  }, [matiere, defaultChapitreId]);
-
-  async function creerChapitre() {
-    if (!nouveauChapitreNom.trim() || !matiere) return;
-    setCreationEnCours(true);
-    try {
-      const { data: user } = await supabase.auth.getUser();
-      if (!user.user) return;
-      const { data, error } = await supabase
-        .from("chapitres")
-        .insert({
-          titre: nouveauChapitreNom.trim(),
-          matiere,
-          sous_matiere: sousMatiere || null,
-          enseignant_id: user.user.id,
-        })
-        .select()
-        .single();
-      if (error) { alert("Erreur : " + error.message); return; }
-      // Ajouter à la liste et sélectionner
-      setChapitres(prev => [...prev, data as Chapitre]);
-      setChapitreId(data.id);
-      setNouveauChapitreNom("");
-      setShowCreerChapitre(false);
-    } finally {
-      setCreationEnCours(false);
-    }
-  }
-
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (assignation.groupeIds.length === 0 && assignation.eleveUids.length === 0) {
       alert("Veuillez sélectionner au moins un groupe ou un élève.");
       return;
     }
-    const chapitreTitre = chapitreId
-      ? (chapitresFiltres.find((c) => c.id === chapitreId)?.titre
-        ?? chapitres.find((c) => c.id === chapitreId)?.titre
-        ?? "Non spécifié")
-      : "Sans chapitre";
     const niveauNom = assignation.groupeNoms.join(", ") || "École primaire";
     const dateFinale = periodicite === "semaine" ? lundiDeSemaine(semaineAssignation) : dateAssignation;
     onGenerer({
       type: "exercice",
-      matiere,
+      matiere: mcv.matiere,
       niveauNom,
-      chapitreId: chapitreId || null,
-      chapitreTitre,
+      chapitreId: mcv.chapitreId || null,
+      chapitreTitre: mcv.chapitreId ? (mcv.chapitreTitre || "Non spécifié") : "Sans chapitre",
       nbQuestions,
       difficulte,
       contexte,
@@ -170,36 +94,17 @@ export default function GenererExerciceForm({
     });
   }
 
-  // Sous-matières disponibles pour la matière sélectionnée
-  const sousMatieresDispo = Array.from(
-    new Set(chapitres.filter(c => c.sous_matiere).map(c => c.sous_matiere as string))
-  ).sort();
-
-  // Chapitres filtrés par sous-matière
-  const chapitresFiltres = sousMatiere
-    ? chapitres.filter(c => c.sous_matiere === sousMatiere)
-    : chapitres;
-
   const aucunAssigne = assignation.groupeIds.length === 0 && assignation.eleveUids.length === 0;
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="grid-2" style={{ marginBottom: 16 }}>
-        {/* Matière */}
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">Matière</label>
-          <select
-            className="form-input"
-            value={matiere}
-            onChange={(e) => setMatiere(e.target.value)}
-          >
-            {matieresDispo.length === 0 && <option value="">Chargement…</option>}
-            {matieresDispo.map((m) => (
-              <option key={m} value={m}>{m}</option>
-            ))}
-          </select>
-        </div>
+      <MatiereChapitreSelector
+        value={mcv}
+        onChange={setMcv}
+        defaultChapitreId={defaultChapitreId}
+      />
 
+      <div className="grid-2" style={{ marginBottom: 16 }}>
         {/* Nb questions */}
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="form-label">Nombre de questions</label>
@@ -213,121 +118,7 @@ export default function GenererExerciceForm({
             ))}
           </select>
         </div>
-      </div>
 
-      {/* Sous-matière (liste existante OU saisie libre via "Personnalisé") */}
-      <div className="form-group">
-        <label className="form-label">
-          Sous-matière <span className="text-secondary">(optionnel)</span>
-        </label>
-        <select
-          className="form-input"
-          value={sousMatiereMode === "perso" ? "__perso__" : sousMatiere}
-          onChange={(e) => {
-            const v = e.target.value;
-            if (v === "__perso__") {
-              setSousMatiereMode("perso");
-              setSousMatiere(sousMatierePerso);
-              // Pas de filtre de chapitre pour une sous-matière perso (nouvelle)
-              setChapitreId("");
-              return;
-            }
-            setSousMatiereMode("liste");
-            setSousMatiere(v);
-            // Auto-sélectionne le premier chapitre de la sous-matière choisie
-            const filtered = v ? chapitres.filter(c => c.sous_matiere === v) : chapitres;
-            setChapitreId(filtered[0]?.id ?? "");
-          }}
-        >
-          <option value="">Toutes les sous-matières</option>
-          {sousMatieresDispo.map((sm) => (
-            <option key={sm} value={sm}>{sm}</option>
-          ))}
-          <option value="__perso__">➕ Personnalisé…</option>
-        </select>
-        {sousMatiereMode === "perso" && (
-          <input
-            type="text"
-            className="form-input"
-            value={sousMatierePerso}
-            onChange={(e) => {
-              setSousMatierePerso(e.target.value);
-              setSousMatiere(e.target.value);
-            }}
-            placeholder="Ex. Conjugaison, Numération, Géométrie…"
-            style={{ marginTop: 8 }}
-            autoFocus
-          />
-        )}
-      </div>
-
-      {/* Chapitre */}
-      <div className="form-group">
-        <label className="form-label">
-          Chapitre <span style={{ color: "var(--text-secondary)", fontSize: 12, fontWeight: 400 }}>(optionnel)</span>
-        </label>
-        <div style={{ display: "flex", gap: 8, alignItems: "stretch" }}>
-          <select
-            className="form-input"
-            value={chapitreId}
-            onChange={(e) => setChapitreId(e.target.value)}
-            style={{ flex: 1 }}
-          >
-            <option value="">— Sans chapitre —</option>
-            {chapitresFiltres.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.sous_matiere && !sousMatiere ? `[${c.sous_matiere}] ` : ""}{c.titre}
-              </option>
-            ))}
-          </select>
-          <button
-            type="button"
-            onClick={() => setShowCreerChapitre(!showCreerChapitre)}
-            style={{
-              padding: "0 14px", borderRadius: 8, border: "1.5px solid var(--primary)",
-              background: showCreerChapitre ? "var(--primary)" : "transparent",
-              color: showCreerChapitre ? "white" : "var(--primary)",
-              cursor: "pointer", fontWeight: 700, fontSize: 18, lineHeight: 1,
-              display: "flex", alignItems: "center", justifyContent: "center",
-              transition: "all 0.15s",
-            }}
-            title="Créer un nouveau chapitre"
-          >
-            +
-          </button>
-        </div>
-
-        {/* Formulaire création chapitre */}
-        {showCreerChapitre && (
-          <div style={{
-            marginTop: 10, padding: "12px 16px",
-            background: "var(--blue-50, #EFF6FF)", border: "1.5px solid var(--blue-200, #BFDBFE)",
-            borderRadius: 10, display: "flex", gap: 8, alignItems: "center",
-          }}>
-            <input
-              type="text"
-              className="form-input"
-              placeholder="Nom du nouveau chapitre"
-              value={nouveauChapitreNom}
-              onChange={(e) => setNouveauChapitreNom(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); creerChapitre(); } }}
-              style={{ flex: 1, marginBottom: 0 }}
-              autoFocus
-            />
-            <button
-              type="button"
-              onClick={creerChapitre}
-              disabled={!nouveauChapitreNom.trim() || creationEnCours}
-              className="pb-btn primary"
-              style={{ padding: "8px 16px", fontSize: 13, borderRadius: 8, whiteSpace: "nowrap" }}
-            >
-              {creationEnCours ? "…" : "Créer"}
-            </button>
-          </div>
-        )}
-      </div>
-
-      <div className="grid-2" style={{ marginBottom: 16 }}>
         {/* Difficulté */}
         <div className="form-group" style={{ marginBottom: 0 }}>
           <label className="form-label">Difficulté</label>
@@ -341,20 +132,20 @@ export default function GenererExerciceForm({
             <option value="difficile">Difficile</option>
           </select>
         </div>
+      </div>
 
-        {/* Contexte */}
-        <div className="form-group" style={{ marginBottom: 0 }}>
-          <label className="form-label">
-            Contexte / thème <span className="text-secondary">(optionnel)</span>
-          </label>
-          <input
-            type="text"
-            className="form-input"
-            value={contexte}
-            onChange={(e) => setContexte(e.target.value)}
-            placeholder="Ex. les animaux, la ferme…"
-          />
-        </div>
+      {/* Contexte */}
+      <div className="form-group">
+        <label className="form-label">
+          Contexte / thème <span className="text-secondary">(optionnel)</span>
+        </label>
+        <input
+          type="text"
+          className="form-input"
+          value={contexte}
+          onChange={(e) => setContexte(e.target.value)}
+          placeholder="Ex. les animaux, la ferme…"
+        />
       </div>
 
       {/* Consigne détaillée */}
