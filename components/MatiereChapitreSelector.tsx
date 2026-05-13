@@ -4,6 +4,21 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import { Chapitre } from "@/types";
 
+/**
+ * Matières et sous-matières canoniques toujours proposées dans les
+ * formulaires. L'ordre des entrées (et des sous-matières dans chaque
+ * matière) est celui affiché à l'enseignant.
+ */
+export const MATIERES_CANONIQUES: Record<string, string[]> = {
+  "Mathématiques": ["Calcul", "Numération", "Grandeurs et mesures", "Géométrie"],
+  "Français": ["Lecture", "Écriture", "Conjugaison", "Grammaire", "Orthographe", "Vocabulaire"],
+  "Anglais": [],
+  "Histoire": [],
+  "Géographie": [],
+  "Sciences": [],
+};
+const MATIERES_ORDRE = Object.keys(MATIERES_CANONIQUES);
+
 export interface MatiereChapitreValue {
   matiere: string;
   sousMatiere: string;
@@ -42,14 +57,15 @@ export default function MatiereChapitreSelector({
   const [nouveauChapitreNom, setNouveauChapitreNom] = useState("");
   const [creationEnCours, setCreationEnCours] = useState(false);
 
-  // Charge les matières disponibles au montage
+  // Charge les matières disponibles au montage (canoniques + extras BDD)
   useEffect(() => {
     supabase
       .from("chapitres")
       .select("matiere")
-      .order("matiere")
       .then(({ data }) => {
-        const ms = Array.from(new Set((data ?? []).map((c: { matiere: string }) => c.matiere))).sort();
+        const dbMatieres = Array.from(new Set((data ?? []).map((c: { matiere: string }) => c.matiere)));
+        const extras = dbMatieres.filter(m => !MATIERES_ORDRE.includes(m)).sort();
+        const ms = [...MATIERES_ORDRE, ...extras];
         setMatieresDispo(ms);
         if (!value.matiere) {
           const initiale = matiereParDefaut && ms.includes(matiereParDefaut)
@@ -118,9 +134,13 @@ export default function MatiereChapitreSelector({
     }
   }
 
-  const sousMatieresDispo = Array.from(
+  // Sous-matières : canoniques de la matière + extras trouvés en BDD (ordre conservé)
+  const sousMatieresCanoniques = MATIERES_CANONIQUES[value.matiere] ?? [];
+  const sousMatieresDB = Array.from(
     new Set(chapitres.filter(c => c.sous_matiere).map(c => c.sous_matiere as string))
-  ).sort();
+  );
+  const extrasDB = sousMatieresDB.filter(sm => !sousMatieresCanoniques.includes(sm)).sort();
+  const sousMatieresDispo = [...sousMatieresCanoniques, ...extrasDB];
 
   const chapitresFiltres = value.sousMatiere
     ? chapitres.filter(c => c.sous_matiere === value.sousMatiere)
