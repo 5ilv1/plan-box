@@ -105,37 +105,34 @@ export async function GET(req: NextRequest) {
   };
   const cartes = await calculerDomainesParEleve(admin, cible, dateDebut);
 
-  // ── Avancement : blocs DU JOUR faits / proposés ──────────────────────
-  // Indépendant du filtre période (qui ne s'applique qu'aux % matière).
-  // On veut un indicateur "pulse" pour la journée en cours.
+  // ── Avancement : exercices faits / proposés sur la période ──────────
+  // Suit le filtre période. Exclut blocs futurs et types passifs.
+  const dateJour = dateDebut?.split("T")[0] ?? null;
   const aujourdhui = new Date().toISOString().split("T")[0];
   const TYPES_EXCLUS = new Set(["ressource", "lecon_copier", "ceinture_multiplication"]);
   const blocsParUid = new Map<string, { total: number; faits: number }>();
-  const incr = (uid: string, statut: string, type: string) => {
+  const incr = (uid: string, statut: string, type: string, dateAssign: string) => {
     if (TYPES_EXCLUS.has(type)) return;
+    if (dateAssign > aujourdhui) return; // bloc futur
     let s = blocsParUid.get(uid);
     if (!s) { s = { total: 0, faits: 0 }; blocsParUid.set(uid, s); }
     s.total++;
     if (statut === "fait") s.faits++;
   };
   if (cible.pb_ids.length > 0) {
-    const { data } = await admin
-      .from("plan_travail")
-      .select("eleve_id, statut, type")
-      .in("eleve_id", cible.pb_ids)
-      .eq("date_assignation", aujourdhui);
-    for (const r of (data ?? []) as Array<{ eleve_id: string; statut: string; type: string }>) {
-      incr(`pb_${r.eleve_id}`, r.statut, r.type);
+    let q = admin.from("plan_travail").select("eleve_id, statut, type, date_assignation").in("eleve_id", cible.pb_ids).lte("date_assignation", aujourdhui);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    const { data } = await q;
+    for (const r of (data ?? []) as Array<{ eleve_id: string; statut: string; type: string; date_assignation: string }>) {
+      incr(`pb_${r.eleve_id}`, r.statut, r.type, r.date_assignation);
     }
   }
   if (cible.rb_ids.length > 0) {
-    const { data } = await admin
-      .from("plan_travail")
-      .select("repetibox_eleve_id, statut, type")
-      .in("repetibox_eleve_id", cible.rb_ids)
-      .eq("date_assignation", aujourdhui);
-    for (const r of (data ?? []) as Array<{ repetibox_eleve_id: number; statut: string; type: string }>) {
-      incr(`rb_${r.repetibox_eleve_id}`, r.statut, r.type);
+    let q = admin.from("plan_travail").select("repetibox_eleve_id, statut, type, date_assignation").in("repetibox_eleve_id", cible.rb_ids).lte("date_assignation", aujourdhui);
+    if (dateJour) q = q.gte("date_assignation", dateJour);
+    const { data } = await q;
+    for (const r of (data ?? []) as Array<{ repetibox_eleve_id: number; statut: string; type: string; date_assignation: string }>) {
+      incr(`rb_${r.repetibox_eleve_id}`, r.statut, r.type, r.date_assignation);
     }
   }
 

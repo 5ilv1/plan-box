@@ -91,7 +91,7 @@ interface ElevesScores {
 }
 
 export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retourHref, retourLabel }: Props) {
-  const [periode, setPeriode] = useState<Periode>("all");
+  const [periode, setPeriode] = useState<Periode>("jour");
   const [niveau, setNiveau] = useState<"tous" | "CE2" | "CM1" | "CM2">(niveauInitial);
   const [data, setData] = useState<SuiviResp | null>(null);
   const [chargement, setChargement] = useState(true);
@@ -610,7 +610,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
               }}>
                 <div>Élève</div>
                 <div>Niveau</div>
-                <div style={{ textAlign: "right" }} title="Blocs du jour faits / proposés">Avancement du jour</div>
+                <div style={{ textAlign: "right" }}>Avancement</div>
                 <div style={{ textAlign: "right" }}>Français</div>
                 <div style={{ textAlign: "right" }}>Maths</div>
                 <div style={{ textAlign: "right" }}>Écriture</div>
