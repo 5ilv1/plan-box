@@ -137,6 +137,15 @@ export async function GET(req: NextRequest) {
   }
 
   // ── Atelier d'écriture : nb mots et % justes par élève ───────────────
+  // Pour cette colonne, on ne suit PAS le filtre période : l'atelier se
+  // déroule sur la semaine, donc on prend toujours du lundi à aujourd'hui.
+  const maintenant = new Date();
+  const jour = maintenant.getDay();
+  const decalLundi = jour === 0 ? -6 : 1 - jour;
+  const lundi = new Date(maintenant);
+  lundi.setDate(maintenant.getDate() + decalLundi);
+  const dateLundi = lundi.toISOString().split("T")[0];
+
   const compterMots = (s: string) => {
     const t = s?.trim() ?? "";
     return t ? t.split(/\s+/).length : 0;
@@ -160,17 +169,23 @@ export async function GET(req: NextRequest) {
     }
   };
   if (cible.pb_ids.length > 0) {
-    let q = admin.from("plan_travail").select("eleve_id, contenu").eq("type", "ecriture").eq("statut", "fait").in("eleve_id", cible.pb_ids);
-    if (dateJour) q = q.gte("date_assignation", dateJour);
-    const { data } = await q;
+    const { data } = await admin
+      .from("plan_travail")
+      .select("eleve_id, contenu")
+      .eq("type", "ecriture")
+      .in("eleve_id", cible.pb_ids)
+      .gte("date_assignation", dateLundi);
     for (const r of (data ?? []) as Array<{ eleve_id: string; contenu: Record<string, unknown> }>) {
       ajouterEcriture(`pb_${r.eleve_id}`, r.contenu ?? {});
     }
   }
   if (cible.rb_ids.length > 0) {
-    let q = admin.from("plan_travail").select("repetibox_eleve_id, contenu").eq("type", "ecriture").eq("statut", "fait").in("repetibox_eleve_id", cible.rb_ids);
-    if (dateJour) q = q.gte("date_assignation", dateJour);
-    const { data } = await q;
+    const { data } = await admin
+      .from("plan_travail")
+      .select("repetibox_eleve_id, contenu")
+      .eq("type", "ecriture")
+      .in("repetibox_eleve_id", cible.rb_ids)
+      .gte("date_assignation", dateLundi);
     for (const r of (data ?? []) as Array<{ repetibox_eleve_id: number; contenu: Record<string, unknown> }>) {
       ajouterEcriture(`rb_${r.repetibox_eleve_id}`, r.contenu ?? {});
     }
