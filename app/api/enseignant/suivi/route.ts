@@ -29,6 +29,49 @@ function getDateDebut(periode: string): string | null {
   return null;
 }
 
+const LABEL_TYPE: Record<string, { label: string; icone: string }> = {
+  dictee: { label: "Dictée", icone: "spellcheck" },
+  correction_dictee: { label: "Correction dictée", icone: "rule" },
+  qcm: { label: "QCM", icone: "quiz" },
+  calcul_mental: { label: "Calcul mental", icone: "function" },
+  probleme_maths: { label: "Problème", icone: "calculate" },
+  lecon_copier: { label: "Leçon à copier", icone: "edit_note" },
+  mots: { label: "Mots", icone: "spellcheck" },
+  exercice: { label: "Exercice", icone: "school" },
+  texte_a_trous: { label: "Texte à trous", icone: "text_fields" },
+  analyse_phrase: { label: "Analyse phrase", icone: "schema" },
+  classement: { label: "Classement", icone: "category" },
+  lecture: { label: "Lecture", icone: "auto_stories" },
+  ecriture: { label: "Écriture", icone: "edit_note" },
+  fichier_maths: { label: "Fichier maths", icone: "menu_book" },
+  ressource: { label: "Podcast", icone: "podcasts" },
+};
+
+async function blocsDuJourEleve(
+  admin: ReturnType<typeof createAdminClient>,
+  cible: CibleEleves
+): Promise<Array<{ id: string; type: string; titre: string; statut: string; label: string; icone: string }>> {
+  const today = new Date().toISOString().split("T")[0];
+  let q = admin
+    .from("plan_travail")
+    .select("id, type, titre, statut")
+    .eq("date_assignation", today);
+  if (cible.pb_ids.length > 0) q = q.in("eleve_id", cible.pb_ids);
+  else if (cible.rb_ids.length > 0) q = q.in("repetibox_eleve_id", cible.rb_ids);
+  const { data } = await q;
+  return (data ?? []).map((b) => {
+    const meta = LABEL_TYPE[b.type as string] ?? { label: b.type as string, icone: "task_alt" };
+    return {
+      id: b.id as string,
+      type: b.type as string,
+      titre: (b.titre as string) ?? meta.label,
+      statut: (b.statut as string) ?? "a_faire",
+      label: meta.label,
+      icone: meta.icone,
+    };
+  });
+}
+
 /** Récupère le niveau (CE2/CM1/CM2) d'un élève RB via eleve_groupe → groupes.nom */
 async function niveauRb(admin: ReturnType<typeof createAdminClient>, rbId: number): Promise<string | null> {
   const { data } = await admin
@@ -287,6 +330,7 @@ export async function GET(req: NextRequest) {
     },
     ceinture,
     lecture: { nb_blocs_faits: nbLectures },
+    blocsDuJour: inclureCeinture ? await blocsDuJourEleve(admin, cible) : [],
     ecriture: {
       nb_blocs: nbBlocsEcriture,
       nb_mots_ecrits: nbMotsEcrits,

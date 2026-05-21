@@ -31,6 +31,14 @@ interface SuiviResp {
     pourcentage: number;
     date: string;
   }>;
+  blocsDuJour?: Array<{
+    id: string;
+    type: string;
+    titre: string;
+    statut: string;
+    label: string;
+    icone: string;
+  }>;
 }
 
 type Periode = "jour" | "semaine" | "mois" | "trimestre" | "all";
@@ -475,6 +483,53 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
           </div>
         </div>
       </div>
+
+      {/* Aujourd'hui — blocs du jour (vue élève seulement) */}
+      {cible === "eleve" && (data.blocsDuJour ?? []).length > 0 && (
+        <div style={{ marginTop: 24 }}>
+          <h2 style={{
+            fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 800, fontSize: 16,
+            marginBottom: 10, display: "flex", alignItems: "center", gap: 8,
+          }}>
+            <span className="ms" style={{ fontSize: 22, color: "#4338CA" }}>today</span>
+            Aujourd&apos;hui ({(data.blocsDuJour ?? []).filter((b) => b.statut === "fait").length}/{(data.blocsDuJour ?? []).length})
+          </h2>
+          <div style={{
+            display: "grid", gap: 8,
+            gridTemplateColumns: "repeat(auto-fill, minmax(180px, 1fr))",
+          }}>
+            {(data.blocsDuJour ?? []).map((b) => {
+              const fait = b.statut === "fait";
+              return (
+                <div
+                  key={b.id}
+                  style={{
+                    background: fait ? "#F0FDF4" : "#FEF2F2",
+                    border: `1.5px solid ${fait ? "#86EFAC" : "#FECACA"}`,
+                    borderRadius: 10,
+                    padding: "8px 10px",
+                    display: "flex", alignItems: "center", gap: 8,
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 18, color: fait ? "#16A34A" : "#DC2626", flexShrink: 0 }}>
+                    {fait ? "check_circle" : b.icone}
+                  </span>
+                  <div style={{ minWidth: 0, flex: 1 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+                                  color: fait ? "#166534" : "#991B1B" }}>
+                      {b.label}
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--pb-on-surface)",
+                                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                      {b.titre}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Chapitres validés (vue élève seulement) */}
       {cible === "eleve" && (data.chapitresValides ?? []).length > 0 && (
