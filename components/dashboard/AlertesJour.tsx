@@ -45,19 +45,51 @@ function Pastille({
   noms: string[];
   titre: string;
 }) {
-  const tooltip = noms.length > 0 ? `${titre} :\n${noms.join(", ")}` : titre;
+  const [ouvert, setOuvert] = useState(false);
+  const cliquable = noms.length > 0;
   return (
-    <span
-      title={tooltip}
-      style={{
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        minWidth: 30, height: 24, borderRadius: 999, padding: "0 8px",
-        background: fond, color: couleur,
-        fontSize: 12, fontWeight: 800,
-        cursor: noms.length > 0 ? "help" : "default",
-      }}
-    >
-      {nombre}
+    <span style={{ position: "relative", display: "inline-block" }}>
+      <button
+        type="button"
+        onMouseEnter={() => cliquable && setOuvert(true)}
+        onMouseLeave={() => setOuvert(false)}
+        onClick={(e) => { e.stopPropagation(); if (cliquable) setOuvert((v) => !v); }}
+        style={{
+          display: "inline-flex", alignItems: "center", justifyContent: "center",
+          minWidth: 30, height: 24, borderRadius: 999, padding: "0 8px",
+          background: fond, color: couleur, border: "none",
+          fontSize: 12, fontWeight: 800,
+          cursor: cliquable ? "pointer" : "default",
+          fontFamily: "inherit",
+        }}
+      >
+        {nombre}
+      </button>
+      {ouvert && cliquable && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          style={{
+            position: "absolute", top: "calc(100% + 6px)", left: "50%",
+            transform: "translateX(-50%)",
+            background: "white", color: "#111",
+            borderRadius: 10, padding: "10px 14px",
+            minWidth: 180, maxWidth: 280,
+            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
+            zIndex: 100,
+            textAlign: "left",
+          }}
+        >
+          <div style={{
+            fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+            color: couleur, marginBottom: 6,
+          }}>
+            {titre}
+          </div>
+          <div style={{ fontSize: 13, lineHeight: 1.5 }}>
+            {noms.join(", ")}
+          </div>
+        </div>
+      )}
     </span>
   );
 }
