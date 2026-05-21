@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { createPortal } from "react-dom";
 
 interface Eleve {
   uid: string;
@@ -46,14 +47,30 @@ function Pastille({
   titre: string;
 }) {
   const [ouvert, setOuvert] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement | null>(null);
   const cliquable = noms.length > 0;
+
+  function ouvrir() {
+    if (!cliquable || !btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    setPos({ top: r.bottom + 6, left: r.left + r.width / 2 });
+    setOuvert(true);
+  }
+
   return (
-    <span style={{ position: "relative", display: "inline-block" }}>
+    <>
       <button
+        ref={btnRef}
         type="button"
-        onMouseEnter={() => cliquable && setOuvert(true)}
+        onMouseEnter={ouvrir}
         onMouseLeave={() => setOuvert(false)}
-        onClick={(e) => { e.stopPropagation(); if (cliquable) setOuvert((v) => !v); }}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (!cliquable) return;
+          if (ouvert) setOuvert(false);
+          else ouvrir();
+        }}
         style={{
           display: "inline-flex", alignItems: "center", justifyContent: "center",
           minWidth: 30, height: 24, borderRadius: 999, padding: "0 8px",
@@ -65,18 +82,19 @@ function Pastille({
       >
         {nombre}
       </button>
-      {ouvert && cliquable && (
+      {ouvert && cliquable && pos && typeof document !== "undefined" && createPortal(
         <div
-          onClick={(e) => e.stopPropagation()}
           style={{
-            position: "absolute", top: "calc(100% + 6px)", left: "50%",
+            position: "fixed",
+            top: pos.top, left: pos.left,
             transform: "translateX(-50%)",
             background: "white", color: "#111",
             borderRadius: 10, padding: "10px 14px",
-            minWidth: 180, maxWidth: 280,
-            boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
-            zIndex: 100,
+            minWidth: 200, maxWidth: 320,
+            boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
+            zIndex: 10000,
             textAlign: "left",
+            pointerEvents: "none",
           }}
         >
           <div style={{
@@ -88,9 +106,10 @@ function Pastille({
           <div style={{ fontSize: 13, lineHeight: 1.5 }}>
             {noms.join(", ")}
           </div>
-        </div>
+        </div>,
+        document.body
       )}
-    </span>
+    </>
   );
 }
 
