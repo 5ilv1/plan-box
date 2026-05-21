@@ -50,27 +50,56 @@ function Pastille({
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement | null>(null);
   const cliquable = noms.length > 0;
+  // Évite la double-action sur tap mobile (mouseenter + click synthétisés)
+  const touchRef = useRef(false);
 
-  function ouvrir() {
-    if (!cliquable || !btnRef.current) return;
+  function calculerPos() {
+    if (!btnRef.current) return null;
     const r = btnRef.current.getBoundingClientRect();
-    setPos({ top: r.bottom + 6, left: r.left + r.width / 2 });
+    return { top: r.bottom + 6, left: r.left + r.width / 2 };
+  }
+  function ouvrir() {
+    if (!cliquable) return;
+    const p = calculerPos();
+    if (p) setPos(p);
     setOuvert(true);
   }
+  function fermer() { setOuvert(false); }
+
+  // Fermer au clic en dehors
+  useEffect(() => {
+    if (!ouvert) return;
+    const onDoc = (e: MouseEvent) => {
+      if (btnRef.current?.contains(e.target as Node)) return;
+      fermer();
+    };
+    document.addEventListener("mousedown", onDoc);
+    return () => document.removeEventListener("mousedown", onDoc);
+  }, [ouvert]);
 
   return (
     <>
       <button
         ref={btnRef}
         type="button"
-        onMouseEnter={ouvrir}
-        onMouseLeave={() => setOuvert(false)}
+        onPointerEnter={(e) => {
+          if (e.pointerType === "mouse") ouvrir();
+        }}
+        onPointerLeave={(e) => {
+          if (e.pointerType === "mouse") fermer();
+        }}
         onClick={(e) => {
           e.stopPropagation();
           if (!cliquable) return;
-          if (ouvert) setOuvert(false);
-          else ouvrir();
+          // Sur tap (touchstart synthétise un click), on toggle
+          setOuvert((v) => {
+            if (v) return false;
+            const p = calculerPos();
+            if (p) setPos(p);
+            return true;
+          });
         }}
+        onTouchStart={() => { touchRef.current = true; }}
         style={{
           display: "inline-flex", alignItems: "center", justifyContent: "center",
           minWidth: 30, height: 24, borderRadius: 999, padding: "0 8px",
@@ -94,7 +123,6 @@ function Pastille({
             boxShadow: "0 12px 32px rgba(0,0,0,0.3)",
             zIndex: 10000,
             textAlign: "left",
-            pointerEvents: "none",
           }}
         >
           <div style={{
