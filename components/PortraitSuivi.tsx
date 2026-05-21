@@ -38,6 +38,9 @@ interface SuiviResp {
     statut: string;
     label: string;
     icone: string;
+    score_eleve: number | null;
+    score_total: number | null;
+    pourcentage: number | null;
   }>;
 }
 
@@ -500,6 +503,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
           }}>
             {(data.blocsDuJour ?? []).map((b) => {
               const fait = b.statut === "fait";
+              const aScore = fait && b.score_eleve !== null && b.score_total !== null;
               return (
                 <div
                   key={b.id}
@@ -524,6 +528,18 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                       {b.titre}
                     </div>
                   </div>
+                  {aScore && (
+                    <div style={{
+                      flexShrink: 0, fontSize: 12, fontWeight: 800,
+                      color: couleurPct(b.pourcentage),
+                      textAlign: "right", lineHeight: 1.1,
+                    }}>
+                      <div>{b.pourcentage}%</div>
+                      <div style={{ fontSize: 10, fontWeight: 600, opacity: 0.7 }}>
+                        {b.score_eleve}/{b.score_total}
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}

@@ -50,17 +50,24 @@ const LABEL_TYPE: Record<string, { label: string; icone: string }> = {
 async function blocsDuJourEleve(
   admin: ReturnType<typeof createAdminClient>,
   cible: CibleEleves
-): Promise<Array<{ id: string; type: string; titre: string; statut: string; label: string; icone: string }>> {
+): Promise<Array<{
+  id: string; type: string; titre: string; statut: string; label: string; icone: string;
+  score_eleve: number | null; score_total: number | null; pourcentage: number | null;
+}>> {
   const today = new Date().toISOString().split("T")[0];
   let q = admin
     .from("plan_travail")
-    .select("id, type, titre, statut")
+    .select("id, type, titre, statut, contenu")
     .eq("date_assignation", today);
   if (cible.pb_ids.length > 0) q = q.in("eleve_id", cible.pb_ids);
   else if (cible.rb_ids.length > 0) q = q.in("repetibox_eleve_id", cible.rb_ids);
   const { data } = await q;
   return (data ?? []).map((b) => {
     const meta = LABEL_TYPE[b.type as string] ?? { label: b.type as string, icone: "task_alt" };
+    const c = (b.contenu ?? {}) as { score_eleve?: number; score_total?: number };
+    const se = typeof c.score_eleve === "number" ? c.score_eleve : null;
+    const st = typeof c.score_total === "number" && c.score_total > 0 ? c.score_total : null;
+    const pct = se !== null && st !== null ? Math.round((se / st) * 100) : null;
     return {
       id: b.id as string,
       type: b.type as string,
@@ -68,6 +75,9 @@ async function blocsDuJourEleve(
       statut: (b.statut as string) ?? "a_faire",
       label: meta.label,
       icone: meta.icone,
+      score_eleve: se,
+      score_total: st,
+      pourcentage: pct,
     };
   });
 }
