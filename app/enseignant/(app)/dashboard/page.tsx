@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { Notification } from "@/types";
 import NotifCard from "@/components/NotifCard";
 import AujourdhuiSection from "@/components/dashboard/AujourdhuiSection";
+import AlertesJour from "@/components/dashboard/AlertesJour";
 import ProgrammeJourView from "@/components/dashboard/ProgrammeJourView";
 import ProgressionElevesView from "@/components/dashboard/ProgressionElevesView";
 import FeedbackView from "@/components/dashboard/FeedbackView";
@@ -583,6 +584,7 @@ export default function DashboardEnseignant() {
           <p>Voici le programme de vos élèves pour aujourd&apos;hui.</p>
         </div>
         <AujourdhuiSection variant="hero" />
+        <AlertesJour />
       </section>
 
       {/* ── Tabs ── */}
