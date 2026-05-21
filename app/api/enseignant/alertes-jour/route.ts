@@ -18,6 +18,10 @@ import { requireEnseignant } from "@/lib/server-auth";
  * ecriture (semaine), eval (exos d'éval automatique).
  */
 
+// Types comptés dans le compteur GLOBAL "Travail du jour" et dans le calcul
+// des élèves en retard. On affiche aussi le détail par type uniquement pour
+// les 3 piliers ci-dessous (dictee, problème du jour, calcul du jour) — le
+// reste compte mais n'apparaît pas en détail.
 const TYPES_PONCTUELS = new Set([
   "dictee",
   "correction_dictee",
@@ -31,6 +35,8 @@ const TYPES_PONCTUELS = new Set([
   "analyse_phrase",
   "classement",
 ]);
+// Types qui ressortent en détail dans les pastilles
+const TYPES_DETAILLES = new Set(["dictee"]);
 
 const SEUIL_RETARD_HEURE = 12; // midi
 const SEUIL_RETARD_PCT = 50;
@@ -250,6 +256,51 @@ export async function GET(_req: NextRequest) {
     g.nonFaits.sort((a, b) => a.prenom.localeCompare(b.prenom));
   }
 
+  // ── Sélection des pastilles affichées ─────────────────────────────────
+  // On ne garde que :
+  //   - les blocs dont le type est dans TYPES_DETAILLES (dictée)
+  //   - le calcul du jour (clé spécifique)
+  //   - le problème du jour (clé spécifique)
+  //   - un agrégat global "Travail du jour"
+  const pastilles: Groupe[] = [];
+  for (const [key, g] of groupes) {
+    if (TYPES_DETAILLES.has(g.type)) {
+      // Fusionner les variantes du même type sous un libellé général
+      const existant = pastilles.find((p) => p.type === g.type);
+      if (existant) {
+        existant.faits.push(...g.faits);
+        existant.nonFaits.push(...g.nonFaits);
+      } else {
+        pastilles.push({ ...g, titre: g.label });
+      }
+      continue;
+    }
+    if (key === "calcul_jour|Calcul du jour" || key === "daily_problem|Problème du jour") {
+      pastilles.push(g);
+    }
+  }
+
+  // Agrégat global : pour chaque élève, est-ce qu'il a tout terminé ?
+  const agregat: Groupe = {
+    type: "global",
+    titre: "Travail du jour",
+    label: "Travail du jour",
+    icone: "checklist",
+    faits: [],
+    nonFaits: [],
+  };
+  for (const [uid, c] of compteursEleve) {
+    const e = elevesMap.get(uid);
+    if (!e || c.total === 0) continue;
+    if (c.faits >= c.total) agregat.faits.push(e);
+    else agregat.nonFaits.push(e);
+  }
+  agregat.faits.sort((a, b) => a.prenom.localeCompare(b.prenom));
+  agregat.nonFaits.sort((a, b) => a.prenom.localeCompare(b.prenom));
+  if (agregat.faits.length + agregat.nonFaits.length > 0) {
+    pastilles.push(agregat);
+  }
+
   // ── Alerte "en retard" — seuil simple : heure ≥ midi ET % < 50 ─────────
   const maintenant = new Date();
   const heureActuelle = maintenant.getHours() + maintenant.getMinutes() / 60;
@@ -267,8 +318,17 @@ export async function GET(_req: NextRequest) {
     enRetard.sort((a, b) => a.pct - b.pct || a.prenom.localeCompare(b.prenom));
   }
 
+  // Ordre fixe : dictée → calcul → problème → travail du jour
+  const ordreType: Record<string, number> = {
+    dictee: 0,
+    calcul_jour: 1,
+    daily_problem: 2,
+    global: 3,
+  };
+  pastilles.sort((a, b) => (ordreType[a.type] ?? 99) - (ordreType[b.type] ?? 99));
+
   return NextResponse.json({
-    blocs: [...groupes.values()].sort((a, b) => a.label.localeCompare(b.label)),
+    blocs: pastilles,
     enRetard,
     enRetardActif,
     seuilHeure: SEUIL_RETARD_HEURE,
