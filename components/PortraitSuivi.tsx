@@ -610,7 +610,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
               }}>
                 <div>Élève</div>
                 <div>Niveau</div>
-                <div style={{ textAlign: "right" }}>Avancement</div>
+                <div style={{ textAlign: "right" }} title="Blocs du jour faits / proposés">Avancement du jour</div>
                 <div style={{ textAlign: "right" }}>Français</div>
                 <div style={{ textAlign: "right" }}>Maths</div>
                 <div style={{ textAlign: "right" }}>Écriture</div>
