@@ -87,8 +87,36 @@ export default function PodcastsEnseignant() {
   const [editPodcast, setEditPodcast] = useState<Podcast | null>(null);
   const [editTitre, setEditTitre] = useState("");
   const [editUrl, setEditUrl] = useState("");
+  const [editUrlInitiale, setEditUrlInitiale] = useState(""); // pour pouvoir supprimer l'ancien fichier après remplacement
   const [editMatiere, setEditMatiere] = useState("");
+  const [editFichierNom, setEditFichierNom] = useState<string | null>(null);
+  const [editUploadProgress, setEditUploadProgress] = useState<"idle" | "uploading" | "done" | "erreur">("idle");
   const [enSauvegarde, setEnSauvegarde] = useState(false);
+
+  // Upload MP3 dans la modale d'édition (écrase l'URL existante)
+  async function uploadMp3Edit(file: File) {
+    setEditUploadProgress("uploading");
+    try {
+      const presignRes = await fetch("/api/upload-podcast", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nom: file.name, contentType: file.type }),
+      });
+      const presignJson = await presignRes.json();
+      if (!presignRes.ok) { setEditUploadProgress("erreur"); return; }
+      const { error: uploadError } = await supabase.storage
+        .from("podcasts")
+        .uploadToSignedUrl(presignJson.path, presignJson.token, file, {
+          contentType: file.type || "audio/mpeg",
+        });
+      if (uploadError) { setEditUploadProgress("erreur"); return; }
+      setEditUrl(presignJson.publicUrl);
+      setEditFichierNom(file.name);
+      setEditUploadProgress("done");
+    } catch {
+      setEditUploadProgress("erreur");
+    }
+  }
 
   // Aperçu
   const [apercuPodcast, setApercuPodcast] = useState<Podcast | null>(null);
@@ -233,8 +261,18 @@ export default function PodcastsEnseignant() {
     setEditPodcast(p);
     setEditTitre(p.titre);
     const taches = (p.contenu?.taches ?? []) as Array<{ url?: string }>;
-    setEditUrl(taches[0]?.url ?? (p.contenu?.url as string) ?? "");
+    const url = taches[0]?.url ?? (p.contenu?.url as string) ?? "";
+    setEditUrl(url);
+    setEditUrlInitiale(url);
     setEditMatiere((p.contenu?.matiere as string) ?? "");
+    setEditFichierNom(null);
+    setEditUploadProgress("idle");
+  }
+
+  /** Extrait le path Supabase Storage à partir d'une publicUrl du bucket podcasts. */
+  function extrairePathPodcast(url: string): string | null {
+    const m = url.match(/\/storage\/v1\/object\/public\/podcasts\/(.+)$/);
+    return m ? m[1] : null;
   }
 
   async function sauvegarderEdition() {
@@ -271,6 +309,14 @@ export default function PodcastsEnseignant() {
             contenu: contenuMaj,
           }),
         });
+      }
+
+      // Si l'URL a changé ET l'ancienne pointait sur le bucket podcasts, supprime l'ancien fichier
+      if (editUrlInitiale && editUrlInitiale !== editUrl) {
+        const ancienPath = extrairePathPodcast(editUrlInitiale);
+        if (ancienPath) {
+          await supabase.storage.from("podcasts").remove([ancienPath]).catch(() => {});
+        }
       }
 
       showMsg("Podcast mis à jour");
@@ -763,6 +809,39 @@ export default function PodcastsEnseignant() {
             </Field>
             <Field label="URL du podcast">
               <input className="form-input" value={editUrl} onChange={(e) => setEditUrl(e.target.value)} placeholder="https://…" style={{ width: "100%", fontSize: 14 }} />
+            </Field>
+            <Field label="Remplacer le fichier MP3">
+              <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap" }}>
+                <label
+                  style={{
+                    display: "inline-flex", alignItems: "center", gap: 6,
+                    padding: "6px 12px", borderRadius: 8, fontSize: 13, fontWeight: 600,
+                    border: "1.5px solid var(--pb-outline-variant, #ddd)",
+                    background: "white", cursor: editUploadProgress === "uploading" ? "wait" : "pointer",
+                  }}
+                >
+                  <span className="ms" style={{ fontSize: 18 }}>upload_file</span>
+                  Choisir un MP3
+                  <input
+                    type="file"
+                    accept="audio/mpeg,audio/mp3,.mp3"
+                    style={{ display: "none" }}
+                    disabled={editUploadProgress === "uploading"}
+                    onChange={(e) => { const f = e.target.files?.[0]; if (f) uploadMp3Edit(f); }}
+                  />
+                </label>
+                {editUploadProgress === "uploading" && (
+                  <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>Upload en cours…</span>
+                )}
+                {editUploadProgress === "done" && editFichierNom && (
+                  <span style={{ fontSize: 12, color: "#16A34A", fontWeight: 600 }}>
+                    ✓ {editFichierNom} — l&apos;ancien fichier sera remplacé après enregistrement
+                  </span>
+                )}
+                {editUploadProgress === "erreur" && (
+                  <span style={{ fontSize: 12, color: "#DC2626", fontWeight: 600 }}>Erreur d&apos;upload</span>
+                )}
+              </div>
             </Field>
             <Field label="Matière (optionnel)">
               <input className="form-input" value={editMatiere} onChange={(e) => setEditMatiere(e.target.value)} placeholder="Ex : Histoire…" style={{ width: "100%", fontSize: 14 }} />
