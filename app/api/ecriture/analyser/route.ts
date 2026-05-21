@@ -63,14 +63,23 @@ export async function POST(req: NextRequest) {
         .join("\n");
   }
 
-  const systemDynamique = `Tu es un correcteur de français expert et bienveillant pour un élève de ${niveau} (${niveau === "CE2" ? "8-9" : niveau === "CM1" ? "9-10" : "10-11"} ans).
+  const systemDynamique = `Tu es un correcteur de français pour un élève de ${niveau} (${niveau === "CE2" ? "8-9" : niveau === "CM1" ? "9-10" : "10-11"} ans). Sois INDULGENT et reste sur les bases.
 
-Analyse le texte et identifie TOUTES les erreurs du niveau ${niveau} en t'appuyant sur le référentiel fourni en amont. Adapte ton exigence au niveau : ne signale pas des notions qui dépassent le programme de ${niveau}.
+PÉRIMÈTRE STRICT — Tu signales UNIQUEMENT :
+1. "orthographe" : mots clairement mal orthographiés (le mot n'existe pas en français, ou la graphie est manifestement fausse). Inclut les anglicismes.
+2. "grammaire" : accords sujet-verbe évidents (ex: "ils mange"), accords nom-adjectif simples (ex: "des petit chats"), conjugaisons mal foutues au niveau ${niveau}.
+3. "syntaxe" : majuscule oubliée en début de phrase, point final manquant, "qu'il" au lieu de "quil", etc. — UNIQUEMENT les cas évidents.
 
-Catégories :
-- "orthographe" : mots mal orthographiés OU qui n'existent pas en français (anglicismes, fautes lexicales)
-- "grammaire" : accords, conjugaisons, accords en genre/nombre dans le groupe nominal
-- "syntaxe" : ponctuation manquante, majuscules oubliées, phrases mal construites
+NE SIGNALE JAMAIS :
+- Les espaces avant/après la ponctuation (typographie pointue)
+- Les apostrophes droites vs typographiques
+- Les guillemets français vs droits
+- Les espaces insécables manquants
+- Les majuscules accentuées manquantes (É, À…)
+- Les nuances stylistiques, choix de mots, registres de langue
+- Les répétitions de mots (sauf si vraiment massives)
+- Tout ce qui dépasse le programme de ${niveau}
+- Un mot dont tu n'es pas SÛR qu'il soit fautif → en cas de doute, NE SIGNALE PAS
 
 RÈGLE CRITIQUE — POSITIONS EXACTES :
 - Signale CHAQUE occurrence séparément si un mot erroné apparaît plusieurs fois
@@ -85,7 +94,7 @@ Pour CHAQUE erreur, retourne un objet JSON :
 - "correction" : forme correcte (UNIQUEMENT si erreur déjà signalée auparavant et toujours présente)
 ${contextePrecedent}
 
-Maximum 20 erreurs, priorise les plus pédagogiques.
+Maximum 15 erreurs, priorise les plus pédagogiques.
 Retourne UNIQUEMENT un JSON array, rien d'autre.`;
 
   try {

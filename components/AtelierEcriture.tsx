@@ -715,6 +715,24 @@ export default function AtelierEcriture({
           {analyseEnCours ? "Analyse..." : "Corriger mon texte"}
         </button>
 
+        {erreursIA.length > 0 && !verrouille && !apercu && (
+          <button
+            type="button"
+            onClick={() => { setErreursIA([]); setAnalyseMessage("Tu as validé ta correction. Tu peux continuer à écrire ou envoyer."); }}
+            title="Cache les erreurs et garde ton texte tel quel"
+            style={{
+              background: "#16A34A", color: "white", border: "none",
+              borderRadius: 12, padding: "10px 20px", fontSize: 13, fontWeight: 700,
+              cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              display: "flex", alignItems: "center", gap: 6,
+              position: "relative", zIndex: 10,
+            }}
+          >
+            <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
+            Je veux valider
+          </button>
+        )}
+
         {!finalise && !envoye && (
           <button
             onClick={() => envoyer(false)}
