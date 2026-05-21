@@ -41,6 +41,20 @@ interface SuiviResp {
     score_eleve: number | null;
     score_total: number | null;
     pourcentage: number | null;
+    details: null | {
+      type: "qcm";
+      score: number;
+      total: number;
+    } | {
+      type: "probleme";
+      reponses: Array<{ enonce: string; reponse_eleve: string | null; attendu: string }>;
+    } | {
+      type: "calcul";
+      enonce: string;
+      reponse_eleve: string | null;
+      attendu: string;
+      correct: boolean;
+    };
   }>;
 }
 
@@ -503,7 +517,6 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
           }}>
             {(data.blocsDuJour ?? []).map((b) => {
               const fait = b.statut === "fait";
-              const aScore = fait && b.score_eleve !== null && b.score_total !== null;
               return (
                 <div
                   key={b.id}
@@ -511,33 +524,78 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                     background: fait ? "#F0FDF4" : "#FEF2F2",
                     border: `1.5px solid ${fait ? "#86EFAC" : "#FECACA"}`,
                     borderRadius: 10,
-                    padding: "8px 10px",
-                    display: "flex", alignItems: "center", gap: 8,
+                    padding: "10px 12px",
+                    display: "flex", flexDirection: "column", gap: 6,
                   }}
                 >
-                  <span className="ms" style={{ fontSize: 18, color: fait ? "#16A34A" : "#DC2626", flexShrink: 0 }}>
-                    {fait ? "check_circle" : b.icone}
-                  </span>
-                  <div style={{ minWidth: 0, flex: 1 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
-                                  color: fait ? "#166534" : "#991B1B" }}>
-                      {b.label}
-                    </div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: "var(--pb-on-surface)",
-                                  overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                      {b.titre}
+                  {/* Ligne 1 : icône + label + titre */}
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span className="ms" style={{ fontSize: 18, color: fait ? "#16A34A" : "#DC2626", flexShrink: 0 }}>
+                      {fait ? "check_circle" : b.icone}
+                    </span>
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div style={{ fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.06em",
+                                    color: fait ? "#166534" : "#991B1B" }}>
+                        {b.label}
+                      </div>
+                      <div style={{ fontSize: 12, fontWeight: 600, color: "var(--pb-on-surface)",
+                                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {b.titre}
+                      </div>
                     </div>
                   </div>
-                  {aScore && (
-                    <div style={{
-                      flexShrink: 0, fontSize: 12, fontWeight: 800,
-                      color: couleurPct(b.pourcentage),
-                      textAlign: "right", lineHeight: 1.1,
-                    }}>
-                      <div>{b.pourcentage}%</div>
-                      <div style={{ fontSize: 10, fontWeight: 600, opacity: 0.7 }}>
-                        {b.score_eleve}/{b.score_total}
-                      </div>
+                  {/* Ligne 2 : détail selon le type */}
+                  {b.details?.type === "qcm" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+                      <span style={{ color: "var(--pb-on-surface-variant)", fontSize: 11 }}>Score</span>
+                      <span style={{ fontWeight: 800, color: couleurPct(Math.round((b.details.score / b.details.total) * 100)) }}>
+                        {b.details.score}/{b.details.total}
+                      </span>
+                    </div>
+                  )}
+                  {b.details?.type === "calcul" && (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 13 }}>
+                      <span style={{ fontWeight: 700, fontFamily: "monospace" }}>{b.details.enonce} =</span>
+                      {b.details.reponse_eleve !== null ? (
+                        <>
+                          <span style={{ fontWeight: 800, color: b.details.correct ? "#16A34A" : "#DC2626" }}>
+                            {b.details.reponse_eleve}
+                          </span>
+                          {!b.details.correct && (
+                            <span style={{ fontSize: 11, color: "#991B1B" }}>
+                              (attendu : {b.details.attendu})
+                            </span>
+                          )}
+                        </>
+                      ) : (
+                        <span style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
+                          pas encore tenté
+                        </span>
+                      )}
+                    </div>
+                  )}
+                  {b.details?.type === "probleme" && b.details.reponses.length > 0 && (
+                    <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 12 }}>
+                      {b.details.reponses.map((r, i) => (
+                        <div key={i} style={{
+                          background: "white", border: "1px solid #BBF7D0",
+                          borderRadius: 6, padding: "4px 8px",
+                          fontSize: 11, lineHeight: 1.4,
+                        }}>
+                          <div style={{ color: "var(--pb-on-surface-variant)", marginBottom: 2 }}>
+                            Q{i + 1} · attendu : <strong>{r.attendu}</strong>
+                          </div>
+                          <div style={{ color: r.reponse_eleve ? "var(--pb-on-surface)" : "var(--pb-on-surface-variant)", fontStyle: r.reponse_eleve ? "normal" : "italic" }}>
+                            {r.reponse_eleve ?? "pas de réponse enregistrée"}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Fallback : score générique */}
+                  {!b.details && fait && b.score_eleve !== null && b.score_total !== null && (
+                    <div style={{ fontSize: 12, fontWeight: 700, color: couleurPct(b.pourcentage) }}>
+                      {b.score_eleve}/{b.score_total} · {b.pourcentage}%
                     </div>
                   )}
                 </div>

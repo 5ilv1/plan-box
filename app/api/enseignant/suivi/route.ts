@@ -47,13 +47,37 @@ const LABEL_TYPE: Record<string, { label: string; icone: string }> = {
   ressource: { label: "Podcast", icone: "podcasts" },
 };
 
+interface BlocJour {
+  id: string;
+  type: string;
+  titre: string;
+  statut: string;
+  label: string;
+  icone: string;
+  score_eleve: number | null;
+  score_total: number | null;
+  pourcentage: number | null;
+  /** Détail spécifique au type (QCM : score x/total, problème : réponses, calcul : opération+résultat) */
+  details: null | {
+    type: "qcm";
+    score: number;
+    total: number;
+  } | {
+    type: "probleme";
+    reponses: Array<{ enonce: string; reponse_eleve: string | null; attendu: string }>;
+  } | {
+    type: "calcul";
+    enonce: string;
+    reponse_eleve: string | null;
+    attendu: string;
+    correct: boolean;
+  };
+}
+
 async function blocsDuJourEleve(
   admin: ReturnType<typeof createAdminClient>,
   cible: CibleEleves
-): Promise<Array<{
-  id: string; type: string; titre: string; statut: string; label: string; icone: string;
-  score_eleve: number | null; score_total: number | null; pourcentage: number | null;
-}>> {
+): Promise<BlocJour[]> {
   const today = new Date().toISOString().split("T")[0];
   let q = admin
     .from("plan_travail")
@@ -62,15 +86,58 @@ async function blocsDuJourEleve(
   if (cible.pb_ids.length > 0) q = q.in("eleve_id", cible.pb_ids);
   else if (cible.rb_ids.length > 0) q = q.in("repetibox_eleve_id", cible.rb_ids);
   const { data } = await q;
-  return (data ?? []).map((b) => {
+
+  const blocs: BlocJour[] = (data ?? []).map((b) => {
     const meta = LABEL_TYPE[b.type as string] ?? { label: b.type as string, icone: "task_alt" };
-    const c = (b.contenu ?? {}) as { score_eleve?: number; score_total?: number };
+    const c = (b.contenu ?? {}) as Record<string, unknown>;
     const se = typeof c.score_eleve === "number" ? c.score_eleve : null;
-    const st = typeof c.score_total === "number" && c.score_total > 0 ? c.score_total : null;
-    const pct = se !== null && st !== null ? Math.round((se / st) * 100) : null;
+    const st = typeof c.score_total === "number" && (c.score_total as number) > 0 ? (c.score_total as number) : null;
+    let pct = se !== null && st !== null ? Math.round((se / st) * 100) : null;
+
+    let details: BlocJour["details"] = null;
+    const type = b.type as string;
+
+    // QCM : compte les bonnes réponses depuis reponses_eleve + questions.reponse_correcte
+    if (type === "qcm") {
+      const questions = Array.isArray(c.questions) ? (c.questions as Array<{ reponse_correcte?: number }>) : [];
+      const reponses = Array.isArray(c.reponses_eleve) ? (c.reponses_eleve as Array<{ reponse?: number; correcte?: boolean }>) : [];
+      if (questions.length > 0 && reponses.length > 0) {
+        let bons = 0;
+        for (let i = 0; i < questions.length; i++) {
+          const r = reponses[i];
+          if (!r) continue;
+          if (typeof r.correcte === "boolean") {
+            if (r.correcte) bons++;
+          } else if (typeof r.reponse === "number" && r.reponse === questions[i]?.reponse_correcte) {
+            bons++;
+          }
+        }
+        details = { type: "qcm", score: bons, total: questions.length };
+        if (se === null) {
+          pct = Math.round((bons / questions.length) * 100);
+        }
+      }
+    }
+
+    // Problème : extraire les réponses
+    if (type === "probleme_maths") {
+      const problemes = Array.isArray(c.problemes) ? (c.problemes as Array<{ enonce?: string; resultat_attendu?: string }>) : [];
+      const reponses = Array.isArray(c.reponses_eleve) ? (c.reponses_eleve as Array<{ reponse?: string }>) : [];
+      if (problemes.length > 0) {
+        details = {
+          type: "probleme",
+          reponses: problemes.map((p, i) => ({
+            enonce: p.enonce ?? "",
+            reponse_eleve: reponses[i]?.reponse ?? null,
+            attendu: p.resultat_attendu ?? "",
+          })),
+        };
+      }
+    }
+
     return {
       id: b.id as string,
-      type: b.type as string,
+      type,
       titre: (b.titre as string) ?? meta.label,
       statut: (b.statut as string) ?? "a_faire",
       label: meta.label,
@@ -78,8 +145,57 @@ async function blocsDuJourEleve(
       score_eleve: se,
       score_total: st,
       pourcentage: pct,
+      details,
     };
   });
+
+  // ── Calcul du jour : carte virtuelle (pas dans plan_travail) ───────────
+  // Récupère le calcul du jour du niveau de l'élève + sa tentative.
+  const rbId = cible.rb_ids[0];
+  const pbId = cible.pb_ids[0];
+  if (rbId !== undefined || pbId !== undefined) {
+    const { data: calculsJour } = await admin
+      .from("calcul_jour")
+      .select("id, operation, nombre1, nombre2, reponse")
+      .eq("date", today);
+    if (calculsJour && calculsJour.length > 0) {
+      // On prend le 1er calcul tenté par l'élève (toutes tentatives confondues)
+      const calculIds = calculsJour.map((c) => c.id as string);
+      let qC = admin.from("calcul_jour_resultat").select("calcul_id, reponse_eleve, correct, tentative").in("calcul_id", calculIds);
+      if (rbId !== undefined) qC = qC.eq("rb_eleve_id", rbId);
+      else if (pbId !== undefined) qC = qC.eq("eleve_id", pbId);
+      const { data: tentatives } = await qC.order("tentative", { ascending: false });
+      if (tentatives && tentatives.length > 0) {
+        const t = tentatives[0];
+        const calcul = calculsJour.find((c) => c.id === t.calcul_id);
+        if (calcul) {
+          const op = calcul.operation as string;
+          const sym = op === "addition" ? "+" : op === "soustraction" ? "−" : op === "multiplication" ? "×" : "÷";
+          const enonce = `${calcul.nombre1} ${sym} ${calcul.nombre2}`;
+          blocs.push({
+            id: `calcul_jour_${t.calcul_id}`,
+            type: "calcul_jour",
+            titre: "Calcul du jour",
+            statut: "fait",
+            label: "Calcul du jour",
+            icone: "function",
+            score_eleve: t.correct ? 1 : 0,
+            score_total: 1,
+            pourcentage: t.correct ? 100 : 0,
+            details: {
+              type: "calcul",
+              enonce,
+              reponse_eleve: t.reponse_eleve !== null ? String(t.reponse_eleve) : null,
+              attendu: String(calcul.reponse),
+              correct: !!t.correct,
+            },
+          });
+        }
+      }
+    }
+  }
+
+  return blocs;
 }
 
 /** Récupère le niveau (CE2/CM1/CM2) d'un élève RB via eleve_groupe → groupes.nom */
