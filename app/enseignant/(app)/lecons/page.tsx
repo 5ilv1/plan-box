@@ -95,6 +95,37 @@ export default function BanqueLecons() {
   /* ── Copie lien ── */
   const [copie, setCopie] = useState<string | null>(null); // id de la leçon dont le lien vient d'être copié
 
+  /* ── Confirmation désaffectation ── */
+  const [desaffectCible, setDesaffectCible] = useState<Lecon | null>(null);
+  const [enDesaffect, setEnDesaffect] = useState(false);
+  async function confirmerDesaffectation() {
+    if (!desaffectCible) return;
+    const lecon = desaffectCible;
+    setEnDesaffect(true);
+    try {
+      const date = affectationsParUrl[lecon.url];
+      const res = await fetch("/api/affecter-lecon-copier", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ date, titre: lecon.titre }),
+      });
+      if (res.ok) {
+        setAffectationsParUrl((prev) => {
+          const next = { ...prev };
+          delete next[lecon.url];
+          return next;
+        });
+        setDesaffectCible(null);
+      } else {
+        const j = await res.json().catch(() => ({}));
+        alert(j.erreur ?? "Erreur lors de la désaffectation");
+      }
+    } catch {
+      alert("Erreur réseau");
+    }
+    setEnDesaffect(false);
+  }
+
   /* ── Import en lot ── */
   const [modalLot, setModalLot] = useState(false);
   const [lotFichiers, setLotFichiers] = useState<LotItem[]>([]);
@@ -522,22 +553,7 @@ export default function BanqueLecons() {
                             modifier
                           </button>
                           <button
-                            onClick={async () => {
-                              if (!confirm("Désaffecter cette leçon pour tous les groupes ?")) return;
-                              const date = affectationsParUrl[lecon.url];
-                              const res = await fetch("/api/affecter-lecon-copier", {
-                                method: "DELETE",
-                                headers: { "Content-Type": "application/json" },
-                                body: JSON.stringify({ date, titre: lecon.titre }),
-                              });
-                              if (res.ok) {
-                                setAffectationsParUrl((prev) => {
-                                  const next = { ...prev };
-                                  delete next[lecon.url];
-                                  return next;
-                                });
-                              }
-                            }}
+                            onClick={() => setDesaffectCible(lecon)}
                             disabled={enSuppr}
                             title="Désaffecter cette leçon"
                             style={{ fontSize: 11, fontWeight: 700, color: "#DC2626", background: "none", border: "none", cursor: "pointer", textDecoration: "underline", padding: 0, whiteSpace: "nowrap" }}
@@ -942,6 +958,61 @@ export default function BanqueLecons() {
       )}
 
       {/* ════ MODAL AFFECTATION ════ */}
+      {/* ── Modal désaffectation ── */}
+      {desaffectCible && (
+        <div
+          onClick={() => !enDesaffect && setDesaffectCible(null)}
+          style={{
+            position: "fixed", inset: 0, zIndex: 1000,
+            background: "rgba(0,0,0,0.5)", backdropFilter: "blur(4px)",
+            display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+          }}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              background: "white", borderRadius: 16, padding: "24px 28px",
+              maxWidth: 440, width: "100%",
+              boxShadow: "0 20px 60px rgba(0,0,0,0.25)",
+            }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+              <span className="ms" style={{ fontSize: 28, color: "#DC2626" }}>warning</span>
+              <h2 style={{ fontSize: 17, fontWeight: 800, margin: 0 }}>Désaffecter cette leçon ?</h2>
+            </div>
+            <p style={{ fontSize: 14, color: "#374151", margin: "0 0 18px", lineHeight: 1.5 }}>
+              La leçon <strong>« {desaffectCible.titre} »</strong> ne sera plus assignée aux élèves. Cette action est immédiate.
+            </p>
+            <div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setDesaffectCible(null)}
+                disabled={enDesaffect}
+                style={{
+                  background: "white", color: "#6B7280",
+                  border: "1.5px solid #D1D5DB", borderRadius: 10,
+                  padding: "8px 16px", fontSize: 13, fontWeight: 700,
+                  cursor: enDesaffect ? "not-allowed" : "pointer",
+                }}
+              >
+                Annuler
+              </button>
+              <button
+                onClick={confirmerDesaffectation}
+                disabled={enDesaffect}
+                style={{
+                  background: "#DC2626", color: "white", border: "none",
+                  borderRadius: 10, padding: "8px 18px", fontSize: 13, fontWeight: 700,
+                  cursor: enDesaffect ? "wait" : "pointer",
+                  opacity: enDesaffect ? 0.6 : 1,
+                }}
+              >
+                {enDesaffect ? "Désaffectation…" : "Désaffecter"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {modalAffect && (
         <div
           style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 100, display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}
