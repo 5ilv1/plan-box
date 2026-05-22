@@ -108,6 +108,43 @@ interface ElevesScores {
 }
 
 export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retourHref, retourLabel }: Props) {
+  const [refaireEnCours, setRefaireEnCours] = useState<string | null>(null);
+  async function refaireBloc(b: NonNullable<SuiviResp["blocsDuJour"]>[number]) {
+    if (!id) return;
+    if (refaireEnCours) return;
+    if (!confirm(`Remettre "${b.titre}" à refaire pour cet élève ?`)) return;
+    setRefaireEnCours(b.id);
+    try {
+      let body: Record<string, unknown>;
+      if (b.type === "calcul_jour") {
+        const calcul_id = b.id.replace(/^calcul_jour_/, "");
+        if (id.startsWith("rb_")) {
+          body = { type: "calcul_jour", calcul_id, rb_eleve_id: parseInt(id.slice(3), 10) };
+        } else {
+          const pbId = id.startsWith("pb_") ? id.slice(3) : id;
+          body = { type: "calcul_jour", calcul_id, eleve_id: pbId };
+        }
+      } else {
+        body = { type: "bloc", id: b.id };
+      }
+      const res = await fetch("/api/enseignant/bloc-refaire", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        alert(j.erreur ?? "Erreur");
+        return;
+      }
+      // Refresh la page (le state data sera rechargé)
+      window.location.reload();
+    } catch {
+      alert("Erreur réseau");
+    } finally {
+      setRefaireEnCours(null);
+    }
+  }
   const [periode, setPeriode] = useState<Periode>("jour");
   const [niveau, setNiveau] = useState<"tous" | "CE2" | "CM1" | "CM2">(niveauInitial);
   const [data, setData] = useState<SuiviResp | null>(null);
@@ -528,7 +565,7 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                     display: "flex", flexDirection: "column", gap: 6,
                   }}
                 >
-                  {/* Ligne 1 : icône + label + titre */}
+                  {/* Ligne 1 : icône + label + titre + bouton refaire */}
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span className="ms" style={{ fontSize: 18, color: fait ? "#16A34A" : "#DC2626", flexShrink: 0 }}>
                       {fait ? "check_circle" : b.icone}
@@ -543,6 +580,25 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                         {b.titre}
                       </div>
                     </div>
+                    {fait && cible === "eleve" && (
+                      <button
+                        onClick={() => refaireBloc(b)}
+                        disabled={refaireEnCours === b.id}
+                        title="Remettre à refaire"
+                        style={{
+                          flexShrink: 0,
+                          background: "white", color: "#92400E",
+                          border: "1px solid #FCD34D", borderRadius: 6,
+                          padding: "2px 6px", fontSize: 11, fontWeight: 600,
+                          cursor: refaireEnCours === b.id ? "wait" : "pointer",
+                          display: "inline-flex", alignItems: "center", gap: 3,
+                          opacity: refaireEnCours === b.id ? 0.5 : 1,
+                        }}
+                      >
+                        <span className="ms" style={{ fontSize: 13 }}>refresh</span>
+                        Refaire
+                      </button>
+                    )}
                   </div>
                   {/* Ligne 2 : détail selon le type */}
                   {b.details?.type === "qcm" && (
