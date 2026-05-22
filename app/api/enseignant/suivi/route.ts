@@ -97,24 +97,34 @@ async function blocsDuJourEleve(
     let details: BlocJour["details"] = null;
     const type = b.type as string;
 
-    // QCM : compte les bonnes réponses depuis reponses_eleve + questions.reponse_correcte
+    // QCM : compte les bonnes réponses depuis reponses_eleve + questions.reponse_correcte.
+    // Si pas de reponses_eleve mais score_eleve est dans contenu, on l'utilise.
+    // Sinon on affiche "—/total" (l'élève a probablement marqué fait sans jouer).
     if (type === "qcm") {
       const questions = Array.isArray(c.questions) ? (c.questions as Array<{ reponse_correcte?: number }>) : [];
       const reponses = Array.isArray(c.reponses_eleve) ? (c.reponses_eleve as Array<{ reponse?: number; correcte?: boolean }>) : [];
-      if (questions.length > 0 && reponses.length > 0) {
-        let bons = 0;
-        for (let i = 0; i < questions.length; i++) {
-          const r = reponses[i];
-          if (!r) continue;
-          if (typeof r.correcte === "boolean") {
-            if (r.correcte) bons++;
-          } else if (typeof r.reponse === "number" && r.reponse === questions[i]?.reponse_correcte) {
-            bons++;
+      if (questions.length > 0) {
+        if (reponses.length > 0) {
+          let bons = 0;
+          for (let i = 0; i < questions.length; i++) {
+            const r = reponses[i];
+            if (!r) continue;
+            if (typeof r.correcte === "boolean") {
+              if (r.correcte) bons++;
+            } else if (typeof r.reponse === "number" && r.reponse === questions[i]?.reponse_correcte) {
+              bons++;
+            }
           }
-        }
-        details = { type: "qcm", score: bons, total: questions.length };
-        if (se === null) {
-          pct = Math.round((bons / questions.length) * 100);
+          details = { type: "qcm", score: bons, total: questions.length };
+          if (se === null) {
+            pct = Math.round((bons / questions.length) * 100);
+          }
+        } else if (se !== null && st !== null) {
+          // Score stocké directement
+          details = { type: "qcm", score: se, total: st };
+        } else {
+          // Pas de réponses enregistrées : afficher juste le total avec score "—"
+          details = { type: "qcm", score: -1, total: questions.length };
         }
       }
     }

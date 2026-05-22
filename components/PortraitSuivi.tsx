@@ -604,9 +604,15 @@ export default function PortraitSuivi({ cible, id, niveauInitial = "tous", retou
                   {b.details?.type === "qcm" && (
                     <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
                       <span style={{ color: "var(--pb-on-surface-variant)", fontSize: 11 }}>Score</span>
-                      <span style={{ fontWeight: 800, color: couleurPct(Math.round((b.details.score / b.details.total) * 100)) }}>
-                        {b.details.score}/{b.details.total}
-                      </span>
+                      {b.details.score < 0 ? (
+                        <span style={{ fontWeight: 700, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
+                          —/{b.details.total} (non joué)
+                        </span>
+                      ) : (
+                        <span style={{ fontWeight: 800, color: couleurPct(Math.round((b.details.score / b.details.total) * 100)) }}>
+                          {b.details.score}/{b.details.total}
+                        </span>
+                      )}
                     </div>
                   )}
                   {b.details?.type === "calcul" && (
