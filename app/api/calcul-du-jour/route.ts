@@ -123,16 +123,16 @@ export async function GET() {
     if (eleveRBData) {
       rbEleveId = eleveRBData.id;
 
-      // Chercher dans les groupes
+      // Chercher dans les groupes (table : eleve_groupe, FK : repetibox_eleve_id)
       const { data: groupeEleve } = await admin
-        .from("groupe_eleve")
-        .select("groupe_id, groupe:groupe_id(nom)")
-        .eq("eleve_id", eleveRBData.id)
+        .from("eleve_groupe")
+        .select("groupe_id, groupes:groupe_id(nom)")
+        .eq("repetibox_eleve_id", eleveRBData.id)
         .limit(10);
 
       let foundFromGroupe = false;
       for (const ge of groupeEleve ?? []) {
-        const groupeNom = (ge as any).groupe?.nom ?? "";
+        const groupeNom = (ge as any).groupes?.nom ?? "";
         const matchCM = groupeNom.match(/CM[12]/i);
         if (matchCM) {
           niveau = matchCM[0].toUpperCase();

@@ -24,7 +24,7 @@ export async function GET() {
     const match = niveauNom.match(/CM[12]/i);
     niveau = match ? match[0].toUpperCase() : "CM1";
   } else {
-    // Repetibox : eleve.auth_id → groupe_eleve → groupe.nom
+    // Repetibox : eleve.auth_id → eleve_groupe → groupes.nom
     const { data: eleveRBData } = await admin
       .from("eleve")
       .select("id, classe_id, niveau_plus")
@@ -35,15 +35,15 @@ export async function GET() {
     if (eleveRB) {
       // D'abord chercher dans les groupes (plus précis que le nom de classe)
       const { data: groupeEleve } = await admin
-        .from("groupe_eleve")
-        .select("groupe_id, groupe:groupe_id(nom)")
-        .eq("eleve_id", eleveRB.id)
+        .from("eleve_groupe")
+        .select("groupe_id, groupes:groupe_id(nom)")
+        .eq("repetibox_eleve_id", eleveRB.id)
         .limit(10);
 
       let foundFromGroupe = false;
       let isNonCM = false;
       for (const ge of groupeEleve ?? []) {
-        const groupeNom = (ge as any).groupe?.nom ?? "";
+        const groupeNom = (ge as any).groupes?.nom ?? "";
         // Détecter CM1/CM2
         const matchCM = groupeNom.match(/CM[12]/i);
         if (matchCM) {
