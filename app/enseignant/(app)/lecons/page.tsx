@@ -103,11 +103,13 @@ export default function BanqueLecons() {
     const lecon = desaffectCible;
     setEnDesaffect(true);
     try {
-      const date = affectationsParUrl[lecon.url];
+      // On envoie l'URL : supprime TOUTES les affectations de cette leçon
+      // (toutes dates, tous groupes) pour qu'elle disparaisse aussi du
+      // planning et des pages élèves.
       const res = await fetch("/api/affecter-lecon-copier", {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date, titre: lecon.titre }),
+        body: JSON.stringify({ url: lecon.url }),
       });
       if (res.ok) {
         setAffectationsParUrl((prev) => {

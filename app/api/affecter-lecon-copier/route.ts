@@ -127,15 +127,34 @@ export async function POST(req: NextRequest) {
 }
 
 // DELETE /api/affecter-lecon-copier
-// Supprime toutes les lignes plan_travail correspondant à (date, groupe, titre)
+// Body : { url?, date?, groupe?, titre? }
+//   - Si url fourni : supprime TOUTES les affectations de cette leçon (toutes
+//     dates, tous groupes) → utilisé par le bouton "désaffecter" de la page
+//     leçons.
+//   - Sinon : ancien comportement (filtre par date + titre + groupe).
 export async function DELETE(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { date, groupe, titre } = body as { date: string; groupe: string; titre: string };
-  if (!date || !titre) return NextResponse.json({ erreur: "date et titre requis" }, { status: 400 });
+  const { url, date, groupe, titre } = body as {
+    url?: string; date?: string; groupe?: string; titre?: string;
+  };
 
   const admin = createAdminClient();
+
+  if (url) {
+    // Suppression complète : toutes les lignes plan_travail dont contenu.url == url
+    const { error, count } = await admin
+      .from("plan_travail")
+      .delete({ count: "exact" })
+      .eq("type", "lecon_copier")
+      .eq("contenu->>url", url);
+    if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+    return NextResponse.json({ ok: true, nb_supprimes: count ?? 0 });
+  }
+
+  // Mode legacy : par date + titre (+ groupe optionnel)
+  if (!date || !titre) return NextResponse.json({ erreur: "url, ou (date + titre) requis" }, { status: 400 });
 
   let query = admin
     .from("plan_travail")
