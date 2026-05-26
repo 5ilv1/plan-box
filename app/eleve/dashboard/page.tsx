@@ -849,8 +849,13 @@ export default function DashboardEleve() {
   });
   const hasDailyProblem = dailyProblem !== null;
   const hasCalculJour = calculJour !== null;
-  const totalTaches = blocsAujourdhui.length + (hasDailyProblem ? 1 : 0) + (hasCalculJour ? 1 : 0);
-  const nbFaitAujourd_hui = blocsAujourdhui.filter((b) => b.statut === "fait").length
+  // Compteur de tâches du JOUR uniquement (exclut les blocs hebdomadaires
+  // et les podcasts reportés qui ne sont pas spécifiquement à faire
+  // aujourd'hui).
+  const dateAujourdhui = new Date().toISOString().split("T")[0];
+  const blocsDuJourStricts = blocsAujourdhui.filter((b) => b.date_assignation === dateAujourdhui);
+  const totalTaches = blocsDuJourStricts.length + (hasDailyProblem ? 1 : 0) + (hasCalculJour ? 1 : 0);
+  const nbFaitAujourd_hui = blocsDuJourStricts.filter((b) => b.statut === "fait").length
     + (hasDailyProblem && dailyProblemSolved ? 1 : 0)
     + (calculJour?.deja_fait ? 1 : 0);
   const pctJour = totalTaches > 0
