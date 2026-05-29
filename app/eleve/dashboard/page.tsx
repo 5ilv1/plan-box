@@ -403,12 +403,15 @@ export default function DashboardEleve() {
       }
       if (podcastsBlocs.length > 0) {
         const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
-        const resFaits = await fetch(
-          `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&eleve_id=${encodeURIComponent(eleveId)}`,
-          { signal },
-        );
-        const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
-        const faits = new Set<string>(jsonFaits.faits ?? []);
+        let faits = new Set<string>();
+        try {
+          const resFaits = await fetch(
+            `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&eleve_id=${encodeURIComponent(eleveId)}`,
+            { signal },
+          );
+          const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
+          faits = new Set<string>(jsonFaits.faits ?? []);
+        } catch { /* réseau KO : on affiche les podcasts sans l'état "fait" */ }
         if (!signal.aborted) {
           setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
             id: bloc.id,
@@ -536,38 +539,9 @@ export default function DashboardEleve() {
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
       setPodcastsQcm(podcastsRB);
 
-      // Podcasts à présenter dans le bloc latéral : ceux de la semaine + reportés.
-      const podcastsBlocs: Array<{ bloc: PlanTravail; reporte: boolean }> = [];
-      const vusQcm = new Set<string>();
-      for (const b of blocsWeekFiltered) {
-        if (b.type !== "ressource") continue;
-        const qcmId = (b.contenu as any)?.qcm_id as string | undefined;
-        if (!qcmId || vusQcm.has(qcmId)) continue;
-        vusQcm.add(qcmId);
-        podcastsBlocs.push({ bloc: b, reporte: b.date_assignation < debut });
-      }
-      if (podcastsBlocs.length > 0) {
-        const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
-        const resFaits = await fetch(
-          `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&rb_id=${rbId}`,
-          { signal },
-        );
-        const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
-        const faits = new Set<string>(jsonFaits.faits ?? []);
-        if (!signal.aborted) {
-          setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
-            id: bloc.id,
-            titre: bloc.titre,
-            qcm_id: (bloc.contenu as any).qcm_id as string,
-            fait: faits.has((bloc.contenu as any).qcm_id),
-            reporte,
-          })));
-        }
-      } else if (!signal.aborted) {
-        setPodcastsSemaine([]);
-      }
-
-      // Requêtes secondaires avec signal
+      // Requêtes secondaires indépendantes — lancées AVANT le chargement des
+      // podcasts pour qu'un échec ou une lenteur de /qcm-reponse/faits ne puisse
+      // jamais empêcher l'affichage des ceintures, du calcul ou du problème du jour.
       fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
         .then((r) => r.json())
         .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
@@ -622,6 +596,41 @@ export default function DashboardEleve() {
           setCalculJour(json.id ? json : null);
         })
         .catch(() => {});
+
+      // Podcasts à présenter dans le bloc latéral : ceux de la semaine + reportés.
+      const podcastsBlocs: Array<{ bloc: PlanTravail; reporte: boolean }> = [];
+      const vusQcm = new Set<string>();
+      for (const b of blocsWeekFiltered) {
+        if (b.type !== "ressource") continue;
+        const qcmId = (b.contenu as any)?.qcm_id as string | undefined;
+        if (!qcmId || vusQcm.has(qcmId)) continue;
+        vusQcm.add(qcmId);
+        podcastsBlocs.push({ bloc: b, reporte: b.date_assignation < debut });
+      }
+      if (podcastsBlocs.length > 0) {
+        const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
+        let faits = new Set<string>();
+        try {
+          const resFaits = await fetch(
+            `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&rb_id=${rbId}`,
+            { signal },
+          );
+          const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
+          faits = new Set<string>(jsonFaits.faits ?? []);
+        } catch { /* réseau KO : on affiche les podcasts sans l'état "fait" */ }
+        if (!signal.aborted) {
+          setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
+            id: bloc.id,
+            titre: bloc.titre,
+            qcm_id: (bloc.contenu as any).qcm_id as string,
+            fait: faits.has((bloc.contenu as any).qcm_id),
+            reporte,
+          })));
+        }
+      } else if (!signal.aborted) {
+        setPodcastsSemaine([]);
+      }
+
     } catch (err) {
       if (signal.aborted) return;
       console.error("[chargerRB]", err);
