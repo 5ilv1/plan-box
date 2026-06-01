@@ -33,6 +33,10 @@ interface ChapitreAssigne {
   tousValides: boolean;
   exerciceEnCoursId: string | null;
   exerciceEnCoursOrdre: number | null;
+  prochainExerciceTitre: string | null;
+  prochainExerciceType: string | null;
+  prochainExerciceMinutes: number | null;
+  derniereActivite: string | null;
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -150,7 +154,7 @@ function filtrerDicteesMotsJourStrict(blocs: PlanTravail[], aujourd_hui: string)
 
 // ─── Cache stale-while-revalidate (sessionStorage) ────────────────────────────
 // Bump la version à chaque changement de shape pour invalider les caches obsolètes.
-const CACHE_VERSION = "v1";
+const CACHE_VERSION = "v2";
 const cacheKey = (id: string) => `pb_dash_${CACHE_VERSION}_${id}`;
 
 interface DashCache {
@@ -170,6 +174,7 @@ interface DashCache {
   dailyProblem: { id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null;
   dailyProblemSolved: boolean;
   chapitresAssignes: ChapitreAssigne[];
+  serieParcours: number;
   calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null;
 }
 
@@ -226,6 +231,7 @@ export default function DashboardEleve() {
   const [dailyProblem, setDailyProblem]               = useState<{ id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null>(null);
   const [dailyProblemSolved, setDailyProblemSolved]    = useState(false);
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
+  const [serieParcours, setSerieParcours]              = useState<number>(0);
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
   const [bibliothequePeutChoisir, setBibliothequePeutChoisir] = useState(false);
   const [bibliothequeEnCours, setBibliothequeEnCours]         = useState<{ chapitre_id: string; titre: string; auteur: string | null; couverture_url: string | null; pourcentage: number } | null>(null);
@@ -274,6 +280,7 @@ export default function DashboardEleve() {
       setDailyProblem(cache.dailyProblem);
       setDailyProblemSolved(cache.dailyProblemSolved);
       setChapitresAssignes(cache.chapitresAssignes);
+      setSerieParcours(cache.serieParcours ?? 0);
       setCalculJour(cache.calculJour);
       setChargementDonnees(false); // UI visible immédiatement
     }
@@ -457,7 +464,7 @@ export default function DashboardEleve() {
 
       fetch(`/api/chapitres/mes-chapitres?eleve_id=${eleveId}`, { signal })
         .then((r) => r.json())
-        .then((json) => { if (!signal.aborted) setChapitresAssignes(json.chapitres ?? []); })
+        .then((json) => { if (!signal.aborted) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
         .catch(() => {});
 
       fetch("/api/daily-problem", { signal })
@@ -502,6 +509,66 @@ export default function DashboardEleve() {
         { onConflict: "repetibox_eleve_id" }
       );
 
+      // Requêtes indépendantes (ceinture, calcul, problème, parcours) lancées
+      // TOUT EN HAUT, en parallèle du chargement des plans de travail/podcasts.
+      // Elles ne dépendent que de rbId : ainsi, même si le chargement des
+      // podcasts est lent ou échoue (élève avec beaucoup de podcasts), rien ne
+      // bloque jamais l'affichage des ceintures, du calcul ou du problème.
+      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
+        .then((r) => r.json())
+        .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
+        .catch(() => {});
+
+      fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal })
+        .then((r) => r.json())
+        .then((d) => {
+          if (signal.aborted) return;
+          setCeintureActive(d.actif === true);
+          if (d.actif) {
+            fetch(`/api/ceinture-progression?rb_id=${rbId}`, { signal })
+              .then((r) => r.json())
+              .then((p) => {
+                if (signal.aborted) return;
+                const c = CEINTURES[p.ceinture_index ?? 0];
+                if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
+              })
+              .catch(() => {});
+          }
+        })
+        .catch(() => {});
+
+      fetch(`/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
+        .then((r) => r.json())
+        .then((json) => { if (!signal.aborted) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
+        .catch(() => {});
+
+      fetch("/api/daily-problem", { signal })
+        .then((r) => r.json())
+        .then((json) => {
+          if (signal.aborted) return;
+          if (json.id && !json.noSchool) {
+            setDailyProblem(json);
+            if (json.serverAttempt?.solved) {
+              setDailyProblemSolved(true);
+            } else {
+              const saved = localStorage.getItem(`dpd_${rbId}_${new Date().toISOString().split("T")[0]}`);
+              if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
+            }
+          } else {
+            setDailyProblem(null);
+            setDailyProblemSolved(false);
+          }
+        })
+        .catch(() => {});
+
+      fetch("/api/calcul-du-jour", { signal })
+        .then((r) => r.json())
+        .then((json) => {
+          if (signal.aborted) return;
+          setCalculJour(json.id ? json : null);
+        })
+        .catch(() => {});
+
       const aujourd_hui = new Date().toISOString().split("T")[0];
       const { debut, fin } = getBornesSemaine();
 
@@ -538,64 +605,6 @@ export default function DashboardEleve() {
         .slice(0, 4)
         .map((b) => ({ id: b.id, titre: b.titre, qcm_id: (b.contenu as any).qcm_id as string }));
       setPodcastsQcm(podcastsRB);
-
-      // Requêtes secondaires indépendantes — lancées AVANT le chargement des
-      // podcasts pour qu'un échec ou une lenteur de /qcm-reponse/faits ne puisse
-      // jamais empêcher l'affichage des ceintures, du calcul ou du problème du jour.
-      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
-        .then((r) => r.json())
-        .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
-        .catch(() => {});
-
-      fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal })
-        .then((r) => r.json())
-        .then((d) => {
-          if (signal.aborted) return;
-          setCeintureActive(d.actif === true);
-          if (d.actif) {
-            fetch(`/api/ceinture-progression?rb_id=${rbId}`, { signal })
-              .then((r) => r.json())
-              .then((p) => {
-                if (signal.aborted) return;
-                const c = CEINTURES[p.ceinture_index ?? 0];
-                if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
-              })
-              .catch(() => {});
-          }
-        })
-        .catch(() => {});
-
-      fetch(`/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
-        .then((r) => r.json())
-        .then((json) => { if (!signal.aborted) setChapitresAssignes(json.chapitres ?? []); })
-        .catch(() => {});
-
-      fetch("/api/daily-problem", { signal })
-        .then((r) => r.json())
-        .then((json) => {
-          if (signal.aborted) return;
-          if (json.id && !json.noSchool) {
-            setDailyProblem(json);
-            if (json.serverAttempt?.solved) {
-              setDailyProblemSolved(true);
-            } else {
-              const saved = localStorage.getItem(`dpd_${rbId}_${new Date().toISOString().split("T")[0]}`);
-              if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
-            }
-          } else {
-            setDailyProblem(null);
-            setDailyProblemSolved(false);
-          }
-        })
-        .catch(() => {});
-
-      fetch("/api/calcul-du-jour", { signal })
-        .then((r) => r.json())
-        .then((json) => {
-          if (signal.aborted) return;
-          setCalculJour(json.id ? json : null);
-        })
-        .catch(() => {});
 
       // Podcasts à présenter dans le bloc latéral : ceux de la semaine + reportés.
       const podcastsBlocs: Array<{ bloc: PlanTravail; reporte: boolean }> = [];
@@ -742,13 +751,14 @@ export default function DashboardEleve() {
       dailyProblem,
       dailyProblemSolved,
       chapitresAssignes,
+      serieParcours,
       calculJour,
     });
   }, [
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
     blocsAujourdhui, blocsSemaine, notifications, chapitresRB, podcastsQcm,
     podcastsSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
-    dailyProblemSolved, chapitresAssignes, calculJour,
+    dailyProblemSolved, chapitresAssignes, serieParcours, calculJour,
   ]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
@@ -918,6 +928,18 @@ export default function DashboardEleve() {
       return raw;
     }
   })();
+
+  // Parcours en cours, triés : activité la plus récente d'abord, puis le plus avancé.
+  const parcoursEnCours = [...chapitresAssignes]
+    .filter((ch) => !ch.tousValides && ch.nbExercices > 0)
+    .sort((a, b) => {
+      const da = a.derniereActivite ?? "";
+      const db = b.derniereActivite ?? "";
+      if (da !== db) return db.localeCompare(da);
+      return b.pourcentage - a.pourcentage;
+    });
+  // Le parcours « à la une » = celui déjà commencé le plus récemment (sinon le plus avancé).
+  const parcoursALaUne = parcoursEnCours.find((ch) => ch.nbValides > 0) ?? parcoursEnCours[0] ?? null;
 
   const initiales = session?.prenom
     ? session.prenom.charAt(0).toUpperCase() + (session.nom?.charAt(0).toUpperCase() ?? "")
@@ -1489,18 +1511,84 @@ export default function DashboardEleve() {
                       : `${nbFaitAujourd_hui}/${totalTaches} tâches complétées`}
                   </p>
                 </div>
-                {totalTaches > 0 && (
-                  <span style={{
-                    marginLeft: "auto",
-                    background: nbFaitAujourd_hui === totalTaches ? "#dcfce7" : "rgba(0,80,212,0.1)",
-                    color: nbFaitAujourd_hui === totalTaches ? "#166534" : "var(--pb-primary)",
-                    fontWeight: 800, fontSize: 13, padding: "4px 14px", borderRadius: 999,
-                    fontFamily: "'Plus Jakarta Sans', sans-serif",
-                  }}>
-                    {nbFaitAujourd_hui === totalTaches ? "✓ Tout fait !" : `${totalTaches - nbFaitAujourd_hui} restant${totalTaches - nbFaitAujourd_hui > 1 ? "s" : ""}`}
-                  </span>
-                )}
+                <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8 }}>
+                  {serieParcours >= 2 && (
+                    <span title="Jours d'affilée où tu as avancé un parcours" style={{
+                      background: "rgba(245,158,11,0.12)", color: "#B45309",
+                      fontWeight: 800, fontSize: 13, padding: "4px 12px", borderRadius: 999,
+                      fontFamily: "'Plus Jakarta Sans', sans-serif", whiteSpace: "nowrap",
+                    }}>
+                      🔥 {serieParcours} jours
+                    </span>
+                  )}
+                  {totalTaches > 0 && (
+                    <span style={{
+                      background: nbFaitAujourd_hui === totalTaches ? "#dcfce7" : "rgba(0,80,212,0.1)",
+                      color: nbFaitAujourd_hui === totalTaches ? "#166534" : "var(--pb-primary)",
+                      fontWeight: 800, fontSize: 13, padding: "4px 14px", borderRadius: 999,
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}>
+                      {nbFaitAujourd_hui === totalTaches ? "✓ Tout fait !" : `${totalTaches - nbFaitAujourd_hui} restant${totalTaches - nbFaitAujourd_hui > 1 ? "s" : ""}`}
+                    </span>
+                  )}
+                </div>
               </div>
+
+              {/* ══ Parcours à la une / Transition après le travail du jour ══ */}
+              {parcoursALaUne && (() => {
+                const journeeFinie = totalTaches > 0 && nbFaitAujourd_hui === totalTaches;
+                return (
+                  <Link
+                    href={`/eleve/chapitre/${parcoursALaUne.id}`}
+                    className="pb-card"
+                    style={{
+                      display: "block", textDecoration: "none", color: "inherit",
+                      padding: "20px 22px", marginBottom: 24,
+                      background: "linear-gradient(135deg, rgba(124,58,237,0.10), rgba(124,58,237,0.02))",
+                      border: "1px solid rgba(124,58,237,0.20)",
+                      position: "relative", overflow: "hidden",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                      <div style={{
+                        width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+                        background: "rgba(124,58,237,0.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <span className="ms" style={{ fontSize: 28, color: "#7C3AED" }}>
+                          {journeeFinie ? "rocket_launch" : "auto_stories"}
+                        </span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+                          textTransform: "uppercase", color: "#7C3AED", marginBottom: 4,
+                        }}>
+                          {journeeFinie ? "🎉 Travail du jour terminé — et maintenant ?" : "⭐ Ton parcours à continuer"}
+                        </div>
+                        <div style={{
+                          fontWeight: 800, fontSize: 16,
+                          fontFamily: "'Plus Jakarta Sans', sans-serif",
+                          color: "var(--pb-on-surface)",
+                        }}>
+                          {parcoursALaUne.titre}
+                        </div>
+                        <div style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginTop: 3 }}>
+                          {parcoursALaUne.prochainExerciceTitre
+                            ? <>Étape {parcoursALaUne.exerciceEnCoursOrdre} : {parcoursALaUne.prochainExerciceTitre}{parcoursALaUne.prochainExerciceMinutes ? ` · ~${parcoursALaUne.prochainExerciceMinutes} min` : ""}</>
+                            : `${parcoursALaUne.nbValides}/${parcoursALaUne.nbExercices} validés`}
+                        </div>
+                      </div>
+                      <span className="pb-btn primary-fill" style={{
+                        fontSize: 14, padding: "10px 22px", borderRadius: 999, flexShrink: 0,
+                        background: "#7C3AED", color: "#fff", whiteSpace: "nowrap",
+                      }}>
+                        {journeeFinie ? "5 min de parcours 💪" : (parcoursALaUne.nbValides > 0 ? "Continuer →" : "Commencer →")}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })()}
 
               {blocsAujourdhui.length === 0 && chapitresRB.length === 0 ? (
                 <div className="pb-card" style={{ textAlign: "center", padding: "48px 24px" }}>
@@ -1909,6 +1997,7 @@ export default function DashboardEleve() {
                   {/* ══ Chapitres progressifs (le livre en cours est déjà affiché en haut via le bloc "Ma lecture") ══ */}
                   {chapitresAssignes
                     .filter((ch) => !bibliothequeEnCours || ch.id !== bibliothequeEnCours.chapitre_id)
+                    .filter((ch) => !parcoursALaUne || ch.id !== parcoursALaUne.id)
                     .map((ch) => (
                     <Link
                       key={`chap-${ch.id}`}
@@ -1958,9 +2047,14 @@ export default function DashboardEleve() {
                           <div style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginTop: 4 }}>
                             {ch.tousValides
                               ? "✅ Tous les exercices validés · Évaluation disponible"
-                              : ch.exerciceEnCoursOrdre != null
-                                ? `Exercice ${ch.exerciceEnCoursOrdre} sur ${ch.nbExercices}`
-                                : `${ch.nbExercices} exercice${ch.nbExercices > 1 ? "s" : ""}`}
+                              : ch.prochainExerciceTitre
+                                ? <>
+                                    <span style={{ fontWeight: 700, color: "#7C3AED" }}>Étape {ch.exerciceEnCoursOrdre} :</span>{" "}{ch.prochainExerciceTitre}
+                                    {ch.prochainExerciceMinutes ? <span style={{ color: "var(--pb-on-surface-variant)" }}> · ~{ch.prochainExerciceMinutes} min</span> : null}
+                                  </>
+                                : ch.exerciceEnCoursOrdre != null
+                                  ? `Exercice ${ch.exerciceEnCoursOrdre} sur ${ch.nbExercices}`
+                                  : `${ch.nbExercices} exercice${ch.nbExercices > 1 ? "s" : ""}`}
                           </div>
                         </div>
                         <div style={{
@@ -1985,13 +2079,31 @@ export default function DashboardEleve() {
                             {ch.pourcentage}%
                           </span>
                         </div>
-                        <div style={{ height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 100, overflow: "hidden" }}>
+                        <div style={{ height: 6, background: "rgba(0,0,0,0.06)", borderRadius: 100, overflow: "hidden", position: "relative" }}>
+                          {/* Repères de paliers 25/50/75 % */}
+                          {!ch.tousValides && [25, 50, 75].map((p) => (
+                            <div key={p} style={{
+                              position: "absolute", left: `${p}%`, top: 0, bottom: 0,
+                              width: 2, background: "rgba(255,255,255,0.9)",
+                            }} />
+                          ))}
                           <div style={{
                             width: `${ch.pourcentage}%`, height: "100%",
                             background: ch.tousValides ? "#22C55E" : "#7C3AED",
                             borderRadius: 100, transition: "width 0.5s ease",
                           }} />
                         </div>
+                        {/* Objectif de palier : prochain palier à atteindre */}
+                        {!ch.tousValides && (() => {
+                          const prochainPalier = [25, 50, 75, 100].find((p) => ch.pourcentage < p)!;
+                          const cible = Math.ceil((prochainPalier / 100) * ch.nbExercices);
+                          const restants = Math.max(1, cible - ch.nbValides);
+                          return (
+                            <div style={{ fontSize: 11, fontWeight: 700, color: "#7C3AED", marginTop: 8 }}>
+                              🎯 Plus que {restants} exercice{restants > 1 ? "s" : ""} pour atteindre {prochainPalier}&nbsp;%
+                            </div>
+                          );
+                        })()}
                       </div>
 
                       {/* CTA */}
@@ -2001,7 +2113,7 @@ export default function DashboardEleve() {
                           alignSelf: "flex-start", marginTop: 14,
                           background: "#7C3AED", color: "#fff",
                         }}>
-                          Continuer →
+                          {ch.nbValides > 0 ? "Continuer" : "Commencer"} →
                         </span>
                       )}
                     </Link>
