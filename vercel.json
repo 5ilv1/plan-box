@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/theme-ecriture-jour",
       "schedule": "0 6 * * 1,2,4,5"
+    },
+    {
+      "path": "/api/cron/calcul-du-jour",
+      "schedule": "10 6 * * 1,2,3,4,5"
     }
   ]
 }

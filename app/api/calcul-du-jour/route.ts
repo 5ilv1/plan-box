@@ -1,87 +1,7 @@
 import { NextResponse } from "next/server";
 import { getServerUser } from "@/lib/server-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
-import type { CalculJourConfig, OperationCalcul } from "@/types";
-
-const NIVEAUX_IDS: Record<string, string> = {
-  CE2: "11111111-0000-0000-0000-000000000001",
-  CM1: "11111111-0000-0000-0000-000000000002",
-  CM2: "11111111-0000-0000-0000-000000000003",
-};
-
-const DEFAULT_CONFIG = {
-  operations: [] as OperationCalcul[],
-  decimales: false,
-  decimales_mode: "aucun",
-  nb_decimales: 0,
-  nombre_min: 1,
-  nombre_max: 100,
-  nombre2_min: 1,
-  nombre2_max: 100,
-  actif: false,
-};
-
-function genererCalcul(config: {
-  operations: OperationCalcul[];
-  decimales_mode: string;
-  nb_decimales: number;
-  nombre_min: number;
-  nombre_max: number;
-  nombre2_min: number;
-  nombre2_max: number;
-}): { nombre1: number; nombre2: number; operation: OperationCalcul; reponse: number } {
-  const op = config.operations[Math.floor(Math.random() * config.operations.length)];
-  let n1: number, n2: number, reponse: number;
-
-  const n1Decimal = config.decimales_mode === "premier_nombre" || config.decimales_mode === "les_deux";
-  const n2Decimal = config.decimales_mode === "les_deux";
-  const nbDec = (n1Decimal || n2Decimal) && config.nb_decimales === 0 ? 1 : config.nb_decimales;
-  const factor = Math.pow(10, nbDec);
-
-  if (n1Decimal) {
-    n1 = Math.round((config.nombre_min + Math.random() * (config.nombre_max - config.nombre_min)) * factor) / factor;
-  } else {
-    n1 = Math.floor(config.nombre_min + Math.random() * (config.nombre_max - config.nombre_min + 1));
-  }
-  if (n2Decimal) {
-    n2 = Math.round((config.nombre2_min + Math.random() * (config.nombre2_max - config.nombre2_min)) * factor) / factor;
-  } else {
-    n2 = Math.floor(config.nombre2_min + Math.random() * (config.nombre2_max - config.nombre2_min + 1));
-  }
-
-  switch (op) {
-    case "addition":
-      reponse = n1 + n2;
-      break;
-    case "soustraction":
-      if (n1 < n2) [n1, n2] = [n2, n1];
-      reponse = n1 - n2;
-      break;
-    case "multiplication":
-      reponse = n1 * n2;
-      break;
-    case "division": {
-      // Pour que la division soit "propre" : n1 est un multiple de n2
-      const n2Min = Math.max(2, config.nombre2_min);
-      const n2Max = Math.max(n2Min, config.nombre2_max);
-      n2 = Math.floor(n2Min + Math.random() * (n2Max - n2Min + 1));
-      if (n2 < 2) n2 = 2;
-      const minMultiplier = Math.max(1, Math.ceil(config.nombre_min / n2));
-      const maxMultiplier = Math.floor(config.nombre_max / n2);
-      const multiplier = Math.floor(minMultiplier + Math.random() * (maxMultiplier - minMultiplier + 1));
-      n1 = n2 * (multiplier || 1);
-      if (n1 === 0) n1 = n2;
-      reponse = n1 / n2;
-      break;
-    }
-  }
-
-  if (n1Decimal || n2Decimal) {
-    reponse = Math.round(reponse * factor) / factor;
-  }
-
-  return { nombre1: n1, nombre2: n2, operation: op, reponse };
-}
+import { NIVEAUX_IDS, assurerCalculDuJour } from "@/lib/calcul-jour";
 
 export async function GET() {
   const user = await getServerUser();
@@ -222,57 +142,20 @@ export async function GET() {
     });
   }
 
-  // Pas de calcul pour aujourd'hui → en générer un
-  // Récupérer la config du niveau
-  const { data: configData } = await admin
-    .from("calcul_jour_config")
-    .select("*")
-    .eq("niveau_id", niveauId)
-    .maybeSingle();
-
-  const config = configData ?? { ...DEFAULT_CONFIG, niveau_id: niveauId };
-
-  if ((!config.actif && configData) || !config.operations || config.operations.length === 0) {
+  // Pas de calcul pour aujourd'hui → en générer un (logique partagée avec le cron)
+  const resultat = await assurerCalculDuJour(admin, niveauId, today);
+  if ("inactif" in resultat) {
     return NextResponse.json({ inactif: true, message: "Le calcul du jour n'est pas activé pour ce niveau." });
   }
 
-  const calcul = genererCalcul({
-    operations: config.operations,
-    decimales_mode: config.decimales_mode ?? "aucun",
-    nb_decimales: config.nb_decimales,
-    nombre_min: config.nombre_min,
-    nombre_max: config.nombre_max,
-    nombre2_min: config.nombre2_min ?? config.nombre_min,
-    nombre2_max: config.nombre2_max ?? config.nombre_max,
-  });
-
-  const { data: newCalcTmp, error: insertError } = await admin
-    .from("calcul_jour")
-    .upsert(
-      {
-        date: today,
-        niveau_id: niveauId,
-        operation: calcul.operation,
-        nombre1: calcul.nombre1,
-        nombre2: calcul.nombre2,
-        reponse: calcul.reponse,
-      },
-      { onConflict: "date,niveau_id" }
-    )
-    .select()
-    .single();
-
-  if (insertError) {
-    return NextResponse.json({ error: insertError.message }, { status: 500 });
-  }
-
+  const newCalc = resultat.row;
   return NextResponse.json({
-    id: newCalcTmp.id,
-    operation: newCalcTmp.operation,
-    nombre1: newCalcTmp.nombre1,
-    nombre2: newCalcTmp.nombre2,
+    id: newCalc.id,
+    operation: newCalc.operation,
+    nombre1: newCalc.nombre1,
+    nombre2: newCalc.nombre2,
     niveau,
-    date: newCalcTmp.date,
+    date: newCalc.date,
     tentatives_restantes: 2,
   });
 }
