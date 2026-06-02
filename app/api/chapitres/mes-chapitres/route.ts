@@ -64,16 +64,35 @@ export async function GET(req: NextRequest) {
   // 4. Exercices par chapitre
   const { data: exercices } = await admin
     .from("exercice")
-    .select("id, chapitre_id, ordre")
+    .select("id, chapitre_id, ordre, titre, type, nb_questions")
     .in("chapitre_id", chapitreIds)
     .order("ordre");
 
   // 5. Résultats de l'élève
-  let resQuery = admin.from("exercice_resultat").select("exercice_id, valide, score, total");
+  let resQuery = admin.from("exercice_resultat").select("exercice_id, valide, score, total, created_at");
   if (eleveId) resQuery = resQuery.eq("eleve_id", eleveId);
   else resQuery = resQuery.eq("rb_eleve_id", parseInt(rbId!, 10));
 
   const { data: resultats } = await resQuery;
+
+  // Durée estimée par type d'exercice (en minutes)
+  const DUREE_PAR_TYPE: Record<string, number> = {
+    revision: 3,
+    exercice: 5,
+    texte_a_trous: 4,
+    qcm: 4,
+    ecriture_contrainte: 8,
+    calcul_mental: 3,
+    analyse_phrase: 6,
+  };
+  function estimerMinutes(type?: string | null, nbQuestions?: number | null): number {
+    const base = DUREE_PAR_TYPE[type ?? ""] ?? 5;
+    if (nbQuestions && nbQuestions > 0) {
+      // ~30s par question, borné, sinon retombe sur la base par type
+      return Math.max(base, Math.round((nbQuestions * 0.5) / 1) || base);
+    }
+    return base;
+  }
 
   // 6. Agréger
   const exercicesParChapitre = new Map<string, typeof exercices>();
@@ -86,6 +105,42 @@ export async function GET(req: NextRequest) {
   const resultatsValides = new Set(
     (resultats ?? []).filter((r) => r.valide).map((r) => r.exercice_id)
   );
+
+  // Dernière activité par chapitre (max created_at des résultats)
+  const exerciceVersChapitre = new Map<string, string>();
+  for (const ex of exercices ?? []) exerciceVersChapitre.set(ex.id, ex.chapitre_id);
+  const derniereActiviteParChapitre = new Map<string, string>();
+  for (const r of resultats ?? []) {
+    const chId = exerciceVersChapitre.get(r.exercice_id);
+    if (!chId || !r.created_at) continue;
+    const prev = derniereActiviteParChapitre.get(chId);
+    if (!prev || r.created_at > prev) derniereActiviteParChapitre.set(chId, r.created_at);
+  }
+
+  // Série (streak) : nombre de jours consécutifs (finissant aujourd'hui ou hier)
+  // avec au moins un résultat de parcours.
+  const joursActifs = new Set(
+    (resultats ?? [])
+      .filter((r) => r.created_at)
+      .map((r) => new Date(r.created_at!).toISOString().split("T")[0])
+  );
+  let serie = 0;
+  {
+    const curseur = new Date();
+    // Tolérance : si rien aujourd'hui mais quelque chose hier, la série court depuis hier.
+    const todayStr = curseur.toISOString().split("T")[0];
+    if (!joursActifs.has(todayStr)) curseur.setDate(curseur.getDate() - 1);
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const jour = curseur.toISOString().split("T")[0];
+      if (joursActifs.has(jour)) {
+        serie += 1;
+        curseur.setDate(curseur.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+  }
 
   const result = chapitres.map((ch) => {
     const exos = exercicesParChapitre.get(ch.id) ?? [];
@@ -110,8 +165,14 @@ export async function GET(req: NextRequest) {
       tousValides,
       exerciceEnCoursId: exerciceEnCours?.id ?? null,
       exerciceEnCoursOrdre: exerciceEnCours?.ordre ?? null,
+      prochainExerciceTitre: exerciceEnCours?.titre ?? null,
+      prochainExerciceType: exerciceEnCours?.type ?? null,
+      prochainExerciceMinutes: exerciceEnCours
+        ? estimerMinutes(exerciceEnCours.type, exerciceEnCours.nb_questions)
+        : null,
+      derniereActivite: derniereActiviteParChapitre.get(ch.id) ?? null,
     };
   });
 
-  return NextResponse.json({ chapitres: result });
+  return NextResponse.json({ chapitres: result, serie });
 }
