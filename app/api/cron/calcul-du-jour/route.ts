@@ -16,10 +16,11 @@ export async function GET(req: Request) {
     return new Response("Unauthorized", { status: 401 });
   }
 
-  // Pas de génération le week-end (samedi = 6, dimanche = 0)
+  // Jours de classe uniquement : lundi, mardi, jeudi, vendredi (pas de mercredi
+  // ni de week-end), comme le cron theme-ecriture.
   const jour = new Date().getDay();
-  if (jour === 0 || jour === 6) {
-    return Response.json({ skipped: true, raison: "Week-end" });
+  if (![1, 2, 4, 5].includes(jour)) {
+    return Response.json({ skipped: true, raison: "Pas un jour de classe" });
   }
 
   const admin = createAdminClient();

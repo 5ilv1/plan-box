@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/calcul-du-jour",
-      "schedule": "10 6 * * 1,2,3,4,5"
+      "schedule": "10 6 * * 1,2,4,5"
     }
   ]
 }
