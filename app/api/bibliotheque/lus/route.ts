@@ -38,18 +38,20 @@ export async function GET(req: NextRequest) {
 
   const chapMap = new Map((chapitres ?? []).map((c) => [c.id, c]));
 
-  const livres = evals.map((e) => {
-    const ch = chapMap.get(e.chapitre_id);
-    return {
-      chapitre_id: e.chapitre_id,
-      titre: ch?.titre ?? "Livre supprimé",
-      auteur: (ch as { auteur?: string } | undefined)?.auteur ?? null,
-      couverture_url: (ch as { couverture_url?: string } | undefined)?.couverture_url ?? null,
-      termine_le: e.created_at,
-      score: e.score ?? null,
-      total: e.total ?? null,
-    };
-  });
+  const livres = evals
+    .filter((e) => chapMap.has(e.chapitre_id))
+    .map((e) => {
+      const ch = chapMap.get(e.chapitre_id)!;
+      return {
+        chapitre_id: e.chapitre_id,
+        titre: ch.titre,
+        auteur: (ch as { auteur?: string }).auteur ?? null,
+        couverture_url: (ch as { couverture_url?: string }).couverture_url ?? null,
+        termine_le: e.created_at,
+        score: e.score ?? null,
+        total: e.total ?? null,
+      };
+    });
 
   return NextResponse.json({ livres });
 }
