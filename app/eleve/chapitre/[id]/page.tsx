@@ -87,7 +87,9 @@ export default function PageChapitreEleve() {
       const estLecture = chapRes.chapitre?.matiere === "lecture";
       if (estLecture) {
         const nonEval = exos.filter((e: ExerciceProgression) => !e.est_evaluation_finale);
-        setEvalDebloquee(nonEval.length > 0 && nonEval.every((e: ExerciceProgression) => e.valide));
+        // Débloquée si tous les exercices non-eval sont validés
+        // (ou s'il n'y en a pas — cas d'un chapitre avec uniquement l'eval_finale)
+        setEvalDebloquee(nonEval.length === 0 || nonEval.every((e: ExerciceProgression) => e.valide));
       } else {
         setEvalDebloquee(exos.length > 0 && exos.every((e: ExerciceProgression) => e.valide));
       }
@@ -260,8 +262,6 @@ export default function PageChapitreEleve() {
         {(() => {
           const estLecture = chapitre.matiere === "lecture";
           const evalLecture = estLecture ? exercices.find((e) => e.est_evaluation_finale) : null;
-          // Pour chapitre lecture sans eval générée : cacher complètement la carte
-          if (estLecture && !evalLecture) return null;
           return (
         <div style={{
           display: "flex", alignItems: "flex-start", gap: 14, marginTop: 4,

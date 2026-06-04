@@ -348,7 +348,20 @@ export default function PageEvaluationFinale() {
 
       const miniExercices = creerMiniExercices(exercices);
       if (miniExercices.length === 0) {
-        router.push(`/eleve/chapitre/${chapitreId}`);
+        // Aucun exercice évaluable (type lecture, révision…) → valider automatiquement
+        await fetch("/api/chapitres/evaluation-resultat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chapitre_id: chapitreId,
+            eleve_id: session?.source === "planbox" ? session.id : undefined,
+            rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+            score: 1,
+            total: 1,
+          }),
+        });
+        setReussi(true);
+        setEtat("resultat");
         return;
       }
 

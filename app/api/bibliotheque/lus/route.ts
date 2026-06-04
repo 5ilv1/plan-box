@@ -33,7 +33,8 @@ export async function GET(req: NextRequest) {
   const { data: chapitres } = await admin
     .from("chapitres")
     .select("id, titre, auteur, couverture_url")
-    .in("id", chapIds);
+    .in("id", chapIds)
+    .eq("disponible_bibliotheque", true);
 
   const chapMap = new Map((chapitres ?? []).map((c) => [c.id, c]));
 
