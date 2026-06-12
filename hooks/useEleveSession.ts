@@ -86,8 +86,9 @@ export function useEleveSession() {
         }
 
         if (!annule) {
-          // Authentifié mais non reconnu → déconnecter
-          await supabase.auth.signOut();
+          // Authentifié mais non reconnu → déconnecter (cet appareil uniquement :
+          // un signOut global révoquerait les sessions sur tous les appareils)
+          await supabase.auth.signOut({ scope: "local" });
           setSession(null);
           ecrireSessionCache(null);
           setChargement(false);
@@ -163,9 +164,13 @@ export function useEleveSession() {
   async function effacerSession() {
     const supabase = createClient();
     // signOut peut parfois pendre (lock interne, réseau) → timeout 3s
+    // scope "local" : déconnecte cet appareil seulement. Le défaut ("global")
+    // révoquait TOUTES les sessions de l'élève — y compris sur les autres
+    // appareils et sur Repetibox — d'où des dashboards cassés (API en 401,
+    // ceintures/calcul/problème masqués) sans aucun message.
     try {
       await Promise.race([
-        supabase.auth.signOut(),
+        supabase.auth.signOut({ scope: "local" }),
         new Promise((_, reject) => setTimeout(() => reject(new Error("signOut timeout")), 3000)),
       ]);
     } catch (err) {

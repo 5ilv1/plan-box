@@ -241,6 +241,31 @@ export default function DashboardEleve() {
   useEffect(() => { sessionRef.current = session; }, [session]);
   const abortRef = useRef<AbortController | null>(null);
 
+  // ── Session serveur morte ───────────────────────────────────────────────────
+  // Cas vécu (Lilou B) : la session Supabase est révoquée depuis un autre
+  // appareil/app, mais le client se croit toujours connecté (cache). Les API
+  // authentifiées répondent alors 401 et les ceintures/calcul/problème
+  // disparaissent sans message, indéfiniment. Ici : on tente un refresh du
+  // jeton ; s'il échoue, on déconnecte et on renvoie à l'écran de connexion.
+  const reparationSessionRef = useRef<Promise<boolean> | null>(null);
+  function reparerSession(): Promise<boolean> {
+    if (!reparationSessionRef.current) {
+      reparationSessionRef.current = (async () => {
+        try {
+          const { data, error } = await supabase.auth.refreshSession();
+          if (!error && data.session) {
+            reparationSessionRef.current = null; // refresh OK → futurs 401 re-tenteront
+            return true;
+          }
+        } catch { /* refresh impossible → reconnexion */ }
+        await effacerSession();
+        router.replace("/eleve");
+        return false;
+      })();
+    }
+    return reparationSessionRef.current;
+  }
+
   // ── Bornes semaine ──────────────────────────────────────────────────────────
   function getBornesSemaine() {
     const aujourd_hui = new Date();
@@ -377,7 +402,8 @@ export default function DashboardEleve() {
       setProgressionsPB((progressionsData ?? []) as ProgressionComplete[]);
       setNotifications((notifsData ?? []) as Notification[]);
 
-      supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId);
+      // .then() obligatoire : le builder Supabase ne s'exécute que s'il est attendu
+      supabase.from("eleves").update({ derniere_connexion: new Date().toISOString() }).eq("id", eleveId).then(() => {});
 
       const blocs = filtrerDicteesMotsJourStrict(
         filtrerBlocsConditionnels([
@@ -445,9 +471,16 @@ export default function DashboardEleve() {
 
       const ceintureParam = rbId ? `rb_id=${rbId}` : `eleve_id=${eleveId}`;
       fetch(`/api/ceinture-active?${ceintureParam}`, { signal })
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (r.status === 401) {
+            if (!(await reparerSession())) return null;
+            const retry = await fetch(`/api/ceinture-active?${ceintureParam}`, { signal });
+            return retry.ok ? retry.json() : null;
+          }
+          return r.ok ? r.json() : null;
+        })
         .then((d) => {
-          if (signal.aborted) return;
+          if (signal.aborted || !d) return; // erreur/401 → on garde l'état du cache
           setCeintureActive(d.actif === true);
           if (d.actif) {
             fetch(`/api/ceinture-progression?${ceintureParam}`, { signal })
@@ -504,10 +537,11 @@ export default function DashboardEleve() {
   // ── Chargement Repetibox ────────────────────────────────────────────────────
   async function chargerRB(rbId: number, signal: AbortSignal) {
     try {
+      // .then() obligatoire : le builder Supabase ne s'exécute que s'il est attendu
       supabase.from("eleves_planbox_meta").upsert(
         { repetibox_eleve_id: rbId, derniere_connexion: new Date().toISOString() },
         { onConflict: "repetibox_eleve_id" }
-      );
+      ).then(() => {});
 
       // Requêtes indépendantes (ceinture, calcul, problème, parcours) lancées
       // TOUT EN HAUT, en parallèle du chargement des plans de travail/podcasts.
@@ -520,9 +554,16 @@ export default function DashboardEleve() {
         .catch(() => {});
 
       fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal })
-        .then((r) => r.json())
+        .then(async (r) => {
+          if (r.status === 401) {
+            if (!(await reparerSession())) return null;
+            const retry = await fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal });
+            return retry.ok ? retry.json() : null;
+          }
+          return r.ok ? r.json() : null;
+        })
         .then((d) => {
-          if (signal.aborted) return;
+          if (signal.aborted || !d) return; // erreur/401 → on garde l'état du cache
           setCeintureActive(d.actif === true);
           if (d.actif) {
             fetch(`/api/ceinture-progression?rb_id=${rbId}`, { signal })
