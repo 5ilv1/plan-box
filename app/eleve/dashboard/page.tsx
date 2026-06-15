@@ -68,6 +68,7 @@ const TYPE_BLOC_MS: Record<string, { icon: string; color: string; bg: string }> 
   ressource:     { icon: "open_in_new",  color: "#0891B2", bg: "rgba(8,145,178,0.1)" },
   repetibox:     { icon: "style",         color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
   fichier_maths: { icon: "square_foot",  color: "#0F766E", bg: "rgba(15,118,110,0.1)" },
+  probleme_maths:{ icon: "functions",    color: "#0D9488", bg: "rgba(13,148,136,0.1)" },
   ecriture:      { icon: "edit_note",    color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
   ceinture_multiplication: { icon: "military_tech", color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
 };
@@ -1758,6 +1759,7 @@ export default function DashboardEleve() {
                       analyse_phrase: { label: "Analyse de phrase", color: "#6D28D9", bg: "rgba(109,40,217,0.08)" },
                       classement: { label: "Classement", color: "#0369A1", bg: "rgba(3,105,161,0.08)" },
                       lecture: { label: "Lecture", color: "#7C3AED", bg: "rgba(124,58,237,0.08)" },
+                      probleme_maths: { label: "Problèmes de maths", color: "#0D9488", bg: "rgba(13,148,136,0.08)" },
                       ceinture_multiplication: { label: "Ceintures", color: "#F59E0B", bg: "rgba(245,158,11,0.08)" },
                     };
                     const DESC: Record<string, string> = {
@@ -1774,9 +1776,10 @@ export default function DashboardEleve() {
                       analyse_phrase: "Identifie les fonctions grammaticales.",
                       classement: "Classe les éléments dans les bonnes catégories.",
                       lecture: "Lis le texte puis réponds aux questions.",
+                      probleme_maths: "Lis, calcule, puis écris ta phrase réponse.",
                       ceinture_multiplication: "Entraîne-toi sur les tables de multiplication.",
                     };
-                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "lecture", "ceinture_multiplication"];
+                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "lecture", "probleme_maths", "ceinture_multiplication"];
                     const tousBlocs = [
                       ...groupesEnLigne.flatMap(([, { blocs }]) => blocs),
                       ...blocsEnLigneLibres,
