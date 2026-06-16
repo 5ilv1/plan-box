@@ -50,25 +50,15 @@ function resultatCorrect(saisi: string, attendu: string): boolean {
   return false;
 }
 
-function phraseCorrecte(saisie: string, motsCles: string[]): boolean {
-  const n = normaliser(saisie);
-  if (n.split(/\s+/).filter(Boolean).length < 3) return false; // au moins 3 mots
-  return motsCles.every((mc) => {
-    const mn = normaliser(mc);
-    if (!mn) return true;
-    // Match mot entier (évite "4" matchant "14")
-    const re = new RegExp(`(^|\\s)${mn.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\s|$)`);
-    return re.test(n);
-  });
-}
-
 export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, onTermine }: Props) {
   const [index, setIndex] = useState(0);
   const [resultat, setResultat] = useState("");
   const [phrase, setPhrase] = useState("");
   const [indiceVisible, setIndiceVisible] = useState(false);
-  const [feedback, setFeedback] = useState<{ resultatOk: boolean; phraseOk: boolean; afficher: boolean }>({
-    resultatOk: false, phraseOk: false, afficher: false,
+  // La phrase réponse n'entre PAS dans la note : seul le résultat est évalué.
+  // La phrase reste demandée (entraînement) et un exemple est montré en feedback.
+  const [feedback, setFeedback] = useState<{ resultatOk: boolean; afficher: boolean }>({
+    resultatOk: false, afficher: false,
   });
   const [reponses, setReponses] = useState<{ id: number; reponse: string; correcte: boolean | null }[]>([]);
   const [scoreTotal, setScoreTotal] = useState({ bon: 0, total: 0 });
@@ -82,15 +72,13 @@ export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, 
   function valider() {
     if (!problemeCourant) return;
     const rOk = resultatCorrect(resultat, problemeCourant.resultat_attendu);
-    const pOk = phraseCorrecte(phrase, problemeCourant.mots_cles);
-    setFeedback({ resultatOk: rOk, phraseOk: pOk, afficher: true });
+    setFeedback({ resultatOk: rOk, afficher: true });
   }
 
   function passerSuivant() {
     if (!problemeCourant) return;
-    const rOk = feedback.resultatOk;
-    const pOk = feedback.phraseOk;
-    const globalOk = rOk && pOk;
+    // Note basée uniquement sur le résultat (la phrase ne compte pas).
+    const globalOk = feedback.resultatOk;
 
     const nouvelleRep = {
       id: problemeCourant.id,
@@ -110,7 +98,7 @@ export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, 
       setResultat("");
       setPhrase("");
       setIndiceVisible(false);
-      setFeedback({ resultatOk: false, phraseOk: false, afficher: false });
+      setFeedback({ resultatOk: false, afficher: false });
     } else {
       setTermine(true);
       onTermine(nouveauScore, nouvellesReponses);
@@ -233,11 +221,7 @@ export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, 
           placeholder="Écris une phrase complète pour répondre au problème."
           rows={2}
           disabled={feedback.afficher}
-          style={{
-            resize: "vertical",
-            borderColor: feedback.afficher ? (feedback.phraseOk ? "#16A34A" : "#DC2626") : undefined,
-            background: feedback.afficher ? (feedback.phraseOk ? "#DCFCE7" : "#FEE2E2") : undefined,
-          }}
+          style={{ resize: "vertical" }}
         />
       </div>
 
@@ -246,23 +230,22 @@ export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, 
         <div style={{
           padding: "12px 16px",
           borderRadius: 12,
-          background: feedback.resultatOk && feedback.phraseOk ? "#DCFCE7" : "#FEF3C7",
-          border: `1.5px solid ${feedback.resultatOk && feedback.phraseOk ? "#86EFAC" : "#FCD34D"}`,
+          background: feedback.resultatOk ? "#DCFCE7" : "#FEF3C7",
+          border: `1.5px solid ${feedback.resultatOk ? "#86EFAC" : "#FCD34D"}`,
           marginBottom: 16,
         }}>
-          <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: "0.875rem", color: feedback.resultatOk && feedback.phraseOk ? "#166534" : "#78350F" }}>
-            {feedback.resultatOk && feedback.phraseOk ? "🎉 Bravo !" : "Presque !"}
+          <p style={{ margin: "0 0 6px", fontWeight: 700, fontSize: "0.875rem", color: feedback.resultatOk ? "#166534" : "#78350F" }}>
+            {feedback.resultatOk ? "🎉 Bravo !" : "Presque !"}
           </p>
           {!feedback.resultatOk && (
             <p style={{ margin: "4px 0", fontSize: "0.8125rem", color: "#78350F" }}>
               Résultat attendu : <strong>{problemeCourant.resultat_attendu}</strong>
             </p>
           )}
-          {!feedback.phraseOk && (
-            <p style={{ margin: "4px 0", fontSize: "0.8125rem", color: "#78350F" }}>
-              Exemple de phrase : <em>« {problemeCourant.phrase_reponse_attendue} »</em>
-            </p>
-          )}
+          {/* La phrase ne compte pas dans la note : on montre toujours un exemple à comparer. */}
+          <p style={{ margin: "4px 0", fontSize: "0.8125rem", color: feedback.resultatOk ? "#166534" : "#78350F" }}>
+            Exemple de phrase réponse : <em>« {problemeCourant.phrase_reponse_attendue} »</em>
+          </p>
         </div>
       )}
 
