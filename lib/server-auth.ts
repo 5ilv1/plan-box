@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { PLANBOX_AUTH_COOKIE } from "./supabase";
 
 export async function getServerUser() {
   const cookieStore = await cookies();
@@ -8,6 +9,9 @@ export async function getServerUser() {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
+      // Même nom de cookie que le client navigateur (lib/supabase.ts), sinon
+      // le serveur ne retrouve pas la session Plan Box.
+      cookieOptions: { name: PLANBOX_AUTH_COOKIE },
       cookies: {
         getAll() { return cookieStore.getAll(); },
         setAll() {},
