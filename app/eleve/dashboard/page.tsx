@@ -9,6 +9,7 @@ import { PlanTravail, Progression, Chapitre, Notification, TYPE_BLOC_CONFIG } fr
 import { CEINTURES } from "@/lib/ceintures";
 import ActivityCard from "@/components/ActivityCard";
 import NotifCard from "@/components/NotifCard";
+import Avatar from "@/components/Avatar";
 
 // ─── Types locaux ────────────────────────────────────────────────────────────
 
@@ -1038,7 +1039,11 @@ export default function DashboardEleve() {
                 {niveauNom}
               </span>
             )}
-            <div className="pb-avatar">{initiales}</div>
+            {session?.avatar_bigheads ? (
+              <Avatar options={session.avatar_bigheads} seed={session.prenom} size={40} />
+            ) : (
+              <div className="pb-avatar">{initiales}</div>
+            )}
             <button
               onClick={deconnecter}
               style={{

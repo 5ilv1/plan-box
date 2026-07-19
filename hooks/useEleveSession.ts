@@ -2,15 +2,19 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
+import type { BigHeadsOptions } from "@/lib/bigheads";
 
 export interface EleveSession {
   id: string;
   prenom: string;
   nom: string;
   source: "planbox" | "repetibox";
+  // Avatar BigHeads (élèves Repetibox uniquement). null = pas d'avatar → initiales.
+  avatar_bigheads?: BigHeadsOptions | null;
 }
 
-const SESSION_CACHE_KEY = "pb_eleve_session_v1";
+// v2 : ajout de avatar_bigheads → on invalide les sessions cachées d'avant.
+const SESSION_CACHE_KEY = "pb_eleve_session_v2";
 
 function lireSessionCachee(): EleveSession | null {
   if (typeof window === "undefined") return null;
@@ -65,7 +69,7 @@ export function useEleveSession() {
         if (annule) return;
 
         if (e) {
-          const s: EleveSession = { id: user.id, prenom: e.prenom as string, nom: e.nom as string, source: "planbox" };
+          const s: EleveSession = { id: user.id, prenom: e.prenom as string, nom: e.nom as string, source: "planbox", avatar_bigheads: null };
           setSession(s);
           ecrireSessionCache(s);
           setChargement(false);
@@ -77,7 +81,7 @@ export function useEleveSession() {
           const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
           if (!annule && res.ok) {
             const json = await res.json();
-            const s: EleveSession = { id: String(json.id), prenom: json.prenom as string, nom: json.nom as string, source: "repetibox" };
+            const s: EleveSession = { id: String(json.id), prenom: json.prenom as string, nom: json.nom as string, source: "repetibox", avatar_bigheads: json.avatar_bigheads ?? null };
             setSession(s);
             ecrireSessionCache(s);
             setChargement(false);

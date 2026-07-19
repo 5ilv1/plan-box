@@ -1574,6 +1574,13 @@ input[type="number"] {
   flex-shrink: 0;
 }
 
+/* SVG BigHeads (viewBox ~carré) rempli dans son cercle conteneur. */
+.bh-avatar > svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
 /* ═══════════════════════════════════════════════════
    Enseignant Design System — layout & composants
    Réutilise les tokens --pb-* (même palette)
