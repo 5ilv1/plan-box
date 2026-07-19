@@ -18,7 +18,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await admin
     .from("eleve")
-    .select("id, prenom, nom")
+    .select("id, prenom, nom, avatar_bigheads")
     .eq("auth_id", authId)
     .single();
 
@@ -30,5 +30,7 @@ export async function GET(req: NextRequest) {
     id: data.id as number,
     prenom: data.prenom as string,
     nom: data.nom as string,
+    // Avatar BigHeads (customiseur Repetibox). null = pas encore créé → onboarding.
+    avatar_bigheads: data.avatar_bigheads ?? null,
   });
 }
