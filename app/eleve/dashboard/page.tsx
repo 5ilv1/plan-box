@@ -334,6 +334,31 @@ export default function DashboardEleve() {
     };
   }, [chargementSession, session]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // ── Onboarding avatar obligatoire (élèves Repetibox) ────────────────────────
+  // Vérification FRAÎCHE (jamais le cache) : si l'élève Repetibox n'a pas encore
+  // créé son avatar, on le redirige vers le customiseur Repetibox (via SSO) et on
+  // bloque l'accès au dashboard tant que ce n'est pas fait. L'avatar est stocké
+  // côté Repetibox (table eleve) — Plan Box ne fait que le lire.
+  useEffect(() => {
+    if (chargementSession || !session || session.source !== "repetibox") return;
+    let annule = false;
+    (async () => {
+      try {
+        const { data: { user } } = await createClient().auth.getUser();
+        if (!user || annule) return;
+        const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
+        if (!res.ok || annule) return;
+        const json = await res.json();
+        if (!json.avatar_bigheads && !annule) {
+          window.location.href = "/api/sso/redirect-repetibox?dest=" + encodeURIComponent("/eleve/avatar");
+        }
+      } catch {
+        /* Erreur réseau : on ne bloque pas (fail-open) pour ne pas piéger l'élève. */
+      }
+    })();
+    return () => { annule = true; };
+  }, [chargementSession, session]);
+
   // ── Statut bibliothèque (livre en cours / peut choisir) ─────────────────────
   useEffect(() => {
     if (!session) return;
