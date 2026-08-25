@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import MatieresView from "@/components/dashboard/MatieresView";
+import NouvelleAnneeSection from "@/components/NouvelleAnneeSection";
 
 interface JourSansEcole {
   id: string;
@@ -288,6 +289,9 @@ export default function ParametresPage() {
           </h3>
           <MatieresView />
         </section>
+
+        {/* ── Section : Changer d'année ── */}
+        <NouvelleAnneeSection />
 
       </div>
     </>

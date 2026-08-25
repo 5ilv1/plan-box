@@ -134,6 +134,27 @@ NEXT_PUBLIC_REPETIBOX_URL      # URL Repetibox
 - **Vercel** : auto-deploy sur push `main`
 - **URL prod** : https://plan-box-phi.vercel.app
 
+## Changer d'année (remise à zéro)
+
+Bouton **« Changer d'année »** en bas de `/enseignant/parametres`.
+
+- Définition des tables vidées : `lib/nouvelle-annee.ts`
+- API : `app/api/admin/nouvelle-annee/route.ts` (`GET` = aperçu chiffré, `POST` = exécution)
+- UI : `components/NouvelleAnneeSection.tsx` (saisie de « NOUVELLE ANNEE » obligatoire)
+
+**Efface** tout le travail élève : `plan_travail`, `exercice_resultat`, `evaluation_resultat`,
+`calcul_jour_resultat`, `qcm_reponse`, `pb_progression`, `notifications`,
+`eleve_bibliotheque_choix`, `chapitre_assignation`, `dictee_correction_feedback`.
+
+**Conserve** les contenus (chapitres, exercices, livres, leçons, podcasts, banques) et les
+ceintures de multiplication. Options cochables : dictées, Ma P'tite Règle, thèmes d'écriture.
+
+⚠️ **Base partagée avec Repetibox** (même projet Supabase `dobaryyfqgcumwbskark`). Ne jamais
+vider `carte`, `flash_session`, `badge_eleve`, `progression`, `etudiant`, `eleve`,
+`groupe_eleve`, `qr_tokens`, `math_problems`, `problem_attempts` : ces tables appartiennent à
+Repetibox. `badge_eleve.eleve_id` et `ceinture_resultat.repetibox_eleve_id` sont en
+`ON DELETE CASCADE` sur `eleve` — supprimer un élève Repetibox efface ses badges et ses ceintures.
+
 ## Pièges connus
 
 1. **Normalisation des accents** : ne JAMAIS supprimer les accents dans le normaliser (`normaliser()` dans la page exercice élève). Sinon `ou` = `où` et `er` = `é`

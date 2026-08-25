@@ -42,3 +42,6 @@ next-env.d.ts
 
 # Worktrees créés par le harness — ne pas tracker
 .claude/worktrees/
+
+# Sauvegardes locales avant remise à zéro d'année
+backups/
