@@ -1,0 +1,422 @@
+[
+  {
+    "item_code": "P25",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Dans « Mon petit frère répare son vélo. », quel est le sujet du verbe ?",
+        "options": [
+          "Mon petit frère",
+          "répare",
+          "son vélo",
+          "frère"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« Qui est-ce qui répare ? » — mon petit frère. Le sujet est le groupe entier."
+      },
+      {
+        "question": "Dans « Le matin, les voisins promènent leur chien. », quel est le sujet du verbe ?",
+        "options": [
+          "Le matin",
+          "promènent",
+          "les voisins",
+          "leur chien"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Qui est-ce qui promène ? » — les voisins. Le début de la phrase n'est pas toujours le sujet."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Qui est-ce qui… ?",
+        "consigne": "Pour chaque phrase, écris le sujet en entier, avec le petit mot qui est devant s'il y en a un.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris le sujet en entier : Sacha range ses feutres.",
+            "reponse_attendue": "Sacha",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris le sujet en entier : Le matin, les enfants arrivent à huit heures.",
+            "reponse_attendue": "les enfants",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris le sujet en entier : Ma cousine chante très fort.",
+            "reponse_attendue": "Ma cousine",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris le sujet en entier : Dans la cour, Malo cherche son ballon.",
+            "reponse_attendue": "Malo",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris le sujet en entier : Les jumeaux dorment encore.",
+            "reponse_attendue": "Les jumeaux",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris le sujet en entier : Ce matin, nous partons à la piscine.",
+            "reponse_attendue": "nous",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris le sujet en entier : Le directeur passe dans la cour.",
+            "reponse_attendue": "Le directeur",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris le sujet en entier : Sous le préau, mon voisin arrose les plantes.",
+            "reponse_attendue": "mon voisin",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          }
+        ]
+      },
+      {
+        "titre": "Trouve le sujet",
+        "consigne": "Pour chaque phrase, écris le sujet en entier, avec le petit mot qui est devant s'il y en a un.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris le sujet en entier : Fatou lit une histoire.",
+            "reponse_attendue": "Fatou",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris le sujet en entier : Le soir, le facteur apporte un colis.",
+            "reponse_attendue": "le facteur",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris le sujet en entier : Dans le jardin, mon oncle ramasse les feuilles.",
+            "reponse_attendue": "mon oncle",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris le sujet en entier : Chaque samedi, mes parents rangent la cuisine.",
+            "reponse_attendue": "mes parents",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris le sujet en entier : Devant la classe, Yanis pose une question.",
+            "reponse_attendue": "Yanis",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris le sujet en entier : À la cantine, les grands passent les premiers.",
+            "reponse_attendue": "les grands",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris le sujet en entier : Le mercredi, les jardiniers taillent les rosiers.",
+            "reponse_attendue": "les jardiniers",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris le sujet en entier : Vous chantez une chanson.",
+            "reponse_attendue": "Vous",
+            "indice": "Pose la question « Qui est-ce qui… ? » devant le verbe."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P22",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Tu ___ un beau portrait. (dessiner) », quelle forme convient ?",
+        "options": [
+          "dessine",
+          "dessines",
+          "dessinent",
+          "dessiner"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Avec « tu », un verbe en -ER prend -es."
+      },
+      {
+        "question": "Dans « Elles ___ la cour après la récréation. (traverser) », quelle forme convient ?",
+        "options": [
+          "traverse",
+          "traverses",
+          "traverser",
+          "traversent"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Avec « elles », un verbe en -ER prend -ent, même si on ne l'entend pas."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'atelier portrait",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Je (dessiner) dessine un visage rond. Tu (gommer) gommes le trait de trop. Elle (colorier) colorie les cheveux en brun. Nous (accrocher) accrochons les portraits au mur. Ils (regarder) regardent le résultat.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "dessine",
+            "indice": "Avec « je »."
+          },
+          {
+            "position": 1,
+            "mot": "gommes",
+            "indice": "Avec « tu »."
+          },
+          {
+            "position": 2,
+            "mot": "colorie",
+            "indice": "Avec « elle »."
+          },
+          {
+            "position": 3,
+            "mot": "accrochons",
+            "indice": "Avec « nous »."
+          },
+          {
+            "position": 4,
+            "mot": "regardent",
+            "indice": "Avec « ils »."
+          }
+        ]
+      },
+      {
+        "titre": "L'heure du conte",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Tu (raconter) racontes la fin de l'histoire. Il (imiter) imite la voix du géant. Vous (éclater) éclatez de rire. Elles (arriver) arrivent en courant. Je (noter) note le titre du livre.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "racontes",
+            "indice": "Avec « tu »."
+          },
+          {
+            "position": 1,
+            "mot": "imite",
+            "indice": "Avec « il »."
+          },
+          {
+            "position": 2,
+            "mot": "éclatez",
+            "indice": "Avec « vous »."
+          },
+          {
+            "position": 3,
+            "mot": "arrivent",
+            "indice": "Avec « elles »."
+          },
+          {
+            "position": 4,
+            "mot": "note",
+            "indice": "Avec « je »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P17",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Les deux amies ___ les étiquettes. (coller) », quelle forme convient ?",
+        "options": [
+          "colle",
+          "colles",
+          "collent",
+          "coller"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Les deux amies », c'est comme « elles » : un verbe en -ER prend -ent."
+      },
+      {
+        "question": "Dans « Le grand frère de Nour ___ le carton. (chercher) », quelle forme convient ?",
+        "options": [
+          "cherche",
+          "cherches",
+          "cherchent",
+          "chercher"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le sujet est « le grand frère » : une seule personne. Un verbe en -ER prend alors -e."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Avant la séance de dessin",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent, accordé avec son sujet.",
+        "texte_complet": "Chaque lundi, la maîtresse (préparer) prépare les crayons. Lila et Jade (installer) installent les tables au fond. Le grand frère de Nour (chercher) cherche le carton à dessin. Les grands élèves (poser) posent leur feuille bien à plat. Le petit Malo (fermer) ferme la porte sans bruit.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "prépare",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 1,
+            "mot": "installent",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 2,
+            "mot": "cherche",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 3,
+            "mot": "posent",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 4,
+            "mot": "ferme",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          }
+        ]
+      },
+      {
+        "titre": "La visite du musée",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent, accordé avec son sujet.",
+        "texte_complet": "Au musée, le guide (observer) observe un grand tableau. Les deux surveillantes (expliquer) expliquent l'histoire du peintre. Les enfants curieux (montrer) montrent les couleurs du doigt. Le maître (ramasser) ramasse les carnets. Les parents accompagnateurs (rentrer) rentrent les derniers.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "observe",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 1,
+            "mot": "expliquent",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 2,
+            "mot": "montrent",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 3,
+            "mot": "ramasse",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          },
+          {
+            "position": 4,
+            "mot": "rentrent",
+            "indice": "Pose la question « Qui est-ce qui… ? », puis demande-toi si le sujet désigne une seule personne ou plusieurs."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P47",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Quel mot convient ? « Nour habite ___ côté de l'école. »",
+        "options": [
+          "a",
+          "à",
+          "et",
+          "est"
+        ],
+        "reponse_correcte": 1,
+        "explication": "On ne peut pas dire « habite avait côté » : ce n'est pas le verbe avoir, donc on écrit à avec un accent."
+      },
+      {
+        "question": "Quel mot convient ? « Le portrait de Malo ___ presque fini. »",
+        "options": [
+          "et",
+          "es",
+          "ai",
+          "est"
+        ],
+        "reponse_correcte": 3,
+        "explication": "On peut dire « était presque fini » : c'est le verbe être, donc on écrit est."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Timéo dessine",
+        "consigne": "Complète le texte avec a / à, ou avec et / est.",
+        "texte_complet": "Timéo est assis près de la fenêtre. Il a posé son carnet à côté de sa trousse. Sur la page, un renard et un loup se regardent en silence. Ce dessin est vraiment réussi.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "est",
+            "indice": "Essaie de dire « était » : si ça marche, c'est le verbe être."
+          },
+          {
+            "position": 1,
+            "mot": "a",
+            "indice": "Essaie de dire « avait » : si ça marche, c'est le verbe avoir."
+          },
+          {
+            "position": 2,
+            "mot": "à",
+            "indice": "Essaie de dire « avait » : si ça ne marche pas, ce n'est pas le verbe avoir."
+          },
+          {
+            "position": 3,
+            "mot": "et",
+            "indice": "Si tu peux remplacer le mot par « ainsi que », c'est le petit mot qui relie."
+          },
+          {
+            "position": 4,
+            "mot": "est",
+            "indice": "Essaie de dire « était » : si ça marche, c'est le verbe être."
+          }
+        ]
+      },
+      {
+        "titre": "L'affiche de Nour",
+        "consigne": "Complète le texte avec a / à, ou avec et / est.",
+        "texte_complet": "Nour a rangé ses feutres dans une boîte à chaussures. Sur son cahier, elle colle une photo et un ruban doré. Son portrait est enfin terminé. Elle le montre à toute la classe.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "a",
+            "indice": "Essaie de dire « avait » : si ça marche, c'est le verbe avoir."
+          },
+          {
+            "position": 1,
+            "mot": "à",
+            "indice": "Essaie de dire « avait » : si ça ne marche pas, ce n'est pas le verbe avoir."
+          },
+          {
+            "position": 2,
+            "mot": "et",
+            "indice": "Si tu peux remplacer le mot par « ainsi que », c'est le petit mot qui relie."
+          },
+          {
+            "position": 3,
+            "mot": "est",
+            "indice": "Essaie de dire « était » : si ça marche, c'est le verbe être."
+          },
+          {
+            "position": 4,
+            "mot": "à",
+            "indice": "Essaie de dire « avait » : si ça ne marche pas, ce n'est pas le verbe avoir."
+          }
+        ]
+      }
+    ]
+  }
+]

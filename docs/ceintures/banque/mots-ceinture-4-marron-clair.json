@@ -1,0 +1,750 @@
+[
+  {
+    "item_code": "M27",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel mot invariable est écrit correctement ?",
+        "options": [
+          "malgrés",
+          "malgrè",
+          "malgré",
+          "malgret"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« malgré » se termine par un e avec un accent aigu, sans s et sans t : c'est un mot invariable, il ne change jamais."
+      },
+      {
+        "question": "Quel mot invariable complète : « Inès s'est assise ___ Malo et Louna. » ?",
+        "options": [
+          "parmi",
+          "entre",
+          "chez",
+          "vers"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Quand il y a une personne ou une chose de chaque côté, on emploie « entre » ; « parmi » s'emploie au milieu de plusieurs."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Où, avec qui, malgré quoi ?",
+        "consigne": "Écris le mot invariable qui manque. Ce qui est entre parenthèses t'aide à trouver lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Nour a retrouvé son crayon ___ toutes les affaires du bac. (au milieu de plusieurs choses ; le mot commence par p et compte cinq lettres)",
+            "reponse_attendue": "parmi",
+            "indice": "Un seul mot, sans s à la fin : par + mi."
+          },
+          {
+            "id": 2,
+            "enonce": "Les CM1 sont sortis en récréation ___ la pluie. (la pluie ne les a pas empêchés de sortir ; le mot commence par m)",
+            "reponse_attendue": "malgré",
+            "indice": "Accent aigu sur le e de la fin, et jamais de s."
+          },
+          {
+            "id": 3,
+            "enonce": "Timéo est parti à la piscine ___ son bonnet. (le contraire de *avec*)",
+            "reponse_attendue": "sans",
+            "indice": "Quatre lettres : ne le confonds pas avec « cent » ni avec « sang »."
+          },
+          {
+            "id": 4,
+            "enonce": "Le chat de Jade dort ___ la table de la cuisine. (le contraire de *sur*)",
+            "reponse_attendue": "sous",
+            "indice": "Il se termine par un s que l'on n'entend pas, comme dans « dessous »."
+          },
+          {
+            "id": 5,
+            "enonce": "Fatou se dirige ___ la sortie du parc. (elle va dans cette direction ; le mot commence par v)",
+            "reponse_attendue": "vers",
+            "indice": "Il se termine par -ers, comme « envers »."
+          },
+          {
+            "id": 6,
+            "enonce": "Ce soir, Malo dort ___ sa grand-mère. (dans la maison de quelqu'un ; le mot commence par ch)",
+            "reponse_attendue": "chez",
+            "indice": "Il se termine par un z, comme « nez »."
+          },
+          {
+            "id": 7,
+            "enonce": "Le vélo de Rosalie est appuyé ___ le mur de la cour. (il touche le mur ; le mot commence par c)",
+            "reponse_attendue": "contre",
+            "indice": "Il se termine par -tre, comme « quatre »."
+          },
+          {
+            "id": 8,
+            "enonce": "Le maître a placé Inès ___ Sacha et Adam. (elle est au milieu des deux)",
+            "reponse_attendue": "entre",
+            "indice": "Il commence par en- et se termine par -tre."
+          },
+          {
+            "id": 9,
+            "enonce": "Louna range les feutres ___ le maître efface le tableau. (les deux actions se passent en même temps ; deux mots, le premier commence par p)",
+            "reponse_attendue": "pendant que",
+            "indice": "Le premier mot se termine par -ant, le second est « que »."
+          },
+          {
+            "id": 10,
+            "enonce": "Les élèves se sont levés ___ la cloche a sonné. (tout de suite après ce moment ; deux mots, le premier commence par d)",
+            "reponse_attendue": "dès que",
+            "indice": "Le premier mot a trois lettres, un accent grave sur le e et un s à la fin."
+          }
+        ]
+      },
+      {
+        "titre": "Les petits mots qui relient",
+        "consigne": "Écris le mot invariable qui manque. Ce qui est entre parenthèses t'aide à trouver lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sacha a repéré un roman ___ tous ceux de la bibliothèque. (au milieu de beaucoup de choses ; le mot commence par p et compte cinq lettres)",
+            "reponse_attendue": "parmi",
+            "indice": "Un seul mot, sans s à la fin : par + mi."
+          },
+          {
+            "id": 2,
+            "enonce": "Yanis a terminé sa course ___ sa cheville douloureuse. (sa cheville ne l'a pas empêché de finir ; le mot commence par m)",
+            "reponse_attendue": "malgré",
+            "indice": "Accent aigu sur le e de la fin, et jamais de s."
+          },
+          {
+            "id": 3,
+            "enonce": "Adam est entré en classe ___ son cartable. (le contraire de *avec*)",
+            "reponse_attendue": "sans",
+            "indice": "Quatre lettres : ne le confonds pas avec « cent » ni avec « sang »."
+          },
+          {
+            "id": 4,
+            "enonce": "Le ballon a roulé ___ le banc du préau. (le contraire de *sur*)",
+            "reponse_attendue": "sous",
+            "indice": "Il se termine par un s que l'on n'entend pas, comme dans « dessous »."
+          },
+          {
+            "id": 5,
+            "enonce": "La maîtresse avance ___ le tableau. (elle va dans cette direction ; le mot commence par v)",
+            "reponse_attendue": "vers",
+            "indice": "Il se termine par -ers, comme « envers »."
+          },
+          {
+            "id": 6,
+            "enonce": "Après l'école, Inès goûte ___ sa voisine. (dans la maison de quelqu'un ; le mot commence par ch)",
+            "reponse_attendue": "chez",
+            "indice": "Il se termine par un z, comme « nez »."
+          },
+          {
+            "id": 7,
+            "enonce": "Timéo a posé son front ___ la vitre froide du car. (son front touche la vitre ; le mot commence par c)",
+            "reponse_attendue": "contre",
+            "indice": "Il se termine par -tre, comme « quatre »."
+          },
+          {
+            "id": 8,
+            "enonce": "L'affiche est fixée ___ la porte et la fenêtre. (elle est au milieu des deux)",
+            "reponse_attendue": "entre",
+            "indice": "Il commence par en- et se termine par -tre."
+          },
+          {
+            "id": 9,
+            "enonce": "Lila peint ___ Fatou découpe les étiquettes. (les deux actions se passent en même temps ; deux mots, le premier commence par p)",
+            "reponse_attendue": "pendant que",
+            "indice": "Le premier mot se termine par -ant, le second est « que »."
+          },
+          {
+            "id": 10,
+            "enonce": "Jade lève le doigt ___ elle a trouvé la réponse. (tout de suite après ce moment ; deux mots, le premier commence par d)",
+            "reponse_attendue": "dès que",
+            "indice": "Le premier mot a trois lettres, un accent grave sur le e et un s à la fin."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M28",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans « Timéo range sa règle dans le tiroir de son *bureau* », que veut dire le mot *bureau* ?",
+        "options": [
+          "un meuble avec un plateau et des tiroirs",
+          "la pièce où travaille le directeur",
+          "l'ensemble des personnes qui dirigent",
+          "un ordinateur allumé"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un mot peut avoir plusieurs sens : c'est la phrase autour de lui qui dit lequel. Ici, on parle d'un tiroir, donc d'un meuble."
+      },
+      {
+        "question": "Dans laquelle de ces phrases le mot « souris » désigne un animal ?",
+        "options": [
+          "Adam déplace la souris pour cliquer.",
+          "La souris de l'ordinateur ne marche plus.",
+          "Sacha branche une souris sans fil.",
+          "Une souris grise a filé dans le grenier."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le même mot peut nommer un animal ou un objet : « grise » et « le grenier » indiquent qu'il s'agit ici de l'animal."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Un mot, plusieurs sens",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Choisis le sens qu'il a dans cette phrase-là.",
+        "questions": [
+          {
+            "question": "« Lila arrache une *feuille* de son bloc à croquis. » Que veut dire le mot *feuille* ?",
+            "options": [
+              "un morceau de papier",
+              "la partie verte qui pousse sur une branche",
+              "une petite branche",
+              "un vêtement léger"
+            ],
+            "reponse_correcte": 0,
+            "explication": "C'est la phrase autour du mot qui indique son sens : on arrache une feuille d'un bloc, il s'agit donc de papier."
+          },
+          {
+            "question": "« En automne, les *feuilles* du marronnier deviennent rousses. » Que veut dire le mot *feuille* ?",
+            "options": [
+              "des morceaux de papier que l'on découpe aux ciseaux",
+              "des pages arrachées à un livre",
+              "les parties plates qui poussent sur les branches",
+              "des affiches collées au mur"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le marronnier et l'automne montrent qu'on parle de l'arbre : le même mot a ici son autre sens."
+          },
+          {
+            "question": "« Yanis glisse sur la *glace* de la patinoire. » Que veut dire le mot *glace* ?",
+            "options": [
+              "un dessert sucré et froid",
+              "l'eau gelée, dure et lisse",
+              "un grand miroir",
+              "une vitre de fenêtre"
+            ],
+            "reponse_correcte": 1,
+            "explication": "À la patinoire, on glisse sur de l'eau gelée : c'est ce sens-là du mot glace."
+          },
+          {
+            "question": "« Fatou a commandé une *glace* à la fraise. » Que veut dire le mot *glace* ?",
+            "options": [
+              "l'eau gelée à la surface d'un lac",
+              "un miroir accroché au mur du couloir",
+              "un gâteau que l'on sert chaud",
+              "un dessert très froid"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« à la fraise » montre qu'il s'agit du dessert : le même mot change de sens selon la phrase."
+          },
+          {
+            "question": "« Le maître écrit trois *opérations* au tableau. » Que veut dire le mot *opération* ?",
+            "options": [
+              "des calculs",
+              "des soins donnés par un chirurgien",
+              "des exercices de lecture à haute voix",
+              "des consignes de sécurité à respecter"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Au tableau, en classe, une opération est un calcul. Le mot a un tout autre sens à l'hôpital."
+          },
+          {
+            "question": "« Le grand-père de Sacha se repose après son *opération* à l'hôpital. » Que veut dire le mot *opération* ?",
+            "options": [
+              "un calcul difficile",
+              "un très long voyage",
+              "un soin fait par un chirurgien",
+              "une visite de la famille"
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'hôpital et le chirurgien indiquent le sens médical du mot : ce n'est plus un calcul."
+          },
+          {
+            "question": "« Adam glisse une *pièce* de deux euros dans sa tirelire. » Que veut dire le mot *pièce* ?",
+            "options": [
+              "une salle de la maison",
+              "de l'argent en métal",
+              "un morceau de puzzle en carton",
+              "un spectacle joué au théâtre"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« de deux euros » et « tirelire » montrent qu'il s'agit d'argent."
+          },
+          {
+            "question": "« La *pièce* la plus claire de l'appartement est la cuisine. » Que veut dire le mot *pièce* ?",
+            "options": [
+              "une monnaie en métal",
+              "un morceau de tissu",
+              "un texte joué par des acteurs",
+              "une salle d'une maison ou d'un appartement"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« de l'appartement » et « la cuisine » montrent qu'on parle d'une salle."
+          }
+        ]
+      },
+      {
+        "titre": "Le sens dépend de la phrase",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Choisis le sens qu'il a dans cette phrase-là.",
+        "questions": [
+          {
+            "question": "« Le maître déroule une grande *carte* de la France. » Que veut dire le mot *carte* ?",
+            "options": [
+              "un carton illustré avec lequel on joue",
+              "un dessin qui représente un pays",
+              "une lettre envoyée par la poste",
+              "la liste des plats d'un restaurant"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« de la France » montre qu'il s'agit d'une représentation du pays."
+          },
+          {
+            "question": "« Rosalie mélange les *cartes* avant de commencer la partie. » Que veut dire le mot *carte* ?",
+            "options": [
+              "des plans de villes et de villages",
+              "des lettres envoyées par la poste",
+              "des cartons pour jouer",
+              "des affiches collées sur un mur"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« la partie » montre qu'on parle d'un jeu : le même mot a ici un autre sens."
+          },
+          {
+            "question": "« Louna recoud un *bouton* de son manteau. » Que veut dire le mot *bouton* ?",
+            "options": [
+              "une fleur qui n'est pas encore ouverte",
+              "une touche sur laquelle on appuie",
+              "un petit point rouge sur la peau",
+              "une attache de vêtement"
+            ],
+            "reponse_correcte": 3,
+            "explication": "On recoud sur un manteau : il s'agit de l'attache du vêtement."
+          },
+          {
+            "question": "« Au printemps, les *boutons* du rosier s'ouvrent enfin. » Que veut dire le mot *bouton* ?",
+            "options": [
+              "des fleurs qui vont bientôt s'ouvrir",
+              "des attaches de vêtement",
+              "des interrupteurs électriques",
+              "des taches sur la peau"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le printemps et le rosier montrent qu'on parle de fleurs prêtes à s'ouvrir."
+          },
+          {
+            "question": "« Inès suit les *notes* sur sa partition. » Que veut dire le mot *note* ?",
+            "options": [
+              "les résultats chiffrés d'un devoir",
+              "les signes de la musique",
+              "de petits mots écrits sur un papier",
+              "des additions à poser"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« partition » montre qu'il s'agit de musique."
+          },
+          {
+            "question": "« Timéo est content de sa *note* en calcul. » Que veut dire le mot *note* ?",
+            "options": [
+              "un signe écrit sur une partition",
+              "un petit mot laissé sur la table",
+              "le résultat d'un devoir",
+              "une facture à payer au restaurant"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« en calcul » montre qu'il s'agit du résultat d'un travail scolaire."
+          },
+          {
+            "question": "« Jade essuie la *table* avant le repas. » Que veut dire le mot *table* ?",
+            "options": [
+              "un meuble formé d'un plateau et de pieds",
+              "une liste de résultats à apprendre",
+              "le tableau de la classe",
+              "une carte du monde"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« essuie » et « avant le repas » montrent qu'il s'agit du meuble."
+          },
+          {
+            "question": "« Nour révise la *table* de 7. » Que veut dire le mot *table* ?",
+            "options": [
+              "un meuble à plateau et à pieds",
+              "une planche de bois posée sur deux tréteaux",
+              "un plateau que l'on pose pour repasser",
+              "des résultats à apprendre par cœur"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« de 7 » et « révise » montrent qu'il s'agit des tables de multiplication."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M29",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Quel mot est un synonyme de « rapide » ?",
+        "options": [
+          "lent",
+          "calme",
+          "long",
+          "vif"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Deux synonymes ont le même sens ou presque : « rapide » et « vif » veulent dire à peu près la même chose. « lent » en est le contraire."
+      },
+      {
+        "question": "« Inès trouve son crayon, puis elle *trouve* sa gomme. » Par quel verbe remplacer le second *trouve* pour éviter la répétition ?",
+        "options": [
+          "repère",
+          "perd",
+          "cherche",
+          "cache"
+        ],
+        "reponse_correcte": 0,
+        "explication": "On remplace le mot répété par un synonyme : « repérer », c'est trouver. « chercher » n'est pas la même chose : on peut chercher sans trouver."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Un mot plus précis",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Choisis le mot qui a le même sens que ce mot-là.",
+        "questions": [
+          {
+            "question": "« La maîtresse *dit* la consigne une deuxième fois. » Par quel verbe peut-on remplacer *dit* ?",
+            "options": [
+              "répète",
+              "chuchote",
+              "écoute",
+              "efface"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« répéter », c'est dire une nouvelle fois : les deux mots ont le même sens dans cette phrase."
+          },
+          {
+            "question": "« Sacha *met* son manteau avant de sortir. » Par quel verbe peut-on remplacer *met* ?",
+            "options": [
+              "retire",
+              "enfile",
+              "secoue",
+              "achète"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« enfiler un manteau », c'est le mettre : « retirer » dirait le contraire."
+          },
+          {
+            "question": "« Le vieux monsieur *marche* lentement dans l'allée. » Par quel verbe peut-on remplacer *marche* ?",
+            "options": [
+              "court",
+              "saute",
+              "avance",
+              "recule"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« avancer » a le même sens que « marcher » ici. « courir » et « sauter » disent autre chose."
+          },
+          {
+            "question": "« Yanis *a* une belle écharpe rouge autour du cou. » Par quel verbe peut-on remplacer *a* ?",
+            "options": [
+              "vend",
+              "perd",
+              "cache",
+              "porte"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Quand un vêtement est sur nous, on le porte : c'est le verbe précis qui remplace « avoir »."
+          },
+          {
+            "question": "« Depuis la fenêtre, Lila *voit* le clocher du village. » Par quel verbe peut-on remplacer *voit* ?",
+            "options": [
+              "entend",
+              "aperçoit",
+              "touche",
+              "imagine"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« apercevoir », c'est voir : les autres verbes parlent d'un autre sens ou d'autre chose."
+          },
+          {
+            "question": "« Inès connaît une histoire *drôle* ; Malo en connaît une tout aussi *drôle*. » Par quel adjectif remplacer le second *drôle* ?",
+            "options": [
+              "triste",
+              "longue",
+              "amusante",
+              "vraie"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Pour ne pas répéter un mot, on emploie un synonyme : « amusante » veut dire la même chose que « drôle »."
+          },
+          {
+            "question": "« Louna est *contente* de son dessin, et ses parents sont *contents* eux aussi. » Par quel adjectif remplacer le second *contents* ?",
+            "options": [
+              "heureux",
+              "déçus",
+              "inquiets",
+              "sévères"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« heureux » est un synonyme de « content » : la phrase garde son sens et la répétition disparaît."
+          },
+          {
+            "question": "« Malo *mange* son sandwich en trois bouchées. » Par quel verbe peut-on remplacer *mange* ?",
+            "options": [
+              "goûte",
+              "partage",
+              "coupe",
+              "dévore"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« dévorer », c'est manger vite et avec appétit : c'est le verbe le plus précis ici."
+          }
+        ]
+      },
+      {
+        "titre": "Éviter les répétitions",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Choisis le mot qui a le même sens que ce mot-là.",
+        "questions": [
+          {
+            "question": "« Pour son anniversaire, Fatou *donne* un livre à sa cousine ; le lendemain, elle lui *donne* aussi un stylo. » Par quel verbe remplacer le second *donne* ?",
+            "options": [
+              "prête",
+              "vend",
+              "offre",
+              "cache"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Pour ne pas répéter le même verbe, on emploie un synonyme : un cadeau, on l'offre. « prêter » et « vendre » ne veulent pas dire la même chose."
+          },
+          {
+            "question": "« Lila a trouvé un coquillage tout *petit* dans le sable. » Par quel adjectif peut-on remplacer *petit* ?",
+            "options": [
+              "énorme",
+              "minuscule",
+              "lourd",
+              "brillant"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« minuscule » veut dire très petit : c'est le synonyme le plus précis."
+          },
+          {
+            "question": "« Le portrait de Nour est vraiment *beau*. » Par quel adjectif peut-on remplacer *beau* ?",
+            "options": [
+              "magnifique",
+              "affreux",
+              "ancien",
+              "récent"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« magnifique » est un synonyme de « beau » ; « affreux » en est le contraire."
+          },
+          {
+            "question": "« Adam a terminé son exercice très *vite*. » Par quel mot peut-on remplacer *vite* ?",
+            "options": [
+              "lentement",
+              "tard",
+              "soigneusement",
+              "rapidement"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« rapidement » a le même sens que « vite » ; « lentement » dirait le contraire."
+          },
+          {
+            "question": "« Yanis avait l'air *triste* en sortant du gymnase. » Par quel adjectif peut-on remplacer *triste* ?",
+            "options": [
+              "malheureux",
+              "joyeux",
+              "fatigué",
+              "pressé"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« malheureux » est un synonyme de « triste ». « fatigué » et « pressé » disent autre chose."
+          },
+          {
+            "question": "« Sacha aide souvent son *ami* Timéo ; ce matin, il a aussi aidé son *ami* Malo. » Par quel nom remplacer le second *ami* ?",
+            "options": [
+              "voisin",
+              "frère",
+              "camarade",
+              "cousin"
+            ],
+            "reponse_correcte": 2,
+            "explication": "On remplace le mot répété par un synonyme : « camarade » a le même sens que « ami ». Les autres mots changent la relation entre les enfants."
+          },
+          {
+            "question": "« Louna a entendu un bruit *bizarre* dans le couloir. » Par quel adjectif peut-on remplacer *bizarre* ?",
+            "options": [
+              "habituel",
+              "étrange",
+              "doux",
+              "joyeux"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« étrange » est un synonyme de « bizarre » ; « habituel » dirait le contraire."
+          },
+          {
+            "question": "« La séance de théâtre *commence* à quatorze heures. » Par quel verbe peut-on remplacer *commence* ?",
+            "options": [
+              "se termine",
+              "dure",
+              "recommence",
+              "débute"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« débuter » veut dire commencer ; « se terminer » dit le contraire."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M30",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans « Le vieux chêne perd ses feuilles », quelle est la classe du mot « perd » ?",
+        "options": [
+          "un nom",
+          "un verbe",
+          "un adjectif",
+          "un déterminant"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le verbe dit ce que l'on fait ou ce qui se passe, et il change quand on change le temps : « le chêne perdait ses feuilles »."
+      },
+      {
+        "question": "Dans « Cette petite fille lit une histoire », quel mot est un déterminant ?",
+        "options": [
+          "petite",
+          "fille",
+          "Cette",
+          "lit"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le déterminant se place devant le nom et lui donne son genre et son nombre : « cette fille ». « petite » est un adjectif, « fille » est un nom."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quatre classes de mots",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Range-le dans la bonne colonne.",
+        "categories": [
+          "Nom",
+          "Déterminant",
+          "Verbe",
+          "Adjectif"
+        ],
+        "items": [
+          {
+            "texte": "Nour termine le *portrait* de sa grand-mère.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Un long *couloir* mène jusqu'à la salle de sport.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "On devine la *silhouette* d'un arbre dans la brume.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Malo a lu *ces* deux romans pendant les vacances.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Fatou trace *une* étoile au bas de sa feuille.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "*Mon* voisin de table s'appelle Adam.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Louna *écrit* la date en haut de la page.",
+            "categorie": "Verbe"
+          },
+          {
+            "texte": "Le vent *secoue* les branches du marronnier.",
+            "categorie": "Verbe"
+          },
+          {
+            "texte": "Les CM1 *chantent* devant toute l'école.",
+            "categorie": "Verbe"
+          },
+          {
+            "texte": "Jade a des cheveux *raides*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Sacha est un garçon *timide* mais très drôle.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Inès a noué un foulard *large* autour de son cou.",
+            "categorie": "Adjectif"
+          }
+        ]
+      },
+      {
+        "titre": "Nom, déterminant, verbe ou adjectif ?",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Range-le dans la bonne colonne.",
+        "categories": [
+          "Nom",
+          "Déterminant",
+          "Verbe",
+          "Adjectif"
+        ],
+        "items": [
+          {
+            "texte": "Adam a perdu son *cahier* de poésie.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Un *parapluie* rouge sèche près de la porte.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "La *cousine* de Jade habite au bord de la mer.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Le maître a effacé *le* tableau avant la leçon.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Louna a mis *des* rubans dans ses cheveux.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "*Cette* histoire amuse toute la classe.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Le chat *grimpe* sur le mur du jardin.",
+            "categorie": "Verbe"
+          },
+          {
+            "texte": "Timéo *sourit* quand on parle de son chien.",
+            "categorie": "Verbe"
+          },
+          {
+            "texte": "Les feuilles *tremblent* au moindre souffle d'air.",
+            "categorie": "Verbe"
+          },
+          {
+            "texte": "Rosalie a une chevelure *rousse*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Les randonneurs suivent un sentier *étroit*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Nour avance dans un couloir *silencieux*.",
+            "categorie": "Adjectif"
+          }
+        ]
+      }
+    ]
+  }
+]

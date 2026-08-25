@@ -1,0 +1,544 @@
+[
+  {
+    "item_code": "M34",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel mot invariable est écrit correctement ?",
+        "options": [
+          "néamoins",
+          "néanmoin",
+          "nénmoins",
+          "néanmoins"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« néanmoins » prend un accent aigu sur le premier e, un a après le n, et un s final que l'on n'entend pas."
+      },
+      {
+        "question": "Quel mot convient : « Sacha s'entraîne ___ que l'an dernier : trois fois par semaine au lieu de deux. » ?",
+        "options": [
+          "autant",
+          "davantage",
+          "à peine",
+          "auparavant"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Trois fois au lieu de deux, c'est plus : « davantage » veut dire « plus ». « autant » voudrait dire la même quantité."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots invariables de la série 5",
+        "consigne": "Écris le mot invariable qui manque. Les indications entre parenthèses te disent lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Le vent soufflait très fort ; ___, Timéo a gardé son chapeau sur la tête. (synonyme de *pourtant* ; un seul mot commençant par n)",
+            "reponse_attendue": "néanmoins",
+            "indice": "On y voit « néan » avec un accent aigu, puis « moins » avec un s final."
+          },
+          {
+            "id": 2,
+            "enonce": "La sortie au château est annulée ; ___, la visite du moulin est maintenue. (synonyme de *cependant* ; un seul mot commençant par t et finissant par -fois)",
+            "reponse_attendue": "toutefois",
+            "indice": "Deux morceaux collés en un seul mot : *toute* + *fois*."
+          },
+          {
+            "id": 3,
+            "enonce": "Cette année, Louna lit ___ que l'an dernier. (veut dire « plus » ; un seul mot commençant par d)",
+            "reponse_attendue": "davantage",
+            "indice": "On entend « d'avantage », mais cela s'écrit en un seul mot, avec un e à la fin."
+          },
+          {
+            "id": 4,
+            "enonce": "Le spectacle commence à dix heures : il faut être là un quart d'heure ___. (veut dire « avant ce moment-là » ; le mot commence par au-)",
+            "reponse_attendue": "auparavant",
+            "indice": "*au* + *paravant* collés : aucun accent, et -ant à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Le maître a décidé que, ___, chacun rangerait sa chaise avant de sortir. (veut dire « à partir de maintenant et pour la suite » ; le mot commence par do-)",
+            "reponse_attendue": "dorénavant",
+            "indice": "Un accent aigu sur le e du milieu, et -ant à la fin."
+          },
+          {
+            "id": 6,
+            "enonce": "Jade oublie ___ son écharpe au vestiaire, mais cela reste rare. (un seul mot ; cela veut dire « de temps en temps » ; il commence par q et contient *fois*)",
+            "reponse_attendue": "quelquefois",
+            "indice": "*quelque* + *fois* collés en un seul mot."
+          },
+          {
+            "id": 7,
+            "enonce": "En automne il pleut souvent, mais ___ le soleil revient l'après-midi. (un mot de sept lettres ; cela veut dire « de temps en temps » ; il commence par p)",
+            "reponse_attendue": "parfois",
+            "indice": "*par* + *fois* collés, avec un s à la fin."
+          },
+          {
+            "id": 8,
+            "enonce": "Adam a ramassé ___ de feuilles que Fatou : dix chacun. (veut dire « la même quantité » ; le mot commence par a)",
+            "reponse_attendue": "autant",
+            "indice": "Il se termine par -ant, comme *pendant*, et il ne prend pas d'accent."
+          },
+          {
+            "id": 9,
+            "enonce": "Ce livre est ___ drôle que Malo rit à chaque page. (veut dire « à un tel point » ; le mot commence par t)",
+            "reponse_attendue": "tellement",
+            "indice": "*tel* + *lement* : deux l au milieu."
+          },
+          {
+            "id": 10,
+            "enonce": "Le chuchotement de Sacha était si faible qu'on l'entendait ___. (veut dire « presque pas » ; deux mots, le second est *peine*)",
+            "reponse_attendue": "à peine",
+            "indice": "Le premier mot est la petite préposition *à*, avec un accent grave."
+          }
+        ]
+      },
+      {
+        "titre": "Encore les mots invariables de la série 5",
+        "consigne": "Écris le mot invariable qui manque. Les indications entre parenthèses te disent lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Le sac de Fatou était très lourd ; ___, elle a tenu jusqu'au sommet. (synonyme de *pourtant* ; un seul mot commençant par n)",
+            "reponse_attendue": "néanmoins",
+            "indice": "On y voit « néan » avec un accent aigu, puis « moins » avec un s final."
+          },
+          {
+            "id": 2,
+            "enonce": "Le car est arrivé en retard ; ___, personne n'a manqué le début du film. (synonyme de *cependant* ; un seul mot commençant par t et finissant par -fois)",
+            "reponse_attendue": "toutefois",
+            "indice": "Deux morceaux collés en un seul mot : *toute* + *fois*."
+          },
+          {
+            "id": 3,
+            "enonce": "Depuis qu'il s'entraîne, Yanis court ___ qu'au mois de septembre. (veut dire « plus » ; un seul mot commençant par d)",
+            "reponse_attendue": "davantage",
+            "indice": "On entend « d'avantage », mais cela s'écrit en un seul mot, avec un e à la fin."
+          },
+          {
+            "id": 4,
+            "enonce": "Inès connaissait déjà ce musée : elle y était venue deux ans ___. (veut dire « avant ce moment-là » ; le mot commence par au-)",
+            "reponse_attendue": "auparavant",
+            "indice": "*au* + *paravant* collés : aucun accent, et -ant à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "La directrice a annoncé que, ___, la bibliothèque ouvrirait aussi le mardi. (veut dire « à partir de maintenant et pour la suite » ; le mot commence par do-)",
+            "reponse_attendue": "dorénavant",
+            "indice": "Un accent aigu sur le e du milieu, et -ant à la fin."
+          },
+          {
+            "id": 6,
+            "enonce": "Rosalie se trompe ___ de porte en arrivant le matin, mais cela n'arrive pas souvent. (un seul mot ; cela veut dire « de temps en temps » ; il commence par q et contient *fois*)",
+            "reponse_attendue": "quelquefois",
+            "indice": "*quelque* + *fois* collés en un seul mot."
+          },
+          {
+            "id": 7,
+            "enonce": "Le chat de Malo dort presque toute la journée, mais ___ il chasse dans le jardin. (un mot de sept lettres ; cela veut dire « de temps en temps » ; il commence par p)",
+            "reponse_attendue": "parfois",
+            "indice": "*par* + *fois* collés, avec un s à la fin."
+          },
+          {
+            "id": 8,
+            "enonce": "Lila a lu ___ de pages que sa sœur : vingt-cinq chacune. (veut dire « la même quantité » ; le mot commence par a)",
+            "reponse_attendue": "autant",
+            "indice": "Il se termine par -ant, comme *pendant*, et il ne prend pas d'accent."
+          },
+          {
+            "id": 9,
+            "enonce": "La musique était ___ forte que Nour s'est bouché les oreilles. (veut dire « à un tel point » ; le mot commence par t)",
+            "reponse_attendue": "tellement",
+            "indice": "*tel* + *lement* : deux l au milieu."
+          },
+          {
+            "id": 10,
+            "enonce": "L'écriture du billet était si petite qu'on la lisait ___. (veut dire « presque pas » ; deux mots, le second est *peine*)",
+            "reponse_attendue": "à peine",
+            "indice": "Le premier mot est la petite préposition *à*, avec un accent grave."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M35",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans l'article « timide adj. Qui n'ose pas parler ni agir devant les autres. », que nous apprend l'abréviation adj. ?",
+        "options": [
+          "que le mot a deux sens",
+          "qu'il faut lui ajouter un e",
+          "que le mot est un adjectif",
+          "que le mot est un adverbe"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Juste après le mot, le dictionnaire donne sa nature : adj. veut dire adjectif."
+      },
+      {
+        "question": "Voici un article : « glace n. f. 1. Eau devenue dure sous l'effet du froid. 2. Miroir. 3. Crème glacée. » Dans « Inès se recoiffe devant la glace du couloir », quel sens du mot est employé ?",
+        "options": [
+          "le sens 2",
+          "le sens 1",
+          "le sens 3",
+          "aucun des trois"
+        ],
+        "reponse_correcte": 0,
+        "explication": "On se recoiffe devant un miroir : c'est la définition numéro 2 de l'article."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'article du mot farouche",
+        "consigne": "Lis cet article de dictionnaire, puis réponds aux questions. — farouche adj. 1. Qui n'est pas apprivoisé, qui fuit dès qu'on approche. « Ce chat farouche se cache sous l'armoire. » 2. Qui évite la compagnie des autres, très timide. « Rosalie est farouche : elle préfère les petits groupes aux grandes tablées. » 3. Violent, acharné. « Les deux équipes se sont livré un combat farouche. »",
+        "questions": [
+          {
+            "question": "Que veut dire l'abréviation « adj. » écrite juste après le mot farouche ?",
+            "options": [
+              "adverbe",
+              "nom masculin",
+              "verbe",
+              "adjectif"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Juste après le mot, le dictionnaire donne sa nature : adj. est l'abréviation d'adjectif."
+          },
+          {
+            "question": "Combien de sens différents cet article donne-t-il au mot farouche ?",
+            "options": [
+              "un seul",
+              "deux",
+              "trois",
+              "quatre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les définitions sont numérotées 1, 2 et 3 : l'article donne trois sens."
+          },
+          {
+            "question": "Dans « Le renard est un animal farouche qui s'enfuit au moindre bruit », quel sens du mot est employé ?",
+            "options": [
+              "le sens 1",
+              "le sens 2",
+              "le sens 3",
+              "aucun des trois"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Il s'agit d'un animal qui fuit quand on approche : c'est la définition numéro 1."
+          },
+          {
+            "question": "Dans « Timéo est trop farouche pour chanter devant toute l'école », quel sens du mot est employé ?",
+            "options": [
+              "le sens 3",
+              "le sens 2",
+              "le sens 1",
+              "aucun des trois"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Ici, farouche parle d'une personne très timide devant les autres : c'est la définition numéro 2."
+          },
+          {
+            "question": "Dans « Une lutte farouche a opposé les deux finalistes », quel sens du mot est employé ?",
+            "options": [
+              "le sens 1",
+              "le sens 2",
+              "le sens 3",
+              "les trois à la fois"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une lutte farouche est une lutte acharnée, très disputée : c'est la définition numéro 3."
+          },
+          {
+            "question": "À quoi servent les phrases écrites entre guillemets après chaque définition ?",
+            "options": [
+              "Ce sont les contraires du mot.",
+              "Ce sont d'autres façons d'écrire le mot.",
+              "Ce sont les mots de la même famille.",
+              "Ce sont des exemples qui montrent le mot employé dans une phrase."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un article de dictionnaire donne un exemple après chaque définition, pour montrer le mot en situation."
+          },
+          {
+            "question": "Quelle information de l'article permet de savoir que farouche accompagne un nom, comme dans « un combat farouche » ?",
+            "options": [
+              "le numéro 3",
+              "l'abréviation adj., qui donne sa nature",
+              "la phrase entre guillemets du sens 1",
+              "la place du mot dans le dictionnaire"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'abréviation adj. dit que le mot est un adjectif : un adjectif accompagne toujours un nom."
+          },
+          {
+            "question": "Pourquoi cet article numérote-t-il ses définitions 1, 2 et 3 ?",
+            "options": [
+              "parce que le mot s'écrit de trois façons",
+              "parce que le mot a trois syllabes",
+              "parce que le mot a trois sens différents",
+              "parce que le mot appartient à trois familles"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Quand un mot a plusieurs sens, le dictionnaire les numérote pour les distinguer."
+          }
+        ]
+      },
+      {
+        "titre": "L'article du mot allure",
+        "consigne": "Lis cet article de dictionnaire, puis réponds aux questions. — allure n. f. 1. Façon de marcher, de se tenir. « Nour a l'allure d'une sportive. » 2. Vitesse à laquelle on se déplace. « Le train roule à vive allure. » 3. Aspect que présente une chose, apparence. « Depuis l'orage, le jardin a une allure abandonnée. »",
+        "questions": [
+          {
+            "question": "Que veut dire l'abréviation « n. f. » écrite juste après le mot allure ?",
+            "options": [
+              "nom féminin",
+              "nom au futur",
+              "nombre de formes",
+              "note finale"
+            ],
+            "reponse_correcte": 0,
+            "explication": "n. f. est l'abréviation de nom féminin : c'est la nature du mot."
+          },
+          {
+            "question": "Quelle information de l'article dit qu'il faut écrire « une allure » et non « un allure » ?",
+            "options": [
+              "le numéro 1",
+              "l'abréviation n. f.",
+              "l'exemple du sens 2",
+              "la place du mot dans le dictionnaire"
+            ],
+            "reponse_correcte": 1,
+            "explication": "n. f. veut dire nom féminin : on écrit donc une allure."
+          },
+          {
+            "question": "Combien de sens différents cet article donne-t-il au mot allure ?",
+            "options": [
+              "quatre",
+              "deux",
+              "un seul",
+              "trois"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les définitions sont numérotées 1, 2 et 3 : l'article donne trois sens."
+          },
+          {
+            "question": "Dans « Le cycliste a doublé le peloton à une allure impressionnante », quel sens du mot est employé ?",
+            "options": [
+              "le sens 3",
+              "le sens 1",
+              "aucun des trois",
+              "le sens 2"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Il est question de la vitesse du cycliste : c'est la définition numéro 2."
+          },
+          {
+            "question": "Dans « Le vieux cheval avance d'une allure lente », quel sens du mot est employé ?",
+            "options": [
+              "le sens 2",
+              "le sens 3",
+              "le sens 1",
+              "aucun des trois"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Il est question de la façon de marcher du cheval : c'est la définition numéro 1."
+          },
+          {
+            "question": "Dans « Cette vieille armoire a une drôle d'allure avec ses portes de travers », quel sens du mot est employé ?",
+            "options": [
+              "le sens 3",
+              "le sens 1",
+              "le sens 2",
+              "les trois à la fois"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Une armoire ne marche pas et ne se déplace pas : il s'agit de son aspect, la définition numéro 3."
+          },
+          {
+            "question": "À quoi sert la phrase écrite entre guillemets après chaque définition ?",
+            "options": [
+              "à donner le contraire du mot",
+              "à indiquer comment prononcer le mot",
+              "à donner un exemple du mot employé dans une phrase",
+              "à indiquer d'où vient le mot"
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'exemple montre le mot en situation, pour bien comprendre le sens qui vient d'être défini."
+          },
+          {
+            "question": "Que trouve-t-on toujours juste après le mot en tête d'article ?",
+            "options": [
+              "sa famille de mots",
+              "son contraire",
+              "sa nature",
+              "son nombre de lettres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un article commence par le mot, puis sa nature (n. f., n. m., adj., v.), et ensuite les définitions."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M24",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Comment complète-t-on : « une pomme (croquer) → une pomme … » ?",
+        "options": [
+          "croquer",
+          "croquée",
+          "croqué",
+          "croqués"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Employé comme un adjectif, le participe passé s'accorde avec le nom : « pomme » est féminin singulier, on écrit croquée."
+      },
+      {
+        "question": "Comment complète-t-on : « un dessin (terminer) → un dessin … » ?",
+        "options": [
+          "terminer",
+          "terminé",
+          "terminée",
+          "terminés"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Ici le mot décrit le dessin : c'est le participe passé, en -é, et non l'infinitif en -er. « dessin » est masculin singulier, donc pas de marque en plus."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le participe passé qui décrit",
+        "consigne": "Écris le participe passé du verbe donné entre parenthèses, accordé avec le nom qui le précède. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "une écharpe (tricoter) → une écharpe …",
+            "reponse_attendue": "tricotée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 2,
+            "enonce": "des cheveux (boucler) → des cheveux …",
+            "reponse_attendue": "bouclés",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 3,
+            "enonce": "une chemise (repasser) → une chemise …",
+            "reponse_attendue": "repassée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 4,
+            "enonce": "un pull (déchirer) → un pull …",
+            "reponse_attendue": "déchiré",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 5,
+            "enonce": "des chaussures (cirer) → des chaussures …",
+            "reponse_attendue": "cirées",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 6,
+            "enonce": "une feuille (froisser) → une feuille …",
+            "reponse_attendue": "froissée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 7,
+            "enonce": "un portrait (encadrer) → un portrait …",
+            "reponse_attendue": "encadré",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 8,
+            "enonce": "des lunettes (casser) → des lunettes …",
+            "reponse_attendue": "cassées",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 9,
+            "enonce": "une porte (ouvrir) → une porte …",
+            "reponse_attendue": "ouverte",
+            "indice": "Le participe passé d'ouvrir ne finit pas en -é : il se termine par -ert."
+          },
+          {
+            "id": 10,
+            "enonce": "des mots (écrire) → des mots …",
+            "reponse_attendue": "écrits",
+            "indice": "Le participe passé d'écrire se termine par -it."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des participes passés qui décrivent",
+        "consigne": "Écris le participe passé du verbe donné entre parenthèses, accordé avec le nom qui le précède. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "une lettre (poster) → une lettre …",
+            "reponse_attendue": "postée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 2,
+            "enonce": "des gâteaux (cuire) → des gâteaux …",
+            "reponse_attendue": "cuits",
+            "indice": "Le participe passé de cuire se termine par -it."
+          },
+          {
+            "id": 3,
+            "enonce": "une lampe (allumer) → une lampe …",
+            "reponse_attendue": "allumée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 4,
+            "enonce": "un mur (peindre) → un mur …",
+            "reponse_attendue": "peint",
+            "indice": "Le participe passé de peindre ne finit pas en -é : il se termine par -eint."
+          },
+          {
+            "id": 5,
+            "enonce": "des vêtements (mouiller) → des vêtements …",
+            "reponse_attendue": "mouillés",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 6,
+            "enonce": "une nappe (tacher) → une nappe …",
+            "reponse_attendue": "tachée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 7,
+            "enonce": "un carreau (briser) → un carreau …",
+            "reponse_attendue": "brisé",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 8,
+            "enonce": "des rideaux (plisser) → des rideaux …",
+            "reponse_attendue": "plissés",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 9,
+            "enonce": "une phrase (souligner) → une phrase …",
+            "reponse_attendue": "soulignée",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          },
+          {
+            "id": 10,
+            "enonce": "des feuilles (sécher) → des feuilles …",
+            "reponse_attendue": "séchées",
+            "indice": "Regarde le genre et le nombre du nom : le participe passé employé comme adjectif s'accorde avec lui."
+          }
+        ]
+      }
+    ]
+  }
+]

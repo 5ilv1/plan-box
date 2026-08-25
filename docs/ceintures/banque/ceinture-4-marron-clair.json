@@ -1,0 +1,816 @@
+[
+  {
+    "item_code": "P23",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Les CM2 ___ à la piscine le mardi. (aller) », quelle forme convient ?",
+        "options": [
+          "va",
+          "vont",
+          "allent",
+          "aller"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Aller est irrégulier : ils vont, elles vont. « allent » n'existe pas."
+      },
+      {
+        "question": "Dans « Nous ___ deux équipes. (faire) », quelle forme convient ?",
+        "options": [
+          "fait",
+          "font",
+          "faire",
+          "faisons"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Avec « nous », faire fait « faisons »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La sortie au parc",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Ce matin, nous (aller) allons au parc. Tu (faire) fais la liste des groupes. Les parents (aller) vont au parking. Les CM1 (faire) font les affiches. Le maître (aller) va devant.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "allons",
+            "indice": "Verbe aller, avec « nous »."
+          },
+          {
+            "position": 1,
+            "mot": "fais",
+            "indice": "Verbe faire, avec « tu »."
+          },
+          {
+            "position": 2,
+            "mot": "vont",
+            "indice": "Verbe aller : le sujet vaut « ils »."
+          },
+          {
+            "position": 3,
+            "mot": "font",
+            "indice": "Verbe faire : le sujet vaut « ils »."
+          },
+          {
+            "position": 4,
+            "mot": "va",
+            "indice": "Verbe aller : le sujet vaut « il »."
+          }
+        ]
+      },
+      {
+        "titre": "Le mercredi au gymnase",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Le mercredi, je (aller) vais au gymnase. Vous (faire) faites deux équipes. Les grands (faire) font le tour du terrain. Ma tante (aller) va s'asseoir sur le banc. Nous (aller) allons encourager les autres.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "vais",
+            "indice": "Verbe aller, avec « je »."
+          },
+          {
+            "position": 1,
+            "mot": "faites",
+            "indice": "Verbe faire, avec « vous » : attention, il est irrégulier."
+          },
+          {
+            "position": 2,
+            "mot": "font",
+            "indice": "Verbe faire : le sujet vaut « ils »."
+          },
+          {
+            "position": 3,
+            "mot": "va",
+            "indice": "Verbe aller : le sujet vaut « elle »."
+          },
+          {
+            "position": 4,
+            "mot": "allons",
+            "indice": "Verbe aller, avec « nous »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P19",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Comment écrit-on l'adjectif dans « des chapeaux (pointu) » ?",
+        "options": [
+          "pointue",
+          "pointues",
+          "pointu",
+          "pointus"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« chapeaux » est masculin pluriel : l'adjectif prend seulement -s."
+      },
+      {
+        "question": "Comment écrit-on l'adjectif dans « une casquette (neuf) » ?",
+        "options": [
+          "neuve",
+          "neuf",
+          "neufs",
+          "neuves"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« casquette » est féminin singulier : neuf devient neuve."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'accord dans le groupe",
+        "consigne": "Écris l'adjectif accordé avec le nom. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "des chaussures (noir) → des chaussures …",
+            "reponse_attendue": "noires",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 2,
+            "enonce": "une veste (vert) → une veste …",
+            "reponse_attendue": "verte",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 3,
+            "enonce": "les cheveux (long) → les cheveux …",
+            "reponse_attendue": "longs",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 4,
+            "enonce": "une histoire (amusant) → une histoire …",
+            "reponse_attendue": "amusante",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 5,
+            "enonce": "des yeux (clair) → des yeux …",
+            "reponse_attendue": "clairs",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 6,
+            "enonce": "une écharpe (doux) → une écharpe …",
+            "reponse_attendue": "douce",
+            "indice": "Certains adjectifs changent plus que d'autres au féminin."
+          },
+          {
+            "id": 7,
+            "enonce": "des chaussettes (rayé) → des chaussettes …",
+            "reponse_attendue": "rayées",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 8,
+            "enonce": "un manteau (gris) → un manteau …",
+            "reponse_attendue": "gris",
+            "indice": "Un adjectif qui finit déjà par -s ne change pas au masculin singulier."
+          }
+        ]
+      },
+      {
+        "titre": "Le portrait accordé",
+        "consigne": "Écris l'adjectif accordé avec le nom. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "une jupe (bleu) → une jupe …",
+            "reponse_attendue": "bleue",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 2,
+            "enonce": "des lunettes (rond) → des lunettes …",
+            "reponse_attendue": "rondes",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 3,
+            "enonce": "un bonnet (violet) → un bonnet …",
+            "reponse_attendue": "violet",
+            "indice": "Le nom est masculin singulier."
+          },
+          {
+            "id": 4,
+            "enonce": "des rubans (doré) → des rubans …",
+            "reponse_attendue": "dorés",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 5,
+            "enonce": "une voix (fort) → une voix …",
+            "reponse_attendue": "forte",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 6,
+            "enonce": "des joues (rebondi) → des joues …",
+            "reponse_attendue": "rebondies",
+            "indice": "Regarde le genre et le nombre du nom."
+          },
+          {
+            "id": 7,
+            "enonce": "un sourire (franc) → un sourire …",
+            "reponse_attendue": "franc",
+            "indice": "Le nom est masculin singulier."
+          },
+          {
+            "id": 8,
+            "enonce": "une robe (blanc) → une robe …",
+            "reponse_attendue": "blanche",
+            "indice": "Certains adjectifs changent beaucoup au féminin."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P26",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Les élèves ___ leur cahier. (prendre) », quelle forme convient ?",
+        "options": [
+          "prend",
+          "prends",
+          "prendent",
+          "prennent"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Prendre est irrégulier : ils prennent, avec deux n."
+      },
+      {
+        "question": "Dans « Vous ___ de la piscine. (venir) », quelle forme convient ?",
+        "options": [
+          "venez",
+          "venons",
+          "viennent",
+          "venir"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Avec « vous », venir fait « venez »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Avant la récréation",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "À dix heures, je (prendre) prends mon goûter. Tu (venir) viens avec nous. Les CM1 (prendre) prennent leur ballon. Fatou (venir) vient nous rejoindre. Nous (prendre) prenons le couloir de droite.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "prends",
+            "indice": "Verbe prendre, avec « je »."
+          },
+          {
+            "position": 1,
+            "mot": "viens",
+            "indice": "Verbe venir, avec « tu »."
+          },
+          {
+            "position": 2,
+            "mot": "prennent",
+            "indice": "Verbe prendre : le sujet vaut « ils »."
+          },
+          {
+            "position": 3,
+            "mot": "vient",
+            "indice": "Verbe venir : le sujet vaut « elle »."
+          },
+          {
+            "position": 4,
+            "mot": "prenons",
+            "indice": "Verbe prendre, avec « nous »."
+          }
+        ]
+      },
+      {
+        "titre": "Le retour du musée",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Après la visite, vous (prendre) prenez vos carnets. Les parents (venir) viennent nous accompagner. Je (venir) viens m'asseoir près de Fatou. Adam (prendre) prend la place du fond. Nous (venir) venons au point de rendez-vous.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "prenez",
+            "indice": "Verbe prendre, avec « vous »."
+          },
+          {
+            "position": 1,
+            "mot": "viennent",
+            "indice": "Verbe venir : le sujet vaut « ils »."
+          },
+          {
+            "position": 2,
+            "mot": "viens",
+            "indice": "Verbe venir, avec « je »."
+          },
+          {
+            "position": 3,
+            "mot": "prend",
+            "indice": "Verbe prendre : le sujet vaut « il »."
+          },
+          {
+            "position": 4,
+            "mot": "venons",
+            "indice": "Verbe venir, avec « nous »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P27",
+    "type": "analyse_phrase",
+    "diagnostic": [
+      {
+        "question": "Dans « Fatou donne un cadeau à sa cousine », quel groupe est complément d'objet indirect ?",
+        "options": [
+          "Fatou",
+          "à sa cousine",
+          "un cadeau",
+          "donne"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Fatou donne À QUI ? à sa cousine. Le complément répond à la question « à qui ? » posée après le verbe : c'est un COI."
+      },
+      {
+        "question": "Dans laquelle de ces phrases le verbe a-t-il un complément d'objet direct ?",
+        "options": [
+          "Malo court dans la cour.",
+          "Malo pense à son chien.",
+          "Malo range son cartable.",
+          "Malo parle de ses vacances."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Malo range QUOI ? son cartable. Le complément répond à la question « quoi ? » posée après le verbe : c'est un COD."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Direct ou indirect ?",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Lila termine son exposé",
+            "groupes": [
+              {
+                "mots": "Lila",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "termine",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "son exposé",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          },
+          {
+            "texte": "Timéo répond à sa voisine",
+            "groupes": [
+              {
+                "mots": "Timéo",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "répond",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "à sa voisine",
+                "fonction": "COI",
+                "debut": 2,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Les élèves rangent leurs cahiers",
+            "groupes": [
+              {
+                "mots": "Les élèves",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "rangent",
+                "fonction": "Verbe",
+                "debut": 2,
+                "fin": 2
+              },
+              {
+                "mots": "leurs cahiers",
+                "fonction": "COD",
+                "debut": 3,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Adam parle de son voyage",
+            "groupes": [
+              {
+                "mots": "Adam",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "parle",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "de son voyage",
+                "fonction": "COI",
+                "debut": 2,
+                "fin": 4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "titre": "Au club de théâtre",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Sacha apprend son texte",
+            "groupes": [
+              {
+                "mots": "Sacha",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "apprend",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "son texte",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          },
+          {
+            "texte": "Les acteurs sourient au public",
+            "groupes": [
+              {
+                "mots": "Les acteurs",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "sourient",
+                "fonction": "Verbe",
+                "debut": 2,
+                "fin": 2
+              },
+              {
+                "mots": "au public",
+                "fonction": "COI",
+                "debut": 3,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Jade essaie un costume",
+            "groupes": [
+              {
+                "mots": "Jade",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "essaie",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "un costume",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          },
+          {
+            "texte": "Inès rêve de son rôle",
+            "groupes": [
+              {
+                "mots": "Inès",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "rêve",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "de son rôle",
+                "fonction": "COI",
+                "debut": 2,
+                "fin": 4
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P28",
+    "type": "analyse_phrase",
+    "diagnostic": [
+      {
+        "question": "Dans « Le soir, Fatou bricole dans sa chambre », quel groupe répond à la question « où ? »",
+        "options": [
+          "dans sa chambre",
+          "Le soir",
+          "Fatou",
+          "bricole"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« dans sa chambre » dit l'endroit : c'est un complément circonstanciel de lieu."
+      },
+      {
+        "question": "Dans « Louna descend l'escalier sans bruit », que nous dit « sans bruit » ?",
+        "options": [
+          "quand ?",
+          "où ?",
+          "comment ?",
+          "qui ?"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« sans bruit » dit de quelle manière Louna descend : c'est un complément circonstanciel de manière."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quand, où, comment ?",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Le matin, les CM2 lisent en silence",
+            "groupes": [
+              {
+                "mots": "Le matin",
+                "fonction": "CC Temps",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "les CM2",
+                "fonction": "Sujet",
+                "debut": 2,
+                "fin": 3
+              },
+              {
+                "mots": "lisent",
+                "fonction": "Verbe",
+                "debut": 4,
+                "fin": 4
+              },
+              {
+                "mots": "en silence",
+                "fonction": "CC Manière",
+                "debut": 5,
+                "fin": 6
+              }
+            ]
+          },
+          {
+            "texte": "Nour glisse ses affaires dans le casier",
+            "groupes": [
+              {
+                "mots": "Nour",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "glisse",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "ses affaires",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              },
+              {
+                "mots": "dans le casier",
+                "fonction": "CC Lieu",
+                "debut": 4,
+                "fin": 6
+              }
+            ]
+          },
+          {
+            "texte": "Les élèves avancent lentement vers la cantine",
+            "groupes": [
+              {
+                "mots": "Les élèves",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "avancent",
+                "fonction": "Verbe",
+                "debut": 2,
+                "fin": 2
+              },
+              {
+                "mots": "lentement",
+                "fonction": "CC Manière",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "vers la cantine",
+                "fonction": "CC Lieu",
+                "debut": 4,
+                "fin": 6
+              }
+            ]
+          },
+          {
+            "texte": "Le maître ouvre la fenêtre",
+            "groupes": [
+              {
+                "mots": "Le maître",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "ouvre",
+                "fonction": "Verbe",
+                "debut": 2,
+                "fin": 2
+              },
+              {
+                "mots": "la fenêtre",
+                "fonction": "COD",
+                "debut": 3,
+                "fin": 4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "titre": "La journée de la classe",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "À huit heures, les élèves entrent dans la classe",
+            "groupes": [
+              {
+                "mots": "À huit heures",
+                "fonction": "CC Temps",
+                "debut": 0,
+                "fin": 2
+              },
+              {
+                "mots": "les élèves",
+                "fonction": "Sujet",
+                "debut": 3,
+                "fin": 4
+              },
+              {
+                "mots": "entrent",
+                "fonction": "Verbe",
+                "debut": 5,
+                "fin": 5
+              },
+              {
+                "mots": "dans la classe",
+                "fonction": "CC Lieu",
+                "debut": 6,
+                "fin": 8
+              }
+            ]
+          },
+          {
+            "texte": "Jade écrit la date soigneusement",
+            "groupes": [
+              {
+                "mots": "Jade",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "écrit",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "la date",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              },
+              {
+                "mots": "soigneusement",
+                "fonction": "CC Manière",
+                "debut": 4,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Après la sonnerie, Malo parle à la maîtresse",
+            "groupes": [
+              {
+                "mots": "Après la sonnerie",
+                "fonction": "CC Temps",
+                "debut": 0,
+                "fin": 2
+              },
+              {
+                "mots": "Malo",
+                "fonction": "Sujet",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "parle",
+                "fonction": "Verbe",
+                "debut": 4,
+                "fin": 4
+              },
+              {
+                "mots": "à la maîtresse",
+                "fonction": "COI",
+                "debut": 5,
+                "fin": 7
+              }
+            ]
+          },
+          {
+            "texte": "La classe travaille au gymnase",
+            "groupes": [
+              {
+                "mots": "La classe",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "travaille",
+                "fonction": "Verbe",
+                "debut": 2,
+                "fin": 2
+              },
+              {
+                "mots": "au gymnase",
+                "fonction": "CC Lieu",
+                "debut": 3,
+                "fin": 4
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  }
+]

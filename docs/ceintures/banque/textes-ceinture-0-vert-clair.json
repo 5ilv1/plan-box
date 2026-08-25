@@ -1,0 +1,598 @@
+[
+  {
+    "item_code": "T11",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Laquelle de ces phrases est écrite correctement ?",
+        "options": [
+          "les élèves entrent dans la classe.",
+          "Les élèves entrent dans la classe",
+          "Les élèves entrent dans la classe.",
+          "les élèves entrent dans la classe"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une phrase commence par une majuscule et se termine par un point : il faut les deux."
+      },
+      {
+        "question": "Que manque-t-il à cette phrase : « la maîtresse ouvre la boîte de craies. » ?",
+        "options": [
+          "la majuscule au début",
+          "le point à la fin",
+          "il ne manque rien",
+          "un verbe"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le point est bien là, mais le premier mot d'une phrase s'écrit avec une majuscule."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Trois colonnes pour trois phrases",
+        "consigne": "Classe chaque phrase dans la bonne colonne.",
+        "categories": [
+          "Phrase correcte",
+          "Il manque la majuscule",
+          "Il manque le point"
+        ],
+        "items": [
+          {
+            "texte": "Lila attache ses cheveux avec un ruban vert.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "fatou porte un pull rayé.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Rosalie mesure la table avec sa règle",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Le maître ouvre la fenêtre de la classe.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "les nouveaux élèves visitent l'école.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Le chat de Malo dort sur le radiateur",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Timéo glisse son cartable sous le banc.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "mon grand frère a les cheveux bouclés.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Inès chuchote une histoire à son voisin",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Nous partons à la bibliothèque après le goûter.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "sacha sourit à sa voisine de table.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Les CM2 descendent au gymnase",
+            "categorie": "Il manque le point"
+          }
+        ]
+      },
+      {
+        "titre": "Le tri du jour",
+        "consigne": "Classe chaque phrase dans la bonne colonne.",
+        "categories": [
+          "Phrase correcte",
+          "Il manque la majuscule",
+          "Il manque le point"
+        ],
+        "items": [
+          {
+            "texte": "Yanis apporte des gâteaux pour son anniversaire.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "adam range les livres sur l'étagère.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Nour souffle ses bougies devant tout le monde",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Le vent secoue la porte du préau.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "notre classe part en sortie jeudi.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Le couloir sent le pain chaud",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "La maîtresse écrit la date au tableau.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "le chien du voisin aboie tout le temps.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Timéo enfile son manteau bleu",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Louna tient son cahier serré contre elle.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "inès a perdu son bonnet gris.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Les élèves de CE2 chantent dans la salle",
+            "categorie": "Il manque le point"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T13",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Le modèle est : « Sacha porte un blouson trop grand. » Quelle copie est exacte ?",
+        "options": [
+          "Sacha porte un blouson trop grand",
+          "sacha porte un blouson trop grand.",
+          "Sacha porte un blouson trop gran.",
+          "Sacha porte un blouson trop grand."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Recopier, c'est écrire exactement le même texte : les mêmes lettres, la majuscule du début et le point de la fin."
+      },
+      {
+        "question": "Le modèle est : « Jade a rangé sa trousse dans le tiroir. » Yanis a recopié : « Jade a rangé sa trousse dans le tiroir » Quelle erreur a-t-il faite ?",
+        "options": [
+          "Il a oublié le point de la fin.",
+          "Il a oublié la majuscule du début.",
+          "Il a oublié un mot du modèle.",
+          "Il n'a fait aucune erreur."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Tous les mots et la majuscule sont là : c'est le point de la fin qui manque. La ponctuation fait partie de la copie."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La copie du jour : Nour",
+        "consigne": "Recopie ce texte sans faire une seule erreur : « Nour a les cheveux courts et une frange bien droite. Elle porte toujours un gilet jaune. Quand elle rit, on voit ses deux dents du haut. »",
+        "contraintes": [
+          "Tu recopies les trois phrases mot pour mot : tu n'ajoutes aucun mot et tu n'en enlèves aucun.",
+          "Chacune des trois phrases commence par une majuscule.",
+          "Chacune des trois phrases se termine par un point.",
+          "Tu n'oublies pas la virgule qui se trouve dans la dernière phrase.",
+          "Tu écris chaque mot avec la même orthographe que le modèle, accents compris."
+        ],
+        "nb_phrases": 3,
+        "exemple": "Nour a les cheveux courts et une frange bien droite."
+      },
+      {
+        "titre": "La copie du jour : Malo",
+        "consigne": "Recopie ce texte sans faire une seule erreur : « Malo est le plus petit de la classe. Il a des taches de rousseur sur le nez. Sa casquette verte ne le quitte jamais, même à la cantine. »",
+        "contraintes": [
+          "Tu recopies les trois phrases mot pour mot : tu n'ajoutes aucun mot et tu n'en enlèves aucun.",
+          "Chacune des trois phrases commence par une majuscule.",
+          "Chacune des trois phrases se termine par un point.",
+          "Tu n'oublies pas la virgule qui se trouve dans la dernière phrase.",
+          "Tu écris chaque mot avec la même orthographe que le modèle, accents compris."
+        ],
+        "nb_phrases": 3,
+        "exemple": "Malo est le plus petit de la classe."
+      }
+    ]
+  },
+  {
+    "item_code": "T44",
+    "type": "lecture",
+    "diagnostic": [
+      {
+        "question": "On lit dans un texte : « Malo habite au-dessus de la pharmacie, en face de la poste. » Pour répondre à la question « Où habite Malo ? », quel morceau faut-il recopier ?",
+        "options": [
+          "Malo habite dans une grande maison.",
+          "au-dessus de la pharmacie, en face de la poste",
+          "Malo aime beaucoup sa maison.",
+          "juste en face de l'école"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La réponse se trouve déjà dans le texte : on recopie le morceau de phrase qui répond à la question, sans inventer."
+      },
+      {
+        "question": "Dans un texte, on lit : « Sacha porte des lunettes rondes. » À quelle question ce morceau de phrase répond-il ?",
+        "options": [
+          "Où habite Sacha ?",
+          "Quel âge a Sacha ?",
+          "Comment s'appelle le frère de Sacha ?",
+          "Que porte Sacha sur le nez ?"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un morceau de texte ne répond qu'à une seule question : ici, il dit ce que Sacha porte, pas où il habite ni son âge."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Rosalie, la nouvelle",
+        "texte": "Rosalie est entrée dans la classe un matin de septembre. Elle vient d'une petite école, au bord de la mer. Rosalie a des cheveux roux qu'elle attache avec un élastique bleu. Sur son nez, on compte des dizaines de taches de rousseur. Elle porte souvent un gilet trop grand pour elle : c'était celui de sa grande sœur. Le premier jour, Rosalie n'a parlé à personne. Elle a rangé son cartable près de la fenêtre et elle a passé toute la récréation près du mur du préau. Le deuxième jour, Timéo lui a prêté son taille-crayon. Depuis, ils s'assoient à la même table. Rosalie peint des chevaux mieux que tout le monde. Quand la maîtresse demande un volontaire pour illustrer une histoire, c'est toujours elle qui lève la main.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Comment sont les cheveux de Rosalie ?",
+            "choix": [
+              "des cheveux roux qu'elle attache avec un élastique bleu",
+              "des dizaines de taches de rousseur",
+              "un gilet trop grand pour elle",
+              "une petite école au bord de la mer"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 2,
+            "question": "D'où vient Rosalie ?",
+            "choix": [
+              "du préau de l'école",
+              "de la table de Timéo",
+              "d'une petite école au bord de la mer",
+              "de la fenêtre de la classe"
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 3,
+            "question": "Qu'y a-t-il sur le nez de Rosalie ?",
+            "choix": [
+              "un élastique bleu",
+              "des dizaines de taches de rousseur",
+              "des cheveux roux",
+              "un gilet trop grand"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 4,
+            "question": "À qui était le gilet que porte Rosalie ?",
+            "choix": [
+              "à Timéo",
+              "à la maîtresse",
+              "à sa mère",
+              "à sa grande sœur"
+            ],
+            "reponse": 3
+          },
+          {
+            "id": 5,
+            "question": "Où Rosalie a-t-elle passé toute sa première récréation ?",
+            "choix": [
+              "dans la classe, près de la fenêtre",
+              "près du mur du préau",
+              "au bord de la mer",
+              "à la même table que Timéo"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 6,
+            "question": "Que Timéo a-t-il prêté à Rosalie le deuxième jour ?",
+            "choix": [
+              "son taille-crayon",
+              "son cartable",
+              "son élastique",
+              "son carnet"
+            ],
+            "reponse": 0
+          }
+        ]
+      },
+      {
+        "titre": "Le grand-père de Yanis",
+        "texte": "Le grand-père de Yanis habite au bout du village, dans une maison basse au toit rouge. Tout le monde l'appelle Papi Gino. Il a une barbe blanche très courte et des lunettes rondes qu'il laisse sans arrêt sur la table de la cuisine. Papi Gino marche lentement, avec une canne en bois qu'il a taillée lui-même. Le mercredi, Yanis passe l'après-midi chez lui. Ils s'occupent du jardin : Papi Gino sème les radis et Yanis arrose les tomates. Quand il pleut, ils sortent la boîte de dominos et ils écoutent la radio. Papi Gino a des dizaines d'histoires de son enfance dans la tête. Il parle du temps où il vivait en Italie, dans un village entouré de collines. Yanis connaît ces histoires par cœur, mais il les écoute chaque fois avec le même plaisir.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Où habite Papi Gino aujourd'hui ?",
+            "choix": [
+              "dans un village entouré de collines, en Italie",
+              "au bout du village, dans une maison basse au toit rouge",
+              "au fond du jardin de Yanis",
+              "juste à côté de l'école de Yanis"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 2,
+            "question": "Comment est la barbe de Papi Gino ?",
+            "choix": [
+              "une barbe blanche très courte",
+              "des lunettes rondes",
+              "une canne en bois",
+              "un toit rouge"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 3,
+            "question": "Avec quoi Papi Gino marche-t-il ?",
+            "choix": [
+              "avec le bras de Yanis",
+              "avec ses lunettes rondes",
+              "avec la boîte de dominos",
+              "avec une canne en bois qu'il a taillée lui-même"
+            ],
+            "reponse": 3
+          },
+          {
+            "id": 4,
+            "question": "Que fait Yanis dans le jardin ?",
+            "choix": [
+              "il sème les radis",
+              "il taille la canne en bois",
+              "il arrose les tomates",
+              "il écoute la radio"
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 5,
+            "question": "Que font Yanis et son grand-père quand il pleut ?",
+            "choix": [
+              "ils s'occupent du jardin",
+              "ils sortent la boîte de dominos et ils écoutent la radio",
+              "ils partent en Italie",
+              "ils cherchent les lunettes de Papi Gino"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 6,
+            "question": "Dans quel pays Papi Gino vivait-il quand il était enfant ?",
+            "choix": [
+              "en Espagne",
+              "au Portugal",
+              "en Italie",
+              "en Grèce"
+            ],
+            "reponse": 2
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T12",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "« Yanis lace ses chaussures et puis il rejoint ses camarades. » Que fait Yanis en premier ?",
+        "options": [
+          "Il rejoint ses camarades.",
+          "Il lace ses chaussures.",
+          "Il fait les deux gestes en même temps.",
+          "On ne peut pas le savoir."
+        ],
+        "reponse_correcte": 1,
+        "explication": "« et puis » annonce ce qui vient après : le geste écrit avant « et puis » est fait en premier."
+      },
+      {
+        "question": "Nour veut écrire ses deux idées dans une seule phrase : « Nour tire le rideau ___ elle ouvre le volet. » Quel mot faut-il écrire à la place du trou ?",
+        "options": [
+          "aussi",
+          "avec",
+          "et",
+          "pour"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Pour rassembler deux idées entières dans une seule phrase, on écrit « et » entre les deux."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Relier deux idées",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Deux idées : « Lila ouvre sa trousse. » et « Lila sort un feutre. » Quelle phrase les relie correctement ?",
+            "options": [
+              "Lila ouvre sa trousse et elle sort un feutre.",
+              "Lila ouvre sa trousse elle sort un feutre.",
+              "Lila ouvre sa trousse et. Elle sort un feutre.",
+              "Et Lila ouvre sa trousse elle sort un feutre."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« et » se glisse entre les deux idées, dans une seule phrase."
+          },
+          {
+            "question": "Nour enfile son manteau, ensuite elle noue son écharpe. Quelle phrase emploie « et puis » correctement ?",
+            "options": [
+              "Et puis Nour enfile son manteau elle noue son écharpe.",
+              "Nour enfile son manteau, et puis. Elle noue son écharpe.",
+              "Nour enfile son manteau et puis elle noue son écharpe.",
+              "Nour enfile son manteau elle noue et puis son écharpe."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« et puis » se place entre les deux idées, jamais au début de la phrase ni au milieu d'une idée."
+          },
+          {
+            "question": "Dans laquelle de ces phrases les deux idées sont-elles reliées par « et » ?",
+            "options": [
+              "Le préau est tout mouillé.",
+              "Timéo attrape son ballon et il court vers le préau.",
+              "Timéo attrape son ballon. Il court vers le préau.",
+              "Timéo, son ballon, le préau."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux idées reliées tiennent dans une seule phrase, avec « et » entre les deux."
+          },
+          {
+            "question": "Quelle phrase est correctement reliée ?",
+            "options": [
+              "Malo pousse le portail il entre et dans la cour.",
+              "Malo pousse le portail et. Il entre dans la cour.",
+              "Malo pousse le portail il entre dans la cour.",
+              "Malo pousse le portail et il entre dans la cour."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Une seule phrase, avec « et » placé entre les deux idées entières et un seul point à la fin : c'est la seule forme correcte ici."
+          },
+          {
+            "question": "Deux idées : « Jade lit une bande dessinée. » et « Jade rit toute seule. » Quelle phrase les relie ?",
+            "options": [
+              "Jade lit une bande dessinée et elle rit toute seule.",
+              "Jade lit une bande dessinée elle rit et toute seule.",
+              "Et Jade lit une bande dessinée elle rit toute seule.",
+              "Jade lit une bande dessinée et. elle rit toute seule."
+            ],
+            "reponse_correcte": 0,
+            "explication": "On garde une seule phrase, avec « et » entre les deux idées et un seul point à la fin."
+          },
+          {
+            "question": "Que veut dire « et puis » dans « Adam range ses affaires et puis il sort de la classe » ?",
+            "options": [
+              "Adam ne range pas ses affaires.",
+              "Adam doit choisir entre les deux actions.",
+              "Adam fait d'abord une action, ensuite l'autre.",
+              "Adam fait les deux actions exactement en même temps."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« et puis » indique que la seconde action vient après la première."
+          },
+          {
+            "question": "Dans quelle phrase « et » relie-t-il deux idées, et non deux mots ?",
+            "options": [
+              "Louna a un cartable rouge et vert.",
+              "Louna ouvre son cahier et elle écrit la date.",
+              "Louna aime les pommes et les poires.",
+              "Louna et Sacha sont voisins de table."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« et » peut relier deux mots, mais ici il relie deux idées : chacune a son sujet et son verbe."
+          },
+          {
+            "question": "Deux idées : « Yanis souffle ses bougies. » et « La classe chante. » Quelle phrase emploie « et puis » correctement ?",
+            "options": [
+              "Et puis Yanis souffle ses bougies la classe chante.",
+              "Yanis souffle ses bougies la classe et puis chante.",
+              "Yanis souffle ses bougies. Et puis.",
+              "Yanis souffle ses bougies et puis la classe chante."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« et puis » se place entre les deux idées entières, pas au début et pas au milieu de l'une d'elles."
+          }
+        ]
+      },
+      {
+        "titre": "Une seule phrase pour deux idées",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Deux idées : « Yanis ouvre la fenêtre. » et « Yanis respire l'air frais. » Quelle phrase les relie ?",
+            "options": [
+              "Yanis ouvre la fenêtre respire l'air frais.",
+              "Et Yanis ouvre la fenêtre il respire l'air frais.",
+              "Yanis ouvre la fenêtre et. Il respire l'air frais.",
+              "Yanis ouvre la fenêtre et il respire l'air frais."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« et » se glisse entre les deux idées, dans une seule phrase."
+          },
+          {
+            "question": "Quelle phrase emploie « et puis » correctement ?",
+            "options": [
+              "Et puis Inès termine son dessin elle le signe.",
+              "Inès termine son dessin et puis elle le signe.",
+              "Inès termine son dessin, et puis. Elle le signe.",
+              "Inès termine et puis son dessin elle le signe."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« et puis » se place entre les deux idées entières."
+          },
+          {
+            "question": "Dans laquelle de ces phrases les deux idées sont-elles reliées par « et » ?",
+            "options": [
+              "Le tableau est plein de craie.",
+              "Rosalie efface le tableau. Elle range l'éponge.",
+              "Rosalie efface le tableau et elle range l'éponge.",
+              "Rosalie, le tableau, l'éponge."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Deux idées reliées tiennent dans une seule phrase, avec « et » entre les deux."
+          },
+          {
+            "question": "Quelle phrase est correctement reliée ?",
+            "options": [
+              "Sacha sort son cahier et il écrit son prénom.",
+              "Sacha sort son cahier il écrit son prénom.",
+              "Sacha sort son cahier il écrit et son prénom.",
+              "Sacha sort son cahier et. Il écrit son prénom."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Sans mot de liaison, les deux idées se cognent ; « et » les relie proprement."
+          },
+          {
+            "question": "Que veut dire « et puis » dans « Louna souffle sur sa soupe et puis elle goûte une cuillère » ?",
+            "options": [
+              "Louna choisit une seule des deux actions.",
+              "Louna ne goûte pas sa soupe.",
+              "Louna fait les deux actions exactement en même temps.",
+              "Louna souffle d'abord, ensuite elle goûte."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« et puis » indique que la seconde action vient après la première."
+          },
+          {
+            "question": "Dans quelle phrase « et » relie-t-il deux idées, et non deux mots ?",
+            "options": [
+              "Jade porte un bonnet et des moufles.",
+              "Jade referme son livre et elle éteint la lampe.",
+              "Jade et Timéo habitent la même rue.",
+              "Jade aime les crêpes et les gaufres."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Ici, « et » relie deux idées : de chaque côté, il y a un sujet et un verbe."
+          },
+          {
+            "question": "Deux idées : « Malo pousse le portillon. » et « La chienne sort dans le jardin. » Quelle phrase emploie « et puis » correctement ?",
+            "options": [
+              "Malo pousse le portillon et puis la chienne sort dans le jardin.",
+              "Et puis Malo pousse le portillon la chienne sort dans le jardin.",
+              "Malo pousse le portillon la chienne et puis sort dans le jardin.",
+              "Malo pousse le portillon. Et puis."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« et puis » sépare les deux idées entières et montre qu'elles se suivent."
+          },
+          {
+            "question": "Un élève a écrit : « Fatou attrape sa raquette elle descend au gymnase. » Quelle correction convient ?",
+            "options": [
+              "Fatou attrape et sa raquette elle descend au gymnase.",
+              "Fatou attrape sa raquette et. Elle descend au gymnase.",
+              "Fatou attrape sa raquette et elle descend au gymnase.",
+              "Et Fatou attrape sa raquette elle descend au gymnase."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Il manquait le mot de liaison : « et » se place entre les deux idées."
+          }
+        ]
+      }
+    ]
+  }
+]

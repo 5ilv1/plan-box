@@ -1,0 +1,682 @@
+[
+  {
+    "item_code": "M31",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel mot invariable est écrit correctement ?",
+        "options": [
+          "aussitot",
+          "ossitôt",
+          "aussitôts",
+          "aussitôt"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« aussitôt » est formé de « aussi » et de « tôt » : il garde l'accent circonflexe de « tôt » et ne prend jamais de s."
+      },
+      {
+        "question": "Quel mot invariable complète : « Le ciel était très couvert ; le match a ___ eu lieu. » ?",
+        "options": [
+          "pourtant",
+          "aussitôt",
+          "autrefois",
+          "surtout"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un ciel couvert annonçait l'annulation du match, et le match a eu lieu quand même : « pourtant » sert à marquer cette opposition."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots invariables du raisonnement",
+        "consigne": "Écris le mot invariable qui manque. Ce qui est entre parenthèses t'aide à trouver lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Malo a relu sa dictée ; il a ___ laissé deux fautes. (synonyme de *pourtant* ; le mot commence par c et compte neuf lettres)",
+            "reponse_attendue": "cependant",
+            "indice": "On y retrouve « pendant », précédé de ce-."
+          },
+          {
+            "id": 2,
+            "enonce": "Inès connaissait bien sa leçon ; elle s'est ___ trompée deux fois. (synonyme de *cependant* ; le mot commence par p)",
+            "reponse_attendue": "pourtant",
+            "indice": "Il commence comme « pour » et se termine par -ant."
+          },
+          {
+            "id": 3,
+            "enonce": "Nour trace un trait au milieu de sa feuille : ___, elle obtient deux parts égales. (veut dire « de cette façon » ; cinq lettres, le mot commence par a)",
+            "reponse_attendue": "ainsi",
+            "indice": "Il se termine par -si, et il ne porte aucun accent."
+          },
+          {
+            "id": 4,
+            "enonce": "Yanis apprend le violon ___ que la guitare. (il préfère le premier des deux ; le mot commence par p et est suivi de « que »)",
+            "reponse_attendue": "plutôt",
+            "indice": "Un seul mot, avec un accent circonflexe sur le o et un t muet à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Rosalie aime tous les fruits, ___ les framboises. (elle les aime plus que tous les autres ; le mot commence par s)",
+            "reponse_attendue": "surtout",
+            "indice": "Il est formé de « sur » et de « tout », soudés, avec un t muet."
+          },
+          {
+            "id": 6,
+            "enonce": "Adam a ___ terminé son portrait : il n'a plus que le fond à peindre. (il n'a pas tout à fait fini ; le mot commence par p)",
+            "reponse_attendue": "presque",
+            "indice": "Il se termine par -que, et il ne porte aucun accent."
+          },
+          {
+            "id": 7,
+            "enonce": "La maîtresse a appelé Louna, qui l'a rejointe ___. (tout de suite, sans attendre une seconde ; le mot commence par au)",
+            "reponse_attendue": "aussitôt",
+            "indice": "Il est formé de « aussi » et de « tôt », soudés : l'accent circonflexe ne disparaît pas."
+          },
+          {
+            "id": 8,
+            "enonce": "Les élèves écrivaient à la plume ___. (il y a très longtemps ; le mot commence par au)",
+            "reponse_attendue": "autrefois",
+            "indice": "Il est formé de « autre » et de « fois », soudés, avec un s à la fin."
+          },
+          {
+            "id": 9,
+            "enonce": "Le tableau est trop haut pour Sacha : il s'assiéra ___ au premier rang. (à partir de maintenant et pour la suite ; le mot commence par d)",
+            "reponse_attendue": "désormais",
+            "indice": "Accent aigu sur le e, et un s muet à la fin."
+          },
+          {
+            "id": 10,
+            "enonce": "Fatou rince les pinceaux ___ Timéo range les pots de peinture. (les deux actions se passent en même temps ; deux mots, le premier commence par t)",
+            "reponse_attendue": "tandis que",
+            "indice": "Le premier mot se termine par un s muet ; le second est « que »."
+          }
+        ]
+      },
+      {
+        "titre": "Pourtant, ainsi, désormais…",
+        "consigne": "Écris le mot invariable qui manque. Ce qui est entre parenthèses t'aide à trouver lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Le film durait deux heures ; Jade ne s'est ___ pas ennuyée. (synonyme de *pourtant* ; le mot commence par c et compte neuf lettres)",
+            "reponse_attendue": "cependant",
+            "indice": "On y retrouve « pendant », précédé de ce-."
+          },
+          {
+            "id": 2,
+            "enonce": "Ce problème semblait difficile ; Louna l'a ___ résolu en cinq minutes. (synonyme de *cependant* ; le mot commence par p)",
+            "reponse_attendue": "pourtant",
+            "indice": "Il commence comme « pour » et se termine par -ant."
+          },
+          {
+            "id": 3,
+            "enonce": "Timéo trie ses crayons par couleur : ___, il les retrouve plus vite. (veut dire « de cette façon » ; cinq lettres, le mot commence par a)",
+            "reponse_attendue": "ainsi",
+            "indice": "Il se termine par -si, et il ne porte aucun accent."
+          },
+          {
+            "id": 4,
+            "enonce": "Nour a emprunté un roman ___ qu'un documentaire. (elle préfère le premier des deux ; le mot commence par p et est suivi de « que »)",
+            "reponse_attendue": "plutôt",
+            "indice": "Un seul mot, avec un accent circonflexe sur le o et un t muet à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Adam aime toutes les sorties, ___ celles au musée. (il les aime plus que toutes les autres ; le mot commence par s)",
+            "reponse_attendue": "surtout",
+            "indice": "Il est formé de « sur » et de « tout », soudés, avec un t muet."
+          },
+          {
+            "id": 6,
+            "enonce": "Il est ___ midi : la cloche va sonner d'une minute à l'autre. (il n'est pas tout à fait midi ; le mot commence par p)",
+            "reponse_attendue": "presque",
+            "indice": "Il se termine par -que, et il ne porte aucun accent."
+          },
+          {
+            "id": 7,
+            "enonce": "Malo a entendu son prénom et il a levé la main ___. (tout de suite, sans attendre une seconde ; le mot commence par au)",
+            "reponse_attendue": "aussitôt",
+            "indice": "Il est formé de « aussi » et de « tôt », soudés : l'accent circonflexe ne disparaît pas."
+          },
+          {
+            "id": 8,
+            "enonce": "Ce moulin servait à moudre le grain ___. (il y a très longtemps ; le mot commence par au)",
+            "reponse_attendue": "autrefois",
+            "indice": "Il est formé de « autre » et de « fois », soudés, avec un s à la fin."
+          },
+          {
+            "id": 9,
+            "enonce": "La bibliothèque a changé ses horaires : elle ouvrira ___ à dix heures. (à partir de maintenant et pour la suite ; le mot commence par d)",
+            "reponse_attendue": "désormais",
+            "indice": "Accent aigu sur le e, et un s muet à la fin."
+          },
+          {
+            "id": 10,
+            "enonce": "Inès dresse la table ___ son frère épluche les légumes. (les deux actions se passent en même temps ; deux mots, le premier commence par t)",
+            "reponse_attendue": "tandis que",
+            "indice": "Le premier mot se termine par un s muet ; le second est « que »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M25",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Quel mot n'appartient PAS à la famille de « mont », la montagne ?",
+        "options": [
+          "montagne",
+          "montre",
+          "montagneux",
+          "montagnard"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Montagne, montagneux et montagnard parlent tous de la montagne. « Montre » n'a rien à voir : ce n'est pas la même famille."
+      },
+      {
+        "question": "Quel est le radical commun aux mots « portable », « transporter » et « porteur » ?",
+        "options": [
+          "able",
+          "trans",
+          "port",
+          "eur"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le radical, c'est la partie commune que l'on retrouve dans tous les mots de la famille : ici « port », qui parle de ce que l'on porte."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Trois familles et trois intrus",
+        "consigne": "Classe chaque mot dans la famille à laquelle il appartient. Attention : certains mots ressemblent à un mot de la liste mais ne parlent pas du tout de la même chose.",
+        "categories": [
+          "Famille de « terre »",
+          "Famille de « fleur »",
+          "Famille de « chat »",
+          "Aucune de ces trois familles"
+        ],
+        "items": [
+          {
+            "texte": "terrain",
+            "categorie": "Famille de « terre »"
+          },
+          {
+            "texte": "terrasse",
+            "categorie": "Famille de « terre »"
+          },
+          {
+            "texte": "atterrir",
+            "categorie": "Famille de « terre »"
+          },
+          {
+            "texte": "fleuriste",
+            "categorie": "Famille de « fleur »"
+          },
+          {
+            "texte": "fleurir",
+            "categorie": "Famille de « fleur »"
+          },
+          {
+            "texte": "fleuri",
+            "categorie": "Famille de « fleur »"
+          },
+          {
+            "texte": "chaton",
+            "categorie": "Famille de « chat »"
+          },
+          {
+            "texte": "chatte",
+            "categorie": "Famille de « chat »"
+          },
+          {
+            "texte": "chatière",
+            "categorie": "Famille de « chat »"
+          },
+          {
+            "texte": "terrible",
+            "categorie": "Aucune de ces trois familles"
+          },
+          {
+            "texte": "fleuve",
+            "categorie": "Aucune de ces trois familles"
+          },
+          {
+            "texte": "château",
+            "categorie": "Aucune de ces trois familles"
+          }
+        ]
+      },
+      {
+        "titre": "Le radical et le sens",
+        "consigne": "Classe chaque mot dans la famille à laquelle il appartient. Attention : certains mots ressemblent à un mot de la liste mais ne parlent pas du tout de la même chose.",
+        "categories": [
+          "Famille de « froid »",
+          "Famille de « vent »",
+          "Famille de « dent »",
+          "Aucune de ces trois familles"
+        ],
+        "items": [
+          {
+            "texte": "refroidir",
+            "categorie": "Famille de « froid »"
+          },
+          {
+            "texte": "froideur",
+            "categorie": "Famille de « froid »"
+          },
+          {
+            "texte": "froidement",
+            "categorie": "Famille de « froid »"
+          },
+          {
+            "texte": "venteux",
+            "categorie": "Famille de « vent »"
+          },
+          {
+            "texte": "ventilateur",
+            "categorie": "Famille de « vent »"
+          },
+          {
+            "texte": "éventail",
+            "categorie": "Famille de « vent »"
+          },
+          {
+            "texte": "dentiste",
+            "categorie": "Famille de « dent »"
+          },
+          {
+            "texte": "dentaire",
+            "categorie": "Famille de « dent »"
+          },
+          {
+            "texte": "dentifrice",
+            "categorie": "Famille de « dent »"
+          },
+          {
+            "texte": "froisser",
+            "categorie": "Aucune de ces trois familles"
+          },
+          {
+            "texte": "ventre",
+            "categorie": "Aucune de ces trois familles"
+          },
+          {
+            "texte": "identique",
+            "categorie": "Aucune de ces trois familles"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M32",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans le mot « décharger », que veut dire le préfixe « dé- » ?",
+        "options": [
+          "charger deux fois",
+          "charger avant les autres",
+          "le contraire de charger",
+          "charger un peu seulement"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le préfixe dé- indique le contraire de l'action : décharger, c'est enlever ce que l'on avait chargé."
+      },
+      {
+        "question": "Dans « une théière » et « une soupière », que montre le suffixe « -ière » ?",
+        "options": [
+          "la personne qui sert",
+          "l'action de servir",
+          "le contraire du mot",
+          "le récipient qui contient"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un suffixe s'ajoute à la fin du radical et change le sens : ici, -ière sert à nommer le récipient qui contient le thé ou la soupe."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ce que disent les préfixes et les suffixes",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « relire », « redire » et « recommencer », que veut dire le préfixe « re- » ?",
+            "options": [
+              "le contraire",
+              "une nouvelle fois",
+              "très peu",
+              "avant"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le préfixe re- indique que l'action se répète : relire, c'est lire une nouvelle fois."
+          },
+          {
+            "question": "Dans « enfermer » et « enterrer », que veut dire le préfixe « en- » ?",
+            "options": [
+              "mettre dans",
+              "sortir de",
+              "faire deux fois",
+              "couper en morceaux"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le préfixe en- (ou em-) veut dire « mettre dans » : enterrer une graine, c'est la mettre dans la terre."
+          },
+          {
+            "question": "Le mot « entrouvrir » est formé du préfixe « entre- » et du verbe « ouvrir ». Que veut dire « entrouvrir une porte » ?",
+            "options": [
+              "l'ouvrir en grand",
+              "l'ouvrir deux fois",
+              "l'ouvrir un peu seulement",
+              "la fermer à clé"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le préfixe entre- veut dire « à moitié, un peu » : une porte entrouverte n'est ouverte qu'un peu."
+          },
+          {
+            "question": "Dans « une déchirure » et « une rayure », que montre le suffixe « -ure » ?",
+            "options": [
+              "la personne qui répare l'objet",
+              "un objet tout petit",
+              "le moment de la journée",
+              "la marque que laisse l'action"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le suffixe -ure sert à nommer la marque que laisse l'action : une rayure, c'est la marque laissée quand on raye quelque chose."
+          },
+          {
+            "question": "Dans « sous-sol » et « sous-marin », que veut dire le préfixe « sous- » ?",
+            "options": [
+              "au-dessus",
+              "en dessous",
+              "autour",
+              "très grand"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le préfixe sous- indique ce qui se trouve en dessous : un sous-marin navigue sous la mer."
+          },
+          {
+            "question": "Dans « un plongeur » et « une skieuse », que montre le suffixe « -eur » ou « -euse » ?",
+            "options": [
+              "la personne qui fait l'action",
+              "l'endroit où l'on va",
+              "un objet plus petit",
+              "exactement le contraire de l'action"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le suffixe -eur ou -euse sert à nommer la personne qui fait l'action : celle qui skie est une skieuse."
+          },
+          {
+            "question": "Dans « une fillette » et « une camionnette », que montre le suffixe « -ette » ?",
+            "options": [
+              "que c'est plus vieux",
+              "que c'est plus rapide",
+              "que c'est plus grand",
+              "que c'est plus petit"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le suffixe -ette indique quelque chose de petit : une camionnette est un petit camion."
+          },
+          {
+            "question": "Dans « réparable » et « transportable », que veut dire le suffixe « -able » ?",
+            "options": [
+              "que l'action est impossible",
+              "que l'action est déjà terminée",
+              "que l'action est possible",
+              "que l'action est obligatoire"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le suffixe -able veut dire « que l'on peut » : un objet réparable, c'est un objet que l'on peut remettre en état."
+          }
+        ]
+      },
+      {
+        "titre": "Le sens caché au début et à la fin",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Le mot « revoir » est formé du préfixe « re- » et du verbe « voir ». Que signifie-t-il ?",
+            "options": [
+              "voir avant",
+              "ne plus voir",
+              "voir de nouveau",
+              "voir de très loin"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le préfixe re- indique que l'action se répète : revoir, c'est voir de nouveau."
+          },
+          {
+            "question": "Dans « survoler un stade », que veut dire le préfixe « sur- » ?",
+            "options": [
+              "au-dessus",
+              "en dessous",
+              "avant",
+              "contre"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le préfixe sur- indique ce qui passe au-dessus : survoler, c'est voler au-dessus."
+          },
+          {
+            "question": "Dans « une dizaine » et « une douzaine », que montre le suffixe « -aine » ?",
+            "options": [
+              "un nombre tout à fait exact",
+              "un groupe d'à peu près ce nombre",
+              "la moitié de ce nombre",
+              "un très grand nombre"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le suffixe -aine sert à dire une quantité approchée : une dizaine de crayons, c'est à peu près dix crayons."
+          },
+          {
+            "question": "Dans « maladroit » et « malchance », que veut dire le préfixe « mal- » ?",
+            "options": [
+              "deux fois mieux",
+              "tout autour",
+              "au-dessus de tout",
+              "mal, ce qui ne va pas"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le préfixe mal- dit que quelque chose ne va pas : la malchance, c'est le contraire de la chance."
+          },
+          {
+            "question": "Dans « le balayage » et « le bricolage », que montre le suffixe « -age » ?",
+            "options": [
+              "l'action que l'on fait",
+              "une personne",
+              "un lieu",
+              "un objet minuscule"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le suffixe -age sert à nommer l'action : le balayage, c'est l'action de balayer."
+          },
+          {
+            "question": "Dans « un abricotier » et « un noisetier », que montre le suffixe « -ier » ?",
+            "options": [
+              "le fruit",
+              "l'arbre qui donne ce fruit",
+              "la confiture faite avec ce fruit",
+              "le marchand de ce fruit"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le suffixe -ier sert souvent à nommer l'arbre : l'abricotier donne des abricots."
+          },
+          {
+            "question": "Dans « courageux » et « peureux », que montre le suffixe « -eux » ?",
+            "options": [
+              "le métier de quelqu'un",
+              "l'action que l'on est en train de faire",
+              "comment est quelqu'un ou une chose",
+              "le lieu où l'on se rend"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le suffixe -eux forme des adjectifs : peureux, c'est qui a peur facilement ; nuageux, c'est couvert de nuages."
+          },
+          {
+            "question": "Dans « incassable » et « invisible », que veut dire le préfixe « in- » ?",
+            "options": [
+              "une nouvelle fois, encore",
+              "très",
+              "avant",
+              "le contraire, « pas »"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le préfixe in- exprime le contraire : invisible veut dire « que l'on ne peut pas voir »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M33",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel mot obtient-on en ajoutant le suffixe « -age » au verbe « arroser » ?",
+        "options": [
+          "arrosage",
+          "arroseur",
+          "arrosoir",
+          "arrosé"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le suffixe -age s'ajoute au radical du verbe pour nommer l'action : arroser donne « l'arrosage »."
+      },
+      {
+        "question": "Quel mot est formé du préfixe « re- » et du verbe « tomber » ?",
+        "options": [
+          "tombeau",
+          "retomber",
+          "tombant",
+          "tombereau"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le préfixe s'écrit devant le radical sans rien y changer : re- + tomber donne « retomber », c'est-à-dire tomber une nouvelle fois."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je fabrique un mot de la famille",
+        "consigne": "Fabrique le mot demandé en ajoutant au mot de départ le préfixe ou le suffixe indiqué. Écris un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "*long* + le suffixe -eur → le nom : la …",
+            "reponse_attendue": "longueur",
+            "indice": "On garde le g de « long » et on écrit -ueur, comme dans « la grandeur »."
+          },
+          {
+            "id": 2,
+            "enonce": "*lent* + le suffixe -ment → l'adverbe : …",
+            "reponse_attendue": "lentement",
+            "indice": "On part du féminin « lente », puis on ajoute -ment."
+          },
+          {
+            "id": 3,
+            "enonce": "*sel* + le suffixe -é → l'adjectif : un gâteau trop …",
+            "reponse_attendue": "salé",
+            "indice": "Dans cette famille, le e de « sel » devient un a."
+          },
+          {
+            "id": 4,
+            "enonce": "*neige* + le suffixe -eux → l'adjectif : un temps …",
+            "reponse_attendue": "neigeux",
+            "indice": "Le e final de « neige » disparaît devant -eux."
+          },
+          {
+            "id": 5,
+            "enonce": "*maison* + le suffixe -ette → une petite maison : une …",
+            "reponse_attendue": "maisonnette",
+            "indice": "Le n se double avant -ette."
+          },
+          {
+            "id": 6,
+            "enonce": "*ranger* + le suffixe -ement → le nom : le … des cahiers",
+            "reponse_attendue": "rangement",
+            "indice": "Le radical est celui de « ranger » : on garde le g, puis on ajoute -ement."
+          },
+          {
+            "id": 7,
+            "enonce": "*courir* + le suffixe -eur → celui qui court : un …",
+            "reponse_attendue": "coureur",
+            "indice": "Le i de « courir » disparaît : cour- puis -eur."
+          },
+          {
+            "id": 8,
+            "enonce": "le préfixe re- + *partir* → …",
+            "reponse_attendue": "repartir",
+            "indice": "Le préfixe s'écrit devant le verbe, sans trait d'union et sans accent."
+          },
+          {
+            "id": 9,
+            "enonce": "*chauffer* + le suffixe -age → le nom : le … de l'école",
+            "reponse_attendue": "chauffage",
+            "indice": "On garde le radical de « chauffer », avec ses deux f, puis on ajoute -age."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des mots de la même famille",
+        "consigne": "Fabrique le mot demandé en ajoutant au mot de départ le préfixe ou le suffixe indiqué. Écris un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "*large* + le suffixe -eur → le nom : la …",
+            "reponse_attendue": "largeur",
+            "indice": "Le e final de « large » disparaît devant -eur."
+          },
+          {
+            "id": 2,
+            "enonce": "*doux* + le suffixe -ment → l'adverbe : …",
+            "reponse_attendue": "doucement",
+            "indice": "On part du féminin « douce », puis on ajoute -ment."
+          },
+          {
+            "id": 3,
+            "enonce": "*jardin* + le suffixe -age → le nom : le …",
+            "reponse_attendue": "jardinage",
+            "indice": "Le suffixe s'ajoute au radical sans rien y changer."
+          },
+          {
+            "id": 4,
+            "enonce": "*orage* + le suffixe -eux → l'adjectif : un ciel …",
+            "reponse_attendue": "orageux",
+            "indice": "Le e final de « orage » disparaît devant -eux."
+          },
+          {
+            "id": 5,
+            "enonce": "*cuisine* + le suffixe -ier → celui qui cuisine : un …",
+            "reponse_attendue": "cuisinier",
+            "indice": "Le e final de « cuisine » disparaît devant -ier."
+          },
+          {
+            "id": 6,
+            "enonce": "*calme* + le suffixe -ment → l'adverbe : …",
+            "reponse_attendue": "calmement",
+            "indice": "L'adjectif « calme » s'écrit pareil au féminin : on ajoute simplement -ment."
+          },
+          {
+            "id": 7,
+            "enonce": "le préfixe re- + *lever* → …",
+            "reponse_attendue": "relever",
+            "indice": "Le préfixe s'écrit devant le verbe, sans trait d'union et sans accent."
+          },
+          {
+            "id": 8,
+            "enonce": "*bois* + le suffixe -é → l'adjectif : un chemin …",
+            "reponse_attendue": "boisé",
+            "indice": "Le s de « bois » se garde devant le suffixe."
+          },
+          {
+            "id": 9,
+            "enonce": "*pierre* + le suffixe -eux → l'adjectif : un sentier …",
+            "reponse_attendue": "pierreux",
+            "indice": "Le e final de « pierre » disparaît devant -eux, mais les deux r restent."
+          }
+        ]
+      }
+    ]
+  }
+]

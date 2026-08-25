@@ -1,0 +1,622 @@
+[
+  {
+    "item_code": "M19",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel mot invariable est écrit correctement ?",
+        "options": [
+          "lontemps",
+          "longtemp",
+          "longtemps",
+          "longtant"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« longtemps » garde le g de « long » et le mps de « temps » : long + temps."
+      },
+      {
+        "question": "Quel mot convient : « Sacha met son manteau ___ de sortir. » ?",
+        "options": [
+          "après",
+          "avant",
+          "ensuite",
+          "depuis"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Il met son manteau d'abord, et il sort ensuite : c'est « avant », le contraire de « après »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots invariables du temps",
+        "consigne": "Écris le mot invariable qui manque. Les mots entre parenthèses t'aident à trouver lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Les CM1 chantent ___ toute la répétition. (synonyme de *durant*, le mot commence par p)",
+            "reponse_attendue": "pendant",
+            "indice": "Ce mot se termine par -ant, comme « enfant »."
+          },
+          {
+            "id": 2,
+            "enonce": "Yanis apprend la guitare ___ deux ans. (il a commencé il y a deux ans ; le mot commence par d)",
+            "reponse_attendue": "depuis",
+            "indice": "Il se termine par un s que l'on n'entend pas."
+          },
+          {
+            "id": 3,
+            "enonce": "Timéo se lave les mains ___ le repas. (l'action se passe d'abord ; le mot commence par a et se termine par -ant)",
+            "reponse_attendue": "avant",
+            "indice": "Il se termine par -ant, et il n'y a pas d'accent."
+          },
+          {
+            "id": 4,
+            "enonce": "Fatou range son cartable ___ la classe. (l'action se passe une fois la classe terminée ; le mot commence par a)",
+            "reponse_attendue": "après",
+            "indice": "Attention à l'accent sur le e et au s de la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Il y a ___, les élèves écrivaient sur des ardoises. (cela fait beaucoup de temps ; un seul mot)",
+            "reponse_attendue": "longtemps",
+            "indice": "On voit « long » et « temps » à l'intérieur du mot."
+          },
+          {
+            "id": 6,
+            "enonce": "Il est huit heures : la classe commence ___. (en ce moment ; le mot commence par m)",
+            "reponse_attendue": "maintenant",
+            "indice": "Deux fois les lettres -na-, et -ant à la fin."
+          },
+          {
+            "id": 7,
+            "enonce": "Au bout d'une heure de recherche, Malo a ___ retrouvé son écharpe. (synonyme de *finalement*, en cinq lettres)",
+            "reponse_attendue": "enfin",
+            "indice": "On y entend « fin », et il commence par en-."
+          },
+          {
+            "id": 8,
+            "enonce": "Louna décore son étiquette, ___ elle écrit la date. (marque l'étape suivante ; sept lettres, le mot commence par en)",
+            "reponse_attendue": "ensuite",
+            "indice": "On y voit « suite », avec un e à la fin."
+          },
+          {
+            "id": 9,
+            "enonce": "Le vent s'est levé : ___, la maîtresse a fermé la fenêtre. (pour cette raison ; le mot commence par a)",
+            "reponse_attendue": "alors",
+            "indice": "Il se termine par un s que l'on n'entend pas."
+          },
+          {
+            "id": 10,
+            "enonce": "Adam relit sa phrase, ___ il range son cahier. (mot de quatre lettres qui marque la suite ; il commence par p)",
+            "reponse_attendue": "puis",
+            "indice": "Quatre lettres, et un s muet à la fin."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des mots invariables",
+        "consigne": "Écris le mot invariable qui manque. Les mots entre parenthèses t'aident à trouver lequel : à toi de l'écrire sans faute.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Nous avons visité le musée ___ deux heures. (synonyme de *durant*, le mot commence par p)",
+            "reponse_attendue": "pendant",
+            "indice": "Ce mot se termine par -ant, comme « enfant »."
+          },
+          {
+            "id": 2,
+            "enonce": "Inès porte des lunettes ___ le CE1. (elle a commencé au CE1 ; le mot commence par d)",
+            "reponse_attendue": "depuis",
+            "indice": "Il se termine par un s que l'on n'entend pas."
+          },
+          {
+            "id": 3,
+            "enonce": "Jade relit sa dictée ___ de rendre sa feuille. (l'action se passe d'abord ; le mot commence par a et se termine par -ant)",
+            "reponse_attendue": "avant",
+            "indice": "Il se termine par -ant, et il n'y a pas d'accent."
+          },
+          {
+            "id": 4,
+            "enonce": "Les CE2 rentrent en rang ___ la récréation. (l'action se passe une fois la récréation terminée ; le mot commence par a)",
+            "reponse_attendue": "après",
+            "indice": "Attention à l'accent sur le e et au s de la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Cette photo a été prise il y a ___. (cela fait beaucoup d'années ; un seul mot)",
+            "reponse_attendue": "longtemps",
+            "indice": "On voit « long » et « temps » à l'intérieur du mot."
+          },
+          {
+            "id": 6,
+            "enonce": "Rosalie a terminé son travail : elle peut ___ lire. (en ce moment, tout de suite ; le mot commence par m)",
+            "reponse_attendue": "maintenant",
+            "indice": "Deux fois les lettres -na-, et -ant à la fin."
+          },
+          {
+            "id": 7,
+            "enonce": "Le train a du retard, mais il entre ___ en gare. (synonyme de *finalement*, en cinq lettres)",
+            "reponse_attendue": "enfin",
+            "indice": "On y entend « fin », et il commence par en-."
+          },
+          {
+            "id": 8,
+            "enonce": "Adam écrit la date, ___ il souligne le titre. (marque l'étape suivante ; sept lettres, le mot commence par en)",
+            "reponse_attendue": "ensuite",
+            "indice": "On y voit « suite », avec un e à la fin."
+          },
+          {
+            "id": 9,
+            "enonce": "Il pleuvait très fort : ___, la sortie a été annulée. (pour cette raison ; le mot commence par a)",
+            "reponse_attendue": "alors",
+            "indice": "Il se termine par un s que l'on n'entend pas."
+          },
+          {
+            "id": 10,
+            "enonce": "Nour souffle un grand coup, ___ elle monte sur scène. (mot de quatre lettres qui marque la suite ; il commence par p)",
+            "reponse_attendue": "puis",
+            "indice": "Quatre lettres, et un s muet à la fin."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M20",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "En haut d'une page du dictionnaire, les mots-repères sont « balle » et « bison ». Quel mot se trouve sur cette page ?",
+        "options": [
+          "avion",
+          "banane",
+          "bonbon",
+          "brosse"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Les mots-repères donnent le premier et le dernier mot de la page : « banane » vient après « balle » et avant « bison »."
+      },
+      {
+        "question": "Sur une page, les mots-repères sont « lapin » et « lettre ». Quel mot ne se trouve PAS sur cette page ?",
+        "options": [
+          "large",
+          "leçon",
+          "lourd",
+          "lent"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Après le l, on compare la deuxième lettre : « lo » vient après « le », donc « lourd » est plus loin dans le dictionnaire que « lettre »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Sur quelle page du dictionnaire ?",
+        "consigne": "Voici les mots-repères écrits en haut de quatre pages du dictionnaire. Choisis la page où se trouve le mot demandé.",
+        "questions": [
+          {
+            "question": "Sur quelle page trouves-tu le mot « cheveu » ?",
+            "options": [
+              "page 120 : chaise – charrue",
+              "page 124 : chasseur – chemin",
+              "page 128 : chercher – chocolat",
+              "page 132 : chou – cirque"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« cheveu » vient après « chercher » (che-r) et avant « chocolat » (cho)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « manger » ?",
+            "options": [
+              "page 200 : maison – marché",
+              "page 205 : melon – mesure",
+              "page 210 : métal – miel",
+              "page 215 : minute – moulin"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« manger » vient après « maison » (mai) et avant « marché » (mar)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « sourire » ?",
+            "options": [
+              "page 320 : sable – sauter",
+              "page 325 : savon – sirène",
+              "page 330 : soldat – souvent",
+              "page 335 : sucre – syllabe"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« sourire » vient après « soldat » (sol) et avant « souvent » (souv)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « regard » ?",
+            "options": [
+              "page 280 : radis – ramper",
+              "page 285 : recette – reine",
+              "page 290 : remercier – rideau",
+              "page 295 : rocher – ruban"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« regard » vient après « recette » (rec) et avant « reine » (rei)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « timide » ?",
+            "options": [
+              "page 350 : tabouret – taupe",
+              "page 355 : temps – tirer",
+              "page 360 : toboggan – tortue",
+              "page 365 : trace – tuyau"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« timide » vient après « temps » (te) et avant « tirer » (tir)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « palmier » ?",
+            "options": [
+              "page 255 : page – panier",
+              "page 260 : peigne – pinceau",
+              "page 265 : pirate – plume",
+              "page 270 : poche – pouce"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« palmier » vient après « page » (pag) et avant « panier » (pan)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « joue » ?",
+            "options": [
+              "page 180 : jamais – jeter",
+              "page 184 : jeudi – joli",
+              "page 188 : jongler – journal",
+              "page 192 : judo – jusque"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« joue » vient après « jongler » (jon) et avant « journal » (jour)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « botte » ?",
+            "options": [
+              "page 30 : bagage – balai",
+              "page 34 : banane – bavard",
+              "page 38 : bébé – bille",
+              "page 42 : blanc – bouton"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« botte » vient après « blanc » (bl) et avant « bouton » (bou)."
+          }
+        ]
+      },
+      {
+        "titre": "Je cherche vite dans le dictionnaire",
+        "consigne": "Voici les mots-repères écrits en haut de quatre pages du dictionnaire. Choisis la page où se trouve le mot demandé.",
+        "questions": [
+          {
+            "question": "Sur quelle page trouves-tu le mot « manteau » ?",
+            "options": [
+              "page 210 : magasin – malade",
+              "page 214 : manche – marché",
+              "page 220 : matin – melon",
+              "page 226 : menu – mille"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« manteau » vient après « manche » (man-c) et avant « marché » (mar)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « famille » ?",
+            "options": [
+              "page 88 : facile – farine",
+              "page 92 : fatigue – fente",
+              "page 96 : fer – fille",
+              "page 100 : flamme – fruit"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« famille » vient après « facile » (fac) et avant « farine » (far)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « ruban » ?",
+            "options": [
+              "page 300 : radis – rasoir",
+              "page 306 : recette – rideau",
+              "page 312 : robe – roue",
+              "page 316 : rouge – ruse"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« ruban » vient après « rouge » (rou) et avant « ruse » (rus)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « poche » ?",
+            "options": [
+              "page 250 : page – panier",
+              "page 256 : parc – pinceau",
+              "page 262 : pluie – porte",
+              "page 268 : poste – prune"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« poche » vient après « pluie » (plu) et avant « porte » (por)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « grimper » ?",
+            "options": [
+              "page 150 : gagner – garçon",
+              "page 154 : gâteau – gentil",
+              "page 158 : girafe – gomme",
+              "page 162 : gorge – guitare"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« grimper » vient après « gorge » (go) et avant « guitare » (gu)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « vaisselle » ?",
+            "options": [
+              "page 380 : vacances – valise",
+              "page 384 : vase – vent",
+              "page 388 : verre – vide",
+              "page 392 : village – voler"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« vaisselle » vient après « vacances » (vac) et avant « valise » (val)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « dessin » ?",
+            "options": [
+              "page 60 : dame – début",
+              "page 64 : dernier – deux",
+              "page 68 : dimanche – docteur",
+              "page 72 : dormir – drapeau"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« dessin » vient après « dernier » (der) et avant « deux » (deu)."
+          },
+          {
+            "question": "Sur quelle page trouves-tu le mot « outil » ?",
+            "options": [
+              "page 230 : objet – ombre",
+              "page 234 : oncle – orage",
+              "page 238 : ordre – os",
+              "page 242 : ours – ozone"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« outil » vient après « ours » (our) et avant « ozone » (oz)."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M21",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans la phrase « Le bateau arrive au port de Brest. », quel mot est un nom propre ?",
+        "options": [
+          "bateau",
+          "port",
+          "arrive",
+          "Brest"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un nom propre désigne une personne, un animal ou un lieu en particulier, et il prend une majuscule : Brest est une ville."
+      },
+      {
+        "question": "Dans « Ce matin, Malo a oublié son cahier. », quel mot est un nom propre ?",
+        "options": [
+          "Malo",
+          "Ce",
+          "matin",
+          "cahier"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« Ce » a une majuscule seulement parce qu'il commence la phrase ; seul « Malo » désigne une personne en particulier."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Noms communs et noms propres",
+        "consigne": "Classe chaque phrase selon le mot placé entre astérisques : est-ce un nom commun ou un nom propre ?",
+        "categories": [
+          "Nom commun",
+          "Nom propre"
+        ],
+        "items": [
+          {
+            "texte": "Le chat de Jade s'appelle *Filou*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Cet été, nous avons visité la ville de *Lyon*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Cette année, *Timéo* est dans la classe de CM1.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Le fleuve qui traverse Paris s'appelle la *Seine*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Ma correspondante habite en *Espagne*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Sur la liste, le maître a écrit *Rosalie* en premier.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Nous avons visité le *musée* du Louvre.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Malo habite près de la *rivière* Ardèche.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "*Cartables* et manteaux s'entassent au fond de la classe.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "La *maîtresse* lit une histoire aux CE2.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Sacha a perdu son *écharpe* dans la cour.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Les élèves du *collège* Jean-Moulin sont venus.",
+            "categorie": "Nom commun"
+          }
+        ]
+      },
+      {
+        "titre": "Un nom pour tous, un nom pour un seul",
+        "consigne": "Classe chaque phrase selon le mot placé entre astérisques : est-ce un nom commun ou un nom propre ?",
+        "categories": [
+          "Nom commun",
+          "Nom propre"
+        ],
+        "items": [
+          {
+            "texte": "Chaque été, Louna part en vacances en *Bretagne*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Le chien des voisins s'appelle *Pacha*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Cet hiver, *Malo* apprend à faire du ski.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "La plus haute montagne des Alpes est le *Mont-Blanc*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Mon cousin habite à *Marseille*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Dans le cahier, la maîtresse a souligné *Inès*.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Nous longeons le *canal* du Midi à vélo.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Fatou attend le *train* de Bordeaux.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Yanis a taché sa *trousse* avec de la peinture.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Le *boulanger* de la rue Victor-Hugo ouvre à six heures.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "*Cahiers* et crayons sont restés sur les tables.",
+            "categorie": "Nom commun"
+          },
+          {
+            "texte": "Le *bateau* de l'île de Ré part à midi.",
+            "categorie": "Nom commun"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M18",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Lila et Malo enlèvent leur manteau, puis ___ montent l'escalier. », quel pronom personnel sujet convient ?",
+        "options": [
+          "ils",
+          "il",
+          "elle",
+          "je"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le pronom remplace « Lila et Malo » : plusieurs personnes, dont un garçon, donc « ils »."
+      },
+      {
+        "question": "Par quel pronom personnel sujet peux-tu remplacer « Sacha et Yanis » ?",
+        "options": [
+          "elles",
+          "nous",
+          "vous",
+          "ils"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Deux garçons dont on parle : c'est « ils », le pronom de la 3e personne du pluriel."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait de Timéo",
+        "consigne": "Complète le texte avec le pronom personnel sujet qui convient : je, tu, il, nous, vous, ils.",
+        "texte_complet": "Ce matin, Timéo sort son matériel. Quand Timéo ouvre sa trousse, il attrape son crayon préféré. — Timéo, tu travailles déjà ? demande la maîtresse. — Oui, je suis content de mon portrait, répond l'élève. Sacha et Adam admirent le dessin : ils trouvent le résultat très réussi. Le soir, nous affichons le portrait au fond de la classe.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "il",
+            "indice": "Le pronom reprend le sujet de la phrase d'avant : une seule personne, un garçon."
+          },
+          {
+            "position": 1,
+            "mot": "tu",
+            "indice": "La maîtresse parle à Timéo : elle s'adresse à une seule personne."
+          },
+          {
+            "position": 2,
+            "mot": "je",
+            "indice": "C'est Timéo qui parle de lui-même."
+          },
+          {
+            "position": 3,
+            "mot": "ils",
+            "indice": "Le pronom reprend deux personnes dont on parle."
+          },
+          {
+            "position": 4,
+            "mot": "nous",
+            "indice": "Regarde la terminaison -ons du verbe."
+          }
+        ]
+      },
+      {
+        "titre": "Au club de théâtre",
+        "consigne": "Complète le texte avec le pronom personnel sujet qui convient : je, tu, il, nous, vous, ils.",
+        "texte_complet": "Ce mercredi, Yanis répète une scène de théâtre. Dès que la musique commence, il avance jusqu'au milieu du plateau. — Les enfants, vous connaissez votre texte ? demande le maître. — Oui, je suis prêt, répond Yanis. — Et toi, Louna, tu te souviens de ta première phrase ? Adam et Sacha entrent à leur tour : ils rejoignent Yanis sur le plateau.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "il",
+            "indice": "Le pronom reprend le sujet de la phrase d'avant : une seule personne, un garçon."
+          },
+          {
+            "position": 1,
+            "mot": "vous",
+            "indice": "Le maître parle à plusieurs enfants. Regarde la terminaison -ez du verbe."
+          },
+          {
+            "position": 2,
+            "mot": "je",
+            "indice": "C'est Yanis qui parle de lui-même."
+          },
+          {
+            "position": 3,
+            "mot": "tu",
+            "indice": "Le maître s'adresse à Louna : le mot « toi » te met sur la piste."
+          },
+          {
+            "position": 4,
+            "mot": "ils",
+            "indice": "Le pronom reprend deux personnes dont on parle."
+          }
+        ]
+      }
+    ]
+  }
+]

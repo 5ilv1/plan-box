@@ -1,0 +1,710 @@
+[
+  {
+    "item_code": "M22",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel déterminant démonstratif convient : « ___ arbre perd ses feuilles. » ?",
+        "options": [
+          "ce",
+          "cet",
+          "cette",
+          "ces"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Devant un nom masculin qui commence par une voyelle, « ce » devient « cet » : cet arbre, cet oiseau."
+      },
+      {
+        "question": "Comment dit-on « les crayons qui sont à moi » avec un déterminant possessif ?",
+        "options": [
+          "mes crayons",
+          "ses crayons",
+          "nos crayons",
+          "ces crayons"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le propriétaire, c'est moi, et il y a plusieurs crayons : on écrit « mes crayons »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ce, cet, cette, ces… et les possessifs",
+        "consigne": "Écris seulement le déterminant qui manque. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "ce cahier → au pluriel : … cahiers",
+            "reponse_attendue": "ces",
+            "indice": "Au pluriel, ce, cet et cette donnent tous la même forme."
+          },
+          {
+            "id": 2,
+            "enonce": "cette photo → au pluriel : … photos",
+            "reponse_attendue": "ces",
+            "indice": "Au pluriel, ce, cet et cette donnent tous la même forme."
+          },
+          {
+            "id": 3,
+            "enonce": "ces garçons → au singulier : … garçon",
+            "reponse_attendue": "ce",
+            "indice": "Le nom est masculin et commence par une consonne."
+          },
+          {
+            "id": 4,
+            "enonce": "ces images → au singulier : … image",
+            "reponse_attendue": "cette",
+            "indice": "On dit « une image » : le nom est féminin."
+          },
+          {
+            "id": 5,
+            "enonce": "ces oiseaux → au singulier : … oiseau",
+            "reponse_attendue": "cet",
+            "indice": "Le nom est masculin et commence par une voyelle."
+          },
+          {
+            "id": 6,
+            "enonce": "le vélo de Timéo → avec un déterminant possessif : … vélo",
+            "reponse_attendue": "son",
+            "indice": "Un seul propriétaire, un seul objet."
+          },
+          {
+            "id": 7,
+            "enonce": "les crayons de Lila → avec un déterminant possessif : … crayons",
+            "reponse_attendue": "ses",
+            "indice": "Un seul propriétaire, mais plusieurs objets."
+          },
+          {
+            "id": 8,
+            "enonce": "la cabane des enfants → avec un déterminant possessif : … cabane",
+            "reponse_attendue": "leur",
+            "indice": "Plusieurs propriétaires, un seul objet."
+          }
+        ]
+      },
+      {
+        "titre": "Je montre, je possède",
+        "consigne": "Écris seulement le déterminant qui manque. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "ces fleurs → au singulier : … fleur",
+            "reponse_attendue": "cette",
+            "indice": "On dit « une fleur » : le nom est féminin."
+          },
+          {
+            "id": 2,
+            "enonce": "ces livres → au singulier : … livre",
+            "reponse_attendue": "ce",
+            "indice": "Le nom est masculin et commence par une consonne."
+          },
+          {
+            "id": 3,
+            "enonce": "cet hôtel → au pluriel : … hôtels",
+            "reponse_attendue": "ces",
+            "indice": "Au pluriel, ce, cet et cette donnent tous la même forme."
+          },
+          {
+            "id": 4,
+            "enonce": "ces éléphants → au singulier : … éléphant",
+            "reponse_attendue": "cet",
+            "indice": "Le nom est masculin et commence par une voyelle."
+          },
+          {
+            "id": 5,
+            "enonce": "cette chanson → au pluriel : … chansons",
+            "reponse_attendue": "ces",
+            "indice": "Au pluriel, ce, cet et cette donnent tous la même forme."
+          },
+          {
+            "id": 6,
+            "enonce": "le chapeau de Nour → avec un déterminant possessif : … chapeau",
+            "reponse_attendue": "son",
+            "indice": "Un seul propriétaire, un seul objet."
+          },
+          {
+            "id": 7,
+            "enonce": "les affaires de Malo → avec un déterminant possessif : … affaires",
+            "reponse_attendue": "ses",
+            "indice": "Un seul propriétaire, mais plusieurs objets."
+          },
+          {
+            "id": 8,
+            "enonce": "le cartable qui est à toi → avec un déterminant possessif : … cartable",
+            "reponse_attendue": "ton",
+            "indice": "Le propriétaire, c'est « toi »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M23",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Comment écrit-on le mot qui manque ? « Rosalie s'est fait mal à la ___. »",
+        "options": [
+          "jampe",
+          "janbe",
+          "janpe",
+          "jambe"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Devant un b, on écrit m et non n : jambe."
+      },
+      {
+        "question": "Quel mot est écrit correctement ?",
+        "options": [
+          "tronpette",
+          "trompette",
+          "tronpète",
+          "trompete"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Devant un p, on écrit m et non n : trompette."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le m devant m, b, p",
+        "consigne": "Regarde la lettre qui suit le n ou le m. Classe chaque mot : est-il bien écrit, ou faut-il remplacer le n par un m ?",
+        "categories": [
+          "Bien écrit",
+          "Il faut un m à la place du n"
+        ],
+        "items": [
+          {
+            "texte": "tomber",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "important",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "chambre",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "content",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "enfant",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "danser",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "janbe",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "nonbre",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "sinple",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "canpagne",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "tanbour",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "enbrasser",
+            "categorie": "Il faut un m à la place du n"
+          }
+        ]
+      },
+      {
+        "titre": "Encore le m devant m, b, p",
+        "consigne": "Regarde la lettre qui suit le n ou le m. Classe chaque mot : est-il bien écrit, ou faut-il remplacer le n par un m ?",
+        "categories": [
+          "Bien écrit",
+          "Il faut un m à la place du n"
+        ],
+        "items": [
+          {
+            "texte": "emporter",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "lampe",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "novembre",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "monter",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "manger",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "orange",
+            "categorie": "Bien écrit"
+          },
+          {
+            "texte": "chanp",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "enmener",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "conbien",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "janbon",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "tinbre",
+            "categorie": "Il faut un m à la place du n"
+          },
+          {
+            "texte": "sonbre",
+            "categorie": "Il faut un m à la place du n"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M15",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel est le féminin de « un chercheur » ?",
+        "options": [
+          "une chercheure",
+          "une chercheresse",
+          "une chercheuse",
+          "une chercheur"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Beaucoup de noms en -eur font leur féminin en -euse : un chercheur, une chercheuse."
+      },
+      {
+        "question": "Quel est le féminin de « un moniteur » ?",
+        "options": [
+          "une moniteuse",
+          "une monitrice",
+          "une moniteure",
+          "une moniteresse"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Les noms en -teur font souvent leur féminin en -trice : un moniteur, une monitrice."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le féminin des noms de métier",
+        "consigne": "Écris le nom au féminin. Un seul mot, sans le déterminant.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "un vendeur → une …",
+            "reponse_attendue": "vendeuse",
+            "indice": "Le nom se termine par -eur."
+          },
+          {
+            "id": 2,
+            "enonce": "un coiffeur → une …",
+            "reponse_attendue": "coiffeuse",
+            "indice": "Le nom se termine par -eur."
+          },
+          {
+            "id": 3,
+            "enonce": "un danseur → une …",
+            "reponse_attendue": "danseuse",
+            "indice": "Le nom se termine par -eur."
+          },
+          {
+            "id": 4,
+            "enonce": "un acteur → une …",
+            "reponse_attendue": "actrice",
+            "indice": "Le nom se termine par -teur."
+          },
+          {
+            "id": 5,
+            "enonce": "un directeur → une …",
+            "reponse_attendue": "directrice",
+            "indice": "Le nom se termine par -teur."
+          },
+          {
+            "id": 6,
+            "enonce": "un instituteur → une …",
+            "reponse_attendue": "institutrice",
+            "indice": "Le nom se termine par -teur."
+          },
+          {
+            "id": 7,
+            "enonce": "un sportif → une …",
+            "reponse_attendue": "sportive",
+            "indice": "Le nom se termine par -f."
+          },
+          {
+            "id": 8,
+            "enonce": "un fugitif → une …",
+            "reponse_attendue": "fugitive",
+            "indice": "Le nom se termine par -f."
+          }
+        ]
+      },
+      {
+        "titre": "Au masculin, au féminin",
+        "consigne": "Écris le nom au féminin. Un seul mot, sans le déterminant.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "un chanteur → une …",
+            "reponse_attendue": "chanteuse",
+            "indice": "Le nom se termine par -eur."
+          },
+          {
+            "id": 2,
+            "enonce": "un nageur → une …",
+            "reponse_attendue": "nageuse",
+            "indice": "Le nom se termine par -eur."
+          },
+          {
+            "id": 3,
+            "enonce": "un voyageur → une …",
+            "reponse_attendue": "voyageuse",
+            "indice": "Le nom se termine par -eur."
+          },
+          {
+            "id": 4,
+            "enonce": "un dessinateur → une …",
+            "reponse_attendue": "dessinatrice",
+            "indice": "Le nom se termine par -teur."
+          },
+          {
+            "id": 5,
+            "enonce": "un agriculteur → une …",
+            "reponse_attendue": "agricultrice",
+            "indice": "Le nom se termine par -teur."
+          },
+          {
+            "id": 6,
+            "enonce": "un lecteur → une …",
+            "reponse_attendue": "lectrice",
+            "indice": "Le nom se termine par -teur."
+          },
+          {
+            "id": 7,
+            "enonce": "un captif → une …",
+            "reponse_attendue": "captive",
+            "indice": "Le nom se termine par -f."
+          },
+          {
+            "id": 8,
+            "enonce": "un veuf → une …",
+            "reponse_attendue": "veuve",
+            "indice": "Le nom se termine par -f."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M26",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Quel mot n'appartient PAS au champ lexical de la mer ?",
+        "options": [
+          "la voile",
+          "le phare",
+          "le cahier",
+          "la marée"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un champ lexical rassemble les mots qui parlent du même sujet ; « le cahier » ne parle pas de la mer."
+      },
+      {
+        "question": "Le clavier, la partition, le violon et le concert appartiennent tous au même champ lexical. Lequel ?",
+        "options": [
+          "le sport",
+          "la cuisine",
+          "l'école",
+          "la musique"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Tous ces mots servent à parler de la musique : c'est leur champ lexical."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Trois champs lexicaux",
+        "consigne": "Classe chaque mot dans le champ lexical auquel il appartient.",
+        "categories": [
+          "L'école",
+          "La mer",
+          "La musique"
+        ],
+        "items": [
+          {
+            "texte": "le cartable",
+            "categorie": "L'école"
+          },
+          {
+            "texte": "la récréation",
+            "categorie": "L'école"
+          },
+          {
+            "texte": "le tableau",
+            "categorie": "L'école"
+          },
+          {
+            "texte": "la maîtresse",
+            "categorie": "L'école"
+          },
+          {
+            "texte": "la vague",
+            "categorie": "La mer"
+          },
+          {
+            "texte": "le sable",
+            "categorie": "La mer"
+          },
+          {
+            "texte": "le coquillage",
+            "categorie": "La mer"
+          },
+          {
+            "texte": "la marée",
+            "categorie": "La mer"
+          },
+          {
+            "texte": "la guitare",
+            "categorie": "La musique"
+          },
+          {
+            "texte": "la chanson",
+            "categorie": "La musique"
+          },
+          {
+            "texte": "le rythme",
+            "categorie": "La musique"
+          },
+          {
+            "texte": "le musicien",
+            "categorie": "La musique"
+          }
+        ]
+      },
+      {
+        "titre": "De quoi parle-t-on ?",
+        "consigne": "Classe chaque mot dans le champ lexical auquel il appartient.",
+        "categories": [
+          "La forêt",
+          "La cuisine",
+          "Le portrait"
+        ],
+        "items": [
+          {
+            "texte": "le sentier",
+            "categorie": "La forêt"
+          },
+          {
+            "texte": "la branche",
+            "categorie": "La forêt"
+          },
+          {
+            "texte": "le champignon",
+            "categorie": "La forêt"
+          },
+          {
+            "texte": "l'écureuil",
+            "categorie": "La forêt"
+          },
+          {
+            "texte": "la casserole",
+            "categorie": "La cuisine"
+          },
+          {
+            "texte": "la recette",
+            "categorie": "La cuisine"
+          },
+          {
+            "texte": "le four",
+            "categorie": "La cuisine"
+          },
+          {
+            "texte": "l'assiette",
+            "categorie": "La cuisine"
+          },
+          {
+            "texte": "le menton",
+            "categorie": "Le portrait"
+          },
+          {
+            "texte": "les sourcils",
+            "categorie": "Le portrait"
+          },
+          {
+            "texte": "la moustache",
+            "categorie": "Le portrait"
+          },
+          {
+            "texte": "la silhouette",
+            "categorie": "Le portrait"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M43",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel est le contraire de « prudent », formé avec un préfixe ?",
+        "options": [
+          "imprudent",
+          "inprudent",
+          "deprudent",
+          "malprudent"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le préfixe in- devient im- devant un p : imprudent."
+      },
+      {
+        "question": "Quel mot est le contraire de « monter » ?",
+        "options": [
+          "descendre",
+          "remonter",
+          "démonter",
+          "monteur"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un contraire n'est pas toujours formé avec un préfixe : le contraire de monter est un tout autre mot, descendre."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les contraires",
+        "consigne": "Écris le contraire du mot placé entre astérisques. Un seul mot. Quand l'énoncé le demande, garde le mot de départ et ajoute-lui un préfixe.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "*poli* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "impoli",
+            "indice": "Devant un p, le préfixe in- s'écrit im-."
+          },
+          {
+            "id": 2,
+            "enonce": "*content* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "mécontent",
+            "indice": "Le préfixe commence par mé-."
+          },
+          {
+            "id": 3,
+            "enonce": "*utile* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "inutile",
+            "indice": "Le préfixe commence par in-."
+          },
+          {
+            "id": 4,
+            "enonce": "*brancher* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "débrancher",
+            "indice": "Le préfixe commence par dé-."
+          },
+          {
+            "id": 5,
+            "enonce": "*jour* → le contraire : …",
+            "reponse_attendue": "nuit",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          },
+          {
+            "id": 6,
+            "enonce": "*chaud* → le contraire : …",
+            "reponse_attendue": "froid",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          },
+          {
+            "id": 7,
+            "enonce": "*sale* → le contraire : …",
+            "reponse_attendue": "propre",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          },
+          {
+            "id": 8,
+            "enonce": "*vide* → le contraire : …",
+            "reponse_attendue": "plein",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des contraires",
+        "consigne": "Écris le contraire du mot placé entre astérisques. Un seul mot. Quand l'énoncé le demande, garde le mot de départ et ajoute-lui un préfixe.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "*possible* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "impossible",
+            "indice": "Devant un p, le préfixe in- s'écrit im-."
+          },
+          {
+            "id": 2,
+            "enonce": "*heureux* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "malheureux",
+            "indice": "Le préfixe commence par mal-."
+          },
+          {
+            "id": 3,
+            "enonce": "*connu* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "inconnu",
+            "indice": "Le préfixe commence par in-."
+          },
+          {
+            "id": 4,
+            "enonce": "*gonfler* → le contraire, en ajoutant un préfixe : …",
+            "reponse_attendue": "dégonfler",
+            "indice": "Le préfixe commence par dé-."
+          },
+          {
+            "id": 5,
+            "enonce": "*premier* → le contraire : …",
+            "reponse_attendue": "dernier",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          },
+          {
+            "id": 6,
+            "enonce": "*lourd* → le contraire : …",
+            "reponse_attendue": "léger",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          },
+          {
+            "id": 7,
+            "enonce": "*dessus* → le contraire : …",
+            "reponse_attendue": "dessous",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          },
+          {
+            "id": 8,
+            "enonce": "*sortie* → le contraire : …",
+            "reponse_attendue": "entrée",
+            "indice": "Ici, le contraire est un mot complètement différent."
+          }
+        ]
+      }
+    ]
+  }
+]

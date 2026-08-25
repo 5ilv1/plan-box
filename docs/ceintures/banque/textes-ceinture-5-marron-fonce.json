@@ -1,0 +1,644 @@
+[
+  {
+    "item_code": "T49",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase montre que Rosalie est généreuse, sans le dire ?",
+        "options": [
+          "Rosalie est vraiment très généreuse avec tout le monde.",
+          "Rosalie partage son goûter avec Adam.",
+          "Rosalie a bon cœur, toute la classe le sait.",
+          "Rosalie est la fille la plus généreuse de l'école."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Montrer, c'est raconter un geste que le lecteur peut voir. Les trois autres phrases se contentent d'annoncer la qualité."
+      },
+      {
+        "question": "« Adam range les jeux oubliés par terre, puis il essuie la table sans qu'on le lui demande. » Que montre cette action ?",
+        "options": [
+          "Il est serviable.",
+          "Il est bavard.",
+          "Il est distrait.",
+          "Il est peureux."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un geste rendu sans qu'on le demande fait deviner le caractère : ici, quelqu'un de serviable."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Timéo, sans le mot « timide »",
+        "consigne": "Écris quatre phrases qui font deviner que Timéo est timide, sans jamais employer ce mot.",
+        "contraintes": [
+          "Tu écris quatre phrases.",
+          "Chaque phrase raconte un geste ou une action de Timéo.",
+          "Tu n'emploies ni le mot « timide » ni le mot « peureux ».",
+          "Aucune phrase ne commence par « Timéo est ».",
+          "Tu situes au moins une action dans un lieu précis de l'école."
+        ],
+        "nb_phrases": 4,
+        "exemple": "Quand la maîtresse interroge la classe, Timéo baisse les yeux vers sa trousse."
+      },
+      {
+        "titre": "Jade, sans le mot « curieuse »",
+        "consigne": "Écris cinq phrases qui font deviner que Jade est curieuse de tout, sans jamais employer ce mot.",
+        "contraintes": [
+          "Tu écris cinq phrases.",
+          "Chaque phrase raconte un geste ou une action de Jade.",
+          "Tu n'emploies ni le mot « curieuse » ni le mot « intéressée ».",
+          "Aucune phrase ne contient le verbe « être ».",
+          "Deux phrases au moins se passent en dehors de la classe."
+        ],
+        "nb_phrases": 5,
+        "exemple": "Jade ouvre le dictionnaire dès qu'un mot inconnu passe dans la lecture du matin."
+      }
+    ]
+  },
+  {
+    "item_code": "T31",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Quand commence-t-on un nouveau paragraphe dans un récit ?",
+        "options": [
+          "Quand on change de moment ou de lieu.",
+          "Quand la phrase commence à devenir un peu longue.",
+          "Quand on a déjà écrit une dizaine de lignes.",
+          "Quand on emploie un mot difficile à écrire."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un paragraphe regroupe ce qui va ensemble. On va à la ligne quand on change de moment, de lieu ou d'idée."
+      },
+      {
+        "question": "Un texte raconte l'arrivée de la classe au château, puis la visite des salles, puis le retour en car. Combien de paragraphes écris-tu ?",
+        "options": [
+          "un seul",
+          "deux",
+          "trois",
+          "six"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Il y a trois moments différents : un paragraphe pour chacun."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La sortie au château, en trois paragraphes",
+        "consigne": "Raconte la journée de la classe au château. Va à la ligne pour changer de paragraphe.",
+        "contraintes": [
+          "Tu écris trois paragraphes, séparés par un retour à la ligne.",
+          "Le premier paragraphe raconte l'arrivée, le deuxième la visite, le troisième le retour.",
+          "Chaque paragraphe contient au moins deux phrases.",
+          "Tu commences chaque paragraphe par un connecteur de temps différent.",
+          "Tu ne mélanges pas deux moments dans le même paragraphe."
+        ],
+        "nb_phrases": 6,
+        "exemple": "Au petit matin, le car nous attendait déjà devant l'école."
+      },
+      {
+        "titre": "Le jour de la photo de classe, en trois paragraphes",
+        "consigne": "Raconte le jour de la photo de classe. Va à la ligne pour changer de paragraphe.",
+        "contraintes": [
+          "Tu écris trois paragraphes, séparés par un retour à la ligne.",
+          "Le premier paragraphe raconte les préparatifs, le deuxième le moment de la photo, le troisième ce qui s'est passé après.",
+          "Chaque paragraphe contient au moins trois phrases.",
+          "Tu commences le deuxième et le troisième paragraphe par un connecteur de temps.",
+          "Tu désignes le photographe d'au moins deux façons différentes."
+        ],
+        "nb_phrases": 9,
+        "exemple": "Ce matin-là, tout le monde était arrivé coiffé et bien habillé."
+      }
+    ]
+  },
+  {
+    "item_code": "T27",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase emploie correctement « qui » ou « que » ?",
+        "options": [
+          "Louna a un chat que dort sur le radiateur.",
+          "Louna a un chat qui dort sur le radiateur.",
+          "Louna a un chat qui elle adore.",
+          "Louna a un chat que il dort toute la journée."
+        ],
+        "reponse_correcte": 1,
+        "explication": "« qui » remplace celui qui fait l'action : le chat dort, donc « le chat qui dort »."
+      },
+      {
+        "question": "« Le livre ___ Sacha m'a prêté est passionnant. » Quel mot convient ?",
+        "options": [
+          "qui",
+          "quoi",
+          "qu'il",
+          "que"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Ce n'est pas le livre qui prête : Sacha a prêté quelque chose. Le mot remplacé est complément, on emploie « que »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Qui ou que ?",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "« La fille ___ habite en face de chez moi s'appelle Louna. » Quel mot convient ?",
+            "options": [
+              "que",
+              "qui",
+              "qu'",
+              "dont"
+            ],
+            "reponse_correcte": 1,
+            "explication": "C'est la fille qui habite : le mot remplacé fait l'action, on emploie « qui »."
+          },
+          {
+            "question": "« Le gâteau ___ Fatou a préparé sent très bon. » Quel mot convient ?",
+            "options": [
+              "qui",
+              "qu'ils",
+              "quoi",
+              "que"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Ce n'est pas le gâteau qui prépare : Fatou a préparé quelque chose. On emploie « que »."
+          },
+          {
+            "question": "Quelle phrase est correcte ?",
+            "options": [
+              "Voici le livre qui j'ai lu.",
+              "Voici le livre que il m'a prêté.",
+              "Voici le livre que j'ai lu.",
+              "Voici le livre qui je préfère."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« j'ai lu quelque chose » : le mot remplacé est complément, on emploie « que »."
+          },
+          {
+            "question": "Relie les deux phrases avec « qui » : « Timéo a un vélo. Ce vélo a un guidon rouge. »",
+            "options": [
+              "Timéo a un vélo que a un guidon rouge.",
+              "Timéo a un vélo qu'il a un guidon rouge.",
+              "Timéo a un vélo, qui le guidon est rouge.",
+              "Timéo a un vélo qui a un guidon rouge."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« qui » remplace « ce vélo », qui fait l'action dans la deuxième phrase."
+          },
+          {
+            "question": "Relie les deux phrases avec « que » : « J'ai perdu le stylo. Mon parrain m'a offert ce stylo. »",
+            "options": [
+              "J'ai perdu le stylo qui mon parrain m'a offert.",
+              "J'ai perdu le stylo que mon parrain m'a offert.",
+              "J'ai perdu le stylo que il m'a offert.",
+              "J'ai perdu le stylo qu'il mon parrain m'a offert."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« que » remplace « ce stylo », complément du verbe « a offert ». On ne répète pas le sujet."
+          },
+          {
+            "question": "Dans quelle phrase « que » est-il mal employé ?",
+            "options": [
+              "Le film que nous avons vu était drôle.",
+              "La chanson que Jade chante est très ancienne.",
+              "Le chien que aboie appartient au voisin.",
+              "Le dessin que tu as fini est très beau."
+            ],
+            "reponse_correcte": 2,
+            "explication": "C'est le chien qui aboie : il fait l'action, il faut « qui »."
+          },
+          {
+            "question": "« Nour a une trousse. Cette trousse ferme avec un aimant. » Quelle phrase relie les deux idées avec « qui » ?",
+            "options": [
+              "Nour a une trousse et cette trousse ferme avec un aimant.",
+              "Nour a une trousse que ferme avec un aimant.",
+              "Nour a une trousse, elle ferme avec un aimant.",
+              "Nour a une trousse qui ferme avec un aimant."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Une seule phrase remplace les deux, et le mot « trousse » n'est plus répété."
+          },
+          {
+            "question": "Pourquoi écrit-on « l'histoire qu'Adam invente » et non « que Adam invente » ?",
+            "options": [
+              "Parce que « que » perd son e devant une voyelle.",
+              "Parce qu'Adam est un prénom.",
+              "Parce que le mot « histoire » est féminin.",
+              "Parce que le verbe est au présent."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Devant une voyelle, « que » s'écrit « qu' » : qu'Adam, qu'elle, qu'Inès."
+          }
+        ]
+      },
+      {
+        "titre": "Une seule phrase au lieu de deux",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "« Le chemin ___ traverse le bois est plein de boue. » Quel mot convient ?",
+            "options": [
+              "que",
+              "qu'",
+              "qui",
+              "quoi"
+            ],
+            "reponse_correcte": 2,
+            "explication": "C'est le chemin qui traverse le bois : le mot remplacé fait l'action, on emploie « qui »."
+          },
+          {
+            "question": "« Le film ___ nous avons vu hier fait un peu peur. » Quel mot convient ?",
+            "options": [
+              "qui",
+              "qu'ils",
+              "quoi",
+              "que"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« nous avons vu quelque chose » : le mot remplacé est complément, on emploie « que »."
+          },
+          {
+            "question": "Quelle phrase est correcte ?",
+            "options": [
+              "Voici le radeau qui nous avons construit.",
+              "Voici le radeau que nous avons construit.",
+              "Voici le radeau que il a construit.",
+              "Voici le radeau qui je préfère."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« nous avons construit quelque chose » : on emploie « que »."
+          },
+          {
+            "question": "Relie les deux phrases avec « qui » : « Sacha a trouvé un caillou. Ce caillou brille au soleil. »",
+            "options": [
+              "Sacha a trouvé un caillou qui brille au soleil.",
+              "Sacha a trouvé un caillou qu'il brille au soleil.",
+              "Sacha a trouvé un caillou que brille au soleil.",
+              "Sacha a trouvé un caillou, qui le soleil brille."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« qui » remplace « ce caillou », qui fait l'action de briller."
+          },
+          {
+            "question": "Relie les deux phrases avec « que » : « Jade a rangé le puzzle. Son cousin lui a donné ce puzzle. »",
+            "options": [
+              "Jade a rangé le puzzle qui son cousin lui a donné.",
+              "Jade a rangé le puzzle qu'il son cousin lui a donné.",
+              "Jade a rangé le puzzle que son cousin lui a donné.",
+              "Jade a rangé le puzzle que il lui a donné."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« que » remplace « ce puzzle », complément du verbe « a donné »."
+          },
+          {
+            "question": "Dans quelle phrase « qui » est-il mal employé ?",
+            "options": [
+              "L'élève qui lève le doigt attend son tour.",
+              "Le train qui part à huit heures est complet.",
+              "Le gâteau qui tu as goûté vient de la boulangerie.",
+              "La route qui monte au village est étroite."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« tu as goûté quelque chose » : le mot remplacé est complément, il faut « que »."
+          },
+          {
+            "question": "« Timéo a un cousin. Ce cousin habite au Sénégal. » Quelle phrase relie les deux idées avec « qui » ?",
+            "options": [
+              "Timéo a un cousin et ce cousin habite au Sénégal.",
+              "Timéo a un cousin qui habite au Sénégal.",
+              "Timéo a un cousin, il habite au Sénégal.",
+              "Timéo a un cousin que habite au Sénégal."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une seule phrase remplace les deux, et le mot « cousin » n'est plus répété."
+          },
+          {
+            "question": "Dans « le message que Malo a écrit », quel mot « que » remplace-t-il ?",
+            "options": [
+              "Malo",
+              "personne",
+              "a écrit",
+              "le message"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Malo a écrit le message » : « que » remplace « le message », complément du verbe."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T30",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Hier soir, Jade a ___ une histoire à son petit frère. (lire) », quelle forme convient ?",
+        "options": [
+          "lisait",
+          "lu",
+          "lit",
+          "lire"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Après l'auxiliaire « a », le verbe se met au participe passé : elle a lu. C'est le passé composé."
+      },
+      {
+        "question": "Dans un récit au passé, quelle phrase raconte une action soudaine, et non un décor qui dure ?",
+        "options": [
+          "La nuit tombait doucement sur le village.",
+          "Les volets grinçaient à chaque coup de vent.",
+          "Tout à coup, un chien a aboyé dans la ruelle.",
+          "La rue était vide et silencieuse."
+        ],
+        "reponse_correcte": 2,
+        "explication": "L'imparfait peint le décor qui dure ; le passé composé raconte l'action qui arrive d'un coup."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'orage sur la cour",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le à l'imparfait ou au passé composé, selon ce que la phrase raconte.",
+        "texte_complet": "Ce jour-là, de gros nuages (monter) montaient au-dessus de la cour. Les CM1 (guetter) guettaient la sonnerie sous le préau. Soudain, la pluie a claqué sur le sol et (surprendre) surpris tout le monde. Nour a attrapé son sac et (courir) couru jusqu'à la porte. Elle (serrer) serrait son cartable au-dessus de sa tête.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "montaient",
+            "indice": "« Ce jour-là » ouvre le décor du récit : ce qui dure s'écrit à l'imparfait."
+          },
+          {
+            "position": 1,
+            "mot": "guettaient",
+            "indice": "Toujours le décor : ce que les CM1 faisaient pendant ce temps-là s'écrit à l'imparfait."
+          },
+          {
+            "position": 2,
+            "mot": "surpris",
+            "indice": "« Soudain » annonce une action qui arrive d'un coup, et ton verbe est relié par « et » à « a claqué » : écris le participe passé."
+          },
+          {
+            "position": 3,
+            "mot": "couru",
+            "indice": "La phrase est au passé composé : ton verbe est relié par « et » à « a attrapé ». Écris le participe passé."
+          },
+          {
+            "position": 4,
+            "mot": "serrait",
+            "indice": "Ce n'est pas une action soudaine : c'est ce qu'elle faisait pendant qu'elle courait, donc l'imparfait."
+          }
+        ]
+      },
+      {
+        "titre": "Le soir du spectacle",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le à l'imparfait ou au passé composé, selon ce que la phrase raconte.",
+        "texte_complet": "Ce soir-là, les rideaux rouges (descendre) descendaient lentement devant la scène. Les parents (bavarder) bavardaient encore au fond de la salle. Tout à coup, la musique a jailli des haut-parleurs et (couvrir) couvert leurs voix. Sacha a ouvert son étui et (sortir) sorti sa flûte. Il (trembler) tremblait un peu avant le premier air.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "descendaient",
+            "indice": "« Ce soir-là » ouvre le décor du récit : ce qui dure s'écrit à l'imparfait."
+          },
+          {
+            "position": 1,
+            "mot": "bavardaient",
+            "indice": "Toujours le décor : ce que les parents faisaient pendant ce temps-là s'écrit à l'imparfait."
+          },
+          {
+            "position": 2,
+            "mot": "couvert",
+            "indice": "« Tout à coup » annonce une action qui arrive d'un coup, et ton verbe est relié par « et » à « a jailli » : écris le participe passé."
+          },
+          {
+            "position": 3,
+            "mot": "sorti",
+            "indice": "La phrase est au passé composé : ton verbe est relié par « et » à « a ouvert ». Écris le participe passé."
+          },
+          {
+            "position": 4,
+            "mot": "tremblait",
+            "indice": "Ce n'est pas une action soudaine : c'est ce qu'il ressentait pendant tout ce moment, donc l'imparfait."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T33",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Tu écris une lettre à la directrice pour demander une salle. Quelle phrase convient ?",
+        "options": [
+          "Salut, il faudrait une salle pour notre fête.",
+          "J'ai un truc à vous demander pour la salle.",
+          "Faut nous filer une salle pour vendredi.",
+          "Je vous écris pour vous demander une salle."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Dans une lettre à un adulte qu'on ne tutoie pas, on choisit des mots soignés, pas les mots de la cour de récréation."
+      },
+      {
+        "question": "Dans un texte sur la montagne, quel mot appartient au vocabulaire du sujet ?",
+        "options": [
+          "le sommet",
+          "le quai",
+          "la marée",
+          "le récif"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Chaque sujet a ses mots : « sommet » est un mot de la montagne, les trois autres sont des mots de la mer."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le mot qui convient",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Tu écris un mot dans le cahier de liaison aux parents de ton correspondant. Quelle phrase convient ?",
+            "options": [
+              "Coucou, on vous attend samedi, ramenez le pique-nique !",
+              "Nous serions heureux de vous accueillir samedi à l'école.",
+              "Vous venez samedi ou pas ?",
+              "Y a une rencontre samedi, venez si vous voulez."
+            ],
+            "reponse_correcte": 1,
+            "explication": "On écrit à des adultes qu'on ne connaît pas : « nous serions heureux de vous accueillir » convient, « coucou » et « y a » viennent de l'oral."
+          },
+          {
+            "question": "Dans un texte sur la mer, quel mot appartient au vocabulaire du sujet ?",
+            "options": [
+              "le sommet",
+              "le glacier",
+              "le rivage",
+              "le sentier"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Rivage » est un mot de la mer ; les trois autres appartiennent au vocabulaire de la montagne."
+          },
+          {
+            "question": "« Le vieux monsieur ___ lentement vers le banc. » Quel verbe convient ?",
+            "options": [
+              "galope",
+              "s'avance",
+              "bondit",
+              "fonce"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le mot « lentement » impose un verbe lent : galoper, bondir et foncer disent le contraire."
+          },
+          {
+            "question": "Dans un match de handball, quel verbe convient : « Le gardien ___ le ballon lancé par l'attaquante, puis il le renvoie à son défenseur. » ?",
+            "options": [
+              "arrête",
+              "marque",
+              "dribble",
+              "siffle"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Ces quatre verbes appartiennent au handball, mais chacun a son acteur : l'attaquante marque, l'arbitre siffle, un joueur de champ dribble ; le gardien, lui, arrête."
+          },
+          {
+            "question": "Tu écris une histoire de chevaliers. Quel mot nomme l'endroit où vit le seigneur ?",
+            "options": [
+              "la ferme",
+              "le moulin",
+              "le château fort",
+              "l'auberge"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Ces quatre bâtiments existent bien au Moyen Âge, mais le seigneur ne vit ni à la ferme, ni au moulin, ni à l'auberge : il habite le château fort."
+          },
+          {
+            "question": "« Après la course, Yanis ___ un grand verre d'eau. » Quel verbe convient le mieux ?",
+            "options": [
+              "sirote",
+              "grignote",
+              "déguste",
+              "avale"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Après une course, on boit vite : « avaler ». Siroter et déguster veulent dire boire lentement, et on ne grignote pas de l'eau."
+          },
+          {
+            "question": "Dans un texte sur la montagne, quel mot ne va pas avec le sujet ?",
+            "options": [
+              "le sommet",
+              "le refuge",
+              "la marée",
+              "le sentier"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La marée appartient au vocabulaire de la mer : elle n'a rien à faire dans un texte sur la montagne."
+          },
+          {
+            "question": "« La maîtresse ___ la consigne au tableau. » Quel verbe convient dans un texte de classe ?",
+            "options": [
+              "griffonne",
+              "écrit",
+              "gribouille",
+              "barbouille"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les trois autres verbes disent qu'on écrit mal ou salement : ils ne conviennent pas pour la consigne du tableau."
+          }
+        ]
+      },
+      {
+        "titre": "Choisir le mot juste",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Tu écris la légende d'une photo pour l'exposition affichée dans le couloir de l'école. Quelle phrase convient ?",
+            "options": [
+              "Là, on rigole trop, c'est trop bien.",
+              "Cette photo, elle est vraiment top.",
+              "Les CM2 présentent leur maquette du village médiéval.",
+              "Nous, on a fabriqué ça en classe, c'était trop bien avec la maîtresse."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une légende est lue par tous les visiteurs : elle dit clairement ce que montre la photo, sans les mots de la cour de récréation."
+          },
+          {
+            "question": "Dans un texte sur la forêt, quel mot appartient au vocabulaire du sujet ?",
+            "options": [
+              "la clairière",
+              "le quai",
+              "le trottoir",
+              "le hublot"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Clairière » est un mot de la forêt ; les trois autres viennent de la ville ou du bateau."
+          },
+          {
+            "question": "« Le chaton ___ sur les genoux de Lila. » Quel verbe convient ?",
+            "options": [
+              "ronronne",
+              "rugit",
+              "aboie",
+              "hennit"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Chaque animal a son verbe : le chat ronronne, le lion rugit, le chien aboie, le cheval hennit."
+          },
+          {
+            "question": "Dans une recette de gâteau, quel verbe convient : « ___ les œufs et le sucre jusqu'à obtenir une crème lisse. » ?",
+            "options": [
+              "Épluche",
+              "Mélange",
+              "Râpe",
+              "Égoutte"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Ces quatre verbes sont des verbes de cuisine, mais chacun va avec ses ingrédients : on épluche un légume, on râpe du fromage, on égoutte des pâtes ; des œufs et du sucre, on les mélange."
+          },
+          {
+            "question": "Tu écris une histoire de pirates, au temps des voiliers. Quel mot nomme le grand bateau sur lequel ils vivent ?",
+            "options": [
+              "la barque",
+              "le paquebot",
+              "le navire",
+              "le ferry"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Ce sont quatre bateaux, mais la barque est trop petite pour y vivre, et le paquebot comme le ferry n'existaient pas au temps des voiliers : les pirates vivent sur un navire."
+          },
+          {
+            "question": "« Après trois heures de marche, Inès ___ sur un rocher. » Quel verbe convient le mieux ?",
+            "options": [
+              "s'effondre",
+              "sautille",
+              "gambade",
+              "danse"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Après trois heures de marche, on est épuisé : sautiller, gambader et danser diraient le contraire."
+          },
+          {
+            "question": "Dans un texte sur l'hôpital, quel mot ne va pas avec le sujet ?",
+            "options": [
+              "l'infirmière",
+              "le brancard",
+              "le pansement",
+              "le cartable"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le cartable appartient au vocabulaire de l'école : il n'a rien à faire dans un texte sur l'hôpital."
+          },
+          {
+            "question": "« Le journaliste ___ les résultats du match à la radio. » Quel verbe convient ?",
+            "options": [
+              "bavarde",
+              "chuchote",
+              "murmure",
+              "annonce"
+            ],
+            "reponse_correcte": 3,
+            "explication": "À la radio, on annonce pour être entendu de tous : murmurer et chuchoter, c'est parler tout bas."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,734 @@
+[
+  {
+    "item_code": "T34",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans laquelle de ces phrases y a-t-il une comparaison ?",
+        "options": [
+          "Rosalie court vite dans le couloir du gymnase.",
+          "Rosalie court comme une flèche dans le couloir du gymnase.",
+          "Rosalie court avec ses baskets neuves.",
+          "Rosalie court parce qu'elle est en retard."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Comparer, c'est rapprocher deux choses différentes qui ont un point commun, à l'aide d'un mot comme « comme »."
+      },
+      {
+        "question": "« Les mains de mon grand-père sont rugueuses comme ___. » Quel groupe de mots complète le mieux cette comparaison ?",
+        "options": [
+          "de la soie",
+          "des mains",
+          "de l'écorce",
+          "du vent"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une comparaison ne marche que si les deux choses partagent vraiment le point commun annoncé : l'écorce est rugueuse, la soie est douce."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Comparer pour faire voir",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans quelle phrase trouve-t-on une comparaison ?",
+            "options": [
+              "Malo range sa chambre en dix minutes.",
+              "Malo a une chambre bien rangée.",
+              "Malo range sa chambre comme un capitaine range son bateau.",
+              "Malo range sa chambre tous les samedis."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Comparer, c'est rapprocher deux choses différentes par un point commun, ici avec le mot « comme »."
+          },
+          {
+            "question": "« Jade a des yeux verts comme deux billes de verre. » Qu'est-ce qui est comparé aux billes de verre ?",
+            "options": [
+              "les yeux de Jade",
+              "Jade elle-même",
+              "la couleur verte",
+              "le verre"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Dans une comparaison, on relie ce dont on parle — les yeux de Jade — à l'image choisie."
+          },
+          {
+            "question": "« Le rire de Louna jaillit comme un feu d'artifice. » Quel est le point commun entre ce rire et un feu d'artifice ?",
+            "options": [
+              "Ils sont tous les deux dangereux.",
+              "Ils partent d'un coup et on les entend de loin.",
+              "Ils ont lieu le soir.",
+              "Ils coûtent très cher."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le point commun est ce qui justifie l'image : le rire part d'un coup, comme la fusée qui monte."
+          },
+          {
+            "question": "Quelle comparaison ne fonctionne pas, parce qu'elle dit le contraire de ce qu'on veut faire comprendre ?",
+            "options": [
+              "Ses cheveux sont doux comme de la laine.",
+              "Sa voix est douce comme du miel.",
+              "Ses joues sont douces comme du papier de verre.",
+              "Sa peau est douce comme du velours."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le papier de verre est rugueux : l'image contredit l'idée de douceur."
+          },
+          {
+            "question": "Quel mot ne sert PAS à introduire une comparaison ?",
+            "options": [
+              "comme",
+              "pareil à",
+              "pendant",
+              "on dirait"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Pendant » situe dans le temps ; il ne rapproche pas deux images."
+          },
+          {
+            "question": "« Timéo est ___ un roseau : il plie mais il ne casse jamais. » Quel groupe complète cette comparaison ?",
+            "options": [
+              "malgré",
+              "pareil à",
+              "sauf",
+              "au lieu de"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Pareil à » relie le personnage à l'image du roseau : c'est un mot de comparaison."
+          },
+          {
+            "question": "Quelle phrase dit la même chose que « Inès est rapide », en ajoutant une comparaison ?",
+            "options": [
+              "Inès est rapide et souriante.",
+              "Inès est très rapide.",
+              "Inès est rapide comme le vent.",
+              "Inès n'est pas lente."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Ajouter une comparaison, c'est ajouter une image, pas seulement un adverbe ou un autre adjectif."
+          },
+          {
+            "question": "Dans un portrait, à quoi sert une comparaison ?",
+            "options": [
+              "À faire voir le personnage grâce à une image.",
+              "À raconter la fin de l'histoire.",
+              "À poser une question au lecteur.",
+              "À donner la date de l'action."
+            ],
+            "reponse_correcte": 0,
+            "explication": "La comparaison donne à voir : le lecteur se représente le personnage au lieu de lire une liste d'adjectifs."
+          }
+        ]
+      },
+      {
+        "titre": "Des images dans le portrait",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans quelle phrase trouve-t-on une comparaison ?",
+            "options": [
+              "Sacha avance vers le tableau sans se presser.",
+              "Sacha avance comme un chat qui approche d'un oiseau.",
+              "Sacha avance vers le tableau de la classe.",
+              "Sacha avance parce que le maître l'appelle."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le mot « comme » rapproche la façon d'avancer de Sacha de celle d'un chat : c'est une comparaison."
+          },
+          {
+            "question": "« Les mains de Fatou sont froides comme deux glaçons. » Qu'est-ce qui est comparé aux glaçons ?",
+            "options": [
+              "Fatou tout entière",
+              "le froid",
+              "les mains de Fatou",
+              "l'hiver"
+            ],
+            "reponse_correcte": 2,
+            "explication": "On compare ce dont parle la phrase — les mains — à l'image des glaçons."
+          },
+          {
+            "question": "« Adam reste planté là, immobile comme une statue. » Quel est le point commun entre Adam et la statue ?",
+            "options": [
+              "Ils sont en pierre.",
+              "Ils ne bougent plus du tout.",
+              "Ils sont très vieux.",
+              "Ils se trouvent dans un musée."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le point commun est l'immobilité : c'est elle qui rend l'image juste."
+          },
+          {
+            "question": "Quelle comparaison ne fonctionne pas, parce qu'elle dit le contraire de ce qu'on veut faire comprendre ?",
+            "options": [
+              "Il est têtu comme une mule.",
+              "Il est fort comme un bœuf.",
+              "Il est bavard comme une pie.",
+              "Il est bavard comme une tombe."
+            ],
+            "reponse_correcte": 3,
+            "explication": "On dit « muet comme une tombe » : une tombe ne parle pas, l'image contredit « bavard »."
+          },
+          {
+            "question": "Quel mot ne sert PAS à introduire une comparaison ?",
+            "options": [
+              "ressemble à",
+              "on dirait",
+              "aussi… que",
+              "depuis"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Depuis » indique le point de départ dans le temps ; il ne compare rien."
+          },
+          {
+            "question": "« Ses cheveux roux ___ un tas de feuilles d'automne. » Quel groupe complète cette comparaison ?",
+            "options": [
+              "ressemblent à",
+              "s'éloignent de",
+              "se moquent de",
+              "se souviennent de"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Ressembler à » rapproche deux images : c'est une façon de comparer sans employer « comme »."
+          },
+          {
+            "question": "Quelle phrase dit la même chose que « Yanis est très discret », en ajoutant une comparaison ?",
+            "options": [
+              "Yanis est discret et poli.",
+              "Yanis passe dans le couloir comme une ombre.",
+              "Yanis n'est vraiment pas bruyant.",
+              "Yanis reste discret toute la journée."
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'image de l'ombre fait voir la discrétion, au lieu de se contenter de la nommer."
+          },
+          {
+            "question": "Pourquoi vaut-il mieux écrire « une voix douce comme un murmure » que « une voix douce » ?",
+            "options": [
+              "Parce que la phrase est plus longue.",
+              "Parce que l'image aide le lecteur à entendre la voix.",
+              "Parce qu'il faut toujours deux adjectifs.",
+              "Parce que la comparaison remplace le point final."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une comparaison bien choisie précise l'adjectif et le rend sensible au lecteur."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T35",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "« Rosalie ouvre la porte du grenier. La fillette n'a pas peur du noir. » Qu'est-ce que « La fillette » ?",
+        "options": [
+          "Un groupe nominal qui désigne Rosalie.",
+          "Un pronom qui désigne Rosalie.",
+          "Un nouveau personnage qui entre dans l'histoire.",
+          "Un nom propre."
+        ],
+        "reponse_correcte": 0,
+        "explication": "« La fillette », c'est un déterminant plus un nom : un groupe nominal. Et il désigne le même personnage que la phrase d'avant."
+      },
+      {
+        "question": "Dans quelle réécriture le personnage n'est-il jamais désigné deux fois par le même mot ou le même groupe de mots ?",
+        "options": [
+          "Un garçon blond attend devant le portail. Le garçon souffle dans ses mains. Le garçon consulte sa montre.",
+          "Un garçon blond attend devant le portail. Il souffle dans ses mains. Il consulte sa montre.",
+          "Un garçon blond attend devant le portail. Le petit blond souffle dans ses mains. Le petit blond consulte sa montre.",
+          "Un garçon blond attend devant le portail. Il souffle dans ses mains. Le petit blond consulte sa montre."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Pour ne pas se répéter, on alterne les substituts : un groupe nominal, puis un pronom, puis un autre groupe nominal déjà annoncé par le début du texte."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Comment le personnage est-il désigné ?",
+        "consigne": "Dans chaque extrait, le mot ou le groupe de mots qui désigne le personnage est entre astérisques. Classe-le selon ce qu'il est.",
+        "categories": [
+          "Pronom",
+          "Groupe nominal",
+          "Nom propre"
+        ],
+        "items": [
+          {
+            "texte": "Rosalie pousse la porte du club de théâtre. *Elle* cherche sa place au premier rang.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Timéo se penche sur son cahier. *Le garçon aux lunettes rondes* recommence sa phrase.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "La nouvelle élève pose son cartable près de la fenêtre. *Inès* n'a encore parlé à personne.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Sacha ferme les yeux avant de plonger. *Il* compte jusqu'à dix dans sa tête.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Fatou attend son tour au portique. *La plus jeune de la famille* refuse qu'on l'aide.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "Un garçon en survêtement bleu traverse la cour au pas de course. *Yanis* est encore en retard.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Louna a laissé sa flûte à la maison. Sa voisine *lui* prête la sienne.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Malo pousse le portail du collège. *Ce grand élève de CM2* a encore grandi cet été.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "La déléguée de la classe monte sur l'estrade. *Adam* déplie lentement sa feuille.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Le maître appelle le nouveau ; *celui-ci* se lève sans un mot.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Jade range son archet dans l'étui. *La musicienne du groupe* remercie le public d'un signe.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "Le gardien de but saute sur le ballon. *Nour* se relève, tout sourire.",
+            "categorie": "Nom propre"
+          }
+        ]
+      },
+      {
+        "titre": "Trois façons de nommer le héros",
+        "consigne": "Dans chaque extrait, le mot ou le groupe de mots qui désigne le personnage est entre astérisques. Classe-le selon ce qu'il est.",
+        "categories": [
+          "Pronom",
+          "Groupe nominal",
+          "Nom propre"
+        ],
+        "items": [
+          {
+            "texte": "Jade grimpe sur le mur d'escalade. *Elle* cherche la prise suivante du bout des doigts.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Lila referme son roman d'un coup sec. *La lectrice la plus rapide de la classe* soupire de plaisir.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "Le garçon aux cheveux blancs de farine sort enfin de la cuisine. *Sacha* a cuisiné un gâteau.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Timéo pousse la porte de l'atelier. *Il* respire l'odeur du bois coupé.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Malo dévale la colline à vélo. *Le champion du quartier* freine des deux mains.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "La joueuse au maillot numéro sept marque le dernier but. *Fatou* lève les deux bras.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Le petit dernier ne trouve plus sa doudoune. Son frère *lui* montre le porte-manteau.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Louna traverse le gymnase en silence. *Cette élève de CM2* connaît tous les agrès.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "Un élève tousse au fond de la classe. *Adam* met aussitôt sa main devant sa bouche.",
+            "categorie": "Nom propre"
+          },
+          {
+            "texte": "Le directeur appelle la déléguée ; *celle-ci* traverse le couloir au pas de course.",
+            "categorie": "Pronom"
+          },
+          {
+            "texte": "Yanis remonte sa ligne au bord de la rivière. *Le plus patient des trois frères* sourit.",
+            "categorie": "Groupe nominal"
+          },
+          {
+            "texte": "La fillette qui chantait tout à l'heure revient sur scène. *Inès* n'a plus du tout le trac.",
+            "categorie": "Nom propre"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T32",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "« Malo n'a pas pu terminer son dessin ___ la cloche a sonné trop tôt. » Quel mot convient ?",
+        "options": [
+          "donc",
+          "parce que",
+          "pourtant",
+          "ensuite"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Ce qui suit explique pourquoi Malo n'a pas terminé : c'est la cause, et on l'annonce par « parce que »."
+      },
+      {
+        "question": "Dans « Comme il neigeait très fort, la sortie a été annulée », quelle partie est la conséquence ?",
+        "options": [
+          "il neigeait très fort",
+          "le mot « Comme »",
+          "la sortie a été annulée",
+          "les mots « très fort »"
+        ],
+        "reponse_correcte": 2,
+        "explication": "La cause, c'est la neige ; la conséquence, c'est ce qui arrive à cause d'elle : l'annulation de la sortie."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Cause ou conséquence ?",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "« Inès a couru tout le trajet, ___ elle arrive en avance. » Quel mot convient ?",
+            "options": [
+              "car",
+              "parce que",
+              "donc",
+              "puisque"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Ce qui suit est le résultat de la course : on l'annonce par un mot de conséquence."
+          },
+          {
+            "question": "« Le match a été annulé ___ le terrain était inondé. » Quel mot convient ?",
+            "options": [
+              "donc",
+              "parce que",
+              "alors",
+              "c'est pourquoi"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le terrain inondé explique l'annulation : c'est la cause, annoncée par « parce que »."
+          },
+          {
+            "question": "Dans « Comme Sacha n'avait pas sa clé, il a attendu sa sœur devant la porte », quelle est la cause ?",
+            "options": [
+              "il a attendu sa sœur",
+              "les mots « devant la porte »",
+              "Sacha n'avait pas sa clé",
+              "sa sœur est enfin arrivée"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La cause, c'est ce qui explique le reste : sans clé, impossible d'entrer."
+          },
+          {
+            "question": "Dans « Le vent soufflait très fort, c'est pourquoi le volet a claqué toute la nuit », quelle est la conséquence ?",
+            "options": [
+              "le volet a claqué toute la nuit",
+              "le vent soufflait très fort",
+              "les mots « toute la nuit »",
+              "les mots « c'est pourquoi »"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La conséquence, c'est ce qui arrive à cause du reste : le volet claque parce que le vent souffle."
+          },
+          {
+            "question": "Quel mot n'exprime NI la cause NI la conséquence ?",
+            "options": [
+              "car",
+              "donc",
+              "pendant que",
+              "parce que"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Pendant que » situe deux actions en même temps : il parle du temps, pas de l'explication."
+          },
+          {
+            "question": "« ___ la neige tombait depuis deux jours, la route du col était impraticable. » Quel mot convient au début de la phrase ?",
+            "options": [
+              "Donc",
+              "Comme",
+              "Alors",
+              "Pourtant"
+            ],
+            "reponse_correcte": 1,
+            "explication": "En tête de phrase, « comme » annonce la cause, et la conséquence vient ensuite."
+          },
+          {
+            "question": "Quelle phrase est correcte ?",
+            "options": [
+              "Adam a raté son bus parce qu'il est arrivé en retard au club.",
+              "Adam est arrivé en retard au club parce qu'il a raté son bus.",
+              "Adam a raté son bus donc il est parti très tôt.",
+              "Adam est arrivé en retard au club car il a pris de l'avance."
+            ],
+            "reponse_correcte": 1,
+            "explication": "La cause arrive avant dans la réalité : c'est le bus raté qui explique le retard, et non l'inverse."
+          },
+          {
+            "question": "« Rosalie n'a pas entendu la sonnerie ___ elle avait son casque sur les oreilles. » Quel mot convient ?",
+            "options": [
+              "donc",
+              "c'est pourquoi",
+              "car",
+              "alors"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le casque explique pourquoi elle n'a rien entendu : c'est la cause, annoncée par « car »."
+          }
+        ]
+      },
+      {
+        "titre": "Expliquer, ou dire ce qui arrive",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "« Le brouillard était très épais, ___ les bateaux sont restés au port. » Quel mot convient ?",
+            "options": [
+              "parce que",
+              "car",
+              "puisque",
+              "c'est pourquoi"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Ce qui suit est le résultat du brouillard : « c'est pourquoi » annonce une conséquence."
+          },
+          {
+            "question": "« Fatou a mis deux pulls ___ la salle n'est jamais chauffée. » Quel mot convient ?",
+            "options": [
+              "car",
+              "donc",
+              "alors",
+              "c'est pourquoi"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La salle froide explique les deux pulls : c'est la cause, annoncée par « car »."
+          },
+          {
+            "question": "Dans « Le chien aboyait sans arrêt, alors Timéo est descendu voir », quelle est la cause ?",
+            "options": [
+              "Timéo est descendu voir",
+              "Le chien aboyait sans arrêt",
+              "le mot « alors »",
+              "les mots « sans arrêt »"
+            ],
+            "reponse_correcte": 1,
+            "explication": "C'est l'aboiement qui explique la descente de Timéo : c'est lui la cause."
+          },
+          {
+            "question": "Dans « Comme la piscine était en travaux, la classe est allée au gymnase », quelle est la conséquence ?",
+            "options": [
+              "la piscine était en travaux",
+              "le mot « Comme »",
+              "la classe est allée au gymnase",
+              "les mots « au gymnase »"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La conséquence, c'est ce qui arrive à cause du reste : le changement de lieu."
+          },
+          {
+            "question": "Quel mot n'exprime NI la cause NI la conséquence ?",
+            "options": [
+              "ensuite",
+              "donc",
+              "puisque",
+              "car"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Ensuite » range les actions dans le temps ; il n'explique rien."
+          },
+          {
+            "question": "« ___ tu connais la route par cœur, tu passeras devant. » Quel mot convient au début de la phrase ?",
+            "options": [
+              "Donc",
+              "Pourtant",
+              "Puisque",
+              "Alors"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Puisque » annonce une cause que tout le monde connaît déjà."
+          },
+          {
+            "question": "Quelle phrase est correcte ?",
+            "options": [
+              "Jade a eu froid parce qu'elle a enfilé son manteau.",
+              "Jade a enfilé son manteau donc elle avait froid.",
+              "Jade avait froid, donc elle a enfilé son manteau.",
+              "Jade avait froid car elle a enfilé son manteau."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le froid explique le geste : le froid est la cause, le manteau enfilé est la conséquence."
+          },
+          {
+            "question": "« Yanis a laissé son maillot à la maison, ___ il n'a pas pu nager. » Quel mot convient ?",
+            "options": [
+              "car",
+              "parce que",
+              "puisque",
+              "alors"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Ce qui suit est le résultat de l'oubli : « alors » annonce une conséquence."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T36",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans quelle phrase la parole rapportée est-elle correctement encadrée ?",
+        "options": [
+          "Fatou demande : Tu viens avec nous ?",
+          "Fatou demande « tu viens avec nous ? »",
+          "Fatou demande : tu viens avec nous",
+          "Fatou demande : « Tu viens avec nous ? »"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Après le verbe de parole et les deux-points, la parole s'ouvre par un guillemet et une majuscule, et se referme par un guillemet."
+      },
+      {
+        "question": "Dans ce texte, quelle phrase ne va pas avec le reste ? « Louna cherche son chat depuis le matin. Elle appelle sous chaque voiture du parking. Louna n'a jamais eu d'animal. Vers midi, elle entend enfin un miaulement. »",
+        "options": [
+          "Louna n'a jamais eu d'animal.",
+          "Louna cherche son chat depuis le matin.",
+          "Elle appelle sous chaque voiture du parking.",
+          "Vers midi, elle entend enfin un miaulement."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Quand tu relis, vérifie que tout le texte raconte la même histoire : cette phrase contredit le début, puisque Louna a un chat."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je relis les dialogues avec ma grille ④",
+        "consigne": "Chaque ligne est un extrait de texte. Dans un dialogue, chaque réplique commence par un tiret ; une parole rapportée à l'intérieur d'un récit s'écrit entre guillemets après les deux-points. Classe chaque ligne : sa ponctuation est-elle complète, ou bien manque-t-il le tiret d'une réplique, ou bien les guillemets d'une parole rapportée ?",
+        "categories": [
+          "Dialogue bien ponctué",
+          "Tiret manquant",
+          "Guillemets manquants"
+        ],
+        "items": [
+          {
+            "texte": "— Je crois que j'ai trouvé la solution, murmure Sacha. — Montre-moi ça tout de suite, répond Nour.",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Tu as fini le tien ? demande Nour. Je n'y arriverai jamais, soupire Louna.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Fatou chuchote : Ne te retourne pas tout de suite.",
+            "categorie": "Guillemets manquants"
+          },
+          {
+            "texte": "— Est-ce que quelqu'un a vu ma règle ? demande Jade.",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Ce carton est beaucoup trop lourd pour moi, avoue Inès. Tu veux que je t'aide à le porter ? propose Adam.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Le maître annonce : Nous partirons à huit heures précises.",
+            "categorie": "Guillemets manquants"
+          },
+          {
+            "texte": "Timéo répond : « Je te la prête jusqu'à demain. »",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— À qui le tour de lire ? interroge le maître. C'est mon tour maintenant, rappelle Inès.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Rosalie répète : Je ne bougerai pas d'ici.",
+            "categorie": "Guillemets manquants"
+          },
+          {
+            "texte": "Le maître prévient : « Attention, la marche est glissante ! »",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Regarde un peu ce qu'il y a sous le banc, dit Fatou. Tu ne devineras jamais ce que j'ai trouvé ! s'exclame Malo.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Yanis demande : Est-ce que la porte était déjà entrouverte ?",
+            "categorie": "Guillemets manquants"
+          }
+        ]
+      },
+      {
+        "titre": "Ma grille de relecture ④ au travail",
+        "consigne": "Chaque ligne est un extrait de texte. Dans un dialogue, chaque réplique commence par un tiret ; une parole rapportée à l'intérieur d'un récit s'écrit entre guillemets après les deux-points. Classe chaque ligne : sa ponctuation est-elle complète, ou bien manque-t-il le tiret d'une réplique, ou bien les guillemets d'une parole rapportée ?",
+        "categories": [
+          "Dialogue bien ponctué",
+          "Tiret manquant",
+          "Guillemets manquants"
+        ],
+        "items": [
+          {
+            "texte": "— Tu as encore laissé ton livre de poésie à la maison, remarque Nour. — Je le sais bien, soupire Timéo.",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Par quoi commences-tu ton exposé ? demande Jade. Je préfère commencer par la fin, explique Yanis.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Malo souffle : J'ai vraiment cru que tu étais parti sans moi.",
+            "categorie": "Guillemets manquants"
+          },
+          {
+            "texte": "Inès promet : « Je m'en occupe avant la récréation. »",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Rangez vos affaires sans bruit, demande la maîtresse. Est-ce qu'on peut sortir maintenant ? insiste Sacha.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "La directrice explique : Les portes ferment à dix-sept heures.",
+            "categorie": "Guillemets manquants"
+          },
+          {
+            "texte": "— Où est-ce que tu as rangé les ciseaux ? demande Lila.",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Pousse-toi un peu, je ne vois pas le tableau, dit Louna. Ne fais surtout pas tomber le vase ! crie Rosalie.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Louna insiste : Ce n'est pas moi qui ai commencé.",
+            "categorie": "Guillemets manquants"
+          },
+          {
+            "texte": "Adam répond : « Dans le tiroir du bas, comme d'habitude. »",
+            "categorie": "Dialogue bien ponctué"
+          },
+          {
+            "texte": "— Il y a eu un bruit dans le couloir, affirme Malo. Je n'ai rien entendu du tout, répond Jade.",
+            "categorie": "Tiret manquant"
+          },
+          {
+            "texte": "Timéo murmure : Je n'ose pas lever la main devant tout le monde.",
+            "categorie": "Guillemets manquants"
+          }
+        ]
+      }
+    ]
+  }
+]

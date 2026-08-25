@@ -4,266 +4,721 @@
     "type": "classement",
     "diagnostic": [
       {
-        "question": "Quelle phrase est une phrase interrogative ?",
+        "question": "Quel signe faut-il écrire à la fin de « Est-ce que tu connais Malo » ?",
         "options": [
-          "Nour a les cheveux bouclés.",
-          "Comme ses yeux brillent !",
-          "Quelle est la couleur de ses yeux ?",
-          "Regarde bien son visage."
-        ],
-        "reponse_correcte": 2,
-        "explication": "Une phrase interrogative pose une question et se termine toujours par un point d'interrogation (?)."
-      },
-      {
-        "question": "Quel signe faut-il écrire à la fin de cette phrase : « Comme Timéo a l'air joyeux »",
-        "options": [
-          "!",
           ".",
           "?",
+          "!",
           ","
         ],
-        "reponse_correcte": 0,
-        "explication": "Cette phrase montre un sentiment très fort : c'est une phrase exclamative, elle se termine par un point d'exclamation (!)."
-      }
-    ],
-    "entrainement": {
-      "titre": "Les trois types de phrases du portrait",
-      "consigne": "Range chaque phrase dans la bonne colonne : déclarative (.), interrogative (?) ou exclamative (!). Observe bien le signe de ponctuation à la fin.",
-      "categories": [
-        "Déclarative",
-        "Interrogative",
-        "Exclamative"
-      ],
-      "items": [
-        {
-          "texte": "Nour a de longs cheveux bruns.",
-          "categorie": "Déclarative"
-        },
-        {
-          "texte": "Quel âge a Rosalie ?",
-          "categorie": "Interrogative"
-        },
-        {
-          "texte": "Comme ce portrait est réussi !",
-          "categorie": "Exclamative"
-        },
-        {
-          "texte": "Timéo porte des lunettes rondes.",
-          "categorie": "Déclarative"
-        },
-        {
-          "texte": "Est-ce que Sacha porte un chapeau ?",
-          "categorie": "Interrogative"
-        },
-        {
-          "texte": "Quelle jolie écharpe rouge !",
-          "categorie": "Exclamative"
-        },
-        {
-          "texte": "Fatou dessine le portrait de sa voisine.",
-          "categorie": "Déclarative"
-        },
-        {
-          "texte": "Comment sont les yeux d'Inès ?",
-          "categorie": "Interrogative"
-        },
-        {
-          "texte": "Que ses boucles sont douces !",
-          "categorie": "Exclamative"
-        },
-        {
-          "texte": "Malo a un petit grain de beauté sur la joue.",
-          "categorie": "Déclarative"
-        },
-        {
-          "texte": "Qui a dessiné ce portrait ?",
-          "categorie": "Interrogative"
-        },
-        {
-          "texte": "Comme Lila sourit gentiment !",
-          "categorie": "Exclamative"
-        }
-      ]
-    }
-  },
-  {
-    "item_code": "P14",
-    "type": "texte_a_trous",
-    "diagnostic": [
+        "reponse_correcte": 1,
+        "explication": "« Est-ce que » annonce une question : la phrase interrogative se termine par un point d'interrogation."
+      },
       {
-        "question": "Quel déterminant convient : « Timéo porte ___ lunettes rondes. »",
+        "question": "Quelle phrase est correctement ponctuée ?",
         "options": [
-          "une",
-          "un",
-          "des",
-          "la"
+          "Comme cette photo est belle.",
+          "Comme cette photo est belle ?",
+          "Comme cette photo est belle !",
+          "Comme cette photo est belle,"
         ],
         "reponse_correcte": 2,
-        "explication": "« Lunettes » est au pluriel : il faut un déterminant pluriel, « des »."
-      },
-      {
-        "question": "Dans quelle phrase le déterminant est bien accordé avec le nom ?",
-        "options": [
-          "Lila met un chaussures neuves.",
-          "Lila met des chaussure neuves.",
-          "Lila met une chaussures neuves.",
-          "Lila met des chaussures neuves."
-        ],
-        "reponse_correcte": 3,
-        "explication": "Le déterminant s'accorde en genre et en nombre avec le nom : « des chaussures » est féminin pluriel."
+        "explication": "« Comme… » exprime un sentiment fort : c'est une phrase exclamative, elle prend un point d'exclamation."
       }
     ],
-    "entrainement": {
-      "titre": "Le portrait de Fatou : les déterminants",
-      "consigne": "Complète le portrait avec le déterminant qui convient. Attention à l'accord avec le nom : masculin ou féminin, singulier ou pluriel.",
-      "texte_complet": "Voici Fatou, ma meilleure amie. Elle a un grand sourire et des taches de rousseur. Je garde la photo de Fatou dans mes cahiers.",
-      "trous": [
-        {
-          "position": 0,
-          "mot": "ma",
-          "indice": "Déterminant possessif féminin singulier : cette amie est à moi."
-        },
-        {
-          "position": 1,
-          "mot": "un",
-          "indice": "Article indéfini masculin singulier, devant « grand sourire »."
-        },
-        {
-          "position": 2,
-          "mot": "des",
-          "indice": "Article indéfini pluriel, devant « taches »."
-        },
-        {
-          "position": 3,
-          "mot": "la",
-          "indice": "Article défini féminin singulier, devant « photo »."
-        },
-        {
-          "position": 4,
-          "mot": "mes",
-          "indice": "Déterminant possessif pluriel : ces cahiers sont à moi."
-        }
-      ]
-    }
-  },
-  {
-    "item_code": "P15",
-    "type": "texte_a_trous",
-    "diagnostic": [
+    "entrainement": [
       {
-        "question": "Quel mot outil complète : « Rosalie dessine ___ un feutre vert. »",
-        "options": [
-          "sans",
-          "avec",
-          "pour",
-          "sous"
+        "titre": "Le portrait de la classe",
+        "consigne": "Lis chaque phrase et regarde comment elle se termine. Range-la dans la bonne colonne.",
+        "categories": [
+          "Déclarative",
+          "Interrogative",
+          "Exclamative"
         ],
-        "reponse_correcte": 1,
-        "explication": "« Avec » indique l'objet que l'on utilise pour faire quelque chose."
+        "items": [
+          {
+            "texte": "Le chat de Jade dort sur le banc du jardin.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Timéo range ses feutres dans sa trousse.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Nour porte un pull rayé aujourd'hui.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Les élèves rentrent de la récréation.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Est-ce que tu viens à la bibliothèque avec nous ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Viens-tu chercher ton cahier de poésie ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Où as-tu trouvé ce crayon vert ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Pourquoi Fatou sourit-elle sur la photo ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Comme il fait beau aujourd'hui !",
+            "categorie": "Exclamative"
+          },
+          {
+            "texte": "Que ce portrait est réussi !",
+            "categorie": "Exclamative"
+          },
+          {
+            "texte": "Comme ce portrait ressemble à Malo !",
+            "categorie": "Exclamative"
+          },
+          {
+            "texte": "Quelle jolie écharpe !",
+            "categorie": "Exclamative"
+          }
+        ]
       },
       {
-        "question": "Quel mot outil complète : « Malo sort ___ écharpe, car il n'a pas froid. »",
-        "options": [
-          "sans",
-          "avec",
-          "sur",
-          "pour"
+        "titre": "Une journée d'école",
+        "consigne": "Lis chaque phrase et regarde comment elle se termine. Range-la dans la bonne colonne.",
+        "categories": [
+          "Déclarative",
+          "Interrogative",
+          "Exclamative"
         ],
-        "reponse_correcte": 0,
-        "explication": "« Sans » indique ce que l'on n'a pas : c'est le contraire de « avec »."
+        "items": [
+          {
+            "texte": "Rosalie collectionne les cartes postales.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Le maître écrit la date au tableau.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Sacha attend son tour devant le tableau.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Adam dessine le portrait de sa grand-mère.",
+            "categorie": "Déclarative"
+          },
+          {
+            "texte": "Est-ce que Yanis a terminé son dessin ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Quand partons-nous à la piscine ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Qui a rangé la bibliothèque de la classe ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "As-tu vu le nouveau tableau du couloir ?",
+            "categorie": "Interrogative"
+          },
+          {
+            "texte": "Comme cette photo est réussie !",
+            "categorie": "Exclamative"
+          },
+          {
+            "texte": "Que cette histoire est drôle !",
+            "categorie": "Exclamative"
+          },
+          {
+            "texte": "Comme Inès court vite !",
+            "categorie": "Exclamative"
+          },
+          {
+            "texte": "Quelle drôle d'histoire !",
+            "categorie": "Exclamative"
+          }
+        ]
       }
-    ],
-    "entrainement": {
-      "titre": "Timéo dessine un portrait : les mots outils",
-      "consigne": "Complète le texte avec le mot outil qui convient. Relis chaque phrase entière pour vérifier qu'elle a bien du sens.",
-      "texte_complet": "Timéo est assis sur un banc. Il dessine le portrait de Lila avec un crayon noir. Il travaille sans bruit. Ce dessin est un cadeau pour sa maman. Un petit chat dort sous le banc.",
-      "trous": [
-        {
-          "position": 0,
-          "mot": "sur",
-          "indice": "Mot outil qui dit qu'il est assis en haut du banc, posé dessus."
-        },
-        {
-          "position": 1,
-          "mot": "avec",
-          "indice": "Mot outil qui indique l'objet utilisé pour dessiner."
-        },
-        {
-          "position": 2,
-          "mot": "sans",
-          "indice": "Contraire de « avec » : il ne fait aucun bruit."
-        },
-        {
-          "position": 3,
-          "mot": "pour",
-          "indice": "Mot outil qui dit à qui le cadeau est destiné."
-        },
-        {
-          "position": 4,
-          "mot": "sous",
-          "indice": "Contraire de « sur » : le chat est dessous, au-dessous du banc."
-        }
-      ]
-    }
+    ]
   },
   {
     "item_code": "P20",
-    "type": "texte_a_trous",
+    "type": "exercice",
     "diagnostic": [
       {
-        "question": "Complète : « Fatou et Malo ___ des lunettes rondes. »",
-        "options": [
-          "a",
-          "ont",
-          "on",
-          "sont"
-        ],
-        "reponse_correcte": 1,
-        "explication": "« Fatou et Malo », c'est « ils » : le verbe avoir au présent s'écrit « ont »."
-      },
-      {
-        "question": "Complète : « Tu ___ un joli sourire. »",
+        "question": "Quelle est la bonne forme du verbe être au présent avec « tu » ?",
         "options": [
           "est",
           "es",
-          "as",
-          "a"
+          "ai",
+          "as"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Avec « tu », le verbe être fait « es » ; « est » s'emploie avec il ou elle."
+      },
+      {
+        "question": "Dans « Ils (avoir) ___ tous un portrait à finir », quelle forme du présent convient ?",
+        "options": [
+          "a",
+          "sont",
+          "ont",
+          "avons"
         ],
         "reponse_correcte": 2,
-        "explication": "Avec « tu », le verbe avoir au présent s'écrit « as »."
+        "explication": "Avec « ils », le verbe avoir au présent fait « ont »."
       }
     ],
-    "entrainement": {
-      "titre": "Inès se présente : être et avoir au présent",
-      "consigne": "Complète le portrait avec le verbe être ou le verbe avoir conjugué au présent. Cherche d'abord le sujet de chaque phrase.",
-      "texte_complet": "Je suis Inès. Ma meilleure amie est Rosalie. Nous sommes dans la même classe. Nous avons toutes les deux les cheveux courts. Nos cartables sont bleus.",
-      "trous": [
-        {
-          "position": 0,
-          "mot": "suis",
-          "indice": "Verbe être au présent avec « je »."
-        },
-        {
-          "position": 1,
-          "mot": "est",
-          "indice": "Verbe être au présent avec un sujet singulier : « mon amie »."
-        },
-        {
-          "position": 2,
-          "mot": "sommes",
-          "indice": "Verbe être au présent avec « nous »."
-        },
-        {
-          "position": 3,
-          "mot": "avons",
-          "indice": "Verbe avoir au présent avec « nous »."
-        },
-        {
-          "position": 4,
-          "mot": "sont",
-          "indice": "Verbe être au présent avec un sujet pluriel : « nos cartables »."
-        }
-      ]
-    }
+    "entrainement": [
+      {
+        "titre": "Être et avoir au présent",
+        "consigne": "Écris seulement le verbe conjugué au présent. Un seul mot par réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Complète : je (être) → je …",
+            "reponse_attendue": "suis",
+            "indice": "Verbe être, 1re personne du singulier."
+          },
+          {
+            "id": 2,
+            "enonce": "Complète : tu (être) → tu …",
+            "reponse_attendue": "es",
+            "indice": "Verbe être, 2e personne du singulier : la terminaison est un -s."
+          },
+          {
+            "id": 3,
+            "enonce": "Complète : elle (être) → elle …",
+            "reponse_attendue": "est",
+            "indice": "Verbe être, 3e personne du singulier."
+          },
+          {
+            "id": 4,
+            "enonce": "Complète : nous (être) → nous …",
+            "reponse_attendue": "sommes",
+            "indice": "Verbe être, 1re personne du pluriel."
+          },
+          {
+            "id": 5,
+            "enonce": "Complète : je (avoir) → j'…",
+            "reponse_attendue": "ai",
+            "indice": "Verbe avoir, 1re personne du singulier : le « j' » est déjà écrit."
+          },
+          {
+            "id": 6,
+            "enonce": "Complète : tu (avoir) → tu …",
+            "reponse_attendue": "as",
+            "indice": "Verbe avoir, 2e personne du singulier : la terminaison est un -s."
+          },
+          {
+            "id": 7,
+            "enonce": "Conjugue avoir au présent : vous …",
+            "reponse_attendue": "avez",
+            "indice": "Verbe avoir, 2e personne du pluriel."
+          },
+          {
+            "id": 8,
+            "enonce": "Conjugue avoir au présent : ils …",
+            "reponse_attendue": "ont",
+            "indice": "Verbe avoir, 3e personne du pluriel."
+          }
+        ]
+      },
+      {
+        "titre": "Être et avoir dans la phrase",
+        "consigne": "Écris le verbe conjugué au présent. Un seul mot, accents compris. Attention : « a » du verbe avoir ne prend pas d'accent.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Complète au présent : Tu ___ en avance ce matin. (être)",
+            "reponse_attendue": "es",
+            "indice": "Verbe être, avec « tu »."
+          },
+          {
+            "id": 2,
+            "enonce": "Complète au présent : Nous ___ dans la même classe. (être)",
+            "reponse_attendue": "sommes",
+            "indice": "Verbe être, avec « nous »."
+          },
+          {
+            "id": 3,
+            "enonce": "Complète au présent : Vous ___ très attentifs. (être)",
+            "reponse_attendue": "êtes",
+            "indice": "Verbe être, avec « vous ». N'oublie pas l'accent."
+          },
+          {
+            "id": 4,
+            "enonce": "Complète au présent : Elles ___ contentes de leur dessin. (être)",
+            "reponse_attendue": "sont",
+            "indice": "Verbe être, avec « elles »."
+          },
+          {
+            "id": 5,
+            "enonce": "Complète au présent : J' ___ un nouveau feutre. (avoir)",
+            "reponse_attendue": "ai",
+            "indice": "Verbe avoir, avec « je »."
+          },
+          {
+            "id": 6,
+            "enonce": "Complète au présent : Tu ___ de la chance. (avoir)",
+            "reponse_attendue": "as",
+            "indice": "Verbe avoir, avec « tu »."
+          },
+          {
+            "id": 7,
+            "enonce": "Complète au présent : Elle ___ les yeux verts. (avoir)",
+            "reponse_attendue": "a",
+            "indice": "Verbe avoir, avec « elle ». Ce mot ne prend pas d'accent."
+          },
+          {
+            "id": 8,
+            "enonce": "Complète au présent : Vous ___ deux crayons rouges. (avoir)",
+            "reponse_attendue": "avez",
+            "indice": "Verbe avoir, avec « vous »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P14",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans « Timéo attache ___ lacets avant de sortir », quel déterminant convient ?",
+        "options": [
+          "son",
+          "sa",
+          "ses",
+          "cet"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« lacets » est au pluriel : le déterminant se met aussi au pluriel, donc « ses »."
+      },
+      {
+        "question": "Dans « Nour dessine ___ arbre au milieu de la feuille », quel déterminant convient ?",
+        "options": [
+          "un",
+          "une",
+          "des",
+          "ces"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« arbre » est un nom masculin singulier : on écrit « un arbre »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le bon déterminant",
+        "consigne": "Choisis le seul déterminant qui s'accorde avec le nom de la phrase.",
+        "questions": [
+          {
+            "question": "Nour pose ___ trousse sur la table.",
+            "options": [
+              "son",
+              "ses",
+              "sa",
+              "cette"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« trousse » est féminin singulier : le possessif est « sa »."
+          },
+          {
+            "question": "Louna a mis ___ nouvelle robe pour la photo de classe.",
+            "options": [
+              "sa",
+              "son",
+              "ses",
+              "ces"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« robe » est féminin singulier et commence par une consonne : on écrit « sa robe »."
+          },
+          {
+            "question": "Le maître affiche ___ portraits des élèves au fond de la classe.",
+            "options": [
+              "le",
+              "la",
+              "les",
+              "l'"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« portraits » est au pluriel : l'article défini pluriel est « les »."
+          },
+          {
+            "question": "Sacha a retrouvé ___ cahier de poésie sous la table.",
+            "options": [
+              "ses",
+              "son",
+              "sa",
+              "cette"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« cahier » est masculin singulier : le possessif est « son »."
+          },
+          {
+            "question": "Timéo écrit son prénom avec ___ stylo à bille.",
+            "options": [
+              "une",
+              "des",
+              "ces",
+              "un"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« stylo » est masculin singulier : l'article indéfini est « un »."
+          },
+          {
+            "question": "Yanis observe ___ oiseau posé sur le rebord de la fenêtre.",
+            "options": [
+              "le",
+              "la",
+              "l'",
+              "les"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Devant un nom singulier qui commence par une voyelle, « le » devient « l' »."
+          },
+          {
+            "question": "Nour a apporté ___ photos de vacances pour son exposé.",
+            "options": [
+              "une",
+              "des",
+              "la",
+              "cette"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« photos » est au pluriel : l'article indéfini pluriel est « des »."
+          },
+          {
+            "question": "Malo regarde ___ arbre du fond de la cour.",
+            "options": [
+              "ces",
+              "cet",
+              "ce",
+              "cette"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Devant un nom masculin singulier commençant par une voyelle, « ce » devient « cet »."
+          }
+        ]
+      },
+      {
+        "titre": "Accorde le déterminant",
+        "consigne": "Un seul déterminant s'accorde avec le nom : coche-le.",
+        "questions": [
+          {
+            "question": "Inès a rangé ___ feutres dans une boîte en carton.",
+            "options": [
+              "son",
+              "sa",
+              "ses",
+              "cette"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« feutres » est au pluriel : le possessif devient « ses »."
+          },
+          {
+            "question": "Rosalie décrit ___ personnage préféré devant la classe.",
+            "options": [
+              "sa",
+              "son",
+              "ses",
+              "cette"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« personnage » est masculin singulier : on écrit « son personnage »."
+          },
+          {
+            "question": "Adam colle sa photo sur ___ première page de son cahier.",
+            "options": [
+              "la",
+              "le",
+              "les",
+              "l'"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« page » est féminin singulier et commence par une consonne : c'est « la »."
+          },
+          {
+            "question": "Jade n'aime pas beaucoup ___ photo de classe.",
+            "options": [
+              "ce",
+              "cet",
+              "cette",
+              "ces"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« photo » est féminin singulier : le démonstratif est « cette »."
+          },
+          {
+            "question": "Louna range ___ ardoise dans son casier.",
+            "options": [
+              "l'",
+              "la",
+              "le",
+              "les"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Devant « ardoise », qui commence par une voyelle, « la » devient « l' »."
+          },
+          {
+            "question": "Sacha a dessiné ___ moustaches sur son autoportrait.",
+            "options": [
+              "une",
+              "des",
+              "la",
+              "cette"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« moustaches » est au pluriel : l'article indéfini pluriel est « des »."
+          },
+          {
+            "question": "Yanis porte ___ bonnet en laine et une écharpe rayée.",
+            "options": [
+              "un",
+              "une",
+              "des",
+              "cette"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« bonnet » est masculin singulier : on écrit « un bonnet »."
+          },
+          {
+            "question": "Fatou a oublié ___ trousse à la maison.",
+            "options": [
+              "son",
+              "sa",
+              "ses",
+              "ces"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« trousse » est féminin singulier et commence par une consonne : c'est « sa »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P15",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans « Nour est très fière ___ son travail », quel mot convient ?",
+        "options": [
+          "à",
+          "de",
+          "sur",
+          "avec"
+        ],
+        "reponse_correcte": 1,
+        "explication": "On est fier DE quelque chose : après « fière », on emploie « de »."
+      },
+      {
+        "question": "Dans « Sacha met ses bottes ___ ne pas avoir les pieds mouillés », quel mot convient ?",
+        "options": [
+          "sans",
+          "de",
+          "avec",
+          "pour"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« pour » annonce le but, ce qu'on veut obtenir en faisant l'action."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le petit mot qui manque",
+        "consigne": "Choisis le seul petit mot qui donne un sens correct à la phrase.",
+        "questions": [
+          {
+            "question": "Timéo écrit son texte ___ un crayon de papier.",
+            "options": [
+              "sur",
+              "avec",
+              "dans",
+              "pour"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« avec » introduit l'outil qu'on utilise pour faire l'action."
+          },
+          {
+            "question": "Le portrait de Lila est accroché ___ le mur du couloir.",
+            "options": [
+              "sur",
+              "dans",
+              "avec",
+              "pour"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« sur » indique qu'une chose est posée ou fixée contre une autre."
+          },
+          {
+            "question": "Le portrait ___ son grand-père est accroché dans le salon.",
+            "options": [
+              "à",
+              "sur",
+              "de",
+              "dans"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Pour dire de qui on parle, on relie les deux noms avec « de » : le portrait de son grand-père."
+          },
+          {
+            "question": "Adam pense souvent ___ ses vacances au bord de la mer.",
+            "options": [
+              "sans",
+              "de",
+              "avec",
+              "pour"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« pour » annonce le but de l'action."
+          },
+          {
+            "question": "Fatou a recopié sa poésie ___ aucune erreur.",
+            "options": [
+              "avec",
+              "sans",
+              "pour",
+              "sur"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« sans » dit qu'une chose manque, ici les erreurs."
+          },
+          {
+            "question": "Malo a plongé la main ___ sa poche.",
+            "options": [
+              "de",
+              "sur",
+              "dans",
+              "pour"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« dans » indique qu'on va à l'intérieur de quelque chose."
+          },
+          {
+            "question": "Rosalie ressemble beaucoup ___ sa sœur.",
+            "options": [
+              "de",
+              "avec",
+              "sur",
+              "à"
+            ],
+            "reponse_correcte": 3,
+            "explication": "On ressemble À quelqu'un : après « ressemble », on emploie « à »."
+          },
+          {
+            "question": "Adam passe le mercredi ___ sa grand-mère.",
+            "options": [
+              "à",
+              "chez",
+              "dans",
+              "sur"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« chez » s'emploie devant le nom d'une personne pour dire dans sa maison."
+          }
+        ]
+      },
+      {
+        "titre": "À, sans, avec, pour, de, sur…",
+        "consigne": "Un seul petit mot rend la phrase correcte : coche-le.",
+        "questions": [
+          {
+            "question": "Louna découpe le carton ___ des ciseaux.",
+            "options": [
+              "dans",
+              "sur",
+              "avec",
+              "pour"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« avec » introduit l'outil qu'on utilise."
+          },
+          {
+            "question": "Sacha a posé sa trousse ___ la table du fond.",
+            "options": [
+              "dans",
+              "sur",
+              "de",
+              "avec"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« sur » indique qu'une chose est posée au-dessus d'une autre."
+          },
+          {
+            "question": "Le sac ___ Jade est resté au vestiaire.",
+            "options": [
+              "de",
+              "à",
+              "sur",
+              "avec"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Pour dire à qui appartient une chose, on relie les deux noms avec « de »."
+          },
+          {
+            "question": "Jade s'entraîne beaucoup ___ réussir sa course.",
+            "options": [
+              "de",
+              "sur",
+              "avec",
+              "pour"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« pour » annonce le but de l'action."
+          },
+          {
+            "question": "Rosalie a répondu ___ hésiter une seconde.",
+            "options": [
+              "pour",
+              "de",
+              "sans",
+              "avec"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« sans » dit qu'une chose n'a pas eu lieu, ici l'hésitation."
+          },
+          {
+            "question": "Adam a rangé son portrait ___ une pochette en plastique.",
+            "options": [
+              "dans",
+              "sur",
+              "de",
+              "pour"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« dans » indique qu'on met une chose à l'intérieur d'une autre."
+          },
+          {
+            "question": "Yanis obéit toujours ___ ses parents.",
+            "options": [
+              "de",
+              "à",
+              "avec",
+              "pour"
+            ],
+            "reponse_correcte": 1,
+            "explication": "On obéit À quelqu'un : après « obéit », on emploie « à »."
+          },
+          {
+            "question": "Inès va ___ le dentiste jeudi après-midi.",
+            "options": [
+              "chez",
+              "à",
+              "dans",
+              "sur"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« chez » s'emploie devant le nom d'une personne pour dire dans son cabinet, sa maison."
+          }
+        ]
+      }
+    ]
   }
 ]

@@ -1,0 +1,588 @@
+[
+  {
+    "item_code": "M14",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Un seul de ces quatre mots invariables est correctement orthographié. Lequel ?",
+        "options": [
+          "aujourdhui",
+          "aujourd'huit",
+          "aujourhui",
+          "aujourd'hui"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Ce mot s'écrit d'un seul tenant, avec un d suivi d'une apostrophe, et il se termine par -hui, sans t."
+      },
+      {
+        "question": "Quel mot invariable complète : « Adam ne se trompe ___ dans ses tables. » ?",
+        "options": [
+          "jamais",
+          "toujours",
+          "souvent",
+          "beaucoup"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Avec « ne », c'est « jamais » qui va : « ne… jamais » veut dire pas une seule fois."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots invariables du calendrier",
+        "consigne": "Écris le mot invariable qui manque. Son sens est donné entre parenthèses. Attention à l'orthographe : ces mots ne changent jamais.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "___, nous sommes mardi 16 septembre. (le jour où nous sommes, ni hier ni demain)",
+            "reponse_attendue": "aujourd'hui",
+            "indice": "Ce mot s'écrit en trois morceaux collés, avec une apostrophe après le d."
+          },
+          {
+            "id": 2,
+            "enonce": "Lila a piscine ___. (le jour juste après aujourd'hui)",
+            "reponse_attendue": "demain",
+            "indice": "Ce mot se termine par -ain."
+          },
+          {
+            "id": 3,
+            "enonce": "Le maître a corrigé les cahiers ___. (le jour juste avant aujourd'hui)",
+            "reponse_attendue": "hier",
+            "indice": "Ce mot commence par un h qu'on n'entend pas."
+          },
+          {
+            "id": 4,
+            "enonce": "Nour est ___ à l'heure. (le contraire de jamais)",
+            "reponse_attendue": "toujours",
+            "indice": "Ce mot se termine par un s, même quand il n'y a qu'une personne."
+          },
+          {
+            "id": 5,
+            "enonce": "Timéo ne perd ___ son cahier. (le contraire de toujours)",
+            "reponse_attendue": "jamais",
+            "indice": "Ce mot se termine par -ais et garde toujours son s."
+          },
+          {
+            "id": 6,
+            "enonce": "Fatou emprunte ___ des livres à la bibliothèque. (le contraire de rarement)",
+            "reponse_attendue": "souvent",
+            "indice": "Ce mot se termine par -ent, et pourtant ce n'est pas un verbe."
+          },
+          {
+            "id": 7,
+            "enonce": "Malo a ___ d'amis dans la classe. (le contraire de peu)",
+            "reponse_attendue": "beaucoup",
+            "indice": "Ce mot se termine par un p qu'on n'entend pas."
+          },
+          {
+            "id": 8,
+            "enonce": "Adam est ___ content de son résultat. (synonyme de vraiment, placé devant un adjectif)",
+            "reponse_attendue": "très",
+            "indice": "Ce mot porte un accent grave sur le e et se termine par un s."
+          },
+          {
+            "id": 9,
+            "enonce": "Rosalie veut écouter l'histoire ___ une fois. (une fois de plus)",
+            "reponse_attendue": "encore",
+            "indice": "Ce mot se termine par un e."
+          },
+          {
+            "id": 10,
+            "enonce": "Les vacances d'automne arrivent ___. (dans peu de temps)",
+            "reponse_attendue": "bientôt",
+            "indice": "Ce mot porte un accent circonflexe sur le o et se termine par un t muet."
+          }
+        ]
+      },
+      {
+        "titre": "Les mots invariables de la semaine",
+        "consigne": "Écris le mot invariable qui manque. Son sens est donné entre parenthèses. Attention à l'orthographe : ces mots ne changent jamais.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sacha est de service ___. (le jour où nous sommes, ni hier ni demain)",
+            "reponse_attendue": "aujourd'hui",
+            "indice": "Ce mot s'écrit en trois morceaux collés, avec une apostrophe après le d."
+          },
+          {
+            "id": 2,
+            "enonce": "Nous avons gymnase ___. (le jour juste après aujourd'hui)",
+            "reponse_attendue": "demain",
+            "indice": "Ce mot se termine par -ain."
+          },
+          {
+            "id": 3,
+            "enonce": "Jade a perdu son écharpe ___. (le jour juste avant aujourd'hui)",
+            "reponse_attendue": "hier",
+            "indice": "Ce mot commence par un h qu'on n'entend pas."
+          },
+          {
+            "id": 4,
+            "enonce": "Louna remet ___ les feutres dans la boîte. (le contraire de jamais)",
+            "reponse_attendue": "toujours",
+            "indice": "Ce mot se termine par un s, même quand il n'y a qu'une personne."
+          },
+          {
+            "id": 5,
+            "enonce": "Inès ne se moque ___ des autres. (le contraire de toujours)",
+            "reponse_attendue": "jamais",
+            "indice": "Ce mot se termine par -ais et garde toujours son s."
+          },
+          {
+            "id": 6,
+            "enonce": "Yanis lit ___ des livres d'aventures. (le contraire de rarement)",
+            "reponse_attendue": "souvent",
+            "indice": "Ce mot se termine par -ent, et pourtant ce n'est pas un verbe."
+          },
+          {
+            "id": 7,
+            "enonce": "Il y a ___ de livres sur cette étagère. (le contraire de peu)",
+            "reponse_attendue": "beaucoup",
+            "indice": "Ce mot se termine par un p qu'on n'entend pas."
+          },
+          {
+            "id": 8,
+            "enonce": "Le gâteau de la cantine était ___ bon. (synonyme de vraiment, placé devant un adjectif)",
+            "reponse_attendue": "très",
+            "indice": "Ce mot porte un accent grave sur le e et se termine par un s."
+          },
+          {
+            "id": 9,
+            "enonce": "La maîtresse relit la consigne ___ une fois. (une fois de plus)",
+            "reponse_attendue": "encore",
+            "indice": "Ce mot se termine par un e."
+          },
+          {
+            "id": 10,
+            "enonce": "La cloche va sonner ___. (dans peu de temps)",
+            "reponse_attendue": "bientôt",
+            "indice": "Ce mot porte un accent circonflexe sur le o et se termine par un t muet."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M11",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel est le féminin du nom « un lapin » ?",
+        "options": [
+          "lapin",
+          "lapine",
+          "lapinne",
+          "lapines"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Pour former le féminin, on ajoute un -e à la fin du nom masculin : lapin devient lapine, avec un seul n."
+      },
+      {
+        "question": "Nour demande son chemin à une ___. (passant)",
+        "options": [
+          "passant",
+          "passants",
+          "passante",
+          "passantes"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« une » annonce un nom féminin singulier : on ajoute un -e à passant, sans s."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le masculin et le féminin",
+        "consigne": "Écris le nom au féminin. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "un ami → une …",
+            "reponse_attendue": "amie",
+            "indice": "Pense à ce qu'on ajoute à la fin du nom masculin pour faire le féminin."
+          },
+          {
+            "id": 2,
+            "enonce": "un voisin → une …",
+            "reponse_attendue": "voisine",
+            "indice": "Pense à ce qu'on ajoute à la fin du nom masculin pour faire le féminin."
+          },
+          {
+            "id": 3,
+            "enonce": "un marchand → une …",
+            "reponse_attendue": "marchande",
+            "indice": "Le d ne s'entend pas au masculin, mais il reste au féminin."
+          },
+          {
+            "id": 4,
+            "enonce": "un cousin → une …",
+            "reponse_attendue": "cousine",
+            "indice": "Pense à ce qu'on ajoute à la fin du nom masculin pour faire le féminin."
+          },
+          {
+            "id": 5,
+            "enonce": "un géant → une …",
+            "reponse_attendue": "géante",
+            "indice": "Garde l'accent aigu du mot masculin et ajoute la lettre du féminin."
+          },
+          {
+            "id": 6,
+            "enonce": "un client → une …",
+            "reponse_attendue": "cliente",
+            "indice": "Le t ne s'entend pas au masculin, mais il reste au féminin."
+          },
+          {
+            "id": 7,
+            "enonce": "un employé → une …",
+            "reponse_attendue": "employée",
+            "indice": "Le mot finit déjà par é : on ajoute quand même la lettre du féminin, ce qui donne deux e à la suite."
+          },
+          {
+            "id": 8,
+            "enonce": "un gagnant → une …",
+            "reponse_attendue": "gagnante",
+            "indice": "Le t ne s'entend pas au masculin, mais il reste au féminin."
+          }
+        ]
+      },
+      {
+        "titre": "Du garçon à la fille",
+        "consigne": "Écris le nom au féminin. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "un habitant → une …",
+            "reponse_attendue": "habitante",
+            "indice": "Le t ne s'entend pas au masculin, mais il reste au féminin."
+          },
+          {
+            "id": 2,
+            "enonce": "un étudiant → une …",
+            "reponse_attendue": "étudiante",
+            "indice": "Garde l'accent aigu du mot masculin et ajoute la lettre du féminin."
+          },
+          {
+            "id": 3,
+            "enonce": "un remplaçant → une …",
+            "reponse_attendue": "remplaçante",
+            "indice": "Garde la cédille sous le c et ajoute la lettre du féminin."
+          },
+          {
+            "id": 4,
+            "enonce": "un ours → une …",
+            "reponse_attendue": "ourse",
+            "indice": "Le mot finit déjà par s : on ajoute quand même la lettre du féminin, après le s."
+          },
+          {
+            "id": 5,
+            "enonce": "un avocat → une …",
+            "reponse_attendue": "avocate",
+            "indice": "Le t ne s'entend pas au masculin, mais il reste au féminin."
+          },
+          {
+            "id": 6,
+            "enonce": "un invité → une …",
+            "reponse_attendue": "invitée",
+            "indice": "Le mot finit déjà par é : on ajoute quand même la lettre du féminin, ce qui donne deux e à la suite."
+          },
+          {
+            "id": 7,
+            "enonce": "un gamin → une …",
+            "reponse_attendue": "gamine",
+            "indice": "Pense à ce qu'on ajoute à la fin du nom masculin pour faire le féminin."
+          },
+          {
+            "id": 8,
+            "enonce": "un Français → une …",
+            "reponse_attendue": "Française",
+            "indice": "Le mot finit déjà par s : on ajoute quand même la lettre du féminin, après le s."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M16",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans le groupe « une jolie fleur », quel mot est le nom ?",
+        "options": [
+          "fleur",
+          "une",
+          "jolie",
+          "jolie fleur"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le nom, c'est le mot qui désigne la chose dont on parle : ici « fleur ». « une » est le déterminant et « jolie » l'adjectif."
+      },
+      {
+        "question": "Dans « Les grands arbres perdent leurs feuilles », quel mot est un adjectif ?",
+        "options": [
+          "Les",
+          "arbres",
+          "feuilles",
+          "grands"
+        ],
+        "reponse_correcte": 3,
+        "explication": "L'adjectif donne un renseignement sur le nom : « grands » dit comment sont les arbres. « arbres » et « feuilles » sont des noms."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Dans le groupe nominal",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Range-le dans la bonne colonne : déterminant, nom ou adjectif.",
+        "categories": [
+          "Déterminant",
+          "Nom",
+          "Adjectif"
+        ],
+        "items": [
+          {
+            "texte": "Timéo pousse *le* cartable sous la table.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Nour compte *des* nuages gris.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Fatou attrape *une* fourmi minuscule.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "*Les* CM2 partent au gymnase.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Après la récréation, Malo range le *ballon*.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Jade caresse un petit *chat* noir.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Les *élèves* attendent devant la porte.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Rosalie croque dans une *pomme*.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Adam met un *vieux* pull pour peindre.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Sacha a des chaussures *propres*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Louna découpe une *jolie* étiquette.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Inès a des lunettes *rondes*.",
+            "categorie": "Adjectif"
+          }
+        ]
+      },
+      {
+        "titre": "Déterminant, nom ou adjectif ?",
+        "consigne": "Dans chaque phrase, un mot est écrit entre astérisques. Range-le dans la bonne colonne : déterminant, nom ou adjectif.",
+        "categories": [
+          "Déterminant",
+          "Nom",
+          "Adjectif"
+        ],
+        "items": [
+          {
+            "texte": "Lila peint *un* poisson orange.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Yanis emprunte *la* règle de Nour.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Adam glisse *des* cailloux dans sa poche.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "*Le* dessin de Sacha est affiché au fond de la classe.",
+            "categorie": "Déterminant"
+          },
+          {
+            "texte": "Le petit *chien* de Jade aboie.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Inès a vidé sa *gourde*.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Les *feuilles* jaunes tombent des arbres.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Fatou partage son *goûter*.",
+            "categorie": "Nom"
+          },
+          {
+            "texte": "Malo a enfilé sa *belle* chemise du dimanche.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Rosalie porte une jupe *fleurie*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Louna a des joues *roses*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Timéo a trouvé un *gros* escargot dans la cour.",
+            "categorie": "Adjectif"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M17",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quel est l'infinitif du verbe dans « Louna *nage* dans le grand bassin » ?",
+        "options": [
+          "nagé",
+          "nagent",
+          "nager",
+          "nageait"
+        ],
+        "reponse_correcte": 2,
+        "explication": "L'infinitif, c'est la forme du verbe qu'on lit dans le dictionnaire : nager."
+      },
+      {
+        "question": "Quel est l'infinitif du verbe dans « Malo *voit* le tableau du fond » ?",
+        "options": [
+          "voyer",
+          "voir",
+          "voit",
+          "vu"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Tous les infinitifs ne finissent pas par -er : celui de « voit » est « voir »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Trouve l'infinitif",
+        "consigne": "Écris l'infinitif du verbe écrit entre astérisques. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Lila *chante* devant toute la classe.",
+            "reponse_attendue": "chanter",
+            "indice": "L'infinitif est la forme qu'on lit dans le dictionnaire."
+          },
+          {
+            "id": 2,
+            "enonce": "Les CM2 *marchent* en rang jusqu'au gymnase.",
+            "reponse_attendue": "marcher",
+            "indice": "L'infinitif est la forme qu'on lit dans le dictionnaire."
+          },
+          {
+            "id": 3,
+            "enonce": "Nour *écoute* l'histoire du soir.",
+            "reponse_attendue": "écouter",
+            "indice": "N'oublie pas l'accent aigu du début."
+          },
+          {
+            "id": 4,
+            "enonce": "Timéo *dort* pendant tout le trajet.",
+            "reponse_attendue": "dormir",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 5,
+            "enonce": "Nous *écrivons* la date au tableau.",
+            "reponse_attendue": "écrire",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 6,
+            "enonce": "Fatou *lit* la consigne à voix haute.",
+            "reponse_attendue": "lire",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 7,
+            "enonce": "Les élèves *sortent* dans la cour.",
+            "reponse_attendue": "sortir",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 8,
+            "enonce": "Malo *saute* par-dessus la flaque.",
+            "reponse_attendue": "sauter",
+            "indice": "L'infinitif est la forme qu'on lit dans le dictionnaire."
+          }
+        ]
+      },
+      {
+        "titre": "L'infinitif du verbe",
+        "consigne": "Écris l'infinitif du verbe écrit entre astérisques. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Jade *danse* au spectacle de l'école.",
+            "reponse_attendue": "danser",
+            "indice": "L'infinitif est la forme qu'on lit dans le dictionnaire."
+          },
+          {
+            "id": 2,
+            "enonce": "Adam *grimpe* au mur d'escalade.",
+            "reponse_attendue": "grimper",
+            "indice": "L'infinitif est la forme qu'on lit dans le dictionnaire."
+          },
+          {
+            "id": 3,
+            "enonce": "Rosalie *boit* de l'eau à la fontaine.",
+            "reponse_attendue": "boire",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 4,
+            "enonce": "Les CE2 *courent* autour du terrain.",
+            "reponse_attendue": "courir",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 5,
+            "enonce": "Sacha *ouvre* la fenêtre du fond.",
+            "reponse_attendue": "ouvrir",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 6,
+            "enonce": "Yanis *mange* une pomme au goûter.",
+            "reponse_attendue": "manger",
+            "indice": "L'infinitif est la forme qu'on lit dans le dictionnaire."
+          },
+          {
+            "id": 7,
+            "enonce": "Louna *répond* au maître sans hésiter.",
+            "reponse_attendue": "répondre",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          },
+          {
+            "id": 8,
+            "enonce": "Inès *attend* devant la porte de la classe.",
+            "reponse_attendue": "attendre",
+            "indice": "Cet infinitif ne se termine pas par -er."
+          }
+        ]
+      }
+    ]
+  }
+]

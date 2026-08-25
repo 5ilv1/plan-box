@@ -1,0 +1,436 @@
+[
+  {
+    "item_code": "M36",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Comment s'écrit le mot invariable qui veut dire « jusqu'au moment où » ?",
+        "options": [
+          "jusqu'a ce que",
+          "jusqu'à ce que",
+          "jusqu'à-ce-que",
+          "jusque à ce que"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Il y a un accent grave sur le à, et les trois mots s'écrivent séparés, sans trait d'union."
+      },
+      {
+        "question": "Quel mot invariable convient : « Le sentier devient plus étroit ___ on monte vers le sommet. » ?",
+        "options": [
+          "à mesure que",
+          "en revanche",
+          "afin que",
+          "par ailleurs"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« à mesure que » dit que deux choses se passent en même temps, l'une suivant l'autre. Il s'écrit en trois mots séparés."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots invariables de la série 6",
+        "consigne": "Écris le mot invariable qui manque. Les indications entre parenthèses te disent lequel : à toi de l'écrire sans faute, et de bien séparer les mots.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "___ la cloche a sonné, les élèves se sont rangés sans un bruit. (synonyme de *quand* ; un seul mot commençant par l)",
+            "reponse_attendue": "lorsque",
+            "indice": "*lors* + *que* collés en un seul mot."
+          },
+          {
+            "id": 2,
+            "enonce": "Nous rentrons plus tôt, ___ l'orage approche. (un seul mot ; cela veut dire « étant donné que » ; il commence par pu-)",
+            "reponse_attendue": "puisque",
+            "indice": "*puis* + *que* collés en un seul mot."
+          },
+          {
+            "id": 3,
+            "enonce": "___ il soit déjà tard, Sacha termine son dessin. (un seul mot ; cela veut dire « même si » ; il commence par q)",
+            "reponse_attendue": "quoique",
+            "indice": "*quoi* + *que* collés : ici, cela s'écrit en un seul mot."
+          },
+          {
+            "id": 4,
+            "enonce": "La maîtresse répète la consigne ___ tout le monde comprenne. (cela exprime le but ; deux mots, le premier est *afin*)",
+            "reponse_attendue": "afin que",
+            "indice": "Deux mots séparés ; *afin* prend un seul f et pas d'accent."
+          },
+          {
+            "id": 5,
+            "enonce": "___ le vent soit glacé, Malo sort sans bonnet. (deux mots ; cela veut dire « même si » ; le premier mot est *bien*)",
+            "reponse_attendue": "bien que",
+            "indice": "Deux mots séparés : *bien*, puis *que*."
+          },
+          {
+            "id": 6,
+            "enonce": "Nous jouerons dehors ___ il fera beau. (deux mots ; cela veut dire « aussi longtemps que » ; le premier mot est *tant*)",
+            "reponse_attendue": "tant que",
+            "indice": "Deux mots séparés ; *tant* se termine par -ant, sans accent."
+          },
+          {
+            "id": 7,
+            "enonce": "Yanis n'aime pas la soupe de légumes ; ___, il adore les légumes crus. (deux mots ; cela veut dire « au contraire, par contre » ; le premier mot est *en*)",
+            "reponse_attendue": "en revanche",
+            "indice": "Deux mots séparés ; *revanche* se termine par -che."
+          },
+          {
+            "id": 8,
+            "enonce": "Ce documentaire est passionnant ; ___, il est très bien illustré. (deux mots ; cela veut dire « de plus, d'autre part » ; le premier mot est *par*)",
+            "reponse_attendue": "par ailleurs",
+            "indice": "Deux mots séparés ; *ailleurs* se termine par -eurs."
+          }
+        ]
+      },
+      {
+        "titre": "Encore les mots invariables de la série 6",
+        "consigne": "Écris le mot invariable qui manque. Les indications entre parenthèses te disent lequel : à toi de l'écrire sans faute, et de bien séparer les mots.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "___ le train est entré en gare, tout le monde s'est levé. (synonyme de *quand* ; un seul mot commençant par l)",
+            "reponse_attendue": "lorsque",
+            "indice": "*lors* + *que* collés en un seul mot."
+          },
+          {
+            "id": 2,
+            "enonce": "Prends ton parapluie, ___ la pluie ne va pas s'arrêter. (un seul mot ; cela veut dire « étant donné que » ; il commence par pu-)",
+            "reponse_attendue": "puisque",
+            "indice": "*puis* + *que* collés en un seul mot."
+          },
+          {
+            "id": 3,
+            "enonce": "___ le chemin soit long, Louna préfère y aller à pied. (un seul mot ; cela veut dire « même si » ; il commence par q)",
+            "reponse_attendue": "quoique",
+            "indice": "*quoi* + *que* collés : ici, cela s'écrit en un seul mot."
+          },
+          {
+            "id": 4,
+            "enonce": "Adam relit sa dictée deux fois ___ aucune faute ne lui échappe. (cela exprime le but ; deux mots, le premier est *afin*)",
+            "reponse_attendue": "afin que",
+            "indice": "Deux mots séparés ; *afin* prend un seul f et pas d'accent."
+          },
+          {
+            "id": 5,
+            "enonce": "___ la salle soit petite, tous les spectateurs ont trouvé une place. (deux mots ; cela veut dire « même si » ; le premier mot est *bien*)",
+            "reponse_attendue": "bien que",
+            "indice": "Deux mots séparés : *bien*, puis *que*."
+          },
+          {
+            "id": 6,
+            "enonce": "Tu resteras à l'abri ___ l'averse durera. (deux mots ; cela veut dire « aussi longtemps que » ; le premier mot est *tant*)",
+            "reponse_attendue": "tant que",
+            "indice": "Deux mots séparés ; *tant* se termine par -ant, sans accent."
+          },
+          {
+            "id": 7,
+            "enonce": "Timéo dessine remarquablement bien ; ___, il n'aime pas du tout écrire. (deux mots ; cela veut dire « au contraire, par contre » ; le premier mot est *en*)",
+            "reponse_attendue": "en revanche",
+            "indice": "Deux mots séparés ; *revanche* se termine par -che."
+          },
+          {
+            "id": 8,
+            "enonce": "Ce roman est un peu long ; ___, il coûte assez cher. (deux mots ; cela veut dire « de plus, d'autre part » ; le premier mot est *par*)",
+            "reponse_attendue": "par ailleurs",
+            "indice": "Deux mots séparés ; *ailleurs* se termine par -eurs."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M37",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Quel mot est le terme générique des mots *rose*, *tulipe* et *marguerite* ?",
+        "options": [
+          "bouquet",
+          "jardin",
+          "fleur",
+          "pétale"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un terme générique est un mot général qui regroupe des mots plus précis : rose, tulipe et marguerite sont des fleurs."
+      },
+      {
+        "question": "Dans cette liste, quel mot n'est PAS un terme spécifique du mot générique *véhicule* ?",
+        "options": [
+          "le trottoir",
+          "le camion",
+          "le tramway",
+          "la camionnette"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un trottoir n'est pas un véhicule : c'est une partie de la rue. Les trois autres mots désignent bien des véhicules."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Félins, rapaces et rongeurs",
+        "consigne": "Un terme générique est un mot général qui regroupe des mots plus précis. Range chaque animal sous le terme générique qui lui convient : un félin est un animal de la famille du chat ; un rapace est un oiseau qui chasse avec son bec crochu et ses serres ; un rongeur est un animal qui ronge avec ses grandes dents de devant.",
+        "categories": [
+          "Un félin",
+          "Un rapace",
+          "Un rongeur"
+        ],
+        "items": [
+          {
+            "texte": "le tigre",
+            "categorie": "Un félin"
+          },
+          {
+            "texte": "la panthère",
+            "categorie": "Un félin"
+          },
+          {
+            "texte": "le lynx",
+            "categorie": "Un félin"
+          },
+          {
+            "texte": "le guépard",
+            "categorie": "Un félin"
+          },
+          {
+            "texte": "l'aigle",
+            "categorie": "Un rapace"
+          },
+          {
+            "texte": "le faucon",
+            "categorie": "Un rapace"
+          },
+          {
+            "texte": "la chouette",
+            "categorie": "Un rapace"
+          },
+          {
+            "texte": "le vautour",
+            "categorie": "Un rapace"
+          },
+          {
+            "texte": "l'écureuil",
+            "categorie": "Un rongeur"
+          },
+          {
+            "texte": "le hamster",
+            "categorie": "Un rongeur"
+          },
+          {
+            "texte": "le castor",
+            "categorie": "Un rongeur"
+          },
+          {
+            "texte": "la marmotte",
+            "categorie": "Un rongeur"
+          }
+        ]
+      },
+      {
+        "titre": "Meubles, ustensiles et vêtements",
+        "consigne": "Un terme générique est un mot général qui regroupe des mots plus précis. Range chaque mot précis sous le terme générique qui lui convient : un meuble sert à ranger, à s'asseoir ou à poser des objets ; un ustensile de cuisine sert à préparer les repas ; un vêtement se porte sur le corps.",
+        "categories": [
+          "Un meuble",
+          "Un ustensile de cuisine",
+          "Un vêtement"
+        ],
+        "items": [
+          {
+            "texte": "une commode",
+            "categorie": "Un meuble"
+          },
+          {
+            "texte": "un buffet",
+            "categorie": "Un meuble"
+          },
+          {
+            "texte": "un tabouret",
+            "categorie": "Un meuble"
+          },
+          {
+            "texte": "une étagère",
+            "categorie": "Un meuble"
+          },
+          {
+            "texte": "une louche",
+            "categorie": "Un ustensile de cuisine"
+          },
+          {
+            "texte": "une passoire",
+            "categorie": "Un ustensile de cuisine"
+          },
+          {
+            "texte": "une poêle",
+            "categorie": "Un ustensile de cuisine"
+          },
+          {
+            "texte": "un fouet",
+            "categorie": "Un ustensile de cuisine"
+          },
+          {
+            "texte": "un gilet",
+            "categorie": "Un vêtement"
+          },
+          {
+            "texte": "une salopette",
+            "categorie": "Un vêtement"
+          },
+          {
+            "texte": "un imperméable",
+            "categorie": "Un vêtement"
+          },
+          {
+            "texte": "un survêtement",
+            "categorie": "Un vêtement"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M44",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Parmi ces quatre mots, lequel exprime la plus grande intensité ?",
+        "options": [
+          "surpris",
+          "intrigué",
+          "stupéfait",
+          "étonné"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Être stupéfait, c'est être si surpris qu'on en reste sans voix : c'est le plus fort des quatre."
+      },
+      {
+        "question": "Louna a entendu un petit bruit dans le grenier ; elle est seulement ___, et elle monte quand même voir. Quel mot convient ?",
+        "options": [
+          "terrifiée",
+          "inquiète",
+          "épouvantée",
+          "paniquée"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Elle monte quand même : sa peur est légère. « inquiète » est le mot le plus faible des quatre."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Du plus faible au plus fort",
+        "consigne": "Ces mots disent tous la même idée, mais plus ou moins fort. Range chaque mot dans la colonne qui correspond à son degré d'intensité.",
+        "categories": [
+          "Un peu",
+          "Beaucoup",
+          "Énormément"
+        ],
+        "items": [
+          {
+            "texte": "agacé",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "inquiet",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "content",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "taché",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "en colère",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "effrayé",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "ravi",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "sale",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "furieux",
+            "categorie": "Énormément"
+          },
+          {
+            "texte": "terrifié",
+            "categorie": "Énormément"
+          },
+          {
+            "texte": "fou de joie",
+            "categorie": "Énormément"
+          },
+          {
+            "texte": "crasseux",
+            "categorie": "Énormément"
+          }
+        ]
+      },
+      {
+        "titre": "Encore des degrés d'intensité",
+        "consigne": "Ces mots disent tous la même idée, mais plus ou moins fort. Range chaque mot dans la colonne qui correspond à son degré d'intensité.",
+        "categories": [
+          "Un peu",
+          "Beaucoup",
+          "Énormément"
+        ],
+        "items": [
+          {
+            "texte": "chuchoter",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "surpris",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "fatigué",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "humide",
+            "categorie": "Un peu"
+          },
+          {
+            "texte": "crier",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "stupéfait",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "épuisé",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "trempé",
+            "categorie": "Beaucoup"
+          },
+          {
+            "texte": "hurler",
+            "categorie": "Énormément"
+          },
+          {
+            "texte": "abasourdi",
+            "categorie": "Énormément"
+          },
+          {
+            "texte": "exténué",
+            "categorie": "Énormément"
+          },
+          {
+            "texte": "dégoulinant",
+            "categorie": "Énormément"
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,640 @@
+[
+  {
+    "item_code": "P35",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans « Louna prépare son exposé. Elle le relit une dernière fois. », que remplace le pronom « le » ?",
+        "options": [
+          "Louna",
+          "son exposé",
+          "une dernière fois",
+          "la maîtresse"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« le » reprend le groupe « son exposé », nommé dans la phrase d'avant, pour éviter de le répéter."
+      },
+      {
+        "question": "Dans « Jade félicite les deux gagnants. », quel pronom peut remplacer « les deux gagnants » ?",
+        "options": [
+          "ils",
+          "leur",
+          "les",
+          "eux"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« les deux gagnants » est complément d'objet direct : on le reprend par « les » — « Jade les félicite »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Qui remplace qui ?",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « Malo range ses crayons. Il les glisse dans sa trousse. », que remplace le pronom « les » ?",
+            "options": [
+              "Malo",
+              "sa trousse",
+              "ses crayons",
+              "les élèves de la classe"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« les » reprend « ses crayons », le groupe nommé dans la phrase d'avant."
+          },
+          {
+            "question": "Dans « Fatou attend le maître devant la porte. Elle lui montre son dessin. », qui le pronom « lui » désigne-t-il ?",
+            "options": [
+              "Fatou",
+              "le maître",
+              "la porte",
+              "son dessin"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Fatou est déjà reprise par « elle » : « lui » reprend l'autre personne, le maître."
+          },
+          {
+            "question": "Dans « Nour prend le livre de Sacha et elle le pose sur l'étagère. », que remplace le pronom « le » ?",
+            "options": [
+              "le livre de Sacha",
+              "Nour",
+              "l'étagère",
+              "Sacha"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On ne pose pas une personne sur une étagère : « le » reprend « le livre de Sacha »."
+          },
+          {
+            "question": "Dans « Rosalie annonce à voix haute : « Je suis prête. » », que fait le pronom « je » ?",
+            "options": [
+              "Il désigne la personne qui parle.",
+              "Il remplace le groupe « à voix haute ».",
+              "Il reprend un groupe nommé dans la phrase d'avant.",
+              "Il désigne la personne à qui l'on parle."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« je » ne reprend aucun groupe du texte : il désigne celui ou celle qui parle."
+          },
+          {
+            "question": "Dans « Le maître rend les cahiers aux CM2. Il leur demande de les ranger. », qui le pronom « leur » désigne-t-il ?",
+            "options": [
+              "le maître",
+              "les cahiers",
+              "les CM1",
+              "les CM2"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le maître est déjà repris par « il » : « leur » reprend les CM2, à qui il demande quelque chose."
+          },
+          {
+            "question": "Quel pronom peut remplacer « les affiches du couloir » dans « Timéo décroche les affiches du couloir. » ?",
+            "options": [
+              "ils",
+              "leur",
+              "elles",
+              "les"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le groupe est complément d'objet direct : « Timéo les décroche. »"
+          },
+          {
+            "question": "« Inès et son grand frère arrivent en retard. » Quel pronom reprend ce groupe dans la phrase suivante ?",
+            "options": [
+              "Il",
+              "Elle",
+              "Ils",
+              "Elles"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le groupe désigne deux personnes, dont un garçon : on le reprend par « ils »."
+          },
+          {
+            "question": "Dans « Vous décrivez votre personnage préféré. », que fait le pronom « vous » ?",
+            "options": [
+              "Il reprend le groupe « votre personnage préféré ».",
+              "Il reprend un groupe nommé dans la phrase d'avant.",
+              "Il désigne les personnes à qui l'on parle.",
+              "Il désigne un objet déjà cité."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« vous » ne remplace aucun groupe du texte : il désigne ceux à qui l'on s'adresse."
+          }
+        ]
+      },
+      {
+        "titre": "Qui se cache derrière le pronom ?",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « Jade cherche sa règle partout. Elle la retrouve dans son cartable. », que remplace le pronom « la » ?",
+            "options": [
+              "Jade",
+              "son cartable",
+              "sa règle",
+              "la classe"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Jade est déjà reprise par « elle » : « la » reprend « sa règle »."
+          },
+          {
+            "question": "Dans « Yanis écrit à sa cousine. Il lui envoie une photo. », qui le pronom « lui » désigne-t-il ?",
+            "options": [
+              "Yanis",
+              "sa cousine",
+              "une photo",
+              "le facteur"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« lui » reprend « sa cousine », la personne à qui Yanis écrit."
+          },
+          {
+            "question": "Dans « Sacha rend le ballon aux CE2. Ils le rangent dans le filet. », qui le pronom « ils » désigne-t-il ?",
+            "options": [
+              "les CE2",
+              "Sacha",
+              "le ballon",
+              "le filet"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« ils » est au pluriel : il ne peut pas reprendre Sacha, mais les CE2."
+          },
+          {
+            "question": "Dans « Timéo demande à Inès : « Tu viens avec moi ? » », que fait le pronom « tu » ?",
+            "options": [
+              "Il désigne Inès, la personne à qui l'on parle.",
+              "Il remplace le groupe « avec moi ».",
+              "Il désigne Timéo, qui parle.",
+              "Il reprend un groupe nommé dans la phrase d'avant."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« tu » ne reprend aucun groupe du texte : il désigne celui ou celle à qui l'on s'adresse."
+          },
+          {
+            "question": "Dans « La maîtresse distribue les livres aux élèves. Elle leur laisse dix minutes. », qui le pronom « leur » désigne-t-il ?",
+            "options": [
+              "la maîtresse",
+              "les livres",
+              "dix minutes",
+              "les élèves"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La maîtresse est déjà reprise par « elle » : « leur » reprend les élèves."
+          },
+          {
+            "question": "Quel pronom peut remplacer « le portrait de Fatou » dans « Nous plaçons le portrait de Fatou au fond. » ?",
+            "options": [
+              "il",
+              "lui",
+              "la",
+              "le"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le groupe est masculin singulier et complément d'objet direct : « Nous le plaçons au fond. »"
+          },
+          {
+            "question": "« Louna et sa cousine rangent la salle. » Quel pronom reprend ce groupe dans la phrase suivante ?",
+            "options": [
+              "Elles",
+              "Ils",
+              "Elle",
+              "On"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le groupe désigne deux filles : on le reprend par « elles »."
+          },
+          {
+            "question": "Dans « Nous répétons la scène du spectacle. », que fait le pronom « nous » ?",
+            "options": [
+              "Il reprend le groupe « la scène du spectacle ».",
+              "Il reprend un groupe nommé dans la phrase d'avant.",
+              "Il désigne un objet déjà cité.",
+              "Il désigne les personnes qui parlent."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« nous » ne remplace aucun groupe du texte : il désigne celles et ceux qui parlent."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P36",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Comment écrit-on l'adjectif dans « une casquette et un blouson (froissé) tous les deux » ?",
+        "options": [
+          "froissé",
+          "froissée",
+          "froissés",
+          "froissées"
+        ],
+        "reponse_correcte": 2,
+        "explication": "L'adjectif se rapporte aux deux noms à la fois : il se met au pluriel, et au masculin dès que l'un des deux noms est masculin."
+      },
+      {
+        "question": "Comment écrit-on l'adjectif dans « des jeux (original) » ?",
+        "options": [
+          "original",
+          "originals",
+          "originales",
+          "originaux"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Au masculin pluriel, presque tous les adjectifs en -al font -aux : originaux."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'album de famille",
+        "consigne": "L'adjectif est donné entre parenthèses. Écris-le en l'accordant.",
+        "texte_complet": "Sur cette vieille photo, ma grand-mère porte une veste et un chapeau (assorti) assortis l'un à l'autre. Autour du cou, elle a noué une écharpe (blanc) blanche. Elle range ses chaussures de danse (usé) usées dans un carton. Au mur du salon, on voit des tableaux (ancien) anciens. Sa petite sœur a des tresses (roux) rousses.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "assortis",
+            "indice": "Quand un adjectif se rapporte à deux noms à la fois, il se met au pluriel ; le masculin l'emporte sur le féminin."
+          },
+          {
+            "position": 1,
+            "mot": "blanche",
+            "indice": "Ici l'adjectif ne décrit qu'un seul nom, et ce nom est féminin : cet adjectif-là change de forme au féminin, il n'ajoute pas seulement une lettre."
+          },
+          {
+            "position": 2,
+            "mot": "usées",
+            "indice": "Cherche le nom que l'adjectif décrit vraiment : ce n'est pas toujours celui qui le touche."
+          },
+          {
+            "position": 3,
+            "mot": "anciens",
+            "indice": "Un tableau, des tableaux : regarde bien si le nom est au singulier ou au pluriel."
+          },
+          {
+            "position": 4,
+            "mot": "rousses",
+            "indice": "Cet adjectif de couleur s'accorde ; son féminin double la consonne."
+          }
+        ]
+      },
+      {
+        "titre": "Le grenier de Louna",
+        "consigne": "L'adjectif est donné entre parenthèses. Écris-le en l'accordant.",
+        "texte_complet": "Au grenier, Louna ouvre une vieille malle. Sa sœur enfile une jupe (neuf) neuve. Dans une caisse, son frère feuillette des journaux (jauni) jaunis. Sous la fenêtre, un cahier et une trousse (identique) identiques tous les deux attendent la rentrée. Au fond de la malle, ils découvrent des rubans (vert) verts. Contre le mur, des raquettes de tennis (léger) légères prennent la poussière.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "neuve",
+            "indice": "L'adjectif ne décrit ici qu'un seul nom, et ce nom est féminin : au féminin, cet adjectif change sa dernière lettre."
+          },
+          {
+            "position": 1,
+            "mot": "jaunis",
+            "indice": "Un journal, des journaux : regarde bien si le nom est au singulier ou au pluriel."
+          },
+          {
+            "position": 2,
+            "mot": "identiques",
+            "indice": "Quand un adjectif se rapporte à deux noms à la fois, il se met au pluriel."
+          },
+          {
+            "position": 3,
+            "mot": "verts",
+            "indice": "Cet adjectif de couleur s'accorde avec le nom qu'il décrit. Attention : quelques couleurs qui viennent d'un nom, comme marron ou orange, ne bougent jamais."
+          },
+          {
+            "position": 4,
+            "mot": "légères",
+            "indice": "Cherche le nom que l'adjectif décrit vraiment : ce n'est pas toujours celui qui le touche."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P38",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Les CM2 ___ sortir plus tôt. (pouvoir) », quelle forme convient ?",
+        "options": [
+          "peut",
+          "peuvent",
+          "pouvent",
+          "peuve"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Les CM2 », c'est comme « ils » : pouvoir fait « peuvent »."
+      },
+      {
+        "question": "Dans « Nous ___ vraiment gagner ce match. (vouloir) », quelle forme convient ?",
+        "options": [
+          "voulons",
+          "veulons",
+          "voulions",
+          "voulont"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Avec « nous », vouloir change de radical et fait « voulons »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Avant la récréation",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Avant la récréation, je (vouloir) veux terminer mon portrait. Tu (pouvoir) peux me prêter ta gomme ? Nour (pouvoir) peut rester encore cinq minutes. Ses voisines (vouloir) veulent l'aider. Nous (pouvoir) pouvons ranger la table ensemble.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "veux",
+            "indice": "Vouloir change de radical : veu- aux personnes du singulier."
+          },
+          {
+            "position": 1,
+            "mot": "peux",
+            "indice": "Pouvoir se termine par -x, et non par -s, aux deux premières personnes du singulier."
+          },
+          {
+            "position": 2,
+            "mot": "peut",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la forme qui convient."
+          },
+          {
+            "position": 3,
+            "mot": "veulent",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la forme qui convient."
+          },
+          {
+            "position": 4,
+            "mot": "pouvons",
+            "indice": "Avec « nous » et « vous », ce verbe reprend le radical de son infinitif."
+          }
+        ]
+      },
+      {
+        "titre": "La préparation du spectacle",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Pour le spectacle, vous (pouvoir) pouvez apporter un chapeau. Les jumelles (pouvoir) peuvent essayer les costumes. Sacha (vouloir) veut lire le texte du narrateur. Je (pouvoir) peux tenir le rideau. Nous (vouloir) voulons répéter une dernière fois.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "pouvez",
+            "indice": "Avec « nous » et « vous », ce verbe reprend le radical de son infinitif."
+          },
+          {
+            "position": 1,
+            "mot": "peuvent",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la forme qui convient."
+          },
+          {
+            "position": 2,
+            "mot": "veut",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la forme qui convient."
+          },
+          {
+            "position": 3,
+            "mot": "peux",
+            "indice": "Pouvoir se termine par -x, et non par -s, aux deux premières personnes du singulier."
+          },
+          {
+            "position": 4,
+            "mot": "voulons",
+            "indice": "Avec « nous » et « vous », ce verbe reprend le radical de son infinitif."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P55",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Ce matin-là, les élèves ___ la cour en silence. (quitter) », quelle forme du passé simple convient ?",
+        "options": [
+          "quitta",
+          "quittèrent",
+          "quittérent",
+          "quittaient"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Au passé simple, avec « ils » ou « elles », un verbe en -ER prend -èrent, avec un accent grave."
+      },
+      {
+        "question": "Dans « Le voyageur ___ l'eau de la source. (boire) », quelle forme du passé simple convient ?",
+        "options": [
+          "boit",
+          "buvait",
+          "but",
+          "burent"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Au passé simple, boire fait « il but » ; « buvait » serait de l'imparfait."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La nuit au château",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au passé simple.",
+        "texte_complet": "Ce soir-là, un voyageur (frapper) frappa à la porte du vieux château. Deux gardes (reculer) reculèrent derrière lui. Le vieux gardien (surgir) surgit sur le seuil. Les chiens (bondir) bondirent dans la cour. Le voyageur (courir) courut jusqu'au portail.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "frappa",
+            "indice": "Au passé simple, un verbe en -ER fait -a avec « il » ou « elle »."
+          },
+          {
+            "position": 1,
+            "mot": "reculèrent",
+            "indice": "Le sujet vaut « ils » : au passé simple, un verbe en -ER prend alors -èrent, avec un accent grave."
+          },
+          {
+            "position": 2,
+            "mot": "surgit",
+            "indice": "Regarde d'abord si le sujet vaut « il » ou « ils » ; ce verbe n'est pas un verbe en -ER, il ne prend donc pas leur terminaison."
+          },
+          {
+            "position": 3,
+            "mot": "bondirent",
+            "indice": "Le sujet vaut « ils » : cherche la terminaison du pluriel pour un verbe en -IR."
+          },
+          {
+            "position": 4,
+            "mot": "courut",
+            "indice": "Certains verbes font leur passé simple en -ut au singulier."
+          }
+        ]
+      },
+      {
+        "titre": "L'orage sur le village",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au passé simple.",
+        "texte_complet": "Vers minuit, un éclair (déchirer) déchira le ciel. Les volets de la ferme (claquer) claquèrent dans le vent. Le chien du voisin (hurler) hurla longtemps. Les habitants (franchir) franchirent la place en courant. Le pont de bois (disparaître) disparut sous l'eau.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "déchira",
+            "indice": "Au passé simple, un verbe en -ER fait -a avec « il » ou « elle »."
+          },
+          {
+            "position": 1,
+            "mot": "claquèrent",
+            "indice": "Le sujet vaut « ils » : au passé simple, un verbe en -ER prend alors -èrent, avec un accent grave."
+          },
+          {
+            "position": 2,
+            "mot": "hurla",
+            "indice": "Au passé simple, un verbe en -ER fait -a avec « il » ou « elle »."
+          },
+          {
+            "position": 3,
+            "mot": "franchirent",
+            "indice": "Le sujet vaut « ils » : cherche la terminaison du pluriel."
+          },
+          {
+            "position": 4,
+            "mot": "disparut",
+            "indice": "Certains verbes font leur passé simple en -ut au singulier."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P31",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quelle est la forme du verbe être à l'imparfait avec « nous » ?",
+        "options": [
+          "nous étions",
+          "nous sommes",
+          "nous serons",
+          "nous avons été"
+        ],
+        "reponse_correcte": 0,
+        "explication": "À l'imparfait, être fait « nous étions » ; « nous sommes » est le présent."
+      },
+      {
+        "question": "Quelle est la forme du verbe avoir au futur simple avec « ils » ?",
+        "options": [
+          "ils ont",
+          "ils avaient",
+          "ils ont eu",
+          "ils auront"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Au futur simple, avoir se construit sur aur- : ils auront ; « ils ont » est le présent."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Hier, demain, déjà fait",
+        "consigne": "Complète chaque phrase avec le verbe indiqué entre parenthèses, au temps demandé. Écris seulement le verbe.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "L'an dernier, j'… le plus petit de la classe. (être, imparfait)",
+            "reponse_attendue": "étais",
+            "indice": "Ce temps raconte ce qui durait autrefois : le radical de être y devient ét-."
+          },
+          {
+            "id": 2,
+            "enonce": "Demain, tu … le premier à lire ton portrait. (être, futur simple)",
+            "reponse_attendue": "seras",
+            "indice": "Au futur, être ne garde rien de son infinitif ; la terminaison de « tu » est -as."
+          },
+          {
+            "id": 3,
+            "enonce": "La semaine dernière, Louna … malade pendant deux jours. (être, passé composé)",
+            "reponse_attendue": "a été",
+            "indice": "Ce temps s'écrit en deux mots. Pour être, le premier mot est une forme du verbe avoir."
+          },
+          {
+            "id": 4,
+            "enonce": "Cette année, vous … trois fois à la bibliothèque. (être, passé composé)",
+            "reponse_attendue": "avez été",
+            "indice": "Deux mots : d'abord avoir au présent avec « vous », ensuite le participe passé de être."
+          },
+          {
+            "id": 5,
+            "enonce": "À la maternelle, Fatou … peur du noir. (avoir, imparfait)",
+            "reponse_attendue": "avait",
+            "indice": "Ce temps raconte une habitude passée : le radical de avoir y devient av-."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans deux ans, nous … un nouveau gymnase. (avoir, futur simple)",
+            "reponse_attendue": "aurons",
+            "indice": "Ne confonds pas avec le présent : au futur, on entend le son « or » au début du verbe."
+          },
+          {
+            "id": 7,
+            "enonce": "Au goûter, j'… une bonne surprise. (avoir, passé composé)",
+            "reponse_attendue": "ai eu",
+            "indice": "Deux mots, et les deux viennent de avoir : l'auxiliaire au présent, puis le participe passé."
+          },
+          {
+            "id": 8,
+            "enonce": "Hier soir, vous … le temps de terminer votre exposé. (avoir, passé composé)",
+            "reponse_attendue": "avez eu",
+            "indice": "Le participe passé de avoir ne fait que deux lettres ; devant lui, l'auxiliaire se conjugue au présent avec « vous »."
+          }
+        ]
+      },
+      {
+        "titre": "Ce qui a changé cette année",
+        "consigne": "Complète chaque phrase avec le verbe indiqué entre parenthèses, au temps demandé. Écris seulement le verbe.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Avant la récréation, les élèves … impatients. (être, imparfait)",
+            "reponse_attendue": "étaient",
+            "indice": "Ce temps raconte ce qui durait ; avec « ils » ou « elles », sa terminaison ne s'entend pas."
+          },
+          {
+            "id": 2,
+            "enonce": "L'été prochain, je … en colonie avec Malo. (être, futur simple)",
+            "reponse_attendue": "serai",
+            "indice": "Au futur, être change complètement de radical ; avec « je », la terminaison s'écrit -ai."
+          },
+          {
+            "id": 3,
+            "enonce": "Depuis lundi, tu … absent deux fois. (être, passé composé)",
+            "reponse_attendue": "as été",
+            "indice": "Ce temps s'écrit en deux mots. Pour être, le premier mot est une forme du verbe avoir."
+          },
+          {
+            "id": 4,
+            "enonce": "Pendant l'orage, les campeurs … très courageux. (être, passé composé)",
+            "reponse_attendue": "ont été",
+            "indice": "Deux mots : d'abord avoir au présent avec « ils », ensuite le participe passé de être."
+          },
+          {
+            "id": 5,
+            "enonce": "À cinq ans, j'… un doudou bleu. (avoir, imparfait)",
+            "reponse_attendue": "avais",
+            "indice": "Ce temps raconte ce qui durait autrefois : le radical de avoir y devient av-."
+          },
+          {
+            "id": 6,
+            "enonce": "Le mois prochain, j'… dix ans. (avoir, futur simple)",
+            "reponse_attendue": "aurai",
+            "indice": "Ne confonds pas avec le présent : au futur, on entend le son « or » au début du verbe."
+          },
+          {
+            "id": 7,
+            "enonce": "Ce matin, nous … une nouvelle surprenante. (avoir, passé composé)",
+            "reponse_attendue": "avons eu",
+            "indice": "Deux mots, et les deux viennent de avoir : l'auxiliaire au présent, puis le participe passé."
+          },
+          {
+            "id": 8,
+            "enonce": "En juin, les CM2 … la chance de partir en classe verte. (avoir, passé composé)",
+            "reponse_attendue": "ont eu",
+            "indice": "Le participe passé de avoir ne fait que deux lettres ; devant lui, l'auxiliaire se conjugue au présent avec « ils »."
+          }
+        ]
+      }
+    ]
+  }
+]

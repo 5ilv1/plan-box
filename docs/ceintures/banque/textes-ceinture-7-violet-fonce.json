@@ -1,0 +1,434 @@
+[
+  {
+    "item_code": "T50",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Un portrait complet réunit trois choses. Lesquelles ?",
+        "options": [
+          "L'apparence, le caractère, et une action qui montre ce caractère.",
+          "Le nom, l'âge et l'adresse du personnage.",
+          "Le début, le milieu et la fin d'une histoire.",
+          "Trois adjectifs, trois verbes et trois noms."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un portrait dit à quoi ressemble le personnage, quel genre de personne il est, et le montre une fois en train d'agir."
+      },
+      {
+        "question": "Voici un portrait : « Sacha a des cheveux noirs coupés très court. Il porte toujours le même sweat gris. Ses baskets sont trouées aux deux talons. » Que faut-il ajouter pour qu'il soit complet ?",
+        "options": [
+          "D'autres détails sur son apparence.",
+          "Un titre au-dessus du texte.",
+          "Ce qu'il est à l'intérieur, montré par une action.",
+          "Les majuscules et les points qui manquent."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Ce portrait ne dit que l'apparence. Un portrait complet fait aussi comprendre le caractère, et le montre par une action précise."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait d'un personnage inventé",
+        "consigne": "Invente un personnage de ton âge et écris son portrait, organisé en trois moments : d'abord son apparence, puis son caractère, puis une action qui montre ce caractère.",
+        "contraintes": [
+          "Tu écris huit à dix phrases.",
+          "Tu donnes un prénom à ton personnage et tu ne l'écris pas plus de deux fois : ailleurs, tu emploies des substituts.",
+          "Les trois premières phrases décrivent son apparence : le visage, les cheveux, puis un vêtement ou un objet qu'il garde toujours sur lui.",
+          "Les trois phrases suivantes disent son caractère : deux qualités et un seul défaut.",
+          "Les dernières phrases racontent une seule action précise, qui montre l'une de ces qualités ou ce défaut.",
+          "Tu emploies au moins une comparaison introduite par « comme ».",
+          "Tu n'écris jamais deux fois le même adjectif."
+        ],
+        "nb_phrases": 9,
+        "exemple": "Ses lunettes rondes glissent sans arrêt sur son nez, et il les remonte d'un doigt, comme un vieux professeur."
+      },
+      {
+        "titre": "La rencontre du bord de mer",
+        "consigne": "Invente un personnage adulte que ton héros rencontre au bord de la mer, et écris son portrait : son apparence, puis son caractère, puis une action qui montre ce caractère.",
+        "contraintes": [
+          "Tu écris huit à dix phrases.",
+          "Tu écris trois phrases sur l'apparence, trois sur le caractère, puis deux ou trois sur une seule action.",
+          "Tu emploies au moins quatre adjectifs différents, et jamais deux fois le même.",
+          "Tu emploies une comparaison introduite par « comme » ou par « on dirait ».",
+          "Tu remplaces au moins deux fois le nom du personnage par deux substituts différents : un pronom, puis un groupe nominal.",
+          "Ton portrait ne contient aucun dialogue.",
+          "Ton texte se termine sur l'action, et non sur une phrase du type « je l'aime beaucoup »."
+        ],
+        "nb_phrases": 9,
+        "exemple": "Elle plie les filets à toute vitesse, sans jamais baisser les yeux vers ses mains."
+      }
+    ]
+  },
+  {
+    "item_code": "T37",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans quelle phrase le verbe « dévorer » est-il employé au sens figuré ?",
+        "options": [
+          "Le chien dévore sa gamelle en trois secondes.",
+          "Louna dévore son roman jusqu'à minuit.",
+          "Le renard dévore la poule qu'il vient d'attraper.",
+          "Le chat dévore les restes du repas."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Au sens propre, dévorer, c'est manger. Au sens figuré, on garde seulement l'idée d'avidité : Louna lit avec avidité."
+      },
+      {
+        "question": "Que veut dire « Adam a le cœur sur la main » ?",
+        "options": [
+          "Il a mal au cœur depuis ce matin.",
+          "Il tient un objet au creux de sa main.",
+          "Il a très peur de quelque chose.",
+          "Il est très généreux."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Cette expression s'emploie au sens figuré : elle ne parle pas du corps, mais de la générosité."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Sens propre, sens figuré",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans quelle phrase le verbe « brûler » est-il employé au sens propre ?",
+            "options": [
+              "Timéo brûle d'impatience avant le spectacle.",
+              "Le feu de camp brûle jusqu'au matin.",
+              "Cette question me brûle les lèvres.",
+              "Il a brûlé les étapes et s'est trompé."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Au sens propre, brûler se dit d'un vrai feu. Dans les autres phrases, le mot garde seulement l'idée de chaleur."
+          },
+          {
+            "question": "« Jade a une mémoire d'éléphant. » Que veut dire cette expression ?",
+            "options": [
+              "Elle est très grande pour son âge.",
+              "Elle a peur des souris.",
+              "Elle retient tout, très longtemps.",
+              "Elle oublie tout au bout de deux jours."
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'éléphant passe pour ne rien oublier : l'image sert à dire que la mémoire de Jade est excellente."
+          },
+          {
+            "question": "Dans « Le vent caresse les blés », comment le verbe « caresser » est-il employé ?",
+            "options": [
+              "Au sens figuré : le vent passe doucement, comme une main.",
+              "Au sens propre : le vent possède des mains.",
+              "C'est une erreur : on ne peut pas écrire cela.",
+              "Au sens propre : un fermier caresse les blés."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le vent n'a pas de main : on lui prête un geste humain, c'est le sens figuré."
+          },
+          {
+            "question": "Dans quelle phrase l'adjectif « lourd » est-il employé au sens figuré ?",
+            "options": [
+              "Mon cartable est bien trop lourd pour moi.",
+              "Ce carton est plus lourd qu'il n'en a l'air.",
+              "Un silence lourd s'installe dans la classe.",
+              "La valise est lourde à porter jusqu'au quai."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un silence ne se pèse pas : « lourd » y garde seulement l'idée de ce qui pèse, au sens figuré."
+          },
+          {
+            "question": "« Yanis a pris la mouche. » Que s'est-il passé ?",
+            "options": [
+              "Il a attrapé un insecte au vol.",
+              "Il s'est vexé d'un seul coup.",
+              "Il est parti en courant.",
+              "Il a raconté un mensonge."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Au sens figuré, « prendre la mouche », c'est se fâcher brusquement pour peu de chose."
+          },
+          {
+            "question": "Dans quelle phrase l'adjectif « glacé » est-il employé au sens propre ?",
+            "options": [
+              "Un accueil glacé l'attendait à la porte.",
+              "Elle m'a lancé un regard glacé.",
+              "Il est resté glacé de peur devant la porte.",
+              "L'eau du torrent est glacée en toute saison."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Seule l'eau est vraiment froide : ailleurs, « glacé » ne parle plus de température."
+          },
+          {
+            "question": "Quel sens le mot « racine » a-t-il dans « Les racines du vieux tilleul soulèvent le trottoir » ?",
+            "options": [
+              "Le sens propre.",
+              "Le sens figuré.",
+              "Les deux sens à la fois.",
+              "Ni l'un ni l'autre."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Ce sont de vraies racines d'arbre : le mot est employé au sens propre."
+          },
+          {
+            "question": "Comment dit-on, au sens propre, ce que raconte « Inès a fondu en larmes » ?",
+            "options": [
+              "Inès s'est mise à pleurer d'un coup.",
+              "Inès a eu très chaud.",
+              "Inès a disparu du groupe.",
+              "Inès a bu un grand verre d'eau."
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'image de la fonte sert à dire que les larmes sont venues d'un seul coup."
+          }
+        ]
+      },
+      {
+        "titre": "Ce que les mots veulent vraiment dire",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans quelle phrase le verbe « voler » est-il employé au sens propre ?",
+            "options": [
+              "L'hirondelle vole au-dessus du toit du hangar.",
+              "Le temps vole quand on s'amuse.",
+              "Il vole au secours de son petit frère.",
+              "Les rumeurs volent de bouche en bouche."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Seule l'hirondelle vole vraiment dans les airs : c'est le sens propre du verbe."
+          },
+          {
+            "question": "« Rosalie garde la tête froide. » Que veut dire cette expression ?",
+            "options": [
+              "Elle a froid au front.",
+              "Elle reste calme même quand tout va mal.",
+              "Elle ne dit jamais rien à personne.",
+              "Elle refuse d'aider les autres."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Au sens figuré, garder la tête froide, c'est ne pas se laisser emporter par l'émotion."
+          },
+          {
+            "question": "Dans « La nuit tombe sur le village », comment le verbe « tomber » est-il employé ?",
+            "options": [
+              "Au sens propre : la nuit se casse la figure.",
+              "Au sens propre : quelque chose tombe du ciel.",
+              "Au sens figuré : le soir arrive peu à peu.",
+              "Au sens figuré : le village s'écroule."
+            ],
+            "reponse_correcte": 2,
+            "explication": "La nuit ne tombe pas comme un objet : le verbe garde seulement l'idée de ce qui descend."
+          },
+          {
+            "question": "Dans quelle phrase le verbe « briller » est-il employé au sens figuré ?",
+            "options": [
+              "Les vitres brillent après la pluie.",
+              "Sacha brille en mathématiques.",
+              "La lampe brille au fond du couloir.",
+              "Ses chaussures neuves brillent au soleil."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Sacha n'émet pas de lumière : le verbe sert à dire qu'il réussit remarquablement."
+          },
+          {
+            "question": "« Malo a la langue bien pendue. » Que veut dire cette expression ?",
+            "options": [
+              "Il s'est blessé à la langue.",
+              "Il ne parle presque jamais.",
+              "Il parle beaucoup et facilement.",
+              "Il adore les bonbons acidulés."
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'image sert à dire que la parole vient sans effort : Malo est très bavard."
+          },
+          {
+            "question": "Dans quelle phrase le mot « épine » est-il employé au sens propre ?",
+            "options": [
+              "Tu m'as ôté une belle épine du pied.",
+              "Ce problème de robinet est une vraie épine.",
+              "Une épine du rosier lui a piqué le doigt.",
+              "Il garde une épine dans le cœur depuis ce jour."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Seule l'épine du rosier est une vraie épine de plante : c'est le sens propre."
+          },
+          {
+            "question": "Quel sens le mot « source » a-t-il dans « Nous avons bu à la source du torrent » ?",
+            "options": [
+              "Le sens figuré.",
+              "Le sens propre.",
+              "Les deux sens à la fois.",
+              "Ni l'un ni l'autre."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Il s'agit d'une vraie source d'eau : le mot est employé au sens propre."
+          },
+          {
+            "question": "Comment dit-on, au sens propre, ce que raconte « Fatou a pris ses jambes à son cou » ?",
+            "options": [
+              "Fatou s'est enfuie en courant.",
+              "Fatou s'est assise en tailleur.",
+              "Fatou s'est fait mal au cou.",
+              "Fatou a enroulé une écharpe."
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'expression est imagée : elle dit seulement que Fatou est partie très vite."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T39",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Tu écris un récit au passé : « Depuis le matin, le vent (souffler) ___ sur la lande. » Quelle forme convient ?",
+        "options": [
+          "souffla",
+          "soufflera",
+          "soufflait",
+          "a soufflé"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Dans un récit au passé, « depuis le matin » dit que l'action durait encore : c'est l'imparfait."
+      },
+      {
+        "question": "Dans un récit au passé, à quoi sert le passé simple ?",
+        "options": [
+          "À raconter les actions courtes qui font avancer l'histoire.",
+          "À décrire le décor et les habitudes.",
+          "À parler de ce que fera le personnage plus tard.",
+          "À écrire les répliques du dialogue."
+        ],
+        "reponse_correcte": 0,
+        "explication": "L'imparfait pose le décor et les habitudes ; le passé simple raconte ce qui arrive soudain et fait avancer le récit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La nuit dans la cabane",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le à l'imparfait ou au passé simple, selon ce que raconte la phrase.",
+        "texte_complet": "Tous les soirs, Lila (relire) relisait son carnet de voyage. Ce mardi-là, la pluie (frapper) frappait les carreaux depuis des heures. Soudain, la porte de la cabane (grincer) grinça. Aussitôt, la fillette (lever) leva la tête. Pendant que son cœur (battre) battait très fort, elle souffla la bougie.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "relisait",
+            "indice": "Repère « tous les soirs » : l'action revenait chaque jour."
+          },
+          {
+            "position": 1,
+            "mot": "frappait",
+            "indice": "Repère « depuis des heures » : l'action dure encore."
+          },
+          {
+            "position": 2,
+            "mot": "grinça",
+            "indice": "Repère « Soudain » : l'action est courte et fait avancer l'histoire."
+          },
+          {
+            "position": 3,
+            "mot": "leva",
+            "indice": "Repère « Aussitôt » : la réaction est immédiate et brève."
+          },
+          {
+            "position": 4,
+            "mot": "battait",
+            "indice": "Après « pendant que », l'action sert de décor à ce qui arrive."
+          }
+        ]
+      },
+      {
+        "titre": "La mouette de la falaise",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le à l'imparfait ou au passé simple, selon ce que raconte la phrase.",
+        "texte_complet": "Ce matin-là, une mouette (surgir) surgit devant Yanis. D'un bond, le garçon (reculer) recula contre le muret de pierre. Depuis l'aube, une brume épaisse (couvrir) couvrait toute la falaise. Autrefois, Yanis (redouter) redoutait ces grands oiseaux blancs. Dès que la mouette repartit vers le large, il (reprendre) reprit son chemin.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "surgit",
+            "indice": "Repère « ce matin-là » : l'apparition est brusque et lance l'histoire."
+          },
+          {
+            "position": 1,
+            "mot": "recula",
+            "indice": "Repère « d'un bond » : le mouvement est bref et terminé."
+          },
+          {
+            "position": 2,
+            "mot": "couvrait",
+            "indice": "Repère « depuis l'aube » : la brume est là depuis un moment et n'a pas bougé."
+          },
+          {
+            "position": 3,
+            "mot": "redoutait",
+            "indice": "Repère « autrefois » : c'était ainsi avant, chaque fois qu'il en voyait un."
+          },
+          {
+            "position": 4,
+            "mot": "reprit",
+            "indice": "Repère « dès que » : l'action vient juste après l'autre et fait avancer l'histoire."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T38",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Le modèle est : « La vieille dame portait un châle gris tissé à la main. » Quelle copie est exacte ?",
+        "options": [
+          "La vieille dame portait un chale gris tissé à la main.",
+          "La vieille dame portait un châle gris tissé à la main",
+          "La vieille dame portait un châle gris tissée à la main.",
+          "La vieille dame portait un châle gris tissé à la main."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Recopier sans erreur, c'est garder chaque accent, chaque accord et la ponctuation de la fin."
+      },
+      {
+        "question": "Pour recopier un long texte sans faute, quelle méthode est la plus sûre ?",
+        "options": [
+          "Recopier lettre par lettre, en revenant au modèle après chaque lettre.",
+          "Lire un groupe de mots, l'écrire de mémoire, puis vérifier avant de continuer.",
+          "Recopier le plus vite possible, puis relire une seule fois tout à la fin.",
+          "Lire le texte une fois, puis l'écrire entièrement de mémoire."
+        ],
+        "reponse_correcte": 1,
+        "explication": "On copie par groupes de mots : on lit, on écrit sans regarder, puis on compare. C'est ainsi qu'on va vite et juste."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La copie longue : la gardienne du phare",
+        "consigne": "Recopie ce texte en entier, sans faire une seule erreur : « Marthe habite le phare depuis quarante ans. Elle a le visage tanné par le vent et des yeux d'un bleu très pâle, comme délavés par la mer. Ses cheveux blancs sont noués en chignon serré, et pas une mèche n'en dépasse jamais. Elle porte un ciré jaune, hiver comme été, et de grandes bottes. Chaque soir, elle monte les cent quatre-vingt-douze marches de la tour sans souffler une seule fois. Là-haut, elle allume la lampe, essuie les vitres et note la force du vent. Les pêcheurs du port disent qu'elle connaît la mer mieux que personne. Quand un bateau tarde à revenir, elle demeure debout derrière la vitre, immobile. À minuit, elle redescend chercher une tasse de thé brûlant. Puis elle repart faire sa ronde, une lampe de poche à la main. Elle vérifie les portes, les cordages et le niveau du réservoir. Le vieux chien la suit partout, mais il ne monte jamais jusqu'à la lanterne. Vers quatre heures, la mer pâlit et le ciel devient gris perle. Marthe s'assoit alors sur la dernière marche et regarde le jour se lever. »",
+        "contraintes": [
+          "Tu recopies le texte en entier, sans sauter un seul mot et sans en ajouter aucun.",
+          "Tu gardes toutes les majuscules, y compris celles de Marthe, de Là-haut et le À accentué de « À minuit ».",
+          "Tu gardes toutes les virgules, tous les points, et les traits d'union de « cent quatre-vingt-douze ».",
+          "Tu gardes tous les accents : tanné, pâle, délavés, ciré, été, Là-haut, pêcheurs, connaît, À minuit, brûlant, vérifie, réservoir, pâlit, dernière.",
+          "Tu copies par groupes de mots : tu lis un groupe, tu l'écris sans regarder, puis tu vérifies.",
+          "Tu recopies les quatorze phrases d'une seule traite : le modèle fait plus de quinze lignes et tu ne t'arrêtes pas avant la fin.",
+          "Quand tu as fini, tu relis en suivant le modèle du doigt et tu corriges tout ce qui diffère."
+        ],
+        "nb_phrases": 14,
+        "exemple": "Marthe habite le phare depuis quarante ans."
+      },
+      {
+        "titre": "La copie longue : le cordonnier de la rue",
+        "consigne": "Recopie ce texte en entier, sans faire une seule erreur : « Monsieur Sadi tient l'échoppe du bout de la rue depuis toujours. C'est un homme très petit, si petit qu'il travaille debout sur une caisse de bois. Il a des mains larges, noircies par la colle, et des ongles courts qu'il brosse chaque soir. Sur son nez tient une paire de lunettes rondes qu'il ne nettoie jamais. Le matin, il ouvre les volets, salue les commerçants et allume la radio. Ensuite, il aligne les chaussures sur l'établi, de la plus abîmée à la plus neuve. Les enfants du quartier s'arrêtent devant la vitrine pour le voir travailler. Il ne leur dit presque rien, mais il leur garde toujours des chutes de cuir. À sept heures, il éteint la radio et range ses outils un par un. Le marteau, les alênes et la boîte de clous retrouvent chacun leur place. Il balaie le sol, puis il passe un chiffon humide sur le comptoir. Avant de partir, il accroche à la porte une petite pancarte écrite à la main. On y lit toujours la même phrase, tracée au crayon bleu. Alors il baisse le rideau de fer, qui grince comme une vieille grille. »",
+        "contraintes": [
+          "Tu recopies le texte en entier, sans sauter un seul mot et sans en ajouter aucun.",
+          "Tu gardes toutes les majuscules, y compris celles de Monsieur Sadi, de Ensuite, de Alors et le À accentué de « À sept heures ».",
+          "Tu gardes toutes les virgules et tous les points, sans en ajouter ni en retirer.",
+          "Tu gardes tous les accents : échoppe, très, noircies, abîmée, établi, s'arrêtent, À sept heures, éteint, alênes, boîte, même, tracée, et toutes les apostrophes.",
+          "Tu copies par groupes de mots : tu lis un groupe, tu l'écris sans regarder, puis tu vérifies.",
+          "Tu recopies les quatorze phrases d'une seule traite : le modèle fait plus de quinze lignes et tu ne t'arrêtes pas avant la fin.",
+          "Quand tu as fini, tu relis en suivant le modèle du doigt et tu corriges tout ce qui diffère."
+        ],
+        "nb_phrases": 14,
+        "exemple": "Monsieur Sadi tient l'échoppe du bout de la rue depuis toujours."
+      }
+    ]
+  }
+]

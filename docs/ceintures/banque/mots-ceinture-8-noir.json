@@ -1,0 +1,576 @@
+[
+  {
+    "item_code": "M40",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans monologue et monocycle, que veut dire le préfixe mono- ?",
+        "options": [
+          "un seul",
+          "deux",
+          "beaucoup",
+          "la moitié"
+        ],
+        "reponse_correcte": 0,
+        "explication": "mono- vient du grec et veut dire « un seul » : dans un monologue, une seule personne parle."
+      },
+      {
+        "question": "Que désigne le mot « préhistoire » ?",
+        "options": [
+          "l'histoire des rois",
+          "la période qui précède l'invention de l'écriture",
+          "une histoire très longue",
+          "l'histoire des animaux"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le préfixe pré- veut dire « avant » : la préhistoire est la période d'avant l'écriture."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les préfixes venus du grec",
+        "consigne": "Chaque mot savant commence par un préfixe venu du grec ou du latin. Choisis ce qu'il veut dire.",
+        "questions": [
+          {
+            "question": "Dans télescope, télévision et téléphone, que veut dire le préfixe télé- ?",
+            "options": [
+              "loin",
+              "petit",
+              "rond",
+              "rapide"
+            ],
+            "reponse_correcte": 0,
+            "explication": "télé- vient du grec et veut dire « loin » : le téléphone porte la voix au loin."
+          },
+          {
+            "question": "Dans microscope et microbe, que veut dire le préfixe micro- ?",
+            "options": [
+              "grand",
+              "petit",
+              "double",
+              "faux"
+            ],
+            "reponse_correcte": 1,
+            "explication": "micro- vient du grec et veut dire « petit » : le microscope sert à voir ce qui est trop petit pour l'œil."
+          },
+          {
+            "question": "Dans polygone et polyglotte, que veut dire le préfixe poly- ?",
+            "options": [
+              "un seul",
+              "beau",
+              "nombreux",
+              "après"
+            ],
+            "reponse_correcte": 2,
+            "explication": "poly- vient du grec et veut dire « plusieurs » : un polygone a plusieurs côtés."
+          },
+          {
+            "question": "Dans chronomètre et chronologie, que veut dire le préfixe chrono- ?",
+            "options": [
+              "le froid",
+              "la couleur",
+              "le bruit",
+              "le temps"
+            ],
+            "reponse_correcte": 3,
+            "explication": "chrono- vient du grec et veut dire « le temps » : un chronomètre mesure le temps."
+          },
+          {
+            "question": "Dans géographie et géologie, que veut dire le préfixe géo- ?",
+            "options": [
+              "la Terre",
+              "le ciel",
+              "la mer",
+              "la ville"
+            ],
+            "reponse_correcte": 0,
+            "explication": "géo- vient du grec et veut dire « la Terre » : la géographie décrit la Terre."
+          },
+          {
+            "question": "Dans orthographe et orthophoniste, que veut dire le préfixe ortho- ?",
+            "options": [
+              "à l'envers",
+              "correct",
+              "en couleur",
+              "à la main"
+            ],
+            "reponse_correcte": 1,
+            "explication": "ortho- vient du grec et veut dire « droit, correct » : l'orthographe, c'est la façon correcte d'écrire."
+          },
+          {
+            "question": "Dans périmètre et périscope, que veut dire le préfixe péri- ?",
+            "options": [
+              "sous",
+              "contre",
+              "autour",
+              "avant"
+            ],
+            "reponse_correcte": 2,
+            "explication": "péri- vient du grec et veut dire « autour » : le périmètre est la mesure du tour d'une figure."
+          },
+          {
+            "question": "Dans autoportrait et autobiographie, que veut dire le préfixe auto- ?",
+            "options": [
+              "soi-même",
+              "la voiture",
+              "la vitesse",
+              "l'ami"
+            ],
+            "reponse_correcte": 0,
+            "explication": "auto- vient du grec et veut dire « soi-même » : un autoportrait est le portrait que l'on fait de soi. Le mot automobile veut d'ailleurs dire « qui se déplace tout seul »."
+          }
+        ]
+      },
+      {
+        "titre": "Les préfixes venus du latin et du grec",
+        "consigne": "Chaque mot savant commence par un préfixe venu du grec ou du latin. Choisis ce qu'il veut dire.",
+        "questions": [
+          {
+            "question": "Dans multicolore et multiplication, que veut dire le préfixe multi- ?",
+            "options": [
+              "moins",
+              "sans",
+              "un seul",
+              "nombreux"
+            ],
+            "reponse_correcte": 3,
+            "explication": "multi- vient du latin et veut dire « plusieurs » : un tissu multicolore a plusieurs couleurs."
+          },
+          {
+            "question": "Dans transporter et transpercer, que veut dire le préfixe trans- ?",
+            "options": [
+              "à travers",
+              "sous",
+              "contre",
+              "petit"
+            ],
+            "reponse_correcte": 0,
+            "explication": "trans- vient du latin et veut dire « à travers » : transpercer, c'est percer de part en part."
+          },
+          {
+            "question": "Dans bipède et bimensuel, que veut dire le préfixe bi- ?",
+            "options": [
+              "trois",
+              "dix",
+              "deux",
+              "cent"
+            ],
+            "reponse_correcte": 2,
+            "explication": "bi- vient du latin et veut dire « deux » : un bipède marche sur deux pieds."
+          },
+          {
+            "question": "Dans supermarché et superposer, que veut dire le préfixe super- ?",
+            "options": [
+              "au-dessous",
+              "au-dessus",
+              "à côté",
+              "avant"
+            ],
+            "reponse_correcte": 1,
+            "explication": "super- vient du latin et veut dire « au-dessus » : superposer, c'est poser l'un au-dessus de l'autre."
+          },
+          {
+            "question": "Dans aéroport et aérien, que veut dire le préfixe aéro- ?",
+            "options": [
+              "l'eau",
+              "le feu",
+              "l'air",
+              "la terre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "aéro- vient du grec et veut dire « l'air » : un aéroport est le port des appareils qui volent dans l'air."
+          },
+          {
+            "question": "Dans hydravion et hydratant, que veut dire le préfixe hydro- (ou hydr-) ?",
+            "options": [
+              "l'eau",
+              "l'air",
+              "le froid",
+              "la roue"
+            ],
+            "reponse_correcte": 0,
+            "explication": "hydro- vient du grec et veut dire « l'eau » : un hydravion se pose sur l'eau."
+          },
+          {
+            "question": "Dans thermomètre et thermos, que veut dire le préfixe thermo- ?",
+            "options": [
+              "la lumière",
+              "la chaleur",
+              "le poids",
+              "le son"
+            ],
+            "reponse_correcte": 1,
+            "explication": "thermo- vient du grec et veut dire « la chaleur » : un thermomètre mesure la température."
+          },
+          {
+            "question": "Dans antivol et antigel, que veut dire le préfixe anti- ?",
+            "options": [
+              "avec",
+              "avant",
+              "contre",
+              "après"
+            ],
+            "reponse_correcte": 2,
+            "explication": "anti- vient du grec et veut dire « contre » : un antivol protège contre le vol. Attention : c'est le préfixe ante- qui veut dire « avant »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M41",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Dans dictionnaire, dictée et prédiction, on retrouve la racine latine dic-. Que veut-elle dire ?",
+        "options": [
+          "écrire",
+          "lire",
+          "compter",
+          "dire"
+        ],
+        "reponse_correcte": 3,
+        "explication": "La racine latine dic- veut dire « dire » : une prédiction, c'est ce que l'on dit à l'avance."
+      },
+      {
+        "question": "Le mot somnifère est formé de somni- (« sommeil ») et -fère (« qui apporte »). Que désigne un somnifère ?",
+        "options": [
+          "un médicament qui fait dormir",
+          "une personne qui dort beaucoup",
+          "un rêve",
+          "un lit d'appoint"
+        ],
+        "reponse_correcte": 0,
+        "explication": "En collant le sens des deux racines, on obtient « qui apporte le sommeil » : c'est un médicament qui fait dormir."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des racines grecques et latines",
+        "consigne": "Les mots savants sont construits avec des racines grecques et latines. Assemble les morceaux donnés et écris le mot. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "la racine *aqua* (« eau ») + *-rium* → le bassin vitré où l'on garde des poissons : …",
+            "reponse_attendue": "aquarium",
+            "indice": "Le mot garde le qu de *aqua* et se termine par -rium."
+          },
+          {
+            "id": 2,
+            "enonce": "la racine *hippo* (« cheval ») + *-drome* (« piste de course ») → la piste où courent les chevaux : …",
+            "reponse_attendue": "hippodrome",
+            "indice": "Deux p dans *hippo*, et -drome à la fin."
+          },
+          {
+            "id": 3,
+            "enonce": "la racine *herbi* (« herbe ») + *-vore* (« qui mange ») → l'animal qui se nourrit d'herbe : …",
+            "reponse_attendue": "herbivore",
+            "indice": "Un h au début, que l'on n'entend pas, et -vore à la fin."
+          },
+          {
+            "id": 4,
+            "enonce": "la racine *carni* (« chair, viande ») + *-vore* (« qui mange ») → l'animal qui se nourrit de viande : …",
+            "reponse_attendue": "carnivore",
+            "indice": "On y voit *carn*, comme dans *carnassier*, et -vore à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "la racine *manu* (« main ») + *scrit* (« écrit ») → le texte écrit à la main : …",
+            "reponse_attendue": "manuscrit",
+            "indice": "Un seul mot, avec un t final que l'on n'entend pas."
+          },
+          {
+            "id": 6,
+            "enonce": "la racine *nav* (« bateau ») + *-igation* → l'art de conduire un bateau : …",
+            "reponse_attendue": "navigation",
+            "indice": "On y voit *nav*, comme dans *navire*, puis -igation."
+          },
+          {
+            "id": 7,
+            "enonce": "la racine *sol* (« soleil ») + *-aire* → qui vient du soleil : …",
+            "reponse_attendue": "solaire",
+            "indice": "Un seul l, et la fin s'écrit -aire."
+          },
+          {
+            "id": 8,
+            "enonce": "la racine *cycl* (« cercle, roue ») + *-iste* → la personne qui roule à vélo : …",
+            "reponse_attendue": "cycliste",
+            "indice": "Deux fois la lettre c, un y au milieu, et -iste à la fin."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des racines grecques et latines",
+        "consigne": "Les mots savants sont construits avec des racines grecques et latines. Assemble les morceaux donnés et écris le mot. Un seul mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "la racine *audi* (« entendre ») + *-teur* → la personne qui écoute une émission : …",
+            "reponse_attendue": "auditeur",
+            "indice": "On y voit *audi*, comme dans *audition*, puis -teur."
+          },
+          {
+            "id": 2,
+            "enonce": "la racine *lun* (« lune ») + *-aire* → qui concerne la Lune : …",
+            "reponse_attendue": "lunaire",
+            "indice": "Un seul n, et la fin s'écrit -aire."
+          },
+          {
+            "id": 3,
+            "enonce": "la racine *pédi* (« pied ») + *-cure* (« soin ») → la personne qui soigne les pieds : …",
+            "reponse_attendue": "pédicure",
+            "indice": "Un accent aigu sur le premier e, et -cure à la fin."
+          },
+          {
+            "id": 4,
+            "enonce": "la racine *agri* (« champ ») + *-culture* → la culture des champs : …",
+            "reponse_attendue": "agriculture",
+            "indice": "Un seul mot, sans trait d'union."
+          },
+          {
+            "id": 5,
+            "enonce": "la racine *api* (« abeille ») + *-culteur* → celui qui élève des abeilles : …",
+            "reponse_attendue": "apiculteur",
+            "indice": "Un seul p, et -culteur à la fin."
+          },
+          {
+            "id": 6,
+            "enonce": "la racine *média* + *-thèque* (« armoire, lieu de rangement ») → le lieu où l'on emprunte livres, disques et films : …",
+            "reponse_attendue": "médiathèque",
+            "indice": "Un accent aigu sur le premier e, un accent grave sur le e de -thèque."
+          },
+          {
+            "id": 7,
+            "enonce": "la racine *terr* (« terre ») + *-estre* → qui vit sur la terre ferme : …",
+            "reponse_attendue": "terrestre",
+            "indice": "Deux r au milieu, et -estre à la fin."
+          },
+          {
+            "id": 8,
+            "enonce": "la racine *bio* (« vie ») + *-logie* (« science ») → la science qui étudie les êtres vivants : …",
+            "reponse_attendue": "biologie",
+            "indice": "Aucun accent dans ce mot, et -logie à la fin."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M45",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Le dictionnaire des synonymes donne pour regarder : observer, apercevoir, dévisager, surveiller. Quel mot convient : « De la fenêtre du car, Inès ___ un troupeau de moutons pendant une seconde. » ?",
+        "options": [
+          "a observé",
+          "a aperçu",
+          "a dévisagé",
+          "a surveillé"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« pendant une seconde » : le regard est très bref, c'est apercevoir. Observer demande du temps et de l'attention."
+      },
+      {
+        "question": "Dans quelle phrase le synonyme choisi n'est PAS le mot juste ?",
+        "options": [
+          "Les randonneurs explorent une grotte encore inconnue.",
+          "Le douanier inspecte chaque valise avec attention.",
+          "Malo fouille son cartable pour retrouver sa clé.",
+          "Fatou explore son tiroir pour prendre une gomme."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Explorer, c'est parcourir un lieu qu'on ne connaît pas pour le découvrir. Pour un tiroir familier, le mot juste est fouiller."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le mot juste",
+        "consigne": "Le dictionnaire des synonymes propose plusieurs mots proches. Choisis celui qui convient exactement au sens de la phrase.",
+        "questions": [
+          {
+            "question": "Synonymes de donner : offrir, prêter, rendre, confier. Quel mot convient : « Le club de lecture ___ un carnet à chaque nouvel inscrit, et ne le reprend jamais. » ?",
+            "options": [
+              "prête",
+              "offre",
+              "rend",
+              "confie"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Offrir, c'est donner pour de bon : le carnet n'est pas repris. Prêter et confier supposent un retour."
+          },
+          {
+            "question": "Synonymes de regarder : contempler, apercevoir, surveiller, entrevoir. Quel mot convient : « Du haut de la colline, Lila ___ le coucher de soleil pendant de longues minutes. » ?",
+            "options": [
+              "a aperçu",
+              "a surveillé",
+              "a contemplé",
+              "a entrevu"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Contempler, c'est regarder longuement, avec admiration. Apercevoir et entrevoir désignent au contraire un regard très bref."
+          },
+          {
+            "question": "Synonymes de dire : murmurer, hurler, déclarer, bredouiller. Quel mot convient : « Intimidé, Adam a ___ quelques mots, en butant sur chaque syllabe. » ?",
+            "options": [
+              "bredouillé",
+              "hurlé",
+              "déclaré",
+              "murmuré"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Bredouiller, c'est parler de façon confuse, sans articuler. Murmurer, c'est parler à voix très basse."
+          },
+          {
+            "question": "Synonymes de vieux : antique, âgé, usé, vieilli. Quel mot convient : « Ce vase ___ a été retrouvé dans une tombe égyptienne. » ?",
+            "options": [
+              "âgé",
+              "usé",
+              "vieilli",
+              "antique"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Antique se dit d'un objet qui vient de l'Antiquité. Âgé se dit d'une personne ou d'un animal, pas d'un vase."
+          },
+          {
+            "question": "Synonymes de content : satisfait, ravi, soulagé, flatté. Quel mot convient : « Après avoir cherché son chat toute la nuit, Fatou est ___ : elle n'a plus à s'inquiéter. » ?",
+            "options": [
+              "satisfaite",
+              "soulagée",
+              "flattée",
+              "ravie"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Être soulagé, c'est être délivré d'une inquiétude. Ravi dirait seulement la joie, pas la fin de l'angoisse."
+          },
+          {
+            "question": "Synonymes de fatigué : las, somnolent, essoufflé, courbaturé. Quel mot convient : « Après avoir monté quatre étages en courant, Adam est ___ et reprend son souffle sur le palier. » ?",
+            "options": [
+              "courbaturé",
+              "somnolent",
+              "essoufflé",
+              "las"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Être essoufflé, c'est manquer de souffle après un effort. Courbaturé se dit des muscles douloureux le lendemain, et somnolent parle du sommeil."
+          },
+          {
+            "question": "Synonymes de demander : réclamer, supplier, interroger, commander. Quel mot convient : « Le journaliste ___ le champion sur ses entraînements. » ?",
+            "options": [
+              "réclame",
+              "supplie",
+              "commande",
+              "interroge"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Interroger, c'est poser des questions à quelqu'un : c'est le travail du journaliste."
+          },
+          {
+            "question": "Synonymes de marcher : flâner, déambuler, traîner, se précipiter. Quel mot convient : « Pressée d'arriver à l'heure, Inès ___ vers l'école. » ?",
+            "options": [
+              "se précipite",
+              "flâne",
+              "déambule",
+              "traîne"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Se précipiter, c'est aller très vite. Flâner, déambuler et traîner disent au contraire qu'on prend son temps."
+          }
+        ]
+      },
+      {
+        "titre": "Encore le mot juste",
+        "consigne": "Le dictionnaire des synonymes propose plusieurs mots proches. Choisis celui qui convient exactement au sens de la phrase.",
+        "questions": [
+          {
+            "question": "Synonymes de casser : briser, fêler, déchirer, arracher. Quel mot convient : « En le heurtant, Sacha a seulement ___ le verre : une fine fissure court sur le bord. » ?",
+            "options": [
+              "brisé",
+              "déchiré",
+              "fêlé",
+              "arraché"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Fêler, c'est fendre sans séparer les morceaux : le verre tient encore. Briser voudrait dire qu'il est en morceaux."
+          },
+          {
+            "question": "Synonymes de prendre : emprunter, empoigner, attraper, ramasser. Quel mot convient : « Malo ___ ce roman à la bibliothèque pour deux semaines. » ?",
+            "options": [
+              "empoigne",
+              "emprunte",
+              "attrape",
+              "ramasse"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Emprunter, c'est prendre en s'engageant à rendre : c'est le mot juste pour la bibliothèque."
+          },
+          {
+            "question": "Synonymes de voir : apercevoir, remarquer, examiner, deviner. Quel mot convient : « Le médecin ___ longuement la radiographie avant de parler. » ?",
+            "options": [
+              "aperçoit",
+              "remarque",
+              "devine",
+              "examine"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Examiner, c'est regarder en détail pour comprendre. Apercevoir désigne un regard bref, involontaire."
+          },
+          {
+            "question": "Synonymes de triste : déçu, désolé, mélancolique, abattu. Quel mot convient : « Jade espérait la première place ; elle est un peu ___ d'arriver troisième. » ?",
+            "options": [
+              "abattue",
+              "déçue",
+              "désolée",
+              "mélancolique"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Être déçu, c'est ne pas obtenir ce qu'on espérait. « un peu » écarte abattue, qui dirait un chagrin beaucoup plus fort."
+          },
+          {
+            "question": "Synonymes de grand : haut, long, vaste, spacieux. Quel mot convient : « La tour de l'église est la plus ___ du village. » ?",
+            "options": [
+              "longue",
+              "vaste",
+              "haute",
+              "spacieuse"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une tour se mesure de bas en haut : le mot juste est haute. Vaste et spacieux parlent d'une surface."
+          },
+          {
+            "question": "Synonymes de faire : fabriquer, construire, rédiger, dessiner. Quel mot convient : « Louna ___ une lettre de remerciement à la directrice. » ?",
+            "options": [
+              "fabrique",
+              "construit",
+              "dessine",
+              "rédige"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Rédiger, c'est écrire un texte en le composant. On fabrique un objet, on ne fabrique pas une lettre."
+          },
+          {
+            "question": "Synonymes de aimer : apprécier, adorer, préférer, estimer. Quel mot convient : « Entre le vélo et la natation, Rosalie ___ la natation. » ?",
+            "options": [
+              "préfère",
+              "apprécie",
+              "adore",
+              "estime"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Préférer, c'est aimer mieux une chose qu'une autre : la phrase compare deux sports."
+          },
+          {
+            "question": "Synonymes de briller : scintiller, luire, flamboyer, éblouir. Quel mot convient : « Au coucher du soleil, tout l'horizon ___ de rouge et d'orange. » ?",
+            "options": [
+              "scintille",
+              "luit",
+              "flamboie",
+              "éblouit"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Flamboyer, c'est briller comme une flamme, avec de grandes couleurs vives. Scintiller se dit d'une petite lumière qui tremble, et luire d'un éclat faible et régulier."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,434 @@
+[
+  {
+    "item_code": "P51",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Les élèves ___ leur dessin. (finir) », quelle forme convient ?",
+        "options": [
+          "finit",
+          "finissent",
+          "finissons",
+          "finir"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Les élèves », c'est comme « ils » : finir fait « finissent »."
+      },
+      {
+        "question": "Dans « Nous ___ le ballon au vol. (saisir) », quelle forme convient ?",
+        "options": [
+          "saisit",
+          "saisis",
+          "saisir",
+          "saisissons"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Avec « nous », saisir fait « saisissons »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La fin du portrait",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Ce matin, je (finir) finis mon portrait. Tu (choisir) choisis les couleurs du fond. Nous (réfléchir) réfléchissons au titre. Les CM1 (applaudir) applaudissent le résultat. La maîtresse (remplir) remplit la fiche de la classe.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "finis",
+            "indice": "Verbe finir, avec « je »."
+          },
+          {
+            "position": 1,
+            "mot": "choisis",
+            "indice": "Verbe choisir, avec « tu »."
+          },
+          {
+            "position": 2,
+            "mot": "réfléchissons",
+            "indice": "Verbe réfléchir, avec « nous »."
+          },
+          {
+            "position": 3,
+            "mot": "applaudissent",
+            "indice": "Verbe applaudir : le sujet vaut « ils »."
+          },
+          {
+            "position": 4,
+            "mot": "remplit",
+            "indice": "Verbe remplir : le sujet vaut « elle »."
+          }
+        ]
+      },
+      {
+        "titre": "La course du stade",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Au stade, nous (obéir) obéissons au signal du départ. Vous (réussir) réussissez votre course. Les coureurs (ralentir) ralentissent avant la ligne blanche. Sacha (rougir) rougit de fierté. Les plus jeunes (grandir) grandissent vite et courent déjà comme les grands.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "obéissons",
+            "indice": "Verbe obéir, avec « nous »."
+          },
+          {
+            "position": 1,
+            "mot": "réussissez",
+            "indice": "Verbe réussir, avec « vous »."
+          },
+          {
+            "position": 2,
+            "mot": "ralentissent",
+            "indice": "Verbe ralentir : le sujet vaut « ils »."
+          },
+          {
+            "position": 3,
+            "mot": "rougit",
+            "indice": "Verbe rougir, avec « il »."
+          },
+          {
+            "position": 4,
+            "mot": "grandissent",
+            "indice": "Verbe grandir : le sujet vaut « ils »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P18",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase est la forme négative de « Lila range sa trousse. » ?",
+        "options": [
+          "Lila ne range pas sa trousse.",
+          "Lila ne range sa trousse.",
+          "Lila range ne pas sa trousse.",
+          "Lila pas range sa trousse."
+        ],
+        "reponse_correcte": 0,
+        "explication": "La négation encadre le verbe : « ne » devant, « pas » derrière."
+      },
+      {
+        "question": "Quelle phrase est écrite correctement à la forme négative ?",
+        "options": [
+          "Elle ne aide pas son frère.",
+          "Elle n'aide son frère.",
+          "Elle n'aide pas son frère.",
+          "Elle aide ne pas son frère."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Devant une voyelle, « ne » devient « n' » : n'aide. Et « pas » reste après le verbe."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La négation dans le portrait",
+        "consigne": "Range chaque phrase dans la bonne colonne. Regarde s'il manque un mot, et si « ne » est écrit comme il faut devant le verbe.",
+        "categories": [
+          "Négation correcte",
+          "Il manque « ne » ou « n' »",
+          "Il manque « pas »",
+          "Il faut « n' » et non « ne »"
+        ],
+        "items": [
+          {
+            "texte": "Timéo ne parle pas très fort.",
+            "categorie": "Négation correcte"
+          },
+          {
+            "texte": "Elle n'écoute pas la consigne.",
+            "categorie": "Négation correcte"
+          },
+          {
+            "texte": "Les CM1 ne bavardent pas en classe.",
+            "categorie": "Négation correcte"
+          },
+          {
+            "texte": "Nour vient pas ce matin.",
+            "categorie": "Il manque « ne » ou « n' »"
+          },
+          {
+            "texte": "Jade ouvre pas la fenêtre.",
+            "categorie": "Il manque « ne » ou « n' »"
+          },
+          {
+            "texte": "Malo sort pas de la classe.",
+            "categorie": "Il manque « ne » ou « n' »"
+          },
+          {
+            "texte": "Il n'aime les épinards.",
+            "categorie": "Il manque « pas »"
+          },
+          {
+            "texte": "Le chat n'entend la sonnette.",
+            "categorie": "Il manque « pas »"
+          },
+          {
+            "texte": "Lila ne range son cartable.",
+            "categorie": "Il manque « pas »"
+          },
+          {
+            "texte": "Adam ne oublie pas son écharpe.",
+            "categorie": "Il faut « n' » et non « ne »"
+          },
+          {
+            "texte": "Fatou ne invite pas ses voisins.",
+            "categorie": "Il faut « n' » et non « ne »"
+          },
+          {
+            "texte": "Le maître ne attend pas les retardataires.",
+            "categorie": "Il faut « n' » et non « ne »"
+          }
+        ]
+      },
+      {
+        "titre": "La négation à la récréation",
+        "consigne": "Range chaque phrase dans la bonne colonne. Regarde s'il manque un mot, et si « ne » est écrit comme il faut devant le verbe.",
+        "categories": [
+          "Négation correcte",
+          "Il manque « ne » ou « n' »",
+          "Il manque « pas »",
+          "Il faut « n' » et non « ne »"
+        ],
+        "items": [
+          {
+            "texte": "Malo ne joue pas au ballon.",
+            "categorie": "Négation correcte"
+          },
+          {
+            "texte": "Inès n'utilise pas de règle.",
+            "categorie": "Négation correcte"
+          },
+          {
+            "texte": "Les grands ne courent pas dans le couloir.",
+            "categorie": "Négation correcte"
+          },
+          {
+            "texte": "Yanis crie pas dans la cour.",
+            "categorie": "Il manque « ne » ou « n' »"
+          },
+          {
+            "texte": "Fatou apporte pas son goûter.",
+            "categorie": "Il manque « ne » ou « n' »"
+          },
+          {
+            "texte": "Les CE2 marchent pas en rang.",
+            "categorie": "Il manque « ne » ou « n' »"
+          },
+          {
+            "texte": "Timéo ne prête son ballon.",
+            "categorie": "Il manque « pas »"
+          },
+          {
+            "texte": "Rosalie n'écrit son prénom.",
+            "categorie": "Il manque « pas »"
+          },
+          {
+            "texte": "Louna ne lit son livre.",
+            "categorie": "Il manque « pas »"
+          },
+          {
+            "texte": "Adam ne attrape pas le ballon.",
+            "categorie": "Il faut « n' » et non « ne »"
+          },
+          {
+            "texte": "Jade ne enlève pas son manteau.",
+            "categorie": "Il faut « n' » et non « ne »"
+          },
+          {
+            "texte": "La maîtresse ne appelle pas les CM1.",
+            "categorie": "Il faut « n' » et non « ne »"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P48",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Quel mot convient : « Malo range ___ cartable dans le casier. » ?",
+        "options": [
+          "sont",
+          "son",
+          "on",
+          "ont"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Ici, le mot accompagne un nom : on peut dire « mon cartable ». C'est « son », sans t."
+      },
+      {
+        "question": "Dans « Lila et Adam ___ terminé leur dessin », quel mot convient ?",
+        "options": [
+          "sont",
+          "on",
+          "son",
+          "ont"
+        ],
+        "reponse_correcte": 3,
+        "explication": "On peut dire « ils avaient terminé » : c'est le verbe avoir, on écrit ont."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait de Nour",
+        "consigne": "Complète avec le petit mot qui convient. Pour t'aider, essaie de remplacer le mot par un autre : si la phrase reste correcte, tu as trouvé.",
+        "texte_complet": "Dans la classe, on observe le portrait que Nour a terminé. Les couleurs sont douces et le chapeau du modèle est bleu. Nour a dessiné son grand frère. Ses parents ont accroché le dessin dans le salon. Ils sont très fiers.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "on",
+            "indice": "Essaie de remplacer par « quelqu'un » : si ça marche, écris le petit mot sujet."
+          },
+          {
+            "position": 1,
+            "mot": "sont",
+            "indice": "Essaie de remplacer par « étaient »."
+          },
+          {
+            "position": 2,
+            "mot": "son",
+            "indice": "Essaie de remplacer par « mon » ou « ton »."
+          },
+          {
+            "position": 3,
+            "mot": "ont",
+            "indice": "Essaie de remplacer par « avaient »."
+          },
+          {
+            "position": 4,
+            "mot": "sont",
+            "indice": "Essaie de remplacer par « étaient »."
+          }
+        ]
+      },
+      {
+        "titre": "L'exposition des portraits",
+        "consigne": "Complète avec le petit mot qui convient. Pour t'aider, essaie de remplacer le mot par un autre : si la phrase reste correcte, tu as trouvé.",
+        "texte_complet": "Après la récréation, on affiche les portraits dans le couloir. Yanis et Fatou ont apporté du ruban adhésif. Malo écrit son prénom au dos du dessin. Les cadres sont posés par terre. Pour finir, on range le ruban dans le tiroir.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "on",
+            "indice": "Essaie de remplacer par « quelqu'un » : si ça marche, écris le petit mot sujet."
+          },
+          {
+            "position": 1,
+            "mot": "ont",
+            "indice": "Essaie de remplacer par « avaient »."
+          },
+          {
+            "position": 2,
+            "mot": "son",
+            "indice": "Essaie de remplacer par « mon » ou « ton »."
+          },
+          {
+            "position": 3,
+            "mot": "sont",
+            "indice": "Essaie de remplacer par « étaient »."
+          },
+          {
+            "position": 4,
+            "mot": "on",
+            "indice": "Essaie de remplacer par « quelqu'un » : si ça marche, écris le petit mot sujet."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P52",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Les grands cahiers rouges ___ sur l'étagère. (rester) », quelle forme convient ?",
+        "options": [
+          "reste",
+          "restes",
+          "restent",
+          "rester"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Les grands cahiers rouges », c'est comme « ils » : un verbe en -ER prend -ent, même si on ne l'entend pas."
+      },
+      {
+        "question": "Dans « Mon voisin ___ la voiture. (laver) », quelle forme convient ?",
+        "options": [
+          "lavent",
+          "lave",
+          "laves",
+          "laver"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Qui est-ce qui lave ? Mon voisin : une seule personne. Un verbe en -ER prend alors -e, pas -ent."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La récréation des CM2",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent, accordé avec son sujet.",
+        "texte_complet": "Dans la cour, les CM2 (jouer) jouent au ballon. Inès et Louna (crier) crient un peu trop fort. Le surveillant (oublier) oublie son sifflet sur le banc. Elles (saluer) saluent la maîtresse avant de rentrer. Rosalie (plier) plie sa feuille en deux.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "jouent",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 1,
+            "mot": "crient",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 2,
+            "mot": "oublie",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 3,
+            "mot": "saluent",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 4,
+            "mot": "plie",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          }
+        ]
+      },
+      {
+        "titre": "Le jour de la sortie",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent, accordé avec son sujet.",
+        "texte_complet": "Le matin, les CM1 (distribuer) distribuent les carnets de visite. Fatou et Jade (étudier) étudient le plan du musée. Le maître (continuer) continue la visite après le pique-nique. Ils (copier) copient les questions dans leur carnet. La maîtresse (vérifier) vérifie les tickets une dernière fois.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "distribuent",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 1,
+            "mot": "étudient",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 2,
+            "mot": "continue",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 3,
+            "mot": "copient",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          },
+          {
+            "position": 4,
+            "mot": "vérifie",
+            "indice": "Remplace le sujet par « il », « elle », « ils » ou « elles », puis écris la terminaison qui convient."
+          }
+        ]
+      }
+    ]
+  }
+]

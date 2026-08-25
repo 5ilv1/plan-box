@@ -1,0 +1,798 @@
+[
+  {
+    "item_code": "P39",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Laquelle de ces phrases est au plus-que-parfait ?",
+        "options": [
+          "Nour avait terminé son portrait.",
+          "Nour a terminé son portrait.",
+          "Nour terminait son portrait.",
+          "Nour aura terminé son portrait."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le plus-que-parfait, c'est l'auxiliaire avoir ou être à l'imparfait (« avait », « était »), suivi du participe passé."
+      },
+      {
+        "question": "Dans « Les affiches étaient ___ pendant la nuit. (tomber) », quelle forme convient ?",
+        "options": [
+          "tombé",
+          "tombés",
+          "tombée",
+          "tombées"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Avec l'auxiliaire être, le participe passé s'accorde avec le sujet : « les affiches » est féminin pluriel."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le jour de la photo de classe",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. L'auxiliaire est déjà écrit : complète chaque phrase au plus-que-parfait.",
+        "texte_complet": "Ce jour-là, Malo était (partir) parti avant la photo de groupe. Rosalie avait (mettre) mis son bonnet dans son cartable. Fatou et sa cousine étaient (sortir) sorties par la petite porte du fond. Inès était (descendre) descendue au vestiaire du bas. Le photographe avait (prévoir) prévu deux appareils.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "parti",
+            "indice": "L'auxiliaire est « être » : cherche le sujet, demande-toi qui est concerné, puis accorde le participe passé."
+          },
+          {
+            "position": 1,
+            "mot": "mis",
+            "indice": "L'auxiliaire est « avoir » : ici aucun complément d'objet n'est placé avant le verbe, le participe passé ne bouge donc pas."
+          },
+          {
+            "position": 2,
+            "mot": "sorties",
+            "indice": "L'auxiliaire est « être » : cherche le sujet, demande-toi qui est concerné, puis accorde le participe passé."
+          },
+          {
+            "position": 3,
+            "mot": "descendue",
+            "indice": "L'auxiliaire est « être » : cherche le sujet, demande-toi qui est concerné, puis accorde le participe passé."
+          },
+          {
+            "position": 4,
+            "mot": "prévu",
+            "indice": "L'auxiliaire est « avoir » : ici aucun complément d'objet n'est placé avant le verbe, le participe passé ne bouge donc pas."
+          }
+        ]
+      },
+      {
+        "titre": "Le soir de la fête du quartier",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. L'auxiliaire est déjà écrit : complète chaque phrase au plus-que-parfait.",
+        "texte_complet": "Ce soir-là, Louna était (naître) née dans ce quartier, comme sa mère. Les invités avaient (entendre) entendu la fanfare depuis la place. Jade et Nour étaient (repartir) reparties avant le feu d'artifice. Yanis avait (peindre) peint le décor de la petite scène. La lune était (monter) montée au-dessus des toits.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "née",
+            "indice": "L'auxiliaire est « être » : cherche le sujet, demande-toi qui est concerné, puis accorde le participe passé."
+          },
+          {
+            "position": 1,
+            "mot": "entendu",
+            "indice": "L'auxiliaire est « avoir » : ici aucun complément d'objet n'est placé avant le verbe, le participe passé ne bouge donc pas."
+          },
+          {
+            "position": 2,
+            "mot": "reparties",
+            "indice": "L'auxiliaire est « être » : cherche le sujet, demande-toi qui est concerné, puis accorde le participe passé."
+          },
+          {
+            "position": 3,
+            "mot": "peint",
+            "indice": "L'auxiliaire est « avoir » : ici aucun complément d'objet n'est placé avant le verbe, le participe passé ne bouge donc pas."
+          },
+          {
+            "position": 4,
+            "mot": "montée",
+            "indice": "L'auxiliaire est « être » : cherche le sujet, demande-toi qui est concerné, puis accorde le participe passé."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P41",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans « Ton dessin est plus grand que le mien. », qu'est-ce que « le mien » ?",
+        "options": [
+          "un pronom personnel",
+          "un pronom démonstratif",
+          "un pronom possessif",
+          "un déterminant possessif"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Le mien » remplace « mon dessin » et dit à qui il appartient : c'est un pronom possessif."
+      },
+      {
+        "question": "Dans quelle phrase le mot entre astérisques est-il un pronom démonstratif ?",
+        "options": [
+          "*Ce* matin, Louna arrive en avance.",
+          "Parmi les portraits, *celui* de Timéo est encadré.",
+          "Nour *le* regarde longuement.",
+          "Ce cadre est *le sien*."
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Celui » remplace un nom en le montrant. « Ce » devant « matin » accompagne le nom : c'est un déterminant, pas un pronom."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les pronoms de l'atelier portrait",
+        "consigne": "Classe chaque pronom écrit entre astérisques dans la bonne colonne.",
+        "categories": [
+          "Pronom personnel",
+          "Pronom possessif",
+          "Pronom démonstratif"
+        ],
+        "items": [
+          {
+            "texte": "Fatou *lui* a prêté son crayon rouge.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "Les CM2 partiront sans *eux*.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "La maîtresse *nous* attend devant le portail.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "Timéo *les* range soigneusement dans sa trousse.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "Mon portrait est terminé, mais *le tien* sèche encore.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Nos crayons sont neufs ; *les vôtres* sont usés.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Inès a retrouvé ses gants, Sacha cherche encore *les siens*.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Cette écharpe verte n'est pas *la mienne*.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Parmi tous ces dessins, *celui* de Nour m'étonne.",
+            "categorie": "Pronom démonstratif"
+          },
+          {
+            "texte": "Je préfère les portraits anciens à *ceux* d'aujourd'hui.",
+            "categorie": "Pronom démonstratif"
+          },
+          {
+            "texte": "Les affiches du couloir et *celles* de la classe se ressemblent.",
+            "categorie": "Pronom démonstratif"
+          },
+          {
+            "texte": "Prends ce livre-ci et laisse *celui-là* sur l'étagère.",
+            "categorie": "Pronom démonstratif"
+          }
+        ]
+      },
+      {
+        "titre": "Les pronoms du jour de la sortie",
+        "consigne": "Classe chaque pronom écrit entre astérisques dans la bonne colonne.",
+        "categories": [
+          "Pronom personnel",
+          "Pronom possessif",
+          "Pronom démonstratif"
+        ],
+        "items": [
+          {
+            "texte": "Adam a écouté ses camarades, puis il *leur* a montré la photo.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "Sans *toi*, l'équipe aurait perdu le match.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "La directrice *me* félicite devant toute la classe.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "Ce matin, *elles* rangent le matériel après la séance.",
+            "categorie": "Pronom personnel"
+          },
+          {
+            "texte": "Votre exposé est prêt ; *le nôtre* commence à peine.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Ma trousse est bleue, *la sienne* est verte.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Yanis a perdu ses gants, alors il a emprunté *les miens*.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "Notre exposé dure dix minutes, *le leur* en dure cinq.",
+            "categorie": "Pronom possessif"
+          },
+          {
+            "texte": "De toutes les photos, *celle* de la cour est la plus belle.",
+            "categorie": "Pronom démonstratif"
+          },
+          {
+            "texte": "Ces feutres sèchent vite ; *ceux-ci* durent plus longtemps.",
+            "categorie": "Pronom démonstratif"
+          },
+          {
+            "texte": "*Cela* ne me dérange pas du tout.",
+            "categorie": "Pronom démonstratif"
+          },
+          {
+            "texte": "Ces affiches-ci restent au mur, *celles-là* partent au recyclage.",
+            "categorie": "Pronom démonstratif"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P43",
+    "type": "analyse_phrase",
+    "diagnostic": [
+      {
+        "question": "Dans « Sous les arbres de la cour jouaient les élèves de CE2. », quel groupe est le sujet du verbe ?",
+        "options": [
+          "Sous les arbres",
+          "de la cour",
+          "jouaient",
+          "les élèves de CE2"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« Qui est-ce qui jouait ? » — les élèves de CE2. Le sujet est ici placé après le verbe."
+      },
+      {
+        "question": "Dans « À la fin du spectacle, Jade a offert des fleurs à sa maîtresse. », quelle est la fonction de « à sa maîtresse » ?",
+        "options": [
+          "complément d'objet indirect (COI)",
+          "complément d'objet direct (COD)",
+          "complément circonstanciel de temps",
+          "attribut du sujet"
+        ],
+        "reponse_correcte": 0,
+        "explication": "On ne peut ni la supprimer ni la déplacer : « à sa maîtresse » complète le verbe « offrir » et répond à « offert à qui ? ». C'est un COI. « À la fin du spectacle », lui, se déplace et se supprime : c'est un complément circonstanciel de temps."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Une matinée à l'école",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Chaque matin les CM2 traversent la cour en silence",
+            "groupes": [
+              {
+                "mots": "Chaque matin",
+                "fonction": "CC Temps",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "les CM2",
+                "fonction": "Sujet",
+                "debut": 2,
+                "fin": 3
+              },
+              {
+                "mots": "traversent",
+                "fonction": "Verbe",
+                "debut": 4,
+                "fin": 4
+              },
+              {
+                "mots": "la cour",
+                "fonction": "COD",
+                "debut": 5,
+                "fin": 6
+              },
+              {
+                "mots": "en silence",
+                "fonction": "CC Manière",
+                "debut": 7,
+                "fin": 8
+              }
+            ]
+          },
+          {
+            "texte": "Dans le couloir résonnent les voix des CM1",
+            "groupes": [
+              {
+                "mots": "Dans le couloir",
+                "fonction": "CC Lieu",
+                "debut": 0,
+                "fin": 2
+              },
+              {
+                "mots": "résonnent",
+                "fonction": "Verbe",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "les voix des CM1",
+                "fonction": "Sujet",
+                "debut": 4,
+                "fin": 7
+              }
+            ]
+          },
+          {
+            "texte": "Nour explique la règle du jeu à son voisin",
+            "groupes": [
+              {
+                "mots": "Nour",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "explique",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "la règle du jeu",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 5
+              },
+              {
+                "mots": "à son voisin",
+                "fonction": "COI",
+                "debut": 6,
+                "fin": 8
+              }
+            ]
+          },
+          {
+            "texte": "Sacha est devenu le meilleur lecteur de la classe",
+            "groupes": [
+              {
+                "mots": "Sacha",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "est devenu",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 2
+              },
+              {
+                "mots": "le meilleur lecteur de la classe",
+                "fonction": "Attribut",
+                "debut": 3,
+                "fin": 8
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "titre": "Autour de l'exposition",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Chaque dimanche Louna relit ses notes attentivement",
+            "groupes": [
+              {
+                "mots": "Chaque dimanche",
+                "fonction": "CC Temps",
+                "debut": 0,
+                "fin": 1
+              },
+              {
+                "mots": "Louna",
+                "fonction": "Sujet",
+                "debut": 2,
+                "fin": 2
+              },
+              {
+                "mots": "relit",
+                "fonction": "Verbe",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "ses notes",
+                "fonction": "COD",
+                "debut": 4,
+                "fin": 5
+              },
+              {
+                "mots": "attentivement",
+                "fonction": "CC Manière",
+                "debut": 6,
+                "fin": 6
+              }
+            ]
+          },
+          {
+            "texte": "Sur le mur du fond brillait une affiche colorée",
+            "groupes": [
+              {
+                "mots": "Sur le mur du fond",
+                "fonction": "CC Lieu",
+                "debut": 0,
+                "fin": 4
+              },
+              {
+                "mots": "brillait",
+                "fonction": "Verbe",
+                "debut": 5,
+                "fin": 5
+              },
+              {
+                "mots": "une affiche colorée",
+                "fonction": "Sujet",
+                "debut": 6,
+                "fin": 8
+              }
+            ]
+          },
+          {
+            "texte": "Adam a prêté son écharpe à sa voisine",
+            "groupes": [
+              {
+                "mots": "Adam",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "a prêté",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 2
+              },
+              {
+                "mots": "son écharpe",
+                "fonction": "COD",
+                "debut": 3,
+                "fin": 4
+              },
+              {
+                "mots": "à sa voisine",
+                "fonction": "COI",
+                "debut": 5,
+                "fin": 7
+              }
+            ]
+          },
+          {
+            "texte": "Ces deux portraits semblent vraiment réussis",
+            "groupes": [
+              {
+                "mots": "Ces deux portraits",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 2
+              },
+              {
+                "mots": "semblent",
+                "fonction": "Verbe",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "vraiment réussis",
+                "fonction": "Attribut",
+                "debut": 4,
+                "fin": 5
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P44",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Combien de verbes conjugués y a-t-il dans « Quand Malo entre dans la classe, tout le monde se tait. » ?",
+        "options": [
+          "un",
+          "deux",
+          "trois",
+          "aucun"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« entre » et « se tait » sont tous les deux conjugués : la phrase contient deux propositions."
+      },
+      {
+        "question": "Laquelle de ces phrases est une phrase simple ?",
+        "options": [
+          "Lila veut apprendre le portrait au crayon.",
+          "Lila apprend le portrait car elle aime dessiner.",
+          "Lila apprend le portrait quand elle a le temps.",
+          "Lila dessine et Nour colorie."
+        ],
+        "reponse_correcte": 0,
+        "explication": "« apprendre » reste à l'infinitif et ne compte pas : il n'y a qu'un seul verbe conjugué, « veut »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Simple ou complexe ? Les phrases de l'atelier",
+        "consigne": "Classe chaque phrase selon le nombre de verbes conjugués qu'elle contient.",
+        "categories": [
+          "Phrase simple (un seul verbe conjugué)",
+          "Phrase complexe (plusieurs verbes conjugués)"
+        ],
+        "items": [
+          {
+            "texte": "Chaque matin, Nour arrive la première dans la cour.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Les CM2 veulent préparer une exposition de portraits.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Malo a terminé son dessin avant la sonnerie.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Sur la table, les crayons et les feutres attendent les élèves.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Fatou dessine plus vite que son voisin.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Sous le préau, les grands jouent sans faire de bruit.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Timéo range ses affaires quand la récréation se termine.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Sacha pense que son portrait ressemble à son frère.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Les élèves sortent et le maître ferme la porte.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Je connais la fille qui a gagné le concours.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Le vent souffle fort, la fenêtre claque.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Adam attend son tour pendant que Jade termine sa phrase.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          }
+        ]
+      },
+      {
+        "titre": "Simple ou complexe ? Les phrases du concours",
+        "consigne": "Classe chaque phrase selon le nombre de verbes conjugués qu'elle contient.",
+        "categories": [
+          "Phrase simple (un seul verbe conjugué)",
+          "Phrase complexe (plusieurs verbes conjugués)"
+        ],
+        "items": [
+          {
+            "texte": "Le mercredi, Sacha dessine des portraits dans son carnet.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Louna espère gagner le concours de lecture.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Les jumelles ont rangé le matériel après la séance.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Jade colle les photos et les légendes sur le panneau.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Ce portrait est plus grand que le mien.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Inès veut offrir son dessin à sa grand-mère.",
+            "categorie": "Phrase simple (un seul verbe conjugué)"
+          },
+          {
+            "texte": "Le maître explique la consigne et les élèves écoutent.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Yanis croit que la photo est un peu floue.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "La visite commencera dès que le groupe sera au complet.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Je relis le texte que Fatou a écrit.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "La sirène retentit, la cour se vide d'un coup.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          },
+          {
+            "texte": "Timéo lève la main car il a une question.",
+            "categorie": "Phrase complexe (plusieurs verbes conjugués)"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P46",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans « Louna range son carnet parce que la cloche a sonné. », qu'est-ce que « parce que » ?",
+        "options": [
+          "une conjonction de coordination",
+          "un pronom relatif",
+          "un adverbe",
+          "une conjonction de subordination"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« Parce que » introduit une proposition qui dépend de la première et ne peut pas rester seule : c'est une conjonction de subordination."
+      },
+      {
+        "question": "Dans quelle phrase le mot entre astérisques est-il une conjonction de coordination ?",
+        "options": [
+          "Timéo pense *que* le modèle bouge trop.",
+          "Sacha présentera son portrait *lorsque* le maître l'appellera.",
+          "Le crayon est cassé, *donc* Inès en prend un autre.",
+          "Jade dessine *pendant que* son frère lit."
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Donc » relie deux propositions de même niveau, dont aucune ne dépend de l'autre : c'est une conjonction de coordination."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots de liaison de l'atelier",
+        "consigne": "Classe chaque mot écrit entre astérisques dans la bonne colonne.",
+        "categories": [
+          "Conjonction de coordination",
+          "Conjonction de subordination"
+        ],
+        "items": [
+          {
+            "texte": "Nour voulait dessiner un visage, *mais* son crayon s'est cassé.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Timéo range ses affaires *et* il sort dans la cour.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "La salle est trop sombre, *donc* Yanis ouvre les rideaux.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Louna cherchait son carnet, *or* il était resté en classe.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Préfères-tu le fusain *ou* le crayon gris ?",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Ce portrait vaut cher, *car* il est très ancien.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Adam sourit *quand* la maîtresse le félicite.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Je crois *que* ce portrait ressemble à Jade.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Nous sortirons *si* la pluie s'arrête avant midi.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Inès ferme la fenêtre *parce que* le vent soulève les feuilles.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "*Lorsque* la cloche sonne, les CE2 se rangent en silence.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Rosalie relit son texte *afin que* personne n'y trouve de faute.",
+            "categorie": "Conjonction de subordination"
+          }
+        ]
+      },
+      {
+        "titre": "Les mots de liaison de l'exposition",
+        "consigne": "Classe chaque mot écrit entre astérisques dans la bonne colonne.",
+        "categories": [
+          "Conjonction de coordination",
+          "Conjonction de subordination"
+        ],
+        "items": [
+          {
+            "texte": "Le portrait est fini, *mais* le cadre manque encore.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Veux-tu la gomme blanche *ou* la gomme grise ?",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "La lumière baissait, *donc* le photographe a allumé une lampe.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Louna a terminé son croquis *et* elle range sa trousse.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Les CM1 rentrent plus tôt, *car* la sortie est annulée.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Adam n'a pris *ni* crayon ni feuille de brouillon.",
+            "categorie": "Conjonction de coordination"
+          },
+          {
+            "texte": "Fatou sourit *dès que* la maîtresse arrive dans la salle.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Je pense *que* ce portrait est le plus réussi de tous.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Malo range le matériel *pendant que* Sacha relit sa fiche.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "*Puisque* tu as fini, tu peux relire ton texte.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "*Quand* le soleil se couche, la lumière devient orange.",
+            "categorie": "Conjonction de subordination"
+          },
+          {
+            "texte": "Nous relirons le texte ensemble *si* tu le veux bien.",
+            "categorie": "Conjonction de subordination"
+          }
+        ]
+      }
+    ]
+  }
+]

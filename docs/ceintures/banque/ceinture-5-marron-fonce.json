@@ -1,0 +1,472 @@
+[
+  {
+    "item_code": "P29",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Le cartable des jumeaux ___ dans l'entrée. (traîner) », quelle forme convient ?",
+        "options": [
+          "traînent",
+          "traîne",
+          "traîner",
+          "traînes"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Qui est-ce qui traîne ? Le cartable : un seul. Le mot placé juste devant le verbe (« jumeaux ») n'est pas le sujet."
+      },
+      {
+        "question": "Dans « Que ___ ces deux enfants au fond de la classe ? (murmurer) », quelle forme convient ?",
+        "options": [
+          "murmure",
+          "murmures",
+          "murmurent",
+          "murmurer"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Ici le sujet est placé après le verbe : « ces deux enfants » vaut « ils », le verbe prend -ent."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le jour des portraits",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent, accordé avec son sujet.",
+        "texte_complet": "Chaque mardi, la maîtresse des CM2 (découper) découpe les étiquettes du portrait. Les crayons de Timéo (rouler) roulent sous la table. Où (grimper) grimpent les deux chatons du voisin ? Le portrait des jumelles (briller) brille sous la lampe. Où (pousser) pousse le grand rosier de l'école ?",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "découpe",
+            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
+          },
+          {
+            "position": 1,
+            "mot": "roulent",
+            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
+          },
+          {
+            "position": 2,
+            "mot": "grimpent",
+            "indice": "Pose la question « Qui est-ce qui… ? » : dans une question, le sujet est souvent placé après le verbe."
+          },
+          {
+            "position": 3,
+            "mot": "brille",
+            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
+          },
+          {
+            "position": 4,
+            "mot": "pousse",
+            "indice": "Pose la question « Qui est-ce qui… ? » : dans une question, le sujet est souvent placé après le verbe."
+          }
+        ]
+      },
+      {
+        "titre": "Dans le couloir de l'école",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent, accordé avec son sujet.",
+        "texte_complet": "Sur le mur du couloir, les affiches de la classe (flotter) flottent dans le courant d'air. Le vélo des voisins (rouiller) rouille sous la pluie. Où (voler) volent les hirondelles en automne ? Quand (commencer) commence le spectacle des CE2 ? Les portraits de Rosalie (attirer) attirent tous les regards.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "flottent",
+            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
+          },
+          {
+            "position": 1,
+            "mot": "rouille",
+            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
+          },
+          {
+            "position": 2,
+            "mot": "volent",
+            "indice": "Pose la question « Qui est-ce qui… ? » : dans une question, le sujet est souvent placé après le verbe."
+          },
+          {
+            "position": 3,
+            "mot": "commence",
+            "indice": "Pose la question « Qui est-ce qui… ? » : dans une question, le sujet est souvent placé après le verbe."
+          },
+          {
+            "position": 4,
+            "mot": "attirent",
+            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P24",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Cette nuit, Malo a ___ chez sa cousine. (dormir) », quelle forme convient ?",
+        "options": [
+          "dormir",
+          "dormis",
+          "dormit",
+          "dormi"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Après l'auxiliaire avoir, on écrit le participe passé : dormi."
+      },
+      {
+        "question": "Dans « Louna et Jade sont ___ devant la boulangerie. (passer) », quelle forme convient ?",
+        "options": [
+          "passé",
+          "passés",
+          "passées",
+          "passer"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Avec l'auxiliaire être, le participe passé s'accorde avec le sujet : « Louna et Jade » est féminin pluriel."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'atelier de la matinée",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. L'auxiliaire est déjà écrit : écris seulement le participe passé.",
+        "texte_complet": "Ce matin, Nour a (écrire) écrit son prénom au dos de la feuille. Timéo a (voir) vu le modèle de tout près. Lila est (retourner) retournée chercher un pinceau propre. Les deux garçons ont (mettre) mis leur blouse. Jade a (attendre) attendu son tour sans un bruit.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "écrit",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          },
+          {
+            "position": 1,
+            "mot": "vu",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          },
+          {
+            "position": 2,
+            "mot": "retournée",
+            "indice": "Avec l'auxiliaire être, le participe passé s'accorde avec le sujet : regarde si le sujet est masculin ou féminin, singulier ou pluriel."
+          },
+          {
+            "position": 3,
+            "mot": "mis",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          },
+          {
+            "position": 4,
+            "mot": "attendu",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          }
+        ]
+      },
+      {
+        "titre": "La visite à la bibliothèque",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. L'auxiliaire est déjà écrit : écris seulement le participe passé.",
+        "texte_complet": "Hier, Malo a (lire) lu une histoire de loup blanc. Fatou et Inès sont (entrer) entrées dans la bibliothèque du quartier. Le maître a (ouvrir) ouvert la grande boîte de feutres. Nous avons (entendre) entendu la cloche de midi. Yanis a (répondre) répondu à toutes les questions.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "lu",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          },
+          {
+            "position": 1,
+            "mot": "entrées",
+            "indice": "Avec l'auxiliaire être, le participe passé s'accorde avec le sujet : regarde si le sujet est masculin ou féminin, singulier ou pluriel."
+          },
+          {
+            "position": 2,
+            "mot": "ouvert",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          },
+          {
+            "position": 3,
+            "mot": "entendu",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          },
+          {
+            "position": 4,
+            "mot": "répondu",
+            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P54",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « L'année prochaine, je ___ à la chorale de l'école. (participer) », quelle forme convient ?",
+        "options": [
+          "participerai",
+          "participerais",
+          "participerait",
+          "participer"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Au futur simple, avec « je », le verbe se termine par -ai."
+      },
+      {
+        "question": "Dans « Cet été, Fatou et Adam ___ jusqu'en Espagne. (voyager) », quelle forme convient ?",
+        "options": [
+          "voyagera",
+          "voyagerons",
+          "voyageraient",
+          "voyageront"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« Fatou et Adam » vaut « ils » : au futur simple, la terminaison est -ont."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La semaine prochaine",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au futur simple.",
+        "texte_complet": "La semaine prochaine, je (présenter) présenterai mon portrait à toute la classe. Tu (décorer) décoreras le cadre avec du papier doré. Rosalie (réciter) récitera son texte devant les CE2. Nous (planter) planterons un petit arbre dans la cour. Les CM2 (gagner) gagneront peut-être le concours de l'école.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "présenterai",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 1,
+            "mot": "décoreras",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 2,
+            "mot": "récitera",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 3,
+            "mot": "planterons",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 4,
+            "mot": "gagneront",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          }
+        ]
+      },
+      {
+        "titre": "Le spectacle de demain",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au futur simple.",
+        "texte_complet": "Demain, tu (porter) porteras le grand carton jusqu'au bureau. Malo (monter) montera sur l'estrade le premier. Nous (tourner) tournerons les pages du livre ensemble. Vous (gonfler) gonflerez les ballons avant l'arrivée des familles. Les parents (filmer) filmeront toute la scène.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "porteras",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 1,
+            "mot": "montera",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 2,
+            "mot": "tournerons",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 3,
+            "mot": "gonflerez",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          },
+          {
+            "position": 4,
+            "mot": "filmeront",
+            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P49",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Quel mot convient ? « Timéo ___ coiffe devant le miroir de l'entrée. »",
+        "options": [
+          "se",
+          "ce",
+          "ses",
+          "ces"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« Se » accompagne un verbe : on peut dire « je me coiffe », donc « il se coiffe »."
+      },
+      {
+        "question": "Quel mot convient ? « Fatou plisse ___ yeux pour mieux voir le tableau. »",
+        "options": [
+          "ces",
+          "ses",
+          "ce",
+          "se"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Les yeux sont à Fatou : on peut dire « les siens ». On écrit « ses », avec un s."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le matin de Timéo",
+        "consigne": "Complète le texte avec ce / se, ou avec ces / ses.",
+        "texte_complet": "Chaque matin, Timéo se lève avant tout le monde. Il aime bien ce moment de calme dans la maison. Avant de partir, il attache ses cheveux avec un élastique. Sur le chemin de l'école, il se dépêche un peu. Dehors, Timéo lève la tête et admire ces gros nuages gris.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "se",
+            "indice": "Remplace le sujet par « je » : si le petit mot devient « me », c'est celui qui accompagne le verbe."
+          },
+          {
+            "position": 1,
+            "mot": "ce",
+            "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
+          },
+          {
+            "position": 2,
+            "mot": "ses",
+            "indice": "Si tu peux dire « les siens » ou « les siennes », c'est le petit mot qui dit à qui c'est."
+          },
+          {
+            "position": 3,
+            "mot": "se",
+            "indice": "Remplace le sujet par « je » : si le petit mot devient « me », c'est celui qui accompagne le verbe."
+          },
+          {
+            "position": 4,
+            "mot": "ces",
+            "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
+          }
+        ]
+      },
+      {
+        "titre": "Un après-midi au grenier",
+        "consigne": "Complète le texte avec ce / se, ou avec ces / ses.",
+        "texte_complet": "Dans le grenier, Louna ouvre ce grand coffre en bois. Sa cousine se penche sur une valise cabossée. Au-dessus de la porte, les deux filles remarquent ces toiles d'araignée grises. Louna essuie ses mains pleines de poussière. Une heure plus tard, les cousines referment ce vieux coffre et redescendent.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "ce",
+            "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
+          },
+          {
+            "position": 1,
+            "mot": "se",
+            "indice": "Remplace le sujet par « je » : si le petit mot devient « me », c'est celui qui accompagne le verbe."
+          },
+          {
+            "position": 2,
+            "mot": "ces",
+            "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
+          },
+          {
+            "position": 3,
+            "mot": "ses",
+            "indice": "Si tu peux dire « les siens » ou « les siennes », c'est le petit mot qui dit à qui c'est."
+          },
+          {
+            "position": 4,
+            "mot": "ce",
+            "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P53",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Autrefois, les cloches ___ à midi. (sonner) », quelle forme convient ?",
+        "options": [
+          "sonnait",
+          "sonnaient",
+          "sonnais",
+          "sonner"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Les cloches » vaut « elles » : à l'imparfait, la terminaison est -aient, même si on ne l'entend pas."
+      },
+      {
+        "question": "Dans « Quand elle était petite, Louna ___ peur de l'orage. (avoir) », quelle forme convient ?",
+        "options": [
+          "avait",
+          "avais",
+          "avaient",
+          "avoir"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« Louna » vaut « elle » : à l'imparfait, le verbe avoir fait « avait »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait de mon grand-père",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le à l'imparfait.",
+        "texte_complet": "L'an dernier, mon grand-père (habiter) habitait tout près de la mer. Il (être) était toujours de bonne humeur. Ses voisins (discuter) discutaient avec lui le soir. Ils (avoir) avaient souvent des histoires à raconter. La radio (chanter) chantait dans la cuisine.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "habitait",
+            "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
+          },
+          {
+            "position": 1,
+            "mot": "était",
+            "indice": "Verbe être à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
+          },
+          {
+            "position": 2,
+            "mot": "discutaient",
+            "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
+          },
+          {
+            "position": 3,
+            "mot": "avaient",
+            "indice": "Verbe avoir à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
+          },
+          {
+            "position": 4,
+            "mot": "chantait",
+            "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
+          }
+        ]
+      },
+      {
+        "titre": "L'école d'autrefois",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le à l'imparfait.",
+        "texte_complet": "Autrefois, les élèves (marcher) marchaient jusqu'à l'école à pied. La maîtresse (être) était très sévère. Les tableaux (être) étaient noirs et lourds. Le mercredi, les enfants (danser) dansaient dans la cour. Le maître (avoir) avait une longue règle en bois.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "marchaient",
+            "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
+          },
+          {
+            "position": 1,
+            "mot": "était",
+            "indice": "Verbe être à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
+          },
+          {
+            "position": 2,
+            "mot": "étaient",
+            "indice": "Verbe être à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
+          },
+          {
+            "position": 3,
+            "mot": "dansaient",
+            "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
+          },
+          {
+            "position": 4,
+            "mot": "avait",
+            "indice": "Verbe avoir à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
+          }
+        ]
+      }
+    ]
+  }
+]

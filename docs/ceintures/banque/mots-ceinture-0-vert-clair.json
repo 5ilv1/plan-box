@@ -1,0 +1,732 @@
+[
+  {
+    "item_code": "M10",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans le dictionnaire, lequel de ces mots se trouve tout à la fin ?",
+        "options": [
+          "abeille",
+          "nuage",
+          "fenêtre",
+          "tigre"
+        ],
+        "reponse_correcte": 3,
+        "explication": "On compare la première lettre : a, n, f, t. Dans l'alphabet, t vient après n et f, donc « tigre » est le dernier."
+      },
+      {
+        "question": "Ces quatre mots commencent tous par m. Lequel vient en premier dans l'ordre alphabétique ?",
+        "options": [
+          "moulin",
+          "marché",
+          "musique",
+          "mercredi"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Quand la première lettre est la même, on regarde la deuxième : a vient avant e, o et u, donc « marché » est le premier."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Avant chat, après lune",
+        "consigne": "Compare chaque mot à « chat » puis à « lune » dans l'ordre alphabétique, et range-le dans la bonne colonne. Regarde la 1re lettre ; si elle est la même, regarde la 2e.",
+        "categories": [
+          "Avant « chat »",
+          "Entre « chat » et « lune »",
+          "Après « lune »"
+        ],
+        "items": [
+          {
+            "texte": "arbre",
+            "categorie": "Avant « chat »"
+          },
+          {
+            "texte": "banane",
+            "categorie": "Avant « chat »"
+          },
+          {
+            "texte": "cahier",
+            "categorie": "Avant « chat »"
+          },
+          {
+            "texte": "carte",
+            "categorie": "Avant « chat »"
+          },
+          {
+            "texte": "clé",
+            "categorie": "Entre « chat » et « lune »"
+          },
+          {
+            "texte": "gomme",
+            "categorie": "Entre « chat » et « lune »"
+          },
+          {
+            "texte": "jardin",
+            "categorie": "Entre « chat » et « lune »"
+          },
+          {
+            "texte": "lion",
+            "categorie": "Entre « chat » et « lune »"
+          },
+          {
+            "texte": "mardi",
+            "categorie": "Après « lune »"
+          },
+          {
+            "texte": "nuage",
+            "categorie": "Après « lune »"
+          },
+          {
+            "texte": "porte",
+            "categorie": "Après « lune »"
+          },
+          {
+            "texte": "tigre",
+            "categorie": "Après « lune »"
+          }
+        ]
+      },
+      {
+        "titre": "Avant fleur, après rue",
+        "consigne": "Compare chaque mot à « fleur » puis à « rue » dans l'ordre alphabétique, et range-le dans la bonne colonne. Regarde la 1re lettre ; si elle est la même, regarde la 2e.",
+        "categories": [
+          "Avant « fleur »",
+          "Entre « fleur » et « rue »",
+          "Après « rue »"
+        ],
+        "items": [
+          {
+            "texte": "cerise",
+            "categorie": "Avant « fleur »"
+          },
+          {
+            "texte": "dauphin",
+            "categorie": "Avant « fleur »"
+          },
+          {
+            "texte": "facile",
+            "categorie": "Avant « fleur »"
+          },
+          {
+            "texte": "ferme",
+            "categorie": "Avant « fleur »"
+          },
+          {
+            "texte": "fromage",
+            "categorie": "Entre « fleur » et « rue »"
+          },
+          {
+            "texte": "hibou",
+            "categorie": "Entre « fleur » et « rue »"
+          },
+          {
+            "texte": "moulin",
+            "categorie": "Entre « fleur » et « rue »"
+          },
+          {
+            "texte": "raisin",
+            "categorie": "Entre « fleur » et « rue »"
+          },
+          {
+            "texte": "salade",
+            "categorie": "Après « rue »"
+          },
+          {
+            "texte": "tortue",
+            "categorie": "Après « rue »"
+          },
+          {
+            "texte": "valise",
+            "categorie": "Après « rue »"
+          },
+          {
+            "texte": "zèbre",
+            "categorie": "Après « rue »"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M12",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Quel déterminant convient : « ___ oiseaux chantent dans la cour. » ?",
+        "options": [
+          "L'",
+          "Le",
+          "Les",
+          "La"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« oiseaux » est au pluriel : il faut un déterminant pluriel, donc « les »."
+      },
+      {
+        "question": "Quel déterminant convient : « Sacha porte ___ écharpe verte. » ?",
+        "options": [
+          "une",
+          "un",
+          "des",
+          "les"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« écharpe » est un nom féminin singulier : on dit « une écharpe », même si le mot commence par une voyelle."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les déterminants de la classe",
+        "consigne": "Choisis le déterminant qui convient. Regarde si le nom est masculin ou féminin, singulier ou pluriel.",
+        "questions": [
+          {
+            "question": "« ___ maîtresse écrit la date au tableau. »",
+            "options": [
+              "Le",
+              "La",
+              "Les",
+              "Des"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« maîtresse » est féminin singulier : c'est « la »."
+          },
+          {
+            "question": "« Nour range ___ crayons dans sa trousse. »",
+            "options": [
+              "des",
+              "le",
+              "la",
+              "une"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« crayons » est au pluriel : seul « des » convient parmi ces mots."
+          },
+          {
+            "question": "« Timéo a ___ visage rond. »",
+            "options": [
+              "une",
+              "des",
+              "les",
+              "un"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« visage » est masculin singulier : c'est « un »."
+          },
+          {
+            "question": "« ___ élèves de CE2 sortent en récréation. »",
+            "options": [
+              "Le",
+              "Une",
+              "Les",
+              "La"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« élèves » est au pluriel : seul « les » convient parmi ces mots."
+          },
+          {
+            "question": "« Fatou tient ___ photo dans la main. »",
+            "options": [
+              "une",
+              "un",
+              "des",
+              "les"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« photo » est féminin singulier : c'est « une »."
+          },
+          {
+            "question": "« Malo emprunte ___ gomme de Jade. »",
+            "options": [
+              "le",
+              "la",
+              "un",
+              "des"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« gomme » est féminin singulier : c'est « la »."
+          },
+          {
+            "question": "« ___ chien de Rosalie a des taches noires. »",
+            "options": [
+              "La",
+              "Les",
+              "Le",
+              "Une"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« chien » est masculin singulier : c'est « le »."
+          },
+          {
+            "question": "« Adam écrit ___ mots nouveaux dans son cahier. »",
+            "options": [
+              "le",
+              "un",
+              "une",
+              "des"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« mots » est au pluriel : seul « des » convient parmi ces mots."
+          }
+        ]
+      },
+      {
+        "titre": "Les déterminants à la bibliothèque",
+        "consigne": "Choisis le déterminant qui convient. Regarde si le nom est masculin ou féminin, singulier ou pluriel.",
+        "questions": [
+          {
+            "question": "« ___ cantine ouvre à midi. »",
+            "options": [
+              "Le",
+              "Les",
+              "Des",
+              "La"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« cantine » est féminin singulier : c'est « la »."
+          },
+          {
+            "question": "« Inès emporte ___ livres à la maison. »",
+            "options": [
+              "le",
+              "la",
+              "des",
+              "une"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« livres » est au pluriel : seul « des » convient parmi ces mots."
+          },
+          {
+            "question": "« Yanis a trouvé ___ crayon sous la table. »",
+            "options": [
+              "un",
+              "une",
+              "des",
+              "les"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« crayon » est masculin singulier : c'est « un »."
+          },
+          {
+            "question": "« ___ portes du gymnase sont grandes. »",
+            "options": [
+              "Le",
+              "Les",
+              "Une",
+              "La"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« portes » est au pluriel : seul « les » convient parmi ces mots."
+          },
+          {
+            "question": "« Louna découpe ___ image dans le journal. »",
+            "options": [
+              "un",
+              "des",
+              "les",
+              "une"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« image » est un nom féminin singulier : on dit « une image »."
+          },
+          {
+            "question": "« Sacha a rendu ___ livre à la bibliothèque. »",
+            "options": [
+              "le",
+              "la",
+              "une",
+              "des"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« livre » est masculin singulier : c'est « le »."
+          },
+          {
+            "question": "« ___ maître corrige les cahiers. »",
+            "options": [
+              "La",
+              "Une",
+              "Le",
+              "Des"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« maître » est masculin singulier : c'est « le »."
+          },
+          {
+            "question": "« Jade compte ___ fleurs dans le jardin. »",
+            "options": [
+              "le",
+              "des",
+              "une",
+              "la"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« fleurs » est au pluriel : seul « des » convient parmi ces mots."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M13",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Louna prête ses affaires et aide ses camarades. Quel adjectif la décrit le mieux ?",
+        "options": [
+          "bruyante",
+          "serviable",
+          "brune",
+          "grande"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Aider les autres et prêter ses affaires, c'est être serviable. Les autres mots ne disent pas ce que fait Louna."
+      },
+      {
+        "question": "Timéo a les cheveux qui font des boucles. Quel adjectif décrit ses cheveux ?",
+        "options": [
+          "raides",
+          "longs",
+          "blonds",
+          "bouclés"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Des cheveux qui font des boucles sont des cheveux bouclés. Les autres adjectifs parlent d'autre chose : la longueur, la couleur, la forme droite."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'adjectif qui convient",
+        "consigne": "Lis ce que fait ou ce qu'a le personnage, puis choisis l'adjectif qui le décrit.",
+        "questions": [
+          {
+            "question": "Nour ne se met jamais en colère et parle gentiment. Nour est…",
+            "options": [
+              "bruyante",
+              "douce",
+              "agitée",
+              "rapide"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Quelqu'un qui ne s'énerve pas et parle gentiment est doux ou douce."
+          },
+          {
+            "question": "Timéo n'ose pas parler devant toute la classe. Timéo est…",
+            "options": [
+              "timide",
+              "bavard",
+              "rapide",
+              "grand"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Ne pas oser parler devant les autres, c'est être timide."
+          },
+          {
+            "question": "Fatou invente des histoires qui font rire tout le monde. Fatou est…",
+            "options": [
+              "silencieuse",
+              "sévère",
+              "triste",
+              "amusante"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Quelqu'un qui fait rire les autres est amusant ou amusante."
+          },
+          {
+            "question": "Malo mesure une tête de plus que ses camarades. Malo est…",
+            "options": [
+              "mince",
+              "petit",
+              "grand",
+              "gentil"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Mesurer plus que les autres, c'est être grand. Cet adjectif décrit l'apparence."
+          },
+          {
+            "question": "Les cheveux de Jade descendent jusqu'à sa ceinture. Ses cheveux sont…",
+            "options": [
+              "courts",
+              "blonds",
+              "longs",
+              "fins"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Des cheveux qui descendent très bas sont des cheveux longs. Rien ne dit ici leur couleur ni leur épaisseur."
+          },
+          {
+            "question": "Adam demande sans arrêt pourquoi les choses fonctionnent. Adam est…",
+            "options": [
+              "curieux",
+              "fatigué",
+              "sage",
+              "discret"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Vouloir tout comprendre et poser beaucoup de questions, c'est être curieux."
+          },
+          {
+            "question": "Le nez de Sacha est fin et se termine en pointe. Son nez est…",
+            "options": [
+              "rond",
+              "plat",
+              "large",
+              "pointu"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un nez qui se termine en pointe est un nez pointu."
+          },
+          {
+            "question": "Yanis termine toujours son travail sans se plaindre. Yanis est…",
+            "options": [
+              "pressé",
+              "travailleur",
+              "distrait",
+              "joueur"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Aller au bout de son travail sans se plaindre, c'est être travailleur."
+          }
+        ]
+      },
+      {
+        "titre": "Décrire un camarade",
+        "consigne": "Lis ce que fait ou ce qu'a le personnage, puis choisis l'adjectif qui le décrit.",
+        "questions": [
+          {
+            "question": "Inès sourit à tout le monde dans la cour. Inès est…",
+            "options": [
+              "sévère",
+              "triste",
+              "fâchée",
+              "souriante"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Quelqu'un qui sourit tout le temps est souriant ou souriante."
+          },
+          {
+            "question": "Les yeux de Louna sont de la couleur du ciel d'été. Ses yeux sont…",
+            "options": [
+              "verts",
+              "bleus",
+              "noirs",
+              "marron"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La couleur du ciel d'été, c'est le bleu : ses yeux sont bleus."
+          },
+          {
+            "question": "Sacha ne fait aucun bruit pendant qu'il travaille. Sacha est…",
+            "options": [
+              "silencieux",
+              "bavard",
+              "agité",
+              "pressé"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Ne faire aucun bruit, c'est être silencieux."
+          },
+          {
+            "question": "Adam reprend volontiers deux parts de gâteau. Adam est…",
+            "options": [
+              "pressé",
+              "rapide",
+              "gourmand",
+              "fort"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Aimer manger et en reprendre, c'est être gourmand."
+          },
+          {
+            "question": "Nour range ses affaires sans qu'on le lui demande. Nour est…",
+            "options": [
+              "désordonnée",
+              "soigneuse",
+              "distraite",
+              "bruyante"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Prendre soin de ses affaires et les ranger, c'est être soigneux ou soigneuse."
+          },
+          {
+            "question": "Le visage de Rosalie a la forme d'un cercle. Son visage est…",
+            "options": [
+              "carré",
+              "long",
+              "pointu",
+              "rond"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un visage en forme de cercle est un visage rond."
+          },
+          {
+            "question": "Les cheveux de Fatou sont coupés au-dessus des oreilles. Ses cheveux sont…",
+            "options": [
+              "courts",
+              "longs",
+              "frisés",
+              "raides"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Des cheveux coupés très haut sont des cheveux courts. Rien ne dit ici s'ils frisent ou non."
+          },
+          {
+            "question": "Timéo arrive le premier au bout du terrain. Timéo est…",
+            "options": [
+              "lent",
+              "fort",
+              "rapide",
+              "souple"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Arriver le premier, c'est courir vite : Timéo est rapide."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "M42",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Lequel de ces mots décrit l'apparence de quelqu'un ?",
+        "options": [
+          "aimable",
+          "malin",
+          "chauve",
+          "joyeux"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« chauve » dit ce qu'on voit : la personne n'a pas de cheveux. Les trois autres mots disent comment elle se comporte."
+      },
+      {
+        "question": "Dans la phrase « Nour est une fille discrète », le mot « discrète » décrit…",
+        "options": [
+          "son caractère",
+          "son apparence",
+          "son âge",
+          "sa taille"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Être discrète, cela ne se voit pas sur une photo : c'est une façon d'être et d'agir, donc le caractère."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Apparence ou caractère ?",
+        "consigne": "Pour chaque phrase, dis si le mot qui décrit parle de l'apparence (ce que l'on voit) ou du caractère (la façon d'être et d'agir).",
+        "categories": [
+          "Apparence",
+          "Caractère"
+        ],
+        "items": [
+          {
+            "texte": "Lila est rousse.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Timéo est élancé.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Fatou est brune.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Malo est costaud.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Inès est frisée.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Yanis est mince.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Nour est courageuse.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Sacha est patient.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Jade est rêveuse.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Adam est généreux.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Rosalie est sérieuse.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Louna est calme.",
+            "categorie": "Caractère"
+          }
+        ]
+      },
+      {
+        "titre": "Le portrait en deux colonnes",
+        "consigne": "Pour chaque phrase, dis si le mot qui décrit parle de l'apparence (ce que l'on voit) ou du caractère (la façon d'être et d'agir).",
+        "categories": [
+          "Apparence",
+          "Caractère"
+        ],
+        "items": [
+          {
+            "texte": "Adam est robuste.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Jade est blonde.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Yanis est trapu.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Louna est châtain.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Le maître est barbu.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Inès est pâle.",
+            "categorie": "Apparence"
+          },
+          {
+            "texte": "Malo est prudent.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Rosalie est espiègle.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Lila est polie.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Fatou est honnête.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Sacha est aventureux.",
+            "categorie": "Caractère"
+          },
+          {
+            "texte": "Timéo est attentionné.",
+            "categorie": "Caractère"
+          }
+        ]
+      }
+    ]
+  }
+]

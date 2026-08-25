@@ -1,0 +1,551 @@
+[
+  {
+    "item_code": "T18",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans « Timéo fait une cabane avec des branches », par quel verbe précis peut-on remplacer « fait » ?",
+        "options": [
+          "met",
+          "donne",
+          "construit",
+          "garde"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Faire » est un mot passe-partout : il ne dit pas ce qui se passe vraiment. Ici, Timéo construit sa cabane."
+      },
+      {
+        "question": "Dans quelle phrase le verbe est-il un mot passe-partout, qu'on gagnerait à remplacer par un verbe plus précis ?",
+        "options": [
+          "Rosalie fait un dessin sur son cahier.",
+          "Rosalie découpe une étoile dans le carton.",
+          "Rosalie tresse les cheveux de sa petite sœur.",
+          "Rosalie recoud un bouton de son manteau."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Découper, tresser et recoudre disent exactement le geste. « Faire » ne dit rien : on peut le remplacer par un verbe précis."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des verbes qui disent vraiment",
+        "consigne": "Choisis le verbe précis qui remplace le mieux le verbe entre astérisques.",
+        "questions": [
+          {
+            "question": "Yanis *fait* un château de sable au bord de l'eau.",
+            "options": [
+              "ramasse",
+              "construit",
+              "efface",
+              "apporte"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un château de sable, on le construit : le verbe dit alors le vrai geste."
+          },
+          {
+            "question": "Nour *fait* un tableau avec ses pinceaux et ses couleurs.",
+            "options": [
+              "déchire",
+              "efface",
+              "peint",
+              "gratte"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Faire un tableau avec des pinceaux, c'est peindre : le verbe précis dit à lui seul tout le geste."
+          },
+          {
+            "question": "— Range ton matériel tout de suite ! *dit* le maître.",
+            "options": [
+              "ordonne",
+              "remercie",
+              "questionne",
+              "félicite"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le maître donne un ordre : le verbe de parole qui convient est « ordonne »."
+          },
+          {
+            "question": "Sacha *dit* son poème devant toute la classe.",
+            "options": [
+              "écoute",
+              "oublie",
+              "recopie",
+              "récite"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Dire un poème appris par cœur devant les autres, c'est le réciter."
+          },
+          {
+            "question": "Le vieux marronnier *est* au milieu de la cour.",
+            "options": [
+              "se dresse",
+              "avance",
+              "disparaît",
+              "tombe"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Être » ne dit presque rien. « Se dresser » montre l'arbre debout au milieu de la cour."
+          },
+          {
+            "question": "Inès *dit* son secret à l'oreille de Jade.",
+            "options": [
+              "crie",
+              "chuchote",
+              "demande",
+              "refuse"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Parler tout bas à l'oreille de quelqu'un, c'est chuchoter."
+          },
+          {
+            "question": "La maîtresse *fait* la liste des groupes au tableau.",
+            "options": [
+              "efface",
+              "déchire",
+              "écrit",
+              "range"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Faire une liste au tableau, c'est l'écrire."
+          },
+          {
+            "question": "Notre école *est* au bout de la rue, derrière la boulangerie.",
+            "options": [
+              "part",
+              "marche",
+              "revient",
+              "se trouve"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Pour dire où est un lieu, « se trouve » est plus précis que « est »."
+          }
+        ]
+      },
+      {
+        "titre": "Chasse aux mots passe-partout",
+        "consigne": "Choisis le verbe précis qui remplace le mieux le verbe entre astérisques.",
+        "questions": [
+          {
+            "question": "Adam *fait* ses lacets avant de sortir.",
+            "options": [
+              "coupe",
+              "attache",
+              "enlève",
+              "salit"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Faire ses lacets, c'est les attacher."
+          },
+          {
+            "question": "Malo *fait* un gâteau au chocolat pour l'anniversaire de sa sœur.",
+            "options": [
+              "mange",
+              "achète",
+              "prépare",
+              "partage"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Faire un gâteau, c'est le préparer : on le fabrique soi-même."
+          },
+          {
+            "question": "— Je viendrai demain, c'est sûr, *dit* Timéo.",
+            "options": [
+              "doute",
+              "refuse",
+              "demande",
+              "promet"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Timéo s'engage à venir : il promet."
+          },
+          {
+            "question": "— Pourquoi la rivière est-elle si haute ? *dit* Rosalie.",
+            "options": [
+              "demande",
+              "répond",
+              "ordonne",
+              "raconte"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le point d'interrogation le montre : Rosalie pose une question, elle demande."
+          },
+          {
+            "question": "Le maître *dit* une longue histoire aux CE2 avant la sortie.",
+            "options": [
+              "écoute",
+              "raconte",
+              "recopie",
+              "chante"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Dire une histoire à quelqu'un, c'est la raconter."
+          },
+          {
+            "question": "Une petite cabane *est* tout au fond du jardin, sous les arbres.",
+            "options": [
+              "court",
+              "grandit",
+              "se cache",
+              "s'envole"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Se cache » dit à la fois où est la cabane et qu'on ne la voit pas tout de suite."
+          },
+          {
+            "question": "Jade *fait* un grand trou dans le sable mouillé.",
+            "options": [
+              "bouche",
+              "mesure",
+              "saute",
+              "creuse"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Faire un trou, c'est le creuser."
+          },
+          {
+            "question": "Le clocher de l'église *est* bien au-dessus des toits du village.",
+            "options": [
+              "s'élève",
+              "descend",
+              "roule",
+              "dort"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« S'élève » dit que le clocher monte plus haut que les toits : c'est plus précis que « est »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T19",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "« Dans la cour, tout près du grand marronnier. » Pourquoi cette suite de mots n'est-elle pas une phrase ?",
+        "options": [
+          "Il n'y a pas de majuscule.",
+          "Il manque un sujet et un verbe conjugué.",
+          "Il n'y a pas de point à la fin.",
+          "Elle ne contient pas assez d'adjectifs."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Une phrase complète a un sujet et un verbe conjugué, et elle se comprend toute seule. Ici, on ne sait pas qui fait quoi."
+      },
+      {
+        "question": "« Malo ouvre la porte du gymnase et il pose son sac et il enfile ses baskets et il court vers le tapis. » Dans quelle réécriture chaque phrase est-elle courte et complète, avec son sujet, son verbe conjugué, sa majuscule et son point ?",
+        "options": [
+          "Malo ouvre la porte du gymnase, il pose son sac, il enfile ses baskets, il court vers le tapis.",
+          "Ouvre la porte du gymnase. Pose son sac. Enfile ses baskets. Court vers le tapis.",
+          "Malo ouvre la porte du gymnase et pose son sac et enfile ses baskets et court vers le tapis.",
+          "Malo ouvre la porte du gymnase. Il pose son sac. Il enfile ses baskets, puis il court vers le tapis."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Une phrase trop longue se coupe en phrases courtes. Chacune garde alors son sujet et son verbe conjugué, sa majuscule et son point."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quatre phrases à la cantine",
+        "consigne": "Écris quatre phrases courtes qui racontent ce que fait Fatou quand elle arrive à la cantine.",
+        "contraintes": [
+          "Tu écris exactement quatre phrases.",
+          "Chaque phrase commence par une majuscule et se termine par un point.",
+          "Chaque phrase contient un sujet et un verbe conjugué.",
+          "Aucune phrase ne dépasse dix mots.",
+          "Aucune phrase ne contient plus d'un « et »."
+        ],
+        "nb_phrases": 4,
+        "exemple": "Fatou pousse la lourde porte de la cantine."
+      },
+      {
+        "titre": "Quatre phrases le jour de la photo",
+        "consigne": "Écris quatre phrases courtes qui racontent ce que fait Adam le matin de la photo de classe.",
+        "contraintes": [
+          "Tu écris exactement quatre phrases.",
+          "Chaque phrase commence par une majuscule et se termine par un point.",
+          "Chaque phrase contient un sujet et un verbe conjugué.",
+          "Aucune phrase ne dépasse dix mots.",
+          "Tes quatre phrases ne commencent pas toutes par le même mot."
+        ],
+        "nb_phrases": 4,
+        "exemple": "Adam enfile sa plus belle chemise."
+      }
+    ]
+  },
+  {
+    "item_code": "T46",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase décrit l'apparence physique de Louna ?",
+        "options": [
+          "Louna porte un pull rouge trop grand pour elle.",
+          "Louna adore les histoires de pirates.",
+          "Louna aide toujours les plus petits.",
+          "Louna parle très vite quand elle est contente."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un portrait physique dit ce qu'on voit : le visage, les cheveux, les yeux, les vêtements."
+      },
+      {
+        "question": "Dans quel portrait les informations sont-elles rangées dans l'ordre : le visage, puis les cheveux, puis les yeux, puis les vêtements ?",
+        "options": [
+          "Il a les yeux verts. Son visage est rond. Il porte un jean troué. Ses cheveux sont courts.",
+          "Ses cheveux sont courts. Il a les yeux verts. Son visage est rond. Il porte un jean troué.",
+          "Son visage est rond. Ses cheveux sont courts. Il a les yeux verts. Il porte un jean troué.",
+          "Il porte un jean troué. Son visage est rond. Ses cheveux sont courts. Il a les yeux verts."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un portrait organisé suit un chemin : on part du visage, on descend aux cheveux et aux yeux, on finit par les vêtements."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait de Yanis, le nouvel élève",
+        "consigne": "Écris le portrait physique de Yanis, le nouvel élève de la classe, tel que tu l'imagines.",
+        "contraintes": [
+          "Tu écris quatre phrases, dans cet ordre : le visage, les cheveux, les yeux, les vêtements.",
+          "Chaque phrase contient au moins un adjectif.",
+          "Chaque phrase ne parle que d'un seul élément : tu ne mélanges pas les cheveux et les vêtements dans la même phrase.",
+          "Tu emploies au moins deux verbes autres que « être » et « avoir ».",
+          "Tu ne dis rien de son caractère ni de ses goûts."
+        ],
+        "nb_phrases": 4,
+        "exemple": "Son visage fin est couvert de taches de rousseur."
+      },
+      {
+        "titre": "Le portrait de Rosalie, la capitaine de l'équipe",
+        "consigne": "Écris le portrait physique de Rosalie, la capitaine de l'équipe de basket, telle que tu l'imagines.",
+        "contraintes": [
+          "Tu écris quatre phrases, dans cet ordre : le visage, les cheveux, les yeux, les vêtements.",
+          "Chaque phrase contient au moins un adjectif.",
+          "Chaque phrase ne parle que d'un seul élément : tu ne mélanges pas les cheveux et les vêtements dans la même phrase.",
+          "Tu n'écris pas deux fois le prénom Rosalie.",
+          "Tu emploies au moins deux verbes autres que « être » et « avoir ».",
+          "Tu ne dis rien de son caractère ni de ses goûts."
+        ],
+        "nb_phrases": 4,
+        "exemple": "Ses cheveux bruns tombent en boucles sur ses épaules."
+      }
+    ]
+  },
+  {
+    "item_code": "T21",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Quelle version de cette phrase est correctement écrite ?",
+        "options": [
+          "les élèves rangent le matériel de sport.",
+          "Les élèves rangent le matériel de sport",
+          "les élèves rangent le matériel de sport",
+          "Les élèves rangent le matériel de sport."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Quand tu relis, tu vérifies deux choses d'un coup : la majuscule au début et le point à la fin."
+      },
+      {
+        "question": "Quelle phrase se comprend bien ?",
+        "options": [
+          "Timéo son crayon dans sa trousse.",
+          "Timéo range son crayon dans sa trousse.",
+          "Timéo range son dans sa trousse.",
+          "Timéo range son crayon dans trousse sa."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Relire, c'est aussi vérifier que la phrase veut dire quelque chose : aucun mot ne manque et aucun mot n'est à la mauvaise place."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je relis avec ma grille ①",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle version de cette phrase est correctement écrite ?",
+            "options": [
+              "malo souffle sur sa soupe brûlante.",
+              "Malo souffle sur sa soupe brûlante",
+              "Malo souffle sur sa soupe brûlante.",
+              "malo souffle sur sa soupe brûlante"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Majuscule au début, point à la fin : les deux à la fois."
+          },
+          {
+            "question": "Quelle phrase se comprend bien ?",
+            "options": [
+              "Lila attache son casque avant de monter sur le vélo.",
+              "Lila attache son avant de monter sur le vélo.",
+              "Lila attache son casque monter sur le vélo avant de.",
+              "Lila son casque avant de monter sur le vélo."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Dans les trois autres, il manque un mot ou les mots sont mélangés : la phrase ne se comprend plus."
+          },
+          {
+            "question": "Dans quelle phrase manque-t-il le point final ?",
+            "options": [
+              "Sacha remplit sa gourde au robinet.",
+              "Sacha pousse la porte du casier",
+              "Sacha grimpe sur le mur d'escalade.",
+              "Sacha enfile son maillot de bain."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une phrase se termine toujours par un signe de ponctuation : ici, il faut un point."
+          },
+          {
+            "question": "Quelle phrase se comprend bien ?",
+            "options": [
+              "Le maître écrit consignes au tableau les.",
+              "Le maître écrit les au tableau.",
+              "Le maître les consignes au tableau.",
+              "Le maître écrit les consignes au tableau."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Il faut un verbe, et tous les mots à leur place : sans cela, la phrase ne veut rien dire."
+          },
+          {
+            "question": "Dans quelle phrase manque-t-il la majuscule du début ?",
+            "options": [
+              "inès arrose les plantes de la classe.",
+              "Jade nourrit les poissons de l'aquarium.",
+              "Louna efface le tableau avec une éponge.",
+              "Yanis tire le rideau de la fenêtre."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le premier mot d'une phrase prend toujours une majuscule, même quand c'est un prénom."
+          },
+          {
+            "question": "Une phrase ne veut rien dire. Laquelle ?",
+            "options": [
+              "Adam mesure la longueur du couloir avec un mètre.",
+              "Fatou décore la boîte avec du papier doré.",
+              "Malo boit son sandwich et mange son jus d'orange.",
+              "Timéo pousse la brouette jusqu'au potager."
+            ],
+            "reponse_correcte": 2,
+            "explication": "On mange un sandwich et on boit un jus : ici les deux verbes ont été échangés, la phrase n'a plus de sens."
+          },
+          {
+            "question": "Quelle version de cette phrase est correctement écrite ?",
+            "options": [
+              "rosalie plonge dans le grand bain",
+              "Rosalie plonge dans le grand bain",
+              "rosalie plonge dans le grand bain.",
+              "Rosalie plonge dans le grand bain."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Il manque la majuscule, ou le point, ou les deux dans les autres versions."
+          },
+          {
+            "question": "Quelle phrase se comprend bien ?",
+            "options": [
+              "La maîtresse allume la lumière parce qu'il fait trop clair.",
+              "La maîtresse allume la lumière parce qu'il fait trop sombre.",
+              "La maîtresse allume la lumière parce qu'elle est trop sombre.",
+              "La maîtresse allume la lumière parce qu'il fait trop chaud."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une phrase peut être bien écrite et ne pas avoir de sens : on allume la lumière quand il fait sombre."
+          }
+        ]
+      },
+      {
+        "titre": "Ma grille de relecture ① au travail",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle version de cette phrase est correctement écrite ?",
+            "options": [
+              "louna range les ballons dans le filet.",
+              "Louna range les ballons dans le filet.",
+              "Louna range les ballons dans le filet",
+              "louna range les ballons dans le filet"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Majuscule au début, point à la fin : les deux à la fois."
+          },
+          {
+            "question": "Quelle phrase se comprend bien ?",
+            "options": [
+              "Nour enfile ses son manteau gants et.",
+              "Nour enfile ses gants et son.",
+              "Nour ses gants et son manteau.",
+              "Nour enfile ses gants et son manteau."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Il manque un mot ou les mots sont mélangés dans les trois autres."
+          },
+          {
+            "question": "Dans quelle phrase manque-t-il le point final ?",
+            "options": [
+              "Adam recopie la poésie au propre.",
+              "Jade souffle les bougies du gâteau.",
+              "Sacha suspend son manteau au portemanteau",
+              "Inès trace un trait à la règle."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une phrase se termine toujours par un signe de ponctuation : ici, il faut un point."
+          },
+          {
+            "question": "Une phrase ne veut rien dire. Laquelle ?",
+            "options": [
+              "Timéo lit sa gourde et boit son livre.",
+              "Timéo remplit sa gourde au robinet du couloir.",
+              "Timéo ouvre son livre à la page cent.",
+              "Timéo glisse son cahier dans le casier."
+            ],
+            "reponse_correcte": 0,
+            "explication": "On lit un livre et on boit une gourde : les deux verbes ont été échangés, la phrase n'a plus de sens."
+          },
+          {
+            "question": "Dans quelle phrase manque-t-il la majuscule du début ?",
+            "options": [
+              "Fatou décore la couverture de son classeur.",
+              "Malo attache la laisse de son chien.",
+              "Rosalie plie la feuille en deux.",
+              "yanis arrose le petit pommier de la cour."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le premier mot d'une phrase prend toujours une majuscule, même quand c'est un prénom."
+          },
+          {
+            "question": "Quelle phrase se comprend bien ?",
+            "options": [
+              "Le maître ouvre la fenêtre parce qu'il fait trop froid dans la classe.",
+              "Le maître ouvre la fenêtre parce qu'il fait trop chaud dans la classe.",
+              "Le maître ouvre la fenêtre parce qu'elle est trop chaude dans la classe.",
+              "Le maître ouvre la fenêtre parce qu'il pleut trop fort dans la classe."
+            ],
+            "reponse_correcte": 1,
+            "explication": "On ouvre la fenêtre quand il fait trop chaud : les autres phrases sont bien écrites, mais elles n'ont pas de sens."
+          },
+          {
+            "question": "Quelle version de cette phrase est correctement écrite ?",
+            "options": [
+              "Jade souffle sur ses doigts gelés.",
+              "jade souffle sur ses doigts gelés.",
+              "Jade souffle sur ses doigts gelés",
+              "jade souffle sur ses doigts gelés"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Il manque la majuscule, ou le point, ou les deux dans les autres versions."
+          },
+          {
+            "question": "Quelle phrase se comprend bien ?",
+            "options": [
+              "Inès dépose le vase sur la sans le renverser table.",
+              "Inès dépose le vase la table sans le renverser.",
+              "Inès dépose le vase sur la table sans le renverser.",
+              "Inès dépose le sur la table sans le renverser."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Chaque mot doit être là et à sa place : sinon, la phrase ne se comprend plus."
+          }
+        ]
+      }
+    ]
+  }
+]

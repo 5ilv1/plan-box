@@ -1,0 +1,872 @@
+[
+  {
+    "item_code": "P32",
+    "type": "analyse_phrase",
+    "diagnostic": [
+      {
+        "question": "Dans « Cette photo est ancienne », quel groupe est attribut du sujet ?",
+        "options": [
+          "Cette photo",
+          "est",
+          "ancienne",
+          "il n'y en a pas"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Après un verbe d'état comme « est », le mot qui dit comment est le sujet s'appelle l'attribut du sujet."
+      },
+      {
+        "question": "Comment écrit-on l'adjectif dans « Les jumelles semblent (inquiet) » ?",
+        "options": [
+          "inquiet",
+          "inquiète",
+          "inquiets",
+          "inquiètes"
+        ],
+        "reponse_correcte": 3,
+        "explication": "L'attribut s'accorde avec le sujet, et « les jumelles » est féminin pluriel."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Portraits de classe",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Lila est très curieuse",
+            "groupes": [
+              {
+                "mots": "Lila",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "est",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "très curieuse",
+                "fonction": "Attribut",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          },
+          {
+            "texte": "Les deux frères semblent inquiets",
+            "groupes": [
+              {
+                "mots": "Les deux frères",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 2
+              },
+              {
+                "mots": "semblent",
+                "fonction": "Verbe",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "inquiets",
+                "fonction": "Attribut",
+                "debut": 4,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Fatou est une grande lectrice",
+            "groupes": [
+              {
+                "mots": "Fatou",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "est",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "une grande lectrice",
+                "fonction": "Attribut",
+                "debut": 2,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Fatou présente son personnage",
+            "groupes": [
+              {
+                "mots": "Fatou",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "présente",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "son personnage",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          },
+          {
+            "texte": "Timéo feuillette un vieil album",
+            "groupes": [
+              {
+                "mots": "Timéo",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "feuillette",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "un vieil album",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 4
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "titre": "Les nouveaux de l'école",
+        "consigne": "Trouve la fonction de chaque groupe.",
+        "phrases": [
+          {
+            "texte": "Nour paraît timide",
+            "groupes": [
+              {
+                "mots": "Nour",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "paraît",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "timide",
+                "fonction": "Attribut",
+                "debut": 2,
+                "fin": 2
+              }
+            ]
+          },
+          {
+            "texte": "Les nouveaux élèves deviennent plus confiants",
+            "groupes": [
+              {
+                "mots": "Les nouveaux élèves",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 2
+              },
+              {
+                "mots": "deviennent",
+                "fonction": "Verbe",
+                "debut": 3,
+                "fin": 3
+              },
+              {
+                "mots": "plus confiants",
+                "fonction": "Attribut",
+                "debut": 4,
+                "fin": 5
+              }
+            ]
+          },
+          {
+            "texte": "Sacha est un garçon rêveur",
+            "groupes": [
+              {
+                "mots": "Sacha",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "est",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "un garçon rêveur",
+                "fonction": "Attribut",
+                "debut": 2,
+                "fin": 4
+              }
+            ]
+          },
+          {
+            "texte": "Sacha corrige son brouillon",
+            "groupes": [
+              {
+                "mots": "Sacha",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "corrige",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "son brouillon",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          },
+          {
+            "texte": "Jade décore son cadre",
+            "groupes": [
+              {
+                "mots": "Jade",
+                "fonction": "Sujet",
+                "debut": 0,
+                "fin": 0
+              },
+              {
+                "mots": "décore",
+                "fonction": "Verbe",
+                "debut": 1,
+                "fin": 1
+              },
+              {
+                "mots": "son cadre",
+                "fonction": "COD",
+                "debut": 2,
+                "fin": 3
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P33",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Quelle est la forme du verbe avoir à l'imparfait avec « il » ?",
+        "options": [
+          "il avait",
+          "il avais",
+          "il était",
+          "il aurait"
+        ],
+        "reponse_correcte": 0,
+        "explication": "À l'imparfait, avoir garde le radical av- et prend -ait avec « il » ou « elle » : il avait."
+      },
+      {
+        "question": "Dans quelle phrase le verbe avoir est-il au passé composé ?",
+        "options": [
+          "J'avais un vélo bleu.",
+          "J'ai eu un vélo bleu.",
+          "J'aurai un vélo bleu.",
+          "J'ai un vélo bleu."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le passé composé s'écrit en deux morceaux : l'auxiliaire au présent puis le participe passé, « ai eu »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Avoir, dans tous les temps",
+        "consigne": "Écris le verbe avoir en entier, à la personne et au temps demandés. Ne recopie pas le sujet.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "avoir, présent, avec nous : nous …",
+            "reponse_attendue": "avons",
+            "indice": "Dis la phrase à voix basse : « nous … besoin d'une gomme »."
+          },
+          {
+            "id": 2,
+            "enonce": "avoir, présent, avec ils : ils …",
+            "reponse_attendue": "ont",
+            "indice": "Ce mot se prononce exactement comme « on », mais ici c'est le verbe avoir : remplace-le par « avaient » pour vérifier."
+          },
+          {
+            "id": 3,
+            "enonce": "avoir, imparfait, avec tu : tu …",
+            "reponse_attendue": "avais",
+            "indice": "À l'imparfait, toutes les personnes de avoir commencent par av-."
+          },
+          {
+            "id": 4,
+            "enonce": "avoir, imparfait, avec vous : vous …",
+            "reponse_attendue": "aviez",
+            "indice": "À l'imparfait, avec « vous », la terminaison est -iez."
+          },
+          {
+            "id": 5,
+            "enonce": "avoir, futur simple, avec elle : elle …",
+            "reponse_attendue": "aura",
+            "indice": "Au futur simple, toutes les personnes de avoir commencent par aur-."
+          },
+          {
+            "id": 6,
+            "enonce": "avoir, futur simple, avec ils : ils …",
+            "reponse_attendue": "auront",
+            "indice": "Au futur simple, avec « ils », la terminaison est -ont."
+          },
+          {
+            "id": 7,
+            "enonce": "avoir, passé composé, avec nous : nous …",
+            "reponse_attendue": "avons eu",
+            "indice": "Le passé composé se fait en deux morceaux : l'auxiliaire au présent, puis le participe passé."
+          },
+          {
+            "id": 8,
+            "enonce": "avoir, passé composé, avec elles : elles …",
+            "reponse_attendue": "ont eu",
+            "indice": "Le passé composé se fait en deux morceaux : l'auxiliaire au présent, puis le participe passé."
+          }
+        ]
+      },
+      {
+        "titre": "Le tableau du verbe avoir",
+        "consigne": "Écris le verbe avoir en entier, à la personne et au temps demandés. Ne recopie pas le sujet.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "avoir, présent, avec tu : tu …",
+            "reponse_attendue": "as",
+            "indice": "Au présent, avoir avec « tu » se termine par -s."
+          },
+          {
+            "id": 2,
+            "enonce": "avoir, présent, avec vous : vous …",
+            "reponse_attendue": "avez",
+            "indice": "Au présent, avoir avec « vous » se termine par -ez ; tous les verbes ne suivent pas cette règle, mais celui-ci oui."
+          },
+          {
+            "id": 3,
+            "enonce": "avoir, imparfait, avec ils : ils …",
+            "reponse_attendue": "avaient",
+            "indice": "À l'imparfait, toutes les personnes de avoir commencent par av-."
+          },
+          {
+            "id": 4,
+            "enonce": "avoir, imparfait, avec nous : nous …",
+            "reponse_attendue": "avions",
+            "indice": "À l'imparfait, avec « nous », la terminaison est -ions."
+          },
+          {
+            "id": 5,
+            "enonce": "avoir, futur simple, avec vous : vous …",
+            "reponse_attendue": "aurez",
+            "indice": "Au futur simple, toutes les personnes de avoir commencent par aur-."
+          },
+          {
+            "id": 6,
+            "enonce": "avoir, futur simple, avec tu : tu …",
+            "reponse_attendue": "auras",
+            "indice": "Au futur simple, toutes les personnes de avoir commencent par aur-."
+          },
+          {
+            "id": 7,
+            "enonce": "avoir, passé composé, avec il : il …",
+            "reponse_attendue": "a eu",
+            "indice": "Le passé composé se fait en deux morceaux : l'auxiliaire au présent, puis le participe passé."
+          },
+          {
+            "id": 8,
+            "enonce": "avoir, passé composé, avec tu : tu …",
+            "reponse_attendue": "as eu",
+            "indice": "Le passé composé se fait en deux morceaux : l'auxiliaire au présent, puis le participe passé."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P34",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Dans « une histoire qui fait peur », comment s'appelle l'expansion « qui fait peur » ?",
+        "options": [
+          "un adjectif",
+          "un complément du nom",
+          "un déterminant",
+          "une proposition relative"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Une expansion qui contient un verbe conjugué et commence par « qui », « que » ou « où » est une proposition relative."
+      },
+      {
+        "question": "Dans « Lila porte une jupe bleue », quelle expansion complète le nom « jupe » ?",
+        "options": [
+          "porte",
+          "bleue",
+          "une",
+          "Lila"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« bleue » dit comment est la jupe : c'est un adjectif. « une » n'est pas une expansion, c'est le déterminant, il est là dès le départ."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les expansions du portrait",
+        "consigne": "Classe chaque phrase dans la colonne qui correspond à l'expansion écrite entre astérisques.",
+        "categories": [
+          "Adjectif",
+          "Complément du nom",
+          "Proposition relative"
+        ],
+        "items": [
+          {
+            "texte": "Lila porte une écharpe *rayée*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Timéo invente une *longue* histoire.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Nous admirons un tableau *magnifique*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Rosalie a un *joli* sourire.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Nour range la trousse *de sa sœur*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Malo décrit le chapeau *du magicien*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Jade encadre une photo *en noir et blanc*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Le maître lit un livre *sur les volcans*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Sacha utilise le crayon *qui glisse le mieux*.",
+            "categorie": "Proposition relative"
+          },
+          {
+            "texte": "Fatou décrit un personnage *que tout le monde adore*.",
+            "categorie": "Proposition relative"
+          },
+          {
+            "texte": "Inès peint le jardin *qu'elle aperçoit de sa chambre*.",
+            "categorie": "Proposition relative"
+          },
+          {
+            "texte": "Yanis se souvient du jour *où il a appris à nager*.",
+            "categorie": "Proposition relative"
+          }
+        ]
+      },
+      {
+        "titre": "Les expansions de l'exposition",
+        "consigne": "Classe chaque phrase dans la colonne qui correspond à l'expansion écrite entre astérisques.",
+        "categories": [
+          "Adjectif",
+          "Complément du nom",
+          "Proposition relative"
+        ],
+        "items": [
+          {
+            "texte": "Adam décrit un chien *énorme*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "La maîtresse ouvre une *vieille* boîte.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Louna essaie une robe *verte*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Nous écoutons une musique *douce*.",
+            "categorie": "Adjectif"
+          },
+          {
+            "texte": "Le portrait *de Rosalie* est affiché au fond.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Timéo range les cahiers *du matin*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Inès partage un gâteau *au chocolat*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Sacha déplie une carte *de la région*.",
+            "categorie": "Complément du nom"
+          },
+          {
+            "texte": "Malo lit un livre *qui parle d'un voyage*.",
+            "categorie": "Proposition relative"
+          },
+          {
+            "texte": "Jade retrouve les lunettes *qu'elle avait perdues*.",
+            "categorie": "Proposition relative"
+          },
+          {
+            "texte": "Fatou décrit la maison *où elle passe l'été*.",
+            "categorie": "Proposition relative"
+          },
+          {
+            "texte": "Nour admire le dessin *que son frère a terminé*.",
+            "categorie": "Proposition relative"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P37",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Vous ___ le portrait depuis le fond de la classe. (voir) », quelle forme convient ?",
+        "options": [
+          "voyez",
+          "voient",
+          "voit",
+          "voiez"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Avec « vous », voir change de radical et fait « voyez »."
+      },
+      {
+        "question": "Dans quelle phrase le verbe est-il mal conjugué ?",
+        "options": [
+          "Tu dis la vérité.",
+          "Il dit la vérité.",
+          "Vous disez la vérité.",
+          "Ils disent la vérité."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Avec « vous », dire ne prend pas -ez : on écrit « vous dites »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le matin dans la cour",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Dans la cour, je (voir) vois Louna près du portail. Tu (dire) dis bonjour à tout le monde. Le maître (voir) voit tout depuis la fenêtre. Les CM2 (dire) disent la date à voix haute. Nous (voir) voyons déjà le car du voyage.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "vois",
+            "indice": "Verbe voir, avec « je »."
+          },
+          {
+            "position": 1,
+            "mot": "dis",
+            "indice": "Verbe dire, avec « tu »."
+          },
+          {
+            "position": 2,
+            "mot": "voit",
+            "indice": "Verbe voir : remplace « le maître » par « il », puis écris la forme qui convient."
+          },
+          {
+            "position": 3,
+            "mot": "disent",
+            "indice": "Verbe dire : remplace « les CM2 » par « ils », puis écris la forme qui convient."
+          },
+          {
+            "position": 4,
+            "mot": "voyons",
+            "indice": "Verbe voir, avec « nous » : le radical change."
+          }
+        ]
+      },
+      {
+        "titre": "La récitation de poésie",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
+        "texte_complet": "Chaque matin, tu (voir) vois la maîtresse devant la porte. Vous (dire) dites la poésie sans hésiter. Les jumeaux (voir) voient leur portrait sur le mur. Inès (dire) dit un secret à sa voisine. Nous (dire) disons au revoir avant de partir.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "vois",
+            "indice": "Verbe voir, avec « tu »."
+          },
+          {
+            "position": 1,
+            "mot": "dites",
+            "indice": "Verbe dire, avec « vous » : attention, ce n'est pas -ez."
+          },
+          {
+            "position": 2,
+            "mot": "voient",
+            "indice": "Verbe voir : remplace « les jumeaux » par « ils », puis écris la forme qui convient."
+          },
+          {
+            "position": 3,
+            "mot": "dit",
+            "indice": "Verbe dire : remplace « Inès » par « elle », puis écris la forme qui convient."
+          },
+          {
+            "position": 4,
+            "mot": "disons",
+            "indice": "Verbe dire, avec « nous » : le radical change."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P30",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Timéo veut savoir si Jade a terminé. Quelle phrase est correctement ponctuée ?",
+        "options": [
+          "Jade a-t-elle fini son portrait.",
+          "Jade a-t-elle fini son portrait !",
+          "Jade a-t-elle fini son portrait…",
+          "Jade a-t-elle fini son portrait ?"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Une phrase qui pose une question se termine par un point d'interrogation."
+      },
+      {
+        "question": "Quelle phrase rapporte correctement les paroles de la maîtresse ?",
+        "options": [
+          "La maîtresse annonce rangez vos affaires.",
+          "La maîtresse annonce : rangez vos affaires",
+          "La maîtresse annonce : « Rangez vos affaires. »",
+          "La maîtresse annonce « Rangez vos affaires »."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Les paroles rapportées s'annoncent par deux-points et s'écrivent entre guillemets."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le bon signe au bon endroit",
+        "consigne": "Choisis la phrase correctement ponctuée.",
+        "questions": [
+          {
+            "question": "Lila veut savoir d'où vient ce portrait. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Où as-tu trouvé ce portrait.",
+              "Où as-tu trouvé ce portrait !",
+              "Où as-tu trouvé ce portrait ?",
+              "Où as-tu trouvé ce portrait…"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Où » annonce une question : la phrase se termine par un point d'interrogation."
+          },
+          {
+            "question": "Le grand-père de Malo s'étonne de le voir si grand. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Comme tu es grand !",
+              "Comme tu es grand ?",
+              "Comme tu es grand.",
+              "Comme tu es grand…"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Une phrase qui commence par « Comme » exprime un sentiment fort : elle se termine par un point d'exclamation."
+          },
+          {
+            "question": "Nour énumère ce qu'elle a dans son cartable, et sa liste n'est pas finie. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Dans son cartable, il y a un livre, une trousse, un cahier.",
+              "Dans son cartable, il y a un livre, une trousse, un cahier !",
+              "Dans son cartable, il y a un livre, une trousse, un cahier ?",
+              "Dans son cartable, il y a un livre, une trousse, un cahier…"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les points de suspension montrent que la liste continue."
+          },
+          {
+            "question": "Quelle phrase annonce correctement l'énumération qui suit ?",
+            "options": [
+              "Timéo emporte trois objets. un carnet, un crayon et une gomme.",
+              "Timéo emporte trois objets : un carnet, un crayon et une gomme.",
+              "Timéo emporte trois objets ! un carnet, un crayon et une gomme.",
+              "Timéo emporte trois objets un carnet, un crayon et une gomme."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les deux-points annoncent une liste ou une explication."
+          },
+          {
+            "question": "Quelle phrase rapporte correctement les paroles de Nour ?",
+            "options": [
+              "Nour demande : « Est-ce que je peux ouvrir la fenêtre ? »",
+              "Nour demande « Est-ce que je peux ouvrir la fenêtre ? »",
+              "Nour demande : Est-ce que je peux ouvrir la fenêtre ?",
+              "Nour demande : « Est-ce que je peux ouvrir la fenêtre. »"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On annonce les paroles par deux-points, on les entoure de guillemets, et la question garde son point d'interrogation à l'intérieur."
+          },
+          {
+            "question": "Ce sont deux phrases différentes. Laquelle des écritures est correcte ?",
+            "options": [
+              "Le maître éteint la lumière les élèves sortent en silence.",
+              "Le maître éteint la lumière. les élèves sortent en silence.",
+              "Le maître éteint la lumière. Les élèves sortent en silence.",
+              "Le maître éteint la lumière ? Les élèves sortent en silence."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un point sépare les deux phrases, et la phrase suivante recommence par une majuscule."
+          },
+          {
+            "question": "Fatou invite Sacha et attend sa réponse. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Viendras-tu à la fête samedi.",
+              "Viendras-tu à la fête samedi…",
+              "Viendras-tu à la fête samedi !",
+              "Viendras-tu à la fête samedi ?"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le verbe placé avant le sujet annonce une question : point d'interrogation."
+          },
+          {
+            "question": "Inès commence sa phrase et n'arrive pas à la terminer. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Je crois que j'ai perdu mon.",
+              "Je crois que j'ai perdu mon…",
+              "Je crois que j'ai perdu mon !",
+              "Je crois que j'ai perdu mon ?"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les points de suspension montrent que la phrase reste en suspens."
+          }
+        ]
+      },
+      {
+        "titre": "Ponctuer le récit",
+        "consigne": "Choisis la phrase correctement ponctuée.",
+        "questions": [
+          {
+            "question": "Yanis demande une information à Adam. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Est-ce que Fatou a terminé son portrait.",
+              "Est-ce que Fatou a terminé son portrait ?",
+              "Est-ce que Fatou a terminé son portrait !",
+              "Est-ce que Fatou a terminé son portrait…"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Est-ce que » annonce une question : point d'interrogation."
+          },
+          {
+            "question": "Louna admire beaucoup le dessin de Jade. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Que ce portrait est ressemblant ?",
+              "Que ce portrait est ressemblant.",
+              "Que ce portrait est ressemblant !",
+              "Que ce portrait est ressemblant…"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une phrase qui commence par « Que » pour admirer se termine par un point d'exclamation."
+          },
+          {
+            "question": "Quelle phrase annonce correctement l'énumération qui suit ?",
+            "options": [
+              "Rosalie apporte tout le matériel : des feutres, du papier et de la colle.",
+              "Rosalie apporte tout le matériel des feutres, du papier et de la colle.",
+              "Rosalie apporte tout le matériel ! des feutres, du papier et de la colle.",
+              "Rosalie apporte tout le matériel. des feutres, du papier et de la colle."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les deux-points annoncent la liste qui suit."
+          },
+          {
+            "question": "Adam est très content : il rapporte ses paroles. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Adam s'écrie « J'ai retrouvé ma trousse ! »",
+              "Adam s'écrie : J'ai retrouvé ma trousse !",
+              "Adam s'écrie : « J'ai retrouvé ma trousse. »",
+              "Adam s'écrie : « J'ai retrouvé ma trousse ! »"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Deux-points, guillemets, et le point d'exclamation reste à l'intérieur des paroles."
+          },
+          {
+            "question": "Timéo énumère ce qui reste sur la table, et il n'a pas fini sa liste. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Sur la table, il reste des crayons, des ciseaux, de la colle.",
+              "Sur la table, il reste des crayons, des ciseaux, de la colle !",
+              "Sur la table, il reste des crayons, des ciseaux, de la colle…",
+              "Sur la table, il reste des crayons, des ciseaux, de la colle ?"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les points de suspension montrent que l'énumération continue."
+          },
+          {
+            "question": "Ce sont deux phrases différentes. Laquelle des écritures est correcte ?",
+            "options": [
+              "La cloche sonne les CM2 remontent en classe.",
+              "La cloche sonne. Les CM2 remontent en classe.",
+              "La cloche sonne. les CM2 remontent en classe.",
+              "La cloche sonne ! les CM2 remontent en classe."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un point sépare les deux phrases, et la seconde recommence par une majuscule."
+          },
+          {
+            "question": "Sacha ne comprend pas le geste de Louna et cherche une explication. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Pourquoi Louna range-t-elle son cahier ?",
+              "Pourquoi Louna range-t-elle son cahier.",
+              "Pourquoi Louna range-t-elle son cahier !",
+              "Pourquoi Louna range-t-elle son cahier…"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Pourquoi » annonce une question : point d'interrogation."
+          },
+          {
+            "question": "Louna commence sa phrase et n'arrive pas à la terminer. Quelle phrase est correctement ponctuée ?",
+            "options": [
+              "Je voulais te dire que.",
+              "Je voulais te dire que !",
+              "Je voulais te dire que…",
+              "Je voulais te dire que ?"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les points de suspension montrent que la phrase reste inachevée."
+          }
+        ]
+      }
+    ]
+  }
+]

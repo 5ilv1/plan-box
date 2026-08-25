@@ -1,12 +1,25 @@
-# Ceintures de compétences — Français « Phrases »
+# Ceintures de compétences — français
 
-Brief de mise en œuvre. Ce dossier contient le travail de conception déjà fait :
-le référentiel, un exemple de banque d'exercices validé, la migration et un
-validateur. Le code applicatif reste à écrire.
+Brief de mise en œuvre. Ce dossier contient tout le travail de conception :
+le référentiel, **la banque d'exercices complète des trois domaines de
+français**, la migration, un validateur et un correctif de bug déjà mesuré.
+Le code applicatif reste à écrire.
 
-**Objectif** : en production pour la rentrée. Périmètre de ce lot : le domaine
-**Phrases** uniquement (41 items, 9 ceintures). Mots, Textes et les 4 domaines
-de maths viendront après, sur le même moteur.
+**Objectif** : en production pour la rentrée.
+
+**Périmètre livré** : les trois domaines de français, 9 ceintures chacun.
+
+| Domaine | Code | Items | Fichiers |
+|---|---|---|---|
+| Phrases | `PHRA` | 41 | `banque/ceinture-*.json` |
+| Mots | `MOTS` | 34 | `banque/mots-ceinture-*.json` |
+| Textes | `TEXT` | 37 | `banque/textes-ceinture-*.json` |
+
+Les quatre domaines de maths (Nombres, Calcul, Grandeurs et mesures, Espace et
+géométrie) viendront après, sur le même moteur.
+
+Toutes les banques passent `valider-banque.mjs` à 0 erreur, et chacune a été
+relue par un second modèle chargé de la démolir, puis corrigée.
 
 ---
 
@@ -161,7 +174,20 @@ changement de schéma sur `exercice`.
    - pour chaque item à 2/2 : insérer `exercice_resultat` avec `valide = true`,
      `score = total`, sur l'exercice correspondant du chapitre
    - rediriger vers la page chapitre
-5. Évaluation, seuil 90 %, puis ceinture suivante. Mécanique existante.
+5. **Évaluation** : elle est **composée automatiquement** par
+   `app/eleve/chapitre/[id]/evaluation/page.tsx`, qui échantillonne chaque
+   exercice du chapitre (4 trous sur 5, 3 questions sur 8, 5 éléments de
+   classement, 2 phrases d'analyse) et retire indices et explications.
+   Rien à écrire, rien à générer par IA. Compter 15 à 20 questions par ceinture.
+   Seuil 90 %, puis ceinture suivante. Mécanique existante.
+6. **Remédiation** : chaque item a **deux variantes d'entraînement** dans
+   `ceinture_banque`. La variante 1 est celle installée dans la ligne
+   `exercice`. Après une évaluation ratée, remplacer le `contenu` de la ligne
+   `exercice` des items échoués par la variante 2, et remettre leur
+   `exercice_resultat` à non validé.
+   **Ne PAS créer une deuxième ligne `exercice`** : l'évaluation étant composée
+   à partir de tous les exercices du chapitre, elle doublerait de longueur, et
+   la chaîne de déblocage séquentiel imposerait deux exercices par item.
 
 Le diagnostic est repassable seulement si l'enseignant le réinitialise.
 Prévoir un bouton côté enseignant, pas côté élève.
@@ -172,13 +198,26 @@ Prévoir un bouton côté enseignant, pas côté élève.
 
 | Fichier | Contenu |
 |---|---|
-| `referentiel-phrases.json` | Les 41 items : code, ceinture, libellé, niveau visé, type d'exercice, rattachement aux semaines de la P1 |
-| `banque/ceinture-1-vert-fonce.json` | Banque complète de la ceinture vert foncé (P13, P14, P15, P20) — **format de référence**, déjà validé par `valider-banque.mjs` |
-| `migration.sql` | Les 5 tables + le seed du référentiel Phrases |
-| `valider-banque.mjs` | Rejoue l'algorithme de recherche des trous et contrôle les QCM et les classements |
+| `referentiel-francais.json` | Les 112 items : code, domaine, ceinture, libellé, niveau, type d'exercice **tel qu'il est écrit dans la banque**, type d'origine du référentiel, rattachement aux semaines de la P1 |
+| `banque/` | 27 fichiers, un par ceinture et par domaine. Chaque item porte 2 questions de diagnostic et **2 variantes** d'entraînement (`entrainement` est un tableau : la variante 1 au premier passage, la variante 2 en remédiation) |
+| `migration.sql` | Les 5 tables + le seed des 3 domaines et des 112 items. Additif, rejouable |
+| `valider-banque.mjs` | Rejoue l'algorithme réel de placement des trous, refuse les trous en début de phrase, les homophones et les mots qui déclenchent un menu déroulant, contrôle QCM, classements et analyses de phrase |
+| `CORRECTIF-piocher.md` + `test-piocher.mjs` | Un bug de production mesuré à 49,7 % / 66,5 % d'évaluations cassées, son correctif et son test de non-régression |
 
-Le classeur complet des 7 domaines (236 items) et la fiche imprimable élève
-sont dans le Drive, sous *Français / Ceintures de compétences*.
+**Le `type_exercice` de la banque prime sur celui du référentiel.** Une quinzaine
+d'items ont changé de type parce que le moteur ne sait pas évaluer le type
+d'origine : un item sur la ponctuation ne peut pas être une saisie (la
+comparaison efface les signes), un item sur « avoir » ne peut pas être un texte
+à trous (le champ devient un menu déroulant a/à). Le détail item par item est
+dans `referentiel-francais.json`, colonne `type_referentiel`.
+
+**Trois types ne sont pas composables en évaluation** — `lecture`,
+`ecriture_contrainte`, `mots` — parce que `creerMiniExercices()` les ignore.
+Ils s'entraînent et se valident normalement (l'écriture est corrigée par
+`/api/chapitres/exercices/corriger-ecriture`), mais ne produisent aucune
+question à l'évaluation finale. C'est pour cela que chaque ceinture de Textes
+contient au moins un item d'un type évaluable. Conséquence à connaître :
+l'évaluation finale de Textes est courte, 3 questions pour la ceinture noire.
 
 ### Format de la banque
 
@@ -217,10 +256,16 @@ Contenus par type, tels que les attend le code existant :
    `ceinture_chapitre`, et les assigner aux trois groupes via `chapitre_assignation`.
 3. **Exclusion des listes** — filtrer `sous_matiere LIKE 'ceinture-%'` dans
    `mes-chapitres` et dans la liste des chapitres enseignant.
-4. **Banque** — reprendre le format de `ceinture-1-vert-fonce.json` et écrire
-   les ceintures 0, 2 et 3 (vert clair, bleu clair, bleu foncé), soit 14 items.
-   Passer `valider-banque.mjs` sur chaque fichier. Puis un script d'import qui
-   remplit `ceinture_banque` et crée les lignes `exercice` correspondantes.
+4. **Import de la banque** — les quatre premières ceintures (18 items) sont
+   **déjà écrites et validées** dans `banque/`. Tu n'as pas de contenu
+   pédagogique à produire : écris le script d'import qui, pour chaque fichier,
+   remplit `ceinture_banque` (une ligne par question de diagnostic en usage
+   `diagnostic`, une ligne par exercice en usage `entrainement`) et crée les
+   lignes `exercice` du chapitre correspondant, avec `contenu.item_code`.
+   Relance `node docs/ceintures/valider-banque.mjs docs/ceintures/banque/*.json`
+   avant l'import : il doit sortir `0 erreur`.
+   Les ceintures 4 à 8 (23 items) seront écrites plus tard, après un premier
+   retour de classe sur le calibrage du diagnostic.
 5. **Routes API** (`app/api/ceintures/…`) : état de progression d'un élève,
    récupération du diagnostic, enregistrement du diagnostic, réinitialisation
    côté enseignant.
@@ -253,9 +298,14 @@ prévisualisation Vercel.
 
 ## 9. Reste à décider avec Sylvain
 
-- Les 23 items des ceintures marron à noire : banque écrite à la main ou
-  génération IA relue au fil de l'année ? Sans urgence — personne ne sera
-  ceinture violette avant le printemps.
+- **P32** est libellé « J'identifie **et** j'accorde l'attribut du sujet ». Un
+  item ne porte qu'un seul type d'exercice : l'entraînement fait l'identification
+  (`analyse_phrase`), l'accord n'est testé que par une question du diagnostic.
+  Soit on scinde en deux items, soit on renomme l'item.
+- **L'évaluation de la marron clair de Phrases fait 27 questions** (P27 et P28,
+  deux analyses de phrase, en produisent beaucoup). C'est long pour un CM1 :
+  passer à 3 groupes codés par phrase la ramènerait à 20.
 - Que voit l'enseignant ? Un tableau classe couleurs × élèves serait le pendant
   naturel de la « grille individuelle » PIDAPI, mais rien n'est spécifié.
 - Réinitialisation du diagnostic : à quel niveau (élève, ceinture, domaine) ?
+- Les 4 domaines de maths, à écrire ensuite sur le même moteur.

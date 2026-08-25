@@ -1,0 +1,644 @@
+[
+  {
+    "item_code": "P11",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase est écrite correctement ?",
+        "options": [
+          "timéo range son cartable.",
+          "Timéo range son cartable",
+          "Timéo range son cartable.",
+          "timéo range son cartable"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une phrase commence toujours par une majuscule et se termine par un point."
+      },
+      {
+        "question": "Que manque-t-il à cette phrase : « Nour aime les histoires » ?",
+        "options": [
+          "La majuscule du début",
+          "Le point de la fin",
+          "Rien, elle est correcte",
+          "La majuscule et le point"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Elle commence bien par une majuscule, mais il manque le point qui ferme la phrase."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Majuscule et point : le tri de la classe",
+        "consigne": "Classe chaque phrase dans la bonne colonne. Regarde le premier mot et la fin de la phrase.",
+        "categories": [
+          "Phrase correcte",
+          "Il manque la majuscule",
+          "Il manque le point"
+        ],
+        "items": [
+          {
+            "texte": "Lila range son cartable.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "Le chat dort sur le tapis.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "Nour lit une histoire à sa sœur.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "Adam ferme la porte de la classe.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "timéo dessine un bateau.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "fatou joue dans la cour.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "malo cherche sa trousse.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "la maîtresse écrit au tableau.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Inès aime les histoires",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Sacha court très vite",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Jade colle une image dans son cahier",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Yanis range ses crayons de couleur",
+            "categorie": "Il manque le point"
+          }
+        ]
+      },
+      {
+        "titre": "Majuscule et point : le tri du portrait",
+        "consigne": "Classe chaque phrase dans la bonne colonne. Une seule chose manque, ou bien tout est correct.",
+        "categories": [
+          "Phrase correcte",
+          "Il manque la majuscule",
+          "Il manque le point"
+        ],
+        "items": [
+          {
+            "texte": "Louna prépare son sac de sport.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "Le vent souffle très fort.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "Rosalie sourit à son amie.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "Nous chantons une chanson douce.",
+            "categorie": "Phrase correcte"
+          },
+          {
+            "texte": "sacha arrose les plantes de la classe.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "adam raconte sa journée.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "les élèves rangent la bibliothèque.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "mon petit frère mange une pomme.",
+            "categorie": "Il manque la majuscule"
+          },
+          {
+            "texte": "Jade porte un pull rouge",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Timéo compte jusqu'à dix",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Fatou dessine le portrait de sa mamie",
+            "categorie": "Il manque le point"
+          },
+          {
+            "texte": "Le chien aboie dans le jardin",
+            "categorie": "Il manque le point"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P10",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "« Hier, Lila a perdu sa gomme. » Quand se passe l'action ?",
+        "options": [
+          "Dans le futur",
+          "Dans le présent",
+          "Dans le passé",
+          "On ne peut pas le savoir"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Hier » et le verbe « a perdu » disent que l'action est déjà finie : c'est le passé."
+      },
+      {
+        "question": "« Demain, Malo plantera un arbre dans la cour. » Quand se passe l'action ?",
+        "options": [
+          "Dans le passé",
+          "Dans le futur",
+          "Dans le présent",
+          "Dans le passé, puis dans le présent"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Demain » et le verbe « plantera » disent que l'action n'a pas encore eu lieu : c'est le futur."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Passé, présent ou futur ?",
+        "consigne": "Pour chaque phrase, dis quand se passe l'action. Aide-toi du petit mot du début et du verbe.",
+        "questions": [
+          {
+            "question": "« Hier, Lila a perdu sa gomme dans la cour. » L'action se passe…",
+            "options": [
+              "dans le passé",
+              "dans le présent",
+              "dans le futur",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Hier » et « a perdu » : l'action est déjà terminée, c'est le passé."
+          },
+          {
+            "question": "« En ce moment, Nour dessine un portrait. » L'action se passe…",
+            "options": [
+              "dans le futur",
+              "dans le présent",
+              "dans le passé",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« En ce moment » et « dessine » : l'action est en train de se faire, c'est le présent."
+          },
+          {
+            "question": "« Demain, Timéo apportera son livre préféré. » L'action se passe…",
+            "options": [
+              "dans le passé",
+              "dans le présent",
+              "dans le futur",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Demain » et « apportera » : l'action n'a pas encore eu lieu, c'est le futur."
+          },
+          {
+            "question": "« La semaine dernière, la classe a visité un musée. » L'action se passe…",
+            "options": [
+              "dans le présent",
+              "dans le passé",
+              "dans le futur",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« La semaine dernière » et « a visité » : c'est déjà fait, donc le passé."
+          },
+          {
+            "question": "« Aujourd'hui, Fatou range ses crayons dans sa trousse. » L'action se passe…",
+            "options": [
+              "dans le passé",
+              "dans le futur",
+              "on ne peut pas le savoir",
+              "dans le présent"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Aujourd'hui » et « range » : l'action se déroule maintenant, c'est le présent."
+          },
+          {
+            "question": "« L'année prochaine, Sacha entrera au collège. » L'action se passe…",
+            "options": [
+              "dans le futur",
+              "dans le passé",
+              "dans le présent",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« L'année prochaine » et « entrera » : l'action viendra plus tard, c'est le futur."
+          },
+          {
+            "question": "« Autrefois, les élèves écrivaient sur des ardoises. » L'action se passe…",
+            "options": [
+              "dans le présent",
+              "dans le futur",
+              "dans le passé",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Autrefois » et « écrivaient » : c'était il y a longtemps, c'est le passé."
+          },
+          {
+            "question": "« Maintenant, Adam écoute la maîtresse. » L'action se passe…",
+            "options": [
+              "dans le futur",
+              "dans le présent",
+              "dans le passé",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Maintenant » et « écoute » : l'action est en train de se faire, c'est le présent."
+          }
+        ]
+      },
+      {
+        "titre": "Quand se passe l'action ?",
+        "consigne": "Lis bien la phrase, puis choisis le moment de l'action.",
+        "questions": [
+          {
+            "question": "« Demain matin, Louna arrosera les plantes. » L'action se passe…",
+            "options": [
+              "dans le passé",
+              "dans le présent",
+              "dans le futur",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Demain matin » et « arrosera » : l'action n'a pas encore eu lieu, c'est le futur."
+          },
+          {
+            "question": "« Hier soir, Malo a rangé sa chambre. » L'action se passe…",
+            "options": [
+              "dans le passé",
+              "dans le futur",
+              "dans le présent",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Hier soir » et « a rangé » : c'est déjà fait, donc le passé."
+          },
+          {
+            "question": "« En ce moment, Inès écoute une histoire. » L'action se passe…",
+            "options": [
+              "dans le futur",
+              "dans le présent",
+              "dans le passé",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« En ce moment » et « écoute » : l'action se déroule maintenant, c'est le présent."
+          },
+          {
+            "question": "« La semaine prochaine, nous irons à la piscine. » L'action se passe…",
+            "options": [
+              "dans le présent",
+              "dans le passé",
+              "on ne peut pas le savoir",
+              "dans le futur"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« La semaine prochaine » et « irons » : l'action viendra plus tard, c'est le futur."
+          },
+          {
+            "question": "« L'été dernier, Yanis a appris à nager. » L'action se passe…",
+            "options": [
+              "dans le présent",
+              "dans le passé",
+              "dans le futur",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« L'été dernier » et « a appris » : l'action est terminée, c'est le passé."
+          },
+          {
+            "question": "« Maintenant, Rosalie colle une photo dans son cahier. » L'action se passe…",
+            "options": [
+              "dans le présent",
+              "dans le futur",
+              "dans le passé",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Maintenant » et « colle » : l'action est en train de se faire, c'est le présent."
+          },
+          {
+            "question": "« Ce soir, Adam préparera son cartable. » L'action se passe…",
+            "options": [
+              "dans le passé",
+              "dans le présent",
+              "dans le futur",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Ce soir » et « préparera » : l'action n'a pas encore eu lieu, c'est le futur."
+          },
+          {
+            "question": "« Il y a deux jours, Lila a écrit un poème. » L'action se passe…",
+            "options": [
+              "dans le futur",
+              "dans le présent",
+              "on ne peut pas le savoir",
+              "dans le passé"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Il y a deux jours » et « a écrit » : c'est déjà fait, donc le passé."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P16",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Dans la phrase « Fatou dessine un portrait. », quel est le verbe ?",
+        "options": [
+          "Fatou",
+          "dessine",
+          "un",
+          "portrait"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Si tu dis la phrase avec « hier », seul « dessine » change : c'est le verbe."
+      },
+      {
+        "question": "Dans la phrase « Les élèves rangent leurs affaires. », quel est le verbe ?",
+        "options": [
+          "élèves",
+          "leurs",
+          "affaires",
+          "rangent"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Quand le moment change, c'est « rangent » qui se transforme : le verbe est le mot qui bouge."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le mot qui change quand le moment change",
+        "consigne": "Écris le verbe de la phrase. Un seul mot, écrit comme dans la phrase.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris le verbe : Timéo attrape le ballon.",
+            "reponse_attendue": "attrape",
+            "indice": "Redis la phrase avec « hier » : le seul mot qui change, c'est le verbe."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris le verbe : Nour raconte une histoire à sa sœur.",
+            "reponse_attendue": "raconte",
+            "indice": "Redis la phrase avec « demain » : le mot qui n'est plus pareil, c'est le verbe."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris le verbe : Fatou raconte une histoire drôle.",
+            "reponse_attendue": "raconte",
+            "indice": "Essaie « autrefois », puis « en ce moment » : repère le mot qui bouge."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris le verbe : Le chat dort sous la table.",
+            "reponse_attendue": "dort",
+            "indice": "Redis la phrase avec « hier » : un seul mot se transforme, c'est lui."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris le verbe : Fatou dessine le portrait de son grand-père.",
+            "reponse_attendue": "dessine",
+            "indice": "Change le moment : dis la phrase avec « demain » et écoute quel mot change."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris le verbe : Nous chantons dans la cour.",
+            "reponse_attendue": "chantons",
+            "indice": "Redis la phrase avec « hier » : recopie le mot qui bouge, tel qu'il est écrit ici."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris le verbe : Sacha remplit sa gourde.",
+            "reponse_attendue": "remplit",
+            "indice": "Essaie « demain » : le mot qui se transforme est le verbe."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris le verbe : Jade grimpe sur le mur de l'école.",
+            "reponse_attendue": "grimpe",
+            "indice": "Redis la phrase avec « autrefois » : un seul mot change, c'est le verbe."
+          }
+        ]
+      },
+      {
+        "titre": "Trouve le verbe de la phrase",
+        "consigne": "Écris le verbe de la phrase. Un seul mot, recopié comme dans la phrase.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris le verbe : Louna prépare son cartable.",
+            "reponse_attendue": "prépare",
+            "indice": "Redis la phrase avec « hier » : le mot qui change, c'est le verbe."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris le verbe : Le vent souffle très fort.",
+            "reponse_attendue": "souffle",
+            "indice": "Essaie « demain » : un seul mot se transforme."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris le verbe : Vous écoutez la maîtresse.",
+            "reponse_attendue": "écoutez",
+            "indice": "Redis la phrase avec « demain » : le mot qui n'est plus pareil, c'est le verbe."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris le verbe : Inès plie sa feuille en deux.",
+            "reponse_attendue": "plie",
+            "indice": "Redis la phrase avec « autrefois » : le mot qui bouge est le verbe."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris le verbe : Les oiseaux chantent dans le jardin.",
+            "reponse_attendue": "chantent",
+            "indice": "Essaie « hier », puis « demain » : un seul mot bouge à chaque fois."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris le verbe : Malo pousse la porte de la classe.",
+            "reponse_attendue": "pousse",
+            "indice": "Redis la phrase avec « demain » : recopie le mot qui a changé, tel qu'il est écrit ici."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris le verbe : Je remplis mon verre d'eau.",
+            "reponse_attendue": "remplis",
+            "indice": "Change le moment : le mot qui se transforme est le verbe."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris le verbe : Rosalie choisit un livre à la bibliothèque.",
+            "reponse_attendue": "choisit",
+            "indice": "Redis la phrase avec « hier » : un seul mot n'est plus pareil."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "P12",
+    "type": "exercice",
+    "diagnostic": [
+      {
+        "question": "Dans quelle phrase le mot au pluriel est-il bien écrit ?",
+        "options": [
+          "Timéo range ses cahier dans son casier.",
+          "Timéo range son cahiers dans son casier.",
+          "Timéo range ses cahiers dans son casier.",
+          "Timéo range ses cahiers dans ses casier."
+        ],
+        "reponse_correcte": 2,
+        "explication": "« ses cahiers » : quand il y en a plusieurs, le nom prend un -s."
+      },
+      {
+        "question": "Dans quelle phrase le pluriel est-il bien écrit ?",
+        "options": [
+          "Les élève écoutent la maîtresse.",
+          "Les élèves écoutent la maîtresse.",
+          "Les élèves écoutent la maîtresses.",
+          "Le élèves écoutent la maîtresse."
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Les élèves » sont plusieurs : le nom prend un « s ». « La maîtresse » est toute seule : elle n'en prend pas."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Un s quand il y en a plusieurs",
+        "consigne": "Écris chaque nom au pluriel. Un seul mot, accents compris.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris ce nom au pluriel : cahier",
+            "reponse_attendue": "cahiers",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris ce nom au pluriel : crayon",
+            "reponse_attendue": "crayons",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris ce nom au pluriel : ami",
+            "reponse_attendue": "amis",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris ce nom au pluriel : image",
+            "reponse_attendue": "images",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris ce nom au pluriel : ballon",
+            "reponse_attendue": "ballons",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris ce nom au pluriel : école",
+            "reponse_attendue": "écoles",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris ce nom au pluriel : lapin",
+            "reponse_attendue": "lapins",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris ce nom au pluriel : chaise",
+            "reponse_attendue": "chaises",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          }
+        ]
+      },
+      {
+        "titre": "Le pluriel des mots de la classe",
+        "consigne": "Écris chaque nom au pluriel. Un seul mot, accents compris.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris ce nom au pluriel : dessin",
+            "reponse_attendue": "dessins",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris ce nom au pluriel : histoire",
+            "reponse_attendue": "histoires",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris ce nom au pluriel : camarade",
+            "reponse_attendue": "camarades",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris ce nom au pluriel : stylo",
+            "reponse_attendue": "stylos",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris ce nom au pluriel : porte",
+            "reponse_attendue": "portes",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris ce nom au pluriel : voisine",
+            "reponse_attendue": "voisines",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris ce nom au pluriel : jardin",
+            "reponse_attendue": "jardins",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris ce nom au pluriel : chanson",
+            "reponse_attendue": "chansons",
+            "indice": "Quand il y en a plusieurs, le nom prend un -s à la fin."
+          }
+        ]
+      }
+    ]
+  }
+]

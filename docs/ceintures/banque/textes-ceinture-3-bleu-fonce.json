@@ -1,0 +1,554 @@
+[
+  {
+    "item_code": "T47",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase décrit le caractère de Malo, et non son apparence ?",
+        "options": [
+          "Malo porte des lunettes rondes.",
+          "Malo est patient avec les plus petits.",
+          "Malo a les cheveux très courts.",
+          "Malo mesure une tête de plus que moi."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le portrait moral dit comment on est à l'intérieur : patient, timide, généreux. Le portrait physique dit ce qu'on voit."
+      },
+      {
+        "question": "Parmi ces quatre mots, lequel nomme un défaut ?",
+        "options": [
+          "généreux",
+          "courageux",
+          "moqueur",
+          "honnête"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une qualité fait du bien autour de soi ; un défaut gêne. « Moqueur » veut dire qu'on se moque des autres."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait moral de Louna",
+        "consigne": "Écris le portrait moral de Louna, la déléguée de la classe : dis quel genre de personne elle est.",
+        "contraintes": [
+          "Tu écris cinq phrases.",
+          "Tu donnes deux qualités de Louna, chacune dans une phrase différente.",
+          "Une phrase au moins dit ce qu'elle aime : ses goûts.",
+          "Tu donnes un défaut, et un seul.",
+          "Tu ne dis rien de son apparence physique.",
+          "Tu n'emploies pas plus de deux fois le verbe « être »."
+        ],
+        "nb_phrases": 5,
+        "exemple": "Louna écoute jusqu'au bout ceux qui lui parlent."
+      },
+      {
+        "titre": "Le portrait moral d'Adam",
+        "consigne": "Écris le portrait moral d'Adam, ton voisin de table : dis quel genre de garçon il est.",
+        "contraintes": [
+          "Tu écris cinq phrases.",
+          "Tu donnes deux qualités d'Adam, chacune dans une phrase différente.",
+          "Une phrase au moins dit ce qu'il aime : ses goûts.",
+          "Tu donnes un défaut, et un seul.",
+          "Tu ne dis rien de son apparence physique.",
+          "Tu emploies au moins trois adjectifs de caractère différents."
+        ],
+        "nb_phrases": 5,
+        "exemple": "Adam prête ses affaires sans qu'on ait besoin de les demander."
+      }
+    ]
+  },
+  {
+    "item_code": "T22",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "« Timéo ouvre son livre. Timéo tourne les pages jusqu'au poème. » Comment éviter la répétition du prénom dans la deuxième phrase ?",
+        "options": [
+          "Il tourne les pages jusqu'au poème.",
+          "Elle tourne les pages jusqu'au poème.",
+          "Ils tournent les pages jusqu'au poème.",
+          "Timéo tourne les pages jusqu'au poème."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Pour ne pas répéter le prénom, on le remplace par un mot qui désigne la même personne : ici, « il »."
+      },
+      {
+        "question": "Pourquoi ce début de texte est-il maladroit ? « Nour entre dans la classe. Nour suspend son manteau. Nour s'assoit à sa place. »",
+        "options": [
+          "Les phrases sont trop courtes.",
+          "Les trois phrases racontent la même action.",
+          "Les verbes ne sont pas au bon temps.",
+          "Le prénom Nour est répété trois fois."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Quand un personnage revient, on ne répète pas son prénom : on le désigne autrement, avec un substitut — « elle », « la fillette », « la nouvelle élève »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Désigner sans répéter",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "« Fatou traverse la cour en courant. La petite fille serre son cartable contre elle. » Quel groupe de mots désigne Fatou ?",
+            "options": [
+              "la cour",
+              "La petite fille",
+              "son cartable",
+              "en courant"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« La petite fille » ne présente pas un nouveau personnage : c'est une autre façon de nommer Fatou."
+          },
+          {
+            "question": "« Malo pousse la porte du gymnase. Il attache ses lacets. » Que remplace « Il » ?",
+            "options": [
+              "la porte",
+              "le gymnase",
+              "Malo",
+              "les lacets"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un pronom reprend un mot déjà écrit avant lui : ici, c'est Malo qui attache ses lacets."
+          },
+          {
+            "question": "« Inès lève la main. ___ veut lire son texte à voix haute. » Quel mot désigne Inès ?",
+            "options": [
+              "Elle",
+              "Il",
+              "Ils",
+              "On"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le substitut doit désigner la même personne : Inès est une fille et elle est seule, donc « elle »."
+          },
+          {
+            "question": "« Jade sort de la bibliothèque. ___ tient trois livres serrés contre elle. » Quel groupe de mots désigne Jade ?",
+            "options": [
+              "La bibliothèque",
+              "Le bibliothécaire",
+              "La jeune lectrice",
+              "Les trois livres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un substitut peut aussi être un groupe nominal : « la jeune lectrice » désigne Jade, alors que les autres nomment un lieu, un objet ou quelqu'un d'autre."
+          },
+          {
+            "question": "« Rosalie grimpe sur le mur d'escalade. Rosalie attrape la dernière prise. » Quelle réécriture évite la répétition ?",
+            "options": [
+              "La prise attrape la dernière prise.",
+              "La grimpeuse attrape la dernière prise.",
+              "Rosalie attrape la dernière prise.",
+              "Le garçon attrape la dernière prise."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« La grimpeuse » désigne bien Rosalie et évite de répéter son prénom."
+          },
+          {
+            "question": "« Louna termine son dessin. » Lequel de ces mots ne peut PAS désigner Louna ?",
+            "options": [
+              "l'artiste",
+              "elle",
+              "le garçon",
+              "la fillette"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un substitut doit désigner la même personne : Louna est une fille, « le garçon » parlerait de quelqu'un d'autre."
+          },
+          {
+            "question": "« Timéo se penche sous le banc. Le grand blond récupère son ballon. » Que nous apprend le substitut « Le grand blond » sur Timéo ?",
+            "options": [
+              "Il est grand et il a les cheveux blonds.",
+              "Il est petit et il a les cheveux bruns.",
+              "Il s'appelle Blond.",
+              "Il n'aime pas jouer au ballon."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un substitut peut en dire un peu plus sur le personnage : celui-ci décrit Timéo en même temps qu'il le désigne."
+          },
+          {
+            "question": "« Fatou et Timéo préparent l'exposé ensemble. ___ cherchent des images. » Quel mot désigne Fatou et Timéo ?",
+            "options": [
+              "Il",
+              "Elle",
+              "On",
+              "Ils"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le substitut remplace deux personnes, dont un garçon : le pronom est « ils »."
+          }
+        ]
+      },
+      {
+        "titre": "Un seul personnage, plusieurs noms",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "« Adam pousse le portail de l'école. Le garçon court vers ses copains. » Qui est « Le garçon » ?",
+            "options": [
+              "le portail",
+              "un copain",
+              "Adam",
+              "l'école"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Le garçon » reprend le personnage de la phrase d'avant : c'est Adam."
+          },
+          {
+            "question": "« Lila sort son violon de l'étui. ___ ouvre la partition. » Quel mot désigne Lila ?",
+            "options": [
+              "Elle",
+              "Il",
+              "Ils",
+              "Elles"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Lila est seule et c'est une fille : le pronom est « elle »."
+          },
+          {
+            "question": "« Yanis pêche au bord de la rivière. Le pêcheur remonte sa ligne. » Quel autre substitut pourrait désigner Yanis ?",
+            "options": [
+              "la rivière",
+              "la ligne",
+              "la pêcheuse",
+              "le jeune garçon"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Seul « le jeune garçon » désigne la même personne : les autres nomment un objet ou une fille."
+          },
+          {
+            "question": "« Rosalie referme son cahier. » Lequel de ces mots ne peut PAS désigner Rosalie ?",
+            "options": [
+              "elle",
+              "le garçon",
+              "la fillette",
+              "l'élève"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Rosalie est une fille : « le garçon » désignerait un autre personnage."
+          },
+          {
+            "question": "« Fatou termine son morceau. ___ repose sa flûte sur le pupitre. » Quel groupe de mots désigne Fatou ?",
+            "options": [
+              "Le pupitre",
+              "La jeune flûtiste",
+              "Les autres élèves",
+              "La flûte"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« La jeune flûtiste » ne présente pas un nouveau personnage : c'est une autre façon de désigner Fatou, et elle en dit un peu plus sur elle."
+          },
+          {
+            "question": "Dans quel texte le prénom Malo est-il remplacé par des mots qui le désignent correctement ?",
+            "options": [
+              "Malo grimpe à l'échelle. Malo atteint le toit. Malo agite la main.",
+              "Malo grimpe à l'échelle. Elle atteint le toit. Elle agite la main.",
+              "Malo grimpe à l'échelle. Il atteint le toit. L'échelle agite la main.",
+              "Malo grimpe à l'échelle. Il atteint le toit. Le garçon agite la main."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Ailleurs, le prénom n'est pas remplacé du tout, ou il est remplacé par un mot qui désigne autre chose : une fille, l'échelle. Ici, « il » et « le garçon » désignent bien Malo."
+          },
+          {
+            "question": "« Louna dépose son sac. La déléguée monte sur l'estrade. » Combien de personnes y a-t-il dans ce texte ?",
+            "options": [
+              "deux",
+              "une",
+              "trois",
+              "aucune"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« La déléguée » ne présente pas quelqu'un de nouveau : c'est Louna, désignée autrement."
+          },
+          {
+            "question": "« Yanis et Sacha construisent une cabane. ___ clouent les planches. » Quel mot désigne Yanis et Sacha ?",
+            "options": [
+              "Ils",
+              "Il",
+              "Elles",
+              "On"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le substitut remplace deux garçons : le pronom est « ils »."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T23",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Quelle réplique de dialogue est correctement écrite ?",
+        "options": [
+          "— tu as vu mon cahier ? demande Nour.",
+          "Tu as vu mon cahier ? demande Nour.",
+          "— Tu as vu mon cahier ? demande Nour.",
+          "— Tu as vu mon cahier demande Nour."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une réplique commence par un tiret et par une majuscule ; la question garde son point d'interrogation."
+      },
+      {
+        "question": "« — Où as-tu trouvé ce vieux carnet ? ___ Malo. » Quel verbe de parole convient ?",
+        "options": [
+          "demande",
+          "répond",
+          "remercie",
+          "promet"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Malo pose une question : le verbe de parole qui va avec est « demande »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La trousse disparue",
+        "consigne": "Écris le dialogue entre Nour, qui ne retrouve plus sa trousse, et le maître.",
+        "contraintes": [
+          "Tu commences par une phrase qui dit où sont les personnages.",
+          "Ton dialogue contient quatre répliques.",
+          "Chaque réplique va à la ligne et commence par un tiret.",
+          "Une réplique au moins est une question, avec un point d'interrogation.",
+          "Tu emploies trois verbes de parole différents, et jamais deux fois « dire ».",
+          "Deux répliques au moins sont suivies du nom de celui qui parle (« demande Nour », « répond le maître »)."
+        ],
+        "nb_phrases": 5,
+        "exemple": "— Je ne retrouve plus ma trousse, murmure Nour."
+      },
+      {
+        "titre": "Le livre à choisir",
+        "consigne": "Écris le dialogue entre Timéo et Jade, qui hésitent devant les rayons de la bibliothèque.",
+        "contraintes": [
+          "Tu commences par une phrase qui dit où sont les personnages.",
+          "Ton dialogue contient quatre répliques : deux pour Timéo, deux pour Jade.",
+          "Chaque réplique va à la ligne et commence par un tiret.",
+          "Une réplique au moins est une question, avec un point d'interrogation.",
+          "Tu emploies trois verbes de parole différents, et jamais deux fois « dire ».",
+          "On doit comprendre, à la dernière réplique, quel livre ils emportent."
+        ],
+        "nb_phrases": 5,
+        "exemple": "— Celui-là parle de pirates, propose Timéo."
+      }
+    ]
+  },
+  {
+    "item_code": "T25",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans quelle phrase le groupe nominal est-il mal accordé ?",
+        "options": [
+          "Nour porte des chaussettes rayées.",
+          "Le petit chien de Jade aboie.",
+          "Les grandes fenêtres laissent entrer le soleil.",
+          "Adam enfile ses gants noir."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Dans un groupe nominal, l'adjectif prend le genre et le nombre du nom : des gants noirs."
+      },
+      {
+        "question": "Quelle phrase est correctement accordée ?",
+        "options": [
+          "Les enfants plonge dans le grand bain.",
+          "Les enfants plongent dans le grand bain.",
+          "L'enfant plongent dans le grand bain.",
+          "Les enfant plongent dans le grand bain."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Quand tu relis, tu cherches le sujet, puis tu vérifies que le verbe s'accorde avec lui."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je relis avec ma grille ②",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans quelle phrase l'adjectif est-il mal accordé ?",
+            "options": [
+              "Lila enfile une écharpe verte.",
+              "Malo porte des baskets usées.",
+              "Rosalie noue ses cheveux blond.",
+              "Timéo range ses cahiers neufs."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« cheveux » est masculin pluriel : il faut écrire « ses cheveux blonds »."
+          },
+          {
+            "question": "Quelle phrase est correctement accordée ?",
+            "options": [
+              "Les élèves apprennent la poésie.",
+              "Les élèves apprend la poésie.",
+              "L'élève apprennent la poésie.",
+              "Les élève apprennent la poésie."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le sujet « les élèves » est au pluriel : le nom prend un -s et le verbe s'accorde avec lui."
+          },
+          {
+            "question": "Comment faut-il écrire le groupe nominal de « Fatou attache ses long cheveux » ?",
+            "options": [
+              "ses long cheveux",
+              "ses longs cheveux",
+              "ses longues cheveux",
+              "ses long cheveu"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« cheveux » est masculin pluriel : l'adjectif devient « longs »."
+          },
+          {
+            "question": "« Les jumeaux ___ le même pull. » (porter) Quelle forme convient ?",
+            "options": [
+              "porte",
+              "portes",
+              "porter",
+              "portent"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le sujet « les jumeaux » vaut « ils » : un verbe en -ER prend alors -ent."
+          },
+          {
+            "question": "Dans quelle phrase le déterminant et le nom ne vont pas ensemble ?",
+            "options": [
+              "Sacha ouvre ses cahier.",
+              "Sacha ouvre son cahier.",
+              "Sacha ouvre les cahiers.",
+              "Sacha ouvre un cahier."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« ses » annonce plusieurs objets : il faut écrire « ses cahiers »."
+          },
+          {
+            "question": "Dans quelle phrase le verbe est-il mal accordé ?",
+            "options": [
+              "Inès grimpe sur le banc.",
+              "Les nuages cachent le soleil.",
+              "Les garçons travaille en silence.",
+              "Louna souffle sur sa soupe."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le sujet « les garçons » vaut « ils » : il faut écrire « travaillent »."
+          },
+          {
+            "question": "Comment faut-il écrire le groupe nominal de « des (nouveau) élèves » ?",
+            "options": [
+              "des nouveau élèves",
+              "des nouvel élèves",
+              "des nouvelle élèves",
+              "des nouveaux élèves"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« élèves » est au pluriel : l'adjectif « nouveau » devient « nouveaux »."
+          },
+          {
+            "question": "Combien y a-t-il d'erreurs d'accord dans « Les petit oiseaux picore les miettes. » ?",
+            "options": [
+              "une",
+              "deux",
+              "trois",
+              "aucune"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux : l'adjectif (les petits oiseaux) et le verbe (les oiseaux picorent)."
+          }
+        ]
+      },
+      {
+        "titre": "Ma grille de relecture ② au travail",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans quelle phrase l'adjectif est-il mal accordé ?",
+            "options": [
+              "Yanis porte une casquette bleue.",
+              "Jade enfile des bottes rouge.",
+              "Adam range ses gros feutres.",
+              "Nour déroule une longue écharpe."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« bottes » est féminin pluriel : il faut écrire « des bottes rouges »."
+          },
+          {
+            "question": "Quelle phrase est correctement accordée ?",
+            "options": [
+              "Les CM1 monte le décor.",
+              "Le CM1 montent le décor.",
+              "Les CM1 montes le décor.",
+              "Les CM1 montent le décor."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le sujet « les CM1 » vaut « ils » : un verbe en -ER prend alors -ent."
+          },
+          {
+            "question": "Comment faut-il écrire le groupe nominal de « Malo découvre une vieille photos » ?",
+            "options": [
+              "une vieille photo",
+              "une vieilles photos",
+              "un vieille photo",
+              "une vieux photo"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« une » annonce un seul objet : le nom et l'adjectif restent au singulier."
+          },
+          {
+            "question": "« Les danseuses ___ sur la scène. » (tourner) Quelle forme convient ?",
+            "options": [
+              "tourne",
+              "tournes",
+              "tournent",
+              "tourner"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le sujet « les danseuses » vaut « elles » : un verbe en -ER prend alors -ent."
+          },
+          {
+            "question": "Dans quelle phrase le déterminant et le nom ne vont pas ensemble ?",
+            "options": [
+              "Louna attrape une balle.",
+              "Louna attrape des balles.",
+              "Louna attrape la balle.",
+              "Louna attrape un balles."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« un » annonce un seul objet : il faut écrire « une balle » ou « des balles »."
+          },
+          {
+            "question": "Dans quelle phrase le verbe est-il mal accordé ?",
+            "options": [
+              "Les bougies s'éteint d'un coup.",
+              "La bougie s'éteint d'un coup.",
+              "Les invités chantent en chœur.",
+              "Fatou souffle très fort."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le sujet « les bougies » vaut « elles » : il faut écrire « s'éteignent »."
+          },
+          {
+            "question": "Comment faut-il écrire le groupe nominal de « des (beau) tableaux » ?",
+            "options": [
+              "des beau tableaux",
+              "des belle tableaux",
+              "des beaux tableaux",
+              "des bel tableaux"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« tableaux » est masculin pluriel : l'adjectif « beau » devient « beaux »."
+          },
+          {
+            "question": "Combien y a-t-il d'erreurs d'accord dans « Les grand arbres perd leurs feuilles. » ?",
+            "options": [
+              "une",
+              "deux",
+              "trois",
+              "aucune"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux : l'adjectif (les grands arbres) et le verbe (les arbres perdent)."
+          }
+        ]
+      }
+    ]
+  }
+]

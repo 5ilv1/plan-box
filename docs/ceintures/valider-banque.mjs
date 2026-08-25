@@ -20,6 +20,13 @@ const FONCTIONS = new Set([
   "CC Lieu", "CC Temps", "CC Manière", "Attribut",
 ]);
 
+// Mots dont le masquage détourne le widget en menu à deux choix : interdits
+// hors des items qui portent explicitement sur ces homophones.
+// Liste EXACTE de components/TexteATrousEleve.tsx (genererOptionsHomophone) :
+// ces/ses, la/là, du/dû, sur/sûr n'y sont pas.
+const HOMOPHONES = new Set(["a","à","et","est","on","ont","son","sont","ce","se","ou","où"]);
+const ITEMS_HOMOPHONES = new Set(["P47","P48","P49"]);
+
 const TYPES = new Set([
   "exercice", "qcm", "texte_a_trous", "classement",
   "analyse_phrase", "calcul_mental", "ecriture_contrainte", "lecture", "mots",
@@ -60,7 +67,7 @@ function validerDiagnostic(code, diag) {
   });
 }
 
-function validerTexteATrous(code, e) {
+function validerTexteATrous(code, e, itemCode) {
   if (!e.texte_complet?.trim()) return err(code, "texte_complet vide");
   const trous = e.trous ?? [];
   if (!trous.length) return err(code, "aucun trou");
@@ -87,6 +94,27 @@ function validerTexteATrous(code, e) {
       err(code, `« ${t.mot} » s'est calé sur « ${mots[trouve]} » (position ${trouve}) : sosie sans accent. Masquer toutes les occurrences ambiguës, dans l'ordre.`);
     }
     if (!t.indice?.trim()) warn(code, `« ${t.mot} » sans indice`);
+
+    // Un trou en début de phrase porte une majuscule que la comparaison
+    // ignore : la compétence visée n'est pas évaluable.
+    if (trouve === 0 || (trouve > 0 && /[.!?…]$/.test(mots[trouve - 1]))) {
+      err(code, `« ${t.mot} » est en début de phrase : la majuscule n'est pas vérifiable et le mot n'est pas contraint par ce qui précède`);
+    }
+    // Masquer un homophone hors item dédié transforme le champ en menu
+    // à deux choix et déplace la compétence évaluée.
+    const nu = String(t.mot).replace(/[.,;:!?"'()«»]/g, "").toLowerCase();
+    if (HOMOPHONES.has(nu) && !ITEMS_HOMOPHONES.has(itemCode)) {
+      err(code, `« ${t.mot} » est un homophone : le champ deviendra un menu à deux choix et testera l'homophone, pas l'item`);
+    }
+    // genererOptionsVerbe : tout mot masqué finissant par « é » et faisant au
+    // moins 4 lettres devient un menu déroulant « chanter / chanté ».
+    else if (/é$/i.test(nu) && nu.length >= 4) {
+      err(code, `« ${t.mot} » finit par -é : le champ deviendra un menu à deux choix -er/-é. Masquer une forme accordée (-ée, -és, -ées) ou passer l'item en « exercice »`);
+    }
+    // genererOptionsPluriel : -oux, -aux, -als deviennent aussi un menu.
+    else if (/(oux|aux|als)$/i.test(nu) && nu.length >= 4) {
+      err(code, `« ${t.mot} » finit par -${nu.slice(-3)} : le champ deviendra un menu à deux choix sur le pluriel. Utiliser « exercice » pour une vraie production`);
+    }
   }
 
   const ordonne = positions.every((p, i) => i === 0 || p.position > positions[i - 1].position);
@@ -186,16 +214,32 @@ for (const f of fichiers) {
 
     validerDiagnostic(code, item.diagnostic);
 
-    const e = item.entrainement;
-    if (!e) { err(code, "entrainement manquant"); continue; }
-    switch (item.type) {
-      case "texte_a_trous":  validerTexteATrous(code, e); break;
-      case "classement":     validerClassement(code, e); break;
-      case "exercice":       validerExercice(code, e); break;
-      case "qcm":            validerQcm(code, e); break;
-      case "analyse_phrase": validerAnalysePhrase(code, e); break;
-      default:               warn(code, `type « ${item.type} » non contrôlé par ce validateur`);
+    const variantes = item.entrainement;
+    if (!Array.isArray(variantes)) {
+      err(code, "entrainement doit être un TABLEAU de variantes (au moins une)");
+      continue;
     }
+    if (!variantes.length) { err(code, "aucune variante d'entraînement"); continue; }
+    if (variantes.length < 2) {
+      warn(code, "une seule variante — la remédiation resservira le même exercice");
+    }
+    const signatures = new Set();
+    variantes.forEach((e, vi) => {
+      const ctx = variantes.length > 1 ? `${code} v${vi + 1}` : code;
+      switch (item.type) {
+        case "texte_a_trous":  validerTexteATrous(ctx, e, code); break;
+        case "classement":     validerClassement(ctx, e); break;
+        case "exercice":       validerExercice(ctx, e); break;
+        case "qcm":            validerQcm(ctx, e); break;
+        case "analyse_phrase": validerAnalysePhrase(ctx, e); break;
+        default:               warn(ctx, `type « ${item.type} » non contrôlé par ce validateur`);
+      }
+      // Deux variantes doivent différer réellement, sinon la remédiation
+      // ressert le même contenu à un élève qui vient d'échouer.
+      const sig = JSON.stringify(e.texte_complet ?? e.questions ?? e.items ?? e.phrases ?? e);
+      if (signatures.has(sig)) err(ctx, "variante identique à une précédente");
+      signatures.add(sig);
+    });
   }
   console.log(`  ${vus.size} item(s) contrôlé(s)`);
 }

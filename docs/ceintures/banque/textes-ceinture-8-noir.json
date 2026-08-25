@@ -1,0 +1,394 @@
+[
+  {
+    "item_code": "T40",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "« Nour pousse la porte de la classe. Tous les regards se lèvent, puis la cloche sonne dans le couloir vide. » Que comprend-on, sans que ce soit écrit ?",
+        "options": [
+          "Nour est la première arrivée ce matin.",
+          "Nour arrive en retard.",
+          "Nour a laissé son cartable à la maison.",
+          "La classe est vide quand elle entre."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un texte peut faire comprendre une chose sans la dire : les regards qui se lèvent et le couloir vide disent le retard."
+      },
+      {
+        "question": "Quelle phrase fait deviner que le personnage a peur, sans employer le mot « peur » ?",
+        "options": [
+          "Malo avait très peur du grenier de sa grand-mère.",
+          "Malo n'aimait pas beaucoup monter au grenier.",
+          "Malo trouvait le grenier vraiment effrayant.",
+          "Malo posa la main sur la poignée, puis la retira trois fois."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Écrire en implicite, c'est montrer un geste ou un détail qui laisse le lecteur conclure tout seul."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ce que le texte ne dit pas",
+        "consigne": "Écris un court passage où l'on comprend que ton personnage vient de rater quelque chose d'important, sans jamais le dire.",
+        "contraintes": [
+          "Tu écris cinq à six phrases.",
+          "Tu n'emploies aucun de ces mots : raté, échec, déçu, triste, pleurer.",
+          "Tu décris au moins trois gestes précis de ton personnage.",
+          "Tu donnes un détail du décor qui aide le lecteur à comprendre : un objet, un bruit ou la lumière.",
+          "Une autre personne apparaît et prononce une seule phrase, sans jamais nommer ce qui s'est passé.",
+          "À la fin, le lecteur doit pouvoir répondre à la question : « Qu'est-ce qui vient d'arriver ? »"
+        ],
+        "nb_phrases": 6,
+        "exemple": "Il replia la feuille en quatre, puis en huit, et la glissa tout au fond de sa poche."
+      },
+      {
+        "titre": "Deviner sans qu'on l'écrive",
+        "consigne": "Écris un court passage où l'on comprend que ton personnage est très fier de lui, sans jamais le dire.",
+        "contraintes": [
+          "Tu écris cinq à six phrases.",
+          "Tu n'emploies aucun de ces mots : fier, fierté, content, heureux, réussi.",
+          "Tu décris au moins trois gestes ou attitudes du personnage.",
+          "Tu montres la réaction d'au moins une autre personne, en une phrase.",
+          "Tu emploies une comparaison introduite par « comme » ou par « on dirait ».",
+          "À la fin, le lecteur doit pouvoir répondre à la question : « Que ressent le personnage ? »"
+        ],
+        "nb_phrases": 6,
+        "exemple": "Elle traversa la cour très lentement, en tenant sa feuille bien à plat devant elle."
+      }
+    ]
+  },
+  {
+    "item_code": "T41",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Quel début donne le plus envie de lire la suite ?",
+        "options": [
+          "— Ne te retourne surtout pas, souffla une voix derrière moi.",
+          "Je vais vous raconter une histoire qui m'est arrivée l'an dernier.",
+          "Il était une fois un garçon qui habitait dans une maison.",
+          "Ce matin-là, je me suis levé, j'ai déjeuné et je suis parti à l'école."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un début accroche quand il pose tout de suite une question dans la tête du lecteur : qui parle, et pourquoi ne faut-il pas se retourner ?"
+      },
+      {
+        "question": "« La porte du grenier était entrouverte. Personne n'avait la clé depuis dix ans. » Pourquoi ce début accroche-t-il ?",
+        "options": [
+          "Parce qu'il décrit longuement le grenier.",
+          "Parce qu'il présente tous les personnages dès le départ.",
+          "Parce qu'il pose une énigme : qui a bien pu ouvrir ?",
+          "Parce qu'il commence par une réplique de dialogue."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un bon début installe un manque : le lecteur veut lire la suite pour obtenir la réponse."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les premières lignes",
+        "consigne": "Écris le début d'un récit d'aventure : seulement les premières phrases, celles qui donnent envie de continuer.",
+        "contraintes": [
+          "Tu écris quatre à cinq phrases, pas une de plus.",
+          "Tu commences par une action déjà commencée, ou par une réplique de dialogue.",
+          "Tu n'emploies ni « Il était une fois », ni « Je vais vous raconter », ni « Un jour ».",
+          "Tu ne présentes pas ton personnage comme une fiche : ni son âge, ni son adresse, ni la liste de sa famille.",
+          "Un détail précis du lieu apparaît, sans que le lieu soit nommé.",
+          "Ton début laisse une question sans réponse, que le lecteur se posera."
+        ],
+        "nb_phrases": 5,
+        "exemple": "Le troisième barreau de l'échelle céda juste au moment où la lampe s'éteignit."
+      },
+      {
+        "titre": "Le premier jour, ailleurs",
+        "consigne": "Écris le début d'un récit qui se passe le premier jour d'école, dans un pays que ton personnage ne connaît pas.",
+        "contraintes": [
+          "Tu écris quatre à cinq phrases, pas une de plus.",
+          "Ta première phrase est une question, ou bien une réplique de dialogue.",
+          "Tu n'emploies ni « Il était une fois », ni « Un jour », ni « Bonjour, je m'appelle ».",
+          "Tu fais entendre au moins un bruit et voir au moins une couleur.",
+          "Le lecteur doit comprendre que quelque chose ne va pas, sans que tu l'écrives.",
+          "Tu t'arrêtes juste avant l'événement : tu ne racontes pas encore ce qui va se passer."
+        ],
+        "nb_phrases": 5,
+        "exemple": "— Est-ce que quelqu'un ici parle ma langue ?"
+      }
+    ]
+  },
+  {
+    "item_code": "T42",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Une histoire raconte comment Lila cherche son chat disparu. Quelle fin convient le mieux ?",
+        "options": [
+          "Et puis je me suis réveillée : tout cela n'était qu'un rêve.",
+          "Fin.",
+          "Le chat dormait depuis trois jours dans le carton du déménagement ; Lila referma la porte sans le réveiller.",
+          "Lila aime aussi beaucoup les chevaux et le dessin."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une fin répond à la question posée au début de l'histoire, et laisse au lecteur une dernière image."
+      },
+      {
+        "question": "Pourquoi « Heureusement, ce n'était qu'un rêve » est-elle une fin décevante ?",
+        "options": [
+          "Parce qu'elle efface tout ce qui vient d'être raconté.",
+          "Parce qu'elle est beaucoup trop longue.",
+          "Parce qu'elle contient une faute d'orthographe.",
+          "Parce qu'elle ne comporte pas de dialogue."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Si tout était faux, le lecteur a lu pour rien : la fin doit garder ce que l'histoire a construit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La fin des dessins mystérieux",
+        "consigne": "Voici le début d'une histoire : « Depuis une semaine, quelqu'un dépose un dessin sur le bureau de la maîtresse, chaque matin, avant tout le monde. Personne ne sait qui. » Écris la fin de cette histoire.",
+        "contraintes": [
+          "Tu écris cinq à six phrases.",
+          "Ta fin répond à la question posée par le début : on apprend qui dépose les dessins.",
+          "Tu n'écris ni « c'était un rêve », ni « fin », ni « ils vécurent heureux ».",
+          "Tu racontes une dernière action du personnage, et pas seulement ce qu'il pense.",
+          "Tu emploies au moins un connecteur de temps : « enfin », « ce matin-là », « le lendemain ».",
+          "Ta toute dernière phrase laisse une image ou une parole, et elle fait moins de quinze mots."
+        ],
+        "nb_phrases": 6,
+        "exemple": "Le lendemain, la maîtresse arriva un quart d'heure plus tôt et alluma la lumière du couloir."
+      },
+      {
+        "titre": "La fin du galet promis",
+        "consigne": "Voici le début d'une histoire : « Yanis a promis à son grand-père de rapporter un galet du bout de la plage. Mais la marée monte plus vite que prévu. » Écris la fin de cette histoire.",
+        "contraintes": [
+          "Tu écris cinq à six phrases.",
+          "On apprend si Yanis tient sa promesse, et de quelle façon.",
+          "Tu n'écris ni « c'était un rêve », ni « fin », ni « tout est bien qui finit bien ».",
+          "Ta fin ne fait apparaître aucun personnage nouveau.",
+          "Tu emploies au moins un connecteur de temps.",
+          "Ta toute dernière phrase revient sur le grand-père, et elle fait moins de quinze mots."
+        ],
+        "nb_phrases": 6,
+        "exemple": "L'eau lui arrivait déjà aux genoux quand ses doigts se refermèrent sur quelque chose de lisse."
+      }
+    ]
+  },
+  {
+    "item_code": "T43",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Un paragraphe explique que Sacha s'entraîne tous les jours. Le paragraphe suivant raconte qu'il a perdu le match. Par quel mot commencer ce second paragraphe ?",
+        "options": [
+          "Ainsi",
+          "De plus",
+          "En effet",
+          "Pourtant"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Quand le second paragraphe dit le contraire de ce que le lecteur attendait, on l'annonce par un mot d'opposition."
+      },
+      {
+        "question": "Dans un texte qui présente trois arguments l'un après l'autre, quel enchaînement de connecteurs convient ?",
+        "options": [
+          "Enfin… D'abord… Ensuite",
+          "D'abord… Ensuite… Enfin",
+          "Ensuite… Enfin… D'abord",
+          "D'abord… Pourtant… Ensuite"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Les connecteurs disent au lecteur où il en est : on commence par « d'abord », on continue par « ensuite », on termine par « enfin »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "D'un paragraphe à l'autre",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Premier paragraphe : la cour de récréation est vraiment trop petite. Second paragraphe : la classe a décidé d'écrire au maire. Quel connecteur ouvre le second paragraphe ?",
+            "options": [
+              "C'est pourquoi",
+              "Au contraire",
+              "Par exemple",
+              "Pourtant"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le second paragraphe dit le résultat du premier : on l'annonce par un connecteur de conséquence."
+          },
+          {
+            "question": "Premier paragraphe : Lila adore le théâtre depuis toujours. Second paragraphe : elle refuse de monter sur scène. Quel connecteur ouvre le second paragraphe ?",
+            "options": [
+              "Donc",
+              "Ainsi",
+              "Cependant",
+              "En effet"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le second paragraphe surprend le lecteur : il faut un connecteur d'opposition."
+          },
+          {
+            "question": "Un paragraphe affirme que la bibliothèque est le lieu le plus calme de l'école. Le paragraphe suivant en donne la preuve. Quel connecteur l'ouvre ?",
+            "options": [
+              "En revanche",
+              "En effet",
+              "Pourtant",
+              "Malgré tout"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« En effet » annonce l'explication ou la preuve de ce qui vient d'être affirmé."
+          },
+          {
+            "question": "Tu as déjà donné deux raisons de garder le poulailler de l'école. Tu veux en ajouter une troisième. Quel connecteur emploies-tu ?",
+            "options": [
+              "En revanche",
+              "Autrement dit",
+              "De plus",
+              "Par contre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« De plus » ajoute un argument qui va dans le même sens que les précédents."
+          },
+          {
+            "question": "Quel connecteur annonce la conclusion d'un texte ?",
+            "options": [
+              "Tout d'abord",
+              "Par ailleurs",
+              "D'une part",
+              "Pour finir"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les autres ouvrent ou prolongent le texte : seul « pour finir » annonce le dernier paragraphe."
+          },
+          {
+            "question": "Dans quel ordre ces connecteurs organisent-ils correctement un texte en trois paragraphes ?",
+            "options": [
+              "En conclusion… Ensuite… Tout d'abord",
+              "Tout d'abord… Ensuite… En conclusion",
+              "Ensuite… Tout d'abord… En conclusion",
+              "Tout d'abord… En conclusion… Ensuite"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les connecteurs suivent l'ordre du texte : ouverture, suite, puis conclusion."
+          },
+          {
+            "question": "« Les CM2 partiront en classe de mer au printemps. ___, ils tiendront un carnet de bord chaque soir. » Quel connecteur convient si la seconde phrase ajoute une information ?",
+            "options": [
+              "Par ailleurs",
+              "Au contraire",
+              "En revanche",
+              "Pourtant"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Par ailleurs » ajoute une information nouvelle qui ne contredit pas la première."
+          },
+          {
+            "question": "Que se passe-t-il si un texte n'emploie aucun connecteur entre ses paragraphes ?",
+            "options": [
+              "Il devient forcément plus court.",
+              "Le lecteur ne voit plus le lien entre les idées.",
+              "Il ne contient plus aucun verbe.",
+              "Il devient impossible à ponctuer."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les connecteurs sont les panneaux du texte : sans eux, le lecteur avance sans savoir où on le mène."
+          }
+        ]
+      },
+      {
+        "titre": "Les panneaux du texte",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Premier paragraphe : il a plu pendant toute la sortie. Second paragraphe : la classe est rentrée bien plus tôt que prévu. Quel connecteur ouvre le second paragraphe ?",
+            "options": [
+              "En effet",
+              "Par exemple",
+              "Au contraire",
+              "C'est pour cette raison que"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le second paragraphe dit ce qui découle du premier : c'est un connecteur de conséquence."
+          },
+          {
+            "question": "Premier paragraphe : Malo s'était juré de ne plus jamais grimper. Second paragraphe : il pose le pied sur la première prise. Quel connecteur ouvre le second paragraphe ?",
+            "options": [
+              "Pourtant",
+              "C'est pourquoi",
+              "De plus",
+              "En effet"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le second paragraphe contredit ce que le lecteur attendait : il faut un connecteur d'opposition."
+          },
+          {
+            "question": "Un paragraphe affirme que Jade connaît tous les oiseaux du parc. Le paragraphe suivant raconte un cas précis. Quel connecteur l'ouvre ?",
+            "options": [
+              "Par exemple",
+              "Pourtant",
+              "En revanche",
+              "Malgré cela"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Par exemple » annonce un cas précis qui illustre ce qui vient d'être affirmé."
+          },
+          {
+            "question": "Tu viens d'expliquer pourquoi il faut trier les déchets. Tu veux ajouter un argument de plus. Quel connecteur emploies-tu ?",
+            "options": [
+              "Cependant",
+              "Par ailleurs",
+              "En revanche",
+              "Au contraire"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Par ailleurs » ajoute un argument dans le même sens ; les trois autres annoncent une opposition."
+          },
+          {
+            "question": "Quel connecteur annonce le premier point d'un texte ?",
+            "options": [
+              "Enfin",
+              "En conclusion",
+              "Tout d'abord",
+              "Pour terminer"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les trois autres ferment le texte : seul « tout d'abord » l'ouvre."
+          },
+          {
+            "question": "Dans quel ordre ces connecteurs organisent-ils correctement un texte en trois paragraphes ?",
+            "options": [
+              "Enfin… D'une part… D'autre part",
+              "D'autre part… D'une part… Enfin",
+              "D'une part… D'autre part… Enfin",
+              "D'une part… Enfin… D'autre part"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« D'une part » ouvre, « d'autre part » ajoute, « enfin » conclut : l'ordre suit celui du texte."
+          },
+          {
+            "question": "« La cantine sert désormais un repas végétarien par semaine. ___, les restes ont beaucoup diminué. » Quel connecteur convient si la seconde phrase dit le résultat ?",
+            "options": [
+              "Pourtant",
+              "Par conséquent",
+              "Cependant",
+              "En revanche"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Par conséquent » annonce le résultat de ce qui précède ; les trois autres annoncent une opposition."
+          },
+          {
+            "question": "À quoi servent les connecteurs placés en tête de paragraphe ?",
+            "options": [
+              "À remplacer les majuscules du début.",
+              "À allonger un texte trop court.",
+              "À montrer au lecteur comment les idées s'enchaînent.",
+              "À indiquer qui prend la parole."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un connecteur en tête de paragraphe annonce le lien avec ce qui précède : ajout, opposition, conséquence ou conclusion."
+          }
+        ]
+      }
+    ]
+  }
+]

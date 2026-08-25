@@ -1,0 +1,786 @@
+[
+  {
+    "item_code": "T14",
+    "type": "lecture",
+    "diagnostic": [
+      {
+        "question": "Un texte raconte comment Jade a appris à faire du vélo avec son oncle. Quel titre lui convient le mieux ?",
+        "options": [
+          "Les vacances à la montagne",
+          "Le premier tour de vélo de Jade",
+          "Mon oncle est facteur",
+          "La liste des courses"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le titre annonce ce dont parle le texte en entier, pas seulement un détail."
+      },
+      {
+        "question": "À quoi sert un nouveau paragraphe dans un texte ?",
+        "options": [
+          "à annoncer qu'on change d'idée ou de moment dans l'histoire",
+          "à écrire les mots plus gros",
+          "à répéter la phrase précédente",
+          "à remplacer le titre du texte"
+        ],
+        "reponse_correcte": 0,
+        "explication": "On commence un nouveau paragraphe quand on passe à une autre idée ou à un autre moment."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le chien du boulanger",
+        "texte": "Paragraphe 1. Dans notre rue, tout le monde connaît Pistache, le chien du boulanger. C'est un petit chien blanc, avec une oreille qui tombe et l'autre qui tient bien droite. Il dort toute la matinée sur le paillasson de la boutique. Paragraphe 2. Pistache a une habitude bien à lui. Chaque jour, à quatre heures, il pousse la porte du museau et il descend la rue jusqu'à l'école. Il s'assoit devant le portail et il attend la sortie des classes. Paragraphe 3. Les élèves le caressent les uns après les autres, et Pistache se laisse faire sans bouger une oreille. Certains lui gardent même un bout de pain au fond de la poche. Quand la rue est vide, Pistache remonte tranquillement vers la boulangerie. Le boulanger dit qu'il n'a jamais eu besoin de lui apprendre le chemin.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Combien de paragraphes ce texte contient-il ?",
+            "choix": [
+              "deux paragraphes",
+              "trois paragraphes",
+              "quatre paragraphes",
+              "un seul paragraphe"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 2,
+            "question": "Que raconte le paragraphe 2 ?",
+            "choix": [
+              "à quoi ressemble Pistache",
+              "ce que les élèves disent de Pistache",
+              "l'habitude de Pistache à quatre heures",
+              "comment le boulanger a eu son chien"
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 3,
+            "question": "Quel autre titre conviendrait à ce texte ?",
+            "choix": [
+              "Le chien qui attend les élèves",
+              "La recette du pain de campagne",
+              "Le portail de l'école",
+              "Une journée au bord de la mer"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 4,
+            "question": "De quoi parle le texte en entier ?",
+            "choix": [
+              "d'un boulanger qui ouvre une nouvelle boutique",
+              "d'une classe qui visite une boulangerie",
+              "d'un élève qui a perdu son chien",
+              "d'un chien qui descend chaque jour attendre les élèves"
+            ],
+            "reponse": 3
+          },
+          {
+            "id": 5,
+            "question": "Quel paragraphe décrit à quoi ressemble Pistache ?",
+            "choix": [
+              "le paragraphe 1",
+              "le paragraphe 2",
+              "le paragraphe 3",
+              "aucun des trois"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 6,
+            "question": "Que fait Pistache quand la rue est vide ?",
+            "choix": [
+              "il entre dans l'école",
+              "il aboie devant le portail",
+              "il remonte tranquillement vers la boulangerie",
+              "il dort devant la classe"
+            ],
+            "reponse": 2
+          }
+        ]
+      },
+      {
+        "titre": "La cabane de Louna",
+        "texte": "Paragraphe 1. Au fond du jardin de ma grand-mère, il y a un vieux noyer. Ses branches basses forment une sorte d'escalier, et c'est là que Louna a bâti sa cabane, l'été dernier. Paragraphe 2. La cabane n'est pas très solide. Le plancher est un morceau de porte, les murs sont trois planches clouées n'importe comment. Il faut monter doucement, sinon tout craque sous les pieds. Louna a suspendu un vieux rideau à fleurs devant l'entrée. Paragraphe 3. Dans la cabane, Louna garde une boîte en fer. Elle y range un carnet, deux crayons et une loupe. Quand elle est là-haut, elle écrit tout ce qu'elle voit : les oiseaux, les nuages, le chat du voisin. Personne ne monte sans son autorisation, pas même son grand frère.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Ce texte est découpé en plusieurs paragraphes. Combien en compte-t-on ?",
+            "choix": [
+              "quatre paragraphes",
+              "deux paragraphes",
+              "trois paragraphes",
+              "un seul paragraphe"
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 2,
+            "question": "Que raconte le paragraphe 2 ?",
+            "choix": [
+              "comment la cabane est construite",
+              "ce que Louna garde dans sa boîte en fer",
+              "où habite la grand-mère de Louna",
+              "le nom du chat du voisin"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 3,
+            "question": "Quel autre titre conviendrait à ce texte ?",
+            "choix": [
+              "Le chat du voisin",
+              "Les vacances au bord de la mer",
+              "La cabane du vieux noyer",
+              "La recette des noix"
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 4,
+            "question": "De quoi parle le texte en entier ?",
+            "choix": [
+              "d'une grand-mère qui déménage",
+              "d'un grand frère qui construit une cabane",
+              "d'un noyer qu'il faut couper",
+              "d'une cabane que Louna s'est construite et où elle écrit ce qu'elle voit"
+            ],
+            "reponse": 3
+          },
+          {
+            "id": 5,
+            "question": "Dans quel paragraphe apprend-on ce qu'il y a dans la boîte en fer ?",
+            "choix": [
+              "le paragraphe 3",
+              "le paragraphe 2",
+              "le paragraphe 1",
+              "dans aucun paragraphe"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 6,
+            "question": "Qui a le droit de monter dans la cabane ?",
+            "choix": [
+              "le grand frère de Louna, quand il veut",
+              "seulement les personnes que Louna autorise",
+              "tous les voisins de la rue",
+              "la grand-mère de Louna, seulement le dimanche"
+            ],
+            "reponse": 1
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T45",
+    "type": "lecture",
+    "diagnostic": [
+      {
+        "question": "Dans « Malo a des taches de rousseur sur le nez. », qu'apprend-on sur Malo ?",
+        "options": [
+          "son apparence",
+          "son caractère",
+          "l'endroit où il habite",
+          "son âge"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Ce qu'on voit d'un personnage — son visage, ses cheveux, ses vêtements — décrit son apparence."
+      },
+      {
+        "question": "Quelle phrase dit le caractère de Fatou, et non son apparence ?",
+        "options": [
+          "Fatou porte une natte dans le dos.",
+          "Fatou a les yeux marron.",
+          "Fatou mesure un mètre quarante.",
+          "Fatou n'a jamais peur de parler devant toute la classe."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le caractère dit comment le personnage est à l'intérieur : courageux, timide, patient. Cela ne se voit pas sur une photo."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Adam",
+        "texte": "Adam est le plus grand de la classe de CM1. Il a des cheveux noirs très épais, qu'il coiffe en arrière avec les doigts, et deux yeux sombres toujours un peu rieurs. Une petite cicatrice barre son sourcil gauche : il est tombé d'un toboggan quand il avait quatre ans. Adam parle fort, il rit fort, on l'entend du bout du couloir. Il est aussi le plus patient de nous tous. Quand un élève de CE2 n'y arrive pas, c'est lui qui s'assoit à côté et qui reprend l'explication trois fois, sans s'énerver. Le mardi et le jeudi, Adam se rend au judo. Il porte un survêtement bleu et un sac de sport beaucoup trop lourd pour lui. Il dit qu'un jour il sera moniteur, pour apprendre aux petits à tomber sans avoir peur.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quelle phrase décrit l'apparence d'Adam ?",
+            "choix": [
+              "Il a des cheveux noirs très épais et deux yeux sombres toujours un peu rieurs.",
+              "Il est le plus patient de nous tous.",
+              "Le mardi et le jeudi, Adam se rend au judo.",
+              "Il dit qu'un jour il sera moniteur."
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 2,
+            "question": "Quelle phrase montre le caractère d'Adam ?",
+            "choix": [
+              "Adam est le plus grand de la classe de CM1.",
+              "Il porte un survêtement bleu.",
+              "Il est aussi le plus patient de nous tous.",
+              "Une petite cicatrice barre son sourcil gauche."
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 3,
+            "question": "Pourquoi Adam a-t-il une cicatrice au sourcil ?",
+            "choix": [
+              "parce qu'il fait du judo",
+              "parce qu'il est tombé d'un toboggan à quatre ans",
+              "parce qu'il court dans le couloir",
+              "le texte ne le dit pas"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 4,
+            "question": "Quelle information dit ce qu'Adam FAIT, et ne le décrit pas ?",
+            "choix": [
+              "Il a des cheveux noirs très épais.",
+              "Il a deux yeux sombres un peu rieurs.",
+              "Il est très patient.",
+              "Le mardi et le jeudi, Adam se rend au judo."
+            ],
+            "reponse": 3
+          },
+          {
+            "id": 5,
+            "question": "Quel mot du texte dit le mieux le caractère d'Adam ?",
+            "choix": [
+              "patient",
+              "grand",
+              "bleu",
+              "lourd"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 6,
+            "question": "Comment Adam aide-t-il un élève de CE2 qui n'y arrive pas ?",
+            "choix": [
+              "il lui donne la réponse tout de suite",
+              "il s'assoit à côté de lui et reprend l'explication trois fois",
+              "il appelle la maîtresse",
+              "il lui prête son cahier"
+            ],
+            "reponse": 1
+          }
+        ]
+      },
+      {
+        "titre": "Inès",
+        "texte": "Inès n'est pas facile à repérer dans la cour : elle est petite, elle se déplace vite, et elle porte presque toujours un bonnet, même au mois de juin. Sous ce bonnet, elle a des cheveux châtains coupés au carré. Ses joues deviennent toutes rouges dès qu'elle court. Inès est curieuse de tout. Elle a une question pour tout le monde, du matin au soir : pour la maîtresse, pour la dame de la cantine, pour le gardien de l'école. Elle veut savoir comment marche l'horloge du couloir et pourquoi les pigeons dorment sur le toit. Elle est aussi très têtue : quand elle a une idée, on ne la lui fait pas changer facilement. Le soir, Inès descend au club d'échecs avec son voisin Sacha. Elle a gagné trois parties le mois dernier.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quelle phrase décrit l'apparence d'Inès ?",
+            "choix": [
+              "Inès est curieuse de tout.",
+              "Elle a gagné trois parties le mois dernier.",
+              "Elle veut savoir comment marche l'horloge du couloir.",
+              "Elle a des cheveux châtains coupés au carré."
+            ],
+            "reponse": 3
+          },
+          {
+            "id": 2,
+            "question": "Quelle phrase montre le caractère d'Inès ?",
+            "choix": [
+              "Elle est aussi très têtue : quand elle a une idée, on ne la lui fait pas changer facilement.",
+              "Elle est petite et elle se déplace vite.",
+              "Ses joues deviennent toutes rouges dès qu'elle court.",
+              "Le soir, Inès descend au club d'échecs."
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 3,
+            "question": "Que porte Inès presque toute l'année, même en juin ?",
+            "choix": [
+              "des lunettes rondes",
+              "une écharpe rouge",
+              "un bonnet",
+              "un survêtement bleu"
+            ],
+            "reponse": 2
+          },
+          {
+            "id": 4,
+            "question": "Quand les joues d'Inès deviennent-elles toutes rouges ?",
+            "choix": [
+              "quand elle a froid",
+              "dès qu'elle court",
+              "quand elle gagne aux échecs",
+              "quand la maîtresse l'interroge"
+            ],
+            "reponse": 1
+          },
+          {
+            "id": 5,
+            "question": "Quel mot du texte dit le mieux le caractère d'Inès ?",
+            "choix": [
+              "curieuse",
+              "petite",
+              "rouge",
+              "châtains"
+            ],
+            "reponse": 0
+          },
+          {
+            "id": 6,
+            "question": "Quelle phrase dit ce qu'Inès FAIT, et ne la décrit pas ?",
+            "choix": [
+              "Elle est petite.",
+              "Elle est très têtue.",
+              "Elle a des cheveux coupés au carré.",
+              "Le soir, Inès descend au club d'échecs avec son voisin Sacha."
+            ],
+            "reponse": 3
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T15",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "À quoi reconnaît-on la fin d'une phrase quand on écrit un texte ?",
+        "options": [
+          "La ligne est pleine : on va à la ligne et on continue l'idée plus bas.",
+          "On a écrit cinq mots : on met un point et on repart à zéro.",
+          "L'idée est complète : on met un point, la suivante prend une majuscule.",
+          "On rencontre un prénom : on met un point juste avant lui."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une phrase s'arrête quand l'idée est entière : on ferme avec un point et la phrase suivante repart avec une majuscule."
+      },
+      {
+        "question": "Dans quel texte un point coupe-t-il une idée en deux ?",
+        "options": [
+          "Adam pose son plateau. Il s'assoit près de Fatou.",
+          "Inès prend une pomme. Elle la pose. Sur son plateau.",
+          "Sacha ouvre son livre. Il lit le titre. Il commence l'histoire.",
+          "Fatou verse de l'eau. Elle boit lentement."
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Sur son plateau. » ne forme pas une phrase toute seule : le point a été mis au milieu d'une idée."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Un texte bien découpé",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quel texte est correctement écrit ?",
+            "options": [
+              "le vent souffle sur la cour. les feuilles tournent devant le préau.",
+              "Le vent souffle sur la cour. Les feuilles tournent devant le préau.",
+              "Le vent souffle sur la cour les feuilles tournent devant le préau.",
+              "Le vent souffle sur la cour. les feuilles tournent devant le préau"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Chaque phrase du texte a besoin de sa majuscule ET de son point."
+          },
+          {
+            "question": "Combien de phrases faut-il écrire dans : « nour ouvre la boîte elle sort les crayons de couleur » ?",
+            "options": [
+              "quatre phrases",
+              "trois phrases",
+              "une seule phrase",
+              "deux phrases"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Nour ouvre la boîte » et « elle sort les crayons de couleur » sont deux idées complètes : deux phrases."
+          },
+          {
+            "question": "Où faut-il mettre le premier point dans : « Timéo pousse la porte du gymnase il enfile ses baskets » ?",
+            "options": [
+              "après « gymnase »",
+              "après « porte »",
+              "après « Timéo »",
+              "après « il »"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le point se met à la fin de la première idée complète, juste avant que la seconde commence."
+          },
+          {
+            "question": "Quel texte est correctement découpé en phrases ?",
+            "options": [
+              "Jade entre. Dans la classe elle enlève. Son manteau.",
+              "Jade entre dans la classe elle enlève son manteau.",
+              "Jade entre dans la classe. Elle enlève son manteau.",
+              "jade entre dans la classe. elle enlève son manteau."
+            ],
+            "reponse_correcte": 2,
+            "explication": "On coupe entre les deux idées, pas au milieu de l'une d'elles."
+          },
+          {
+            "question": "Une majuscule a été oubliée dans : « Le car arrive à huit heures. les élèves montent un par un. » Où est l'oubli ?",
+            "options": [
+              "sur « car »",
+              "sur « les »",
+              "sur « heures »",
+              "sur « montent »"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Après un point, le mot suivant commence une nouvelle phrase : il prend une majuscule."
+          },
+          {
+            "question": "Combien de phrases contient ce texte : « Fatou ouvre son casier. Elle sort son cahier. Elle écrit la date. » ?",
+            "options": [
+              "une",
+              "deux",
+              "trois",
+              "quatre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "On compte les points : il y en a trois, donc trois phrases."
+          },
+          {
+            "question": "Dans quel texte le découpage est-il mal fait ?",
+            "options": [
+              "Le chien dort. Le chat le surveille.",
+              "Inès rit. Sacha rit aussi.",
+              "La cloche sonne. Les élèves montent en classe.",
+              "Malo lève la main. la maîtresse l'interroge."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le point est bien placé, mais la phrase qui suit commence sans majuscule."
+          },
+          {
+            "question": "Un élève a écrit : « Louna range ses affaires. et elle sort dans la cour. » Quelle correction convient ?",
+            "options": [
+              "Louna range ses affaires et elle sort dans la cour.",
+              "Louna range ses affaires. Et. Elle sort dans la cour.",
+              "louna range ses affaires et elle sort dans la cour.",
+              "Louna range ses affaires et elle sort dans la cour"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On n'ouvre pas une phrase avec « et » après un point : ici les deux idées tiennent dans une seule phrase."
+          }
+        ]
+      },
+      {
+        "titre": "Majuscules et points dans le texte",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quel texte est correctement écrit ?",
+            "options": [
+              "adam ouvre son casier. il sort son classeur.",
+              "Adam ouvre son casier il sort son classeur.",
+              "Adam ouvre son casier. Il sort son classeur.",
+              "Adam ouvre son casier. Il sort son classeur"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Chaque phrase du texte a besoin de sa majuscule ET de son point."
+          },
+          {
+            "question": "Combien de phrases faut-il écrire dans : « la pluie tombe depuis ce matin la cour est pleine de flaques » ?",
+            "options": [
+              "deux phrases",
+              "une seule phrase",
+              "trois phrases",
+              "quatre phrases"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Il y a deux idées complètes, chacune avec son sujet et son verbe."
+          },
+          {
+            "question": "Où faut-il mettre le premier point dans : « Inès tourne la page elle relit la consigne » ?",
+            "options": [
+              "après « Inès »",
+              "après « tourne »",
+              "après « elle »",
+              "après « page »"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le point se met à la fin de la première idée complète, juste avant que la seconde commence."
+          },
+          {
+            "question": "Quel texte est correctement découpé en phrases ?",
+            "options": [
+              "Timéo dépose. Son sac sur le banc il enlève. Son manteau.",
+              "Timéo dépose son sac sur le banc. Il enlève son manteau.",
+              "Timéo dépose son sac sur le banc il enlève son manteau.",
+              "timéo dépose son sac sur le banc. il enlève son manteau."
+            ],
+            "reponse_correcte": 1,
+            "explication": "On coupe entre les deux idées, et chaque phrase reprend avec une majuscule."
+          },
+          {
+            "question": "Une majuscule a été oubliée dans : « Le portail s'ouvre à huit heures et demie. nous entrons dans la cour. » Où est l'oubli ?",
+            "options": [
+              "sur « portail »",
+              "sur « heures »",
+              "sur « nous »",
+              "sur « cour »"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Après un point, une nouvelle phrase commence : son premier mot prend une majuscule."
+          },
+          {
+            "question": "Combien de phrases contient ce texte : « Louna arrose les plantes. Elle vide l'arrosoir. Elle referme la fenêtre. » ?",
+            "options": [
+              "trois",
+              "deux",
+              "une",
+              "quatre"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On compte les points : il y en a trois, donc trois phrases."
+          },
+          {
+            "question": "Dans quel texte le découpage est-il mal fait ?",
+            "options": [
+              "La cloche sonne. Tout le monde se tait.",
+              "Yanis lève le doigt. la maîtresse l'écoute.",
+              "Il pleut. Nous restons sous le préau.",
+              "Le car démarre. Nous partons enfin."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le point est bien placé, mais la phrase qui suit commence sans majuscule."
+          },
+          {
+            "question": "Un élève a écrit : « Nour range ses crayons. et elle ferme sa trousse. » Quelle correction convient ?",
+            "options": [
+              "nour range ses crayons et elle ferme sa trousse.",
+              "Nour range ses crayons et elle ferme sa trousse",
+              "Nour range ses crayons. Et. Elle ferme sa trousse.",
+              "Nour range ses crayons et elle ferme sa trousse."
+            ],
+            "reponse_correcte": 3,
+            "explication": "On n'ouvre pas une phrase avec « et » après un point : les deux idées tiennent dans une seule phrase, avec une majuscule au début et un point à la fin."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T16",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "« Tu emportes ton pull ou ta casquette ? » demande la maîtresse à Fatou. Combien d'affaires Fatou va-t-elle emporter ?",
+        "options": [
+          "les deux",
+          "aucune des deux",
+          "d'abord l'une, ensuite l'autre",
+          "une seule"
+        ],
+        "reponse_correcte": 3,
+        "explication": "« ou » pose deux possibilités côte à côte et on n'en garde qu'une seule."
+      },
+      {
+        "question": "Un élève a écrit : « Timéo prend un jus et un lait. » Pourtant Timéo n'a droit qu'à une seule boisson. Que faut-il corriger ?",
+        "options": [
+          "Il faut remplacer « et » par « et puis ».",
+          "Il faut remplacer « prend » par « choisit ».",
+          "Il faut remplacer « et » par « ou ».",
+          "Il n'y a rien à corriger."
+        ],
+        "reponse_correcte": 2,
+        "explication": "« et » garde les deux boissons ; pour n'en garder qu'une, il faut écrire « ou »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Proposer un choix",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "La maîtresse n'accepte qu'un seul livre par élève. « Tu prends l'album des dinosaures ___ le roman des pirates ? » Quel mot convient ?",
+            "options": [
+              "ou",
+              "et",
+              "et puis",
+              "aussi"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un seul livre est possible : « ou » propose le choix entre les deux."
+          },
+          {
+            "question": "Quelle phrase propose un choix ?",
+            "options": [
+              "Rosalie prend un pain au chocolat et une brioche.",
+              "Rosalie prend un pain au chocolat, une brioche.",
+              "Rosalie prend un pain au chocolat ou une brioche.",
+              "Rosalie prend un pain au chocolat ou. Une brioche."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Avec « ou », Rosalie n'emporte qu'une seule des deux viennoiseries."
+          },
+          {
+            "question": "Quelle phrase emploie « ou bien » correctement ?",
+            "options": [
+              "Ou bien Malo lit un magazine il bricole dans le garage.",
+              "Malo lit un magazine ou bien il bricole dans le garage.",
+              "Malo lit un magazine ou bien. Il bricole dans le garage.",
+              "Malo lit un magazine, ou bien, ou bien il bricole dans le garage."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« ou bien » se place entre les deux possibilités, à l'intérieur d'une seule phrase."
+          },
+          {
+            "question": "Sacha ne peut s'inscrire qu'à une seule activité. Quelle phrase dit correctement ce choix ?",
+            "options": [
+              "Sacha s'inscrit au judo et à la chorale.",
+              "Sacha s'inscrit au judo, à la chorale.",
+              "Sacha s'inscrit au judo et puis à la chorale.",
+              "Sacha s'inscrit au judo ou à la chorale."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« et » ajoute les deux activités ; ici il n'en reste qu'une, donc « ou »."
+          },
+          {
+            "question": "Dans « Tu viens à pied ou à vélo ? », que veut dire « ou » ?",
+            "options": [
+              "il faut faire les deux",
+              "il faut choisir entre les deux",
+              "les deux sont interdits",
+              "c'est exactement la même chose"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« ou » propose deux possibilités et on n'en retient qu'une."
+          },
+          {
+            "question": "Il ne reste qu'un seul dessert pour Inès. « Tu veux la pomme ___ le yaourt ? » demande son père. Quel mot convient ?",
+            "options": [
+              "et",
+              "et puis",
+              "ou bien",
+              "aussi"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« ou bien » propose le choix, exactement comme « ou »."
+          },
+          {
+            "question": "Dans quelle phrase faut-il écrire « et » à la place du trou, et non « ou » ?",
+            "options": [
+              "Louna met son maillot ___ sa serviette dans le sac de piscine.",
+              "Louna part à la piscine ___ à la patinoire, elle n'a pas encore décidé.",
+              "Louna prend le bus ___ le tram, au choix.",
+              "Louna choisit une seule couleur de bonnet : le rouge ___ le bleu."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le maillot et la serviette partent tous les deux : on ajoute, donc « et »."
+          },
+          {
+            "question": "Adam fait les deux : il termine son exercice, ensuite il relit sa phrase. Quelle phrase convient ?",
+            "options": [
+              "Adam termine son exercice ou il relit sa phrase.",
+              "Adam termine son exercice ou bien il relit sa phrase.",
+              "Adam termine son exercice, il relit sa phrase ou.",
+              "Adam termine son exercice et il relit sa phrase."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Quand les deux actions ont lieu, on relie avec « et » ; « ou » ferait croire qu'il faut choisir."
+          }
+        ]
+      },
+      {
+        "titre": "L'un ou l'autre",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Le maître donne une seule feuille par élève. « Tu prends la feuille blanche ___ la feuille jaune ? » Quel mot convient ?",
+            "options": [
+              "et",
+              "ou",
+              "et puis",
+              "aussi"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une seule feuille est possible : « ou » propose le choix entre les deux."
+          },
+          {
+            "question": "Quelle phrase propose un choix ?",
+            "options": [
+              "Jade emporte un livre et un magazine.",
+              "Jade emporte un livre, un magazine.",
+              "Jade emporte un livre et puis un magazine.",
+              "Jade emporte un livre ou un magazine."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Avec « ou », Jade n'emporte qu'une seule des deux lectures."
+          },
+          {
+            "question": "Quelle phrase emploie « ou bien » correctement ?",
+            "options": [
+              "Adam révise dans sa chambre ou bien il travaille à la cuisine.",
+              "Ou bien Adam révise dans sa chambre il travaille à la cuisine.",
+              "Adam révise dans sa chambre ou bien. Il travaille à la cuisine.",
+              "Adam révise ou bien dans sa chambre il travaille à la cuisine."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« ou bien » se place entre les deux possibilités, à l'intérieur d'une seule phrase."
+          },
+          {
+            "question": "Louna ne peut emprunter qu'un seul livre à la bibliothèque. Quelle phrase dit correctement ce choix ?",
+            "options": [
+              "Louna emprunte le roman et l'album.",
+              "Louna emprunte le roman, l'album.",
+              "Louna emprunte le roman ou l'album.",
+              "Louna emprunte le roman et puis l'album."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un seul livre sort de la bibliothèque : il faut « ou »."
+          },
+          {
+            "question": "Dans « Tu écris au crayon ou au stylo ? », que veut dire « ou » ?",
+            "options": [
+              "il faut écrire deux fois",
+              "il faut utiliser les deux",
+              "les deux sont interdits",
+              "il faut choisir entre les deux"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« ou » propose deux possibilités et on n'en retient qu'une."
+          },
+          {
+            "question": "Dans quelle phrase faut-il écrire « et » à la place du trou, et non « ou » ?",
+            "options": [
+              "Sacha met son cahier ___ sa trousse dans son cartable.",
+              "Sacha part en vacances à la mer ___ à la montagne, il n'a pas décidé.",
+              "Sacha choisit une seule couleur : le vert ___ le violet.",
+              "Sacha rentre à pied ___ en bus, comme il veut."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le cahier et la trousse partent tous les deux dans le cartable : on ajoute, donc « et »."
+          },
+          {
+            "question": "Il ne reste qu'une part de gâteau pour Rosalie. « Tu veux le morceau au chocolat ___ le morceau aux pommes ? » Quel mot convient ?",
+            "options": [
+              "et",
+              "et puis",
+              "ou bien",
+              "aussi"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une seule part est possible : « ou bien » propose le choix, comme « ou »."
+          },
+          {
+            "question": "Malo fait les deux : il verse de l'eau dans son verre, ensuite il boit d'un trait. Quelle phrase convient ?",
+            "options": [
+              "Malo verse de l'eau dans son verre ou il boit d'un trait.",
+              "Malo verse de l'eau dans son verre et il boit d'un trait.",
+              "Malo verse de l'eau dans son verre ou bien il boit d'un trait.",
+              "Malo verse de l'eau dans son verre, il boit d'un trait ou."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les deux actions ont lieu : on relie avec « et ». « ou » ferait croire qu'il faut choisir."
+          }
+        ]
+      }
+    ]
+  }
+]

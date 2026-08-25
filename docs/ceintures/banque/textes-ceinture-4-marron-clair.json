@@ -1,0 +1,588 @@
+[
+  {
+    "item_code": "T48",
+    "type": "ecriture_contrainte",
+    "diagnostic": [
+      {
+        "question": "Dans laquelle de ces phrases trouve-t-on une comparaison ?",
+        "options": [
+          "Timéo a des cheveux roux.",
+          "Timéo a des cheveux roux comme les feuilles de l'automne.",
+          "Timéo aime beaucoup ses cheveux roux.",
+          "Timéo a des cheveux roux depuis toujours."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Comparer, c'est rapprocher deux choses avec un mot comme « comme » : des cheveux roux comme des feuilles d'automne."
+      },
+      {
+        "question": "Quelle phrase enrichit le portrait grâce à des adjectifs ?",
+        "options": [
+          "Nour a un sourire depuis ce matin dans la cour de récréation.",
+          "Nour a un sourire qu'elle montre souvent aux autres élèves.",
+          "Nour a un sourire, et elle rit tout le temps.",
+          "Nour a un sourire large et malicieux."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un adjectif précise le nom : « un sourire large et malicieux » se voit tout de suite, « un sourire » ne dit presque rien."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le portrait de Timéo, le gardien de but",
+        "consigne": "Écris le portrait de Timéo, le gardien de but de l'équipe de l'école, pour qu'on puisse l'imaginer sans l'avoir vu.",
+        "contraintes": [
+          "Tu écris quatre phrases.",
+          "Tu emploies au moins quatre adjectifs différents.",
+          "Une phrase au moins contient une comparaison avec « comme ».",
+          "Tu n'emploies jamais deux fois le même adjectif.",
+          "Tu ne commences pas deux phrases par le prénom « Timéo »."
+        ],
+        "nb_phrases": 4,
+        "exemple": "Ses gants trop grands pendent au bout de ses bras comme deux moufles d'hiver."
+      },
+      {
+        "titre": "Le portrait d'Inès, la voisine du dessus",
+        "consigne": "Écris le portrait d'Inès, ta nouvelle voisine, pour que ton lecteur la reconnaisse dans la rue.",
+        "contraintes": [
+          "Tu écris cinq phrases.",
+          "Tu emploies au moins cinq adjectifs différents.",
+          "Tu écris deux comparaisons avec « comme », dans deux phrases différentes.",
+          "Tu décris au moins trois choses : les cheveux, les yeux, et la voix ou la démarche.",
+          "Tu n'emploies pas plus de deux fois le verbe « avoir »."
+        ],
+        "nb_phrases": 5,
+        "exemple": "Sa voix fine et claire résonne dans la cage d'escalier comme une clochette."
+      }
+    ]
+  },
+  {
+    "item_code": "T26",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Dans « Hier, Timéo a ___ un grand cri dans le couloir. (entendre) », quelle forme convient ?",
+        "options": [
+          "entend",
+          "entendu",
+          "entendre",
+          "entendait"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Après l'auxiliaire « a », le verbe se met au participe passé : il a entendu. C'est le passé composé."
+      },
+      {
+        "question": "Le texte est écrit au présent. Quelle phrase casse la cohérence des temps ?",
+        "options": [
+          "Sacha ouvre la porte de la classe.",
+          "Il glisse son sac sous la table.",
+          "Il a bu son verre d'eau d'un trait.",
+          "Il sourit à sa voisine."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Dans un texte au présent, les actions du moment se racontent au présent : « il boit son verre d'eau d'un trait »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La photo de classe",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent ou au passé composé, selon le moment indiqué par la phrase.",
+        "texte_complet": "En ce moment, Lila (mettre) met sa plus belle chemise. Hier, elle a rangé son cartable et (perdre) perdu son élastique à cheveux. Maintenant, elle (attendre) attend son tour devant le photographe. La semaine dernière, Malo a feuilleté l'album et (voir) vu la photo de l'an dernier. À présent, il (rire) rit tout seul devant le cadre.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "met",
+            "indice": "« En ce moment » : la scène se passe sous nos yeux, écris le présent."
+          },
+          {
+            "position": 1,
+            "mot": "perdu",
+            "indice": "« Hier » : la phrase est au passé composé, et ton verbe est relié par « et » à « a rangé ». Écris le participe passé."
+          },
+          {
+            "position": 2,
+            "mot": "attend",
+            "indice": "« Maintenant » : la scène se passe sous nos yeux, écris le présent."
+          },
+          {
+            "position": 3,
+            "mot": "vu",
+            "indice": "« La semaine dernière » : la phrase est au passé composé, et ton verbe est relié par « et » à « a feuilleté ». Écris le participe passé."
+          },
+          {
+            "position": 4,
+            "mot": "rit",
+            "indice": "« À présent » : on est revenu au moment de la photo, écris le présent."
+          }
+        ]
+      },
+      {
+        "titre": "L'exposé de Fatou",
+        "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent ou au passé composé, selon le moment indiqué par la phrase.",
+        "texte_complet": "En ce moment, Fatou (relire) relit ses notes devant la classe. Hier soir, elle a répété devant la glace et (lire) lu son exposé à ses parents. Maintenant, elle (brandir) brandit une grande affiche devant ses camarades. La semaine dernière, le maître a ouvert un carton et (offrir) offert un carnet à chaque élève. À présent, Fatou (tenir) tient le sien à la main.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "relit",
+            "indice": "« En ce moment » : la scène se passe sous nos yeux, écris le présent."
+          },
+          {
+            "position": 1,
+            "mot": "lu",
+            "indice": "« Hier soir » : la phrase est au passé composé, et ton verbe est relié par « et » à « a répété ». Écris le participe passé."
+          },
+          {
+            "position": 2,
+            "mot": "brandit",
+            "indice": "« Maintenant » : on est revenu au moment de l'exposé, écris le présent."
+          },
+          {
+            "position": 3,
+            "mot": "offert",
+            "indice": "« La semaine dernière » : la phrase est au passé composé, et ton verbe est relié par « et » à « a ouvert ». Écris le participe passé."
+          },
+          {
+            "position": 4,
+            "mot": "tient",
+            "indice": "« À présent » : l'action se passe sous nos yeux, écris le présent."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T28",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Dans « Plus loin, un chemin monte vers la forêt. », que nous dit le groupe « Plus loin » ?",
+        "options": [
+          "l'endroit",
+          "le moment",
+          "la manière",
+          "la raison"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« Plus loin » situe dans l'espace : c'est un connecteur de lieu, il répond à la question « où ? »."
+      },
+      {
+        "question": "Quelle phrase commence par un connecteur de temps ?",
+        "options": [
+          "Derrière la haie, un chat se cache.",
+          "Sous le préau, les CM1 s'abritent.",
+          "Le lendemain, la classe part en sortie.",
+          "Au fond de la cour, il y a un banc."
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Le lendemain » situe dans le temps : il répond à la question « quand ? ». Les trois autres disent où."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des mots pour situer",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « Au fond de la cour, un grand marronnier donne de l'ombre. », que nous dit le groupe « Au fond de la cour » ?",
+            "options": [
+              "où ?",
+              "quand ?",
+              "comment ?",
+              "pourquoi ?"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Au fond de la cour » indique l'endroit : c'est un connecteur de lieu."
+          },
+          {
+            "question": "Dans « Le lendemain matin, Jade retrouve son écharpe. », que nous dit le groupe « Le lendemain matin » ?",
+            "options": [
+              "où ?",
+              "comment ?",
+              "quand ?",
+              "avec qui ?"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Le lendemain matin » indique le moment : c'est un connecteur de temps."
+          },
+          {
+            "question": "« Lila entre dans la bibliothèque. ___, elle repère la table du fond. » Quel connecteur de lieu convient ?",
+            "options": [
+              "Tout à coup",
+              "Dehors",
+              "Là-bas",
+              "Enfin"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Dehors » est bien un connecteur de lieu, mais Lila vient d'entrer : la table est à l'intérieur. « Là-bas » désigne un endroit plus loin dans la salle."
+          },
+          {
+            "question": "« Malo fouille partout dans son casier. ___, il retrouve sa règle sous le radiateur. » Quel connecteur de temps convient ?",
+            "options": [
+              "Autrefois",
+              "Finalement",
+              "Au-dessus",
+              "Là-bas"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Autrefois » est aussi un connecteur de temps, mais il renvoie à un passé lointain : ici, la règle est retrouvée au bout de la recherche, donc « Finalement »."
+          },
+          {
+            "question": "Quelle phrase commence par un connecteur de temps ?",
+            "options": [
+              "Depuis ce matin, la pluie ne s'arrête pas.",
+              "Sous le préau, les CM2 s'abritent.",
+              "Près du portail, Nour attend sa mère.",
+              "Dans le couloir, on marche en silence."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Depuis ce matin » dit quand ; les trois autres disent où."
+          },
+          {
+            "question": "Dans quel ordre ces trois connecteurs racontent-ils une journée ?",
+            "options": [
+              "Enfin, ensuite, d'abord",
+              "D'abord, ensuite, enfin",
+              "Ensuite, enfin, d'abord",
+              "D'abord, enfin, ensuite"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« D'abord » ouvre, « ensuite » continue, « enfin » termine."
+          },
+          {
+            "question": "Dans quelle phrase le connecteur ne va pas avec le reste de la phrase ?",
+            "options": [
+              "Hier, nous avons visité le musée.",
+              "Ce matin, nous avons visité le musée.",
+              "Demain, nous avons visité le musée.",
+              "La semaine dernière, nous avons visité le musée."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Demain » annonce l'avenir : on ne peut pas le placer devant une action déjà terminée."
+          },
+          {
+            "question": "« ___ du tableau, la maîtresse a affiché nos portraits : il faut lever la tête pour les regarder. » Quel connecteur de lieu convient ?",
+            "options": [
+              "Bientôt",
+              "Aussitôt",
+              "Au-dessous",
+              "Au-dessus"
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Au-dessous » est aussi un connecteur de lieu, mais on baisserait la tête. Puisqu'on la lève, les portraits sont au-dessus du tableau."
+          }
+        ]
+      },
+      {
+        "titre": "Situer dans le temps et dans l'espace",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « À la fin de la récréation, Sacha range le ballon. », que nous dit le groupe « À la fin de la récréation » ?",
+            "options": [
+              "où ?",
+              "comment ?",
+              "pourquoi ?",
+              "quand ?"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Ce groupe indique le moment : c'est un connecteur de temps."
+          },
+          {
+            "question": "Dans « Derrière le gymnase, un chat gris se promène. », que nous dit le groupe « Derrière le gymnase » ?",
+            "options": [
+              "quand ?",
+              "où ?",
+              "comment ?",
+              "combien ?"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Ce groupe indique l'endroit : c'est un connecteur de lieu."
+          },
+          {
+            "question": "« Inès pousse la porte du grenier. ___, deux vieilles malles dorment sous la poussière. » Quel connecteur de lieu convient ?",
+            "options": [
+              "Au milieu",
+              "Au rez-de-chaussée",
+              "Aussitôt",
+              "Autrefois"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Au rez-de-chaussée » est aussi un connecteur de lieu, mais Inès vient d'entrer dans le grenier : les malles sont au milieu de la pièce où elle se trouve."
+          },
+          {
+            "question": "« Yanis a fouillé tout le vestiaire pour trouver son maillot. ___, il l'a retrouvé au fond de son sac. » Quel connecteur de temps convient ?",
+            "options": [
+              "Devant",
+              "Avant de chercher",
+              "À la fin",
+              "Par-dessus"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Avant de chercher » est aussi un connecteur de temps, mais Yanis a déjà fouillé : on raconte la fin de la recherche, donc « À la fin »."
+          },
+          {
+            "question": "Quelle phrase commence par un connecteur de lieu ?",
+            "options": [
+              "Ce soir-là, la classe répète la pièce.",
+              "Plus tard, nous irons au théâtre.",
+              "Tout à coup, la lumière s'éteint.",
+              "Au premier rang, les parents sourient."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Au premier rang » dit où ; les trois autres disent quand."
+          },
+          {
+            "question": "Quel connecteur annonce la toute première action d'un récit ?",
+            "options": [
+              "Enfin",
+              "Pour finir",
+              "Tout d'abord",
+              "Ensuite"
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Tout d'abord » ouvre le récit ; « ensuite » continue, « enfin » et « pour finir » le terminent."
+          },
+          {
+            "question": "Dans quelle phrase le connecteur ne va pas avec le reste de la phrase ?",
+            "options": [
+              "L'an prochain, nous partirons en classe de mer.",
+              "Le mois prochain, nous partirons en classe de mer.",
+              "Bientôt, nous partirons en classe de mer.",
+              "L'an dernier, nous partirons en classe de mer."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« L'an dernier » renvoie au passé : on ne peut pas le placer devant une action à venir."
+          },
+          {
+            "question": "« ___ la maison, un vieux puits se cache sous le lierre du jardin. » Quel connecteur de lieu convient ?",
+            "options": [
+              "Aussitôt",
+              "Derrière",
+              "Dans",
+              "Longtemps"
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Dans » est aussi un connecteur de lieu, mais un puits couvert de lierre se trouve au jardin, pas à l'intérieur : il est derrière la maison."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "T29",
+    "type": "qcm",
+    "diagnostic": [
+      {
+        "question": "Tu relis : « Inès a rangé la salle. Ensuite elle a éteint les lumières. Ensuite elle a baissé les stores. Ensuite elle est partie. » Qu'est-ce que ta grille de relecture signale ?",
+        "options": [
+          "Les verbes ne sont pas au même temps.",
+          "Il manque une majuscule au début des phrases.",
+          "Le prénom est répété à chaque phrase.",
+          "Le connecteur « ensuite » est répété trois fois."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un connecteur se répète comme un mot : quand « ensuite » revient à chaque phrase, remplaces-en par « puis », « alors » ou « un peu plus tard »."
+      },
+      {
+        "question": "Le récit est écrit au passé. Quelle phrase casse la cohérence des temps ?",
+        "options": [
+          "Elle allume la lumière du couloir.",
+          "Nour a poussé la porte sans bruit.",
+          "Elle a déposé son sac dans l'entrée.",
+          "Elle est montée dans sa chambre."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Dans un récit au passé, toutes les actions se racontent au passé : « elle a allumé la lumière du couloir »."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je relis avec ma grille ③",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « Rosalie ouvre son cahier. Rosalie écrit la date. Rosalie souligne le titre. », que faut-il corriger ?",
+            "options": [
+              "Il faut mettre les verbes au futur.",
+              "Il faut remplacer deux fois « Rosalie » par « elle ».",
+              "Il faut supprimer la dernière phrase.",
+              "Il faut mettre un point d'interrogation."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Trois fois le même prénom alourdit le texte : un pronom suffit dès qu'on sait de qui on parle."
+          },
+          {
+            "question": "Le récit est au passé composé. Quelle phrase casse la cohérence des temps ?",
+            "options": [
+              "Fatou a ouvert le vieux carton.",
+              "Elle a découvert un cahier jauni.",
+              "Elle tourne les pages une à une.",
+              "Elle a reconnu l'écriture de sa mère."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Il faut écrire « elle a tourné les pages » pour rester au passé composé comme le reste du récit."
+          },
+          {
+            "question": "« Nous avons visité le musée. ___, nous avons pique-niqué dans le parc. » Quel connecteur manque ?",
+            "options": [
+              "Pourtant",
+              "Là-bas",
+              "Comme",
+              "Ensuite"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les deux actions se suivent dans le temps : « Ensuite » les relie."
+          },
+          {
+            "question": "Quelle version évite les répétitions ?",
+            "options": [
+              "Le chien de Jade aboie. Il court après le ballon. L'animal revient vers sa maîtresse.",
+              "Le chien de Jade aboie. Le chien court après le ballon. Le chien revient.",
+              "Le chien de Jade aboie. Le chien de Jade court. Le chien de Jade revient.",
+              "Le chien aboie. Le chien court. Le chien revient. Le chien repart."
+            ],
+            "reponse_correcte": 0,
+            "explication": "On désigne le même animal de trois façons : « le chien », « il », « l'animal »."
+          },
+          {
+            "question": "Dans « Hier, nous partons en sortie. », qu'est-ce qui ne va pas ?",
+            "options": [
+              "Le connecteur « Hier » ne va pas avec un verbe au présent.",
+              "Il manque une majuscule.",
+              "Le verbe n'est pas accordé avec le sujet.",
+              "Il manque un point à la fin."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Hier » renvoie au passé : il faut écrire « nous sommes partis en sortie »."
+          },
+          {
+            "question": "Quelle phrase emploie un connecteur de lieu ?",
+            "options": [
+              "Enfin, la cloche a sonné.",
+              "Au bout du couloir, une porte était ouverte.",
+              "Ce matin-là, il pleuvait.",
+              "Tout à coup, la lumière s'est éteinte."
+            ],
+            "reponse_correcte": 1,
+            "explication": "« Au bout du couloir » dit où ; les trois autres disent quand."
+          },
+          {
+            "question": "Le texte est au présent. Quelle phrase casse la cohérence des temps ?",
+            "options": [
+              "Lila trie ses affaires.",
+              "Elle boucle son cartable.",
+              "Elle sort dans la cour.",
+              "Elle a enfilé son manteau."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Il faut écrire « elle enfile son manteau » pour rester au présent comme le reste du texte."
+          },
+          {
+            "question": "Quelle phrase répète inutilement la même idée ?",
+            "options": [
+              "Le vent soufflait fort et il faisait froid.",
+              "Elle a ouvert la fenêtre du salon.",
+              "Les élèves écoutaient la lecture.",
+              "Il montait l'escalier pour aller en haut."
+            ],
+            "reponse_correcte": 3,
+            "explication": "« Monter » veut déjà dire aller en haut : le reste de la phrase ne sert à rien."
+          }
+        ]
+      },
+      {
+        "titre": "Ma grille de relecture ③ au travail",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans « Louna a trouvé un chaton. Louna a nourri le chaton. Louna a gardé le chaton. », qu'est-ce que ta grille signale ?",
+            "options": [
+              "Les temps ne sont pas cohérents.",
+              "Le prénom et le mot « chaton » se répètent.",
+              "Les verbes ne sont pas accordés.",
+              "Les phrases sont interrogatives."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux mots reviennent à chaque phrase : remplace-les par « elle » et « il » dès qu'on sait de qui on parle."
+          },
+          {
+            "question": "Le récit est au présent. Quelle phrase casse la cohérence des temps ?",
+            "options": [
+              "Adam mélange les cartes.",
+              "Il compte les points à voix haute.",
+              "Il a gagné la partie.",
+              "Il sourit à Jade."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Il faut écrire « il gagne la partie » pour rester au présent comme le reste du récit."
+          },
+          {
+            "question": "« Nous sommes montés au sommet. ___, nous avons vu toute la vallée. » Quel connecteur convient ?",
+            "options": [
+              "De là-haut",
+              "Autrefois",
+              "Pourtant",
+              "Comme"
+            ],
+            "reponse_correcte": 0,
+            "explication": "« De là-haut » dit d'où l'on regarde : c'est un connecteur de lieu, et il enchaîne les deux phrases."
+          },
+          {
+            "question": "Quelle version évite le mieux les répétitions ?",
+            "options": [
+              "Le maître a ouvert la boîte. Le maître a sorti les photos. Le maître a souri.",
+              "Le maître a ouvert la boîte. Il en a sorti les photos. Puis il a souri.",
+              "Le maître a ouvert la boîte. La boîte contenait des photos. Les photos étaient vieilles.",
+              "Le maître a ouvert la boîte du maître avec les photos du maître."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le pronom « il » et le connecteur « puis » remplacent les répétitions et enchaînent les actions."
+          },
+          {
+            "question": "Dans « Demain, la classe est allée au musée. », qu'est-ce qui ne va pas ?",
+            "options": [
+              "Le connecteur « Demain » ne va pas avec le passé composé.",
+              "Il manque une majuscule.",
+              "Le verbe n'est pas accordé avec le sujet.",
+              "Il manque un point à la fin."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Demain » annonce l'avenir : il faut écrire « demain, la classe ira au musée »."
+          },
+          {
+            "question": "Quelle phrase emploie un connecteur de temps ?",
+            "options": [
+              "Sous l'escalier, il y avait un placard.",
+              "Devant la grille, les parents attendaient.",
+              "Au bout d'un moment, la porte s'est ouverte.",
+              "Près du radiateur, le chat dormait."
+            ],
+            "reponse_correcte": 2,
+            "explication": "« Au bout d'un moment » dit quand ; les trois autres disent où."
+          },
+          {
+            "question": "Quelle phrase répète inutilement la même idée ?",
+            "options": [
+              "Elle est sortie dehors sans manteau.",
+              "Elle a couru jusqu'au portail.",
+              "Le ciel devenait tout noir.",
+              "Nous avons attendu longtemps."
+            ],
+            "reponse_correcte": 0,
+            "explication": "« Sortir » veut déjà dire aller dehors : le mot « dehors » ne sert à rien."
+          },
+          {
+            "question": "Tu relis ton texte et tu trouves cinq fois le mot « puis ». Que fais-tu ?",
+            "options": [
+              "Je les garde tous, un connecteur ne se répète jamais trop.",
+              "Je remplace certains « puis » par d'autres connecteurs.",
+              "Je supprime tous les connecteurs du texte.",
+              "Je mets tout le texte au futur."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un connecteur répété s'entend comme une répétition : varie avec « ensuite », « alors », « un peu plus tard »."
+          }
+        ]
+      }
+    ]
+  }
+]
