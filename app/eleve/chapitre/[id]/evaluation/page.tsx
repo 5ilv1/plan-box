@@ -61,10 +61,14 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
 
     switch (ex.type) {
       case "texte_a_trous": {
-        // Garder le texte complet mais seulement 3-4 trous
         const trous = (c.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
         if (trous.length === 0) break;
-        const trousChoisis = piocher(trous, Math.min(4, trous.length));
+        // Tous les trous sont conservés : la pose des trous se cale sur le premier
+        // emplacement libre (accents ignorés), donc prélever ou réordonner la liste
+        // fait glisser les homophones (a/à, et/est…) sur le mauvais mot.
+        // L'exercice étant validé en tout ou rien, garder les 5 trous au lieu de 4
+        // ne change pas sa difficulté. Voir docs/ceintures/CORRECTIF-piocher.md.
+        const trousChoisis = trous;
         minis.push({
           id: ex.id,
           titre: ex.titre,
