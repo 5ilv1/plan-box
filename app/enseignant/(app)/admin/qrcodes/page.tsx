@@ -26,7 +26,7 @@ const SITE_URL = typeof window !== "undefined"
   ? window.location.origin
   : (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000");
 
-/** Illustration décorative de la bande droite (à déposer dans /public). */
+/** Illustration décorative de la bande droite. */
 const ILLUSTRATION = "/carte-eleve-illustration.png";
 
 export default function PageQRCodes() {
@@ -92,87 +92,7 @@ export default function PageQRCodes() {
       <div style={{ minHeight: "100vh", backgroundColor: "var(--bg)", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <div style={{ textAlign: "center" }}>
           <div style={{ width: 40, height: 40, borderRadius: "50%", border: "3px solid var(--primary-mid)", borderTopColor: "var(--primary)", animation: "spin 0.8s linear infinite", margin: "0 auto 12px" }} />
-          <style>{`
-        .qr-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
-          gap: 20px;
-          padding: 32px;
-        }
-        .carte-eleve {
-          display: flex;
-          min-height: 190px;
-          align-items: stretch;
-          overflow: hidden;
-          background: white;
-          border: 2px solid var(--border);
-          border-radius: 14px;
-          break-inside: avoid;
-          page-break-inside: avoid;
-        }
-        .carte-infos {
-          flex: 1;
-          min-width: 0;
-          padding: 16px 18px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-        .carte-illustration {
-          width: 118px;
-          flex-shrink: 0;
-          background: #E7C3B2;
-          border-left: 2px solid var(--border);
-        }
-        .champ-label {
-          font-size: 9px;
-          font-weight: 700;
-          color: var(--text-secondary);
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
-          white-space: nowrap;
-        }
-        .champ-valeur {
-          font-size: var(--vf);
-          font-weight: 800;
-          color: var(--text);
-          font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-          letter-spacing: 0.02em;
-          line-height: 1.3;
-          white-space: nowrap;
-        }
-
-        @media print {
-          .no-print { display: none !important; }
-          body { background: white !important; }
-
-          /* Chrome n'applique pas break-inside:avoid aux items d'une grille :
-             en impression on repasse donc en blocs inline, où la règle est
-             respectée — sinon la dernière carte de chaque page est coupée. */
-          .qr-grid {
-            display: block !important;
-            padding: 8px !important;
-            font-size: 0;
-          }
-          .carte-eleve {
-            display: inline-flex !important;
-            width: calc(50% - 5px);
-            vertical-align: top;
-            margin: 0 0 8px 0;
-            min-height: 168px;
-            border-color: #9CA3AF !important;
-            border-radius: 10px;
-          }
-          .carte-eleve:nth-child(odd) { margin-right: 10px; }
-
-          /* On rend de la place à la colonne identifiants pour qu'elle
-             ne passe jamais à la ligne. */
-          .carte-infos { padding: 12px !important; }
-          .carte-illustration { width: 88px; }
-          .qr-img { width: 88px !important; height: 88px !important; }
-          .champ-valeur { font-size: calc(var(--vf) * 0.87); }
-        }
-      `}</style>
+          <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
           <p style={{ color: "var(--text-secondary)" }}>Génération des QR codes…</p>
         </div>
       </div>
@@ -188,7 +108,7 @@ export default function PageQRCodes() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }}>
+    <div className="cartes-racine" style={{ minHeight: "100vh", backgroundColor: "var(--bg)" }}>
       {/* Header — masqué à l'impression */}
       <div className="no-print" style={{ padding: "24px 32px", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
         <div>
@@ -241,9 +161,9 @@ export default function PageQRCodes() {
                   {qrDataUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
+                      className="qr-img"
                       src={qrDataUrl}
                       alt={`QR code de ${eleve.prenom} ${eleve.nom}`}
-                      className="qr-img"
                       style={{ width: 100, height: 100, display: "block", borderRadius: 6 }}
                     />
                   ) : (
@@ -310,17 +230,51 @@ export default function PageQRCodes() {
         @media print {
           .no-print { display: none !important; }
           body { background: white !important; }
+
+          /* Le layout enseignant impose une barre latérale fixe de 288 px et un
+             en-tête. Sans ça ils s'impriment et amputent d'autant la largeur
+             utile, ce qui écrase la colonne des identifiants. */
+          .ens-sidebar,
+          .ens-sidebar-overlay,
+          .ens-header { display: none !important; }
+          .ens-main-area { margin-left: 0 !important; }
+          .ens-content { padding: 0 !important; }
+
+          /* html/body sont en height:100% et le layout en min-height:100vh :
+             à l'impression cela borne le document à UNE page et tronque la
+             dernière carte. On libère la hauteur sur toute la chaîne. */
+          html, body,
+          .ens-layout,
+          .ens-main-area,
+          .ens-content,
+          .cartes-racine {
+            height: auto !important;
+            min-height: 0 !important;
+            overflow: visible !important;
+          }
+          .ens-layout, .ens-main-area { display: block !important; }
+
+          /* Chrome n'applique pas break-inside:avoid aux items d'une grille :
+             en impression on repasse en blocs inline, où la règle est
+             respectée — sinon la dernière carte de chaque page est coupée. */
           .qr-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            gap: 10px !important;
-            padding: 10px !important;
+            display: block !important;
+            padding: 8px !important;
+            font-size: 0;
           }
           .carte-eleve {
+            display: inline-flex !important;
+            width: calc(50% - 5px);
+            vertical-align: top;
+            margin: 0 0 8px 0;
+            min-height: 168px;
             border-color: #9CA3AF !important;
             border-radius: 10px;
-            min-height: 178px;
           }
-          .carte-illustration { width: 104px; }
+          .carte-eleve:nth-child(odd) { margin-right: 10px; }
+          .carte-infos { padding: 14px !important; }
+          .carte-illustration { width: 100px; }
+          .qr-img { width: 92px !important; height: 92px !important; }
         }
       `}</style>
     </div>
@@ -339,10 +293,28 @@ function Champ({ label, valeur }: { label: string; valeur: string }) {
         background: "var(--primary-pale)",
       }}
     >
-      <div className="champ-label">{label}</div>
       <div
-        className="champ-valeur"
-        style={{ "--vf": `${tailleValeur(valeur)}px` } as React.CSSProperties}
+        style={{
+          fontSize: 9,
+          fontWeight: 700,
+          color: "var(--text-secondary)",
+          textTransform: "uppercase",
+          letterSpacing: "0.06em",
+          whiteSpace: "nowrap",
+        }}
+      >
+        {label}
+      </div>
+      <div
+        style={{
+          fontSize: tailleValeur(valeur),
+          fontWeight: 800,
+          color: "var(--text)",
+          fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace",
+          letterSpacing: "0.02em",
+          lineHeight: 1.3,
+          whiteSpace: "nowrap",
+        }}
       >
         {valeur}
       </div>
@@ -353,13 +325,13 @@ function Champ({ label, valeur }: { label: string; valeur: string }) {
 /**
  * Taille de police de la valeur, choisie pour que l'identifiant tienne sur UNE
  * ligne y compris dans la colonne étroite de l'impression (2 cartes par ligne).
- * À l'impression, le CSS applique en plus un facteur 0.87.
  */
 function tailleValeur(valeur: string): number {
   const n = valeur.length;
-  if (n <= 10) return 15;
-  if (n <= 13) return 13.5;
-  if (n <= 16) return 11.5;
-  if (n <= 20) return 10;
-  return 9;
+  if (n <= 9) return 15;
+  if (n <= 11) return 13.5;
+  if (n <= 13) return 12;
+  if (n <= 16) return 10;
+  if (n <= 20) return 8.5;
+  return 7;
 }
