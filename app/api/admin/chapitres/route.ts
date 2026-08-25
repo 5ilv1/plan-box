@@ -14,6 +14,8 @@ export async function GET() {
     .from("chapitres")
     .select("*, niveaux(*)")
     .or("sous_matiere.is.null,sous_matiere.neq.rituel-orthographe")
+    // Les chapitres-ceintures sont pilotés depuis le module Ceintures
+    .not("sous_matiere", "like", "ceinture-%")
     .order("matiere")
     .order("ordre", { nullsFirst: false });
 

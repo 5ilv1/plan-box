@@ -55,6 +55,9 @@ export async function GET(req: NextRequest) {
     .from("chapitres")
     .select("id, titre, matiere, sous_matiere, seuil_evaluation, date_debut, niveaux(nom)")
     .in("id", chapitreIds)
+    // Les chapitres-ceintures ont leur propre parcours (/eleve/ceintures) :
+    // sans ce filtre, les 9 ceintures apparaîtraient comme 9 chapitres ordinaires.
+    .not("sous_matiere", "like", "ceinture-%")
     .or(`date_debut.is.null,date_debut.lte.${today}`);
 
   if (!chapitres?.length) {

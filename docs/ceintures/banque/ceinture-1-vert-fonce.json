@@ -1,0 +1,269 @@
+[
+  {
+    "item_code": "P13",
+    "type": "classement",
+    "diagnostic": [
+      {
+        "question": "Quelle phrase est une phrase interrogative ?",
+        "options": [
+          "Nour a les cheveux bouclés.",
+          "Comme ses yeux brillent !",
+          "Quelle est la couleur de ses yeux ?",
+          "Regarde bien son visage."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une phrase interrogative pose une question et se termine toujours par un point d'interrogation (?)."
+      },
+      {
+        "question": "Quel signe faut-il écrire à la fin de cette phrase : « Comme Timéo a l'air joyeux »",
+        "options": [
+          "!",
+          ".",
+          "?",
+          ","
+        ],
+        "reponse_correcte": 0,
+        "explication": "Cette phrase montre un sentiment très fort : c'est une phrase exclamative, elle se termine par un point d'exclamation (!)."
+      }
+    ],
+    "entrainement": {
+      "titre": "Les trois types de phrases du portrait",
+      "consigne": "Range chaque phrase dans la bonne colonne : déclarative (.), interrogative (?) ou exclamative (!). Observe bien le signe de ponctuation à la fin.",
+      "categories": [
+        "Déclarative",
+        "Interrogative",
+        "Exclamative"
+      ],
+      "items": [
+        {
+          "texte": "Nour a de longs cheveux bruns.",
+          "categorie": "Déclarative"
+        },
+        {
+          "texte": "Quel âge a Rosalie ?",
+          "categorie": "Interrogative"
+        },
+        {
+          "texte": "Comme ce portrait est réussi !",
+          "categorie": "Exclamative"
+        },
+        {
+          "texte": "Timéo porte des lunettes rondes.",
+          "categorie": "Déclarative"
+        },
+        {
+          "texte": "Est-ce que Sacha porte un chapeau ?",
+          "categorie": "Interrogative"
+        },
+        {
+          "texte": "Quelle jolie écharpe rouge !",
+          "categorie": "Exclamative"
+        },
+        {
+          "texte": "Fatou dessine le portrait de sa voisine.",
+          "categorie": "Déclarative"
+        },
+        {
+          "texte": "Comment sont les yeux d'Inès ?",
+          "categorie": "Interrogative"
+        },
+        {
+          "texte": "Que ses boucles sont douces !",
+          "categorie": "Exclamative"
+        },
+        {
+          "texte": "Malo a un petit grain de beauté sur la joue.",
+          "categorie": "Déclarative"
+        },
+        {
+          "texte": "Qui a dessiné ce portrait ?",
+          "categorie": "Interrogative"
+        },
+        {
+          "texte": "Comme Lila sourit gentiment !",
+          "categorie": "Exclamative"
+        }
+      ]
+    }
+  },
+  {
+    "item_code": "P14",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Quel déterminant convient : « Timéo porte ___ lunettes rondes. »",
+        "options": [
+          "une",
+          "un",
+          "des",
+          "la"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Lunettes » est au pluriel : il faut un déterminant pluriel, « des »."
+      },
+      {
+        "question": "Dans quelle phrase le déterminant est bien accordé avec le nom ?",
+        "options": [
+          "Lila met un chaussures neuves.",
+          "Lila met des chaussure neuves.",
+          "Lila met une chaussures neuves.",
+          "Lila met des chaussures neuves."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le déterminant s'accorde en genre et en nombre avec le nom : « des chaussures » est féminin pluriel."
+      }
+    ],
+    "entrainement": {
+      "titre": "Le portrait de Fatou : les déterminants",
+      "consigne": "Complète le portrait avec le déterminant qui convient. Attention à l'accord avec le nom : masculin ou féminin, singulier ou pluriel.",
+      "texte_complet": "Voici Fatou, ma meilleure amie. Elle a un grand sourire et des taches de rousseur. Je garde la photo de Fatou dans mes cahiers.",
+      "trous": [
+        {
+          "position": 0,
+          "mot": "ma",
+          "indice": "Déterminant possessif féminin singulier : cette amie est à moi."
+        },
+        {
+          "position": 1,
+          "mot": "un",
+          "indice": "Article indéfini masculin singulier, devant « grand sourire »."
+        },
+        {
+          "position": 2,
+          "mot": "des",
+          "indice": "Article indéfini pluriel, devant « taches »."
+        },
+        {
+          "position": 3,
+          "mot": "la",
+          "indice": "Article défini féminin singulier, devant « photo »."
+        },
+        {
+          "position": 4,
+          "mot": "mes",
+          "indice": "Déterminant possessif pluriel : ces cahiers sont à moi."
+        }
+      ]
+    }
+  },
+  {
+    "item_code": "P15",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Quel mot outil complète : « Rosalie dessine ___ un feutre vert. »",
+        "options": [
+          "sans",
+          "avec",
+          "pour",
+          "sous"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Avec » indique l'objet que l'on utilise pour faire quelque chose."
+      },
+      {
+        "question": "Quel mot outil complète : « Malo sort ___ écharpe, car il n'a pas froid. »",
+        "options": [
+          "sans",
+          "avec",
+          "sur",
+          "pour"
+        ],
+        "reponse_correcte": 0,
+        "explication": "« Sans » indique ce que l'on n'a pas : c'est le contraire de « avec »."
+      }
+    ],
+    "entrainement": {
+      "titre": "Timéo dessine un portrait : les mots outils",
+      "consigne": "Complète le texte avec le mot outil qui convient. Relis chaque phrase entière pour vérifier qu'elle a bien du sens.",
+      "texte_complet": "Timéo est assis sur un banc. Il dessine le portrait de Lila avec un crayon noir. Il travaille sans bruit. Ce dessin est un cadeau pour sa maman. Un petit chat dort sous le banc.",
+      "trous": [
+        {
+          "position": 0,
+          "mot": "sur",
+          "indice": "Mot outil qui dit qu'il est assis en haut du banc, posé dessus."
+        },
+        {
+          "position": 1,
+          "mot": "avec",
+          "indice": "Mot outil qui indique l'objet utilisé pour dessiner."
+        },
+        {
+          "position": 2,
+          "mot": "sans",
+          "indice": "Contraire de « avec » : il ne fait aucun bruit."
+        },
+        {
+          "position": 3,
+          "mot": "pour",
+          "indice": "Mot outil qui dit à qui le cadeau est destiné."
+        },
+        {
+          "position": 4,
+          "mot": "sous",
+          "indice": "Contraire de « sur » : le chat est dessous, au-dessous du banc."
+        }
+      ]
+    }
+  },
+  {
+    "item_code": "P20",
+    "type": "texte_a_trous",
+    "diagnostic": [
+      {
+        "question": "Complète : « Fatou et Malo ___ des lunettes rondes. »",
+        "options": [
+          "a",
+          "ont",
+          "on",
+          "sont"
+        ],
+        "reponse_correcte": 1,
+        "explication": "« Fatou et Malo », c'est « ils » : le verbe avoir au présent s'écrit « ont »."
+      },
+      {
+        "question": "Complète : « Tu ___ un joli sourire. »",
+        "options": [
+          "est",
+          "es",
+          "as",
+          "a"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Avec « tu », le verbe avoir au présent s'écrit « as »."
+      }
+    ],
+    "entrainement": {
+      "titre": "Inès se présente : être et avoir au présent",
+      "consigne": "Complète le portrait avec le verbe être ou le verbe avoir conjugué au présent. Cherche d'abord le sujet de chaque phrase.",
+      "texte_complet": "Je suis Inès. Ma meilleure amie est Rosalie. Nous sommes dans la même classe. Nous avons toutes les deux les cheveux courts. Nos cartables sont bleus.",
+      "trous": [
+        {
+          "position": 0,
+          "mot": "suis",
+          "indice": "Verbe être au présent avec « je »."
+        },
+        {
+          "position": 1,
+          "mot": "est",
+          "indice": "Verbe être au présent avec un sujet singulier : « mon amie »."
+        },
+        {
+          "position": 2,
+          "mot": "sommes",
+          "indice": "Verbe être au présent avec « nous »."
+        },
+        {
+          "position": 3,
+          "mot": "avons",
+          "indice": "Verbe avoir au présent avec « nous »."
+        },
+        {
+          "position": 4,
+          "mot": "sont",
+          "indice": "Verbe être au présent avec un sujet pluriel : « nos cartables »."
+        }
+      ]
+    }
+  }
+]
