@@ -5,6 +5,7 @@ import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
+import { resoudrePositionsTrous } from "@/lib/texte-a-trous";
 import ClassementEleve from "@/components/ClassementEleve";
 import ExerciceStack from "@/components/ExerciceStack";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
@@ -75,7 +76,13 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
           type: "texte_a_trous",
           contenu: {
             ...c,
-            trous: trousChoisis,
+            // Même résolution qu'à l'entraînement : sans elle, les trous se
+            // posent sur les premiers mots du texte au lieu des bons.
+            // Les indices sont retirés, comme pour les types « exercice » et
+            // « qcm » : ils donnaient la méthode le jour de l'évaluation, et
+            // leur longueur disloquait la mise en page du texte.
+            trous: resoudrePositionsTrous((c.texte_complet as string) ?? "", trousChoisis)
+              .map(({ indice, ...reste }) => { void indice; return reste; }),
           },
         });
         break;
@@ -314,6 +321,9 @@ export default function PageEvaluationFinale() {
 
   const [reussi, setReussi] = useState(false);
   const [exercicesEchoues, setExercicesEchoues] = useState<string[]>([]);
+  // Les chapitres-ceintures ont leur propre écran de fin : le passage à la
+  // couleur suivante. Voir /eleve/ceintures/reussite/[chapitreId].
+  const [estCeinture, setEstCeinture] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
@@ -344,6 +354,7 @@ export default function PageEvaluationFinale() {
       if (chapRes.chapitre) {
         setChapitreTitre(chapRes.chapitre.titre);
         setSeuilEval(chapRes.chapitre.seuil_evaluation ?? 90);
+        setEstCeinture(String(chapRes.chapitre.sous_matiere ?? "").startsWith("ceinture-"));
       }
 
       const exercices: Exercice[] = exoRes.exercices ?? [];
@@ -398,8 +409,9 @@ export default function PageEvaluationFinale() {
     const totalBon = allScores.reduce((s, sc) => s + sc.bon, 0);
     const totalQ = allScores.reduce((s, sc) => s + sc.total, 0);
     const pct = totalQ > 0 ? Math.round((totalBon / totalQ) * 100) : 0;
+    const aReussi = pct >= seuilEval;
 
-    setReussi(pct >= seuilEval);
+    setReussi(aReussi);
 
     // Exercices échoués = ceux avec au moins une erreur
     const echecs = allScores
@@ -411,7 +423,7 @@ export default function PageEvaluationFinale() {
     setEtat("resultat");
 
     // Sauvegarder
-    fetch("/api/chapitres/evaluation-resultat", {
+    const enregistrement = fetch("/api/chapitres/evaluation-resultat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -423,6 +435,17 @@ export default function PageEvaluationFinale() {
         exercices_echoues: echecsUniques,
       }),
     }).catch(() => {});
+
+    // Ceinture gagnée : on cède la place à l'écran de passage de couleur.
+    // La redirection attend l'enregistrement, sinon cet écran lirait un état
+    // de progression pas encore à jour et renverrait l'élève sur l'échelle.
+    if (estCeinture && aReussi) {
+      enregistrement.finally(() => {
+        router.replace(
+          `/eleve/ceintures/reussite/${chapitreId}?score=${totalBon}&total=${totalQ}`,
+        );
+      });
+    }
   }
 
   // ── Rendu ──────────────────────────────────────────────────────────────

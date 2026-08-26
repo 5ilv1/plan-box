@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
+import { resoudrePositionsTrous } from "@/lib/texte-a-trous";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
@@ -301,31 +302,10 @@ export default function PageExerciceEleve() {
     const texteComplet = (contenu.texte_complet as string) ?? (contenu.texte as string) ?? "";
     const trousBruts = (contenu.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
 
-    // Recalculer les positions réelles : les positions en base sont séquentielles (0,1,2...)
-    // mais le composant attend l'index du mot dans le texte splitté par espaces
-    const mots = texteComplet.split(/\s+/);
-    const trousAvecPositions: Array<{ position: number; mot: string; indice?: string }> = [];
-    const positionsUtilisees = new Set<number>();
-
-    for (const trou of trousBruts) {
-      // Chercher le mot dans le texte (en nettoyant la ponctuation pour la comparaison)
-      const motNettoye = trou.mot.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-      let found = false;
-      for (let i = 0; i < mots.length; i++) {
-        if (positionsUtilisees.has(i)) continue;
-        const motTexteNettoye = mots[i].replace(/[.,;:!?'"()«»]/g, "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        if (motTexteNettoye === motNettoye) {
-          trousAvecPositions.push({ ...trou, position: i });
-          positionsUtilisees.add(i);
-          found = true;
-          break;
-        }
-      }
-      if (!found) {
-        // Fallback : garder la position originale
-        trousAvecPositions.push(trou);
-      }
-    }
+    // Les positions en base sont séquentielles (0,1,2...) ; le composant attend
+    // l'index du mot dans le texte découpé par espaces. Résolution partagée
+    // avec la page évaluation — voir lib/texte-a-trous.ts.
+    const trousAvecPositions = resoudrePositionsTrous(texteComplet, trousBruts);
 
     return (
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
