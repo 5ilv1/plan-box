@@ -1,0 +1,556 @@
+[
+  {
+    "item_code": "N16",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Écrire un nombre en chiffres",
+      "regle": "Dans un nombre plus petit que 10000, le mot « mille » sépare les milliers des centaines, dizaines et unités.",
+      "procedure": [
+        "Repère le mot « mille » : ce qui est dit avant donne le chiffre des milliers.",
+        "Écris ensuite les centaines, les dizaines et les unités du groupe qui suit.",
+        "Mets un 0 à chaque rang qui n'est pas cité."
+      ],
+      "exemples": [
+        {
+          "phrase": "trois-mille-deux-cent-quarante-cinq",
+          "demonstration": "« trois » avant mille donne 3 ; le groupe qui suit vaut 245. J'écris 3245."
+        },
+        {
+          "phrase": "six-mille-quarante",
+          "demonstration": "« six » donne 6. Aucune centaine n'est citée : j'écris 0, puis 40. Cela donne 6040, et non 640."
+        }
+      ],
+      "piege": "Ne laisse jamais d'espace dans ta réponse : écris 3245, et non 3 245."
+    },
+    "diagnostic": [
+      {
+        "question": "Comment s'écrit en chiffres le nombre « quatre-mille-soixante » ?",
+        "options": [
+          "460",
+          "4060",
+          "4600",
+          "40060"
+        ],
+        "reponse_correcte": 1,
+        "explication": "4 milliers, puis aucune centaine (0), puis 60 : cela donne 4060."
+      },
+      {
+        "question": "Comment se lit le nombre 6018 ?",
+        "options": [
+          "six-cent-dix-huit",
+          "six-mille-cent-huit",
+          "six-mille-dix-huit",
+          "soixante-mille-dix-huit"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le 6 est au rang des milliers, il n'y a pas de centaine, puis 18 : six-mille-dix-huit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des mots aux chiffres",
+        "consigne": "Écris le nombre en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres : trois-mille-quatre-cent-douze.",
+            "reponse_attendue": "3412",
+            "indice": "Écris d'abord le chiffre des milliers, puis les trois rangs qui suivent."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris en chiffres : sept-mille-cinquante.",
+            "reponse_attendue": "7050",
+            "indice": "Aucune centaine n'est citée : mets un 0 à ce rang."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris en chiffres : neuf-mille-neuf.",
+            "reponse_attendue": "9009",
+            "indice": "Ni centaine ni dizaine n'est citée : mets un 0 à ces deux rangs."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris en chiffres : deux-mille-six-cents.",
+            "reponse_attendue": "2600",
+            "indice": "Ni dizaine ni unité n'est citée : mets un 0 à ces deux rangs."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris en chiffres : cinq-mille-quatre-vingt-quatorze.",
+            "reponse_attendue": "5094",
+            "indice": "Aucune centaine n'est citée : mets un 0 à ce rang."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris en chiffres : huit-mille-trois-cent-soixante.",
+            "reponse_attendue": "8360",
+            "indice": "Écris d'abord le chiffre des milliers, puis les trois rangs qui suivent."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris en chiffres : mille-sept-cent-quatre-vingt-un.",
+            "reponse_attendue": "1781",
+            "indice": "« mille » tout seul vaut 1 millier."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris en chiffres : quatre-mille-quatre-cent-quatre.",
+            "reponse_attendue": "4404",
+            "indice": "Aucune dizaine n'est citée : mets un 0 à ce rang."
+          }
+        ]
+      },
+      {
+        "titre": "Les nombres du grand livre",
+        "consigne": "Écris le nombre en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres : six-mille-deux-cent-trente-cinq.",
+            "reponse_attendue": "6235",
+            "indice": "Écris d'abord le chiffre des milliers, puis les trois rangs qui suivent."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris en chiffres : quatre-mille-sept.",
+            "reponse_attendue": "4007",
+            "indice": "Ni centaine ni dizaine n'est citée : mets un 0 à ces deux rangs."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris en chiffres : trois-mille-quatre-vingts.",
+            "reponse_attendue": "3080",
+            "indice": "Aucune centaine n'est citée : mets un 0 à ce rang."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris en chiffres : mille-neuf-cent-quatre-vingt-dix.",
+            "reponse_attendue": "1990",
+            "indice": "« mille » tout seul vaut 1 millier."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris en chiffres : cinq-mille-cinq-cent-cinq.",
+            "reponse_attendue": "5505",
+            "indice": "Aucune dizaine n'est citée : mets un 0 à ce rang."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris en chiffres : deux-mille-soixante-douze.",
+            "reponse_attendue": "2072",
+            "indice": "Aucune centaine n'est citée : mets un 0 à ce rang."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris en chiffres : sept-mille-huit-cents.",
+            "reponse_attendue": "7800",
+            "indice": "Ni dizaine ni unité n'est citée : mets un 0 à ces deux rangs."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris en chiffres : neuf-mille-trois-cent-quarante-six.",
+            "reponse_attendue": "9346",
+            "indice": "Écris d'abord le chiffre des milliers, puis les trois rangs qui suivent."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N15",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Ranger des nombres",
+      "regle": "Pour comparer deux entiers, compte leurs chiffres ; à longueur égale, compare-les de gauche à droite.",
+      "procedure": [
+        "Compte les chiffres : celui qui en a le plus est le plus grand.",
+        "À longueur égale, compare de gauche à droite jusqu'au premier chiffre différent.",
+        "Recommence avec le plus petit nombre qui reste."
+      ],
+      "exemples": [
+        {
+          "phrase": "Range 812, 1208 et 821 du plus petit au plus grand.",
+          "demonstration": "1208 a quatre chiffres : c'est le plus grand. Entre 812 et 821, 1 < 2 : 812 < 821 < 1208."
+        },
+        {
+          "phrase": "Compare 4706 et 4760.",
+          "demonstration": "4 = 4, puis 7 = 7, puis 0 < 6 : 4760 est le plus grand."
+        }
+      ],
+      "piege": "Ce n'est pas la fin du nombre qui décide, mais son début."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle série est rangée du plus petit au plus grand ?",
+        "options": [
+          "1234 < 1324 < 1243 < 1423",
+          "1234 < 1243 < 1324 < 1423",
+          "1423 < 1324 < 1243 < 1234",
+          "1243 < 1234 < 1324 < 1423"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Les quatre nombres ont le même chiffre des milliers : tu compares les centaines, puis les dizaines."
+      },
+      {
+        "question": "Rosalie range 4205, 4025 et 4250 du plus petit au plus grand. Quel nombre écrit-elle en dernier ?",
+        "options": [
+          "4205",
+          "4025",
+          "4250",
+          "4520"
+        ],
+        "reponse_correcte": 2,
+        "explication": "En dernier, on écrit le plus grand. Les trois nombres ont 4 milliers : 2 centaines pour deux d'entre eux, et 4250 a le plus de dizaines."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ranger dans l'ordre",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "2043 < 2340 < 2403 < 3204",
+              "2043 < 2340 < 3204 < 2403",
+              "2340 < 2043 < 2403 < 3204",
+              "2403 < 2340 < 2043 < 3204"
+            ],
+            "reponse_correcte": 0,
+            "explication": "3204 a 3 milliers : c'est le plus grand. Les trois autres ont 2 milliers, tu compares alors les centaines."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "1087 < 1780 < 890 < 978",
+              "890 < 978 < 1087 < 1780",
+              "978 < 890 < 1087 < 1780",
+              "890 < 978 < 1780 < 1087"
+            ],
+            "reponse_correcte": 1,
+            "explication": "890 et 978 ont trois chiffres : ils sont plus petits que les nombres à quatre chiffres."
+          },
+          {
+            "question": "Quelle série est rangée du plus grand au plus petit ?",
+            "options": [
+              "5006 > 5060 > 5600 > 5660",
+              "5660 > 5060 > 5600 > 5006",
+              "5660 > 5600 > 5060 > 5006",
+              "5600 > 5660 > 5060 > 5006"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Même chiffre des milliers : tu compares les centaines, puis les dizaines."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "4909 < 4999 < 5010 < 5001",
+              "4999 < 4909 < 5001 < 5010",
+              "5001 < 5010 < 4909 < 4999",
+              "4909 < 4999 < 5001 < 5010"
+            ],
+            "reponse_correcte": 3,
+            "explication": "4 milliers, c'est moins que 5 milliers : les deux nombres en 4 passent devant."
+          },
+          {
+            "question": "Quelle série est rangée du plus grand au plus petit ?",
+            "options": [
+              "7200 > 2700 > 720 > 270",
+              "7200 > 2700 > 270 > 720",
+              "2700 > 7200 > 720 > 270",
+              "270 > 720 > 2700 > 7200"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Compte d'abord les chiffres : quatre chiffres, c'est toujours plus que trois chiffres."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "3085 < 3508 < 3805 < 3580",
+              "3508 < 3580 < 3085 < 3805",
+              "3085 < 3508 < 3580 < 3805",
+              "3085 < 3580 < 3508 < 3805"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Même chiffre des milliers : tu compares les centaines, puis les dizaines."
+          },
+          {
+            "question": "Dans la série 6104, 6014, 6401, 6041, quel nombre vient en premier si on range du plus petit au plus grand ?",
+            "options": [
+              "6104",
+              "6014",
+              "6401",
+              "6041"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Tous ont 6 milliers. Deux nombres n'ont aucune centaine, 6014 et 6041 : entre eux, tu compares les dizaines, 1 dizaine c'est moins que 4. C'est donc 6014."
+          },
+          {
+            "question": "Dans la série 8070, 8700, 8007, 8077, quel nombre vient en premier si on range du plus grand au plus petit ?",
+            "options": [
+              "8007",
+              "8077",
+              "8070",
+              "8700"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Tous ont 8 milliers : le plus grand est celui qui a le plus de centaines, c'est 8700."
+          }
+        ]
+      },
+      {
+        "titre": "L'ordre des nombres",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "1045 < 1054 < 1405 < 1450",
+              "1045 < 1054 < 1450 < 1405",
+              "1054 < 1045 < 1405 < 1450",
+              "1405 < 1450 < 1045 < 1054"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Même chiffre des milliers : tu compares les centaines, puis les dizaines."
+          },
+          {
+            "question": "Quelle série est rangée du plus grand au plus petit ?",
+            "options": [
+              "9090 > 9009 > 909 > 990",
+              "9090 > 9009 > 990 > 909",
+              "9009 > 9090 > 990 > 909",
+              "990 > 909 > 9090 > 9009"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les nombres à quatre chiffres passent devant ceux à trois chiffres."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "2099 < 2999 < 3090 < 3009",
+              "2999 < 2099 < 3009 < 3090",
+              "2099 < 2999 < 3009 < 3090",
+              "3009 < 3090 < 2099 < 2999"
+            ],
+            "reponse_correcte": 2,
+            "explication": "2 milliers, c'est moins que 3 milliers : les deux nombres en 2 passent devant."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "87 < 870 < 780 < 8700",
+              "8700 < 870 < 780 < 87",
+              "87 < 780 < 8700 < 870",
+              "87 < 780 < 870 < 8700"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Compte d'abord les chiffres : deux chiffres, puis trois, puis quatre."
+          },
+          {
+            "question": "Quelle série est rangée du plus grand au plus petit ?",
+            "options": [
+              "6530 > 6503 > 6350 > 6305",
+              "6530 > 6350 > 6503 > 6305",
+              "6503 > 6530 > 6350 > 6305",
+              "6305 > 6350 > 6503 > 6530"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Même chiffre des milliers : tu compares les centaines, puis les dizaines."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "4118 < 4108 < 4181 < 4811",
+              "4108 < 4118 < 4181 < 4811",
+              "4108 < 4181 < 4118 < 4811",
+              "4811 < 4181 < 4118 < 4108"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Même chiffre des milliers et même chiffre des centaines pour trois d'entre eux : tu compares alors les dizaines."
+          },
+          {
+            "question": "Dans la série 5208, 5280, 5028, 5802, quel nombre vient en premier si on range du plus petit au plus grand ?",
+            "options": [
+              "5208",
+              "5280",
+              "5028",
+              "5802"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Tous ont 5 milliers : le plus petit est celui qui a le moins de centaines, et 5028 n'en a aucune."
+          },
+          {
+            "question": "Dans la série 7106, 7601, 7016, 7610, quel nombre vient en premier si on range du plus grand au plus petit ?",
+            "options": [
+              "7106",
+              "7601",
+              "7016",
+              "7610"
+            ],
+            "reponse_correcte": 3,
+            "explication": "7601 et 7610 ont 6 centaines : entre eux, tu compares les dizaines, et 7610 en a le plus."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N17",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Encadrer un nombre",
+      "regle": "Encadrer, c'est trouver la borne juste en dessous et la borne juste au-dessus, au rang demandé.",
+      "procedure": [
+        "Lis le rang demandé : unité, dizaine ou centaine.",
+        "À l'unité, enlève 1 pour le bas, ajoute 1 pour le haut.",
+        "À la dizaine ou à la centaine, mets des 0 à droite du rang, puis ajoute une dizaine ou une centaine."
+      ],
+      "exemples": [
+        {
+          "phrase": "Encadre 5837 à la dizaine.",
+          "demonstration": "Un 0 aux unités : 5830. J'ajoute une dizaine : 5840. Donc 5830 < 5837 < 5840."
+        },
+        {
+          "phrase": "Encadre 5837 à la centaine.",
+          "demonstration": "Des 0 aux dizaines et aux unités : 5800. J'ajoute une centaine : 5900. Donc 5800 < 5837 < 5900."
+        }
+      ],
+      "piege": "Lis bien le rang demandé : il change l'encadrement."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel encadrement de 2748 à la centaine est correct ?",
+        "options": [
+          "2700 < 2748 < 2800",
+          "2740 < 2748 < 2750",
+          "2747 < 2748 < 2749",
+          "2000 < 2748 < 3000"
+        ],
+        "reponse_correcte": 0,
+        "explication": "À la centaine, les bornes sont des centaines entières qui se suivent : 2700 et 2800."
+      },
+      {
+        "question": "Quelle est la dizaine entière juste au-dessus de 4605 ?",
+        "options": [
+          "4600",
+          "4700",
+          "4606",
+          "4610"
+        ],
+        "reponse_correcte": 3,
+        "explication": "4605 est entre 4600 et 4610 : la dizaine entière juste au-dessus est 4610."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Encadrer, une borne à la fois",
+        "consigne": "Écris le nombre qui manque, en chiffres et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Encadre 3476 à l'unité : 3475 < 3476 < … Quel nombre manque ?",
+            "reponse_attendue": "3477",
+            "indice": "À l'unité, la borne du haut est le nombre plus 1."
+          },
+          {
+            "id": 2,
+            "enonce": "Encadre 5208 à la dizaine : 5200 < 5208 < … Quel nombre manque ?",
+            "reponse_attendue": "5210",
+            "indice": "Ajoute une dizaine à la borne du bas."
+          },
+          {
+            "id": 3,
+            "enonce": "Encadre 2640 à la centaine : 2600 < 2640 < … Quel nombre manque ?",
+            "reponse_attendue": "2700",
+            "indice": "Cherche la centaine entière qui suit."
+          },
+          {
+            "id": 4,
+            "enonce": "Encadre 8093 à la dizaine : … < 8093 < 8100. Quel nombre manque ?",
+            "reponse_attendue": "8090",
+            "indice": "Mets un 0 à la place des unités."
+          },
+          {
+            "id": 5,
+            "enonce": "Encadre 1350 à la centaine : … < 1350 < 1400. Quel nombre manque ?",
+            "reponse_attendue": "1300",
+            "indice": "Mets un 0 à la place des dizaines et des unités."
+          },
+          {
+            "id": 6,
+            "enonce": "Encadre 6700 à l'unité : … < 6700 < 6701. Quel nombre manque ?",
+            "reponse_attendue": "6699",
+            "indice": "À l'unité, la borne du bas est le nombre moins 1."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 4999 à la dizaine : 4990 < 4999 < … Quel nombre manque ?",
+            "reponse_attendue": "5000",
+            "indice": "Ajoute une dizaine à la borne du bas : tu changes de millier."
+          },
+          {
+            "id": 8,
+            "enonce": "Encadre 9145 à la centaine : 9100 < 9145 < … Quel nombre manque ?",
+            "reponse_attendue": "9200",
+            "indice": "Cherche la centaine entière qui suit."
+          }
+        ]
+      },
+      {
+        "titre": "La borne qui manque",
+        "consigne": "Écris le nombre qui manque, en chiffres et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Encadre 7351 à l'unité : … < 7351 < 7352. Quel nombre manque ?",
+            "reponse_attendue": "7350",
+            "indice": "À l'unité, la borne du bas est le nombre moins 1."
+          },
+          {
+            "id": 2,
+            "enonce": "Encadre 4082 à la dizaine : 4080 < 4082 < … Quel nombre manque ?",
+            "reponse_attendue": "4090",
+            "indice": "Ajoute une dizaine à la borne du bas."
+          },
+          {
+            "id": 3,
+            "enonce": "Encadre 6519 à la centaine : … < 6519 < 6600. Quel nombre manque ?",
+            "reponse_attendue": "6500",
+            "indice": "Mets un 0 à la place des dizaines et des unités."
+          },
+          {
+            "id": 4,
+            "enonce": "Encadre 3907 à la dizaine : … < 3907 < 3910. Quel nombre manque ?",
+            "reponse_attendue": "3900",
+            "indice": "Mets un 0 à la place des unités."
+          },
+          {
+            "id": 5,
+            "enonce": "Encadre 2450 à la centaine : 2400 < 2450 < … Quel nombre manque ?",
+            "reponse_attendue": "2500",
+            "indice": "Cherche la centaine entière qui suit."
+          },
+          {
+            "id": 6,
+            "enonce": "Encadre 5000 à l'unité : 4999 < 5000 < … Quel nombre manque ?",
+            "reponse_attendue": "5001",
+            "indice": "À l'unité, la borne du haut est le nombre plus 1."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 8996 à la dizaine : 8990 < 8996 < … Quel nombre manque ?",
+            "reponse_attendue": "9000",
+            "indice": "Ajoute une dizaine à la borne du bas : tu changes de millier."
+          },
+          {
+            "id": 8,
+            "enonce": "Encadre 1204 à la centaine : 1200 < 1204 < … Quel nombre manque ?",
+            "reponse_attendue": "1300",
+            "indice": "Cherche la centaine entière qui suit."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,794 @@
+[
+  {
+    "item_code": "N24",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Dixièmes et centièmes",
+      "regle": "Une fraction décimale a 10 ou 100 pour dénominateur : elle compte des dixièmes ou des centièmes d'unité.",
+      "procedure": [
+        "Regarde en combien de parts égales l'unité est partagée : écris ce nombre en bas.",
+        "Compte les parts prises : écris ce nombre en haut.",
+        "Lis la fraction : 10 en bas donne des dixièmes, 100 en bas des centièmes."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une bande est partagée en 10 parts égales ; on en colorie 5.",
+          "demonstration": "En bas, le nombre de parts : 10. En haut, les parts prises : 5. Cela s'écrit 5/10 et se lit cinq dixièmes."
+        },
+        {
+          "phrase": "Un carré est partagé en 100 carreaux égaux ; on en colorie 47.",
+          "demonstration": "En bas 100, en haut 47 : 47/100, quarante-sept centièmes. Les parts sont cent fois plus petites que l'unité."
+        }
+      ],
+      "piege": "Cent parts, ce sont des centièmes : trois centièmes s'écrit 3/100, jamais 3/10. Une unité vaut 10 dixièmes ou 100 centièmes, donc un dixième vaut dix centièmes."
+    },
+    "diagnostic": [
+      {
+        "question": "Une bande est partagée en 10 parts égales. Rosalie en colorie 3. Quelle fraction de la bande a-t-elle coloriée ?",
+        "options": [
+          "3/10",
+          "10/3",
+          "1/3",
+          "3/100"
+        ],
+        "reponse_correcte": 0,
+        "explication": "La bande est partagée en 10 parts égales : le 10 s'écrit en bas. Rosalie en colorie 3 : le 3 s'écrit en haut."
+      },
+      {
+        "question": "Comment écrit-on « quarante-cinq centièmes » ?",
+        "options": [
+          "45/10",
+          "100/45",
+          "45",
+          "45/100"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Des centièmes, ce sont des parts d'une unité partagée en 100 : le 100 s'écrit en bas, le 45 en haut."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Dixièmes et centièmes",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Une bande unité est partagée en 10 parts égales. Timéo en colorie 4. Quelle fraction de la bande a-t-il coloriée ?",
+            "options": [
+              "10/4",
+              "4/10",
+              "1/4",
+              "4/100"
+            ],
+            "reponse_correcte": 1,
+            "explication": "En bas le nombre de parts, 10 ; en haut les parts coloriées, 4."
+          },
+          {
+            "question": "Un carré unité est partagé en 100 petits carreaux égaux. Inès en colorie 23. Quelle fraction du carré a-t-elle coloriée ?",
+            "options": [
+              "23/100",
+              "23/10",
+              "100/23",
+              "23"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'unité est partagée en 100 : j'écris 100 en bas et 23 en haut."
+          },
+          {
+            "question": "Comment écrit-on « six dixièmes » ?",
+            "options": [
+              "6/100",
+              "60/10",
+              "6/10",
+              "10/6"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Des dixièmes : 10 en bas. Il y en a six : 6 en haut."
+          },
+          {
+            "question": "Comment lit-on la fraction 8/100 ?",
+            "options": [
+              "huit dixièmes",
+              "huit centièmes",
+              "cent huitièmes",
+              "quatre-vingts dixièmes"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le nombre du bas est 100 : les parts sont des centièmes. Il y en a 8."
+          },
+          {
+            "question": "Une unité est partagée en 100 parts égales. Quelle fraction représente une seule part ?",
+            "options": [
+              "1/10",
+              "100/1",
+              "1/100",
+              "10/100"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une part sur les 100 parts égales : 1 en haut, 100 en bas."
+          },
+          {
+            "question": "Combien faut-il de dixièmes pour faire une unité entière ?",
+            "options": [
+              "1 dixième",
+              "5 dixièmes",
+              "100 dixièmes",
+              "10 dixièmes"
+            ],
+            "reponse_correcte": 3,
+            "explication": "L'unité est partagée en 10 parts égales : il faut les 10 parts pour la refaire entière."
+          },
+          {
+            "question": "Combien de centièmes valent un dixième ?",
+            "options": [
+              "10 centièmes",
+              "1 centième",
+              "100 centièmes",
+              "1000 centièmes"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'unité vaut 10 dixièmes et aussi 100 centièmes : chaque dixième contient donc 10 centièmes."
+          },
+          {
+            "question": "Laquelle de ces fractions est une fraction décimale ?",
+            "options": [
+              "3/4",
+              "7/10",
+              "2/3",
+              "5/6"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une fraction décimale a 10 ou 100 en bas : c'est le cas de 7/10, qui compte des dixièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Des parts de l'unité",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Un ruban unité est partagé en 10 parts égales. Malo en prend 9. Quelle fraction du ruban prend-il ?",
+            "options": [
+              "9/100",
+              "9/10",
+              "10/9",
+              "1/9"
+            ],
+            "reponse_correcte": 1,
+            "explication": "En bas le nombre de parts, 10 ; en haut les parts prises, 9."
+          },
+          {
+            "question": "Une plaque unité est partagée en 100 carreaux égaux. Jade en colorie 61. Quelle fraction de la plaque a-t-elle coloriée ?",
+            "options": [
+              "61/10",
+              "100/61",
+              "61",
+              "61/100"
+            ],
+            "reponse_correcte": 3,
+            "explication": "L'unité est partagée en 100 : j'écris 100 en bas et 61 en haut."
+          },
+          {
+            "question": "Comment écrit-on « douze centièmes » ?",
+            "options": [
+              "12/100",
+              "12/10",
+              "100/12",
+              "12"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Des centièmes : 100 en bas. Il y en a douze : 12 en haut."
+          },
+          {
+            "question": "Comment lit-on la fraction 5/100 ?",
+            "options": [
+              "cinq dixièmes",
+              "cinquante centièmes",
+              "cinq centièmes",
+              "cent cinquièmes"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le nombre du bas est 100 : les parts sont des centièmes. Il y en a 5."
+          },
+          {
+            "question": "Une unité est partagée en 10 parts égales. Quelle fraction représente une seule part ?",
+            "options": [
+              "1/100",
+              "10/1",
+              "1/10",
+              "10/10"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une part sur les 10 parts égales : 1 en haut, 10 en bas."
+          },
+          {
+            "question": "Combien faut-il de centièmes pour faire une unité entière ?",
+            "options": [
+              "10 centièmes",
+              "100 centièmes",
+              "1 centième",
+              "1000 centièmes"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'unité est partagée en 100 parts égales : il faut les 100 parts pour la refaire entière."
+          },
+          {
+            "question": "Combien de dixièmes valent 30 centièmes ?",
+            "options": [
+              "30 dixièmes",
+              "3 dixièmes",
+              "300 dixièmes",
+              "1 dixième"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un dixième vaut 10 centièmes : dans 30 centièmes, il y a trois paquets de 10, donc 3 dixièmes."
+          },
+          {
+            "question": "Laquelle de ces fractions n'est pas une fraction décimale ?",
+            "options": [
+              "7/10",
+              "2/5",
+              "9/100",
+              "6/10"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une fraction décimale a 10 ou 100 en bas. Dans 2/5, le nombre du bas est 5 : l'unité n'est partagée ni en dixièmes ni en centièmes."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N40",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Encadrer une fraction",
+      "regle": "Le nombre du bas dit combien de parts font une unité entière : on cherche combien de fois ce paquet tient dans le nombre du haut.",
+      "procedure": [
+        "Lis le nombre du bas : il dit combien de parts font 1 unité entière.",
+        "Compte combien de paquets entiers tiennent dans le nombre du haut : c'est l'entier juste en dessous.",
+        "Ajoute 1 : c'est l'entier juste au-dessus."
+      ],
+      "exemples": [
+        {
+          "phrase": "Encadre 7/3 entre deux entiers qui se suivent.",
+          "demonstration": "Il faut 3 tiers pour faire 1. Dans 7 tiers, je fais deux paquets de 3 tiers, et il reste 1 tiers. Donc 2 < 7/3 < 3."
+        },
+        {
+          "phrase": "Encadre 5/8 entre deux entiers qui se suivent.",
+          "demonstration": "Il faut 8 huitièmes pour faire 1, et je n'en ai que 5 : pas même un paquet entier. Donc 0 < 5/8 < 1."
+        }
+      ],
+      "piege": "Quand le nombre du haut est un multiple du nombre du bas, la fraction vaut un entier exactement : 10/5 vaut 2."
+    },
+    "diagnostic": [
+      {
+        "question": "Entre quels deux entiers qui se suivent se trouve 13/4 ?",
+        "options": [
+          "entre 13 et 4",
+          "entre 3 et 4",
+          "entre 4 et 5",
+          "entre 2 et 3"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Il faut 4 quarts pour faire 1. Dans 13 quarts, il y a trois paquets de 4 quarts, soit 12 quarts, et il reste 1 quart : 13/4 est entre 3 et 4."
+      },
+      {
+        "question": "Laquelle de ces fractions est plus grande que 1 ?",
+        "options": [
+          "3/4",
+          "4/9",
+          "9/7",
+          "2/9"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une fraction est plus grande que 1 quand le nombre du haut dépasse celui du bas : 9 septièmes, c'est plus que les 7 septièmes qui font 1."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'entier qui manque",
+        "consigne": "Écris le nombre entier demandé, en chiffres.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel est l'entier juste en dessous de 9/4 ?",
+            "reponse_attendue": "2",
+            "indice": "Il faut 4 quarts pour faire 1 : compte les paquets de 4 quarts dans 9 quarts."
+          },
+          {
+            "id": 2,
+            "enonce": "Quel est l'entier juste au-dessus de 5/4 ?",
+            "reponse_attendue": "2",
+            "indice": "Il faut 4 quarts pour faire 1 : compte les paquets de 4 quarts dans 5 quarts, puis ajoute 1."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel est l'entier juste au-dessus de 11/3 ?",
+            "reponse_attendue": "4",
+            "indice": "Il faut 3 tiers pour faire 1 : compte les paquets de 3 tiers dans 11 tiers, puis ajoute 1."
+          },
+          {
+            "id": 4,
+            "enonce": "… < 7/2 < 4 : quel entier manque ?",
+            "reponse_attendue": "3",
+            "indice": "Il faut 2 demis pour faire 1 : compte les paquets de 2 demis dans 7 demis."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel est l'entier juste au-dessus de 23/4 ?",
+            "reponse_attendue": "6",
+            "indice": "Il faut 4 quarts pour faire 1 : compte les paquets de 4 quarts dans 23 quarts, puis ajoute 1."
+          },
+          {
+            "id": 6,
+            "enonce": "Combien vaut 12/4 ? Écris le nombre entier.",
+            "reponse_attendue": "3",
+            "indice": "Compte les paquets de 4 quarts dans 12 quarts : il ne reste rien."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel est l'entier juste en dessous de 17/5 ?",
+            "reponse_attendue": "3",
+            "indice": "Il faut 5 cinquièmes pour faire 1 : compte les paquets de 5 cinquièmes dans 17 cinquièmes."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel est l'entier juste en dessous de 25/6 ?",
+            "reponse_attendue": "4",
+            "indice": "Il faut 6 sixièmes pour faire 1 : compte les paquets de 6 sixièmes dans 25 sixièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Entre deux entiers",
+        "consigne": "Écris le nombre entier demandé, en chiffres.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel est l'entier juste en dessous de 8/3 ?",
+            "reponse_attendue": "2",
+            "indice": "Il faut 3 tiers pour faire 1 : compte les paquets de 3 tiers dans 8 tiers."
+          },
+          {
+            "id": 2,
+            "enonce": "Quel est l'entier juste au-dessus de 4/3 ?",
+            "reponse_attendue": "2",
+            "indice": "Il faut 3 tiers pour faire 1 : compte les paquets de 3 tiers dans 4 tiers, puis ajoute 1."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel est l'entier juste en dessous de 19/4 ?",
+            "reponse_attendue": "4",
+            "indice": "Il faut 4 quarts pour faire 1 : compte les paquets de 4 quarts dans 19 quarts."
+          },
+          {
+            "id": 4,
+            "enonce": "4 < 9/2 < … : quel entier manque ?",
+            "reponse_attendue": "5",
+            "indice": "Il faut 2 demis pour faire 1 : compte les paquets de 2 demis dans 9 demis, puis ajoute 1."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel est l'entier juste en dessous de 29/10 ?",
+            "reponse_attendue": "2",
+            "indice": "Il faut 10 dixièmes pour faire 1 : compte les paquets de 10 dixièmes dans 29 dixièmes."
+          },
+          {
+            "id": 6,
+            "enonce": "Combien vaut 24/6 ? Écris le nombre entier.",
+            "reponse_attendue": "4",
+            "indice": "Compte les paquets de 6 sixièmes dans 24 sixièmes : il ne reste rien."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel est l'entier juste en dessous de 22/7 ?",
+            "reponse_attendue": "3",
+            "indice": "Il faut 7 septièmes pour faire 1 : compte les paquets de 7 septièmes dans 22 septièmes."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel est l'entier juste au-dessus de 11/6 ?",
+            "reponse_attendue": "2",
+            "indice": "Il faut 6 sixièmes pour faire 1 : compte les paquets de 6 sixièmes dans 11 sixièmes, puis ajoute 1."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N26",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Ce que dit la virgule",
+      "regle": "Avant la virgule on compte les unités entières ; après la virgule, on compte des parts de l'unité : d'abord les dixièmes, puis les centièmes.",
+      "procedure": [
+        "Lis la partie écrite avant la virgule : ce sont les unités entières.",
+        "Le premier chiffre après la virgule donne les dixièmes, le deuxième les centièmes.",
+        "Dis le nombre en entier : « tant d'unités et tant de dixièmes »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Que veut dire 5,8 ?",
+          "demonstration": "Avant la virgule : 5 unités. Après : 8 au premier rang, donc 8 dixièmes. 5,8 est entre 5 et 6."
+        },
+        {
+          "phrase": "Que veut dire 5,08 ?",
+          "demonstration": "Toujours 5 unités. Après la virgule : 0 dixième, puis 8 centièmes. 5,08 vaut 5 unités et 8 centièmes, bien moins que 5,8."
+        }
+      ],
+      "piege": "Ce qui suit la virgule ne se lit pas comme un nombre entier : dans 5,08 le 8 vaut 8 centièmes."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans le nombre 4,6, que représente le chiffre 6 ?",
+        "options": [
+          "6 unités",
+          "6 dixièmes",
+          "6 centièmes",
+          "6 dizaines"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le premier chiffre écrit après la virgule compte les dixièmes."
+      },
+      {
+        "question": "Comment écrit-on « six unités et trois centièmes » ?",
+        "options": [
+          "6,03",
+          "6,3",
+          "0,63",
+          "63"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Aucun dixième n'est cité : on met un 0 juste après la virgule, puis le 3 des centièmes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Unités, dixièmes, centièmes",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans le nombre 5,3, que représente le chiffre 3 ?",
+            "options": [
+              "3 unités",
+              "3 dixièmes",
+              "3 centièmes",
+              "3 dizaines"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le premier chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "question": "Quel nombre vaut 2 unités et 7 dixièmes ?",
+            "options": [
+              "27",
+              "2,07",
+              "2,7",
+              "0,27"
+            ],
+            "reponse_correcte": 2,
+            "explication": "2 unités s'écrivent avant la virgule, les 7 dixièmes juste après."
+          },
+          {
+            "question": "Que vaut 0,01 ?",
+            "options": [
+              "un dixième",
+              "un centième",
+              "un millième",
+              "un demi"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le deuxième rang après la virgule est celui des centièmes : 0,01, c'est une part d'une unité partagée en 100."
+          },
+          {
+            "question": "Dans le nombre 8,42, que représente le chiffre 2 ?",
+            "options": [
+              "2 dixièmes",
+              "2 unités",
+              "2 centièmes",
+              "2 centaines"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le deuxième chiffre après la virgule compte les centièmes."
+          },
+          {
+            "question": "Entre quels deux nombres entiers se trouve 6,8 ?",
+            "options": [
+              "entre 5 et 6",
+              "entre 6 et 7",
+              "entre 7 et 8",
+              "entre 8 et 9"
+            ],
+            "reponse_correcte": 1,
+            "explication": "6,8, c'est 6 unités entières et encore 8 dixièmes : le nombre est plus grand que 6 mais n'atteint pas 7."
+          },
+          {
+            "question": "Lequel de ces nombres est compris entre 4 et 5 ?",
+            "options": [
+              "3,9",
+              "5,4",
+              "4,7",
+              "45"
+            ],
+            "reponse_correcte": 2,
+            "explication": "4,7 a 4 unités entières et 7 dixièmes en plus : il est après 4 et avant 5."
+          },
+          {
+            "question": "Nour a couru trois kilomètres et demi. Comment écrit-on cette distance avec une virgule ?",
+            "options": [
+              "3,5 km",
+              "3,1 km",
+              "35 km",
+              "0,5 km"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un demi, c'est la moitié de l'unité, donc 5 dixièmes : trois kilomètres et demi s'écrivent 3,5 km."
+          },
+          {
+            "question": "Que veut dire 12,9 ?",
+            "options": [
+              "129 unités",
+              "12 unités et 9 centièmes",
+              "9 unités et 12 dixièmes",
+              "12 unités et 9 dixièmes"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Avant la virgule, 12 unités ; après, le premier rang donne 9 dixièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Le sens des nombres décimaux",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Dans le nombre 7,2, que représente le chiffre 2 ?",
+            "options": [
+              "2 centièmes",
+              "2 dixièmes",
+              "2 unités",
+              "2 dizaines"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le premier chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "question": "Quel nombre vaut 5 unités et 4 centièmes ?",
+            "options": [
+              "5,4",
+              "54",
+              "5,04",
+              "0,54"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Il n'y a aucun dixième : on met un 0 au premier rang, puis le 4 des centièmes."
+          },
+          {
+            "question": "Que vaut 0,5 ?",
+            "options": [
+              "un demi",
+              "un cinquième",
+              "cinq unités",
+              "un centième"
+            ],
+            "reponse_correcte": 0,
+            "explication": "0,5, c'est 5 dixièmes, soit la moitié de l'unité : un demi."
+          },
+          {
+            "question": "Dans le nombre 3,07, que représente le chiffre 7 ?",
+            "options": [
+              "7 dixièmes",
+              "7 unités",
+              "7 millièmes",
+              "7 centièmes"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le deuxième chiffre après la virgule compte les centièmes."
+          },
+          {
+            "question": "Entre quels deux nombres entiers se trouve 15,2 ?",
+            "options": [
+              "entre 14 et 15",
+              "entre 15 et 16",
+              "entre 1 et 2",
+              "entre 2 et 15"
+            ],
+            "reponse_correcte": 1,
+            "explication": "15,2, c'est 15 unités entières et encore 2 dixièmes : le nombre dépasse 15 sans atteindre 16."
+          },
+          {
+            "question": "Lequel de ces nombres est compris entre 9 et 10 ?",
+            "options": [
+              "10,3",
+              "8,95",
+              "9,6",
+              "96"
+            ],
+            "reponse_correcte": 2,
+            "explication": "9,6 a 9 unités entières et 6 dixièmes en plus : il est après 9 et avant 10."
+          },
+          {
+            "question": "Sacha mesure 1 mètre et 45 centièmes de mètre. Comment écrit-on sa taille en mètres ?",
+            "options": [
+              "1,45 m",
+              "1,045 m",
+              "145 m",
+              "1,4 m"
+            ],
+            "reponse_correcte": 0,
+            "explication": "1 unité avant la virgule, puis 45 centièmes : 4 dixièmes et 5 centièmes."
+          },
+          {
+            "question": "Que veut dire 30,6 ?",
+            "options": [
+              "30 unités et 6 dixièmes",
+              "306 unités",
+              "30 unités et 6 centièmes",
+              "6 unités et 30 dixièmes"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Avant la virgule, 30 unités ; après, le premier rang donne 6 dixièmes."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N37",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Encadrer au rang demandé",
+      "regle": "Encadrer un nombre à un rang, c'est trouver les deux nombres de ce rang qui l'entourent.",
+      "procedure": [
+        "Repère le rang demandé et le chiffre qui l'occupe.",
+        "Pour la borne du bas, remplace par des 0 tous les chiffres écrits à droite de ce rang.",
+        "Pour la borne du haut, ajoute une unité de ce rang à la borne du bas."
+      ],
+      "exemples": [
+        {
+          "phrase": "Encadre 372 145 au millier.",
+          "demonstration": "Le rang des milliers est occupé par le 2. Des 0 à droite : 372 000. J'ajoute un millier : 373 000."
+        },
+        {
+          "phrase": "Encadre 4 995 à la dizaine.",
+          "demonstration": "Des 0 à droite du rang des dizaines : 4 990. J'ajoute une dizaine : 5 000, car 4 990 plus 10 change aussi les chiffres de gauche."
+        }
+      ],
+      "piege": "Ajouter une unité du rang peut faire changer les chiffres de gauche : la dizaine qui suit 4 990 est 5 000."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel encadrement de 68 429 au millier est correct ?",
+        "options": [
+          "68 400 < 68 429 < 68 500",
+          "60 000 < 68 429 < 70 000",
+          "68 000 < 68 429 < 69 000",
+          "68 000 < 68 429 < 68 500"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Au millier, les bornes se terminent par trois zéros et se suivent : 68 000 puis 69 000."
+      },
+      {
+        "question": "Quelle est la centaine de mille juste au-dessus de 730 500 ?",
+        "options": [
+          "731 000",
+          "740 000",
+          "700 000",
+          "800 000"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Les centaines de mille se comptent 700 000, 800 000, 900 000 : celle qui suit 730 500 est 800 000."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La borne qui manque",
+        "consigne": "Écris le nombre demandé, en chiffres et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel est le millier juste en dessous de 284 617 ?",
+            "reponse_attendue": "284000",
+            "indice": "Repère le rang des milliers, puis remplace par des 0 tous les chiffres écrits à sa droite."
+          },
+          {
+            "id": 2,
+            "enonce": "Encadre 284 617 à la centaine : … < 284 617 < 284 700. Quel nombre manque ?",
+            "reponse_attendue": "284600",
+            "indice": "Mets des 0 à droite du rang des centaines."
+          },
+          {
+            "id": 3,
+            "enonce": "Encadre 45 892 à la dizaine de mille : 40 000 < 45 892 < … Quel nombre manque ?",
+            "reponse_attendue": "50000",
+            "indice": "Ajoute une dizaine de mille à la borne du bas."
+          },
+          {
+            "id": 4,
+            "enonce": "Quelle est la centaine de mille juste au-dessus de 706 350 ?",
+            "reponse_attendue": "800000",
+            "indice": "Mets des 0 à droite du rang des centaines de mille, puis ajoute une centaine de mille."
+          },
+          {
+            "id": 5,
+            "enonce": "Encadre 1 209 480 au million : 1 000 000 < 1 209 480 < … Quel nombre manque ?",
+            "reponse_attendue": "2000000",
+            "indice": "Ajoute un million à la borne du bas."
+          },
+          {
+            "id": 6,
+            "enonce": "Quelle est la dizaine juste au-dessus de 63 999 ?",
+            "reponse_attendue": "64000",
+            "indice": "Mets des 0 à droite du rang des dizaines, puis ajoute une dizaine : les chiffres de gauche peuvent changer."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 9 998 à l'unité : … < 9 998 < 9 999. Quel nombre manque ?",
+            "reponse_attendue": "9997",
+            "indice": "À l'unité, la borne du bas est le nombre moins 1."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel est le millier juste au-dessus de 519 700 ?",
+            "reponse_attendue": "520000",
+            "indice": "Mets des 0 à droite du rang des milliers, puis ajoute un millier : les chiffres de gauche peuvent changer."
+          }
+        ]
+      },
+      {
+        "titre": "Encadrer les grands nombres",
+        "consigne": "Écris le nombre demandé, en chiffres et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel est le millier juste en dessous de 736 208 ?",
+            "reponse_attendue": "736000",
+            "indice": "Repère le rang des milliers, puis remplace par des 0 tous les chiffres écrits à sa droite."
+          },
+          {
+            "id": 2,
+            "enonce": "Encadre 736 208 à la centaine : … < 736 208 < 736 300. Quel nombre manque ?",
+            "reponse_attendue": "736200",
+            "indice": "Mets des 0 à droite du rang des centaines."
+          },
+          {
+            "id": 3,
+            "enonce": "Encadre 82 461 à la dizaine de mille : 80 000 < 82 461 < … Quel nombre manque ?",
+            "reponse_attendue": "90000",
+            "indice": "Ajoute une dizaine de mille à la borne du bas."
+          },
+          {
+            "id": 4,
+            "enonce": "Quelle est la centaine de mille juste au-dessus de 254 900 ?",
+            "reponse_attendue": "300000",
+            "indice": "Mets des 0 à droite du rang des centaines de mille, puis ajoute une centaine de mille."
+          },
+          {
+            "id": 5,
+            "enonce": "Encadre 3 705 240 au million : 3 000 000 < 3 705 240 < … Quel nombre manque ?",
+            "reponse_attendue": "4000000",
+            "indice": "Ajoute un million à la borne du bas."
+          },
+          {
+            "id": 6,
+            "enonce": "Quelle est la dizaine juste au-dessus de 47 995 ?",
+            "reponse_attendue": "48000",
+            "indice": "Mets des 0 à droite du rang des dizaines, puis ajoute une dizaine : les chiffres de gauche peuvent changer."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 20 004 à l'unité : … < 20 004 < 20 005. Quel nombre manque ?",
+            "reponse_attendue": "20003",
+            "indice": "À l'unité, la borne du bas est le nombre moins 1."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel est le millier juste en dessous de 608 470 ?",
+            "reponse_attendue": "608000",
+            "indice": "Repère le rang des milliers, puis remplace par des 0 tous les chiffres écrits à sa droite."
+          }
+        ]
+      }
+    ]
+  }
+]

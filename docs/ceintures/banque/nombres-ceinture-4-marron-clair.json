@@ -1,0 +1,852 @@
+[
+  {
+    "item_code": "N19",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Un demi, un tiers, un quart",
+      "regle": "Prendre 1/4 d'une quantité, c'est la partager en 4 parts égales et en prendre une.",
+      "procedure": [
+        "Lis le nombre du bas : il dit en combien de parts égales on partage.",
+        "Partage la quantité en autant de parts égales.",
+        "Le nombre du haut dit combien de parts on prend."
+      ],
+      "exemples": [
+        {
+          "phrase": "Combien vaut 1/2 de 14 ?",
+          "demonstration": "Le bas dit 2 : 14, c'est 7 et 7. Une part vaut 7."
+        },
+        {
+          "phrase": "Combien vaut 1/3 de 15 ?",
+          "demonstration": "Le bas dit 3 : 15, c'est 5, 5 et 5. Une part vaut 5, plus petite qu'avec un partage en 2."
+        }
+      ],
+      "piege": "Plus le nombre du bas est grand, plus les parts sont petites : 1/4 est plus petit que 1/3."
+    },
+    "diagnostic": [
+      {
+        "question": "Une tarte est partagée en 3 parts égales. Yanis en prend une. Quelle fraction de la tarte prend-il ?",
+        "options": [
+          "3/1",
+          "1/3",
+          "1/4",
+          "3"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La tarte est partagée en 3 parts égales : le 3 s'écrit en bas. Yanis en prend une seule : le 1 s'écrit en haut."
+      },
+      {
+        "question": "Combien vaut 1/4 de 16 ?",
+        "options": [
+          "8",
+          "64",
+          "4",
+          "12"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Je partage 16 en 4 parts égales : 4 + 4 + 4 + 4. Une part vaut 4."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des parts égales",
+        "consigne": "Choisis la bonne réponse. Souviens-toi que les parts doivent toujours être égales.",
+        "questions": [
+          {
+            "question": "Un gâteau est coupé en 4 parts égales. Malo en mange une. Quelle fraction du gâteau a-t-il mangée ?",
+            "options": [
+              "1/4",
+              "4/1",
+              "1/3",
+              "1/2"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le gâteau est partagé en 4 parts égales : le 4 s'écrit en bas. Malo en mange une : le 1 s'écrit en haut."
+          },
+          {
+            "question": "Combien vaut 1/2 de 18 ?",
+            "options": [
+              "2",
+              "36",
+              "6",
+              "9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Je partage 18 en 2 parts égales : 9 et 9. Une part vaut 9."
+          },
+          {
+            "question": "Combien vaut 1/4 de 24 ?",
+            "options": [
+              "4",
+              "6",
+              "20",
+              "96"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Je partage 24 en 4 parts égales : 6 + 6 + 6 + 6. Une part vaut 6."
+          },
+          {
+            "question": "Combien vaut 1/3 de 12 ?",
+            "options": [
+              "3",
+              "9",
+              "4",
+              "36"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Je partage 12 en 3 parts égales : 4 + 4 + 4. Une part vaut 4."
+          },
+          {
+            "question": "Quelle est la plus grande de ces trois fractions : 1/2, 1/3, 1/4 ?",
+            "options": [
+              "1/4",
+              "1/3",
+              "1/2",
+              "elles sont égales"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Plus on partage en beaucoup de parts, plus les parts sont petites : un partage en 2 donne les plus grosses parts."
+          },
+          {
+            "question": "Un ruban est partagé en 4 parts égales. Sacha en prend deux. Quelle part du ruban a-t-il prise ?",
+            "options": [
+              "un quart du ruban",
+              "un tiers du ruban",
+              "la moitié du ruban",
+              "le ruban entier"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Deux parts sur les quatre, c'est la moitié du ruban : 2/4 et 1/2 désignent la même part."
+          },
+          {
+            "question": "Une tablette a 40 carrés. Adam en mange le quart. Combien de carrés a-t-il mangés ?",
+            "options": [
+              "4",
+              "20",
+              "10",
+              "36"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Je partage 40 en 4 parts égales : 10 + 10 + 10 + 10. Le quart de 40 vaut 10."
+          },
+          {
+            "question": "Quelle phrase est vraie ?",
+            "options": [
+              "1/3 est plus grand que 1/2",
+              "1/4 est plus petit que 1/3",
+              "1/4 est plus grand que 1/2",
+              "1/2 est plus petit que 1/3"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Partager en 4 donne des parts plus petites que partager en 3 : 1/4 est plus petit que 1/3."
+          }
+        ]
+      },
+      {
+        "titre": "La moitié, le tiers, le quart",
+        "consigne": "Choisis la bonne réponse. Souviens-toi que les parts doivent toujours être égales.",
+        "questions": [
+          {
+            "question": "Une pizza est coupée en 2 parts égales. Louna en mange une. Quelle fraction de la pizza a-t-elle mangée ?",
+            "options": [
+              "2/1",
+              "1/4",
+              "2",
+              "1/2"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La pizza est partagée en 2 parts égales : le 2 s'écrit en bas. Louna en mange une : le 1 s'écrit en haut."
+          },
+          {
+            "question": "Combien vaut 1/2 de 26 ?",
+            "options": [
+              "13",
+              "52",
+              "24",
+              "2"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Je partage 26 en 2 parts égales : 13 et 13. Une part vaut 13."
+          },
+          {
+            "question": "Combien vaut 1/4 de 32 ?",
+            "options": [
+              "4",
+              "8",
+              "28",
+              "16"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Je partage 32 en 4 parts égales : 8 + 8 + 8 + 8. Une part vaut 8."
+          },
+          {
+            "question": "Combien vaut 1/3 de 33 ?",
+            "options": [
+              "3",
+              "30",
+              "11",
+              "99"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Je partage 33 en 3 parts égales : 11 + 11 + 11. Une part vaut 11."
+          },
+          {
+            "question": "Quelle est la plus petite de ces trois fractions : 1/2, 1/3, 1/4 ?",
+            "options": [
+              "1/2",
+              "1/3",
+              "elles sont égales",
+              "1/4"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Plus on partage en beaucoup de parts, plus les parts sont petites : un partage en 4 donne les plus petites parts."
+          },
+          {
+            "question": "Une corde est partagée en 4 parts égales. Fatou en prend trois. Quelle part de la corde a-t-elle prise ?",
+            "options": [
+              "un quart de la corde",
+              "trois quarts de la corde",
+              "la moitié de la corde",
+              "un tiers de la corde"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Trois parts sur les quatre, cela s'écrit 3/4 et se dit trois quarts."
+          },
+          {
+            "question": "Un sac contient 46 billes. Rosalie en prend la moitié. Combien de billes prend-elle ?",
+            "options": [
+              "46",
+              "2",
+              "23",
+              "12"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Je partage 46 en 2 parts égales : 23 et 23. La moitié de 46 vaut 23."
+          },
+          {
+            "question": "Quelle phrase est vraie ?",
+            "options": [
+              "1/2 est plus grand que 1/3",
+              "1/2 est plus petit que 1/4",
+              "1/3 est plus grand que 1/2",
+              "1/3 est plus petit que 1/4"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Partager en 2 donne des parts plus grosses que partager en 3 : 1/2 est plus grand que 1/3."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N39",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Placer une fraction sur la droite",
+      "regle": "Entre 0 et 1, le nombre de parts égales s'écrit en bas, le rang du repère en haut.",
+      "procedure": [
+        "Compte les parts égales entre 0 et 1 : c'est le nombre du bas.",
+        "Compte les repères depuis 0 jusqu'au point : c'est le nombre du haut.",
+        "Vérifie : sur le repère de 1, haut et bas sont égaux."
+      ],
+      "exemples": [
+        {
+          "phrase": "0 à 1 partagé en 2 parts égales : le point est au milieu.",
+          "demonstration": "En bas 2 ; depuis 0, un seul repère : le point porte 1/2."
+        },
+        {
+          "phrase": "Même droite : le point est sur le repère de 1.",
+          "demonstration": "En bas 2 ; depuis 0, deux repères : le point porte 2/2, donc 1."
+        }
+      ],
+      "piege": "Le repère de 0 ne compte pas."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Quelle fraction est écrite sous le 1er repère après 0 ?",
+        "options": [
+          "1/3",
+          "2/3",
+          "3/3",
+          "1/4"
+        ],
+        "reponse_correcte": 0,
+        "explication": "L'espace est partagé en 3 parts : j'écris 3 en bas, donc 1/4 est éliminé d'office. Le point est au 1er repère depuis 0 : j'écris 1 en haut, c'est 1/3."
+      },
+      {
+        "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Rosalie place un point sur 1/4 et Malo place un point sur 3/4. Lequel des deux points est le plus proche de 1 ?",
+        "options": [
+          "le point de Rosalie, sur 1/4",
+          "les deux points sont à la même distance de 1",
+          "on ne peut pas le savoir",
+          "le point de Malo, sur 3/4"
+        ],
+        "reponse_correcte": 3,
+        "explication": "3/4 est au 3e repère et 1/4 au 1er : c'est le point de Malo qui est le plus avancé vers 1."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Sous quel repère ?",
+        "consigne": "Chaque droite graduée est décrite par la phrase : lis-la attentivement avant de répondre.",
+        "questions": [
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Quelle fraction est écrite sous le 1er repère après 0 ?",
+            "options": [
+              "1/4",
+              "2/4",
+              "4/1",
+              "4/4"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'espace est partagé en 4 parts : j'écris 4 en bas. Le point est au 1er repère depuis 0 : j'écris 1 en haut, c'est 1/4."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Quelle fraction est écrite sous le 3e repère après 0 ?",
+            "options": [
+              "1/4",
+              "2/4",
+              "3/4",
+              "4/4"
+            ],
+            "reponse_correcte": 2,
+            "explication": "En bas, le nombre de parts : 4. En haut, le rang du repère : 3. Toutes les fractions proposées ont 4 en bas : c'est le rang qui décide."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Quelle fraction est écrite sous le 2e repère après 0 ?",
+            "options": [
+              "1/3",
+              "2/3",
+              "3/3",
+              "3/2"
+            ],
+            "reponse_correcte": 1,
+            "explication": "En bas, le nombre de parts : 3. En haut, le rang du repère : 2. Le 1er repère porterait 1/3 et le 3e porterait 3/3."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Sous quel repère écrit-on 1/2 ?",
+            "options": [
+              "le 1er repère après 0",
+              "le 2e repère après 0",
+              "le 3e repère après 0",
+              "sur le repère de 1"
+            ],
+            "reponse_correcte": 1,
+            "explication": "1/2, c'est la moitié : sur 4 parts égales, la moitié en fait 2. C'est donc le 2e repère après 0, celui qui porte aussi 2/4."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Sous quel repère est écrit le nombre 1 ?",
+            "options": [
+              "le 1er repère après 0",
+              "le 2e repère après 0",
+              "le 3e repère après 0",
+              "il n'y a pas de repère pour 1"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Il faut parcourir les 3 parts pour arriver à 1 : c'est le 3e repère, celui qui porte 3/3."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Combien y a-t-il de repères entre 0 et 1, sans compter celui de 0 ni celui de 1 ?",
+            "options": [
+              "2",
+              "5",
+              "3",
+              "4"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Quatre parts égales sont séparées par 3 repères intérieurs : ceux de 1/4, 2/4 et 3/4."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Louna place un point sur 1/3 et Adam place un point sur 2/3. Lequel des deux points est le plus proche de 0 ?",
+            "options": [
+              "le point de Louna, sur 1/3",
+              "le point d'Adam, sur 2/3",
+              "les deux sont à la même distance de 0",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 0,
+            "explication": "1/3 est au 1er repère et 2/3 au 2e : c'est le point de Louna qui est le plus près de 0."
+          }
+        ]
+      },
+      {
+        "titre": "La droite graduée en parts égales",
+        "consigne": "Chaque droite graduée est décrite par la phrase : lis-la attentivement avant de répondre.",
+        "questions": [
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Sous quel repère est écrit le nombre 1 ?",
+            "options": [
+              "le 2e repère après 0",
+              "le 4e repère après 0",
+              "le 3e repère après 0",
+              "il n'y a pas de repère pour 1"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Il faut parcourir les 4 parts pour arriver à 1 : c'est le 4e repère, celui qui porte 4/4."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Sous quel repère écrit-on 1/4 ?",
+            "options": [
+              "le 4e repère après 0",
+              "le 2e repère après 0",
+              "le 1er repère après 0",
+              "sur le repère de 0"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le nombre du haut est 1 : le point est au 1er repère après 0."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Sous quel repère écrit-on 2/3 ?",
+            "options": [
+              "le 1er repère après 0",
+              "le 2e repère après 0",
+              "le 3e repère après 0",
+              "sur le repère de 1"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le nombre du haut est 2 : le point est au 2e repère après 0."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1. Yanis a écrit 1/3 sous le 1er repère et 2/3 sous le 2e repère. En combien de parts égales l'espace entre 0 et 1 est-il partagé ?",
+            "options": [
+              "2",
+              "3",
+              "4",
+              "6"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le nombre écrit en bas des fractions donne le nombre de parts : ici, 3."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Quelle fraction est écrite sous le repère situé juste avant celui de 1 ?",
+            "options": [
+              "3/4",
+              "1/4",
+              "4/3",
+              "2/4"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le repère juste avant 1 est le 3e depuis 0 : en haut 3, en bas 4."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Combien y a-t-il de repères entre 0 et 1, sans compter celui de 0 ni celui de 1 ?",
+            "options": [
+              "3",
+              "1",
+              "4",
+              "2"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Trois parts égales sont séparées par 2 repères intérieurs : ceux de 1/3 et de 2/3."
+          },
+          {
+            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Fatou place un point sur 1/2 et Timéo place un point sur 3/4. Lequel des deux points est le plus proche de 1 ?",
+            "options": [
+              "le point de Fatou, sur 1/2",
+              "les deux sont à la même distance de 1",
+              "le point de Timéo, sur 3/4",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Sur cette droite, 1/2 est au 2e repère et 3/4 au 3e : c'est le point de Timéo qui est le plus avancé vers 1."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N23",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Lire le tableau de numération",
+      "regle": "Un grand nombre se lit par groupes de trois chiffres depuis la droite : unités, mille, millions.",
+      "procedure": [
+        "Sépare le nombre en groupes de trois chiffres depuis la droite.",
+        "Nomme les groupes de droite à gauche : unités, mille, millions.",
+        "Dans ce groupe, compte de droite à gauche : unités, dizaines, centaines, puis ajoute le nom du groupe : « de mille », « de millions »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Dans 486 319 : le chiffre des dizaines de mille ?",
+          "demonstration": "Groupes : 486 et 319. Dans le groupe des mille, 486 : 6 unités de mille, 8 dizaines de mille, 4 centaines de mille. C'est 8."
+        },
+        {
+          "phrase": "Dans 7 052 900 : le chiffre des unités de mille ?",
+          "demonstration": "Groupes : 7, 052, 900. Dans le groupe des mille, 052 : 2 unités de mille, 5 dizaines de mille, 0 centaine de mille. C'est 2."
+        }
+      ],
+      "piege": "Un zéro occupe une colonne comme un autre chiffre."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans 3 902 470, quel est le chiffre des centaines de mille ?",
+        "options": [
+          "3",
+          "9",
+          "0",
+          "2"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Je sépare : 3, puis 902, puis 470. Dans le groupe des mille, 902, le chiffre de gauche est celui des centaines de mille : 9."
+      },
+      {
+        "question": "Dans 640 815, dans quelle colonne du tableau de numération se range le chiffre 6 ?",
+        "options": [
+          "les centaines",
+          "les unités de mille",
+          "les centaines de mille",
+          "les millions"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Je sépare : 640 et 815. Le 6 est le chiffre de gauche du groupe des mille : il se range dans les centaines de mille."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Chaque chiffre à sa place",
+        "consigne": "Écris seulement le chiffre demandé : un seul chiffre, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans 3 546 208, quel est le chiffre des dizaines de mille ?",
+            "reponse_attendue": "4",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans 3 546 208, quel est le chiffre des millions ?",
+            "reponse_attendue": "3",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 3,
+            "enonce": "Dans 3 546 208, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "0",
+            "indice": "Un zéro occupe une colonne comme les autres chiffres : compte-le quand tu comptes les places."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans 807 165, quel est le chiffre des centaines de mille ?",
+            "reponse_attendue": "8",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans 807 165, quel est le chiffre des unités de mille ?",
+            "reponse_attendue": "7",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans 92 604, quel est le chiffre des dizaines de mille ?",
+            "reponse_attendue": "9",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 7,
+            "enonce": "Dans 92 604, quel est le chiffre des centaines ?",
+            "reponse_attendue": "6",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans 5 070 900, quel est le chiffre des dizaines de mille ?",
+            "reponse_attendue": "7",
+            "indice": "Un zéro occupe une colonne comme les autres chiffres : compte-le quand tu comptes les places."
+          }
+        ]
+      },
+      {
+        "titre": "Dans quelle colonne ?",
+        "consigne": "Écris seulement le chiffre demandé : un seul chiffre, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans 2 480 375, quel est le chiffre des centaines de mille ?",
+            "reponse_attendue": "4",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans 2 480 375, quel est le chiffre des unités de mille ?",
+            "reponse_attendue": "0",
+            "indice": "Un zéro occupe une colonne comme les autres chiffres : compte-le quand tu comptes les places."
+          },
+          {
+            "id": 3,
+            "enonce": "Dans 2 480 375, quel est le chiffre des centaines ?",
+            "reponse_attendue": "3",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans 519 042, quel est le chiffre des dizaines de mille ?",
+            "reponse_attendue": "1",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans 519 042, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "4",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans 63 908, quel est le chiffre des unités de mille ?",
+            "reponse_attendue": "3",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 7,
+            "enonce": "Dans 4 006 210, quel est le chiffre des millions ?",
+            "reponse_attendue": "4",
+            "indice": "Sépare le nombre en groupes de trois chiffres en partant de la droite, puis compte les colonnes dans le groupe demandé."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans 4 006 210, quel est le chiffre des unités de mille ?",
+            "reponse_attendue": "6",
+            "indice": "Un zéro occupe une colonne comme les autres chiffres : compte-le quand tu comptes les places."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N25",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Décomposer un nombre entier",
+      "regle": "Décomposer, c'est écrire chaque chiffre multiplié par la valeur de sa place, puis additionner le tout.",
+      "procedure": [
+        "Repère la place de chaque chiffre depuis la droite : unités, dizaines, centaines, milliers…",
+        "Écris « chiffre × valeur de la place » et relie les morceaux par des +.",
+        "Saute les chiffres 0 : ils n'ajoutent rien."
+      ],
+      "exemples": [
+        {
+          "phrase": "Décompose 2 715.",
+          "demonstration": "5 unités, 1 dizaine, 7 centaines, 2 milliers : 2 × 1 000 + 7 × 100 + 1 × 10 + 5."
+        },
+        {
+          "phrase": "Décompose 60 903.",
+          "demonstration": "3 unités, 0 dizaine, 9 centaines, 0 unité de mille, 6 dizaines de mille : 6 × 10 000 + 9 × 100 + 3."
+        }
+      ],
+      "piege": "Compte les places avant d'écrire : dans 60 903, le 6 vaut 6 × 10 000."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle décomposition correspond à 8 306 ?",
+        "options": [
+          "8 × 1 000 + 3 × 100 + 6",
+          "8 × 1 000 + 3 × 10 + 6",
+          "8 × 100 + 3 × 10 + 6",
+          "8 × 1 000 + 3 × 100 + 6 × 10"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le 8 est à la place des milliers, le 3 à celle des centaines, le 6 à celle des unités ; il n'y a pas de dizaines."
+      },
+      {
+        "question": "Quel nombre correspond à 5 × 10 000 + 2 × 100 + 7 ?",
+        "options": [
+          "5 207",
+          "52 007",
+          "500 207",
+          "50 207"
+        ],
+        "reponse_correcte": 3,
+        "explication": "5 × 10 000 donne 50 000, plus 200, plus 7 : le nombre est 50 207. Les colonnes vides se remplissent avec des zéros."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Décomposer, recomposer",
+        "consigne": "Choisis la décomposition qui correspond au nombre, ou le nombre qui correspond à la décomposition.",
+        "questions": [
+          {
+            "question": "Quelle décomposition correspond à 9 452 ?",
+            "options": [
+              "9 × 100 + 4 × 10 + 5 × 10 + 2",
+              "9 × 1 000 + 4 × 100 + 5 × 10 + 2",
+              "9 × 1 000 + 4 × 10 + 5 × 100 + 2",
+              "9 + 4 + 5 + 2"
+            ],
+            "reponse_correcte": 1,
+            "explication": "De droite à gauche : 2 unités, 5 dizaines, 4 centaines, 9 milliers."
+          },
+          {
+            "question": "Quelle décomposition correspond à 30 608 ?",
+            "options": [
+              "3 × 1 000 + 6 × 100 + 8",
+              "3 × 10 000 + 6 × 1 000 + 8",
+              "3 × 10 000 + 6 × 100 + 8",
+              "3 × 10 000 + 6 × 100 + 8 × 10"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le 3 est à la place des dizaines de mille, le 6 à celle des centaines, le 8 à celle des unités ; les deux zéros ne s'écrivent pas."
+          },
+          {
+            "question": "Quel nombre correspond à 2 × 100 000 + 4 × 10 000 + 5 × 1 000 ?",
+            "options": [
+              "24 500",
+              "245 000",
+              "2 045 000",
+              "240 500"
+            ],
+            "reponse_correcte": 1,
+            "explication": "200 000 + 40 000 + 5 000 = 245 000 ; les centaines, dizaines et unités sont des zéros."
+          },
+          {
+            "question": "Quelle décomposition correspond à 108 070 ?",
+            "options": [
+              "1 × 10 000 + 8 × 1 000 + 7 × 10",
+              "1 × 100 000 + 8 × 100 + 7",
+              "1 × 100 000 + 8 × 1 000 + 7 × 100",
+              "1 × 100 000 + 8 × 1 000 + 7 × 10"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le nombre a six chiffres : le 1 est à la place des centaines de mille, le 8 à celle des unités de mille, le 7 à celle des dizaines."
+          },
+          {
+            "question": "Quel nombre correspond à 4 × 1 000 + 3 ?",
+            "options": [
+              "43",
+              "403",
+              "4 003",
+              "4 030"
+            ],
+            "reponse_correcte": 2,
+            "explication": "4 000 + 3 = 4 003 : il faut deux zéros pour les centaines et les dizaines, qui sont vides."
+          },
+          {
+            "question": "Quelle décomposition correspond à 62 500 ?",
+            "options": [
+              "6 × 10 000 + 2 × 1 000 + 5 × 100",
+              "6 × 1 000 + 2 × 100 + 5 × 10",
+              "6 × 10 000 + 2 × 100 + 5 × 10",
+              "6 × 10 000 + 2 × 1 000 + 5 × 10"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le 6 est à la place des dizaines de mille, le 2 à celle des unités de mille, le 5 à celle des centaines."
+          },
+          {
+            "question": "Quel nombre correspond à 7 × 100 000 + 1 × 10 + 9 ?",
+            "options": [
+              "719",
+              "70 019",
+              "700 109",
+              "700 019"
+            ],
+            "reponse_correcte": 3,
+            "explication": "700 000 + 10 + 9 = 700 019 : les colonnes des dizaines de mille, des unités de mille et des centaines sont vides."
+          },
+          {
+            "question": "Quelle somme est égale à 51 340 ?",
+            "options": [
+              "5 000 + 1 000 + 300 + 40",
+              "50 000 + 1 000 + 300 + 40",
+              "50 000 + 1 000 + 34",
+              "50 000 + 100 + 300 + 40"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le 5 vaut 50 000, le 1 vaut 1 000, le 3 vaut 300 et le 4 vaut 40."
+          }
+        ]
+      },
+      {
+        "titre": "Chaque chiffre vaut sa place",
+        "consigne": "Choisis la décomposition qui correspond au nombre, ou le nombre qui correspond à la décomposition.",
+        "questions": [
+          {
+            "question": "Quelle décomposition correspond à 6 719 ?",
+            "options": [
+              "6 × 100 + 7 × 10 + 1 × 10 + 9",
+              "6 × 1 000 + 7 × 10 + 1 × 100 + 9",
+              "6 + 7 + 1 + 9",
+              "6 × 1 000 + 7 × 100 + 1 × 10 + 9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "De droite à gauche : 9 unités, 1 dizaine, 7 centaines, 6 milliers."
+          },
+          {
+            "question": "Quelle décomposition correspond à 40 905 ?",
+            "options": [
+              "4 × 10 000 + 9 × 100 + 5",
+              "4 × 1 000 + 9 × 100 + 5",
+              "4 × 10 000 + 9 × 1 000 + 5",
+              "4 × 10 000 + 9 × 100 + 5 × 10"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le 4 est à la place des dizaines de mille, le 9 à celle des centaines, le 5 à celle des unités ; les deux zéros ne s'écrivent pas."
+          },
+          {
+            "question": "Quel nombre correspond à 3 × 100 000 + 7 × 10 000 + 2 × 1 000 ?",
+            "options": [
+              "37 200",
+              "3 072 000",
+              "372 000",
+              "370 200"
+            ],
+            "reponse_correcte": 2,
+            "explication": "300 000 + 70 000 + 2 000 = 372 000 ; les centaines, dizaines et unités sont des zéros."
+          },
+          {
+            "question": "Quelle décomposition correspond à 205 060 ?",
+            "options": [
+              "2 × 100 000 + 5 × 1 000 + 6 × 10",
+              "2 × 10 000 + 5 × 1 000 + 6 × 10",
+              "2 × 100 000 + 5 × 100 + 6",
+              "2 × 100 000 + 5 × 1 000 + 6 × 100"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le nombre a six chiffres : le 2 est à la place des centaines de mille, le 5 à celle des unités de mille, le 6 à celle des dizaines."
+          },
+          {
+            "question": "Quel nombre correspond à 8 × 1 000 + 4 ?",
+            "options": [
+              "84",
+              "8 004",
+              "804",
+              "8 040"
+            ],
+            "reponse_correcte": 1,
+            "explication": "8 000 + 4 = 8 004 : il faut deux zéros pour les centaines et les dizaines, qui sont vides."
+          },
+          {
+            "question": "Quelle décomposition correspond à 93 700 ?",
+            "options": [
+              "9 × 1 000 + 3 × 100 + 7 × 10",
+              "9 × 10 000 + 3 × 100 + 7 × 10",
+              "9 × 10 000 + 3 × 1 000 + 7 × 10",
+              "9 × 10 000 + 3 × 1 000 + 7 × 100"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le 9 est à la place des dizaines de mille, le 3 à celle des unités de mille, le 7 à celle des centaines."
+          },
+          {
+            "question": "Quel nombre correspond à 5 × 100 000 + 2 × 10 + 6 ?",
+            "options": [
+              "526",
+              "50 026",
+              "500 026",
+              "500 206"
+            ],
+            "reponse_correcte": 2,
+            "explication": "500 000 + 20 + 6 = 500 026 : les colonnes des dizaines de mille, des unités de mille et des centaines sont vides."
+          },
+          {
+            "question": "Quelle somme est égale à 47 250 ?",
+            "options": [
+              "4 000 + 7 000 + 200 + 50",
+              "40 000 + 7 000 + 25",
+              "40 000 + 700 + 200 + 50",
+              "40 000 + 7 000 + 200 + 50"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le 4 vaut 40 000, le 7 vaut 7 000, le 2 vaut 200 et le 5 vaut 50."
+          }
+        ]
+      }
+    ]
+  }
+]

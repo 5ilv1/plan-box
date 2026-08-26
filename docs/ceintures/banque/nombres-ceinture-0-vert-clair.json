@@ -1,0 +1,460 @@
+[
+  {
+    "item_code": "N10",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Compter par bonds",
+      "regle": "Compter de 10 en 10, c'est ajouter 10 à chaque fois ; compter de 100 en 100, c'est ajouter 100.",
+      "procedure": [
+        "Regarde le bond annoncé : 1, 10 ou 100.",
+        "Ajoute ce bond au dernier nombre dit, ou enlève-le si tu recules.",
+        "Vérifie le passage à la dizaine ou à la centaine suivante."
+      ],
+      "exemples": [
+        {
+          "phrase": "Je compte de 10 en 10 : 120, 130, …",
+          "demonstration": "J'ajoute 10 à 130 : cela fait 140."
+        },
+        {
+          "phrase": "Je compte de 100 en 100 : 620, 720, …",
+          "demonstration": "J'ajoute 100 à 720 : le chiffre des centaines passe de 7 à 8, cela fait 820."
+        }
+      ],
+      "piege": "Après 90, compter de 10 en 10 donne 100, et non 910 : dix dizaines font une centaine."
+    },
+    "diagnostic": [
+      {
+        "question": "Je compte de 10 en 10 : 170, 180, … Quel nombre vient ensuite ?",
+        "options": [
+          "190",
+          "181",
+          "200",
+          "900"
+        ],
+        "reponse_correcte": 0,
+        "explication": "De 10 en 10, tu ajoutes 10 : 180 + 10 = 190."
+      },
+      {
+        "question": "Je compte de 100 en 100 : 260, 360, … Quel nombre vient ensuite ?",
+        "options": [
+          "370",
+          "1360",
+          "460",
+          "3600"
+        ],
+        "reponse_correcte": 2,
+        "explication": "De 100 en 100, seul le nombre de centaines augmente de 1 : 360 + 100 = 460."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les bonds de la classe",
+        "consigne": "Écris le nombre qui vient ensuite, en chiffres et sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "Je compte de 1 en 1 : 68, 69, …",
+            "reponse": "70"
+          },
+          {
+            "id": 2,
+            "enonce": "Je compte de 10 en 10 : 30, 40, 50, …",
+            "reponse": "60"
+          },
+          {
+            "id": 3,
+            "enonce": "Je compte de 100 en 100 : 400, 500, …",
+            "reponse": "600"
+          },
+          {
+            "id": 4,
+            "enonce": "Je compte de 10 en 10 : 25, 35, …",
+            "reponse": "45"
+          },
+          {
+            "id": 5,
+            "enonce": "Je compte de 1 en 1 : 199, 200, …",
+            "reponse": "201"
+          },
+          {
+            "id": 6,
+            "enonce": "Je recule de 10 en 10 : 95, 85, …",
+            "reponse": "75"
+          },
+          {
+            "id": 7,
+            "enonce": "Je compte de 100 en 100 : 150, 250, …",
+            "reponse": "350"
+          },
+          {
+            "id": 8,
+            "enonce": "Je recule de 1 en 1 : 302, 301, …",
+            "reponse": "300"
+          }
+        ]
+      },
+      {
+        "titre": "Les bonds du calendrier",
+        "consigne": "Écris le nombre qui vient ensuite, en chiffres et sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "Je compte de 1 en 1 : 47, 48, …",
+            "reponse": "49"
+          },
+          {
+            "id": 2,
+            "enonce": "Je compte de 10 en 10 : 60, 70, 80, …",
+            "reponse": "90"
+          },
+          {
+            "id": 3,
+            "enonce": "Je compte de 100 en 100 : 200, 300, …",
+            "reponse": "400"
+          },
+          {
+            "id": 4,
+            "enonce": "Je compte de 10 en 10 : 36, 46, …",
+            "reponse": "56"
+          },
+          {
+            "id": 5,
+            "enonce": "Je compte de 1 en 1 : 109, 110, …",
+            "reponse": "111"
+          },
+          {
+            "id": 6,
+            "enonce": "Je recule de 10 en 10 : 74, 64, …",
+            "reponse": "54"
+          },
+          {
+            "id": 7,
+            "enonce": "Je compte de 100 en 100 : 310, 410, …",
+            "reponse": "510"
+          },
+          {
+            "id": 8,
+            "enonce": "Je recule de 1 en 1 : 501, 500, …",
+            "reponse": "499"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N11",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Les nombres jusqu'à 100",
+      "regle": "Un nombre plus petit que 100 s'écrit avec son chiffre des dizaines, puis son chiffre des unités.",
+      "procedure": [
+        "Pour écrire un nombre en chiffres, dis combien il a de dizaines, puis combien d'unités.",
+        "Pour comparer, regarde d'abord les dizaines ; si elles sont égales, compare les unités.",
+        "Pour encadrer à la dizaine, cherche la dizaine juste en dessous, puis celle juste au-dessus."
+      ],
+      "exemples": [
+        {
+          "phrase": "Écris en chiffres : quarante-deux.",
+          "demonstration": "4 dizaines et 2 unités : j'écris 42."
+        },
+        {
+          "phrase": "Quel est le plus grand : 35 ou 32 ?",
+          "demonstration": "Même chiffre des dizaines : je compare les unités, 5 est plus grand que 2, donc 35."
+        }
+      ],
+      "piege": "« soixante-douze » ne s'écrit pas 6012 : c'est 72."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle est la décomposition de 85 en dizaines et unités ?",
+        "options": [
+          "8 + 5",
+          "80 + 5",
+          "800 + 5",
+          "50 + 8"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le 8 est à la place des dizaines : il vaut 80. Le 5 est à la place des unités : il vaut 5."
+      },
+      {
+        "question": "Entre quelles dizaines entières se trouve le nombre 76 ?",
+        "options": [
+          "60 et 70",
+          "76 et 77",
+          "80 et 90",
+          "70 et 80"
+        ],
+        "reponse_correcte": 3,
+        "explication": "76 a 7 dizaines : il est après 70 et avant la dizaine suivante, 80."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les nombres de la cour",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres : soixante-quatre.",
+            "reponse_attendue": "64",
+            "indice": "Dis combien il y a de dizaines, puis combien d'unités."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris en chiffres : quatre-vingt-treize.",
+            "reponse_attendue": "93",
+            "indice": "Quatre-vingts, c'est 80 ; ajoute ensuite les unités que tu entends."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel est le plus grand des deux nombres : 68 ou 86 ?",
+            "reponse_attendue": "86",
+            "indice": "Compare d'abord le chiffre des dizaines."
+          },
+          {
+            "id": 4,
+            "enonce": "Quel est le plus petit des trois nombres : 39, 93 et 49 ?",
+            "reponse_attendue": "39",
+            "indice": "Compare d'abord le chiffre des dizaines."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel nombre vient juste avant 70 ?",
+            "reponse_attendue": "69",
+            "indice": "Recule d'une unité."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre vient juste après 79 ?",
+            "reponse_attendue": "80",
+            "indice": "Avance d'une unité : tu changes de dizaine."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 63 entre deux dizaines entières : 60 < 63 < … Quel nombre manque ?",
+            "reponse_attendue": "70",
+            "indice": "Cherche la dizaine entière juste au-dessus."
+          },
+          {
+            "id": 8,
+            "enonce": "Encadre 38 entre deux dizaines entières : … < 38 < 40. Quel nombre manque ?",
+            "reponse_attendue": "30",
+            "indice": "Cherche la dizaine entière juste en dessous."
+          }
+        ]
+      },
+      {
+        "titre": "Les nombres du cahier",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres : quatre-vingt-un.",
+            "reponse_attendue": "81",
+            "indice": "Quatre-vingts, c'est 80 ; ajoute ensuite les unités que tu entends."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris en chiffres : soixante-dix-sept.",
+            "reponse_attendue": "77",
+            "indice": "Soixante-dix, c'est 70 ; ajoute ensuite les unités que tu entends."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel est le plus grand des deux nombres : 52 ou 25 ?",
+            "reponse_attendue": "52",
+            "indice": "Compare d'abord le chiffre des dizaines."
+          },
+          {
+            "id": 4,
+            "enonce": "Quel est le plus petit des trois nombres : 61, 16 et 66 ?",
+            "reponse_attendue": "16",
+            "indice": "Compare d'abord le chiffre des dizaines."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel nombre vient juste avant 90 ?",
+            "reponse_attendue": "89",
+            "indice": "Recule d'une unité : tu changes de dizaine."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre vient juste après 58 ?",
+            "reponse_attendue": "59",
+            "indice": "Avance d'une unité."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 47 entre deux dizaines entières : 40 < 47 < … Quel nombre manque ?",
+            "reponse_attendue": "50",
+            "indice": "Cherche la dizaine entière juste au-dessus."
+          },
+          {
+            "id": 8,
+            "enonce": "Encadre 24 entre deux dizaines entières : … < 24 < 30. Quel nombre manque ?",
+            "reponse_attendue": "20",
+            "indice": "Cherche la dizaine entière juste en dessous."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N38",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Lire une droite graduée",
+      "regle": "Sur une droite graduée, deux repères voisins sont séparés du même écart.",
+      "procedure": [
+        "Lis l'écart entre deux repères voisins.",
+        "Compte de cet écart en cet écart en partant de 0.",
+        "Pour placer un nombre, encadre-le par les deux repères voisins."
+      ],
+      "exemples": [
+        {
+          "phrase": "Droite de 0 à 100, un repère tous les 5. Quel nombre est au 3e repère ?",
+          "demonstration": "Je compte 5, 10, 15 : c'est 15."
+        },
+        {
+          "phrase": "Droite de 0 à 100, un repère tous les 10. Où se place 55 ?",
+          "demonstration": "55 est entre 50 et 60 : il se place juste au milieu de ces deux repères."
+        }
+      ],
+      "piege": "Le 3e repère n'est pas le nombre 3 : compte avec l'écart de la droite."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur une droite graduée de 0 à 100 avec un repère tous les 10, quel nombre est écrit au 5e repère après 0 ?",
+        "options": [
+          "5",
+          "15",
+          "50",
+          "500"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Tu comptes de 10 en 10 : 10, 20, 30, 40, 50. Le 5e repère porte le nombre 50."
+      },
+      {
+        "question": "Sur une droite graduée de 0 à 100 avec un repère tous les 10, entre quels repères se place le nombre 62 ?",
+        "options": [
+          "50 et 60",
+          "60 et 70",
+          "61 et 63",
+          "6 et 7"
+        ],
+        "reponse_correcte": 1,
+        "explication": "62 est plus grand que 60 et plus petit que 70 : il se place entre ces deux repères."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Sur la droite de 0 à 100",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10 (0, 10, 20, …), quel nombre est écrit au 6e repère après 0 ?",
+            "reponse_attendue": "60",
+            "indice": "Compte de 10 en 10 en partant de 0."
+          },
+          {
+            "id": 2,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit juste avant le repère 90 ?",
+            "reponse_attendue": "80",
+            "indice": "Recule d'un écart."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 34 se place entre deux repères. Écris le repère de gauche.",
+            "reponse_attendue": "30",
+            "indice": "Cherche le repère juste en dessous du nombre."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 68 se place entre deux repères. Écris le repère de droite.",
+            "reponse_attendue": "70",
+            "indice": "Cherche le repère juste au-dessus du nombre."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 5 (0, 5, 10, 15, …), quel nombre est écrit juste après le repère 45 ?",
+            "reponse_attendue": "50",
+            "indice": "Ajoute l'écart de la droite."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre se trouve exactement au milieu des repères 20 et 30 ?",
+            "reponse_attendue": "25",
+            "indice": "Le milieu de deux repères espacés de 10 se trouve 5 après le premier."
+          },
+          {
+            "id": 7,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit au 9e repère après 0 ?",
+            "reponse_attendue": "90",
+            "indice": "Compte de 10 en 10 en partant de 0."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 25 (0, 25, 50, …), quel nombre est écrit au 3e repère après 0 ?",
+            "reponse_attendue": "75",
+            "indice": "Compte de 25 en 25 en partant de 0."
+          }
+        ]
+      },
+      {
+        "titre": "Repères et nombres",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10 (0, 10, 20, …), quel nombre est écrit au 4e repère après 0 ?",
+            "reponse_attendue": "40",
+            "indice": "Compte de 10 en 10 en partant de 0."
+          },
+          {
+            "id": 2,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit juste après le repère 50 ?",
+            "reponse_attendue": "60",
+            "indice": "Ajoute l'écart de la droite."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 27 se place entre deux repères. Écris le repère de gauche.",
+            "reponse_attendue": "20",
+            "indice": "Cherche le repère juste en dessous du nombre."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 83 se place entre deux repères. Écris le repère de droite.",
+            "reponse_attendue": "90",
+            "indice": "Cherche le repère juste au-dessus du nombre."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 5 (0, 5, 10, 15, …), quel nombre est écrit juste avant le repère 30 ?",
+            "reponse_attendue": "25",
+            "indice": "Recule d'un écart."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre se trouve exactement au milieu des repères 70 et 80 ?",
+            "reponse_attendue": "75",
+            "indice": "Le milieu de deux repères espacés de 10 se trouve 5 après le premier."
+          },
+          {
+            "id": 7,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit au 8e repère après 0 ?",
+            "reponse_attendue": "80",
+            "indice": "Compte de 10 en 10 en partant de 0."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 20 (0, 20, 40, …), quel nombre se trouve exactement au milieu des repères 0 et 20 ?",
+            "reponse_attendue": "10",
+            "indice": "Le milieu de deux repères espacés de 20 se trouve 10 après le premier."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -7,15 +7,16 @@ Le code applicatif reste à écrire.
 
 **Objectif** : en production pour la rentrée.
 
-**Périmètre livré** : les trois domaines de français, 9 ceintures chacun.
+**Périmètre livré** : les trois domaines de français et le premier domaine de maths, 9 ceintures chacun.
 
 | Domaine | Code | Items | Fichiers |
 |---|---|---|---|
 | Phrases | `PHRA` | 41 | `banque/ceinture-*.json` |
 | Mots | `MOTS` | 34 | `banque/mots-ceinture-*.json` |
 | Textes | `TEXT` | 37 | `banque/textes-ceinture-*.json` |
+| Nombres | `NOMB` | 32 | `banque/nombres-ceinture-*.json` |
 
-Les quatre domaines de maths (Nombres, Calcul, Grandeurs et mesures, Espace et
+Les trois autres domaines de maths (Calcul, Grandeurs et mesures, Espace et
 géométrie) viendront après, sur le même moteur.
 
 Toutes les banques passent `valider-banque.mjs` à 0 erreur, et chacune a été
@@ -198,7 +199,7 @@ Prévoir un bouton côté enseignant, pas côté élève.
 
 | Fichier | Contenu |
 |---|---|
-| `referentiel-francais.json` | Les 112 items : code, domaine, ceinture, libellé, niveau, type d'exercice **tel qu'il est écrit dans la banque**, type d'origine du référentiel, rattachement aux semaines de la P1 |
+| `referentiel-francais.json` | Les 144 items des quatre domaines — le nom du fichier est historique, `scripts/seed-ceintures.ts` le lit sous ce nom : code, domaine, ceinture, libellé, niveau, type d'exercice **tel qu'il est écrit dans la banque**, type d'origine du référentiel, rattachement aux semaines de la P1 |
 | `banque/` | 27 fichiers, un par ceinture et par domaine. Chaque item porte 2 questions de diagnostic et **2 variantes** d'entraînement (`entrainement` est un tableau : la variante 1 au premier passage, la variante 2 en remédiation) |
 | `SPEC-LECONS.md` | Le format de la leçon courte de chaque item, et ce que le moteur doit en faire |
 | `migration.sql` | Les 5 tables + le seed des 3 domaines et des 112 items. Additif, rejouable |

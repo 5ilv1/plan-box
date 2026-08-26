@@ -1,0 +1,476 @@
+[
+  {
+    "item_code": "N12",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Unités, dizaines, centaines",
+      "regle": "Dans un nombre entier, le chiffre le plus à droite est celui des unités, puis viennent les dizaines et les centaines.",
+      "procedure": [
+        "Pars du chiffre le plus à droite : ce sont les unités.",
+        "Avance vers la gauche : dizaines, puis centaines.",
+        "Arrête-toi au rang demandé et lis le chiffre."
+      ],
+      "exemples": [
+        {
+          "phrase": "Dans 583, quel est le chiffre des dizaines ?",
+          "demonstration": "De droite à gauche : 3 unités, 8 dizaines. C'est 8."
+        },
+        {
+          "phrase": "Dans 907, quel est le chiffre des centaines ?",
+          "demonstration": "7 unités, 0 dizaine, 9 centaines : le zéro occupe un rang, il ne se saute pas. C'est 9."
+        }
+      ],
+      "piege": "On compte les rangs en partant de la droite, jamais de la gauche."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans le nombre 638, quel est le chiffre des dizaines ?",
+        "options": [
+          "6",
+          "3",
+          "8",
+          "63"
+        ],
+        "reponse_correcte": 1,
+        "explication": "En partant de la droite : 8 est aux unités, 3 est aux dizaines."
+      },
+      {
+        "question": "Dans le nombre 405, quel rang occupe le chiffre 4 ?",
+        "options": [
+          "les unités",
+          "les dizaines",
+          "les centaines",
+          "les milliers"
+        ],
+        "reponse_correcte": 2,
+        "explication": "En partant de la droite : 5 unités, 0 dizaine, 4 centaines. Le 4 est au rang des centaines."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le rang de chaque chiffre",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans 476, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "7",
+            "indice": "Pars du chiffre le plus à droite, puis avance d'un cran vers la gauche."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans 852, quel est le chiffre des centaines ?",
+            "reponse_attendue": "8",
+            "indice": "Compte les rangs en partant de la droite : unités, dizaines, centaines."
+          },
+          {
+            "id": 3,
+            "enonce": "Dans 309, quel est le chiffre des unités ?",
+            "reponse_attendue": "9",
+            "indice": "Les unités sont au rang le plus à droite."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans 640, quel est le chiffre des unités ?",
+            "reponse_attendue": "0",
+            "indice": "Les unités sont au rang le plus à droite, même si c'est un zéro."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans 728, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "2",
+            "indice": "Pars du chiffre le plus à droite, puis avance d'un cran vers la gauche."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans 195, quel est le chiffre des centaines ?",
+            "reponse_attendue": "1",
+            "indice": "Compte les rangs en partant de la droite : unités, dizaines, centaines."
+          },
+          {
+            "id": 7,
+            "enonce": "Dans 503, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "0",
+            "indice": "Un zéro occupe un rang comme les autres chiffres."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans 87, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "8",
+            "indice": "Pars du chiffre le plus à droite, puis avance d'un cran vers la gauche."
+          }
+        ]
+      },
+      {
+        "titre": "Chaque chiffre à sa place",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans 384, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "8",
+            "indice": "Pars du chiffre le plus à droite, puis avance d'un cran vers la gauche."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans 269, quel est le chiffre des centaines ?",
+            "reponse_attendue": "2",
+            "indice": "Compte les rangs en partant de la droite : unités, dizaines, centaines."
+          },
+          {
+            "id": 3,
+            "enonce": "Dans 750, quel est le chiffre des unités ?",
+            "reponse_attendue": "0",
+            "indice": "Les unités sont au rang le plus à droite, même si c'est un zéro."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans 601, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "0",
+            "indice": "Un zéro occupe un rang comme les autres chiffres."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans 947, quel est le chiffre des unités ?",
+            "reponse_attendue": "7",
+            "indice": "Les unités sont au rang le plus à droite."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans 128, quel est le chiffre des centaines ?",
+            "reponse_attendue": "1",
+            "indice": "Compte les rangs en partant de la droite : unités, dizaines, centaines."
+          },
+          {
+            "id": 7,
+            "enonce": "Dans 430, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "3",
+            "indice": "Pars du chiffre le plus à droite, puis avance d'un cran vers la gauche."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans 96, quel est le chiffre des unités ?",
+            "reponse_attendue": "6",
+            "indice": "Les unités sont au rang le plus à droite."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N13",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Le tableau de numération",
+      "regle": "Dans le tableau de numération, chaque colonne reçoit un seul chiffre : centaines, dizaines, unités.",
+      "procedure": [
+        "Écoute le rang de chaque chiffre, pas l'ordre où on le dit.",
+        "Place chaque chiffre dans sa colonne, les unités tout à droite.",
+        "Relis le nombre en lisant les colonnes de gauche à droite, zéros compris."
+      ],
+      "exemples": [
+        {
+          "phrase": "2 dans la colonne des centaines, 4 dans les dizaines, 6 dans les unités.",
+          "demonstration": "Je lis de gauche à droite : le nombre est 246."
+        },
+        {
+          "phrase": "3 unités, 7 centaines et 0 dizaine.",
+          "demonstration": "Je place 7 aux centaines, 0 aux dizaines, 3 aux unités : je lis 703, et non 373."
+        }
+      ],
+      "piege": "Un zéro ne se supprime pas : sans lui, 703 deviendrait 73."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans un tableau de numération, on a écrit 7 dans la colonne des unités, 5 dans celle des centaines et 0 dans celle des dizaines. Quel nombre est-ce ?",
+        "options": [
+          "507",
+          "57",
+          "570",
+          "750"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Chaque chiffre va dans la colonne annoncée, pas dans l'ordre où on l'entend : 5 centaines, 0 dizaine, 7 unités, cela fait 507."
+      },
+      {
+        "question": "Dans quelle colonne du tableau écris-tu le chiffre 9 du nombre 293 ?",
+        "options": [
+          "la colonne des unités",
+          "la colonne des dizaines",
+          "la colonne des centaines",
+          "dans deux colonnes à la fois"
+        ],
+        "reponse_correcte": 1,
+        "explication": "En partant de la droite : 3 unités, 9 dizaines, 2 centaines. Le 9 va dans la colonne des dizaines."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je remplis le tableau",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans le tableau de numération, on écrit 3 centaines, 5 dizaines et 8 unités. Quel nombre obtient-on ?",
+            "reponse_attendue": "358",
+            "indice": "Lis les colonnes de gauche à droite."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans le tableau de numération, on écrit 4 unités, 6 centaines et 0 dizaine. Quel nombre obtient-on ?",
+            "reponse_attendue": "604",
+            "indice": "Place chaque chiffre dans sa colonne avant de lire le nombre, sans oublier le zéro."
+          },
+          {
+            "id": 3,
+            "enonce": "Pour écrire 471 dans le tableau, quel chiffre mets-tu dans la colonne des dizaines ?",
+            "reponse_attendue": "7",
+            "indice": "Range d'abord le chiffre des unités dans la dernière colonne, puis remonte d'une colonne."
+          },
+          {
+            "id": 4,
+            "enonce": "Pour écrire 290 dans le tableau, quel chiffre mets-tu dans la colonne des unités ?",
+            "reponse_attendue": "0",
+            "indice": "La dernière colonne reçoit le chiffre le plus à droite du nombre."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans le tableau de numération, on écrit 0 unité, 9 centaines et 1 dizaine. Quel nombre obtient-on ?",
+            "reponse_attendue": "910",
+            "indice": "Place chaque chiffre dans sa colonne avant de lire le nombre, sans oublier le zéro."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans le tableau de numération, on écrit 4 centaines, 0 dizaine et 0 unité. Quel nombre obtient-on ?",
+            "reponse_attendue": "400",
+            "indice": "Lis les colonnes de gauche à droite, sans oublier les zéros."
+          },
+          {
+            "id": 7,
+            "enonce": "Pour écrire 803 dans le tableau, quel chiffre mets-tu dans la colonne des dizaines ?",
+            "reponse_attendue": "0",
+            "indice": "Range d'abord le chiffre des unités dans la dernière colonne, puis remonte d'une colonne."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans le tableau de numération, on écrit 1 centaine, 2 dizaines et 7 unités. Quel nombre obtient-on ?",
+            "reponse_attendue": "127",
+            "indice": "Lis les colonnes de gauche à droite."
+          }
+        ]
+      },
+      {
+        "titre": "Des colonnes au nombre",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans le tableau de numération, on écrit 5 centaines, 6 dizaines et 2 unités. Quel nombre obtient-on ?",
+            "reponse_attendue": "562",
+            "indice": "Lis les colonnes de gauche à droite."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans le tableau de numération, on écrit 9 unités, 0 dizaine et 7 centaines. Quel nombre obtient-on ?",
+            "reponse_attendue": "709",
+            "indice": "Place chaque chiffre dans sa colonne avant de lire le nombre, sans oublier le zéro."
+          },
+          {
+            "id": 3,
+            "enonce": "Pour écrire 384 dans le tableau, quel chiffre mets-tu dans la colonne des centaines ?",
+            "reponse_attendue": "3",
+            "indice": "La colonne des centaines est la première à gauche des trois."
+          },
+          {
+            "id": 4,
+            "enonce": "Pour écrire 520 dans le tableau, quel chiffre mets-tu dans la colonne des dizaines ?",
+            "reponse_attendue": "2",
+            "indice": "Range d'abord le chiffre des unités dans la dernière colonne, puis remonte d'une colonne."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans le tableau de numération, on écrit 3 dizaines, 0 unité et 8 centaines. Quel nombre obtient-on ?",
+            "reponse_attendue": "830",
+            "indice": "Place chaque chiffre dans sa colonne avant de lire le nombre, sans oublier le zéro."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans le tableau de numération, on écrit 2 centaines, 0 dizaine et 0 unité. Quel nombre obtient-on ?",
+            "reponse_attendue": "200",
+            "indice": "Lis les colonnes de gauche à droite, sans oublier les zéros."
+          },
+          {
+            "id": 7,
+            "enonce": "Pour écrire 907 dans le tableau, quel chiffre mets-tu dans la colonne des dizaines ?",
+            "reponse_attendue": "0",
+            "indice": "Range d'abord le chiffre des unités dans la dernière colonne, puis remonte d'une colonne."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans le tableau de numération, on écrit 6 centaines, 1 dizaine et 5 unités. Quel nombre obtient-on ?",
+            "reponse_attendue": "615",
+            "indice": "Lis les colonnes de gauche à droite."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N14",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Décomposer et encadrer",
+      "regle": "Un nombre à trois chiffres se décompose en centaines, dizaines et unités : 528 = 500 + 20 + 8.",
+      "procedure": [
+        "Pour décomposer, écris la valeur de chaque chiffre.",
+        "À la dizaine, mets un 0 aux unités, puis ajoute une dizaine pour la borne du haut.",
+        "À la centaine, mets un 0 aux dizaines et aux unités, puis ajoute une centaine."
+      ],
+      "exemples": [
+        {
+          "phrase": "Écris en chiffres 900 + 40 + 2.",
+          "demonstration": "9 centaines, 4 dizaines, 2 unités : j'écris 942."
+        },
+        {
+          "phrase": "Encadre 368 à la centaine.",
+          "demonstration": "Je mets des 0 aux dizaines et aux unités : 300. J'ajoute une centaine : 400. Donc 300 < 368 < 400."
+        }
+      ],
+      "piege": "À la dizaine, un seul 0 ; à la centaine, deux : ajoute ensuite à la borne du bas, jamais au nombre de départ."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le plus grand de ces quatre nombres ?",
+        "options": [
+          "489",
+          "512",
+          "498",
+          "521"
+        ],
+        "reponse_correcte": 3,
+        "explication": "512 et 521 ont 5 centaines, plus que les autres ; entre eux, tu compares les dizaines : 2 dizaines, c'est plus que 1."
+      },
+      {
+        "question": "Quelle est la décomposition du nombre 605 ?",
+        "options": [
+          "60 + 5",
+          "6 + 0 + 5",
+          "600 + 5",
+          "600 + 50"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le 6 est au rang des centaines : il vaut 600. Il n'y a pas de dizaine, et le 5 vaut 5 unités."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Décomposer et encadrer",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres le nombre 300 + 50 + 7.",
+            "reponse_attendue": "357",
+            "indice": "Repère les centaines, les dizaines et les unités, puis écris-les dans cet ordre."
+          },
+          {
+            "id": 2,
+            "enonce": "Complète : 682 = 600 + … + 2. Quel nombre manque ?",
+            "reponse_attendue": "80",
+            "indice": "Cherche la valeur du chiffre des dizaines."
+          },
+          {
+            "id": 3,
+            "enonce": "Encadre 457 à la centaine : 400 < 457 < … Quel nombre manque ?",
+            "reponse_attendue": "500",
+            "indice": "Cherche la centaine entière qui suit."
+          },
+          {
+            "id": 4,
+            "enonce": "Encadre 246 à la dizaine : … < 246 < 250. Quel nombre manque ?",
+            "reponse_attendue": "240",
+            "indice": "Mets un 0 à la place des unités."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel nombre vient juste après 599 ?",
+            "reponse_attendue": "600",
+            "indice": "Ajoute 1 : tu changes de centaine."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris en chiffres le nombre 800 + 4.",
+            "reponse_attendue": "804",
+            "indice": "Il n'y a pas de dizaine : mets un 0 à ce rang."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 731 à la centaine : … < 731 < 800. Quel nombre manque ?",
+            "reponse_attendue": "700",
+            "indice": "Mets un 0 à la place des dizaines et des unités."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel nombre vient juste avant 410 ?",
+            "reponse_attendue": "409",
+            "indice": "Enlève 1 : tu changes de dizaine."
+          }
+        ]
+      },
+      {
+        "titre": "Autour de la centaine",
+        "consigne": "Écris ta réponse en chiffres, sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres le nombre 200 + 60 + 9.",
+            "reponse_attendue": "269",
+            "indice": "Repère les centaines, les dizaines et les unités, puis écris-les dans cet ordre."
+          },
+          {
+            "id": 2,
+            "enonce": "Complète : 573 = 500 + 70 + … Quel nombre manque ?",
+            "reponse_attendue": "3",
+            "indice": "Cherche la valeur du chiffre des unités."
+          },
+          {
+            "id": 3,
+            "enonce": "Encadre 384 à la centaine : … < 384 < 400. Quel nombre manque ?",
+            "reponse_attendue": "300",
+            "indice": "Mets un 0 à la place des dizaines et des unités."
+          },
+          {
+            "id": 4,
+            "enonce": "Encadre 625 à la dizaine : 620 < 625 < … Quel nombre manque ?",
+            "reponse_attendue": "630",
+            "indice": "Ajoute une dizaine à la borne du bas."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel nombre vient juste après 799 ?",
+            "reponse_attendue": "800",
+            "indice": "Ajoute 1 : tu changes de centaine."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris en chiffres le nombre 500 + 90.",
+            "reponse_attendue": "590",
+            "indice": "Il n'y a pas d'unité : mets un 0 à ce rang."
+          },
+          {
+            "id": 7,
+            "enonce": "Encadre 158 à la centaine : 100 < 158 < … Quel nombre manque ?",
+            "reponse_attendue": "200",
+            "indice": "Cherche la centaine entière qui suit."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel nombre vient juste avant 300 ?",
+            "reponse_attendue": "299",
+            "indice": "Enlève 1 : tu changes de centaine."
+          }
+        ]
+      }
+    ]
+  }
+]

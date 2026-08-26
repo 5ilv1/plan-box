@@ -1,0 +1,853 @@
+[
+  {
+    "item_code": "N31",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Lire un décimal sur la droite",
+      "regle": "Quand l'espace entre deux entiers est partagé en 10 parts égales, chaque repère avance de 0,1.",
+      "procedure": [
+        "Repère les deux entiers de la droite et compte les parts égales entre eux.",
+        "Dix parts : le saut vaut 0,1 ; cent parts : il vaut 0,01.",
+        "Pars de l'entier de gauche et avance d'autant de sauts que le rang du repère."
+      ],
+      "exemples": [
+        {
+          "phrase": "Entre 11 et 12, en 10 parts égales : le 8e repère ?",
+          "demonstration": "Chaque saut vaut 0,1 : après 8 sauts depuis 11, j'arrive à 11,8."
+        },
+        {
+          "phrase": "Même droite : où écrire 11,3 ?",
+          "demonstration": "11,3, c'est 11 et 3 dixièmes : j'avance de 3 sauts, donc le 3e repère."
+        }
+      ],
+      "piege": "Le repère de départ ne compte pas : après 11 vient 11,1."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur une demi-droite graduée, on a écrit les nombres 3 et 4 ; l'espace entre 3 et 4 est partagé en 10 parts égales. Quel nombre est écrit sous le 4e repère après 3 ?",
+        "options": [
+          "3,04",
+          "34",
+          "4,4",
+          "3,4"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Chaque part vaut un dixième, soit 0,1. Depuis 3, j'avance de 4 sauts de 0,1 : j'arrive à 3,4."
+      },
+      {
+        "question": "Sur une demi-droite graduée, on a écrit les nombres 8 et 9 ; l'espace entre 8 et 9 est partagé en 10 parts égales. Sous quel repère Nour doit-elle placer 8,9 ?",
+        "options": [
+          "le 8e repère après 8",
+          "le 1er repère après 8",
+          "le 9e repère après 8",
+          "le 9e repère après 9"
+        ],
+        "reponse_correcte": 2,
+        "explication": "8,9, c'est 8 et 9 dixièmes : depuis 8, il faut avancer de 9 sauts de 0,1."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Sous quel repère ?",
+        "consigne": "Chaque demi-droite graduée est décrite par la phrase : lis-la attentivement avant de répondre.",
+        "questions": [
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 2 et 3 ; l'espace entre 2 et 3 est partagé en 10 parts égales. Quel nombre est écrit sous le 7e repère après 2 ?",
+            "options": [
+              "2,07",
+              "7,2",
+              "0,7",
+              "2,7"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Sept sauts de 0,1 depuis 2 : 2 et 7 dixièmes, soit 2,7."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 5 et 6 ; l'espace entre 5 et 6 est partagé en 10 parts égales. Quel nombre est écrit sous le repère situé juste avant celui de 6 ?",
+            "options": [
+              "5,1",
+              "6,9",
+              "5,9",
+              "5,8"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le repère juste avant 6 est le 9e après 5 : il porte 5,9. 5,8 est le repère encore avant."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 0 et 1 ; l'espace entre 0 et 1 est partagé en 10 parts égales. Sous quel repère écrit-on 0,5 ?",
+            "options": [
+              "le 1er repère après 0",
+              "le 2e repère après 0",
+              "le 5e repère après 0",
+              "sur le repère de 1"
+            ],
+            "reponse_correcte": 2,
+            "explication": "0,5, c'est 5 dixièmes : depuis 0, j'avance de 5 sauts."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 7 et 8 ; l'espace entre 7 et 8 est partagé en 10 parts égales. Quel nombre est écrit sous le 10e repère après 7 ?",
+            "options": [
+              "7,10",
+              "8",
+              "7,9",
+              "10"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Dix sauts de 0,1 font 1 entier : depuis 7, on arrive exactement sur 8. Le 9e repère, lui, porte 7,9."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 1 et 2 ; l'espace entre 1 et 2 est partagé en 100 parts égales. Quel nombre est écrit sous le 25e repère après 1 ?",
+            "options": [
+              "1,025",
+              "1,25",
+              "1,205",
+              "25"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Cent parts égales : chaque saut vaut 0,01. Vingt-cinq sauts de 0,01 depuis 1 donnent 1,25."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 4 et 5 ; l'espace entre 4 et 5 est partagé en 10 parts égales. Malo place un point sur 4,2 et Jade place un point sur 4,7. Lequel des deux points est le plus proche de 5 ?",
+            "options": [
+              "le point de Malo, sur 4,2",
+              "les deux sont à la même distance de 5",
+              "on ne peut pas le savoir",
+              "le point de Jade, sur 4,7"
+            ],
+            "reponse_correcte": 3,
+            "explication": "4,7 est au 7e repère et 4,2 au 2e : c'est le point de Jade qui est le plus avancé vers 5."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 9 et 10 ; l'espace entre 9 et 10 est partagé en 10 parts égales. Quel nombre est écrit sous le 5e repère après 9 ?",
+            "options": [
+              "9,5",
+              "9,05",
+              "10,5",
+              "95"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Cinq sauts de 0,1 depuis 9 : 9 et 5 dixièmes, soit 9,5."
+          }
+        ]
+      },
+      {
+        "titre": "La demi-droite des dixièmes",
+        "consigne": "Chaque demi-droite graduée est décrite par la phrase : lis-la attentivement avant de répondre.",
+        "questions": [
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 1 et 2 ; l'espace entre 1 et 2 est partagé en 10 parts égales. Quel nombre est écrit sous le 3e repère après 1 ?",
+            "options": [
+              "1,03",
+              "3,1",
+              "1,3",
+              "13"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Trois sauts de 0,1 depuis 1 : 1 et 3 dixièmes, soit 1,3."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 12 et 13 ; l'espace entre 12 et 13 est partagé en 10 parts égales. Quel nombre est écrit sous le 6e repère après 12 ?",
+            "options": [
+              "12,6",
+              "12,06",
+              "18",
+              "126"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Six sauts de 0,1 depuis 12 : 12 et 6 dixièmes, soit 12,6."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 0 et 1 ; l'espace entre 0 et 1 est partagé en 10 parts égales. Sous quel repère écrit-on 0,8 ?",
+            "options": [
+              "le 1er repère après 0",
+              "le 8e repère après 1",
+              "sur le repère de 1",
+              "le 8e repère après 0"
+            ],
+            "reponse_correcte": 3,
+            "explication": "0,8, c'est 8 dixièmes : depuis 0, j'avance de 8 sauts."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 20 et 21 ; l'espace entre 20 et 21 est partagé en 10 parts égales. Quel nombre est écrit sous le repère situé juste après celui de 20 ?",
+            "options": [
+              "20,2",
+              "21",
+              "20,1",
+              "20,01"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le premier saut après 20 vaut 0,1 : le repère porte 20,1. 20,2 serait le deuxième repère."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 2 et 3 ; l'espace entre 2 et 3 est partagé en 100 parts égales. Quel nombre est écrit sous le 7e repère après 2 ?",
+            "options": [
+              "2,7",
+              "2,07",
+              "7,2",
+              "2,007"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Cent parts égales : chaque saut vaut 0,01. Sept sauts de 0,01 depuis 2 donnent 2,07."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 15 et 16 ; l'espace entre 15 et 16 est partagé en 10 parts égales. Rosalie place un point sur 15,4 et Sacha place un point sur 15,9. Lequel des deux points est le plus proche de 15 ?",
+            "options": [
+              "le point de Sacha, sur 15,9",
+              "les deux sont à la même distance de 15",
+              "le point de Rosalie, sur 15,4",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 2,
+            "explication": "15,4 est au 4e repère et 15,9 au 9e : c'est le point de Rosalie qui est le plus près de 15."
+          },
+          {
+            "question": "Sur une demi-droite graduée, on a écrit les nombres 4 et 5 ; l'espace entre 4 et 5 est partagé en 10 parts égales. Combien y a-t-il de repères entre 4 et 5, sans compter celui de 4 ni celui de 5 ?",
+            "options": [
+              "10",
+              "11",
+              "5",
+              "9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Dix parts égales sont séparées par 9 repères intérieurs : ceux de 4,1 à 4,9."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N32",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Fraction décimale et virgule",
+      "regle": "Une fraction décimale a 10, 100 ou 1000 en bas ; elle s'écrit aussi avec une virgule.",
+      "procedure": [
+        "Compte les zéros du bas : 10 donne un chiffre après la virgule, 100 en donne deux.",
+        "Écris le nombre du haut, puis place la virgule en comptant ces chiffres depuis la droite.",
+        "S'il manque des chiffres devant la virgule, complète avec des zéros."
+      ],
+      "exemples": [
+        {
+          "phrase": "8/10",
+          "demonstration": "Un zéro en bas : un chiffre après la virgule. J'écris 8 et je complète devant : 0,8."
+        },
+        {
+          "phrase": "407/100",
+          "demonstration": "Deux zéros : deux chiffres après la virgule. Dans 407, je compte 0 puis 7 : 4,07."
+        }
+      ],
+      "piege": "Le nombre du bas ne passe jamais après la virgule : 3/10 ne s'écrit pas 3,10."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle est l'écriture à virgule de 9/100 ?",
+        "options": [
+          "0,9",
+          "9,100",
+          "0,09",
+          "9,0"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le bas est 100 : il faut deux chiffres après la virgule. Neuf centièmes s'écrivent 0,09."
+      },
+      {
+        "question": "Quelle fraction décimale est égale à 2,5 ?",
+        "options": [
+          "25/10",
+          "2/5",
+          "25/1000",
+          "25/100"
+        ],
+        "reponse_correcte": 0,
+        "explication": "2,5, c'est 25 dixièmes : j'écris 25 en haut et 10 en bas. Avec 100 ou 1000 en bas, les mêmes chiffres donneraient 0,25 ou 0,025."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "D'une écriture à l'autre",
+        "consigne": "Choisis la bonne écriture du nombre.",
+        "questions": [
+          {
+            "question": "Quelle est l'écriture à virgule de 7/10 ?",
+            "options": [
+              "7,10",
+              "0,7",
+              "1,7",
+              "70"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un zéro en bas : un chiffre après la virgule. Sept dixièmes s'écrivent 0,7."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 63/100 ?",
+            "options": [
+              "6,3",
+              "0,063",
+              "63,100",
+              "0,63"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Deux zéros en bas : deux chiffres après la virgule. Soixante-trois centièmes s'écrivent 0,63."
+          },
+          {
+            "question": "Quelle fraction décimale est égale à 0,4 ?",
+            "options": [
+              "4/10",
+              "10/4",
+              "4/100",
+              "40/10"
+            ],
+            "reponse_correcte": 0,
+            "explication": "0,4, c'est 4 dixièmes : 4 en haut, 10 en bas."
+          },
+          {
+            "question": "Quelle fraction décimale est égale à 1,7 ?",
+            "options": [
+              "1/7",
+              "17/100",
+              "7/10",
+              "17/10"
+            ],
+            "reponse_correcte": 3,
+            "explication": "1,7, c'est 17 dixièmes : 17 en haut, 10 en bas."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 145/100 ?",
+            "options": [
+              "1,45",
+              "14,5",
+              "145,100",
+              "0,145"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Deux zéros en bas : je compte deux chiffres depuis la droite de 145, la virgule se place après le 1."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 5 + 6/10 ?",
+            "options": [
+              "56",
+              "5,06",
+              "6,5",
+              "5,6"
+            ],
+            "reponse_correcte": 3,
+            "explication": "5 unités et 6 dixièmes : les dixièmes s'écrivent à la première place après la virgule."
+          },
+          {
+            "question": "Quelle fraction décimale est égale à 0,03 ?",
+            "options": [
+              "3/10",
+              "3/100",
+              "30/100",
+              "0,3/100"
+            ],
+            "reponse_correcte": 1,
+            "explication": "0,03, c'est 3 centièmes : 3 en haut, 100 en bas."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 20/100 ?",
+            "options": [
+              "0,02",
+              "2",
+              "0,2",
+              "20,100"
+            ],
+            "reponse_correcte": 2,
+            "explication": "20 centièmes, c'est 2 dixièmes : 0,2."
+          }
+        ]
+      },
+      {
+        "titre": "Deux façons d'écrire",
+        "consigne": "Choisis la bonne écriture du nombre.",
+        "questions": [
+          {
+            "question": "Quelle est l'écriture à virgule de 4/10 ?",
+            "options": [
+              "4,10",
+              "0,4",
+              "1,4",
+              "40"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un zéro en bas : un chiffre après la virgule. Quatre dixièmes s'écrivent 0,4."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 87/100 ?",
+            "options": [
+              "8,7",
+              "0,87",
+              "87,100",
+              "0,087"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux zéros en bas : deux chiffres après la virgule. Quatre-vingt-sept centièmes s'écrivent 0,87."
+          },
+          {
+            "question": "Quelle fraction décimale est égale à 0,6 ?",
+            "options": [
+              "6/100",
+              "16/10",
+              "6/10",
+              "10/6"
+            ],
+            "reponse_correcte": 2,
+            "explication": "0,6, c'est 6 dixièmes : 6 en haut, 10 en bas."
+          },
+          {
+            "question": "Quelle fraction décimale est égale à 3,2 ?",
+            "options": [
+              "3/2",
+              "32/10",
+              "32/100",
+              "2/3"
+            ],
+            "reponse_correcte": 1,
+            "explication": "3,2, c'est 32 dixièmes : 32 en haut, 10 en bas."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 306/100 ?",
+            "options": [
+              "30,6",
+              "3,6",
+              "306,100",
+              "3,06"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Deux zéros en bas : je compte deux chiffres depuis la droite de 306, la virgule se place après le 3."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 2 + 9/10 ?",
+            "options": [
+              "29",
+              "2,09",
+              "2,9",
+              "9,2"
+            ],
+            "reponse_correcte": 2,
+            "explication": "2 unités et 9 dixièmes : les dixièmes s'écrivent à la première place après la virgule."
+          },
+          {
+            "question": "Quelle fraction décimale est égale à 0,05 ?",
+            "options": [
+              "5/10",
+              "50/100",
+              "5/1000",
+              "5/100"
+            ],
+            "reponse_correcte": 3,
+            "explication": "0,05, c'est 5 centièmes : 5 en haut, 100 en bas."
+          },
+          {
+            "question": "Quelle est l'écriture à virgule de 50/10 ?",
+            "options": [
+              "5",
+              "0,5",
+              "50,10",
+              "5,10"
+            ],
+            "reponse_correcte": 0,
+            "explication": "50 dixièmes, c'est 5 unités entières : le nombre s'écrit simplement 5."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N33",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Décomposer et recomposer un décimal",
+      "regle": "Après la virgule, le 1er chiffre compte les dixièmes et le 2e chiffre compte les centièmes.",
+      "procedure": [
+        "Les places ne changent jamais : unités avant la virgule, dixièmes à la 1re place après, centièmes à la 2e.",
+        "Pour décomposer un nombre, lis le chiffre qui occupe la place demandée.",
+        "Pour fabriquer un nombre, écris un chiffre à chaque place, et 0 si elle manque.",
+        "Dans l'autre sens, place un chiffre par rang après la virgule, et mets un 0 là où un rang manque."
+      ],
+      "exemples": [
+        {
+          "phrase": "9,45",
+          "demonstration": "Avant la virgule, 9 unités ; puis 4 dixièmes et 5 centièmes."
+        },
+        {
+          "phrase": "Quel nombre vaut 3 unités et 4 centièmes ?",
+          "demonstration": "J'écris 3, la virgule, puis un chiffre par place : 0 pour les dixièmes qui manquent, 4 pour les centièmes → 3,04."
+        }
+      ],
+      "piege": "Ne lis pas 7,08 comme « 7 et 8 dixièmes » : le 8 est à la 2e place, donc des centièmes."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans 6,27, que représente le chiffre 7 ?",
+        "options": [
+          "7 unités",
+          "7 dixièmes",
+          "7 dizaines",
+          "7 centièmes"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le 7 est le 2e chiffre après la virgule : il compte les centièmes."
+      },
+      {
+        "question": "Quelle décomposition correspond à 4,03 ?",
+        "options": [
+          "4 + 3 dixièmes",
+          "4 + 3 centièmes",
+          "4 + 30 centièmes",
+          "40 + 3 centièmes"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Après la virgule il y a d'abord un 0 : aucun dixième, puis 3 centièmes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Complète la décomposition",
+        "consigne": "Écris seulement le nombre demandé, en chiffres et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "5,28 = 5 unités + 2 dixièmes + … centièmes",
+            "reponse_attendue": "8",
+            "indice": "Le 2e chiffre après la virgule compte les centièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "3,6 = 3 unités + … dixièmes",
+            "reponse_attendue": "6",
+            "indice": "Le 1er chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "id": 3,
+            "enonce": "8,04 = 8 unités + … dixièmes + 4 centièmes",
+            "reponse_attendue": "0",
+            "indice": "Un zéro se compte comme les autres chiffres : regarde bien la place de chaque chiffre."
+          },
+          {
+            "id": 4,
+            "enonce": "12,75 = … unités + 7 dixièmes + 5 centièmes",
+            "reponse_attendue": "12",
+            "indice": "La partie entière, c'est tout ce qui est écrit avant la virgule."
+          },
+          {
+            "id": 5,
+            "enonce": "0,91 = 0 unité + 9 dixièmes + … centièmes",
+            "reponse_attendue": "1",
+            "indice": "Le 2e chiffre après la virgule compte les centièmes."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre vaut 2 unités + 4 dixièmes ? Écris-le avec une virgule.",
+            "reponse_attendue": "2,4",
+            "indice": "Le 1er chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel nombre vaut 7 unités + 5 centièmes ? Écris-le avec une virgule.",
+            "reponse_attendue": "7,05",
+            "indice": "Les centièmes s'écrivent à la 2e place après la virgule : pense d'abord à la place des dixièmes."
+          },
+          {
+            "id": 8,
+            "enonce": "45,9 = … unités + 9 dixièmes",
+            "reponse_attendue": "45",
+            "indice": "La partie entière, c'est tout ce qui est écrit avant la virgule."
+          }
+        ]
+      },
+      {
+        "titre": "Unités, dixièmes, centièmes",
+        "consigne": "Écris seulement le nombre demandé, en chiffres et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "7,41 = 7 unités + … dixièmes + 1 centième",
+            "reponse_attendue": "4",
+            "indice": "Le 1er chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "9,8 = 9 unités + … dixièmes",
+            "reponse_attendue": "8",
+            "indice": "Le 1er chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "id": 3,
+            "enonce": "6,07 = 6 unités + 0 dixième + … centièmes",
+            "reponse_attendue": "7",
+            "indice": "Le 2e chiffre après la virgule compte les centièmes."
+          },
+          {
+            "id": 4,
+            "enonce": "23,54 = … unités + 5 dixièmes + 4 centièmes",
+            "reponse_attendue": "23",
+            "indice": "La partie entière, c'est tout ce qui est écrit avant la virgule."
+          },
+          {
+            "id": 5,
+            "enonce": "0,36 = 0 unité + … dixièmes + 6 centièmes",
+            "reponse_attendue": "3",
+            "indice": "Le 1er chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre vaut 8 unités + 1 dixième ? Écris-le avec une virgule.",
+            "reponse_attendue": "8,1",
+            "indice": "Le 1er chiffre après la virgule compte les dixièmes."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel nombre vaut 4 unités + 2 centièmes ? Écris-le avec une virgule.",
+            "reponse_attendue": "4,02",
+            "indice": "Les centièmes s'écrivent à la 2e place après la virgule : pense d'abord à la place des dixièmes."
+          },
+          {
+            "id": 8,
+            "enonce": "60,2 = … unités + 2 dixièmes",
+            "reponse_attendue": "60",
+            "indice": "La partie entière, c'est tout ce qui est écrit avant la virgule."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N34",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Trouver un ordre de grandeur",
+      "regle": "Pour estimer de tête un calcul avec des décimaux, remplace chaque nombre par l'entier le plus proche.",
+      "procedure": [
+        "Regarde le 1er chiffre après la virgule de chaque nombre.",
+        "S'il est 5 ou plus, prends l'entier au-dessus ; sinon, garde l'entier au-dessous.",
+        "Calcule de tête avec ces entiers : tu obtiens l'ordre de grandeur."
+      ],
+      "exemples": [
+        {
+          "phrase": "4,8 + 3,1",
+          "demonstration": "4,8 devient 5 car le 8 fait monter, 3,1 devient 3 : 5 + 3 = 8."
+        },
+        {
+          "phrase": "30,4 − 9,7",
+          "demonstration": "30,4 devient 30, 9,7 devient 10 : 30 − 10 = 20, résultat proche de 20."
+        }
+      ],
+      "piege": "L'ordre de grandeur n'est pas le résultat exact : il sert à vérifier qu'on ne s'est pas trompé."
+    },
+    "diagnostic": [
+      {
+        "question": "Sans poser l'opération : 5,9 + 4,2, c'est proche de quel nombre ?",
+        "options": [
+          "9",
+          "10",
+          "11",
+          "12"
+        ],
+        "reponse_correcte": 1,
+        "explication": "5,9 est proche de 6 et 4,2 est proche de 4 : 6 + 4 = 10."
+      },
+      {
+        "question": "Sacha a 20 € et achète un jeu à 12,80 €. Environ combien lui reste-t-il ?",
+        "options": [
+          "7 €",
+          "6 €",
+          "8 €",
+          "9 €"
+        ],
+        "reponse_correcte": 0,
+        "explication": "12,80 € est proche de 13 € : 20 − 13 = 7, il lui reste environ 7 €."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "De tête, à peu près",
+        "consigne": "Ne pose aucune opération : cherche seulement l'ordre de grandeur.",
+        "questions": [
+          {
+            "question": "Quel est l'entier le plus proche de 12,8 ?",
+            "options": [
+              "13",
+              "12",
+              "11",
+              "128"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le 1er chiffre après la virgule est 8 : il fait monter à l'entier au-dessus, 13."
+          },
+          {
+            "question": "Quel est l'entier le plus proche de 7,3 ?",
+            "options": [
+              "8",
+              "6",
+              "7",
+              "73"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le 1er chiffre après la virgule est 3 : on garde l'entier au-dessous, 7."
+          },
+          {
+            "question": "Sans poser l'opération : 9,8 + 5,1, c'est proche de…",
+            "options": [
+              "14",
+              "16",
+              "15",
+              "13"
+            ],
+            "reponse_correcte": 2,
+            "explication": "9,8 devient 10 et 5,1 devient 5 : 10 + 5 = 15."
+          },
+          {
+            "question": "Sans poser l'opération : 18,2 − 6,9, c'est proche de…",
+            "options": [
+              "11",
+              "10",
+              "12",
+              "13"
+            ],
+            "reponse_correcte": 0,
+            "explication": "18,2 devient 18 et 6,9 devient 7 : 18 − 7 = 11."
+          },
+          {
+            "question": "Sans poser l'opération : 2,9 × 4, c'est proche de…",
+            "options": [
+              "7",
+              "16",
+              "120",
+              "12"
+            ],
+            "reponse_correcte": 3,
+            "explication": "2,9 devient 3 : 3 × 4 = 12."
+          },
+          {
+            "question": "Fatou remplit 3 bouteilles de 1,9 L. Environ combien de litres a-t-elle en tout ?",
+            "options": [
+              "3 L",
+              "5 L",
+              "6 L",
+              "9 L"
+            ],
+            "reponse_correcte": 2,
+            "explication": "1,9 L est proche de 2 L : 3 × 2 = 6, soit environ 6 litres."
+          },
+          {
+            "question": "Sans poser l'opération : 24,7 + 10,2, c'est proche de…",
+            "options": [
+              "34",
+              "35",
+              "36",
+              "24"
+            ],
+            "reponse_correcte": 1,
+            "explication": "24,7 devient 25 et 10,2 devient 10 : 25 + 10 = 35."
+          },
+          {
+            "question": "Le résultat de 8,1 + 7,9 est-il plus proche de 15 ou de 16 ?",
+            "options": [
+              "de 15",
+              "de 16",
+              "des deux à la fois",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "8,1 devient 8 et 7,9 devient 8 : 8 + 8 = 16."
+          }
+        ]
+      },
+      {
+        "titre": "À peu près combien ?",
+        "consigne": "Ne pose aucune opération : cherche seulement l'ordre de grandeur.",
+        "questions": [
+          {
+            "question": "Quel est l'entier le plus proche de 45,4 ?",
+            "options": [
+              "46",
+              "45",
+              "44",
+              "454"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le 1er chiffre après la virgule est 4 : on garde l'entier au-dessous, 45."
+          },
+          {
+            "question": "Quel est l'entier le plus proche de 2,6 ?",
+            "options": [
+              "2",
+              "26",
+              "1",
+              "3"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le 1er chiffre après la virgule est 6 : il fait monter à l'entier au-dessus, 3."
+          },
+          {
+            "question": "Sans poser l'opération : 11,9 + 8,2, c'est proche de…",
+            "options": [
+              "19",
+              "20",
+              "21",
+              "22"
+            ],
+            "reponse_correcte": 1,
+            "explication": "11,9 devient 12 et 8,2 devient 8 : 12 + 8 = 20."
+          },
+          {
+            "question": "Sans poser l'opération : 30,1 − 14,8, c'est proche de…",
+            "options": [
+              "16",
+              "14",
+              "15",
+              "17"
+            ],
+            "reponse_correcte": 2,
+            "explication": "30,1 devient 30 et 14,8 devient 15 : 30 − 15 = 15."
+          },
+          {
+            "question": "Sans poser l'opération : 6,9 × 3, c'est proche de…",
+            "options": [
+              "18",
+              "20",
+              "21",
+              "69"
+            ],
+            "reponse_correcte": 2,
+            "explication": "6,9 devient 7 : 7 × 3 = 21."
+          },
+          {
+            "question": "Timéo court 3 tours de 2,1 km. Environ combien de kilomètres a-t-il parcourus ?",
+            "options": [
+              "4 km",
+              "5 km",
+              "6 km",
+              "9 km"
+            ],
+            "reponse_correcte": 2,
+            "explication": "2,1 km est proche de 2 km : 3 × 2 = 6, soit environ 6 kilomètres."
+          },
+          {
+            "question": "Sans poser l'opération : 49,8 + 20,1, c'est proche de…",
+            "options": [
+              "70",
+              "69",
+              "60",
+              "71"
+            ],
+            "reponse_correcte": 0,
+            "explication": "49,8 devient 50 et 20,1 devient 20 : 50 + 20 = 70."
+          },
+          {
+            "question": "Le résultat de 6,2 + 3,7 est-il plus proche de 9 ou de 10 ?",
+            "options": [
+              "de 9",
+              "de 10",
+              "des deux à la fois",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 1,
+            "explication": "6,2 devient 6 et 3,7 devient 4 : 6 + 4 = 10."
+          }
+        ]
+      }
+    ]
+  }
+]

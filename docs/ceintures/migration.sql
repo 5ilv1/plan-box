@@ -96,7 +96,7 @@ create unique index if not exists idx_cvar_pb on ceinture_variante(eleve_id, exe
 create unique index if not exists idx_cvar_rb on ceinture_variante(rb_eleve_id, exercice_id) where rb_eleve_id is not null;
 create index if not exists idx_cvar_origine on ceinture_variante(origine_evaluation_id);
 
--- ───────────────── Seed du référentiel français (3 domaines, 112 items) ─────
+-- ───────────────── Seed du référentiel (4 domaines, 144 items) ─────
 -- Ordre et type_exercice repris des fichiers de banque, qui font foi :
 -- plusieurs items ont changé de type par rapport au référentiel PIDAPI,
 -- parce que le moteur ne sait pas évaluer le type d'origine (voir BRIEF §3).
@@ -104,7 +104,8 @@ create index if not exists idx_cvar_origine on ceinture_variante(origine_evaluat
 insert into ceinture_domaine (code, nom, matiere, description, ordre) values
   ('PHRA', 'Phrases', 'français', 'Grammaire, conjugaison, orthographe grammaticale', 2),
   ('MOTS', 'Mots', 'français', 'Vocabulaire, classes de mots, orthographe lexicale', 1),
-  ('TEXT', 'Textes', 'français', 'Lecture, production d''écrits, relecture', 3)
+  ('TEXT', 'Textes', 'français', 'Lecture, production d''écrits, relecture', 3),
+  ('NOMB', 'Nombres', 'maths', 'Numération, fractions, nombres décimaux', 4)
 on conflict (code) do update set nom = excluded.nom, matiere = excluded.matiere,
   description = excluded.description, ordre = excluded.ordre;
 
@@ -221,7 +222,39 @@ insert into ceinture_item (code, domaine_code, ceinture_idx, libelle, niveau_cib
   ('T40', 'TEXT', 8, 'Je sais utiliser l''implicite dans mon texte', 'CM2+', 'ecriture_contrainte', 2, 'enseignant', '—', 'PIDAPI', 34),
   ('T41', 'TEXT', 8, 'Je sais écrire un début qui accroche', 'CM2+', 'ecriture_contrainte', 2, 'enseignant', '—', 'Reformulé', 35),
   ('T42', 'TEXT', 8, 'Je sais écrire une fin', 'CM2+', 'ecriture_contrainte', 2, 'enseignant', '—', 'PIDAPI', 36),
-  ('T43', 'TEXT', 8, 'Je sais articuler les paragraphes de mon texte (connecteurs logiques)', 'CM2+', 'qcm', 2, 'enseignant', '—', 'Fusionné', 37)
+  ('T43', 'TEXT', 8, 'Je sais articuler les paragraphes de mon texte (connecteurs logiques)', 'CM2+', 'qcm', 2, 'enseignant', '—', 'Fusionné', 37),
+  ('N10', 'NOMB', 0, 'Je compte de 1 en 1, de 10 en 10 et de 100 en 100', 'CE2', 'calcul_mental', 2, 'auto', 'iParcours · Numération', 'Reformulé', 1),
+  ('N11', 'NOMB', 0, 'Je lis, j''écris, je décompose, je compare et j''encadre les nombres entiers < 100', 'CE2', 'exercice', 2, 'auto', 'iParcours · Numération', 'Reformulé', 2),
+  ('N38', 'NOMB', 0, 'Je repère et je place un nombre sur une droite graduée (0 à 100)', 'CE2', 'exercice', 2, 'auto', 'iParcours · Numération', 'Ajouté', 3),
+  ('N12', 'NOMB', 1, 'Je distingue unités, dizaines et centaines dans un nombre', 'CE2', 'exercice', 2, 'auto', 'iParcours · Numération', 'PIDAPI', 4),
+  ('N13', 'NOMB', 1, 'Je remplis un tableau de numération pour les entiers < 1 000', 'CE2', 'exercice', 2, 'auto', 'Outil élève · Tableau de numération', 'PIDAPI', 5),
+  ('N14', 'NOMB', 1, 'Je décompose, je compare et j''encadre les entiers < 1 000', 'CE2', 'exercice', 2, 'auto', 'iParcours · Numération', 'PIDAPI', 6),
+  ('N16', 'NOMB', 2, 'Je lis les nombres entiers < 10 000 et je les écris en chiffres', 'CE2-CM1', 'exercice', 2, 'auto', 'iParcours · Numération', 'PIDAPI', 7),
+  ('N15', 'NOMB', 2, 'Je range une série de nombres entiers < 10 000', 'CE2-CM1', 'qcm', 2, 'auto', 'iParcours · Numération', 'PIDAPI', 8),
+  ('N17', 'NOMB', 2, 'J''encadre les entiers < 10 000 (à l''unité, à la dizaine, à la centaine)', 'CE2-CM1', 'exercice', 2, 'auto', 'iParcours · Numération', 'Reformulé', 9),
+  ('N18', 'NOMB', 3, 'Je distingue le chiffre des … et le nombre de …', 'CM1', 'qcm', 2, 'auto', 'Outil élève · Tableau de numération', 'PIDAPI', 10),
+  ('N20', 'NOMB', 3, 'Je lis et j''écris les nombres entiers jusqu''aux millions', 'CM1', 'exercice', 2, 'auto', 'iParcours · Numération', 'Reformulé', 11),
+  ('N22', 'NOMB', 3, 'Je range une série de nombres entiers (jusqu''aux millions)', 'CM1', 'qcm', 2, 'auto', 'iParcours · Numération', 'Reformulé', 12),
+  ('N21', 'NOMB', 3, 'Je trouve de tête l''ordre de grandeur d''un résultat', 'CM1', 'qcm', 2, 'auto', 'Calcul du jour', 'PIDAPI', 13),
+  ('N19', 'NOMB', 4, 'J''utilise les fractions simples : 1/2, 1/3, 1/4', 'CM1', 'qcm', 2, 'auto', 'iParcours · Fractions', 'Reformulé', 14),
+  ('N39', 'NOMB', 4, 'Je place une fraction simple sur une droite graduée', 'CM1', 'qcm', 2, 'auto', 'iParcours · Fractions', 'Ajouté', 15),
+  ('N23', 'NOMB', 4, 'Je remplis un tableau de numération pour tous les nombres entiers', 'CM1', 'exercice', 2, 'auto', 'Outil élève · Tableau de numération', 'PIDAPI', 16),
+  ('N25', 'NOMB', 4, 'Je décompose tous les nombres entiers', 'CM1', 'qcm', 2, 'auto', 'iParcours · Numération', 'PIDAPI', 17),
+  ('N24', 'NOMB', 5, 'Je comprends et j''écris une fraction décimale (1/10, 1/100)', 'CM1-CM2', 'qcm', 2, 'auto', 'iParcours · Fractions', 'PIDAPI', 18),
+  ('N40', 'NOMB', 5, 'J''encadre une fraction entre deux entiers et je repère les fractions supérieures à 1', 'CM1-CM2', 'exercice', 2, 'auto', 'iParcours · Fractions', 'Ajouté', 19),
+  ('N26', 'NOMB', 5, 'Je connais le sens des nombres décimaux', 'CM1-CM2', 'qcm', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 20),
+  ('N37', 'NOMB', 5, 'J''encadre tous les nombres entiers', 'CM1-CM2', 'exercice', 2, 'auto', 'iParcours · Numération', 'Déplacé', 21),
+  ('N27', 'NOMB', 6, 'Je remplis un tableau de numération pour les nombres décimaux', 'CM2', 'exercice', 2, 'auto', 'Outil élève · Tableau de numération', 'PIDAPI', 22),
+  ('N29', 'NOMB', 6, 'Je lis et j''écris les nombres décimaux', 'CM2', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 23),
+  ('N30', 'NOMB', 6, 'Je compare et je range des nombres décimaux', 'CM2', 'qcm', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 24),
+  ('N28', 'NOMB', 6, 'Je lis les nombres entiers jusqu''aux milliards et je les écris en chiffres', 'CM2', 'qcm', 2, 'auto', 'iParcours · Numération', 'PIDAPI', 25),
+  ('N31', 'NOMB', 7, 'Je place les nombres décimaux sur une demi-droite graduée', 'CM2', 'qcm', 2, 'auto', 'iParcours · Décimaux', 'Reformulé', 26),
+  ('N32', 'NOMB', 7, 'J''écris les nombres décimaux de différentes façons (fraction décimale, écriture à virgule)', 'CM2', 'qcm', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 27),
+  ('N33', 'NOMB', 7, 'Je décompose les nombres décimaux', 'CM2', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 28),
+  ('N34', 'NOMB', 7, 'Je trouve de tête des ordres de grandeur avec des décimaux', 'CM2', 'qcm', 2, 'auto', 'Calcul du jour', 'Reformulé', 29),
+  ('N35', 'NOMB', 8, 'J''intercale des nombres décimaux entre deux nombres', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 30),
+  ('N36', 'NOMB', 8, 'J''écris une fraction de différentes façons (fractions égales, simplification)', 'CM2+', 'qcm', 2, 'auto', 'iParcours · Fractions', 'PIDAPI', 31),
+  ('N41', 'NOMB', 8, 'Je passe d''une fraction à son écriture décimale et inversement', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Fractions', 'Ajouté', 32)
 on conflict (code) do update set domaine_code = excluded.domaine_code,
   ceinture_idx = excluded.ceinture_idx, libelle = excluded.libelle,
   niveau_cible = excluded.niveau_cible, type_exercice = excluded.type_exercice,

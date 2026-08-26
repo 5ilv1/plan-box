@@ -1,0 +1,794 @@
+[
+  {
+    "item_code": "N27",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Le tableau des décimaux",
+      "regle": "La virgule sépare les unités entières des parts de l'unité : à sa droite viennent les dixièmes, puis les centièmes, puis les millièmes.",
+      "procedure": [
+        "Repère la virgule : c'est elle qui sert de départ, jamais la fin du nombre.",
+        "Pour un rang de droite, compte à partir de la virgule : dixièmes, centièmes, millièmes.",
+        "Pour un rang de gauche, compte à partir de la virgule : unités, dizaines, centaines."
+      ],
+      "exemples": [
+        {
+          "phrase": "Dans 6,38, quel est le chiffre des dixièmes ?",
+          "demonstration": "Je pars de la virgule vers la droite : 3 est au premier rang, celui des dixièmes. C'est 3."
+        },
+        {
+          "phrase": "Dans 90,051, quel est le chiffre des centièmes ?",
+          "demonstration": "À droite de la virgule : 0 dixième, puis 5 centièmes, puis 1 millième. C'est 5, et non 1."
+        }
+      ],
+      "piege": "Le rang se compte depuis la virgule, pas depuis la fin du nombre : dans 90,051, le dernier chiffre est un millième."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans 8,74, quel est le chiffre des centièmes ?",
+        "options": [
+          "8",
+          "7",
+          "4",
+          "74"
+        ],
+        "reponse_correcte": 2,
+        "explication": "À partir de la virgule : 7 est aux dixièmes, 4 aux centièmes."
+      },
+      {
+        "question": "Dans quel nombre le chiffre 6 occupe-t-il le rang des dixièmes ?",
+        "options": [
+          "3,65",
+          "6,25",
+          "2,06",
+          "60,2"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le rang des dixièmes est le premier après la virgule : dans 3,65, c'est bien le 6 qui l'occupe."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Chaque chiffre à sa place",
+        "consigne": "Écris seulement le chiffre demandé : un seul chiffre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans 27,458, quel est le chiffre des centièmes ?",
+            "reponse_attendue": "5",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes, millièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans 27,458, quel est le chiffre des unités ?",
+            "reponse_attendue": "7",
+            "indice": "Pars de la virgule et compte vers la gauche : unités, dizaines, centaines."
+          },
+          {
+            "id": 3,
+            "enonce": "Dans 27,458, quel est le chiffre des dixièmes ?",
+            "reponse_attendue": "4",
+            "indice": "Le rang des dixièmes est le premier à droite de la virgule."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans 306,09, quel est le chiffre des dixièmes ?",
+            "reponse_attendue": "0",
+            "indice": "Un zéro occupe un rang comme les autres chiffres : compte-le."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans 306,09, quel est le chiffre des centièmes ?",
+            "reponse_attendue": "9",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans 5,207, quel est le chiffre des millièmes ?",
+            "reponse_attendue": "7",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes, millièmes."
+          },
+          {
+            "id": 7,
+            "enonce": "Dans 80,3, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "8",
+            "indice": "Pars de la virgule et compte vers la gauche : unités, dizaines."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans 14,62, quel est le chiffre des centièmes ?",
+            "reponse_attendue": "2",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Dans quelle colonne ?",
+        "consigne": "Écris seulement le chiffre demandé : un seul chiffre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans 63,571, quel est le chiffre des dixièmes ?",
+            "reponse_attendue": "5",
+            "indice": "Le rang des dixièmes est le premier à droite de la virgule."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans 63,571, quel est le chiffre des millièmes ?",
+            "reponse_attendue": "1",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes, millièmes."
+          },
+          {
+            "id": 3,
+            "enonce": "Dans 63,571, quel est le chiffre des dizaines ?",
+            "reponse_attendue": "6",
+            "indice": "Pars de la virgule et compte vers la gauche : unités, dizaines."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans 402,08, quel est le chiffre des centièmes ?",
+            "reponse_attendue": "8",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes."
+          },
+          {
+            "id": 5,
+            "enonce": "Dans 402,08, quel est le chiffre des dixièmes ?",
+            "reponse_attendue": "0",
+            "indice": "Un zéro occupe un rang comme les autres chiffres : compte-le."
+          },
+          {
+            "id": 6,
+            "enonce": "Dans 9,306, quel est le chiffre des centièmes ?",
+            "reponse_attendue": "0",
+            "indice": "Pars de la virgule et compte vers la droite : dixièmes, centièmes, millièmes."
+          },
+          {
+            "id": 7,
+            "enonce": "Dans 75,4, quel est le chiffre des unités ?",
+            "reponse_attendue": "5",
+            "indice": "Pars de la virgule et compte vers la gauche : unités, dizaines."
+          },
+          {
+            "id": 8,
+            "enonce": "Dans 128,93, quel est le chiffre des centaines ?",
+            "reponse_attendue": "1",
+            "indice": "Pars de la virgule et compte vers la gauche : unités, dizaines, centaines."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N29",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Écrire un nombre décimal",
+      "regle": "Le chiffre des dixièmes se place juste après la virgule, celui des centièmes juste derrière lui.",
+      "procedure": [
+        "Écris la partie entière, puis la virgule.",
+        "Écris les dixièmes juste après la virgule ; s'il n'y en a aucun, écris un 0.",
+        "Écris ensuite les centièmes."
+      ],
+      "exemples": [
+        {
+          "phrase": "Écris en chiffres : neuf unités et huit dixièmes.",
+          "demonstration": "Partie entière 9, puis la virgule, puis 8 au rang des dixièmes : j'écris 9,8."
+        },
+        {
+          "phrase": "Écris en chiffres : seize unités et trois centièmes.",
+          "demonstration": "Partie entière 16, puis la virgule. Aucun dixième n'est cité : j'écris 0, puis 3 aux centièmes. Cela donne 16,03, et non 16,3."
+        }
+      ],
+      "piege": "Sans le 0 des dixièmes, les centièmes glissent d'un rang : trois centièmes s'écrivent 0,03."
+    },
+    "diagnostic": [
+      {
+        "question": "Comment écrit-on « deux unités et six centièmes » ?",
+        "options": [
+          "2,6",
+          "2,06",
+          "0,26",
+          "26"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Aucun dixième n'est cité : on met un 0 juste après la virgule, puis le 6 des centièmes."
+      },
+      {
+        "question": "Comment lit-on le nombre 7,4 ?",
+        "options": [
+          "sept unités et quatre centièmes",
+          "quatre unités et sept dixièmes",
+          "soixante-quatorze unités",
+          "sept unités et quatre dixièmes"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le chiffre placé juste après la virgule compte les dixièmes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La dictée de décimaux",
+        "consigne": "Écris le nombre en chiffres, sans espace, avec une virgule.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres : trois unités et sept dixièmes.",
+            "reponse_attendue": "3,7",
+            "indice": "Écris la partie entière, la virgule, puis les dixièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris en chiffres : douze unités et quatre centièmes.",
+            "reponse_attendue": "12,04",
+            "indice": "Aucun dixième n'est cité : mets un 0 juste après la virgule."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris en chiffres : cinq unités et vingt-cinq centièmes.",
+            "reponse_attendue": "5,25",
+            "indice": "Vingt-cinq centièmes, ce sont 2 dixièmes et 5 centièmes."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris en chiffres : quarante unités et neuf dixièmes.",
+            "reponse_attendue": "40,9",
+            "indice": "Écris la partie entière, la virgule, puis les dixièmes."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris en chiffres : zéro unité et six centièmes.",
+            "reponse_attendue": "0,06",
+            "indice": "Aucune unité, aucun dixième : mets un 0 à chacun de ces deux rangs."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris en chiffres : cent-trois unités et deux dixièmes.",
+            "reponse_attendue": "103,2",
+            "indice": "Écris d'abord toute la partie entière, puis la virgule."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris en chiffres : huit unités et quinze centièmes.",
+            "reponse_attendue": "8,15",
+            "indice": "Quinze centièmes, ce sont 1 dixième et 5 centièmes."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris en chiffres : soixante unités et trente-cinq centièmes.",
+            "reponse_attendue": "60,35",
+            "indice": "Trente-cinq centièmes, ce sont 3 dixièmes et 5 centièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Des mots aux chiffres",
+        "consigne": "Écris le nombre en chiffres, sans espace, avec une virgule.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris en chiffres : sept unités et deux dixièmes.",
+            "reponse_attendue": "7,2",
+            "indice": "Écris la partie entière, la virgule, puis les dixièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris en chiffres : vingt unités et cinq centièmes.",
+            "reponse_attendue": "20,05",
+            "indice": "Aucun dixième n'est cité : mets un 0 juste après la virgule."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris en chiffres : neuf unités et soixante-douze centièmes.",
+            "reponse_attendue": "9,72",
+            "indice": "Soixante-douze centièmes, ce sont 7 dixièmes et 2 centièmes."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris en chiffres : cinquante unités et trois dixièmes.",
+            "reponse_attendue": "50,3",
+            "indice": "Écris la partie entière, la virgule, puis les dixièmes."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris en chiffres : zéro unité et huit centièmes.",
+            "reponse_attendue": "0,08",
+            "indice": "Aucune unité, aucun dixième : mets un 0 à chacun de ces deux rangs."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris en chiffres : deux-cent-six unités et quatre dixièmes.",
+            "reponse_attendue": "206,4",
+            "indice": "Écris d'abord toute la partie entière, puis la virgule."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris en chiffres : quatre unités et trente-cinq centièmes.",
+            "reponse_attendue": "4,35",
+            "indice": "Trente-cinq centièmes, ce sont 3 dixièmes et 5 centièmes."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris en chiffres : quatre-vingts unités et neuf centièmes.",
+            "reponse_attendue": "80,09",
+            "indice": "Aucun dixième n'est cité : mets un 0 juste après la virgule."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N30",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Comparer deux décimaux",
+      "regle": "On compare d'abord les parties entières ; si elles sont égales, on compare les dixièmes, puis les centièmes.",
+      "procedure": [
+        "Compare ce qui est écrit avant la virgule : le plus grand l'emporte.",
+        "À parties entières égales, compare les chiffres des dixièmes.",
+        "Si les dixièmes sont égaux, compare les centièmes ; tu peux ajouter des 0 à droite pour avoir autant de chiffres."
+      ],
+      "exemples": [
+        {
+          "phrase": "Compare 8,7 et 8,29.",
+          "demonstration": "Même partie entière, 8. Dixièmes : 7 contre 2, donc 8,7 est le plus grand, même si 29 semble plus grand que 7."
+        },
+        {
+          "phrase": "Compare 15,3 et 15,30.",
+          "demonstration": "Mêmes parties entières, mêmes dixièmes. J'ajoute un 0 à 15,3 : les centièmes sont égaux à 0. Les deux nombres sont égaux."
+        }
+      ],
+      "piege": "Avoir plus de chiffres après la virgule ne rend pas un nombre plus grand : 2,7 est plus grand que 2,689."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le plus grand de ces nombres ?",
+        "options": [
+          "5,4",
+          "5,39",
+          "5,275",
+          "5,1"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Tous ont 5 unités : on compare les dixièmes, et 4 est le plus grand."
+      },
+      {
+        "question": "Quelle série est rangée du plus petit au plus grand ?",
+        "options": [
+          "6,35 < 6,3 < 6,4 < 6,45",
+          "6,3 < 6,4 < 6,35 < 6,45",
+          "6,3 < 6,35 < 6,4 < 6,45",
+          "6,45 < 6,4 < 6,35 < 6,3"
+        ],
+        "reponse_correcte": 2,
+        "explication": "6,3 et 6,35 ont les mêmes dixièmes : ce sont les centièmes qui départagent, 0 puis 5. Même chose pour 6,4 et 6,45."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ranger des décimaux",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "4,25 < 4,09 < 4,5 < 4,7",
+              "4,09 < 4,25 < 4,5 < 4,7",
+              "4,09 < 4,25 < 4,7 < 4,5",
+              "4,5 < 4,7 < 4,09 < 4,25"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Toutes les parties entières valent 4 : on compare les dixièmes, 0 puis 2 puis 5 puis 7."
+          },
+          {
+            "question": "Quel est le plus grand de ces nombres ?",
+            "options": [
+              "4,2",
+              "4,3",
+              "4,09",
+              "4,375"
+            ],
+            "reponse_correcte": 3,
+            "explication": "4,3 et 4,375 ont tous les deux 3 dixièmes, plus que 4,2 et 4,09 : ce sont les centièmes qui les départagent, 7 contre 0. Le plus grand est donc 4,375, même s'il a le plus de chiffres."
+          },
+          {
+            "question": "Quel nombre est compris entre 5,2 et 5,3 ?",
+            "options": [
+              "5,15",
+              "5,25",
+              "5,35",
+              "5,02"
+            ],
+            "reponse_correcte": 1,
+            "explication": "5,25 a 2 dixièmes comme 5,2, plus 5 centièmes : il dépasse 5,2 sans atteindre 5,3."
+          },
+          {
+            "question": "Quels deux nombres sont égaux ?",
+            "options": [
+              "3,4 et 3,04",
+              "3,4 et 0,34",
+              "3,4 et 3,40",
+              "3,4 et 34"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un 0 ajouté à droite après la virgule ne change rien : 3,40 a 4 dixièmes et 0 centième, comme 3,4."
+          },
+          {
+            "question": "Quelle série est rangée du plus grand au plus petit ?",
+            "options": [
+              "7,5 > 7,45 > 7,4 > 7,05",
+              "7,5 > 7,4 > 7,45 > 7,05",
+              "7,45 > 7,5 > 7,4 > 7,05",
+              "7,05 > 7,4 > 7,45 > 7,5"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On compare les dixièmes : 5, puis 4, puis 4, puis 0 ; entre 7,45 et 7,4, les centièmes départagent."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "9,9 < 9,85 < 12,06 < 12,6",
+              "9,85 < 9,9 < 12,6 < 12,06",
+              "9,85 < 9,9 < 12,06 < 12,6",
+              "12,06 < 12,6 < 9,85 < 9,9"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les nombres à 9 unités passent avant ceux à 12 unités ; dans chaque paire, les dixièmes départagent."
+          },
+          {
+            "question": "Quel est le plus petit de ces nombres ?",
+            "options": [
+              "0,7",
+              "0,109",
+              "0,25",
+              "0,4"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Tous ont 0 unité : on compare les dixièmes, et 1 est le plus petit."
+          },
+          {
+            "question": "Quelle comparaison est vraie ?",
+            "options": [
+              "8,54 > 8,6",
+              "8,6 > 8,54",
+              "8,6 = 8,54",
+              "8,6 < 8,54"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Mêmes unités : 6 dixièmes, c'est plus que 5 dixièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Le classement des décimaux",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "2,3 < 2,08 < 2,45 < 2,8",
+              "2,08 < 2,45 < 2,3 < 2,8",
+              "2,8 < 2,45 < 2,3 < 2,08",
+              "2,08 < 2,3 < 2,45 < 2,8"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Toutes les parties entières valent 2 : on compare les dixièmes, 0 puis 3 puis 4 puis 8."
+          },
+          {
+            "question": "Quel est le plus grand de ces nombres ?",
+            "options": [
+              "3,5",
+              "3,49",
+              "3,405",
+              "3,2"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Mêmes unités : le plus grand chiffre des dixièmes est 5, dans 3,5."
+          },
+          {
+            "question": "Quel nombre est compris entre 7,6 et 7,7 ?",
+            "options": [
+              "7,55",
+              "7,75",
+              "7,65",
+              "7,06"
+            ],
+            "reponse_correcte": 2,
+            "explication": "7,65 a 6 dixièmes comme 7,6, plus 5 centièmes : il dépasse 7,6 sans atteindre 7,7."
+          },
+          {
+            "question": "Quels deux nombres sont égaux ?",
+            "options": [
+              "6,2 et 6,20",
+              "6,2 et 6,02",
+              "6,2 et 0,62",
+              "6,2 et 62"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un 0 ajouté à droite après la virgule ne change rien : 6,20 a 2 dixièmes et 0 centième, comme 6,2."
+          },
+          {
+            "question": "Quelle série est rangée du plus grand au plus petit ?",
+            "options": [
+              "10,04 > 10,3 > 10,35 > 10,4",
+              "10,4 > 10,3 > 10,35 > 10,04",
+              "10,4 > 10,35 > 10,3 > 10,04",
+              "10,35 > 10,4 > 10,3 > 10,04"
+            ],
+            "reponse_correcte": 2,
+            "explication": "On compare les dixièmes : 4, puis 3, puis 3, puis 0 ; entre 10,35 et 10,3, les centièmes départagent."
+          },
+          {
+            "question": "Quelle série est rangée du plus petit au plus grand ?",
+            "options": [
+              "5,95 < 5,9 < 11,07 < 11,7",
+              "5,9 < 5,95 < 11,07 < 11,7",
+              "11,07 < 11,7 < 5,9 < 5,95",
+              "5,9 < 5,95 < 11,7 < 11,07"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les nombres à 5 unités passent avant ceux à 11 unités ; dans chaque paire, on compare ensuite les rangs après la virgule."
+          },
+          {
+            "question": "Quel est le plus petit de ces nombres ?",
+            "options": [
+              "0,4",
+              "0,45",
+              "0,409",
+              "0,5"
+            ],
+            "reponse_correcte": 0,
+            "explication": "0,4 · 0,45 · 0,409 ont tous 4 dixièmes, moins que 0,5. J'ajoute des 0 à droite pour avoir autant de chiffres : 0,400 · 0,450 · 0,409. Le plus petit est 0,4, même s'il est le plus court."
+          },
+          {
+            "question": "Quelle comparaison est vraie ?",
+            "options": [
+              "9,3 < 9,28",
+              "9,28 = 9,3",
+              "9,3 > 9,28",
+              "9,3 < 9,2"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Mêmes unités : 3 dixièmes, c'est plus que 2 dixièmes, quels que soient les centièmes."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N28",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Lire jusqu'aux milliards",
+      "regle": "Un grand nombre se lit par groupes de trois chiffres depuis la droite : unités, mille, millions, milliards.",
+      "procedure": [
+        "Sépare le nombre en groupes de trois chiffres en partant de la droite.",
+        "Nomme les groupes de droite à gauche : unités, mille, millions, milliards.",
+        "Lis chaque groupe suivi de son nom, en sautant les groupes qui ne contiennent que des zéros."
+      ],
+      "exemples": [
+        {
+          "phrase": "Lis 8 500 000 000.",
+          "demonstration": "Groupes depuis la droite : 000, 000, 500, 8. Le 8 est au rang des milliards, le 500 à celui des millions : huit milliards cinq-cents millions."
+        },
+        {
+          "phrase": "Écris en chiffres : trois milliards soixante mille.",
+          "demonstration": "Milliards : 3. Millions : aucun, donc 000. Mille : 060. Unités : 000. Cela donne 3 000 060 000."
+        }
+      ],
+      "piege": "Chaque groupe placé après le premier s'écrit toujours sur trois chiffres : un groupe absent s'écrit 000."
+    },
+    "diagnostic": [
+      {
+        "question": "Comment écrit-on en chiffres « trois milliards deux-cents millions » ?",
+        "options": [
+          "3 200 000",
+          "320 000 000",
+          "3 002 000 000",
+          "3 200 000 000"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Après le groupe des milliards, il reste trois groupes de trois chiffres : 200 pour les millions, puis 000 et 000."
+      },
+      {
+        "question": "Comment se lit 7 040 000 000 ?",
+        "options": [
+          "sept milliards quatre millions",
+          "sept milliards quarante millions",
+          "sept milliards quatre-cents millions",
+          "sept-cent-quarante millions"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Groupes depuis la droite : 000, 000, 040, 7. Le groupe des millions vaut 40."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Jusqu'aux milliards",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Comment écrit-on en chiffres « six milliards » ?",
+            "options": [
+              "6 000 000",
+              "6 000 000 000",
+              "600 000 000",
+              "6 000 000 000 000"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Après le 6 des milliards viennent trois groupes de trois zéros : millions, mille, unités."
+          },
+          {
+            "question": "Comment se lit 4 300 000 000 ?",
+            "options": [
+              "quatre milliards trois-cents millions",
+              "quatre milliards trois-cents mille",
+              "quatre-cent-trente millions",
+              "quarante-trois milliards"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Groupes depuis la droite : 000, 000, 300, 4. Le 4 est aux milliards, le 300 aux millions."
+          },
+          {
+            "question": "Combien de zéros écrit-on dans un milliard en chiffres ?",
+            "options": [
+              "6",
+              "12",
+              "3",
+              "9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un milliard s'écrit 1 000 000 000 : trois groupes de trois zéros après le 1."
+          },
+          {
+            "question": "Comment écrit-on en chiffres « deux milliards huit-cents millions quatre-cent-mille » ?",
+            "options": [
+              "2 800 400",
+              "2 084 000 000",
+              "2 800 400 000",
+              "2 800 000 400"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Milliards : 2. Millions : 800. Mille : 400. Unités : 000."
+          },
+          {
+            "question": "Quel nombre vient juste après 999 999 999 ?",
+            "options": [
+              "1 000 000 000",
+              "999 999 000",
+              "1 000 000",
+              "9 999 999 990"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Tous les chiffres passent à 0 et un nouveau groupe apparaît : c'est un milliard."
+          },
+          {
+            "question": "Combien de millions faut-il pour faire un milliard ?",
+            "options": [
+              "100",
+              "1 000",
+              "10",
+              "1 000 000"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Chaque groupe vaut mille fois le groupe précédent : mille millions font un milliard."
+          },
+          {
+            "question": "Comment se lit 12 050 000 000 ?",
+            "options": [
+              "douze milliards cinquante millions",
+              "douze milliards cinq millions",
+              "cent-vingt milliards cinquante millions",
+              "douze millions cinquante mille"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Groupes depuis la droite : 000, 000, 050, 12. Le 12 est aux milliards, le 50 aux millions."
+          },
+          {
+            "question": "Comment écrit-on en chiffres « soixante-quinze milliards » ?",
+            "options": [
+              "75 000 000",
+              "75 000 000 000",
+              "7 500 000 000",
+              "75 000 000 000 000"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Après le groupe 75 des milliards viennent trois groupes de trois zéros."
+          }
+        ]
+      },
+      {
+        "titre": "Lire les très grands nombres",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Comment écrit-on en chiffres « neuf milliards » ?",
+            "options": [
+              "9 000 000 000",
+              "9 000 000",
+              "900 000 000",
+              "9 000 000 000 000"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Après le 9 des milliards viennent trois groupes de trois zéros : millions, mille, unités."
+          },
+          {
+            "question": "Comment se lit 6 700 000 000 ?",
+            "options": [
+              "six-cent-soixante-dix millions",
+              "six milliards soixante-dix millions",
+              "six milliards sept-cents millions",
+              "soixante-sept milliards"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Groupes depuis la droite : 000, 000, 700, 6. Le 6 est aux milliards, le 700 aux millions."
+          },
+          {
+            "question": "Quel est le plus grand de ces nombres ?",
+            "options": [
+              "999 000 000",
+              "1 000 000 000",
+              "99 000 000",
+              "900 999 000"
+            ],
+            "reponse_correcte": 1,
+            "explication": "1 000 000 000 a dix chiffres, les autres en ont neuf ou moins : c'est le plus grand."
+          },
+          {
+            "question": "Comment écrit-on en chiffres « cinq milliards trois-cents millions vingt-mille » ?",
+            "options": [
+              "5 300 020 000",
+              "5 300 000 020",
+              "5 032 000 000",
+              "5 300 020"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Milliards : 5. Millions : 300. Mille : 020. Unités : 000."
+          },
+          {
+            "question": "Quel nombre vient juste avant 1 000 000 000 ?",
+            "options": [
+              "100 000 000",
+              "999 999 999",
+              "1 000 000 001",
+              "999 000 000"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le nombre qui précède un milliard a neuf chiffres, tous des 9."
+          },
+          {
+            "question": "Combien de milliers faut-il pour faire un million ?",
+            "options": [
+              "100",
+              "10",
+              "1 000",
+              "1 000 000"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Chaque groupe vaut mille fois le groupe précédent : mille milliers font un million."
+          },
+          {
+            "question": "Comment se lit 30 800 000 000 ?",
+            "options": [
+              "trois milliards huit-cents millions",
+              "trente milliards huit-cents millions",
+              "trente-huit milliards",
+              "trente milliards quatre-vingts millions"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Groupes depuis la droite : 000, 000, 800, 30. Le 30 est aux milliards, le 800 aux millions."
+          },
+          {
+            "question": "Comment écrit-on en chiffres « quarante milliards » ?",
+            "options": [
+              "4 000 000 000",
+              "400 000 000",
+              "40 000 000 000 000",
+              "40 000 000 000"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Après le groupe 40 des milliards viennent trois groupes de trois zéros."
+          }
+        ]
+      }
+    ]
+  }
+]

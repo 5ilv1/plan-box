@@ -1,0 +1,556 @@
+[
+  {
+    "item_code": "N35",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Intercaler un nombre décimal",
+      "regle": "Entre deux décimaux qui se suivent, on peut toujours en intercaler d'autres.",
+      "procedure": [
+        "Écris les deux nombres l'un sous l'autre.",
+        "Ajoute un zéro après le dernier chiffre décimal — un entier s'écrit avec une virgule sans changer de valeur : 2 = 2,0. Tu gagnes une place.",
+        "Choisis un nombre entre les deux à cette nouvelle place : celui du milieu ne se trompe jamais."
+      ],
+      "exemples": [
+        {
+          "phrase": "Juste au milieu de 20 et 21 ?",
+          "demonstration": "J'écris 20,0 et 21,0 ; le zéro du plus petit devient 5 : 20,5."
+        },
+        {
+          "phrase": "Juste au milieu de 1,2 et 1,3 ?",
+          "demonstration": "J'écris 1,20 et 1,30 : le 5 prend la dernière place → 1,25."
+        }
+      ],
+      "piege": "On croit qu'il n'y a rien entre 1,2 et 1,3 : il y en a une infinité."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel nombre est juste au milieu de 6,2 et 6,3 ?",
+        "options": [
+          "6,23",
+          "6,25",
+          "6,5",
+          "6,21"
+        ],
+        "reponse_correcte": 1,
+        "explication": "J'écris 6,20 et 6,30 : le nombre du milieu est 6,25."
+      },
+      {
+        "question": "Lequel de ces nombres est compris entre 5,6 et 5,7 ?",
+        "options": [
+          "5,8",
+          "5,06",
+          "5,76",
+          "5,63"
+        ],
+        "reponse_correcte": 3,
+        "explication": "5,63 a 6 dixièmes comme 5,6, et 3 centièmes en plus : il est bien entre 5,6 et 5,7."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Juste au milieu",
+        "consigne": "Écris le nombre en chiffres, avec une virgule et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel nombre est juste au milieu de 3,4 et 3,5 ?",
+            "reponse_attendue": "3,45",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 2,
+            "enonce": "Quel nombre est juste au milieu de 2 et 3 ?",
+            "reponse_attendue": "2,5",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel nombre est juste au milieu de 7,8 et 7,9 ?",
+            "reponse_attendue": "7,85",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 4,
+            "enonce": "Quel nombre est juste au milieu de 0,1 et 0,2 ?",
+            "reponse_attendue": "0,15",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel nombre est juste au milieu de 9,9 et 10 ?",
+            "reponse_attendue": "9,95",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre est juste au milieu de 12,3 et 12,4 ?",
+            "reponse_attendue": "12,35",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel nombre est juste au milieu de 4,6 et 4,7 ?",
+            "reponse_attendue": "4,65",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel nombre est juste au milieu de 15 et 16 ?",
+            "reponse_attendue": "15,5",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          }
+        ]
+      },
+      {
+        "titre": "Entre deux nombres",
+        "consigne": "Écris le nombre en chiffres, avec une virgule et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel nombre est juste au milieu de 5,1 et 5,2 ?",
+            "reponse_attendue": "5,15",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 2,
+            "enonce": "Quel nombre est juste au milieu de 7 et 8 ?",
+            "reponse_attendue": "7,5",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel nombre est juste au milieu de 0,8 et 0,9 ?",
+            "reponse_attendue": "0,85",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 4,
+            "enonce": "Quel nombre est juste au milieu de 2,9 et 3 ?",
+            "reponse_attendue": "2,95",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          },
+          {
+            "id": 5,
+            "enonce": "Quel nombre est juste au milieu de 24,1 et 24,2 ?",
+            "reponse_attendue": "24,15",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre est juste au milieu de 6,7 et 6,8 ?",
+            "reponse_attendue": "6,75",
+            "indice": "Écris les deux nombres avec le même nombre de chiffres après la virgule, puis ajoute un zéro à chacun."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel nombre est juste au milieu de 40 et 41 ?",
+            "reponse_attendue": "40,5",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel nombre est juste au milieu de 1,9 et 2 ?",
+            "reponse_attendue": "1,95",
+            "indice": "Un nombre entier peut s'écrire avec des chiffres après la virgule sans changer de valeur."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N36",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Des fractions égales",
+      "regle": "Si on multiplie ou si on divise le haut et le bas par le même nombre, la fraction ne change pas.",
+      "procedure": [
+        "Cherche par combien on multiplie ou on divise le bas pour aller à l'autre fraction.",
+        "Applique exactement la même opération au nombre du haut.",
+        "Pour simplifier, cherche un nombre qui divise le haut et le bas."
+      ],
+      "exemples": [
+        {
+          "phrase": "1/7 = …/21",
+          "demonstration": "En bas, 7 × 3 = 21 ; en haut aussi : 1 × 3 = 3. Donc 1/7 = 3/21."
+        },
+        {
+          "phrase": "20/24 = …/6",
+          "demonstration": "En bas, 24 : 4 = 6 ; en haut aussi : 20 : 4 = 5. Donc 20/24 = 5/6."
+        }
+      ],
+      "piege": "On multiplie ou on divise, on n'ajoute jamais : 3/7 n'est pas égal à 4/8."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle fraction est égale à 2/9 ?",
+        "options": [
+          "2/18",
+          "9/2",
+          "4/18",
+          "4/9"
+        ],
+        "reponse_correcte": 2,
+        "explication": "En bas, 9 × 2 = 18 ; je fais la même chose en haut : 2 × 2 = 4."
+      },
+      {
+        "question": "Quelle est la forme la plus simple de 12/18 ?",
+        "options": [
+          "2/3",
+          "12/9",
+          "6/18",
+          "3/6"
+        ],
+        "reponse_correcte": 0,
+        "explication": "12 et 18 se divisent tous les deux par 6 : 12 : 6 = 2 et 18 : 6 = 3."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La même valeur",
+        "consigne": "Choisis la bonne fraction.",
+        "questions": [
+          {
+            "question": "Quelle fraction est égale à 1/6 ?",
+            "options": [
+              "2/12",
+              "3/12",
+              "1/12",
+              "6/1"
+            ],
+            "reponse_correcte": 0,
+            "explication": "En bas, 6 × 2 = 12 ; en haut, 1 × 2 = 2."
+          },
+          {
+            "question": "Quelle fraction est égale à 3/8 ?",
+            "options": [
+              "6/8",
+              "3/16",
+              "6/16",
+              "8/3"
+            ],
+            "reponse_correcte": 2,
+            "explication": "En bas, 8 × 2 = 16 ; en haut, 3 × 2 = 6."
+          },
+          {
+            "question": "Complète : 2/7 = …/14. Quel nombre s'écrit en haut ?",
+            "options": [
+              "2",
+              "4",
+              "7",
+              "9"
+            ],
+            "reponse_correcte": 1,
+            "explication": "En bas, 7 × 2 = 14 : en haut aussi je multiplie par 2, donc 2 × 2 = 4."
+          },
+          {
+            "question": "Quelle est la forme la plus simple de 6/9 ?",
+            "options": [
+              "2/3",
+              "3/9",
+              "6/3",
+              "1/3"
+            ],
+            "reponse_correcte": 0,
+            "explication": "6 et 9 se divisent tous les deux par 3 : 6 : 3 = 2 et 9 : 3 = 3."
+          },
+          {
+            "question": "Quelle est la forme la plus simple de 14/16 ?",
+            "options": [
+              "7/16",
+              "2/8",
+              "14/8",
+              "7/8"
+            ],
+            "reponse_correcte": 3,
+            "explication": "14 et 16 se divisent tous les deux par 2 : 14 : 2 = 7 et 16 : 2 = 8."
+          },
+          {
+            "question": "Parmi ces fractions, laquelle n'est PAS égale à 1/5 ?",
+            "options": [
+              "3/12",
+              "3/15",
+              "2/10",
+              "4/20"
+            ],
+            "reponse_correcte": 0,
+            "explication": "3/15, 2/10 et 4/20 se simplifient toutes en 1/5 ; 3/12 se simplifie en 1/4."
+          },
+          {
+            "question": "Quelle fraction est égale à 2/3 ?",
+            "options": [
+              "4/9",
+              "3/2",
+              "2/9",
+              "4/6"
+            ],
+            "reponse_correcte": 3,
+            "explication": "En bas, 3 × 2 = 6 ; en haut, 2 × 2 = 4."
+          },
+          {
+            "question": "Complète : 24/36 = 2/…. Quel nombre s'écrit en bas ?",
+            "options": [
+              "2",
+              "3",
+              "6",
+              "12"
+            ],
+            "reponse_correcte": 1,
+            "explication": "En haut, 24 : 12 = 2 : en bas aussi je divise par 12, donc 36 : 12 = 3."
+          }
+        ]
+      },
+      {
+        "titre": "Multiplier ou simplifier",
+        "consigne": "Choisis la bonne fraction.",
+        "questions": [
+          {
+            "question": "Quelle fraction est égale à 1/8 ?",
+            "options": [
+              "2/16",
+              "3/16",
+              "1/16",
+              "8/1"
+            ],
+            "reponse_correcte": 0,
+            "explication": "En bas, 8 × 2 = 16 ; en haut, 1 × 2 = 2."
+          },
+          {
+            "question": "Quelle fraction est égale à 5/7 ?",
+            "options": [
+              "10/7",
+              "5/14",
+              "10/14",
+              "7/5"
+            ],
+            "reponse_correcte": 2,
+            "explication": "En bas, 7 × 2 = 14 ; en haut, 5 × 2 = 10."
+          },
+          {
+            "question": "Complète : 4/9 = …/27. Quel nombre s'écrit en haut ?",
+            "options": [
+              "4",
+              "9",
+              "12",
+              "13"
+            ],
+            "reponse_correcte": 2,
+            "explication": "En bas, 9 × 3 = 27 : en haut aussi je multiplie par 3, donc 4 × 3 = 12."
+          },
+          {
+            "question": "Quelle est la forme la plus simple de 6/15 ?",
+            "options": [
+              "3/15",
+              "2/5",
+              "6/5",
+              "3/5"
+            ],
+            "reponse_correcte": 1,
+            "explication": "6 et 15 se divisent tous les deux par 3 : 6 : 3 = 2 et 15 : 3 = 5."
+          },
+          {
+            "question": "Quelle est la forme la plus simple de 10/16 ?",
+            "options": [
+              "5/16",
+              "2/8",
+              "10/8",
+              "5/8"
+            ],
+            "reponse_correcte": 3,
+            "explication": "10 et 16 se divisent tous les deux par 2 : 10 : 2 = 5 et 16 : 2 = 8."
+          },
+          {
+            "question": "Parmi ces fractions, laquelle n'est PAS égale à 1/4 ?",
+            "options": [
+              "2/8",
+              "3/9",
+              "3/12",
+              "5/20"
+            ],
+            "reponse_correcte": 1,
+            "explication": "2/8, 3/12 et 5/20 se simplifient toutes en 1/4 ; 3/9 se simplifie en 1/3."
+          },
+          {
+            "question": "Quelle fraction est égale à 6/7 ?",
+            "options": [
+              "12/14",
+              "6/14",
+              "12/7",
+              "7/6"
+            ],
+            "reponse_correcte": 0,
+            "explication": "En bas, 7 × 2 = 14 ; en haut, 6 × 2 = 12."
+          },
+          {
+            "question": "Complète : 20/45 = 4/…. Quel nombre s'écrit en bas ?",
+            "options": [
+              "4",
+              "5",
+              "15",
+              "9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "En haut, 20 : 5 = 4 : en bas aussi je divise par 5, donc 45 : 5 = 9."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "N41",
+    "type": "exercice",
+    "lecon": {
+      "titre": "De la fraction au nombre à virgule",
+      "regle": "Une fraction dont le bas est 10 ou 100 s'écrit avec une virgule : le bas donne le nombre de chiffres qui suivent.",
+      "procedure": [
+        "Si le bas n'est ni 10 ni 100, multiplie haut et bas pour l'obtenir (par 2, 5 ou 25).",
+        "Compte les zéros du bas : 10 donne un chiffre après la virgule, 100 en donne deux.",
+        "Écris le haut et place la virgule en comptant ces chiffres depuis la droite."
+      ],
+      "exemples": [
+        {
+          "phrase": "9/10",
+          "demonstration": "Un zéro en bas : un chiffre après la virgule. J'écris 9, puis 0 devant : 0,9."
+        },
+        {
+          "phrase": "1/4",
+          "demonstration": "4 × 25 = 100, donc 1 × 25 = 25. J'obtiens 25/100, soit 0,25."
+        }
+      ],
+      "piege": "3/100 ne s'écrit pas 0,3 mais 0,03 : deux chiffres après la virgule."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle fraction est égale à 0,75 ?",
+        "options": [
+          "7/5",
+          "3/4",
+          "75/10",
+          "7/50"
+        ],
+        "reponse_correcte": 1,
+        "explication": "0,75, c'est 75 centièmes ; 75 et 100 se divisent tous les deux par 25 : on obtient 3/4."
+      },
+      {
+        "question": "Quelle est l'écriture décimale de 1/2 ?",
+        "options": [
+          "1,2",
+          "0,2",
+          "0,5",
+          "2,0"
+        ],
+        "reponse_correcte": 2,
+        "explication": "1/2 = 5/10 : la moitié d'une unité, c'est 5 dixièmes, donc 0,5."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "De la fraction au décimal",
+        "consigne": "Écris le nombre en écriture décimale, avec une virgule et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris 4/10 en écriture décimale.",
+            "reponse_attendue": "0,4",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris 37/100 en écriture décimale.",
+            "reponse_attendue": "0,37",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris 3/5 en écriture décimale.",
+            "reponse_attendue": "0,6",
+            "indice": "Le bas n'est ni 10 ni 100 : cherche par combien le multiplier pour l'obtenir, et fais pareil en haut."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris 8/100 en écriture décimale.",
+            "reponse_attendue": "0,08",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris 213/100 en écriture décimale.",
+            "reponse_attendue": "2,13",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris 1/20 en écriture décimale.",
+            "reponse_attendue": "0,05",
+            "indice": "Le bas n'est ni 10 ni 100 : cherche par combien le multiplier pour l'obtenir, et fais pareil en haut."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris 12/10 en écriture décimale.",
+            "reponse_attendue": "1,2",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris 7/2 en écriture décimale.",
+            "reponse_attendue": "3,5",
+            "indice": "Le bas n'est ni 10 ni 100 : cherche par combien le multiplier pour l'obtenir, et fais pareil en haut."
+          }
+        ]
+      },
+      {
+        "titre": "Écris-le avec une virgule",
+        "consigne": "Écris le nombre en écriture décimale, avec une virgule et sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Écris 2/10 en écriture décimale.",
+            "reponse_attendue": "0,2",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 2,
+            "enonce": "Écris 53/100 en écriture décimale.",
+            "reponse_attendue": "0,53",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 3,
+            "enonce": "Écris 4/5 en écriture décimale.",
+            "reponse_attendue": "0,8",
+            "indice": "Le bas n'est ni 10 ni 100 : cherche par combien le multiplier pour l'obtenir, et fais pareil en haut."
+          },
+          {
+            "id": 4,
+            "enonce": "Écris 7/100 en écriture décimale.",
+            "reponse_attendue": "0,07",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 5,
+            "enonce": "Écris 526/100 en écriture décimale.",
+            "reponse_attendue": "5,26",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 6,
+            "enonce": "Écris 3/20 en écriture décimale.",
+            "reponse_attendue": "0,15",
+            "indice": "Le bas n'est ni 10 ni 100 : cherche par combien le multiplier pour l'obtenir, et fais pareil en haut."
+          },
+          {
+            "id": 7,
+            "enonce": "Écris 47/10 en écriture décimale.",
+            "reponse_attendue": "4,7",
+            "indice": "Compte les zéros du nombre du bas : un zéro, un chiffre après la virgule ; deux zéros, deux chiffres."
+          },
+          {
+            "id": 8,
+            "enonce": "Écris 9/2 en écriture décimale.",
+            "reponse_attendue": "4,5",
+            "indice": "Le bas n'est ni 10 ni 100 : cherche par combien le multiplier pour l'obtenir, et fais pareil en haut."
+          }
+        ]
+      }
+    ]
+  }
+]
