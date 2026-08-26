@@ -69,7 +69,7 @@ export default function CeinturesPage() {
   }
 
   return (
-    <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 90px" }}>
+    <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 120px" }}>
       <Link
         href="/eleve/dashboard"
         style={{

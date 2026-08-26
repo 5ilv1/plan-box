@@ -238,7 +238,7 @@ export default function DiagnosticPage() {
   const progression = (courante / total) * 100;
 
   return (
-    <div style={{ maxWidth: 640, margin: "0 auto", padding: "20px 20px 60px" }}>
+    <div style={{ maxWidth: 640, margin: "0 auto", padding: "20px 20px 120px" }}>
       {/* En-tête : quitter, avancement */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <Link
@@ -306,6 +306,12 @@ export default function DiagnosticPage() {
                 border: choisi ? "2px solid #3B82F6" : "2px solid transparent",
                 color: "var(--pb-on-surface)",
                 transition: "background 0.15s ease, border-color 0.15s ease",
+                // Cibles tactiles : un doigt qui s'attarde ne doit pas
+                // sélectionner le texte de la réponse au lieu de la choisir.
+                userSelect: "none",
+                WebkitUserSelect: "none",
+                touchAction: "manipulation",
+                WebkitTapHighlightColor: "transparent",
               }}
             >
               <span style={{
