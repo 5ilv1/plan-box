@@ -29,6 +29,11 @@ create table if not exists ceinture_item (
 );
 create index if not exists idx_ceinture_item_dom on ceinture_item(domaine_code, ceinture_idx, ordre);
 
+-- La leçon appartient à l'ITEM, pas à la variante d'exercice : elle doit
+-- survivre au passage en remédiation, qui change l'entraînement mais pas la
+-- règle à apprendre. Format : docs/ceintures/SPEC-LECONS.md.
+alter table ceinture_item add column if not exists lecon jsonb;
+
 -- Une ceinture = un chapitre existant.
 create table if not exists ceinture_chapitre (
   domaine_code text not null references ceinture_domaine(code),
