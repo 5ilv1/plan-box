@@ -8,6 +8,10 @@
  *   • `exercice`        — UNE ligne dans le chapitre de la ceinture, portant
  *                         `contenu.item_code`, la variante 1 aplatie, et les
  *                         deux variantes sous `contenu.variantes`.
+ *   • `ceinture_item.lecon` — la leçon de l'item (docs/ceintures/SPEC-LECONS.md).
+ *                         Elle est portée par l'ITEM et non par la variante :
+ *                         un passage en remédiation change l'exercice, pas la
+ *                         règle à apprendre.
  *
  * Une seule ligne `exercice` par item : l'évaluation est composée à partir de
  * TOUS les exercices du chapitre, une deuxième ligne la doublerait et
@@ -54,9 +58,23 @@ interface QuestionDiagnostic {
   explication?: string;
 }
 
+interface ExempleLecon {
+  phrase: string;
+  demonstration: string;
+}
+
+interface Lecon {
+  titre: string;
+  regle: string;
+  procedure: string[];
+  exemples: ExempleLecon[];
+  piege?: string;
+}
+
 interface ItemBanque {
   item_code: string;
   type: string;
+  lecon?: Lecon;
   diagnostic: QuestionDiagnostic[];
   entrainement: Record<string, unknown>[];
 }
@@ -67,6 +85,41 @@ interface ItemBase {
   libelle: string;
   type_exercice: string;
   ordre: number;
+}
+
+/**
+ * Contrôle de forme d'une leçon, d'après docs/ceintures/SPEC-LECONS.md.
+ * Renvoie la liste des manquements — vide si la leçon est conforme.
+ */
+function controlerLecon(lecon: Lecon): string[] {
+  const pbs: string[] = [];
+
+  if (!lecon.titre?.trim()) pbs.push("titre vide");
+  if (!lecon.regle?.trim()) pbs.push("regle vide");
+
+  if (!Array.isArray(lecon.procedure) || lecon.procedure.length < 2 || lecon.procedure.length > 3) {
+    pbs.push(`procedure : ${lecon.procedure?.length ?? 0} étape(s), 2 ou 3 attendues`);
+  }
+
+  if (!Array.isArray(lecon.exemples) || lecon.exemples.length !== 2) {
+    pbs.push(`exemples : ${lecon.exemples?.length ?? 0}, 2 attendus`);
+  } else {
+    lecon.exemples.forEach((e, i) => {
+      if (!e.phrase?.trim()) pbs.push(`exemple ${i + 1} sans phrase`);
+      if (!e.demonstration?.trim()) pbs.push(`exemple ${i + 1} sans demonstration`);
+    });
+  }
+
+  // Longueur indicative (80 à 120 mots). Signalée, jamais bloquante : le
+  // calibrage est un jugement pédagogique, pas une règle de schéma.
+  const mots = [
+    lecon.titre, lecon.regle, ...(lecon.procedure ?? []),
+    ...(lecon.exemples ?? []).flatMap((e) => [e.phrase, e.demonstration]),
+    lecon.piege ?? "",
+  ].join(" ").trim().split(/\s+/).length;
+  if (mots < 60 || mots > 160) pbs.push(`~${mots} mots (80 à 120 attendus)`);
+
+  return pbs;
 }
 
 /** Fichiers de banque d'un domaine, dans l'ordre des ceintures. */
@@ -114,6 +167,9 @@ async function importerDomaine(domaine: DomaineCeinture) {
   let nbExercicesCrees = 0;
   let nbExercicesMaj = 0;
   let nbBanque = 0;
+  let nbLecons = 0;
+  const sansLecon: string[] = [];
+  const leconsDouteuses: string[] = [];
 
   for (const { fichier, idx } of fichiersDuDomaine(domaine.code)) {
     const items = JSON.parse(readFileSync(resolve(DOSSIER_BANQUE, fichier), "utf8")) as ItemBanque[];
@@ -157,6 +213,25 @@ async function importerDomaine(domaine: DomaineCeinture) {
       }
       if (item.entrainement.length !== 2) {
         throw new Error(`${item.item_code} : ${item.entrainement.length} variante(s), 2 attendues`);
+      }
+
+      // ── ceinture_item.lecon ──────────────────────────────────────────
+      // La leçon vit sur l'item : elle survit au passage en remédiation, qui
+      // ne change que la variante d'entraînement.
+      if (item.lecon) {
+        const pbs = controlerLecon(item.lecon);
+        if (pbs.length) leconsDouteuses.push(`${item.item_code} — ${pbs.join(" ; ")}`);
+
+        if (!DRY_RUN) {
+          const { error } = await supabase
+            .from("ceinture_item")
+            .update({ lecon: item.lecon })
+            .eq("code", item.item_code);
+          if (error) throw new Error(`leçon ${item.item_code} : ${error.message}`);
+        }
+        nbLecons++;
+      } else {
+        sansLecon.push(item.item_code);
       }
 
       // ── ceinture_banque ──────────────────────────────────────────────
@@ -241,8 +316,13 @@ async function importerDomaine(domaine: DomaineCeinture) {
 
   console.log(
     `  ${nbExercicesCrees} exercice(s) créé(s), ${nbExercicesMaj} mis à jour, ` +
-      `${nbBanque} ligne(s) de banque.`,
+      `${nbBanque} ligne(s) de banque, ${nbLecons} leçon(s).`,
   );
+
+  if (sansLecon.length) {
+    console.log(`  ⚠ ${sansLecon.length} item(s) sans leçon : ${sansLecon.join(", ")}`);
+  }
+  for (const l of leconsDouteuses) console.log(`  ⚠ leçon ${l}`);
 }
 
 async function main() {
@@ -277,9 +357,14 @@ async function main() {
     .select("id", { count: "exact", head: true })
     .not("contenu->>item_code", "is", null);
 
+  const { count: nbLeconsBase } = await supabase
+    .from("ceinture_item")
+    .select("code", { count: "exact", head: true })
+    .not("lecon", "is", null);
+
   console.log(
-    `\nContrôle : ${nbExos ?? 0} exercice(s) portant un item_code pour ` +
-      `${controle?.length ?? 0} item(s) au référentiel.\n`,
+    `\nContrôle : ${nbExos ?? 0} exercice(s) portant un item_code et ` +
+      `${nbLeconsBase ?? 0} leçon(s) pour ${controle?.length ?? 0} item(s) au référentiel.\n`,
   );
 }
 
