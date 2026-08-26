@@ -309,3 +309,68 @@ prévisualisation Vercel.
   naturel de la « grille individuelle » PIDAPI, mais rien n'est spécifié.
 - Réinitialisation du diagnostic : à quel niveau (élève, ceinture, domaine) ?
 - Les 4 domaines de maths, à écrire ensuite sur le même moteur.
+
+---
+
+## 10. État de la mise en œuvre
+
+À jour du 26 août 2026. Les trois domaines sont en base et le parcours élève
+est complet.
+
+| Étape du §7 | État |
+|---|---|
+| 1. Migration | ✅ jouée — 3 domaines, 112 items, vérifiés colonne par colonne contre le référentiel, 0 écart. Une 6ᵉ table s'est ajoutée : `ceinture_variante` |
+| 2. Chapitres-ceintures | ✅ 27 chapitres (les 3 domaines), 81 assignations. `scripts/seed-ceintures.ts`, `--domaine=PHRA\|MOTS\|TEXT\|all` |
+| 3. Exclusion des listes | ✅ livrée en `d73c75e` |
+| 4. Import de la banque | ✅ 112 exercices, 448 lignes de banque. `scripts/import-banque-ceintures.ts` |
+| 5. Routes API | ✅ `etat`, `diagnostic` (GET/POST), `entrer`, `reinitialiser` |
+| 6. Écrans élève | ✅ hub, échelle, diagnostic |
+| 7. Tableau de bord | ✅ tuile « Ceintures de français » |
+| 8. Vérification | ✅ build, `test-piocher` (0 affecté), `valider-banque` (0 erreur), Joseph `--parcours` sur les 27 chapitres (0 erreur, 0 avertissement), parcours navigateur de bout en bout |
+
+### Décisions prises en cours de route
+
+**La progression ne s'écrit pas, elle se dérive.** Une ceinture est acquise dès
+qu'une ligne `evaluation_resultat` porte `reussi = true` sur son chapitre ; la
+courante est la première qui ne l'est pas. Aucune table de progression, aucune
+modification de la page évaluation.
+
+**`/api/progression/valider-eval` n'est pas dans le circuit** : la page
+évaluation appelle `/api/chapitres/evaluation-resultat`. Tant mieux —
+`valider-eval` aurait cherché le « chapitre suivant » par `niveau_id`, qui est
+`null` sur les ceintures, et notifié « Parcours terminé ! » à chaque couleur.
+
+**Le diagnostic ne valide que les items `validation = 'auto'`.** Réussir deux
+QCM sur le portrait moral ne dispense pas de l'écrire. Sans effet sur Phrases
+(41 items sur 41 en `auto`), concerne 12 items de Textes.
+
+**Remédiation par élève, pas par classe.** `exercice.contenu` est partagé :
+y basculer la variante 2 la basculerait pour toute la classe. D'où
+`ceinture_variante` (élève, exercice, variante) et un aiguillage côté serveur
+dans `/api/chapitres/exercices`, derrière un paramètre élève **optionnel** —
+sans lui, le comportement historique est strictement inchangé.
+
+**Piège vérifié : pas d'`upsert` sur les index partiels.** Les index d'unicité
+de `ceinture_diagnostic` et `ceinture_variante` sont partiels
+(`where eleve_id is not null`) ; PostgREST ne sait pas les viser par
+`onConflict`. Les deux écritures font delete-puis-insert. Le parcours de test
+a attrapé ce bug.
+
+### Empreinte sur l'existant
+
+Quatre fichiers, tous en ajout pur :
+
+- `app/api/chapitres/exercices/route.ts` — paramètre élève optionnel, aiguillage
+  de variante, retrait de `contenu.variantes` avant envoi
+- `app/eleve/chapitre/[id]/exercice/[exerciceId]/page.tsx` — passe l'identifiant
+- `app/eleve/chapitre/[id]/evaluation/page.tsx` — passe l'identifiant
+- `app/eleve/dashboard/page.tsx` — la tuile
+
+### Reste à faire
+
+- Vue enseignant : le tableau classe couleurs × élèves du §9, et le bouton de
+  réinitialisation du diagnostic (la route existe, l'écran non).
+- Les 4 domaines de maths, sur le même moteur.
+- `lib/ceintures.ts` porte les ceintures de MULTIPLICATIONS de Repetibox. Les
+  ceintures de compétences vivent dans `lib/ceintures-competences.ts` et
+  `lib/ceintures-serveur.ts`.

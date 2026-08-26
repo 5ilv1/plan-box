@@ -332,9 +332,11 @@ export default function PageEvaluationFinale() {
 
   async function charger(signal: AbortSignal) {
     try {
+      // L'évaluation doit porter sur la variante que l'élève a travaillée.
+      const paramEleve = session?.source === "planbox" ? `eleve_id=${session.id}` : `rb_eleve_id=${session?.id}`;
       const [chapRes, exoRes] = await Promise.all([
         fetch(`/api/admin/chapitres/${chapitreId}`, { signal }).then((r) => r.json()),
-        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`, { signal }).then((r) => r.json()),
+        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}&${paramEleve}`, { signal }).then((r) => r.json()),
       ]);
 
       if (signal.aborted) return;

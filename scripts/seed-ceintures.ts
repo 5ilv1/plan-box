@@ -1,22 +1,32 @@
 #!/usr/bin/env npx tsx
 /**
- * 🥋 Seed des chapitres-ceintures — domaine Phrases
+ * 🥋 Seed des chapitres-ceintures — domaines de français
  *
- * Une ceinture = un chapitre (`sous_matiere = 'ceinture-phrases'`).
- * Ce script crée les 9 chapitres, remplit `ceinture_chapitre` et assigne
- * chaque chapitre aux trois groupes de classe.
+ * Une ceinture = un chapitre (`sous_matiere = 'ceinture-<domaine>'`).
+ * Ce script crée les 9 chapitres d'un domaine, remplit `ceinture_chapitre` et
+ * assigne chaque chapitre aux trois groupes de classe.
  *
  * Idempotent : rejouable sans créer de doublon. Il ne touche jamais aux
- * exercices ni aux résultats — l'import de la banque est un autre script.
+ * exercices ni aux résultats — l'import de la banque est un autre script
+ * (`scripts/import-banque-ceintures.ts`).
  *
  * Usage :
- *   export $(grep -v '^#' .env.local | xargs) && npx tsx scripts/seed-ceintures-phrases.ts
- *   … --dry-run    # affiche ce qui serait fait, n'écrit rien
+ *   export $(grep -v '^#' .env.local | xargs) && npx tsx scripts/seed-ceintures.ts
+ *   … --domaine=PHRA     # un seul domaine (défaut : all)
+ *   … --dry-run          # affiche ce qui serait fait, n'écrit rien
  */
 
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
+import {
+  COULEURS,
+  DOMAINES,
+  domaineParCode,
+  sousMatiere,
+  titreChapitre,
+  type DomaineCeinture,
+} from "../lib/ceintures-competences";
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -25,9 +35,9 @@ const supabase = createClient(
 
 const DRY_RUN = process.argv.includes("--dry-run");
 
-const DOMAINE = "PHRA";
-const SOUS_MATIERE = "ceinture-phrases";
-const MATIERE = "français";
+const argDomaine =
+  process.argv.find((a) => a.startsWith("--domaine="))?.split("=")[1]?.toUpperCase() ?? "ALL";
+
 const NIVEAUX_CIBLES = ["CE2", "CM1", "CM2"];
 const SEUIL = 90;
 
@@ -38,65 +48,53 @@ const GROUPES = [
   { nom: "CM2", id: "051dd2f4-c805-4827-9291-bb675998e51c" },
 ];
 
-interface Ceinture {
-  idx: number;
-  nom: string;
-  hex: string;
-  hex_fond: string;
-}
-
 interface ItemRef {
   code: string;
+  domaine: string;
   ceinture_idx: number;
   libelle: string;
 }
 
 const referentiel = JSON.parse(
-  readFileSync(resolve(process.cwd(), "docs/ceintures/referentiel-phrases.json"), "utf8"),
-) as { ceintures: Ceinture[]; items: ItemRef[] };
+  readFileSync(resolve(process.cwd(), "docs/ceintures/referentiel-francais.json"), "utf8"),
+) as ItemRef[];
 
-const titreCeinture = (c: Ceinture) => `Phrases · ${c.nom}`;
-
-async function main() {
-  console.log(`\n🥋 Seed des ceintures « Phrases »${DRY_RUN ? "  [DRY RUN]" : ""}\n`);
+async function seedDomaine(domaine: DomaineCeinture) {
+  const sm = sousMatiere(domaine);
+  console.log(`\n── ${domaine.nom} (${domaine.code}) ─────────────────────────────`);
 
   // Garde-fou : le référentiel doit être en base (migration jouée).
   const { data: items, error: errItems } = await supabase
     .from("ceinture_item")
     .select("code, ceinture_idx")
-    .eq("domaine_code", DOMAINE);
+    .eq("domaine_code", domaine.code);
 
   if (errItems) throw new Error(`ceinture_item illisible : ${errItems.message}`);
+
+  const attendus = referentiel.filter((r) => r.domaine === domaine.code);
   if (!items?.length) {
-    throw new Error("Aucun item en base — jouer docs/ceintures/migration.sql d'abord.");
-  }
-  if (items.length !== referentiel.items.length) {
     throw new Error(
-      `${items.length} items en base pour ${referentiel.items.length} au référentiel — migration incomplète.`,
+      `Aucun item ${domaine.code} en base — jouer docs/ceintures/migration.sql d'abord.`,
+    );
+  }
+  if (items.length !== attendus.length) {
+    throw new Error(
+      `${items.length} items ${domaine.code} en base pour ${attendus.length} au référentiel — migration incomplète.`,
     );
   }
 
+  // La répartition qui fait foi est celle de la BASE, qui vient du seed de
+  // migration.sql, lui-même aligné sur les fichiers de banque.
   const nbItemsParCeinture = new Map<number, number>();
   for (const it of items) {
     nbItemsParCeinture.set(it.ceinture_idx, (nbItemsParCeinture.get(it.ceinture_idx) ?? 0) + 1);
-  }
-
-  // Vérifier les groupes avant d'écrire quoi que ce soit.
-  const { data: groupes } = await supabase
-    .from("groupes")
-    .select("id, nom")
-    .in("id", GROUPES.map((g) => g.id));
-
-  const groupesManquants = GROUPES.filter((g) => !groupes?.some((x) => x.id === g.id));
-  if (groupesManquants.length) {
-    throw new Error(`Groupe(s) introuvable(s) : ${groupesManquants.map((g) => g.nom).join(", ")}`);
   }
 
   // Chapitres-ceintures déjà présents ?
   const { data: existants } = await supabase
     .from("chapitres")
     .select("id, titre, ordre")
-    .eq("sous_matiere", SOUS_MATIERE);
+    .eq("sous_matiere", sm);
 
   const parTitre = new Map((existants ?? []).map((c) => [c.titre, c]));
 
@@ -104,20 +102,25 @@ async function main() {
   let maj = 0;
   let assignations = 0;
 
-  for (const ceinture of referentiel.ceintures) {
-    const titre = titreCeinture(ceinture);
+  for (const ceinture of COULEURS) {
+    const titre = titreChapitre(domaine, ceinture.idx);
     const nbItems = nbItemsParCeinture.get(ceinture.idx) ?? 0;
     const description =
-      `Ceinture ${ceinture.nom.toLowerCase()} du domaine Phrases — ${nbItems} compétence${nbItems > 1 ? "s" : ""} à valider.`;
+      `Ceinture ${ceinture.nom.toLowerCase()} du domaine ${domaine.nom} — ` +
+      `${nbItems} compétence${nbItems > 1 ? "s" : ""} à valider.`;
 
     const champs = {
       titre,
-      matiere: MATIERE,
-      sous_matiere: SOUS_MATIERE,
+      matiere: domaine.matiere,
+      sous_matiere: sm,
       niveau_id: null,
       niveaux_cibles: NIVEAUX_CIBLES,
       seuil_evaluation: SEUIL,
       seuil_exercice: SEUIL,
+      // Hérité de Repetibox : sans rapport avec l'évaluation de ceinture, qui
+      // est composée à partir des exercices. Calé sur le nombre d'items pour
+      // ne pas déclencher l'avertissement de Joseph.
+      nb_cartes_eval: nbItems,
       ordre: ceinture.idx + 1,
       description,
       disponible_bibliotheque: false,
@@ -154,7 +157,7 @@ async function main() {
     const { error: errLien } = await supabase
       .from("ceinture_chapitre")
       .upsert(
-        { domaine_code: DOMAINE, ceinture_idx: ceinture.idx, chapitre_id: chapitreId },
+        { domaine_code: domaine.code, ceinture_idx: ceinture.idx, chapitre_id: chapitreId },
         { onConflict: "domaine_code,ceinture_idx" },
       );
     if (errLien) throw new Error(`ceinture_chapitre ${ceinture.idx} : ${errLien.message}`);
@@ -175,29 +178,59 @@ async function main() {
   }
 
   console.log(
-    `\n${crees} chapitre(s) créé(s), ${maj} mis à jour, ${assignations} assignation(s) actives.`,
+    `  ${crees} chapitre(s) créé(s), ${maj} mis à jour, ${assignations} assignation(s) actives.`,
   );
+}
+
+async function main() {
+  const domaines =
+    argDomaine === "ALL"
+      ? DOMAINES
+      : [domaineParCode(argDomaine)].filter(Boolean as unknown as (d: unknown) => d is DomaineCeinture);
+
+  if (!domaines.length) {
+    throw new Error(
+      `Domaine « ${argDomaine} » inconnu. Attendu : ${DOMAINES.map((d) => d.code).join(", ")} ou ALL.`,
+    );
+  }
+
+  console.log(`\n🥋 Seed des ceintures de compétences${DRY_RUN ? "  [DRY RUN]" : ""}`);
+
+  // Vérifier les groupes avant d'écrire quoi que ce soit.
+  const { data: groupes } = await supabase
+    .from("groupes")
+    .select("id, nom")
+    .in("id", GROUPES.map((g) => g.id));
+
+  const groupesManquants = GROUPES.filter((g) => !groupes?.some((x) => x.id === g.id));
+  if (groupesManquants.length) {
+    throw new Error(`Groupe(s) introuvable(s) : ${groupesManquants.map((g) => g.nom).join(", ")}`);
+  }
+
+  for (const d of domaines) await seedDomaine(d);
 
   if (DRY_RUN) {
-    console.log("Rien n'a été écrit (--dry-run).\n");
+    console.log("\nRien n'a été écrit (--dry-run).\n");
     return;
   }
 
   // Relecture de contrôle
   const { data: liens } = await supabase
     .from("ceinture_chapitre")
-    .select("ceinture_idx, chapitre_id, chapitres(titre, sous_matiere, seuil_evaluation, niveaux_cibles)")
-    .eq("domaine_code", DOMAINE)
+    .select("domaine_code, ceinture_idx, chapitres(titre, sous_matiere, seuil_evaluation, niveaux_cibles)")
+    .order("domaine_code")
     .order("ceinture_idx");
 
   console.log("\nContrôle :");
   for (const l of (liens ?? []) as unknown as {
+    domaine_code: string;
     ceinture_idx: number;
     chapitres: { titre: string; sous_matiere: string; seuil_evaluation: number; niveaux_cibles: string[] };
   }[]) {
     const ch = l.chapitres;
     console.log(
-      `  ${String(l.ceinture_idx).padStart(2)} → ${ch.titre.padEnd(26)} ${ch.sous_matiere}  seuil ${ch.seuil_evaluation}  [${(ch.niveaux_cibles ?? []).join(", ")}]`,
+      `  ${l.domaine_code} ${String(l.ceinture_idx).padStart(2)} → ${ch.titre.padEnd(26)} ` +
+        `${ch.sous_matiere.padEnd(18)} seuil ${ch.seuil_evaluation}  [${(ch.niveaux_cibles ?? []).join(", ")}]`,
     );
   }
   console.log(`\n${liens?.length ?? 0} ceinture(s) reliée(s) à un chapitre.\n`);

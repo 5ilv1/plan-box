@@ -134,6 +134,40 @@ NEXT_PUBLIC_REPETIBOX_URL      # URL Repetibox
 - **Vercel** : auto-deploy sur push `main`
 - **URL prod** : https://plan-box-phi.vercel.app
 
+## Ceintures de compétences (français)
+
+Référentiel PIDAPI adapté : 3 domaines × 9 couleurs (vert clair → noir), 112 items.
+Conception et décisions dans `docs/ceintures/BRIEF.md`.
+
+**Règle d'architecture** : une ceinture est une ligne de `chapitres`
+(`sous_matiere = 'ceinture-mots|phrases|textes'`), un item est une ligne de
+`exercice` portant `contenu.item_code`. Tout le cycle entraînement → évaluation
+réutilise le moteur existant — ne pas en construire un second.
+
+| Table | Rôle |
+|-------|------|
+| `ceinture_domaine` | MOTS, PHRA, TEXT (les 4 domaines de maths viendront) |
+| `ceinture_item` | le référentiel : code, ceinture, libellé, type d'exercice |
+| `ceinture_chapitre` | (domaine, ceinture_idx) → `chapitre_id` |
+| `ceinture_diagnostic` | une passation : questions, réponses, items acquis |
+| `ceinture_banque` | 2 questions de diagnostic + 2 variantes par item |
+| `ceinture_variante` | la variante de remédiation servie à UN élève |
+
+- Modules : `lib/ceintures-competences.ts` (couleurs, domaines, helpers) et
+  `lib/ceintures-serveur.ts` (état, remédiation). ⚠️ `lib/ceintures.ts` est
+  **autre chose** : les ceintures de multiplications de Repetibox.
+- Scripts : `scripts/seed-ceintures.ts` (chapitres) puis
+  `scripts/import-banque-ceintures.ts` (banque + exercices). Les deux prennent
+  `--domaine=PHRA|MOTS|TEXT|all` et `--dry-run`, et sont idempotents.
+- La progression **ne s'écrit pas** : elle se dérive de `evaluation_resultat`
+  (`reussi = true` ⇒ ceinture acquise).
+- Le diagnostic ne valide que les items `validation = 'auto'`.
+- Pas d'`upsert` sur `ceinture_diagnostic` ni `ceinture_variante` : leurs index
+  d'unicité sont partiels, `onConflict` ne sait pas les viser.
+- Non-régression obligatoire après toute modification de
+  `app/eleve/chapitre/[id]/evaluation/page.tsx` :
+  `node docs/ceintures/test-piocher.mjs` doit sortir « 0 exercice affecté ».
+
 ## Changer d'année (remise à zéro)
 
 Bouton **« Changer d'année »** en bas de `/enseignant/parametres`.

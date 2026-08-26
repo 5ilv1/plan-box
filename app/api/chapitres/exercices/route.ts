@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { servirVariante } from "@/lib/ceintures-competences";
 
 const TYPES_VALIDES = [
   "exercice",
@@ -17,10 +18,23 @@ const CHAMPS_MODIFIABLES = ["titre", "type", "contenu", "nb_questions", "ordre"]
 
 /**
  * GET /api/chapitres/exercices?chapitre_id=UUID
+ *  … &eleve_id=UUID   ou  &rb_eleve_id=NUMBER   (optionnel)
+ *
  * Retourne tous les exercices d'un chapitre, triés par ordre.
+ *
+ * Les exercices-ceintures portent leurs deux variantes d'entraînement dans
+ * `contenu.variantes`. Sans identifiant d'élève, la variante aplatie dans
+ * `contenu` est servie telle quelle — comportement historique, inchangé. Avec
+ * un identifiant, la variante de remédiation propre à CET élève est substituée
+ * (table `ceinture_variante`) : `exercice.contenu` est partagé par toute la
+ * classe, on ne peut donc pas y basculer un élève sans basculer les autres.
+ * Dans les deux cas `contenu.variantes` est retiré avant l'envoi.
  */
 export async function GET(req: NextRequest) {
   const chapitreId = req.nextUrl.searchParams.get("chapitre_id");
+  const eleveId = req.nextUrl.searchParams.get("eleve_id");
+  const rbEleveId = req.nextUrl.searchParams.get("rb_eleve_id");
+
   if (!chapitreId) {
     return NextResponse.json({ error: "chapitre_id requis" }, { status: 400 });
   }
@@ -37,7 +51,37 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Erreur de lecture" }, { status: 500 });
   }
 
-  return NextResponse.json({ exercices: data ?? [] });
+  let exercices = data ?? [];
+
+  // Aucun exercice à variantes → rien à faire (cas de tous les chapitres
+  // ordinaires : une seule requête, comme avant).
+  const aDesVariantes = exercices.some((e) =>
+    Array.isArray((e.contenu as Record<string, unknown>)?.variantes),
+  );
+
+  if (aDesVariantes) {
+    const varianteParExo = new Map<string, number>();
+
+    if (eleveId || rbEleveId) {
+      let q = admin
+        .from("ceinture_variante")
+        .select("exercice_id, variante")
+        .in("exercice_id", exercices.map((e) => e.id));
+      q = eleveId ? q.eq("eleve_id", eleveId) : q.eq("rb_eleve_id", Number(rbEleveId));
+
+      const { data: variantes } = await q;
+      for (const v of variantes ?? []) varianteParExo.set(v.exercice_id, v.variante);
+    }
+
+    exercices = exercices.map((e) => {
+      const contenu = e.contenu as Record<string, unknown>;
+      if (!Array.isArray(contenu?.variantes)) return e;
+      const n = varianteParExo.get(e.id) ?? (contenu.variante as number) ?? 1;
+      return { ...e, contenu: servirVariante(contenu, n) };
+    });
+  }
+
+  return NextResponse.json({ exercices });
 }
 
 /**

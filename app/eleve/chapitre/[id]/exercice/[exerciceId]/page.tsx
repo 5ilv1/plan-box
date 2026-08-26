@@ -77,8 +77,11 @@ export default function PageExerciceEleve() {
 
   async function chargerExercice(signal: AbortSignal) {
     try {
+      // L'identifiant sert à servir la variante de remédiation propre à
+      // l'élève sur les exercices-ceintures. Sans effet ailleurs.
+      const param = session?.source === "planbox" ? `eleve_id=${session.id}` : `rb_eleve_id=${session?.id}`;
       const [res, chapRes] = await Promise.all([
-        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`, { signal }),
+        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}&${param}`, { signal }),
         fetch(`/api/admin/chapitres/${chapitreId}`, { signal }),
       ]);
       if (signal.aborted) return;

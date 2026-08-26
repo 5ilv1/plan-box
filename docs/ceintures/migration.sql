@@ -71,6 +71,24 @@ create table if not exists ceinture_banque (
 );
 create index if not exists idx_cbanque_item on ceinture_banque(item_code, usage, valide_par_enseignant);
 
+-- Remédiation : la variante d'entraînement servie à UN élève sur UN exercice.
+-- exercice.contenu est partagé par toute la classe ; sans cette table, basculer
+-- un élève sur la variante 2 la basculerait pour tout le monde.
+create table if not exists ceinture_variante (
+  id           uuid primary key default gen_random_uuid(),
+  eleve_id     uuid,
+  rb_eleve_id  int,
+  exercice_id  uuid not null references exercice(id) on delete cascade,
+  variante     int  not null default 2 check (variante between 1 and 2),
+  origine_evaluation_id uuid references evaluation_resultat(id) on delete set null,
+  created_at   timestamptz not null default now(),
+  constraint ceinture_variante_eleve_check
+    check (eleve_id is not null or rb_eleve_id is not null)
+);
+create unique index if not exists idx_cvar_pb on ceinture_variante(eleve_id, exercice_id) where eleve_id is not null;
+create unique index if not exists idx_cvar_rb on ceinture_variante(rb_eleve_id, exercice_id) where rb_eleve_id is not null;
+create index if not exists idx_cvar_origine on ceinture_variante(origine_evaluation_id);
+
 -- ───────────────── Seed du référentiel français (3 domaines, 112 items) ─────
 -- Ordre et type_exercice repris des fichiers de banque, qui font foi :
 -- plusieurs items ont changé de type par rapport au référentiel PIDAPI,

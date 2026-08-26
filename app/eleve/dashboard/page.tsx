@@ -235,6 +235,10 @@ export default function DashboardEleve() {
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
   const [serieParcours, setSerieParcours]              = useState<number>(0);
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
+  const [ceinturesFrancais, setCeinturesFrancais] = useState<{
+    couleurCourante: { nom: string; hex: string; hexFond: string } | null;
+    domaines: Array<{ code: string; nom: string; couleurCourante: { hex: string } | null }>;
+  } | null>(null);
   const [bibliothequePeutChoisir, setBibliothequePeutChoisir] = useState(false);
   const [bibliothequeEnCours, setBibliothequeEnCours]         = useState<{ chapitre_id: string; titre: string; auteur: string | null; couverture_url: string | null; pourcentage: number } | null>(null);
 
@@ -373,6 +377,27 @@ export default function DashboardEleve() {
         if (ctrl.signal.aborted) return;
         setBibliothequePeutChoisir(json.peut_choisir ?? false);
         setBibliothequeEnCours(json.livre_en_cours ?? null);
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [session]);
+
+  // ── Ceintures de compétences (français) ────────────────────────────────────
+  useEffect(() => {
+    if (!session) return;
+    const ctrl = new AbortController();
+    const qs = session.source === "planbox"
+      ? `eleve_id=${session.id}`
+      : `rb_eleve_id=${session.id}`;
+    fetch(`/api/ceintures/etat?${qs}`, { signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((json) => {
+        if (ctrl.signal.aborted) return;
+        const domaines = json.domaines ?? [];
+        if (!domaines.length) { setCeinturesFrancais(null); return; }
+        // La pastille de la tuile : la couleur du premier domaine encore en cours.
+        const enCours = domaines.find((d: { termine: boolean }) => !d.termine) ?? domaines[0];
+        setCeinturesFrancais({ couleurCourante: enCours.couleurCourante, domaines });
       })
       .catch(() => {});
     return () => ctrl.abort();
@@ -1215,6 +1240,66 @@ export default function DashboardEleve() {
                   </button>
                 )}
               </div>
+            )}
+
+            {/* Ceintures de français (compétences) */}
+            {ceinturesFrancais && (
+              <Link
+                href="/eleve/ceintures"
+                className="pb-card"
+                style={{
+                  display: "block", textDecoration: "none", color: "inherit",
+                  background: ceinturesFrancais.couleurCourante
+                    ? `linear-gradient(135deg, ${ceinturesFrancais.couleurCourante.hexFond}, white)`
+                    : "linear-gradient(135deg, #F1F8E9, white)",
+                  border: `1.5px solid ${ceinturesFrancais.couleurCourante?.hex ?? "#7CB342"}40`,
+                  padding: "20px",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+                  <span className="ms" style={{ fontSize: 28, color: ceinturesFrancais.couleurCourante?.hex ?? "#7CB342" }}>
+                    workspace_premium
+                  </span>
+                  <div>
+                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)" }}>
+                      Ceintures de français
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                      Mots, Phrases et Textes
+                    </div>
+                  </div>
+                </div>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
+                  {ceinturesFrancais.domaines.map((d) => (
+                    <span
+                      key={d.code}
+                      style={{
+                        display: "inline-flex", alignItems: "center", gap: 5,
+                        padding: "4px 10px", borderRadius: 999,
+                        background: "rgba(255,255,255,0.7)",
+                        border: "1px solid rgba(0,0,0,0.06)",
+                        fontSize: 12, fontWeight: 700,
+                      }}
+                    >
+                      <span style={{
+                        width: 9, height: 9, borderRadius: "50%",
+                        background: d.couleurCourante?.hex ?? "#1A1A1A",
+                        flexShrink: 0,
+                      }} />
+                      {d.nom}
+                    </span>
+                  ))}
+                </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: ceinturesFrancais.couleurCourante?.hex ?? "#7CB342",
+                  color: "white", padding: "8px 18px",
+                  borderRadius: 999, fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}>
+                  Voir mes ceintures →
+                </div>
+              </Link>
             )}
 
             {/* Ceintures de multiplications */}
