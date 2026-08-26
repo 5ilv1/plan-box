@@ -49,7 +49,12 @@ const argDomaine =
 const DOSSIER_BANQUE = resolve(process.cwd(), "docs/ceintures/banque");
 
 /** Préfixe de fichier → domaine. `ceinture-*.json` sans préfixe = Phrases. */
-const PREFIXE: Record<string, string> = { "": "PHRA", "mots-": "MOTS", "textes-": "TEXT" };
+const PREFIXE: Record<string, string> = {
+  "": "PHRA",
+  "mots-": "MOTS",
+  "textes-": "TEXT",
+  "nombres-": "NOMB",
+};
 
 interface QuestionDiagnostic {
   question: string;
@@ -122,13 +127,22 @@ function controlerLecon(lecon: Lecon): string[] {
   return pbs;
 }
 
+/**
+ * Motif des noms de fichiers, dérivé de PREFIXE : ajouter un domaine à la
+ * table suffit, il n'y a pas de regex à penser à mettre à jour.
+ * Ex. : /^(mots-|textes-|nombres-)?ceinture-(\d)-/
+ */
+const MOTIF_FICHIER = new RegExp(
+  `^(${Object.keys(PREFIXE).filter(Boolean).join("|")})?ceinture-(\\d)-`,
+);
+
 /** Fichiers de banque d'un domaine, dans l'ordre des ceintures. */
 function fichiersDuDomaine(code: string): { fichier: string; idx: number }[] {
   const prefixe = Object.entries(PREFIXE).find(([, c]) => c === code)?.[0] ?? "";
   return readdirSync(DOSSIER_BANQUE)
     .filter((f) => f.endsWith(".json"))
     .map((f) => {
-      const m = f.match(/^(mots-|textes-)?ceinture-(\d)-/);
+      const m = f.match(MOTIF_FICHIER);
       return m && PREFIXE[m[1] ?? ""] === code && (m[1] ?? "") === prefixe
         ? { fichier: f, idx: Number(m[2]) }
         : null;

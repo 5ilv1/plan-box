@@ -93,6 +93,15 @@ export const DOMAINES: DomaineCeinture[] = [
     icone: "menu_book",
     ordre: 3,
   },
+  {
+    code: "NOMB",
+    slug: "nombres",
+    nom: "Nombres",
+    matiere: "maths",
+    description: "Numération, fractions, nombres décimaux",
+    icone: "tag",
+    ordre: 4,
+  },
 ];
 
 export function domaineParCode(code: string): DomaineCeinture | undefined {
