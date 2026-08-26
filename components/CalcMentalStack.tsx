@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { genererCarteCalcul, TemplateCalcul } from "@/lib/calcul";
+import { comparerReponse } from "@/lib/comparer-reponse";
 
 interface Calcul {
   id: number;
@@ -57,9 +58,9 @@ export default function CalcMentalStack({
 
   function valider() {
     if (!reponse.trim()) return;
-    const correct =
-      reponse.trim().toLowerCase() ===
-      calculsSession[index].reponse.trim().toLowerCase();
+    // Même comparaison qu'en exercice : « 3 000 » vaut « 3000 », « 3,5 » vaut
+    // « 3.5 ». Voir docs/ceintures/CORRECTIF-reponses-chiffrees.md.
+    const correct = comparerReponse(calculsSession[index].reponse, reponse);
     setFeedback(correct ? "correct" : "incorrect");
     if (correct) setScore((s) => s + 1);
     const newLog = [...reponsesLog, { id: calculsSession[index].id, reponse: reponse.trim(), correcte: correct }];

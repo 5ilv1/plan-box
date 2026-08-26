@@ -1,12 +1,16 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { comparerReponse } from "@/lib/comparer-reponse";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 
 interface Question {
   id: number;
   enonce: string;
   reponse_attendue: string;
   indice?: string;
+  /** Droite graduée dessinée au-dessus de l'énoncé. Voir SPEC-DROITE-GRADUEE.md. */
+  droite?: Droite;
 }
 
 interface ExerciceStackProps {
@@ -48,14 +52,10 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
 
   function valider() {
     if (!reponse.trim()) return;
-    const attendue = q.reponse_attendue.trim().toLowerCase();
-    const donnee = reponse.trim().toLowerCase();
-
-    // Comparaison souple : exact ou numérique
-    const numAttend = parseFloat(attendue.replace(",", "."));
-    const numDonne = parseFloat(donnee.replace(",", "."));
-    const correct = donnee === attendue
-      || (!isNaN(numAttend) && !isNaN(numDonne) && Math.abs(numAttend - numDonne) < 0.01);
+    // Comparaison partagée avec CalcMentalStack : gère l'espace des milliers,
+    // les fractions, et resserre la tolérance au strict.
+    // Voir docs/ceintures/CORRECTIF-reponses-chiffrees.md.
+    const correct = comparerReponse(q.reponse_attendue, reponse);
 
     setFeedback(correct ? "correct" : "incorrect");
     if (!correct) setBonneReponse(q.reponse_attendue);
@@ -268,6 +268,9 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
             transition: "border-color 0.2s ease, background 0.2s ease",
           }}
         >
+          {/* Droite graduée, quand la question en déclare une */}
+          {q.droite && <DroiteGraduee droite={q.droite} />}
+
           {/* Question */}
           <div style={{
             fontSize: 17, fontWeight: 700, lineHeight: 1.6,
