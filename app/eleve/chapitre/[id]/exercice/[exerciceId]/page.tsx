@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import { resoudrePositionsTrous } from "@/lib/texte-a-trous";
+import LeconCeinture, { type Lecon } from "@/components/LeconCeinture";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
@@ -46,6 +47,13 @@ export default function PageExerciceEleve() {
 
   const [exercice, setExercice] = useState<Exercice | null>(null);
   const [etat, setEtat] = useState<Etat>("chargement");
+  // Leçon de l'item (ceintures uniquement). Affichée avant l'entraînement,
+  // puis rouvrable à tout moment pendant l'exercice — jamais en évaluation,
+  // qui est une autre page et n'appelle pas cette route.
+  const [lecon, setLecon] = useState<Lecon | null>(null);
+  const [itemLibelle, setItemLibelle] = useState<string | null>(null);
+  const [leconVisible, setLeconVisible] = useState(false);
+  const [dejaVue, setDejaVue] = useState(false);
 
   // Questions / réponses
   const [questions, setQuestions] = useState<Array<{ enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number }>>([]);
@@ -103,6 +111,27 @@ export default function PageExerciceEleve() {
       }
 
       setExercice(ex);
+
+      // Leçon de l'item : seuls les exercices-ceintures portent un item_code.
+      // Chargée avant que l'exercice ne s'affiche, pour que l'élève voie la
+      // leçon en premier et non l'exercice qui clignote derrière.
+      const itemCode = (ex.contenu as Record<string, unknown>)?.item_code;
+      if (typeof itemCode === "string" && itemCode) {
+        try {
+          const resLecon = await fetch(
+            `/api/ceintures/lecon?item_code=${encodeURIComponent(itemCode)}`,
+            { signal },
+          );
+          const jsonLecon = await resLecon.json();
+          if (!signal.aborted && jsonLecon.lecon) {
+            setLecon(jsonLecon.lecon as Lecon);
+            setItemLibelle(jsonLecon.item_libelle ?? null);
+            setLeconVisible(true);
+          }
+        } catch {
+          // Pas de leçon disponible : on va droit à l'exercice, comme avant.
+        }
+      }
 
       // Préparer les questions selon le type
       const qs: typeof questions = [];
@@ -287,6 +316,41 @@ export default function PageExerciceEleve() {
 
   // ── Rendu ──────────────────────────────────────────────────────────────
 
+  /**
+   * Bouton « Revoir la leçon », accessible pendant tout l'entraînement.
+   * Rendu une seule fois ici plutôt que dans chacun des six rendus par type.
+   * Absent de l'écran de résultat : il n'y a plus rien à appliquer.
+   */
+  const boutonRevoirLecon = lecon && etat === "en_cours" ? (
+    <button
+      onClick={() => setLeconVisible(true)}
+      style={{
+        position: "fixed", top: 14, right: 14, zIndex: 50,
+        display: "inline-flex", alignItems: "center", gap: 6,
+        padding: "8px 14px", borderRadius: 999, cursor: "pointer",
+        background: "white", border: "1.5px solid #93C5FD", color: "#1D4ED8",
+        fontSize: 13, fontWeight: 700, fontFamily: "'Plus Jakarta Sans', sans-serif",
+        boxShadow: "0 2px 10px rgba(0,0,0,0.08)",
+      }}
+    >
+      <span className="ms" style={{ fontSize: 17 }}>menu_book</span>
+      Revoir la leçon
+    </button>
+  ) : null;
+
+  // La leçon couvre l'exercice : un seul point d'insertion, quel que soit le
+  // type. « avant » au premier affichage, « rappel » quand l'élève la rouvre.
+  if (lecon && leconVisible && etat !== "chargement") {
+    return (
+      <LeconCeinture
+        lecon={lecon}
+        itemLibelle={itemLibelle}
+        mode={dejaVue ? "rappel" : "avant"}
+        onFermer={() => { setDejaVue(true); setLeconVisible(false); }}
+      />
+    );
+  }
+
   if (etat === "chargement") {
     return (
       <div style={{ maxWidth: 800, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
@@ -309,6 +373,7 @@ export default function PageExerciceEleve() {
 
     return (
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
+        {boutonRevoirLecon}
         <div style={{ marginBottom: 20 }}>
           <button
             onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
@@ -359,6 +424,7 @@ export default function PageExerciceEleve() {
 
     return (
       <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
+        {boutonRevoirLecon}
         <div style={{ marginBottom: 20 }}>
           <button
             onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
@@ -418,6 +484,7 @@ export default function PageExerciceEleve() {
 
     return (
       <div style={{ maxWidth: 900, margin: "0 auto", padding: "20px 20px 80px" }}>
+        {boutonRevoirLecon}
         <div style={{ marginBottom: 20 }}>
           <button
             onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
@@ -492,6 +559,7 @@ export default function PageExerciceEleve() {
 
     return (
       <div style={{ maxWidth: 1100, margin: "0 auto", padding: "20px 20px 80px" }}>
+        {boutonRevoirLecon}
         {/* En-tête */}
         <div style={{ marginBottom: 20 }}>
           <button
@@ -782,6 +850,7 @@ export default function PageExerciceEleve() {
 
   return (
     <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px", display: "flex", flexDirection: "column", minHeight: "calc(100vh - 100px)", justifyContent: "center" }}>
+      {boutonRevoirLecon}
       {/* En-tête */}
       <div style={{ marginBottom: 24 }}>
         <button
