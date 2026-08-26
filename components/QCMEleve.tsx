@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 
 interface QCMQuestion {
   question: string;
   options: string[];
   reponse_correcte: number;
   explication?: string;
+  /** Droite graduée dessinée au-dessus de l'énoncé. Voir SPEC-DROITE-GRADUEE.md. */
+  droite?: Droite;
 }
 
 interface Props {
@@ -66,6 +69,7 @@ export default function QCMEleve({ titre, questions, onTermine }: Props) {
               background: "white",
             }}
           >
+            {q.droite && <DroiteGraduee droite={q.droite} />}
             <p style={{ margin: 0, fontWeight: 700, fontSize: 15, marginBottom: 10 }}>
               <span style={{ color: "#92400E", marginRight: 6 }}>Q{i + 1}.</span>
               {q.question}
