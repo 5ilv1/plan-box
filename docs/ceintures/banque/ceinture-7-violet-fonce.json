@@ -2,6 +2,26 @@
   {
     "item_code": "P35",
     "type": "qcm",
+    "lecon": {
+      "titre": "À quoi renvoie le pronom ?",
+      "regle": "Un pronom de reprise remplace un groupe déjà nommé ; je, tu, nous, vous désignent ceux qui parlent ou à qui l'on parle.",
+      "procedure": [
+        "Demande-toi si le pronom désigne qui parle, à qui l'on parle, ou un groupe déjà nommé.",
+        "S'il reprend un groupe, remplace-le par ce groupe : la phrase doit garder son sens.",
+        "Écarte le groupe déjà repris par un autre pronom."
+      ],
+      "exemples": [
+        {
+          "phrase": "Adam apporte son ballon. Il le gonfle.",
+          "demonstration": "« Il » reprend Adam ; on ne gonfle pas Adam, donc « le » reprend « son ballon »."
+        },
+        {
+          "phrase": "Rosalie écrit à ses grands-parents : « Je pense à vous. »",
+          "demonstration": "« Je » ne reprend rien : c'est Rosalie qui parle ; « vous » désigne ceux à qui elle écrit."
+        }
+      ],
+      "piege": "Un pronom pluriel ne reprend pas un groupe singulier."
+    },
     "diagnostic": [
       {
         "question": "Dans « Louna prépare son exposé. Elle le relit une dernière fois. », que remplace le pronom « le » ?",
@@ -220,6 +240,26 @@
   {
     "item_code": "P36",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Accorder un adjectif difficile",
+      "regle": "L'adjectif s'accorde avec le nom qu'il décrit, même éloigné, et se met au masculin pluriel s'il décrit un nom masculin et un nom féminin.",
+      "procedure": [
+        "Cherche le nom que l'adjectif décrit vraiment : pas toujours celui qui le touche.",
+        "S'il en décrit deux à la fois, mets-le au pluriel, au masculin dès qu'un des noms est masculin.",
+        "Écris-le au genre et au nombre trouvés : certains adjectifs changent de forme au féminin."
+      ],
+      "exemples": [
+        {
+          "phrase": "Nour porte des lunettes de soleil (rond) …",
+          "demonstration": "Quel nom décrit-il ? Les lunettes, pas le soleil : féminin pluriel → « rondes »."
+        },
+        {
+          "phrase": "Un manteau et une écharpe (mouillé) … sèchent.",
+          "demonstration": "Il décrit les deux noms : pluriel, et masculin à cause de « manteau » → « mouillés »."
+        }
+      ],
+      "piege": "Marron et orange, venus d'un nom, ne s'accordent jamais."
+    },
     "diagnostic": [
       {
         "question": "Comment écrit-on l'adjectif dans « une casquette et un blouson (froissé) tous les deux » ?",
@@ -314,6 +354,26 @@
   {
     "item_code": "P38",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Pouvoir et vouloir au présent",
+      "regle": "Au présent, pouvoir et vouloir changent de radical selon la personne, et prennent -x, jamais -s, avec je et tu.",
+      "procedure": [
+        "Remplace le sujet par son pronom : je, tu, il, nous, vous, ils.",
+        "Avec je et tu, écris la terminaison -x.",
+        "Choisis le radical : pouv-, voul- avec nous et vous ; peuv-, veul- avec ils et elles ; peu-, veu- ailleurs."
+      ],
+      "exemples": [
+        {
+          "phrase": "Tu (vouloir) … un peu d'eau ?",
+          "demonstration": "Avec « tu », le radical est veu- et la terminaison -x → « tu veux »."
+        },
+        {
+          "phrase": "Vous (pouvoir) … entrer sans frapper.",
+          "demonstration": "Avec « vous », le verbe reprend le radical de l'infinitif : pouv- + -ez → « vous pouvez »."
+        }
+      ],
+      "piege": "« Il veut » et « ils veulent » ne s'écrivent pas pareil : au pluriel, le radical change aussi, pas seulement la terminaison."
+    },
     "diagnostic": [
       {
         "question": "Dans « Les CM2 ___ sortir plus tôt. (pouvoir) », quelle forme convient ?",
@@ -408,6 +468,26 @@
   {
     "item_code": "P55",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Le passé simple à la 3e personne",
+      "regle": "Au passé simple, un verbe en -ER fait -a et -èrent, un verbe en -IR fait -it et -irent.",
+      "procedure": [
+        "Regarde l'infinitif : est-il en -ER, en -IR, ou d'un autre type ?",
+        "Demande-toi si le sujet vaut « il » ou « ils ».",
+        "Écris la terminaison : -a / -èrent pour un verbe en -ER, -it / -irent pour un verbe en -IR ; d'autres font -ut / -urent."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le roi (entrer) … dans la grande salle.",
+          "demonstration": "« entrer » est en -ER et le sujet vaut « il » : on écrit « entra »."
+        },
+        {
+          "phrase": "Les deux frères (gravir) … la colline avant la nuit.",
+          "demonstration": "« gravir » est en -IR et le sujet vaut « ils » : « gravirent », et non « gravèrent »."
+        }
+      ],
+      "piege": "Ne confonds pas avec l'imparfait : « il sautait » durait, « il sauta » arrive d'un coup."
+    },
     "diagnostic": [
       {
         "question": "Dans « Ce matin-là, les élèves ___ la cour en silence. (quitter) », quelle forme du passé simple convient ?",
@@ -502,6 +582,26 @@
   {
     "item_code": "P31",
     "type": "exercice",
+    "lecon": {
+      "titre": "Être et avoir, trois temps",
+      "regle": "À l'imparfait, être devient ét- et avoir av- ; au futur, ser- et aur- ; au passé composé, les deux prennent l'auxiliaire avoir.",
+      "procedure": [
+        "Repère le temps demandé et la personne.",
+        "À l'imparfait ou au futur, écris le début qui convient, puis la terminaison de la personne.",
+        "Au passé composé, écris deux mots : avoir au présent, puis le participe passé du verbe demandé."
+      ],
+      "exemples": [
+        {
+          "phrase": "En CE2, vous … dans la classe du bas. (être, imparfait)",
+          "demonstration": "Imparfait de être : ét- + terminaison de « vous », -iez → « vous étiez »."
+        },
+        {
+          "phrase": "Samedi, nous … en retard. (être, passé composé)",
+          "demonstration": "Deux mots : avoir au présent avec « nous », puis le participe passé de être → « nous avons été »."
+        }
+      ],
+      "piege": "Au passé composé, être aussi prend avoir : jamais « je suis été »."
+    },
     "diagnostic": [
       {
         "question": "Quelle est la forme du verbe être à l'imparfait avec « nous » ?",

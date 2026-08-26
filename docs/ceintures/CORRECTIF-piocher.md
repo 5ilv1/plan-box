@@ -119,36 +119,3 @@ contrainte à connaître pour écrire les banques : une consigne du type
 la règle doit descendre dans les `indice`, qui, eux, disparaissent.
 
 Seule exception : le QCM en évaluation ne reçoit pas de consigne (ligne 612).
-
----
-
-## Addendum — 26 août 2026 : un second bug, en amont de celui-ci
-
-Le correctif ci-dessus est juste, mais il ne suffisait pas : **la page
-évaluation ne résolvait pas du tout les positions des trous.**
-
-`app/eleve/chapitre/[id]/exercice/[exerciceId]/page.tsx` recalculait les
-positions (les `position` de la banque sont des rangs 0,1,2… et non des index
-de mots), et passait le résultat au composant. La page évaluation, elle,
-transmettait les trous tels quels : `TexteATrousEleve` masquait donc les mots
-d'index 0 à 4, c'est-à-dire **les cinq premiers mots du texte**.
-
-Constaté à l'écran sur P47 en évaluation : les cinq menus déroulants
-apparaissaient groupés en tête de texte, suivis de « la fenêtre. », et les
-homophones restaient visibles dans les phrases suivantes.
-
-Portée : **tous** les `texte_a_trous` en évaluation, Ma P'tite Règle comprise.
-
-`test-piocher.mjs` ne pouvait pas le voir : il rejoue l'algorithme de la page
-exercice en supposant qu'il s'applique aussi à l'évaluation. Cette hypothèse
-était fausse.
-
-**Correctif** : la résolution est sortie dans `lib/texte-a-trous.ts`
-(`resoudrePositionsTrous`) et appelée par les deux pages. Les indices sont en
-outre retirés des trous en évaluation, comme le font déjà les types
-« exercice » et « qcm » — ils donnaient la méthode le jour de l'évaluation et
-leur longueur disloquait la mise en page.
-
-Vérifié à l'écran : évaluation de la ceinture bleu clair de Phrases jouée de
-bout en bout, 18/18, dont les trois textes à trous (P22, P17, P47) avec les
-cinq menus a/à et et/est chacun au bon endroit.

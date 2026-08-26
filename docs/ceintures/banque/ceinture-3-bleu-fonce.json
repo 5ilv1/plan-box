@@ -2,6 +2,26 @@
   {
     "item_code": "P51",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Conjuguer un verbe en -IR",
+      "regle": "Les verbes qui se conjuguent comme finir prennent -is, -is, -it, -issons, -issez, -issent au présent.",
+      "procedure": [
+        "Enlève le -ir de l'infinitif : il te reste le début du verbe.",
+        "Repère la personne ; si le sujet est un groupe, dis s'il vaut il, elle, ils ou elles.",
+        "Ajoute -is, -is ou -it au singulier, et -issons, -issez ou -issent au pluriel."
+      ],
+      "exemples": [
+        {
+          "phrase": "Tu (nourrir) ___ les poissons de la classe.",
+          "demonstration": "nourrir → nourr-. Avec « tu », la terminaison est -is → j'écris « nourris »."
+        },
+        {
+          "phrase": "Les cerisiers du jardin (fleurir) ___ en avril.",
+          "demonstration": "fleurir → fleur-. « Les cerisiers » vaut « ils » : la terminaison est -issent → j'écris « fleurissent »."
+        }
+      ],
+      "piege": "Au pluriel, ces verbes gagnent la syllabe -iss- : on dit « nous bâtissons », jamais « nous bâtons »."
+    },
     "diagnostic": [
       {
         "question": "Dans « Les élèves ___ leur dessin. (finir) », quelle forme convient ?",
@@ -96,6 +116,26 @@
   {
     "item_code": "P18",
     "type": "classement",
+    "lecon": {
+      "titre": "La forme négative",
+      "regle": "À la forme négative, « ne » et « pas » encadrent le verbe, et « ne » devient « n' » devant une voyelle.",
+      "procedure": [
+        "Repère le verbe de la phrase.",
+        "Vérifie qu'il y a « ne » juste devant lui et « pas » juste derrière lui.",
+        "Si le verbe commence par une voyelle, « ne » doit s'écrire « n' »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Louna dort pas encore.",
+          "demonstration": "Verbe : « dort ». « pas » est bien là, mais rien ne l'encadre devant → il manque « ne »."
+        },
+        {
+          "phrase": "Yanis ne essuie pas le tableau.",
+          "demonstration": "Verbe : « essuie », il commence par une voyelle → « ne » doit devenir « n' » : « Yanis n'essuie pas le tableau. »"
+        }
+      ],
+      "piege": "« ne » tout seul ne suffit pas : sans « pas », la phrase n'est pas encore à la forme négative."
+    },
     "diagnostic": [
       {
         "question": "Quelle phrase est la forme négative de « Lila range sa trousse. » ?",
@@ -246,6 +286,26 @@
   {
     "item_code": "P48",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "son / sont, on / ont",
+      "regle": "« sont » et « ont » sont des verbes (étaient, avaient), tandis que « son » se remplace par « mon » et « on » par « quelqu'un ».",
+      "procedure": [
+        "Essaie de dire « étaient » : si ça marche, écris « sont ».",
+        "Essaie de dire « avaient » : si ça marche, écris « ont ».",
+        "Sinon, essaie « mon » : si ça marche, écris « son » ; essaie « quelqu'un » : si ça marche, écris « on »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Les rideaux du salon ___ tout neufs.",
+          "demonstration": "« Les rideaux étaient tout neufs » se dit → c'est le verbe être : j'écris « sont »."
+        },
+        {
+          "phrase": "Après la course, ___ boit de l'eau fraîche.",
+          "demonstration": "« avaient boit » ne se dit pas, mais « quelqu'un boit de l'eau » se dit → j'écris « on »."
+        }
+      ],
+      "piege": "« son » et « on » s'écrivent sans t : quand « étaient » et « avaient » sonnent faux, le t n'a rien à faire là."
+    },
     "diagnostic": [
       {
         "question": "Quel mot convient : « Malo range ___ cartable dans le casier. » ?",
@@ -340,6 +400,26 @@
   {
     "item_code": "P52",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Le -ent du pluriel",
+      "regle": "Quand le sujet peut être remplacé par « ils » ou « elles », un verbe en -ER prend -ent.",
+      "procedure": [
+        "Trouve le sujet du verbe.",
+        "Remplace-le par « il », « elle », « ils » ou « elles ».",
+        "Avec « ils » ou « elles », écris -ent ; avec « il » ou « elle », écris -e."
+      ],
+      "exemples": [
+        {
+          "phrase": "Les CM2 (trier) ___ les papiers du couloir.",
+          "demonstration": "Le sujet « Les CM2 » se remplace par « ils » → terminaison -ent : j'écris « trient », même si rien ne s'entend."
+        },
+        {
+          "phrase": "Le petit voisin de Malo (remuer) ___ la pâte à crêpes.",
+          "demonstration": "Le sujet « Le petit voisin » se remplace par « il » → terminaison -e : j'écris « remue »."
+        }
+      ],
+      "piege": "« nous » et « vous » désignent pourtant plusieurs personnes, et ne prennent jamais -ent : on écrit -ons et -ez."
+    },
     "diagnostic": [
       {
         "question": "Dans « Les grands cahiers rouges ___ sur l'étagère. (rester) », quelle forme convient ?",

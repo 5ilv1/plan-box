@@ -2,6 +2,26 @@
   {
     "item_code": "P13",
     "type": "classement",
+    "lecon": {
+      "titre": "Les trois types de phrases",
+      "regle": "Le signe de la fin dit le type de la phrase : le point pour déclarer, le point d'interrogation pour questionner, le point d'exclamation pour s'exclamer.",
+      "procedure": [
+        "Regarde le signe placé tout à la fin de la phrase.",
+        "Un point : déclarative. Un point d'interrogation : interrogative. Un point d'exclamation : exclamative.",
+        "Vérifie avec le début : « Est-ce que », « Où », « Comme », « Quelle » confirment ton choix."
+      ],
+      "exemples": [
+        {
+          "phrase": "La cloche sonne la fin de la récréation.",
+          "demonstration": "Elle finit par un point → déclarative : elle raconte simplement quelque chose."
+        },
+        {
+          "phrase": "Aimes-tu les histoires de pirates ?",
+          "demonstration": "Elle finit par un point d'interrogation → interrogative ; le début « Aimes-tu » confirme que c'est une question."
+        }
+      ],
+      "piege": "Le point d'exclamation ne sert pas qu'aux cris : « Comme… ! » et « Quelle… ! » sont exclamatives elles aussi."
+    },
     "diagnostic": [
       {
         "question": "Quel signe faut-il écrire à la fin de « Est-ce que tu connais Malo » ?",
@@ -150,6 +170,26 @@
   {
     "item_code": "P20",
     "type": "exercice",
+    "lecon": {
+      "titre": "Être et avoir au présent",
+      "regle": "Être et avoir sont irréguliers : leurs formes du présent s'apprennent par cœur.",
+      "procedure": [
+        "Regarde quel verbe on te demande : être ou avoir.",
+        "Repère la personne : je, tu, il/elle, nous, vous, ils/elles.",
+        "Récite la conjugaison depuis le début jusqu'à cette personne, puis écris la forme."
+      ],
+      "exemples": [
+        {
+          "phrase": "Ils (être) → ils …",
+          "demonstration": "Verbe être, 3e personne du pluriel. Je récite : je suis, tu es, il est, nous sommes, vous êtes, ils… → j'écris « sont »."
+        },
+        {
+          "phrase": "Nous (avoir) → nous …",
+          "demonstration": "Verbe avoir, 1re personne du pluriel. Je récite : j'ai, tu as, il a, nous… → j'écris « avons »."
+        }
+      ],
+      "piege": "Avec « tu », les deux verbes prennent un -s : tu es, tu as. Ne les confonds pas avec « est » et « a », qui vont avec il ou elle."
+    },
     "diagnostic": [
       {
         "question": "Quelle est la bonne forme du verbe être au présent avec « tu » ?",
@@ -288,6 +328,26 @@
   {
     "item_code": "P14",
     "type": "qcm",
+    "lecon": {
+      "titre": "Accorder le déterminant",
+      "regle": "Le déterminant prend le genre et le nombre du nom qu'il accompagne.",
+      "procedure": [
+        "Repère le nom placé juste après le trou.",
+        "Dis s'il est masculin ou féminin, singulier ou pluriel.",
+        "Garde le déterminant du même genre et du même nombre ; devant une voyelle, prends la forme qui s'y accroche."
+      ],
+      "exemples": [
+        {
+          "phrase": "Nour range ___ ciseaux dans le tiroir. (son / sa / ses)",
+          "demonstration": "« ciseaux » est masculin pluriel ; « son » et « sa » sont au singulier → je garde « ses »."
+        },
+        {
+          "phrase": "Le maître ouvre ___ armoire du fond. (le / la / l')",
+          "demonstration": "« armoire » est féminin singulier et commence par une voyelle : « la » devient « l' », comme « ce » devient « cet » devant « arbre »."
+        }
+      ],
+      "piege": "C'est le nom qui commande, pas le prénom du début : Louna est une fille, et pourtant on écrit « son cartable »."
+    },
     "diagnostic": [
       {
         "question": "Dans « Timéo attache ___ lacets avant de sortir », quel déterminant convient ?",
@@ -506,6 +566,26 @@
   {
     "item_code": "P15",
     "type": "qcm",
+    "lecon": {
+      "titre": "Choisir le bon mot outil",
+      "regle": "Chaque mot outil apporte un sens précis, et certains verbes imposent le leur.",
+      "procedure": [
+        "Demande-toi ce que dit la phrase : un lieu, un outil, un but, un manque ?",
+        "Essaie chaque mot proposé dans le trou et écoute lequel se dit vraiment.",
+        "Garde celui qui donne un sens correct."
+      ],
+      "exemples": [
+        {
+          "phrase": "Inès mélange la peinture ___ un pinceau.",
+          "demonstration": "C'est l'outil : « avec un pinceau » se dit ; « dans un pinceau » sonne faux → j'écris « avec »."
+        },
+        {
+          "phrase": "Sacha a peur ___ l'orage.",
+          "demonstration": "Ici, c'est le verbe qui décide : on dit toujours « avoir peur de » ; « peur avec », « peur pour » n'existent pas → j'écris « de »."
+        }
+      ],
+      "piege": "Quand deux mots semblent possibles, choisis celui qui va avec le verbe de la phrase, pas celui qui te vient en premier."
+    },
     "diagnostic": [
       {
         "question": "Dans « Nour est très fière ___ son travail », quel mot convient ?",
@@ -571,13 +651,13 @@
           {
             "question": "Adam pense souvent ___ ses vacances au bord de la mer.",
             "options": [
-              "sans",
+              "sur",
               "de",
               "avec",
-              "pour"
+              "à"
             ],
             "reponse_correcte": 3,
-            "explication": "« pour » annonce le but de l'action."
+            "explication": "On pense À quelque chose : après « pense », on emploie « à »."
           },
           {
             "question": "Fatou a recopié sa poésie ___ aucune erreur.",

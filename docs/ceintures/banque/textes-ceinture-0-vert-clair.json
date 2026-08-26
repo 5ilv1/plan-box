@@ -2,6 +2,26 @@
   {
     "item_code": "T11",
     "type": "classement",
+    "lecon": {
+      "titre": "Reconnaître une phrase bien écrite",
+      "regle": "Une phrase bien écrite commence par une majuscule et se termine par un point.",
+      "procedure": [
+        "Regarde le tout premier mot : a-t-il une majuscule ?",
+        "Regarde le tout dernier signe : y a-t-il un point ?",
+        "La seule réponse « non » te dit ce qui manque."
+      ],
+      "exemples": [
+        {
+          "phrase": "Adam colle son étiquette sur le cahier.",
+          "demonstration": "Premier mot « Adam » : majuscule. Dernier signe : un point. → la phrase est correcte."
+        },
+        {
+          "phrase": "le tableau du fond brille au soleil.",
+          "demonstration": "Le point est bien là, mais « le » n'a pas de majuscule. → il manque la majuscule."
+        }
+      ],
+      "piege": "Une phrase peut être juste à un bout et fausse à l'autre : vérifie le début ET la fin."
+    },
     "diagnostic": [
       {
         "question": "Laquelle de ces phrases est écrite correctement ?",
@@ -150,6 +170,26 @@
   {
     "item_code": "T13",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Copier sans erreur",
+      "regle": "Copier, c'est écrire exactement le même texte que le modèle, jusqu'au dernier signe.",
+      "procedure": [
+        "Lis une phrase entière, puis écris-la de mémoire.",
+        "Compare-la au modèle : mots, accents, majuscule, ponctuation.",
+        "Corrige tout de suite ce qui n'est pas pareil."
+      ],
+      "exemples": [
+        {
+          "phrase": "Modèle : « Jade enfile son bonnet rouge. »",
+          "demonstration": "J'écris la phrase, puis je compare : les cinq mots, la majuscule de « Jade », le point. Tout y est."
+        },
+        {
+          "phrase": "Modèle : « Le matin, Sacha révise sa poésie. »",
+          "demonstration": "J'ai écrit « Le matin Sacha révise sa poésie. ». Je compare : la virgule manque après « matin ». Je l'ajoute."
+        }
+      ],
+      "piege": "On relit souvent sa copie toute seule : compare-la au modèle, signe par signe."
+    },
     "diagnostic": [
       {
         "question": "Le modèle est : « Sacha porte un blouson trop grand. » Quelle copie est exacte ?",
@@ -206,6 +246,26 @@
   {
     "item_code": "T44",
     "type": "lecture",
+    "lecon": {
+      "titre": "Répondre avec les mots du texte",
+      "regle": "La réponse est déjà écrite dans le texte : on la recopie, on ne l'invente pas.",
+      "procedure": [
+        "Repère les mots importants de la question : qui ? quoi ? où ?",
+        "Retrouve ces mots dans le texte et relis la phrase.",
+        "Recopie le morceau qui répond à la question."
+      ],
+      "exemples": [
+        {
+          "phrase": "« Fatou range sa flûte dans un étui bleu. » Où la range-t-elle ?",
+          "demonstration": "« Où » et « range » me mènent à la phrase. Je recopie : « dans un étui bleu »."
+        },
+        {
+          "phrase": "« Le mercredi, Adam court au stade avec son cousin. » Avec qui court-il ?",
+          "demonstration": "« Le mercredi » répond à quand, pas à avec qui. Je recopie : « avec son cousin »."
+        }
+      ],
+      "piege": "Le premier morceau que tu vois n'est pas toujours le bon : vérifie qu'il répond à LA question."
+    },
     "diagnostic": [
       {
         "question": "On lit dans un texte : « Malo habite au-dessus de la pharmacie, en face de la poste. » Pour répondre à la question « Où habite Malo ? », quel morceau faut-il recopier ?",
@@ -380,6 +440,26 @@
   {
     "item_code": "T12",
     "type": "qcm",
+    "lecon": {
+      "titre": "Relier deux idées",
+      "regle": "« et » rassemble deux idées entières dans une seule phrase ; « et puis » montre que la seconde vient après.",
+      "procedure": [
+        "Vérifie que chaque idée dit qui agit et ce qu'il fait.",
+        "Place « et » ou « et puis » entre les deux idées, jamais au début.",
+        "Ne garde qu'une majuscule au début et un seul point à la fin."
+      ],
+      "exemples": [
+        {
+          "phrase": "Fatou pose son plateau. Fatou remplit son verre.",
+          "demonstration": "Deux idées complètes : « Fatou pose son plateau et elle remplit son verre. »"
+        },
+        {
+          "phrase": "Sacha éteint la lampe. Sacha ferme la porte.",
+          "demonstration": "La seconde action vient après : « Sacha éteint la lampe et puis il ferme la porte. »"
+        }
+      ],
+      "piege": "« et » peut relier deux mots (« du pain et du fromage ») : ici, il relie deux idées, chacune avec son verbe."
+    },
     "diagnostic": [
       {
         "question": "« Yanis lace ses chaussures et puis il rejoint ses camarades. » Que fait Yanis en premier ?",

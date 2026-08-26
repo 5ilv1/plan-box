@@ -2,6 +2,26 @@
   {
     "item_code": "M31",
     "type": "exercice",
+    "lecon": {
+      "titre": "Écrire un mot invariable",
+      "regle": "Un mot invariable s'écrit toujours pareil : accents et lettres muettes compris.",
+      "procedure": [
+        "Lis ce qui est entre parenthèses : cela te dit quel mot il faut.",
+        "Cherche les petits mots soudés à l'intérieur : chacun garde son orthographe.",
+        "Écris-le en entier, avec ses accents et sa lettre muette finale."
+      ],
+      "exemples": [
+        {
+          "phrase": "Nour a cherché sa gomme ___. (pendant une longue durée)",
+          "demonstration": "« pendant une longue durée » → longtemps : j'écris le g de « long », puis un s que l'on n'entend pas."
+        },
+        {
+          "phrase": "Le car démarrera ___. (dans peu de temps)",
+          "demonstration": "→ bientôt, soudé avec « bien » et « tôt » : l'accent circonflexe de « tôt » reste, et le t est muet."
+        }
+      ],
+      "piege": "Ce mot ne prend jamais de s en plus, même quand la phrase parle de plusieurs personnes."
+    },
     "diagnostic": [
       {
         "question": "Quel mot invariable est écrit correctement ?",
@@ -164,6 +184,26 @@
   {
     "item_code": "M25",
     "type": "classement",
+    "lecon": {
+      "titre": "Reconnaître une famille de mots",
+      "regle": "Deux mots sont de la même famille s'ils ont le même radical et s'ils parlent bien de la même chose.",
+      "procedure": [
+        "Repère la partie commune aux mots : c'est le radical.",
+        "Demande-toi si le mot parle vraiment de la même idée.",
+        "Si le sens n'a rien à voir, écarte-le : ce n'est pas la famille."
+      ],
+      "exemples": [
+        {
+          "phrase": "lait, laitier, laiterie",
+          "demonstration": "Le radical lait- revient dans les trois, et les trois parlent du lait : même famille."
+        },
+        {
+          "phrase": "chant, chanteur, chantier",
+          "demonstration": "On voit « chant » dans « chantier », mais un chantier est un endroit où l'on construit : le sens n'a rien à voir, il reste dehors."
+        }
+      ],
+      "piege": "Se ressembler ne suffit pas : c'est le sens qui décide."
+    },
     "diagnostic": [
       {
         "question": "Quel mot n'appartient PAS à la famille de « mont », la montagne ?",
@@ -314,6 +354,26 @@
   {
     "item_code": "M32",
     "type": "qcm",
+    "lecon": {
+      "titre": "Le sens d'un préfixe ou d'un suffixe",
+      "regle": "Le préfixe s'ajoute devant le radical, le suffixe derrière, et chacun apporte un sens que l'on retrouve dans toute une série de mots.",
+      "procedure": [
+        "Cache le morceau ajouté : il reste un mot que tu connais.",
+        "Compare le sens des deux mots : ce qui a changé, c'est ce qu'apporte le morceau.",
+        "Vérifie : ce sens doit convenir à tous les mots donnés."
+      ],
+      "exemples": [
+        {
+          "phrase": "déplier",
+          "demonstration": "Je cache dé-, il reste « plier ». Déplier, c'est le contraire de plier."
+        },
+        {
+          "phrase": "un séchoir, un rasoir",
+          "demonstration": "Je cache -oir : restent « sécher » et « raser ». Chaque fois, c'est l'objet qui sert à faire l'action."
+        }
+      ],
+      "piege": "Devant, c'est un préfixe ; derrière, un suffixe."
+    },
     "diagnostic": [
       {
         "question": "Dans le mot « décharger », que veut dire le préfixe « dé- » ?",
@@ -532,6 +592,26 @@
   {
     "item_code": "M33",
     "type": "exercice",
+    "lecon": {
+      "titre": "Fabriquer un mot de la famille",
+      "regle": "On fabrique un mot de la famille en collant un préfixe devant le mot de départ ou un suffixe derrière, en un seul mot.",
+      "procedure": [
+        "Repère le mot de départ et le morceau à ajouter.",
+        "Colle-les dans l'ordre, sans trait d'union ni espace.",
+        "Vérifie la soudure : devant un suffixe, le e final du mot de départ disparaît souvent."
+      ],
+      "exemples": [
+        {
+          "phrase": "le préfixe re- + *lire* → …",
+          "demonstration": "Le préfixe se pose devant, sans rien changer : relire."
+        },
+        {
+          "phrase": "*rouge* + le suffixe -eur → la …",
+          "demonstration": "Le e final de « rouge » tombe devant -eur : la rougeur."
+        }
+      ],
+      "piege": "Le mot de départ change parfois un peu : lettre qui double, e qui tombe, féminin de l'adjectif devant -ment."
+    },
     "diagnostic": [
       {
         "question": "Quel mot obtient-on en ajoutant le suffixe « -age » au verbe « arroser » ?",

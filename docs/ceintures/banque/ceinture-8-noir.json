@@ -2,6 +2,26 @@
   {
     "item_code": "P39",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Écrire le plus-que-parfait",
+      "regle": "Le plus-que-parfait s'écrit avec l'auxiliaire avoir ou être à l'imparfait, suivi du participe passé.",
+      "procedure": [
+        "Regarde l'auxiliaire déjà écrit : « avait » ou « était », à l'imparfait.",
+        "S'il vient de être, cherche le sujet et accorde le participe passé avec lui.",
+        "S'il vient de avoir, et qu'aucun complément d'objet n'est placé avant le verbe, le participe ne bouge pas."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le maître avait (relire) … toutes les copies.",
+          "demonstration": "L'auxiliaire vient de avoir et rien n'est placé avant le verbe : le participe ne bouge pas → « avait relu »."
+        },
+        {
+          "phrase": "Les étoiles étaient (apparaître) … derrière les nuages.",
+          "demonstration": "L'auxiliaire vient de être : j'accorde avec « les étoiles », féminin pluriel → « étaient apparues »."
+        }
+      ],
+      "piege": "Ici l'auxiliaire est à l'imparfait : avec l'auxiliaire au présent, ce serait du passé composé."
+    },
     "diagnostic": [
       {
         "question": "Laquelle de ces phrases est au plus-que-parfait ?",
@@ -96,6 +116,26 @@
   {
     "item_code": "P41",
     "type": "classement",
+    "lecon": {
+      "titre": "Trois familles de pronoms",
+      "regle": "Le pronom personnel désigne une personne, le possessif dit à qui la chose appartient, le démonstratif montre lequel parmi plusieurs.",
+      "procedure": [
+        "Cherche ce que le pronom remplace.",
+        "S'il dit à qui la chose appartient, il est possessif ; s'il montre lequel parmi plusieurs, il est démonstratif.",
+        "S'il désigne seulement qui parle, à qui l'on parle ou de qui l'on parle, il est personnel."
+      ],
+      "exemples": [
+        {
+          "phrase": "Ces raquettes sont *les nôtres*.",
+          "demonstration": "« les nôtres » remplace « nos raquettes » et dit à qui elles sont : pronom possessif."
+        },
+        {
+          "phrase": "*Ceux* qui ont fini peuvent sortir.",
+          "demonstration": "« Ceux » remplace « les élèves » et montre lesquels : c'est un pronom démonstratif."
+        }
+      ],
+      "piege": "Ce, mon, ses accompagnent un nom : ce sont des déterminants. Un pronom, lui, remplace le nom."
+    },
     "diagnostic": [
       {
         "question": "Dans « Ton dessin est plus grand que le mien. », qu'est-ce que « le mien » ?",
@@ -244,6 +284,26 @@
   {
     "item_code": "P43",
     "type": "analyse_phrase",
+    "lecon": {
+      "titre": "Trouver la fonction des groupes",
+      "regle": "La fonction d'un groupe vient des questions posées au verbe, pas de sa place.",
+      "procedure": [
+        "Trouve le verbe, puis le sujet avec « Qui est-ce qui… ? », même placé après.",
+        "Pose « quoi ? » ou « à qui ? » au verbe : COD ou COI ; après être, sembler ou devenir : attribut.",
+        "Un groupe qui se déplace ou se supprime est un complément circonstanciel : quand ? où ? comment ?"
+      ],
+      "exemples": [
+        {
+          "phrase": "Le soir, Fatou arrose ses plantes.",
+          "demonstration": "Qui est-ce qui arrose ? Fatou : sujet. Arrose quoi ? ses plantes : COD. « Le soir » : CC Temps."
+        },
+        {
+          "phrase": "Devant la grille attendaient les parents des CE1.",
+          "demonstration": "Qui est-ce qui attendait ? Les parents des CE1 : sujet, après le verbe. « Devant la grille » : CC Lieu."
+        }
+      ],
+      "piege": "Le groupe en tête de phrase n'est pas toujours le sujet."
+    },
     "diagnostic": [
       {
         "question": "Dans « Sous les arbres de la cour jouaient les élèves de CE2. », quel groupe est le sujet du verbe ?",
@@ -506,6 +566,26 @@
   {
     "item_code": "P44",
     "type": "classement",
+    "lecon": {
+      "titre": "Phrase simple ou complexe",
+      "regle": "Une phrase est simple quand elle contient un seul verbe conjugué, et complexe quand elle en contient plusieurs.",
+      "procedure": [
+        "Repère tous les verbes de la phrase.",
+        "Écarte ceux qui restent à l'infinitif : ils ne comptent pas.",
+        "Compte les verbes conjugués : un seul, la phrase est simple ; deux ou plus, elle est complexe."
+      ],
+      "exemples": [
+        {
+          "phrase": "Les CE2 doivent ranger le matériel.",
+          "demonstration": "« doivent » est conjugué, « ranger » reste à l'infinitif : un seul verbe conjugué, phrase simple."
+        },
+        {
+          "phrase": "Timéo ferme son cahier et il se lève.",
+          "demonstration": "« ferme » et « se lève » sont tous les deux conjugués : deux verbes conjugués, phrase complexe."
+        }
+      ],
+      "piege": "Une phrase longue n'est pas forcément complexe : on compte les verbes conjugués, pas les mots."
+    },
     "diagnostic": [
       {
         "question": "Combien de verbes conjugués y a-t-il dans « Quand Malo entre dans la classe, tout le monde se tait. » ?",
@@ -652,6 +732,26 @@
   {
     "item_code": "P46",
     "type": "classement",
+    "lecon": {
+      "titre": "Coordination ou subordination",
+      "regle": "Sept mots seulement coordonnent — mais, ou, et, donc, or, ni, car ; les autres mots de liaison subordonnent la partie qu'ils introduisent.",
+      "procedure": [
+        "Repère le mot de liaison entre les deux parties.",
+        "Cherche-le dans la liste des sept : s'il y figure, c'est une coordination.",
+        "S'il n'y figure pas, c'est une subordination : la partie qu'il introduit ne peut pas rester seule."
+      ],
+      "exemples": [
+        {
+          "phrase": "Jade veut peindre, *mais* la peinture a séché.",
+          "demonstration": "« Mais » est dans la liste : coordination. Les deux parties tiennent debout toutes seules."
+        },
+        {
+          "phrase": "Nous rangerons la salle *quand* tout le monde aura terminé.",
+          "demonstration": "« Quand » n'y est pas : subordination ; cette partie ne peut pas rester seule."
+        }
+      ],
+      "piege": "« Car » est dans la liste, « parce que » non : ils disent pourtant la même chose."
+    },
     "diagnostic": [
       {
         "question": "Dans « Louna range son carnet parce que la cloche a sonné. », qu'est-ce que « parce que » ?",

@@ -29,9 +29,10 @@ create table if not exists ceinture_item (
 );
 create index if not exists idx_ceinture_item_dom on ceinture_item(domaine_code, ceinture_idx, ordre);
 
--- La leçon appartient à l'ITEM, pas à la variante d'exercice : elle doit
--- survivre au passage en remédiation, qui change l'entraînement mais pas la
--- règle à apprendre. Format : docs/ceintures/SPEC-LECONS.md.
+-- Leçon courte affichée à l'élève AVANT son exercice d'entraînement.
+-- { titre, regle, procedure[], exemples[{phrase, demonstration}], piege }
+-- Elle appartient à l'item, pas à la variante : elle survit au passage en
+-- remédiation. Voir docs/ceintures/SPEC-LECONS.md.
 alter table ceinture_item add column if not exists lecon jsonb;
 
 -- Une ceinture = un chapitre existant.
@@ -76,24 +77,6 @@ create table if not exists ceinture_banque (
 );
 create index if not exists idx_cbanque_item on ceinture_banque(item_code, usage, valide_par_enseignant);
 
--- Remédiation : la variante d'entraînement servie à UN élève sur UN exercice.
--- exercice.contenu est partagé par toute la classe ; sans cette table, basculer
--- un élève sur la variante 2 la basculerait pour tout le monde.
-create table if not exists ceinture_variante (
-  id           uuid primary key default gen_random_uuid(),
-  eleve_id     uuid,
-  rb_eleve_id  int,
-  exercice_id  uuid not null references exercice(id) on delete cascade,
-  variante     int  not null default 2 check (variante between 1 and 2),
-  origine_evaluation_id uuid references evaluation_resultat(id) on delete set null,
-  created_at   timestamptz not null default now(),
-  constraint ceinture_variante_eleve_check
-    check (eleve_id is not null or rb_eleve_id is not null)
-);
-create unique index if not exists idx_cvar_pb on ceinture_variante(eleve_id, exercice_id) where eleve_id is not null;
-create unique index if not exists idx_cvar_rb on ceinture_variante(rb_eleve_id, exercice_id) where rb_eleve_id is not null;
-create index if not exists idx_cvar_origine on ceinture_variante(origine_evaluation_id);
-
 -- ───────────────── Seed du référentiel français (3 domaines, 112 items) ─────
 -- Ordre et type_exercice repris des fichiers de banque, qui font foi :
 -- plusieurs items ont changé de type par rapport au référentiel PIDAPI,
@@ -110,7 +93,7 @@ insert into ceinture_item (code, domaine_code, ceinture_idx, libelle, niveau_cib
   type_exercice, nb_questions_diagnostic, validation, rattachement, statut_source, ordre) values
   ('P11', 'PHRA', 0, 'Je commence ma phrase par une majuscule et je la termine par un point', 'CE2', 'classement', 2, 'auto', 'S1 · Grammaire', 'Reformulé', 1),
   ('P10', 'PHRA', 0, 'Je situe l''action dans le temps : passé, présent, futur', 'CE2', 'qcm', 2, 'auto', 'S1 · Grammaire', 'Reformulé', 2),
-  ('P16', 'PHRA', 0, 'J''identifie le verbe : le mot qui change quand le moment change', 'CE2', 'exercice', 2, 'auto', 'S1 · Grammaire', 'Reformulé', 3),
+  ('P16', 'PHRA', 0, 'J''identifie le verbe : je l''encadre par « ne … pas »', 'CE2', 'exercice', 2, 'auto', 'S1 · Grammaire', 'Reformulé', 3),
   ('P12', 'PHRA', 0, 'Je mets un « s » au pluriel', 'CE2', 'exercice', 2, 'auto', '—', 'PIDAPI', 4),
   ('P13', 'PHRA', 1, 'Je distingue et j''écris les 3 types de phrases : déclarative (.), interrogative (?), exclamative (!)', 'CE2', 'classement', 2, 'auto', 'S2 · Types de phrases', 'Reformulé', 5),
   ('P20', 'PHRA', 1, 'Je conjugue être et avoir au présent', 'CE2', 'exercice', 2, 'auto', 'S2 · Conjugaison', 'Reformulé', 6),

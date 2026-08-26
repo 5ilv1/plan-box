@@ -2,6 +2,26 @@
   {
     "item_code": "T18",
     "type": "qcm",
+    "lecon": {
+      "titre": "Remplacer un verbe passe-partout",
+      "regle": "« faire », « dire » et « être » ne disent presque rien : un verbe précis dit à lui seul le vrai geste.",
+      "procedure": [
+        "Repère le verbe passe-partout : faire, dire ou être.",
+        "Regarde le reste de la phrase : quel geste se passe vraiment ?",
+        "Choisis le verbe qui dit ce geste-là, et lui seul."
+      ],
+      "exemples": [
+        {
+          "phrase": "Adam fait une photo de toute la classe.",
+          "demonstration": "Le geste réel : il appuie sur le déclencheur. « Adam prend une photo de toute la classe. »"
+        },
+        {
+          "phrase": "— Merci pour ton aide, dit Louna.",
+          "demonstration": "Louna ne demande rien et n'ordonne rien : elle remercie. « — Merci pour ton aide, remercie Louna. »"
+        }
+      ],
+      "piege": "Le verbe précis change avec la phrase : « faire » ne se remplace pas toujours par le même mot."
+    },
     "diagnostic": [
       {
         "question": "Dans « Timéo fait une cabane avec des branches », par quel verbe précis peut-on remplacer « fait » ?",
@@ -220,6 +240,26 @@
   {
     "item_code": "T19",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire une phrase courte et complète",
+      "regle": "Une phrase complète a un sujet et un verbe conjugué, une majuscule et un point.",
+      "procedure": [
+        "Écris qui fait l'action, puis le verbe conjugué qui dit ce qu'il fait.",
+        "Arrête-toi avant dix mots et pose ton point.",
+        "Si tu as écrit deux « et », coupe : tu avais deux phrases."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le grand cartable rouge de Jade.",
+          "demonstration": "Aucun verbe conjugué. J'écris : « Le cartable de Jade tombe du banc. »"
+        },
+        {
+          "phrase": "Inès remplit son verre et elle coupe son pain et elle s'assoit.",
+          "demonstration": "Deux « et » : je coupe. « Inès remplit son verre. Elle coupe son pain et elle s'assoit. »"
+        }
+      ],
+      "piege": "Une suite de mots peut avoir majuscule et point sans être une phrase : le verbe conjugué manque."
+    },
     "diagnostic": [
       {
         "question": "« Dans la cour, tout près du grand marronnier. » Pourquoi cette suite de mots n'est-elle pas une phrase ?",
@@ -276,6 +316,26 @@
   {
     "item_code": "T46",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Organiser un portrait physique",
+      "regle": "Un portrait physique dit seulement ce qu'on voit, et il suit toujours le même chemin : visage, cheveux, yeux, vêtements.",
+      "procedure": [
+        "Écris une phrase par élément, dans cet ordre exact.",
+        "Ajoute au moins un adjectif à chaque phrase.",
+        "Relis : tu ne dois rien avoir dit de son caractère ni de ses goûts."
+      ],
+      "exemples": [
+        {
+          "phrase": "Son visage rond garde deux fossettes.",
+          "demonstration": "Première phrase : le visage. L'adjectif « rond » le précise, et « garde » n'est ni « être » ni « avoir »."
+        },
+        {
+          "phrase": "Ses baskets usées grincent sur le carrelage.",
+          "demonstration": "Dernière phrase : les vêtements. Un seul élément, précisé par l'adjectif « usées »."
+        }
+      ],
+      "piege": "« Il est gentil » n'a pas sa place ici : cela ne se voit pas, c'est le caractère."
+    },
     "diagnostic": [
       {
         "question": "Quelle phrase décrit l'apparence physique de Louna ?",
@@ -333,6 +393,26 @@
   {
     "item_code": "T21",
     "type": "qcm",
+    "lecon": {
+      "titre": "Relire avec ma grille ①",
+      "regle": "En relisant une phrase, tu vérifies trois choses : la majuscule du début, la ponctuation de la fin, et le sens.",
+      "procedure": [
+        "Regarde le premier mot : a-t-il une majuscule ?",
+        "Regarde la fin : le point, le ? ou le ! est-il là ?",
+        "Relis la phrase entière : veut-elle dire quelque chose, sans mot manquant ni déplacé ?"
+      ],
+      "exemples": [
+        {
+          "phrase": "nour recolle l'étiquette de son cahier",
+          "demonstration": "Pas de majuscule, pas de point ; le sens est bon. Je corrige les deux bouts."
+        },
+        {
+          "phrase": "Timéo enfile ses chaussons pour sortir sous la pluie.",
+          "demonstration": "Majuscule et point sont là, mais la phrase ne veut rien dire : on sort en bottes, pas en chaussons."
+        }
+      ],
+      "piege": "Une phrase peut être bien ponctuée et ne rien vouloir dire : relis-la jusqu'au bout."
+    },
     "diagnostic": [
       {
         "question": "Quelle version de cette phrase est correctement écrite ?",

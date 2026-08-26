@@ -2,6 +2,26 @@
   {
     "item_code": "T48",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Enrichir avec adjectifs et comparaison",
+      "regle": "Un adjectif précise ce que tu décris ; une comparaison avec « comme » le rapproche d'autre chose pour qu'on l'imagine.",
+      "procedure": [
+        "Écris ce que tu décris : les cheveux, les yeux, la voix, la démarche.",
+        "Ajoute un ou deux adjectifs qui le précisent.",
+        "Termine par « comme » suivi d'une chose que ton lecteur connaît bien."
+      ],
+      "exemples": [
+        {
+          "phrase": "Ses cheveux sont bouclés.",
+          "demonstration": "J'ajoute des adjectifs, puis la comparaison : « Ses cheveux noirs et serrés bouclent comme des copeaux de bois. »"
+        },
+        {
+          "phrase": "Il marche vite.",
+          "demonstration": "Cela ne montre rien. « Il traverse la cour à petits pas pressés, comme un moineau sur le trottoir. »"
+        }
+      ],
+      "piege": "Ne reprends pas le même adjectif d'une phrase à l'autre : cherches-en un autre, plus précis."
+    },
     "diagnostic": [
       {
         "question": "Dans laquelle de ces phrases trouve-t-on une comparaison ?",
@@ -58,6 +78,26 @@
   {
     "item_code": "T26",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Présent ou passé composé ?",
+      "regle": "C'est le mot qui indique le moment qui commande le temps du verbe.",
+      "procedure": [
+        "Cherche le mot qui donne le moment.",
+        "« En ce moment », « Maintenant », « À présent » : la scène se passe sous nos yeux, écris le présent.",
+        "« Hier », « La semaine dernière » : écris le passé composé ; si « et » relie ton verbe à un verbe qui porte déjà son auxiliaire, écris seulement le participe passé."
+      ],
+      "exemples": [
+        {
+          "phrase": "Maintenant, Sacha (choisir) ___ sa place au premier rang.",
+          "demonstration": "« Maintenant » : la scène se passe sous nos yeux → présent, « choisit »."
+        },
+        {
+          "phrase": "Hier, Jade a ouvert son coffret et (sortir) ___ ses crayons.",
+          "demonstration": "« Hier » : passé composé. « a ouvert » porte déjà l'auxiliaire : j'écris « sorti »."
+        }
+      ],
+      "piege": "Après « et », on ne répète pas « a » : on écrit le participe passé."
+    },
     "diagnostic": [
       {
         "question": "Dans « Hier, Timéo a ___ un grand cri dans le couloir. (entendre) », quelle forme convient ?",
@@ -152,6 +192,26 @@
   {
     "item_code": "T28",
     "type": "qcm",
+    "lecon": {
+      "titre": "Situer avec un connecteur",
+      "regle": "Un connecteur de lieu répond à la question « où ? » ; un connecteur de temps répond à la question « quand ? ».",
+      "procedure": [
+        "Pose la question au groupe placé en tête de phrase : où ? ou quand ?",
+        "Pour en choisir un, relis ce qui vient d'être raconté.",
+        "Vérifie qu'il va avec le reste de la phrase."
+      ],
+      "exemples": [
+        {
+          "phrase": "Sous le pont, une péniche attend l'écluse.",
+          "demonstration": "Je pose la question : où ? → « sous le pont ». Connecteur de lieu."
+        },
+        {
+          "phrase": "Malo range ses affaires. ___, il éteint la lampe de sa chambre.",
+          "demonstration": "Je pose la question : quand ? « Ensuite » situe dans le temps ; « Dehors » dirait un endroit."
+        }
+      ],
+      "piege": "Il ne suffit pas que le connecteur dise « où » : ce doit être l'endroit où le personnage se trouve."
+    },
     "diagnostic": [
       {
         "question": "Dans « Plus loin, un chemin monte vers la forêt. », que nous dit le groupe « Plus loin » ?",
@@ -370,6 +430,26 @@
   {
     "item_code": "T29",
     "type": "qcm",
+    "lecon": {
+      "titre": "Relire avec ma grille ③",
+      "regle": "En relisant, tu vérifies trois choses : le temps, les connecteurs répétés, les mots répétés.",
+      "procedure": [
+        "Repère le temps de la première phrase : chaque verbe doit y rester.",
+        "Remplace les connecteurs qui reviennent par « puis », « alors », « ensuite ».",
+        "Remplace les mots répétés par un pronom ou un autre mot."
+      ],
+      "exemples": [
+        {
+          "phrase": "« Yanis a poussé la grille. Il traverse le jardin. »",
+          "demonstration": "« traverse » est au présent : il casse le temps du récit. J'écris « Il a traversé le jardin. »"
+        },
+        {
+          "phrase": "« Puis Sacha a rangé. Puis il a balayé. Puis il a éteint. »",
+          "demonstration": "Trois fois « Puis ». J'en remplace deux : « Ensuite il a balayé, et pour finir il a éteint. »"
+        }
+      ],
+      "piege": "Une phrase peut être juste et dire deux fois la même chose : « descendre en bas »."
+    },
     "diagnostic": [
       {
         "question": "Tu relis : « Inès a rangé la salle. Ensuite elle a éteint les lumières. Ensuite elle a baissé les stores. Ensuite elle est partie. » Qu'est-ce que ta grille de relecture signale ?",

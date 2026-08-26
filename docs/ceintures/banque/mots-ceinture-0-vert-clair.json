@@ -2,6 +2,26 @@
   {
     "item_code": "M10",
     "type": "classement",
+    "lecon": {
+      "titre": "Ranger dans l'ordre alphabétique",
+      "regle": "Pour comparer deux mots, on regarde d'abord leur 1re lettre ; si elle est la même, on regarde la 2e.",
+      "procedure": [
+        "Compare la 1re lettre des deux mots dans l'alphabet.",
+        "Celle qui vient avant dans l'alphabet donne le mot qui se range en premier.",
+        "Si les deux 1res lettres sont identiques, recommence avec la 2e lettre."
+      ],
+      "exemples": [
+        {
+          "phrase": "« bateau » ou « soleil » ?",
+          "demonstration": "b vient avant s dans l'alphabet : « bateau » se range avant « soleil »."
+        },
+        {
+          "phrase": "« panier » ou « pluie » ?",
+          "demonstration": "Même 1re lettre p : on compare la 2e, a vient avant l, donc « panier » se range avant « pluie »."
+        }
+      ],
+      "piege": "La longueur ne compte pas : « riz » se range après « radis », parce que a vient avant i."
+    },
     "diagnostic": [
       {
         "question": "Dans le dictionnaire, lequel de ces mots se trouve tout à la fin ?",
@@ -150,6 +170,26 @@
   {
     "item_code": "M12",
     "type": "qcm",
+    "lecon": {
+      "titre": "Choisir le bon déterminant",
+      "regle": "Le déterminant se place devant le nom et s'accorde avec lui : masculin ou féminin, singulier ou pluriel.",
+      "procedure": [
+        "Trouve le nom placé juste après le trou.",
+        "Demande-toi s'il est masculin ou féminin, singulier ou pluriel.",
+        "Choisis le déterminant qui va avec : le, un (masculin singulier) ; la, une (féminin singulier) ; les, des (pluriel)."
+      ],
+      "exemples": [
+        {
+          "phrase": "___ ballon roule sous le banc.",
+          "demonstration": "On dit « un ballon » : le nom est masculin singulier, donc « Le ballon roule sous le banc »."
+        },
+        {
+          "phrase": "Rosalie colle ___ affiches dans le couloir.",
+          "demonstration": "« affiches » se termine par -s : le nom est au pluriel, il faut un déterminant pluriel, « les » ou « des »."
+        }
+      ],
+      "piege": "Devant une voyelle, le féminin ne change pas : on écrit « une histoire », jamais « un histoire »."
+    },
     "diagnostic": [
       {
         "question": "Quel déterminant convient : « ___ oiseaux chantent dans la cour. » ?",
@@ -368,6 +408,26 @@
   {
     "item_code": "M13",
     "type": "qcm",
+    "lecon": {
+      "titre": "Choisir l'adjectif qui décrit",
+      "regle": "L'adjectif est le mot qui dit comment est une personne ou une chose.",
+      "procedure": [
+        "Lis ce que fait le personnage ou ce qu'il a.",
+        "Redis-le dans ta tête : « alors, il est… ».",
+        "Choisis l'adjectif qui dit exactement cela, et écarte ceux qui parlent d'autre chose."
+      ],
+      "exemples": [
+        {
+          "phrase": "Adam monte tout en haut du toboggan sans hésiter.",
+          "demonstration": "Il n'a pas peur : Adam est courageux. « prudent » dirait le contraire."
+        },
+        {
+          "phrase": "Inès mesure moins que tous ses camarades.",
+          "demonstration": "Mesurer moins que les autres, c'est être petite. « mince » parlerait de sa largeur."
+        }
+      ],
+      "piege": "Plusieurs adjectifs peuvent convenir à une personne : garde celui qui répond à ce que dit la phrase."
+    },
     "diagnostic": [
       {
         "question": "Louna prête ses affaires et aide ses camarades. Quel adjectif la décrit le mieux ?",
@@ -586,6 +646,26 @@
   {
     "item_code": "M42",
     "type": "classement",
+    "lecon": {
+      "titre": "Apparence ou caractère",
+      "regle": "Un mot d'apparence dit ce que l'on voit d'une personne ; un mot de caractère dit comment elle se comporte.",
+      "procedure": [
+        "Lis le mot qui décrit le personnage.",
+        "Demande-toi : est-ce que cela se verrait sur une photo ?",
+        "Si oui, c'est l'apparence ; si on ne le devine qu'en la regardant vivre, c'est le caractère."
+      ],
+      "exemples": [
+        {
+          "phrase": "Timéo est petit.",
+          "demonstration": "Sur une photo, on voit tout de suite sa taille : c'est l'apparence."
+        },
+        {
+          "phrase": "Adam est bavard.",
+          "demonstration": "Une photo ne dit pas qu'il parle beaucoup ; il faut l'écouter en classe : c'est le caractère."
+        }
+      ],
+      "piege": "Un mot de caractère ne se voit pas : on le devine à ce que la personne fait et dit."
+    },
     "diagnostic": [
       {
         "question": "Lequel de ces mots décrit l'apparence de quelqu'un ?",

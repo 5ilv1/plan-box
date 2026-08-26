@@ -2,6 +2,26 @@
   {
     "item_code": "T14",
     "type": "lecture",
+    "lecon": {
+      "titre": "Titre, paragraphes et sens",
+      "regle": "Le titre annonce ce dont parle le texte entier ; chaque paragraphe raconte une idée différente.",
+      "procedure": [
+        "Repère les paragraphes : le texte en ouvre un nouveau chaque fois qu'il change d'idée.",
+        "Résume chaque paragraphe en trois mots.",
+        "Choisis le titre qui va avec tout le texte."
+      ],
+      "exemples": [
+        {
+          "phrase": "Deux paragraphes : le potager de l'école, puis la récolte.",
+          "demonstration": "Le titre « Le potager de l'école » va avec les deux paragraphes, pas seulement avec un."
+        },
+        {
+          "phrase": "Un texte : Sacha apprivoise un chat perdu, un jour de grande pluie.",
+          "demonstration": "« La pluie de mardi » est vrai, mais ne dit qu'un détail. Le titre : « Le chat de Sacha »."
+        }
+      ],
+      "piege": "Un titre qui ne reprend qu'un détail, même exact, n'est pas le bon titre."
+    },
     "diagnostic": [
       {
         "question": "Un texte raconte comment Jade a appris à faire du vélo avec son oncle. Quel titre lui convient le mieux ?",
@@ -176,6 +196,26 @@
   {
     "item_code": "T45",
     "type": "lecture",
+    "lecon": {
+      "titre": "Apparence ou caractère ?",
+      "regle": "L'apparence se voit ; le caractère dit comment le personnage est d'habitude, à l'intérieur.",
+      "procedure": [
+        "Pourrais-tu le voir sur une photo ? Oui → l'apparence : cheveux, yeux, vêtements.",
+        "Sinon, la phrase dit-elle comment il est d'habitude ? Oui → le caractère.",
+        "Si elle raconte seulement ce qu'il fait un jour, ce n'est ni l'un ni l'autre."
+      ],
+      "exemples": [
+        {
+          "phrase": "Sacha a les cheveux frisés et un pull trop court.",
+          "demonstration": "Sur une photo, je verrais les cheveux et le pull → l'apparence."
+        },
+        {
+          "phrase": "Le samedi, Jade va à la piscine. Elle encourage toujours les plus jeunes.",
+          "demonstration": "Aller à la piscine un samedi : ni l'un ni l'autre. « Encourage toujours » dit le caractère."
+        }
+      ],
+      "piege": "Une action ne montre le caractère que si elle se répète : « toujours », « jamais »."
+    },
     "diagnostic": [
       {
         "question": "Dans « Malo a des taches de rousseur sur le nez. », qu'apprend-on sur Malo ?",
@@ -350,6 +390,26 @@
   {
     "item_code": "T15",
     "type": "qcm",
+    "lecon": {
+      "titre": "Découper un texte en phrases",
+      "regle": "Une phrase s'arrête quand l'idée est entière : on met un point, et la phrase suivante prend une majuscule.",
+      "procedure": [
+        "Repère chaque idée complète : on sait qui agit et ce qu'il fait.",
+        "Ferme chaque idée complète par un point.",
+        "Mets une majuscule au premier mot de chaque phrase, même au milieu du texte."
+      ],
+      "exemples": [
+        {
+          "phrase": "la nuit tombe les lampadaires s'allument",
+          "demonstration": "Deux idées complètes. J'écris : « La nuit tombe. Les lampadaires s'allument. »"
+        },
+        {
+          "phrase": "Le chat saute. Sur le rebord de la fenêtre.",
+          "demonstration": "« Sur le rebord » n'est pas une idée complète : j'écris « Le chat saute sur le rebord de la fenêtre. »"
+        }
+      ],
+      "piege": "Après un point, on repart toujours avec une majuscule."
+    },
     "diagnostic": [
       {
         "question": "À quoi reconnaît-on la fin d'une phrase quand on écrit un texte ?",
@@ -568,6 +628,26 @@
   {
     "item_code": "T16",
     "type": "qcm",
+    "lecon": {
+      "titre": "Proposer un choix",
+      "regle": "« ou » et « ou bien » proposent deux possibilités dont on ne garde qu'une, alors que « et » garde les deux.",
+      "procedure": [
+        "Relis la phrase : garde-t-on les deux, ou une seule ?",
+        "Une seule → écris « ou » ou « ou bien » entre les deux possibilités.",
+        "Les deux → écris « et »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Nour n'a le temps de regarder qu'un seul film ce soir.",
+          "demonstration": "On n'en garde qu'un : « Nour regarde le film de pirates ou le dessin animé. »"
+        },
+        {
+          "phrase": "Yanis emporte sa gourde et sa casquette au stade.",
+          "demonstration": "Les deux partent : on ajoute, donc « et ». Avec « ou », on croirait qu'il doit en abandonner une."
+        }
+      ],
+      "piege": "« ou bien » veut dire la même chose que « ou » : il se place entre les deux possibilités, jamais au début."
+    },
     "diagnostic": [
       {
         "question": "« Tu emportes ton pull ou ta casquette ? » demande la maîtresse à Fatou. Combien d'affaires Fatou va-t-elle emporter ?",

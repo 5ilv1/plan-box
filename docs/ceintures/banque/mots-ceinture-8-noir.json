@@ -2,6 +2,26 @@
   {
     "item_code": "M40",
     "type": "qcm",
+    "lecon": {
+      "titre": "Le sens d'un préfixe savant",
+      "regle": "Les mots savants commencent souvent par un préfixe venu du grec ou du latin, que l'on retrouve avec le même sens dans plusieurs mots.",
+      "procedure": [
+        "Repère le morceau qui se répète au début des mots donnés.",
+        "Cherche ce que ces mots ont en commun dans leur sens.",
+        "Ce point commun, c'est le sens du préfixe."
+      ],
+      "exemples": [
+        {
+          "phrase": "un tricycle, un triangle",
+          "demonstration": "Le morceau commun est tri- : le tricycle a trois roues, le triangle trois côtés → tri- veut dire « trois »."
+        },
+        {
+          "phrase": "un parasol, un parapluie",
+          "demonstration": "Le morceau commun est para- : l'un protège du soleil, l'autre de la pluie → para- veut dire « qui protège de »."
+        }
+      ],
+      "piege": "Compare bien tous les mots donnés : c'est leur point commun qui donne le sens."
+    },
     "diagnostic": [
       {
         "question": "Dans monologue et monocycle, que veut dire le préfixe mono- ?",
@@ -220,6 +240,26 @@
   {
     "item_code": "M41",
     "type": "exercice",
+    "lecon": {
+      "titre": "Assembler des racines savantes",
+      "regle": "Un mot savant se fabrique en collant deux racines : le sens du mot est la somme de leurs deux sens.",
+      "procedure": [
+        "Lis les deux morceaux et ce qu'ils veulent dire.",
+        "Colle-les dans l'ordre donné, en un seul mot, sans trait d'union.",
+        "Vérifie chaque morceau : lettres doubles, h muet, accents."
+      ],
+      "exemples": [
+        {
+          "phrase": "*uni* (« un seul ») + *-forme* → …",
+          "demonstration": "Un vêtement de forme unique pour tous : uniforme, en un seul mot."
+        },
+        {
+          "phrase": "*rhino* (« nez ») + *-céros* (« corne ») → …",
+          "demonstration": "L'animal qui porte une corne sur le nez : rhinocéros, avec le h muet et l'accent aigu du é."
+        }
+      ],
+      "piege": "Le sens te donne le mot, mais c'est l'orthographe des racines qui fait la réponse juste."
+    },
     "diagnostic": [
       {
         "question": "Dans dictionnaire, dictée et prédiction, on retrouve la racine latine dic-. Que veut-elle dire ?",
@@ -358,6 +398,25 @@
   {
     "item_code": "M45",
     "type": "qcm",
+    "lecon": {
+      "titre": "Choisir le mot juste",
+      "regle": "Deux synonymes ne disent jamais exactement la même chose : c'est la phrase qui décide lequel convient.",
+      "procedure": [
+        "Relis la phrase et repère les précisions : durée, quantité, situation.",
+        "Essaie chaque synonyme à la place du trou.",
+        "Élimine ceux qui sont trop forts, trop faibles ou qui ne vont pas avec la situation."
+      ],
+      "exemples": [
+        {
+          "phrase": "Synonymes de manger : grignoter, déguster, dévorer. « Yanis ___ son sandwich en deux minutes. »",
+          "demonstration": "En deux minutes : il l'a dévoré. Grignoter serait bien trop faible."
+        },
+        {
+          "phrase": "Synonymes de trouver : découvrir, dénicher, retrouver. « Timéo ___ enfin ses lunettes, tombées sous le lit. »",
+          "demonstration": "Il les avait déjà : on retrouve ce que l'on a perdu. « découvrir » dirait qu'il ne les connaissait pas."
+        }
+      ]
+    },
     "diagnostic": [
       {
         "question": "Le dictionnaire des synonymes donne pour regarder : observer, apercevoir, dévisager, surveiller. Quel mot convient : « De la fenêtre du car, Inès ___ un troupeau de moutons pendant une seconde. » ?",

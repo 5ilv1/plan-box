@@ -2,6 +2,26 @@
   {
     "item_code": "P23",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Aller et faire au présent",
+      "regle": "Aller et faire sont irréguliers : leurs formes du présent s'apprennent par cœur, terminaison et début compris.",
+      "procedure": [
+        "Repère le verbe demandé : aller ou faire.",
+        "Trouve la personne ; si le sujet est un groupe, dis s'il vaut il, elle, ils ou elles.",
+        "Récite la conjugaison entière, puis écris la forme de cette personne."
+      ],
+      "exemples": [
+        {
+          "phrase": "Tu (aller) ___ au marché avec ton oncle.",
+          "demonstration": "Verbe aller, avec « tu ». Je récite : je vais, tu… → j'écris « vas »."
+        },
+        {
+          "phrase": "Mon frère (faire) ___ ses devoirs à la cuisine.",
+          "demonstration": "Verbe faire ; « Mon frère » vaut « il ». Je récite : je fais, tu fais, il… → j'écris « fait »."
+        }
+      ],
+      "piege": "« allent » et « faisent » n'existent pas : au pluriel, le verbe change complètement de forme."
+    },
     "diagnostic": [
       {
         "question": "Dans « Les CM2 ___ à la piscine le mardi. (aller) », quelle forme convient ?",
@@ -96,6 +116,26 @@
   {
     "item_code": "P19",
     "type": "exercice",
+    "lecon": {
+      "titre": "Accorder l'adjectif au nom",
+      "regle": "L'adjectif prend le genre et le nombre du nom qu'il accompagne.",
+      "procedure": [
+        "Regarde le nom : masculin ou féminin ? singulier ou pluriel ?",
+        "Au féminin, l'adjectif se termine le plus souvent par -e ; au pluriel, il prend un -s.",
+        "Relis à voix basse : certains adjectifs changent davantage au féminin (heureux → heureuse)."
+      ],
+      "exemples": [
+        {
+          "phrase": "un pull (chaud) → un pull …",
+          "demonstration": "« pull » est masculin singulier : l'adjectif ne bouge pas → j'écris « chaud »."
+        },
+        {
+          "phrase": "des tresses (épais) → des tresses …",
+          "demonstration": "« tresses » est féminin pluriel : au féminin, épais devient « épaisse » ; j'ajoute ensuite le -s du pluriel → j'écris « épaisses »."
+        }
+      ],
+      "piege": "Un adjectif qui se termine déjà par -s ou -x ne bouge pas au masculin pluriel : « des cheveux roux »."
+    },
     "diagnostic": [
       {
         "question": "Comment écrit-on l'adjectif dans « des chapeaux (pointu) » ?",
@@ -234,6 +274,26 @@
   {
     "item_code": "P26",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Venir et prendre au présent",
+      "regle": "Venir et prendre sont irréguliers : au pluriel, le début du verbe change en même temps que la terminaison.",
+      "procedure": [
+        "Repère le verbe demandé : venir ou prendre.",
+        "Trouve la personne ; si le sujet est un groupe, dis s'il vaut il, elle, ils ou elles.",
+        "Récite la conjugaison entière, puis écris la forme de cette personne."
+      ],
+      "exemples": [
+        {
+          "phrase": "Tu (prendre) ___ ton parapluie.",
+          "demonstration": "Verbe prendre, avec « tu ». Je récite : je prends, tu… → j'écris « prends »."
+        },
+        {
+          "phrase": "Les cousines de Jade (venir) ___ dimanche.",
+          "demonstration": "« Les cousines » vaut « elles ». Je récite : je viens, tu viens, il vient, nous venons, vous venez, elles… → j'écris « viennent », avec deux n."
+        }
+      ],
+      "piege": "Le début du verbe bouge : « nous venons » mais « elles viennent » ; « ils venent » et « ils prendent » n'existent pas."
+    },
     "diagnostic": [
       {
         "question": "Dans « Les élèves ___ leur cahier. (prendre) », quelle forme convient ?",
@@ -328,6 +388,26 @@
   {
     "item_code": "P27",
     "type": "analyse_phrase",
+    "lecon": {
+      "titre": "COD et COI",
+      "regle": "Le complément qui répond à « quoi ? » après le verbe est un COD ; celui dont la réponse commence par « à » ou « de » est un COI.",
+      "procedure": [
+        "Trouve le verbe, puis le sujet (« Qui est-ce qui… ? »).",
+        "Pose « quoi ? » ou « qui ? » juste après le verbe : si la réponse vient sans petit mot devant, c'est le COD.",
+        "Si la réponse commence par « à » ou « de », c'est un COI."
+      ],
+      "exemples": [
+        {
+          "phrase": "Louna attrape le ballon",
+          "demonstration": "Louna attrape QUOI ? le ballon, sans petit mot devant → « le ballon » est COD."
+        },
+        {
+          "phrase": "Yanis téléphone à sa grand-mère",
+          "demonstration": "Yanis téléphone À QUI ? à sa grand-mère : la réponse commence par « à » → COI."
+        }
+      ],
+      "piege": "« au » et « aux » cachent un « à » : « il écrit aux correspondants » répond à « à qui ? » → COI."
+    },
     "diagnostic": [
       {
         "question": "Dans « Fatou donne un cadeau à sa cousine », quel groupe est complément d'objet indirect ?",
@@ -554,6 +634,26 @@
   {
     "item_code": "P28",
     "type": "analyse_phrase",
+    "lecon": {
+      "titre": "Les compléments circonstanciels",
+      "regle": "Un complément circonstanciel dit quand se passe l'action (temps), où elle se passe (lieu) ou comment elle se passe (manière).",
+      "procedure": [
+        "Trouve le verbe de la phrase.",
+        "Pose-lui les trois questions : quand ? où ? comment ?",
+        "Nomme chaque groupe d'après la question à laquelle il répond : CC Temps, CC Lieu ou CC Manière."
+      ],
+      "exemples": [
+        {
+          "phrase": "Chaque été, mes cousins campent près du lac",
+          "demonstration": "Campent quand ? Chaque été → CC Temps. Campent où ? près du lac → CC Lieu."
+        },
+        {
+          "phrase": "Yanis referme la porte doucement",
+          "demonstration": "Referme comment ? doucement → CC Manière. « la porte » ne répond ni à quand, ni à où, ni à comment : c'est le COD."
+        }
+      ],
+      "piege": "Un groupe qui commence par « à » n'est pas forcément circonstanciel : « à son cousin » répond à « à qui ? », c'est un COI."
+    },
     "diagnostic": [
       {
         "question": "Dans « Le soir, Fatou bricole dans sa chambre », quel groupe répond à la question « où ? »",

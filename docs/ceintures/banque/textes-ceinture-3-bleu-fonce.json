@@ -2,6 +2,26 @@
   {
     "item_code": "T47",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire un portrait moral",
+      "regle": "Le portrait moral dit comment le personnage est à l'intérieur : ses qualités, ses goûts, son défaut.",
+      "procedure": [
+        "Écris une phrase par qualité, en montrant ce que le personnage fait.",
+        "Ajoute une phrase sur ce qu'il aime : ses goûts.",
+        "Termine par un seul défaut. Relis : rien sur son apparence."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une qualité : « Fatou tient toujours ses promesses. »",
+          "demonstration": "Cette phrase ne dit rien de ce qu'on voit : elle montre une qualité, Fatou est fidèle à sa parole."
+        },
+        {
+          "phrase": "Un défaut : « Fatou s'impatiente dès qu'on la fait attendre. »",
+          "demonstration": "Un défaut gêne les autres. Une seule phrase suffit, et « s'impatiente » dit tout."
+        }
+      ],
+      "piege": "« Elle a de longs cheveux » n'a rien à faire ici : c'est l'apparence."
+    },
     "diagnostic": [
       {
         "question": "Quelle phrase décrit le caractère de Malo, et non son apparence ?",
@@ -60,6 +80,26 @@
   {
     "item_code": "T22",
     "type": "qcm",
+    "lecon": {
+      "titre": "Remplacer le prénom sans se tromper",
+      "regle": "Pour ne pas répéter le prénom, remplace-le par un pronom ou un groupe nominal qui désigne la même personne.",
+      "procedure": [
+        "Repère le prénom qui revient et demande-toi de qui on parle.",
+        "Choisis un mot qui désigne cette personne : garçon ou fille, seul ou à plusieurs.",
+        "Relis : s'il pouvait désigner quelqu'un d'autre, change-le."
+      ],
+      "exemples": [
+        {
+          "phrase": "Sacha pousse son vélo. Sacha remet la chaîne en place.",
+          "demonstration": "Sacha est un garçon, seul : j'écris « Il remet la chaîne en place. »"
+        },
+        {
+          "phrase": "Nour démoule son gâteau. ___ pose le plat sur la table.",
+          "demonstration": "« La jeune pâtissière » désigne Nour ; « la cuisine » ou « le pâtissier » désigneraient autre chose."
+        }
+      ],
+      "piege": "« Il » ou « elle » ne s'emploient que si la personne a déjà été nommée."
+    },
     "diagnostic": [
       {
         "question": "« Timéo ouvre son livre. Timéo tourne les pages jusqu'au poème. » Comment éviter la répétition du prénom dans la deuxième phrase ?",
@@ -278,6 +318,26 @@
   {
     "item_code": "T23",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire un dialogue simple",
+      "regle": "Dans un dialogue, chaque réplique va à la ligne et commence par un tiret et une majuscule.",
+      "procedure": [
+        "Commence par une phrase qui dit où sont les personnages.",
+        "Va à la ligne et ouvre chaque réplique par un tiret, puis une majuscule.",
+        "Sur deux répliques au moins, ajoute un verbe de parole précis et le nom de celui qui parle."
+      ],
+      "exemples": [
+        {
+          "phrase": "— Est-ce que tu viens au stade ? demande Yanis.",
+          "demonstration": "Tiret, majuscule, point d'interrogation gardé, puis le verbe de parole et le nom."
+        },
+        {
+          "phrase": "— J'arrive dans cinq minutes, répond Louna.",
+          "demonstration": "Nouvelle réplique, nouvelle ligne, nouveau tiret. Louna ne questionne pas : « répond »."
+        }
+      ],
+      "piege": "Toutes les répliques n'ont pas besoin d'un verbe de parole ; évite « dit », préfère demande, répond, murmure."
+    },
     "diagnostic": [
       {
         "question": "Quelle réplique de dialogue est correctement écrite ?",
@@ -336,6 +396,26 @@
   {
     "item_code": "T25",
     "type": "qcm",
+    "lecon": {
+      "titre": "Relire avec ma grille ②",
+      "regle": "Dans un groupe nominal, le déterminant, le nom et l'adjectif portent la même marque ; le verbe, lui, s'accorde avec son sujet.",
+      "procedure": [
+        "Le déterminant annonce-t-il un seul ou plusieurs ? Mets la même marque au nom et à l'adjectif.",
+        "Cherche le sujet du verbe et remplace-le par il, elle, ils ou elles.",
+        "Écris la terminaison qui va avec ce pronom."
+      ],
+      "exemples": [
+        {
+          "phrase": "Yanis colle des étiquette blanche sur ses livres.",
+          "demonstration": "« des » annonce plusieurs : nom et adjectif prennent la marque → « des étiquettes blanches »."
+        },
+        {
+          "phrase": "Les acrobates saute sur le trampoline.",
+          "demonstration": "Le sujet « les acrobates » se remplace par « ils ». Avec « ils », on écrit « sautent »."
+        }
+      ],
+      "piege": "Une phrase peut contenir deux erreurs à la fois : vérifie le groupe nominal ET le verbe."
+    },
     "diagnostic": [
       {
         "question": "Dans quelle phrase le groupe nominal est-il mal accordé ?",

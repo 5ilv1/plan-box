@@ -2,6 +2,26 @@
   {
     "item_code": "P29",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Trouver le vrai sujet",
+      "regle": "Le verbe s'accorde avec le sujet trouvé par « Qui est-ce qui… ? », même si ce sujet est loin du verbe ou placé après lui.",
+      "procedure": [
+        "Repère le verbe conjugué.",
+        "Pose « Qui est-ce qui… ? » : la réponse est le sujet, même si elle n'est pas juste devant le verbe.",
+        "Accorde le verbe avec ce sujet-là, pas avec le mot qui le touche."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le chien des voisins aboie toute la nuit.",
+          "demonstration": "Qui est-ce qui aboie ? Le chien : un seul. On écrit « aboie », même si « voisins » touche le verbe."
+        },
+        {
+          "phrase": "Que racontent ces vieilles photos ?",
+          "demonstration": "Qui est-ce qui raconte ? Ces vieilles photos, après le verbe : elles valent « elles » → « racontent »."
+        }
+      ],
+      "piege": "Le mot juste devant le verbe n'est pas toujours le sujet."
+    },
     "diagnostic": [
       {
         "question": "Dans « Le cartable des jumeaux ___ dans l'entrée. (traîner) », quelle forme convient ?",
@@ -96,6 +116,26 @@
   {
     "item_code": "P24",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Écrire le participe passé",
+      "regle": "Au passé composé, le participe passé s'accorde avec le sujet quand l'auxiliaire est être, et ne bouge pas quand l'auxiliaire est avoir.",
+      "procedure": [
+        "Regarde l'auxiliaire déjà écrit devant le trou : vient-il de avoir ou de être ?",
+        "Avec avoir, écris le participe passé sans rien ajouter.",
+        "Avec être, cherche le sujet et accorde : -e au féminin, -s au pluriel."
+      ],
+      "exemples": [
+        {
+          "phrase": "Yanis a (prendre) … son goûter.",
+          "demonstration": "L'auxiliaire « a » vient de avoir : le participe ne bouge pas → « Yanis a pris son goûter. »"
+        },
+        {
+          "phrase": "Inès et Louna sont (revenir) … du stade.",
+          "demonstration": "L'auxiliaire « sont » vient de être : j'accorde avec « Inès et Louna », féminin pluriel → « sont revenues »."
+        }
+      ],
+      "piege": "Ne te fie pas au sens : c'est l'auxiliaire écrit devant le trou qui commande l'accord."
+    },
     "diagnostic": [
       {
         "question": "Dans « Cette nuit, Malo a ___ chez sa cousine. (dormir) », quelle forme convient ?",
@@ -190,6 +230,26 @@
   {
     "item_code": "P54",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Écrire le futur simple",
+      "regle": "Au futur simple, un verbe en -ER garde son infinitif en entier, puis reçoit -ai, -as, -a, -ons, -ez ou -ont.",
+      "procedure": [
+        "Écris l'infinitif du verbe en entier, sans rien enlever.",
+        "Repère le sujet et le pronom qui lui correspond : je, tu, il, nous, vous, ils…",
+        "Ajoute la terminaison de cette personne : -ai, -as, -a, -ons, -ez, -ont."
+      ],
+      "exemples": [
+        {
+          "phrase": "Demain, je (souffler) … mes bougies.",
+          "demonstration": "souffler + ai → « je soufflerai ». L'infinitif reste entier devant la terminaison."
+        },
+        {
+          "phrase": "Samedi, les CE2 (visiter) … le musée.",
+          "demonstration": "Le sujet vaut « ils » : visiter + ont → « visiteront ». Le -r de l'infinitif s'écrit toujours."
+        }
+      ],
+      "piege": "On n'entend pas toujours le -r de l'infinitif, mais il s'écrit quand même."
+    },
     "diagnostic": [
       {
         "question": "Dans « L'année prochaine, je ___ à la chorale de l'école. (participer) », quelle forme convient ?",
@@ -284,6 +344,26 @@
   {
     "item_code": "P49",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Ce, se, ces, ses",
+      "regle": "« Se » accompagne un verbe, « ce » et « ces » servent à montrer, « ses » dit à qui la chose appartient.",
+      "procedure": [
+        "Remplace le sujet par « je » : si le petit mot devient « me », écris se.",
+        "Sinon, essaie de dire « les siens » ou « les siennes » : si ça marche, écris ses.",
+        "Sinon, ajoute « …-là » après le nom : écris ce pour un seul, ces pour plusieurs."
+      ],
+      "exemples": [
+        {
+          "phrase": "Sacha … cache derrière le rideau.",
+          "demonstration": "Avec « je » : « je me cache ». Le petit mot devient « me », donc on écrit « se »."
+        },
+        {
+          "phrase": "Adam ramasse … deux pommes de pin.",
+          "demonstration": "« Les siennes » ne va pas ; « ces pommes-là » se dit bien, et il y en a plusieurs → « ces »."
+        }
+      ],
+      "piege": "« Se » est toujours suivi d'un verbe ; ce, ces et ses sont toujours devant un nom."
+    },
     "diagnostic": [
       {
         "question": "Quel mot convient ? « Timéo ___ coiffe devant le miroir de l'entrée. »",
@@ -378,6 +458,26 @@
   {
     "item_code": "P53",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Conjuguer à l'imparfait",
+      "regle": "À l'imparfait, le verbe se termine par -ait quand le sujet vaut il ou elle, et par -aient quand il vaut ils ou elles.",
+      "procedure": [
+        "Repère le sujet et demande-toi s'il vaut « il / elle » ou « ils / elles ».",
+        "Écris -ait pour il ou elle, -aient pour ils ou elles.",
+        "Pour être, écris ét- devant la terminaison ; pour avoir, écris av-."
+      ],
+      "exemples": [
+        {
+          "phrase": "À cette époque, le boulanger (travailler) … la nuit.",
+          "demonstration": "« Le boulanger » vaut « il » : on écrit « travaillait »."
+        },
+        {
+          "phrase": "Autrefois, les trains (siffler) … en entrant en gare.",
+          "demonstration": "« Les trains » vaut « ils » : on écrit « sifflaient », même si on entend la même chose que « sifflait »."
+        }
+      ],
+      "piege": "-ait et -aient se prononcent exactement pareil : seul le sujet décide."
+    },
     "diagnostic": [
       {
         "question": "Dans « Autrefois, les cloches ___ à midi. (sonner) », quelle forme convient ?",

@@ -2,6 +2,26 @@
   {
     "item_code": "P25",
     "type": "exercice",
+    "lecon": {
+      "titre": "Trouver le sujet du verbe",
+      "regle": "Le sujet est le groupe qui répond à la question « Qui est-ce qui… ? » posée devant le verbe.",
+      "procedure": [
+        "Repère le verbe de la phrase.",
+        "Pose la question « Qui est-ce qui » suivie du verbe.",
+        "La réponse est le sujet : écris-le en entier, avec le petit mot qui est devant."
+      ],
+      "exemples": [
+        {
+          "phrase": "Jade tricote une écharpe.",
+          "demonstration": "Verbe : « tricote ». Qui est-ce qui tricote ? → Jade. Le sujet est « Jade »."
+        },
+        {
+          "phrase": "Au fond de la salle, ma grande sœur écrit une carte.",
+          "demonstration": "Verbe : « écrit ». Qui est-ce qui écrit ? → ma grande sœur. Le sujet est « ma grande sœur », pas « Au fond de la salle »."
+        }
+      ],
+      "piege": "Ce qui commence la phrase n'est pas toujours le sujet : c'est la question qui décide, pas la place des mots."
+    },
     "diagnostic": [
       {
         "question": "Dans « Mon petit frère répare son vélo. », quel est le sujet du verbe ?",
@@ -140,6 +160,26 @@
   {
     "item_code": "P22",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Conjuguer un verbe en -ER",
+      "regle": "Au présent, un verbe en -ER prend les terminaisons -e, -es, -e, -ons, -ez, -ent.",
+      "procedure": [
+        "Enlève le -er de l'infinitif : il te reste le début du verbe.",
+        "Repère la personne : je, tu, il/elle, nous, vous, ils/elles.",
+        "Ajoute la terminaison de cette personne au début du verbe."
+      ],
+      "exemples": [
+        {
+          "phrase": "Tu (chanter) ___ dans la chorale.",
+          "demonstration": "chanter → chant-. Avec « tu », la terminaison est -es → j'écris « chantes »."
+        },
+        {
+          "phrase": "Les voisins (marcher) ___ jusqu'au marché.",
+          "demonstration": "marcher → march-. « Les voisins », c'est comme « ils » : la terminaison est -ent → j'écris « marchent »."
+        }
+      ],
+      "piege": "La terminaison -ent ne s'entend pas : c'est la personne qui te dit de l'écrire, jamais ton oreille."
+    },
     "diagnostic": [
       {
         "question": "Dans « Tu ___ un beau portrait. (dessiner) », quelle forme convient ?",
@@ -234,6 +274,26 @@
   {
     "item_code": "P17",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Accorder verbe et sujet",
+      "regle": "Quand le sujet du verbe vaut « il » ou « elle », un verbe en -ER prend -e ; quand il vaut « ils » ou « elles », il prend -ent.",
+      "procedure": [
+        "Pose la question « Qui est-ce qui… ? » devant le verbe pour trouver le sujet.",
+        "Ce sujet désigne-t-il un seul être — « il », « elle » — ou plusieurs — « ils », « elles » ?",
+        "Un seul : écris -e. Plusieurs : écris -ent."
+      ],
+      "exemples": [
+        {
+          "phrase": "La grande cousine de Jade (danser) ___ très bien.",
+          "demonstration": "Qui est-ce qui danse ? La grande cousine : une seule personne, c'est « elle » → j'écris « danse »."
+        },
+        {
+          "phrase": "Les élèves du CE2 (grimper) ___ au mur d'escalade.",
+          "demonstration": "Qui est-ce qui grimpe ? Les élèves : plusieurs, c'est « ils » → j'écris « grimpent »."
+        }
+      ],
+      "piege": "-e et -ent se prononcent pareil : compte les êtres du sujet, ne te fie pas à ton oreille."
+    },
     "diagnostic": [
       {
         "question": "Dans « Les deux amies ___ les étiquettes. (coller) », quelle forme convient ?",
@@ -247,15 +307,15 @@
         "explication": "« Les deux amies », c'est comme « elles » : un verbe en -ER prend -ent."
       },
       {
-        "question": "Dans « Le grand frère de Nour ___ le carton. (chercher) », quelle forme convient ?",
+        "question": "Dans « La voisine de Timéo ___ le portail. (pousser) », quelle forme convient ?",
         "options": [
-          "cherche",
-          "cherches",
-          "cherchent",
-          "chercher"
+          "pousse",
+          "pousses",
+          "poussent",
+          "pousser"
         ],
         "reponse_correcte": 0,
-        "explication": "Le sujet est « le grand frère » : une seule personne. Un verbe en -ER prend alors -e."
+        "explication": "Le sujet est « la voisine » : une seule personne. Un verbe en -ER prend alors -e."
       }
     ],
     "entrainement": [
@@ -328,6 +388,26 @@
   {
     "item_code": "P47",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "a / à, et / est",
+      "regle": "« a » et « est » sont des verbes : on peut dire « avait » et « était » à leur place.",
+      "procedure": [
+        "Essaie de dire « avait » : si la phrase reste correcte, écris « a » ; sinon, écris « à ».",
+        "Essaie de dire « était » : si la phrase reste correcte, écris « est ».",
+        "Si tu peux dire « ainsi que » à la place, écris « et »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Sacha ___ perdu sa casquette.",
+          "demonstration": "« Sacha avait perdu sa casquette » se dit → j'écris « a », sans accent."
+        },
+        {
+          "phrase": "Le chien de Louna ___ tout noir.",
+          "demonstration": "« Le chien de Louna était tout noir » se dit → j'écris « est ». « ainsi que » ne marcherait pas ici, donc ce n'est pas « et »."
+        }
+      ],
+      "piege": "« à » et « et » ne sont pas des verbes : tu les écris justement quand « avait » et « était » sonnent faux."
+    },
     "diagnostic": [
       {
         "question": "Quel mot convient ? « Nour habite ___ côté de l'école. »",

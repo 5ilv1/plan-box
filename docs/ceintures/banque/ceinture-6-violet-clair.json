@@ -2,6 +2,26 @@
   {
     "item_code": "P32",
     "type": "analyse_phrase",
+    "lecon": {
+      "titre": "Reconnaître l'attribut du sujet",
+      "regle": "Après un verbe d'état (être, sembler, paraître, devenir, rester), le groupe qui dit comment est le sujet est son attribut, et il s'accorde avec lui.",
+      "procedure": [
+        "Repère le verbe : est-ce un verbe d'état ?",
+        "Si oui, le groupe qui suit dit comment est le sujet : c'est l'attribut.",
+        "Si le verbe n'est pas un verbe d'état, le groupe qui suit n'est pas un attribut : c'est un complément."
+      ],
+      "exemples": [
+        {
+          "phrase": "Malo reste calme.",
+          "demonstration": "« reste » est un verbe d'état ; « calme » dit comment est Malo : attribut du sujet."
+        },
+        {
+          "phrase": "Ces photos paraissent anciennes.",
+          "demonstration": "« paraissent » est un verbe d'état ; « anciennes » dit comment sont les photos et s'accorde avec elles : attribut."
+        }
+      ],
+      "piege": "« Yanis dessine un visage » ne dit pas comment est Yanis : ce n'est pas un attribut."
+    },
     "diagnostic": [
       {
         "question": "Dans « Cette photo est ancienne », quel groupe est attribut du sujet ?",
@@ -274,6 +294,26 @@
   {
     "item_code": "P33",
     "type": "exercice",
+    "lecon": {
+      "titre": "Le verbe avoir, quatre temps",
+      "regle": "Selon le temps, le verbe avoir change de début : av- à l'imparfait, aur- au futur simple ; au présent, ses formes s'apprennent par cœur.",
+      "procedure": [
+        "Repère le temps demandé et la personne.",
+        "Au présent, écris la forme apprise : ai, as, a, avons, avez, ont.",
+        "Aux autres temps, écris le début qui convient puis la terminaison ; au passé composé, deux mots : avoir au présent, puis eu."
+      ],
+      "exemples": [
+        {
+          "phrase": "avoir, futur simple, avec je",
+          "demonstration": "Début aur-, terminaison de « je » : -ai → « j'aurai »."
+        },
+        {
+          "phrase": "avoir, passé composé, avec vous",
+          "demonstration": "Deux mots : avoir au présent avec « vous », puis eu → « vous avez eu »."
+        }
+      ],
+      "piege": "Au futur, on entend « or » au début du verbe ; à l'imparfait, on entend « av »."
+    },
     "diagnostic": [
       {
         "question": "Quelle est la forme du verbe avoir à l'imparfait avec « il » ?",
@@ -412,6 +452,26 @@
   {
     "item_code": "P34",
     "type": "classement",
+    "lecon": {
+      "titre": "Les trois expansions du nom",
+      "regle": "Un nom peut être complété par un adjectif, par un complément du nom, ou par une proposition relative.",
+      "procedure": [
+        "Un mot seul qui dit comment est le nom : c'est un adjectif.",
+        "Si elle commence par de, du, à, en, sur… et ajoute un nom, c'est un complément du nom.",
+        "Si elle commence par qui, que ou où et contient un verbe conjugué, c'est une proposition relative."
+      ],
+      "exemples": [
+        {
+          "phrase": "Adam ouvre un carnet *neuf*.",
+          "demonstration": "« neuf » dit comment est le carnet, en un mot seul : c'est un adjectif."
+        },
+        {
+          "phrase": "Louna raconte l'histoire *que sa mamie lui a apprise*.",
+          "demonstration": "Le groupe commence par « que » et contient un verbe conjugué, « a apprise » : proposition relative."
+        }
+      ],
+      "piege": "Le déterminant (le, une, ses…) n'est pas une expansion."
+    },
     "diagnostic": [
       {
         "question": "Dans « une histoire qui fait peur », comment s'appelle l'expansion « qui fait peur » ?",
@@ -560,6 +620,25 @@
   {
     "item_code": "P37",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Voir et dire au présent",
+      "regle": "Au présent, voir et dire ne gardent pas le même radical à toutes les personnes : il faut repérer la personne avant d'écrire.",
+      "procedure": [
+        "Repère le sujet et remplace-le par un pronom : je, tu, il, elle, nous, vous, ils, elles.",
+        "Écris la forme du verbe qui va avec ce pronom : le radical change avec nous, vous, ils et elles."
+      ],
+      "exemples": [
+        {
+          "phrase": "Malo (voir) … un aigle dans le ciel.",
+          "demonstration": "Remplace « Malo » par « il » : on écrit « il voit », donc « Malo voit un aigle »."
+        },
+        {
+          "phrase": "Les cousines de Fatou (dire) … une comptine.",
+          "demonstration": "Remplace le sujet par « elles » : le radical devient dis- → « elles disent une comptine »."
+        }
+      ],
+      "piege": "Avec « vous », presque tous les verbes prennent -ez, mais pas dire."
+    },
     "diagnostic": [
       {
         "question": "Dans « Vous ___ le portrait depuis le fond de la classe. (voir) », quelle forme convient ?",
@@ -654,6 +733,26 @@
   {
     "item_code": "P30",
     "type": "qcm",
+    "lecon": {
+      "titre": "Choisir le bon signe",
+      "regle": "Le signe de ponctuation dit ce que fait la phrase : raconter (.), demander (?), s'exclamer (!) ou rester en suspens (…).",
+      "procedure": [
+        "Lis la phrase et demande-toi ce qu'elle fait : raconter, demander, s'exclamer, ou laisser la suite en attente.",
+        "Choisis le signe qui correspond et place-le à la fin.",
+        "Si la phrase annonce une liste ou des paroles, mets deux-points, et entoure les paroles de guillemets."
+      ],
+      "exemples": [
+        {
+          "phrase": "Qui a rangé les pinceaux ?",
+          "demonstration": "La phrase demande quelque chose : elle se termine par un point d'interrogation."
+        },
+        {
+          "phrase": "Yanis chuchote : « J'ai oublié ma flûte. »",
+          "demonstration": "Deux-points pour annoncer les paroles, guillemets pour les entourer ; le point reste à l'intérieur."
+        }
+      ],
+      "piege": "Après les deux-points, les paroles rapportées commencent quand même par une majuscule."
+    },
     "diagnostic": [
       {
         "question": "Timéo veut savoir si Jade a terminé. Quelle phrase est correctement ponctuée ?",

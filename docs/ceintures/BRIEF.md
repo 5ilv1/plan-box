@@ -200,6 +200,7 @@ Prévoir un bouton côté enseignant, pas côté élève.
 |---|---|
 | `referentiel-francais.json` | Les 112 items : code, domaine, ceinture, libellé, niveau, type d'exercice **tel qu'il est écrit dans la banque**, type d'origine du référentiel, rattachement aux semaines de la P1 |
 | `banque/` | 27 fichiers, un par ceinture et par domaine. Chaque item porte 2 questions de diagnostic et **2 variantes** d'entraînement (`entrainement` est un tableau : la variante 1 au premier passage, la variante 2 en remédiation) |
+| `SPEC-LECONS.md` | Le format de la leçon courte de chaque item, et ce que le moteur doit en faire |
 | `migration.sql` | Les 5 tables + le seed des 3 domaines et des 112 items. Additif, rejouable |
 | `valider-banque.mjs` | Rejoue l'algorithme réel de placement des trous, refuse les trous en début de phrase, les homophones et les mots qui déclenchent un menu déroulant, contrôle QCM, classements et analyses de phrase |
 | `CORRECTIF-piocher.md` + `test-piocher.mjs` | Un bug de production mesuré à 49,7 % / 66,5 % d'évaluations cassées, son correctif et son test de non-régression |
@@ -244,6 +245,27 @@ Contenus par type, tels que les attend le code existant :
   `categorie` doit être une chaîne exacte de `categories`.
 - `analyse_phrase` → `{ titre, consigne, phrases:[{texte, groupes:[{mots, fonction, debut, fin}]}] }`
   Fonctions autorisées : voir `FONCTIONS_COULEURS` dans `types/index.ts`.
+
+---
+
+## 6 bis. L'écran de leçon — à construire
+
+Chaque item porte une clé `lecon` : titre, règle en une phrase, procédure en
+2 ou 3 étapes, **deux** exemples travaillés, et un piège. Le format complet est
+dans `SPEC-LECONS.md`.
+
+- Écran affiché **avant l'exercice d'entraînement**, une fois le diagnostic
+  passé, avec un bouton « J'ai compris, je commence ».
+- Bouton « revoir la leçon » accessible **pendant** l'entraînement.
+- **Jamais pendant l'évaluation de ceinture** : la leçon donnerait la règle au
+  moment précis où l'on vérifie qu'elle est acquise, exactement comme les
+  `indice`, que `creerMiniExercices()` retire déjà.
+- Stockage : colonne `lecon jsonb` sur `ceinture_item` (la migration la crée),
+  pas dans le contenu de l'exercice — la leçon appartient à l'item et doit
+  survivre au passage de la variante 1 à la variante 2.
+
+La procédure de chaque leçon est celle que les `indice` de son exercice
+relancent : c'est une invariance à préserver si l'on retouche l'un ou l'autre.
 
 ---
 
@@ -309,68 +331,3 @@ prévisualisation Vercel.
   naturel de la « grille individuelle » PIDAPI, mais rien n'est spécifié.
 - Réinitialisation du diagnostic : à quel niveau (élève, ceinture, domaine) ?
 - Les 4 domaines de maths, à écrire ensuite sur le même moteur.
-
----
-
-## 10. État de la mise en œuvre
-
-À jour du 26 août 2026. Les trois domaines sont en base et le parcours élève
-est complet.
-
-| Étape du §7 | État |
-|---|---|
-| 1. Migration | ✅ jouée — 3 domaines, 112 items, vérifiés colonne par colonne contre le référentiel, 0 écart. Une 6ᵉ table s'est ajoutée : `ceinture_variante` |
-| 2. Chapitres-ceintures | ✅ 27 chapitres (les 3 domaines), 81 assignations. `scripts/seed-ceintures.ts`, `--domaine=PHRA\|MOTS\|TEXT\|all` |
-| 3. Exclusion des listes | ✅ livrée en `d73c75e` |
-| 4. Import de la banque | ✅ 112 exercices, 448 lignes de banque. `scripts/import-banque-ceintures.ts` |
-| 5. Routes API | ✅ `etat`, `diagnostic` (GET/POST), `entrer`, `reinitialiser` |
-| 6. Écrans élève | ✅ hub, échelle, diagnostic |
-| 7. Tableau de bord | ✅ tuile « Ceintures de français » |
-| 8. Vérification | ✅ build, `test-piocher` (0 affecté), `valider-banque` (0 erreur), Joseph `--parcours` sur les 27 chapitres (0 erreur, 0 avertissement), parcours navigateur de bout en bout |
-
-### Décisions prises en cours de route
-
-**La progression ne s'écrit pas, elle se dérive.** Une ceinture est acquise dès
-qu'une ligne `evaluation_resultat` porte `reussi = true` sur son chapitre ; la
-courante est la première qui ne l'est pas. Aucune table de progression, aucune
-modification de la page évaluation.
-
-**`/api/progression/valider-eval` n'est pas dans le circuit** : la page
-évaluation appelle `/api/chapitres/evaluation-resultat`. Tant mieux —
-`valider-eval` aurait cherché le « chapitre suivant » par `niveau_id`, qui est
-`null` sur les ceintures, et notifié « Parcours terminé ! » à chaque couleur.
-
-**Le diagnostic ne valide que les items `validation = 'auto'`.** Réussir deux
-QCM sur le portrait moral ne dispense pas de l'écrire. Sans effet sur Phrases
-(41 items sur 41 en `auto`), concerne 12 items de Textes.
-
-**Remédiation par élève, pas par classe.** `exercice.contenu` est partagé :
-y basculer la variante 2 la basculerait pour toute la classe. D'où
-`ceinture_variante` (élève, exercice, variante) et un aiguillage côté serveur
-dans `/api/chapitres/exercices`, derrière un paramètre élève **optionnel** —
-sans lui, le comportement historique est strictement inchangé.
-
-**Piège vérifié : pas d'`upsert` sur les index partiels.** Les index d'unicité
-de `ceinture_diagnostic` et `ceinture_variante` sont partiels
-(`where eleve_id is not null`) ; PostgREST ne sait pas les viser par
-`onConflict`. Les deux écritures font delete-puis-insert. Le parcours de test
-a attrapé ce bug.
-
-### Empreinte sur l'existant
-
-Quatre fichiers, tous en ajout pur :
-
-- `app/api/chapitres/exercices/route.ts` — paramètre élève optionnel, aiguillage
-  de variante, retrait de `contenu.variantes` avant envoi
-- `app/eleve/chapitre/[id]/exercice/[exerciceId]/page.tsx` — passe l'identifiant
-- `app/eleve/chapitre/[id]/evaluation/page.tsx` — passe l'identifiant
-- `app/eleve/dashboard/page.tsx` — la tuile
-
-### Reste à faire
-
-- Vue enseignant : le tableau classe couleurs × élèves du §9, et le bouton de
-  réinitialisation du diagnostic (la route existe, l'écran non).
-- Les 4 domaines de maths, sur le même moteur.
-- `lib/ceintures.ts` porte les ceintures de MULTIPLICATIONS de Repetibox. Les
-  ceintures de compétences vivent dans `lib/ceintures-competences.ts` et
-  `lib/ceintures-serveur.ts`.

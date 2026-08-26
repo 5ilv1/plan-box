@@ -2,6 +2,26 @@
   {
     "item_code": "M19",
     "type": "exercice",
+    "lecon": {
+      "titre": "Les mots invariables sans faute",
+      "regle": "Un mot invariable garde toujours la même orthographe, avec ses accents et ses lettres muettes.",
+      "procedure": [
+        "Lis la parenthèse : elle donne le sens du mot et sa première lettre.",
+        "Cherche un mot plus court caché à l'intérieur : il t'aide à ne rien oublier.",
+        "Écris le mot, puis vérifie sa fin : accent, lettre muette."
+      ],
+      "exemples": [
+        {
+          "phrase": "Jade lève le doigt ___. (de temps en temps)",
+          "demonstration": "J'écris « parfois » : j'y vois « fois », et le s reste toujours."
+        },
+        {
+          "phrase": "Nour sort ses affaires ___. (avant tout le reste)",
+          "demonstration": "J'écris « d'abord » : une apostrophe après le d, et un d muet à la fin."
+        }
+      ],
+      "piege": "Ces mots ne prennent jamais de s de pluriel."
+    },
     "diagnostic": [
       {
         "question": "Quel mot invariable est écrit correctement ?",
@@ -164,6 +184,26 @@
   {
     "item_code": "M20",
     "type": "qcm",
+    "lecon": {
+      "titre": "Chercher avec les mots-repères",
+      "regle": "Les deux mots-repères écrits en haut d'une page sont le premier et le dernier mot de cette page.",
+      "procedure": [
+        "Compare ton mot au premier mot-repère : il doit venir après.",
+        "Compare-le au second : il doit venir avant.",
+        "Compare lettre par lettre, en partant de la première."
+      ],
+      "exemples": [
+        {
+          "phrase": "« sirop », page « singe – soleil »",
+          "demonstration": "s-i-r vient après s-i-n et avant s-o : « sirop » est bien sur cette page."
+        },
+        {
+          "phrase": "« brique », page « bruit – buffet »",
+          "demonstration": "b-r-i vient avant b-r-u : « brique » est plus tôt dans le dictionnaire, il faut chercher une page avant."
+        }
+      ],
+      "piege": "Deux mots peuvent commencer pareil : continue à comparer jusqu'à la lettre qui change."
+    },
     "diagnostic": [
       {
         "question": "En haut d'une page du dictionnaire, les mots-repères sont « balle » et « bison ». Quel mot se trouve sur cette page ?",
@@ -382,6 +422,25 @@
   {
     "item_code": "M21",
     "type": "classement",
+    "lecon": {
+      "titre": "Nom commun ou nom propre",
+      "regle": "Le nom commun désigne une sorte d'êtres ou de choses ; le nom propre en désigne un seul et prend une majuscule.",
+      "procedure": [
+        "Demande-toi si le mot désigne une sorte de chose ou un seul être en particulier.",
+        "S'il n'en nomme qu'un seul, c'est un nom propre : sa majuscule reste au milieu de la phrase."
+      ],
+      "exemples": [
+        {
+          "phrase": "Timéo range son *ballon* dans le placard.",
+          "demonstration": "On peut dire « un ballon » : le mot vaut pour tous les ballons, c'est un nom commun."
+        },
+        {
+          "phrase": "Le mercredi, Lila va à la piscine de *Nantes*.",
+          "demonstration": "« Nantes » ne nomme qu'une seule ville : c'est un nom propre."
+        }
+      ],
+      "piege": "La majuscule ne suffit pas : le premier mot d'une phrase en prend une aussi."
+    },
     "diagnostic": [
       {
         "question": "Dans la phrase « Le bateau arrive au port de Brest. », quel mot est un nom propre ?",
@@ -528,6 +587,26 @@
   {
     "item_code": "M18",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Choisir le pronom sujet",
+      "regle": "Le pronom personnel sujet remplace le sujet : je et nous pour ceux qui parlent, tu et vous pour ceux à qui l'on parle, il et ils pour ceux dont on parle.",
+      "procedure": [
+        "Cherche qui fait l'action : ce nom est souvent écrit dans la phrase d'avant.",
+        "Compte : une seule personne, ou plusieurs ?",
+        "Vérifie sur le verbe : -ons va avec nous, -ez avec vous."
+      ],
+      "exemples": [
+        {
+          "phrase": "— Fatou, ___ entends bien au fond ? demande le maître.",
+          "demonstration": "Le maître parle à Fatou, une seule personne : c'est « tu »."
+        },
+        {
+          "phrase": "Le mardi, ___ montons tous dans le car.",
+          "demonstration": "La terminaison -ons du verbe le montre : c'est « nous »."
+        }
+      ],
+      "piege": "« il » et « ils » s'entendent pareil : compte les personnes avant d'écrire le s."
+    },
     "diagnostic": [
       {
         "question": "Dans « Lila et Malo enlèvent leur manteau, puis ___ montent l'escalier. », quel pronom personnel sujet convient ?",

@@ -2,6 +2,26 @@
   {
     "item_code": "T40",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire en implicite",
+      "regle": "Écrire en implicite, c'est faire comprendre une chose au lecteur sans jamais l'écrire.",
+      "procedure": [
+        "Écris à part la phrase que tu ne diras pas, puis interdis-toi ses mots.",
+        "Remplace-la par trois gestes précis de ton personnage.",
+        "Ajoute un détail du décor — un objet, un bruit — qui fait conclure le lecteur."
+      ],
+      "exemples": [
+        {
+          "phrase": "La tasse froide traînait près de la lampe restée allumée.",
+          "demonstration": "Je n'écris pas « il n'a pas dormi » : la lampe et la tasse le disent."
+        },
+        {
+          "phrase": "— Tu veux que je te raccompagne ? demanda la voisine, sans le regarder.",
+          "demonstration": "La parole d'un autre porte l'implicite : elle ne nomme rien, et l'on comprend."
+        }
+      ],
+      "piege": "Une seule phrase qui nomme la chose (« il était vraiment triste ») efface tout."
+    },
     "diagnostic": [
       {
         "question": "« Nour pousse la porte de la classe. Tous les regards se lèvent, puis la cloche sonne dans le couloir vide. » Que comprend-on, sans que ce soit écrit ?",
@@ -60,6 +80,26 @@
   {
     "item_code": "T41",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire un début qui accroche",
+      "regle": "Un début accroche quand il commence au milieu de l'action et laisse une question sans réponse.",
+      "procedure": [
+        "Commence par une action déjà commencée ou par une réplique, jamais par une présentation.",
+        "Glisse un détail précis du lieu, sans nommer ce lieu.",
+        "Arrête-toi sur ce que le lecteur ne comprend pas encore."
+      ],
+      "exemples": [
+        {
+          "phrase": "La corde tenait encore, mais plus pour très longtemps.",
+          "demonstration": "On entre au milieu de l'action : on ignore qui tient la corde."
+        },
+        {
+          "phrase": "— Ne dis à personne que tu m'as vue ici, murmura-t-elle en refermant la grille rouillée.",
+          "demonstration": "Une réplique lance aussi l'histoire ; « la grille rouillée » montre le lieu sans le nommer."
+        }
+      ],
+      "piege": "Présenter ton personnage — son âge, sa famille — avant l'action éteint la curiosité."
+    },
     "diagnostic": [
       {
         "question": "Quel début donne le plus envie de lire la suite ?",
@@ -118,6 +158,26 @@
   {
     "item_code": "T42",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire une fin",
+      "regle": "Une fin répond à la question posée par le début, et se termine sur une image.",
+      "procedure": [
+        "Relis le début et écris la question qu'il pose : ta fin doit y répondre.",
+        "Raconte une dernière action du personnage, ouverte par un connecteur de temps.",
+        "Termine par une image ou une parole courte, et n'ajoute rien après."
+      ],
+      "exemples": [
+        {
+          "phrase": "Début : « Depuis lundi, la clé du placard à instruments a disparu. »",
+          "demonstration": "La question est : où est la clé ? J'y réponds par une action : « Louna souleva le pot de fleurs. »"
+        },
+        {
+          "phrase": "Elle raccrocha la clé au clou, bien en vue de tous.",
+          "demonstration": "Une image courte, moins de quinze mots, et rien après."
+        }
+      ],
+      "piege": "« Ce n'était qu'un rêve » efface l'histoire entière : le lecteur a lu pour rien."
+    },
     "diagnostic": [
       {
         "question": "Une histoire raconte comment Lila cherche son chat disparu. Quelle fin convient le mieux ?",
@@ -176,6 +236,26 @@
   {
     "item_code": "T43",
     "type": "qcm",
+    "lecon": {
+      "titre": "Relier les paragraphes",
+      "regle": "Un connecteur placé en tête de paragraphe annonce le lien avec ce qui précède.",
+      "procedure": [
+        "Dis ce que fait ce paragraphe : ajouter, s'opposer, donner le résultat, illustrer, conclure.",
+        "Prends un connecteur de la famille correspondante : de plus, pourtant, c'est pourquoi, par exemple, pour finir.",
+        "Plusieurs idées à la suite ? Ouvre-les par d'abord, ensuite, enfin."
+      ],
+      "exemples": [
+        {
+          "phrase": "Paragraphe 1 : le potager manque d'eau. Paragraphe 2 : les CM2 installent un récupérateur.",
+          "demonstration": "Le second donne le résultat du premier : je l'ouvre par « C'est pourquoi »."
+        },
+        {
+          "phrase": "Paragraphe 1 : Timéo répète chaque soir. Paragraphe 2 : il bafouille en classe.",
+          "demonstration": "Le second s'oppose au premier : je l'ouvre par « Cependant »."
+        }
+      ],
+      "piege": "« De plus » ajoute, il ne contredit jamais ; et chaque famille a des voisins : « cependant » vaut « pourtant »."
+    },
     "diagnostic": [
       {
         "question": "Un paragraphe explique que Sacha s'entraîne tous les jours. Le paragraphe suivant raconte qu'il a perdu le match. Par quel mot commencer ce second paragraphe ?",

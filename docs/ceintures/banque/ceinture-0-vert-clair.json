@@ -2,6 +2,26 @@
   {
     "item_code": "P11",
     "type": "classement",
+    "lecon": {
+      "titre": "Majuscule et point",
+      "regle": "Une phrase commence par une majuscule et se termine par un point.",
+      "procedure": [
+        "Regarde le tout premier mot : commence-t-il par une majuscule ?",
+        "Regarde la toute fin : y a-t-il un point après le dernier mot ?",
+        "Si les deux y sont, la phrase est correcte ; sinon, dis ce qui manque."
+      ],
+      "exemples": [
+        {
+          "phrase": "le maître efface le tableau.",
+          "demonstration": "Premier mot : « le », sans majuscule. Fin : le point est bien là. → il manque la majuscule."
+        },
+        {
+          "phrase": "Rosalie souffle ses bougies",
+          "demonstration": "Premier mot : « Rosalie », la majuscule est là. Fin : rien après « bougies ». → il manque le point."
+        }
+      ],
+      "piege": "Un bon début ne suffit pas : vérifie toujours les deux bouts de la phrase avant de répondre."
+    },
     "diagnostic": [
       {
         "question": "Quelle phrase est écrite correctement ?",
@@ -150,9 +170,29 @@
   {
     "item_code": "P10",
     "type": "qcm",
+    "lecon": {
+      "titre": "Situer l'action dans le temps",
+      "regle": "Le mot qui indique le moment et la forme du verbe disent ensemble si l'action est passée, présente ou future.",
+      "procedure": [
+        "Cherche dans la phrase le mot qui dit le moment : hier, en ce moment, demain…",
+        "Regarde le verbe : l'action est-elle finie, en train de se faire, ou pas encore faite ?",
+        "Réponds : passé, présent ou futur."
+      ],
+      "exemples": [
+        {
+          "phrase": "L'an dernier, Nour habitait à la campagne.",
+          "demonstration": "« L'an dernier » + « habitait » : c'est déjà terminé → l'action se passe dans le passé."
+        },
+        {
+          "phrase": "Timéo rangera sa chambre ce soir.",
+          "demonstration": "Aucun mot du moment au début : « rangera » n'a pas encore eu lieu, et « ce soir » le confirme → futur."
+        }
+      ],
+      "piege": "Le mot du moment n'est pas toujours au début : sans lui, c'est le verbe qui décide."
+    },
     "diagnostic": [
       {
-        "question": "« Hier, Lila a perdu sa gomme. » Quand se passe l'action ?",
+        "question": "« L'an dernier, Malo a déménagé. » Quand se passe l'action ?",
         "options": [
           "Dans le futur",
           "Dans le présent",
@@ -368,6 +408,26 @@
   {
     "item_code": "P16",
     "type": "exercice",
+    "lecon": {
+      "titre": "Trouver le verbe",
+      "regle": "Le verbe est le mot que l'on encadre quand on met la phrase à la forme négative.",
+      "procedure": [
+        "Dis la phrase avec « ne … pas ».",
+        "Le mot qui se retrouve entre « ne » et « pas », c'est le verbe.",
+        "Recopie-le tel qu'il est écrit dans la phrase de départ."
+      ],
+      "exemples": [
+        {
+          "phrase": "Yanis siffle une chanson.",
+          "demonstration": "Yanis ne siffle pas une chanson. → « siffle » est encadré : c'est le verbe."
+        },
+        {
+          "phrase": "Les enfants du village aiment la fête.",
+          "demonstration": "Les enfants du village n'aiment pas la fête. → devant une voyelle « ne » devient « n' », mais le mot encadré reste le verbe : « aiment »."
+        }
+      ],
+      "piege": "Ne choisis pas le mot qui te fait penser à une action : choisis celui que « ne … pas » encadre vraiment."
+    },
     "diagnostic": [
       {
         "question": "Dans la phrase « Fatou dessine un portrait. », quel est le verbe ?",
@@ -378,7 +438,7 @@
           "portrait"
         ],
         "reponse_correcte": 1,
-        "explication": "Si tu dis la phrase avec « hier », seul « dessine » change : c'est le verbe."
+        "explication": "Fatou ne dessine pas un portrait : « ne … pas » encadre « dessine ». C'est le verbe."
       },
       {
         "question": "Dans la phrase « Les élèves rangent leurs affaires. », quel est le verbe ?",
@@ -389,61 +449,61 @@
           "rangent"
         ],
         "reponse_correcte": 3,
-        "explication": "Quand le moment change, c'est « rangent » qui se transforme : le verbe est le mot qui bouge."
+        "explication": "Les élèves ne rangent pas leurs affaires : le mot encadré par « ne … pas » est « rangent »."
       }
     ],
     "entrainement": [
       {
-        "titre": "Le mot qui change quand le moment change",
+        "titre": "Le verbe encadré par ne … pas",
         "consigne": "Écris le verbe de la phrase. Un seul mot, écrit comme dans la phrase.",
         "questions": [
           {
             "id": 1,
             "enonce": "Écris le verbe : Timéo attrape le ballon.",
             "reponse_attendue": "attrape",
-            "indice": "Redis la phrase avec « hier » : le seul mot qui change, c'est le verbe."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 2,
             "enonce": "Écris le verbe : Nour raconte une histoire à sa sœur.",
             "reponse_attendue": "raconte",
-            "indice": "Redis la phrase avec « demain » : le mot qui n'est plus pareil, c'est le verbe."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           },
           {
             "id": 3,
             "enonce": "Écris le verbe : Fatou raconte une histoire drôle.",
             "reponse_attendue": "raconte",
-            "indice": "Essaie « autrefois », puis « en ce moment » : repère le mot qui bouge."
+            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
           },
           {
             "id": 4,
             "enonce": "Écris le verbe : Le chat dort sous la table.",
             "reponse_attendue": "dort",
-            "indice": "Redis la phrase avec « hier » : un seul mot se transforme, c'est lui."
+            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
           },
           {
             "id": 5,
             "enonce": "Écris le verbe : Fatou dessine le portrait de son grand-père.",
             "reponse_attendue": "dessine",
-            "indice": "Change le moment : dis la phrase avec « demain » et écoute quel mot change."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           },
           {
             "id": 6,
             "enonce": "Écris le verbe : Nous chantons dans la cour.",
             "reponse_attendue": "chantons",
-            "indice": "Redis la phrase avec « hier » : recopie le mot qui bouge, tel qu'il est écrit ici."
+            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
           },
           {
             "id": 7,
             "enonce": "Écris le verbe : Sacha remplit sa gourde.",
             "reponse_attendue": "remplit",
-            "indice": "Essaie « demain » : le mot qui se transforme est le verbe."
+            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
           },
           {
             "id": 8,
             "enonce": "Écris le verbe : Jade grimpe sur le mur de l'école.",
             "reponse_attendue": "grimpe",
-            "indice": "Redis la phrase avec « autrefois » : un seul mot change, c'est le verbe."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           }
         ]
       },
@@ -455,49 +515,49 @@
             "id": 1,
             "enonce": "Écris le verbe : Louna prépare son cartable.",
             "reponse_attendue": "prépare",
-            "indice": "Redis la phrase avec « hier » : le mot qui change, c'est le verbe."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           },
           {
             "id": 2,
             "enonce": "Écris le verbe : Le vent souffle très fort.",
             "reponse_attendue": "souffle",
-            "indice": "Essaie « demain » : un seul mot se transforme."
+            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
           },
           {
             "id": 3,
             "enonce": "Écris le verbe : Vous écoutez la maîtresse.",
             "reponse_attendue": "écoutez",
-            "indice": "Redis la phrase avec « demain » : le mot qui n'est plus pareil, c'est le verbe."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 4,
             "enonce": "Écris le verbe : Inès plie sa feuille en deux.",
             "reponse_attendue": "plie",
-            "indice": "Redis la phrase avec « autrefois » : le mot qui bouge est le verbe."
+            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
           },
           {
             "id": 5,
             "enonce": "Écris le verbe : Les oiseaux chantent dans le jardin.",
             "reponse_attendue": "chantent",
-            "indice": "Essaie « hier », puis « demain » : un seul mot bouge à chaque fois."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           },
           {
             "id": 6,
             "enonce": "Écris le verbe : Malo pousse la porte de la classe.",
             "reponse_attendue": "pousse",
-            "indice": "Redis la phrase avec « demain » : recopie le mot qui a changé, tel qu'il est écrit ici."
+            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
           },
           {
             "id": 7,
             "enonce": "Écris le verbe : Je remplis mon verre d'eau.",
             "reponse_attendue": "remplis",
-            "indice": "Change le moment : le mot qui se transforme est le verbe."
+            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
           },
           {
             "id": 8,
             "enonce": "Écris le verbe : Rosalie choisit un livre à la bibliothèque.",
             "reponse_attendue": "choisit",
-            "indice": "Redis la phrase avec « hier » : un seul mot n'est plus pareil."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           }
         ]
       }
@@ -506,6 +566,26 @@
   {
     "item_code": "P12",
     "type": "exercice",
+    "lecon": {
+      "titre": "Mettre un nom au pluriel",
+      "regle": "Pour parler de plusieurs choses, on ajoute le plus souvent un -s à la fin du nom.",
+      "procedure": [
+        "Recopie le nom sans rien changer au début.",
+        "Ajoute un -s tout à la fin.",
+        "Relis : les accents restent exactement les mêmes."
+      ],
+      "exemples": [
+        {
+          "phrase": "un vélo → plusieurs…",
+          "demonstration": "Je recopie « vélo », j'ajoute -s à la fin → j'écris « vélos »."
+        },
+        {
+          "phrase": "une étagère → plusieurs…",
+          "demonstration": "Je recopie « étagère » avec ses deux accents, puis j'ajoute -s → j'écris « étagères »."
+        }
+      ],
+      "piege": "Le -s du pluriel ne s'entend pas : c'est le sens, « il y en a plusieurs », qui te dit de l'écrire, jamais ton oreille."
+    },
     "diagnostic": [
       {
         "question": "Dans quelle phrase le mot au pluriel est-il bien écrit ?",

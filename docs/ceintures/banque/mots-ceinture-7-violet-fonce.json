@@ -2,6 +2,26 @@
   {
     "item_code": "M36",
     "type": "exercice",
+    "lecon": {
+      "titre": "Un seul mot ou deux mots ?",
+      "regle": "Ces mots invariables ne changent jamais ; certains s'écrivent soudés en un seul mot, d'autres restent séparés.",
+      "procedure": [
+        "Lis les parenthèses : elles donnent le sens et le nombre de mots.",
+        "Retrouve les morceaux qui le composent.",
+        "Écris-les soudés ou séparés selon l'indication, sans trait d'union, avec les accents."
+      ],
+      "exemples": [
+        {
+          "phrase": "___, la classe visite le moulin. (le jour où l'on est ; un seul mot)",
+          "demonstration": "→ aujourd'hui : tout est soudé, avec une apostrophe après le d."
+        },
+        {
+          "phrase": "Rosalie relit sa liste ___ le car arrive. (juste au moment où ; deux mots)",
+          "demonstration": "→ dès que : deux mots séparés, avec un accent grave sur le è."
+        }
+      ],
+      "piege": "Rien dans le sens ne dit si les mots sont collés : cela s'apprend."
+    },
     "diagnostic": [
       {
         "question": "Comment s'écrit le mot invariable qui veut dire « jusqu'au moment où » ?",
@@ -140,6 +160,26 @@
   {
     "item_code": "M37",
     "type": "classement",
+    "lecon": {
+      "titre": "Ranger sous le terme générique",
+      "regle": "Un terme générique est un mot général qui regroupe des mots plus précis, appelés termes spécifiques.",
+      "procedure": [
+        "Lis le terme générique et ce qu'il veut dire dans la consigne.",
+        "Pour chaque mot précis, dis la phrase « … est un/une … ».",
+        "Range le mot là où cette phrase est vraie."
+      ],
+      "exemples": [
+        {
+          "phrase": "le chêne — terme générique : un arbre",
+          "demonstration": "« Le chêne est un arbre » : c'est vrai, il se range sous « un arbre »."
+        },
+        {
+          "phrase": "le gland — terme générique : un arbre",
+          "demonstration": "« Le gland est un arbre » : c'est faux, le gland est le fruit du chêne : il ne va pas là."
+        }
+      ],
+      "piege": "Un mot peut faire penser à une catégorie sans en faire partie : essaie toujours la phrase."
+    },
     "diagnostic": [
       {
         "question": "Quel mot est le terme générique des mots *rose*, *tulipe* et *marguerite* ?",
@@ -288,6 +328,26 @@
   {
     "item_code": "M44",
     "type": "classement",
+    "lecon": {
+      "titre": "Classer par degré d'intensité",
+      "regle": "Des mots proches disent la même idée plus ou moins fort : ils se rangent du plus faible au plus fort.",
+      "procedure": [
+        "Repère l'idée commune : la peur, la joie, la saleté…",
+        "Compare seulement les mots qui disent cette même idée.",
+        "Range-les du plus faible au plus fort dans les colonnes."
+      ],
+      "exemples": [
+        {
+          "phrase": "tiède — chaud — brûlant",
+          "demonstration": "Les trois disent la chaleur : tiède est faible, chaud est fort, brûlant est le plus fort des trois."
+        },
+        {
+          "phrase": "chaud — petit — brûlant — minuscule",
+          "demonstration": "Deux idées sont mélangées : je range la chaleur d'un côté (chaud, puis brûlant) et la taille de l'autre (petit, puis minuscule)."
+        }
+      ],
+      "piege": "Ne compare pas des mots de deux idées différentes : chaque idée a son propre classement."
+    },
     "diagnostic": [
       {
         "question": "Parmi ces quatre mots, lequel exprime la plus grande intensité ?",

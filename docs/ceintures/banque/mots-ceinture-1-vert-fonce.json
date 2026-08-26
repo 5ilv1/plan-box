@@ -2,6 +2,26 @@
   {
     "item_code": "M14",
     "type": "exercice",
+    "lecon": {
+      "titre": "Écrire les mots invariables",
+      "regle": "Un mot invariable s'écrit toujours de la même façon : il ne prend jamais la marque du pluriel.",
+      "procedure": [
+        "Lis ce qui est entre parenthèses : cela dit quel mot il faut.",
+        "Écris ce mot de mémoire, lettre après lettre.",
+        "Vérifie sa fin : accent ? lettre muette ?"
+      ],
+      "exemples": [
+        {
+          "phrase": "Sacha parle ___ vite. (plus qu'il ne faut)",
+          "demonstration": "J'écris t-r-o-p : on n'entend pas le p, mais il s'écrit toujours."
+        },
+        {
+          "phrase": "Malo a ___ fini son exercice. (avant le moment prévu)",
+          "demonstration": "J'écris d-é-j-à : un accent aigu sur le e, un accent grave sur le a."
+        }
+      ],
+      "piege": "Quand un mot invariable finit déjà par un s, ce s fait partie du mot : ne l'enlève pas."
+    },
     "diagnostic": [
       {
         "question": "Un seul de ces quatre mots invariables est correctement orthographié. Lequel ?",
@@ -164,6 +184,26 @@
   {
     "item_code": "M11",
     "type": "exercice",
+    "lecon": {
+      "titre": "Écrire le féminin d'un nom",
+      "regle": "Beaucoup de noms forment leur féminin en ajoutant un -e à la fin du masculin, sans rien changer d'autre.",
+      "procedure": [
+        "Écris d'abord le nom masculin en entier, avec ses lettres muettes.",
+        "Ajoute un -e à la fin, sans rien enlever.",
+        "Relis : la lettre muette du masculin s'entend maintenant."
+      ],
+      "exemples": [
+        {
+          "phrase": "un lutin → une …",
+          "demonstration": "J'écris l-u-t-i-n, puis j'ajoute le -e : une lutine. On entend le n."
+        },
+        {
+          "phrase": "un candidat → une …",
+          "demonstration": "Le t de « candidat » ne s'entend pas ; j'ajoute le -e et on entend « candidate »."
+        }
+      ],
+      "piege": "Ne coupe pas le mot masculin : le féminin s'écrit à partir du mot entier."
+    },
     "diagnostic": [
       {
         "question": "Quel est le féminin du nom « un lapin » ?",
@@ -302,6 +342,26 @@
   {
     "item_code": "M16",
     "type": "classement",
+    "lecon": {
+      "titre": "Déterminant, nom ou adjectif",
+      "regle": "Dans un groupe nominal, le déterminant annonce le nom, le nom désigne la chose, et l'adjectif dit comment elle est.",
+      "procedure": [
+        "Lis le mot entre astérisques avec les mots qui l'entourent.",
+        "Si c'est le petit mot devant le nom (le, la, les, un, une, des), c'est un déterminant.",
+        "Sinon, désigne-t-il la chose (nom) ou dit-il comment elle est (adjectif) ?"
+      ],
+      "exemples": [
+        {
+          "phrase": "Le maître ouvre *une* boîte de craies.",
+          "demonstration": "« une » est placé devant le nom « boîte » : c'est un déterminant."
+        },
+        {
+          "phrase": "Nour porte des chaussettes *rayées*.",
+          "demonstration": "« rayées » ne désigne pas la chose ; il dit comment sont les chaussettes : c'est un adjectif."
+        }
+      ],
+      "piege": "L'adjectif n'est pas toujours derrière le nom : « un grand carton »."
+    },
     "diagnostic": [
       {
         "question": "Dans le groupe « une jolie fleur », quel mot est le nom ?",
@@ -450,6 +510,26 @@
   {
     "item_code": "M17",
     "type": "exercice",
+    "lecon": {
+      "titre": "Donner l'infinitif d'un verbe",
+      "regle": "L'infinitif est la forme du verbe qui ne change jamais, celle que l'on lit dans le dictionnaire.",
+      "procedure": [
+        "Repère le verbe conjugué dans la phrase.",
+        "Dis-le après « il faut… » : la forme qui vient est l'infinitif.",
+        "Écris-la : elle se termine par -er, -ir, -re ou -oir."
+      ],
+      "exemples": [
+        {
+          "phrase": "Malo *plante* un bulbe dans un pot.",
+          "demonstration": "Il faut… planter. L'infinitif est « planter »."
+        },
+        {
+          "phrase": "Rosalie *peint* une grande affiche.",
+          "demonstration": "Il faut… peindre. L'infinitif est « peindre », et non « peinder » : il ne finit pas par -er."
+        }
+      ],
+      "piege": "N'ajoute pas -er à tout : « il faut partir » donne « partir »."
+    },
     "diagnostic": [
       {
         "question": "Quel est l'infinitif du verbe dans « Louna *nage* dans le grand bassin » ?",

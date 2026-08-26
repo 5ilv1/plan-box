@@ -2,6 +2,26 @@
   {
     "item_code": "T50",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Écrire un portrait complet",
+      "regle": "Un portrait complet passe par trois moments : l'apparence, le caractère, puis une action qui montre ce caractère.",
+      "procedure": [
+        "Décris l'apparence : le visage, les cheveux, puis un vêtement ou un objet toujours gardé.",
+        "Dis le caractère : deux qualités et un seul défaut.",
+        "Termine par une action précise qui le fait voir, avec une comparaison en « comme »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Ses cheveux tressés tiennent avec un élastique rouge ; un carnet dépasse de sa poche.",
+          "demonstration": "Voilà l'apparence : les cheveux, puis l'objet gardé sur soi."
+        },
+        {
+          "phrase": "Elle range ses crayons par nuances, alignés comme les tuyaux d'un orgue.",
+          "demonstration": "L'action arrive en dernier : elle fait voir le soin annoncé plus haut."
+        }
+      ],
+      "piege": "Ne termine pas sur ton avis (« je l'aime beaucoup ») : ton portrait s'arrête sur l'action."
+    },
     "diagnostic": [
       {
         "question": "Un portrait complet réunit trois choses. Lesquelles ?",
@@ -62,6 +82,26 @@
   {
     "item_code": "T37",
     "type": "qcm",
+    "lecon": {
+      "titre": "Sens propre, sens figuré",
+      "regle": "Au sens propre, le mot dit ce qui se passe vraiment ; au sens figuré, il n'en garde que l'idée.",
+      "procedure": [
+        "Regarde qui fait l'action, ou de quoi la phrase parle.",
+        "Demande-toi si c'est possible pour de vrai : si oui, sens propre.",
+        "Si c'est impossible, cherche l'idée que le mot garde : c'est le sens figuré."
+      ],
+      "exemples": [
+        {
+          "phrase": "La grêle a écrasé toutes les tomates du jardin.",
+          "demonstration": "La grêle écrase vraiment les tomates : sens propre."
+        },
+        {
+          "phrase": "Le trac a écrasé Rosalie juste avant d'entrer en scène.",
+          "demonstration": "Le trac ne pèse rien : impossible pour de vrai. Il ne reste que l'idée d'un poids : sens figuré."
+        }
+      ],
+      "piege": "Une expression toute faite est presque toujours figurée : « tomber dans les pommes » ne parle pas de fruits."
+    },
     "diagnostic": [
       {
         "question": "Dans quelle phrase le verbe « dévorer » est-il employé au sens figuré ?",
@@ -280,6 +320,26 @@
   {
     "item_code": "T39",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Imparfait ou passé simple",
+      "regle": "Dans un récit au passé, l'imparfait dit ce qui durait ou se répétait ; le passé simple raconte l'action courte.",
+      "procedure": [
+        "Repère les mots autour du verbe : « tous les soirs », « autrefois », « depuis », « pendant que » annoncent l'imparfait.",
+        "« Soudain », « aussitôt », « d'un bond », « dès que » annoncent le passé simple.",
+        "Sans indice, demande-toi si l'action dure ou si elle est finie d'un coup."
+      ],
+      "exemples": [
+        {
+          "phrase": "Chaque hiver, Adam (descendre) … à la cave chercher du bois.",
+          "demonstration": "« Chaque hiver » dit que l'action se répétait : « descendait »."
+        },
+        {
+          "phrase": "Cette fois, la lampe (s'éteindre) … avant la dernière marche.",
+          "demonstration": "L'action est courte et fait avancer l'histoire : « s'éteignit »."
+        }
+      ],
+      "piege": "« Ce matin-là », « ce jour-là » posent seulement le moment : ils ne choisissent pas le temps du verbe, c'est la durée de l'action qui décide."
+    },
     "diagnostic": [
       {
         "question": "Tu écris un récit au passé : « Depuis le matin, le vent (souffler) ___ sur la lande. » Quelle forme convient ?",
@@ -374,6 +434,26 @@
   {
     "item_code": "T38",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Copier un long texte",
+      "regle": "Recopier sans erreur, c'est reproduire chaque mot, chaque accent, chaque majuscule et chaque signe de ponctuation.",
+      "procedure": [
+        "Lis un groupe de mots entier et repère les pièges : accents, majuscules, traits d'union.",
+        "Écris ce groupe sans regarder le modèle, d'un seul trait.",
+        "Compare avant le groupe suivant, puis relis tout à la fin en suivant du doigt."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le vieux libraire rangeait ses livres à l'abri de la lumière.",
+          "demonstration": "Je lis « Le vieux libraire rangeait », je l'écris de mémoire, puis je vérifie."
+        },
+        {
+          "phrase": "À l'aube, Éliane traversa la cour du château sans bruit.",
+          "demonstration": "Ici je repère d'abord les majuscules accentuées « À » et « É », puis l'accent de « château »."
+        }
+      ],
+      "piege": "Copier lettre par lettre fait perdre du temps et ajoute des erreurs."
+    },
     "diagnostic": [
       {
         "question": "Le modèle est : « La vieille dame portait un châle gris tissé à la main. » Quelle copie est exacte ?",

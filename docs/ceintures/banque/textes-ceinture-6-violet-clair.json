@@ -2,6 +2,26 @@
   {
     "item_code": "T34",
     "type": "qcm",
+    "lecon": {
+      "titre": "Construire une comparaison",
+      "regle": "Comparer, c'est rapprocher ce dont tu parles d'une chose qui lui ressemble sur un point précis.",
+      "procedure": [
+        "Dis ce que tu veux faire voir : un geste, un son, une couleur.",
+        "Cherche une image qui possède vraiment ce point commun, et relie-la : comme, pareil à, on dirait, ressemble à, aussi… que.",
+        "Relis : si l'image dit le contraire, change-la."
+      ],
+      "exemples": [
+        {
+          "phrase": "Je veux faire entendre que la voix du gardien est grave.",
+          "demonstration": "Le point commun est le son grave : « Sa voix roule comme un tonnerre lointain. »"
+        },
+        {
+          "phrase": "Je veux dire que Timéo est silencieux.",
+          "demonstration": "« Silencieux comme un tambour » dirait le contraire : j'écris « comme un flocon de neige »."
+        }
+      ],
+      "piege": "Ajouter « très » ou un adjectif, ce n'est pas comparer : il faut une autre chose."
+    },
     "diagnostic": [
       {
         "question": "Dans laquelle de ces phrases y a-t-il une comparaison ?",
@@ -220,6 +240,26 @@
   {
     "item_code": "T35",
     "type": "classement",
+    "lecon": {
+      "titre": "Reconnaître les substituts",
+      "regle": "Pour ne pas répéter le nom du personnage, on le remplace par un pronom, un groupe nominal ou son nom propre.",
+      "procedure": [
+        "Repère le mot ou le groupe qui désigne le personnage.",
+        "Un seul petit mot de remplacement (il, elle, lui, celui-ci) : c'est un pronom.",
+        "Un déterminant suivi d'un nom : groupe nominal. Un prénom : nom propre."
+      ],
+      "exemples": [
+        {
+          "phrase": "Nour marche sur le sable mouillé. *Elle* retire ses chaussures.",
+          "demonstration": "« Elle » remplace « Nour » sans la nommer : c'est un pronom."
+        },
+        {
+          "phrase": "Un homme attend sous l'horloge. *Le voyageur pressé* consulte l'écran.",
+          "demonstration": "« Le voyageur pressé » : un déterminant suivi d'un nom, donc un groupe nominal."
+        }
+      ],
+      "piege": "« Lui » et « celui-ci » sont des pronoms eux aussi, même s'ils ne ressemblent pas à « il »."
+    },
     "diagnostic": [
       {
         "question": "« Rosalie ouvre la porte du grenier. La fillette n'a pas peur du noir. » Qu'est-ce que « La fillette » ?",
@@ -368,6 +408,26 @@
   {
     "item_code": "T32",
     "type": "qcm",
+    "lecon": {
+      "titre": "Cause et conséquence",
+      "regle": "La cause explique pourquoi une chose arrive ; la conséquence dit ce qui arrive à cause d'elle.",
+      "procedure": [
+        "Repère ce qui explique, et ce qui arrive à cause de cela.",
+        "Devant ce qui explique : parce que, car, puisque — ou « comme », en tête de phrase.",
+        "Devant le résultat : donc, alors, c'est pourquoi."
+      ],
+      "exemples": [
+        {
+          "phrase": "Timéo est resté à l'infirmerie … il s'était tordu la cheville.",
+          "demonstration": "La cheville explique pourquoi il est resté : c'est la cause, « parce qu' »."
+        },
+        {
+          "phrase": "La rivière avait débordé … le pont est resté fermé.",
+          "demonstration": "« Comme la rivière avait débordé, le pont est resté fermé » : la cause d'abord. Ou « …, c'est pourquoi le pont est resté fermé »."
+        }
+      ],
+      "piege": "Change le mot et relis : si la phrase ne veut plus rien dire, tu as inversé."
+    },
     "diagnostic": [
       {
         "question": "« Malo n'a pas pu terminer son dessin ___ la cloche a sonné trop tôt. » Quel mot convient ?",
@@ -586,6 +646,26 @@
   {
     "item_code": "T36",
     "type": "classement",
+    "lecon": {
+      "titre": "Relire un texte dialogué",
+      "regle": "En relisant, tu vérifies que tout raconte la même histoire, et que chaque parole est ponctuée.",
+      "procedure": [
+        "Relis en entier et corrige la phrase qui contredit ce que tu as écrit avant.",
+        "Dans un dialogue, chaque réplique commence par un tiret, la réponse comprise.",
+        "Dans un récit, une parole rapportée s'écrit entre guillemets, après les deux-points."
+      ],
+      "exemples": [
+        {
+          "phrase": "La cabane ne comptait qu'une pièce. Plus tard, Timéo est monté au grenier.",
+          "demonstration": "La deuxième phrase contredit la première : je corrige."
+        },
+        {
+          "phrase": "— Tu viens répéter ? demande Lila. Je te rejoins après le goûter, répond Malo.",
+          "demonstration": "La réponse est une réplique : il lui manque son tiret."
+        }
+      ],
+      "piege": "Les deux-points ne suffisent pas : sans guillemets, on ne voit plus où la parole s'arrête."
+    },
     "diagnostic": [
       {
         "question": "Dans quelle phrase la parole rapportée est-elle correctement encadrée ?",

@@ -2,6 +2,26 @@
   {
     "item_code": "M27",
     "type": "exercice",
+    "lecon": {
+      "titre": "Ces mots ne changent jamais",
+      "regle": "Ces petits mots restent identiques dans toutes les phrases : on ne leur ajoute ni s, ni e.",
+      "procedure": [
+        "Lis la parenthèse : elle donne le sens du mot et sa première lettre.",
+        "Écris le mot, puis vérifie sa fin : accent, lettre muette.",
+        "S'il existe un mot qui se prononce pareil, choisis celui qui a le sens de la phrase."
+      ],
+      "exemples": [
+        {
+          "phrase": "Timéo glisse sa photo ___ le cahier. (à l'intérieur de)",
+          "demonstration": "J'écris « dans » : le s ne s'entend pas, mais il reste toujours."
+        },
+        {
+          "phrase": "Adam s'assoit ___ de la fenêtre. (tout à côté)",
+          "demonstration": "J'écris « près », avec un accent grave : « prêt » voudrait dire préparé."
+        }
+      ],
+      "piege": "Certains de ces mots s'écrivent en deux morceaux : n'oublie pas le second."
+    },
     "diagnostic": [
       {
         "question": "Quel mot invariable est écrit correctement ?",
@@ -164,6 +184,26 @@
   {
     "item_code": "M28",
     "type": "qcm",
+    "lecon": {
+      "titre": "Le sens d'un mot dans la phrase",
+      "regle": "Un même mot peut avoir plusieurs sens : c'est la phrase autour de lui qui dit lequel.",
+      "procedure": [
+        "Relis la phrase en entier.",
+        "Repère les mots voisins qui renseignent : le lieu, l'objet, le moment.",
+        "Choisis le sens qui va avec eux, même si tu connais un autre sens du mot."
+      ],
+      "exemples": [
+        {
+          "phrase": "Adam souligne le titre avec sa *règle*.",
+          "demonstration": "« souligne » et « avec » montrent l'objet plat qui sert à tracer."
+        },
+        {
+          "phrase": "Le maître rappelle la *règle* du jeu de ballon.",
+          "demonstration": "« du jeu » montre qu'il s'agit cette fois de ce qu'il faut respecter pour jouer : même mot, autre sens."
+        }
+      ],
+      "piege": "Ne choisis pas le sens que tu connais le mieux : lis la phrase jusqu'au bout."
+    },
     "diagnostic": [
       {
         "question": "Dans « Timéo range sa règle dans le tiroir de son *bureau* », que veut dire le mot *bureau* ?",
@@ -382,6 +422,26 @@
   {
     "item_code": "M29",
     "type": "qcm",
+    "lecon": {
+      "titre": "Remplacer par un synonyme",
+      "regle": "Deux synonymes ont le même sens ou presque : l'un peut remplacer l'autre sans changer ce que dit la phrase.",
+      "procedure": [
+        "Relis la phrase avec le mot entre astérisques.",
+        "Mets chaque mot proposé à sa place et relis la phrase en entier.",
+        "Garde celui qui garde le même sens ; écarte ceux qui disent autre chose."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le vent est *fort* ce matin.",
+          "demonstration": "J'essaie « violent » : la phrase dit la même chose. « faible » dirait le contraire."
+        },
+        {
+          "phrase": "Yanis aime le foot ; il *aime* aussi le dessin.",
+          "demonstration": "Pour ne pas répéter, je remplace le second par « apprécie » : apprécier, c'est aimer."
+        }
+      ],
+      "piege": "Un synonyme doit convenir à cette phrase-là : deux mots proches ne se remplacent pas toujours."
+    },
     "diagnostic": [
       {
         "question": "Quel mot est un synonyme de « rapide » ?",
@@ -600,6 +660,26 @@
   {
     "item_code": "M30",
     "type": "classement",
+    "lecon": {
+      "titre": "Reconnaître la classe d'un mot",
+      "regle": "Le nom désigne, le déterminant l'annonce, le verbe dit ce qui se passe, l'adjectif dit comment est la chose.",
+      "procedure": [
+        "Change le moment : « Hier… ». Le mot qui change de forme est le verbe.",
+        "Sinon, est-ce le petit mot placé devant le nom ? C'est un déterminant.",
+        "Sinon, désigne-t-il la chose (nom) ou dit-il comment elle est (adjectif) ?"
+      ],
+      "exemples": [
+        {
+          "phrase": "Le facteur *apporte* une lettre.",
+          "demonstration": "Hier, le facteur apportait : le mot change avec le temps, c'est un verbe."
+        },
+        {
+          "phrase": "Nour a mis un pull *épais*.",
+          "demonstration": "« épais » ne change pas avec le temps ; il dit comment est le pull : c'est un adjectif."
+        }
+      ],
+      "piege": "L'adjectif n'est pas toujours derrière le nom : « une longue route »."
+    },
     "diagnostic": [
       {
         "question": "Dans « Le vieux chêne perd ses feuilles », quelle est la classe du mot « perd » ?",

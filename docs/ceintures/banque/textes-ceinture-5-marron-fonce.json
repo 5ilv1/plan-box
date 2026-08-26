@@ -2,6 +2,26 @@
   {
     "item_code": "T49",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Montrer sans dire",
+      "regle": "On fait deviner le caractère d'un personnage en racontant un geste, au lieu d'écrire le mot qui le nomme.",
+      "procedure": [
+        "Nomme dans ta tête le caractère à faire deviner, puis interdis-toi ce mot.",
+        "Cherche un geste précis que ce personnage-là ferait.",
+        "Raconte ce geste, sans commencer par « il est » ou « elle est »."
+      ],
+      "exemples": [
+        {
+          "phrase": "Je veux faire deviner que Malo est patient.",
+          "demonstration": "Pas « Malo est patient », mais : « Malo attend son tour au bout de la file, sans soupirer. »"
+        },
+        {
+          "phrase": "Je veux faire deviner qu'Inès est étourdie.",
+          "demonstration": "Un défaut se montre pareil : « Inès retourne tout son cartable ; ses lunettes sont sur sa tête. »"
+        }
+      ],
+      "piege": "Ajouter le mot à la fin (« … : elle est vraiment étourdie ») annule tout."
+    },
     "diagnostic": [
       {
         "question": "Quelle phrase montre que Rosalie est généreuse, sans le dire ?",
@@ -58,6 +78,26 @@
   {
     "item_code": "T31",
     "type": "ecriture_contrainte",
+    "lecon": {
+      "titre": "Découper en paragraphes",
+      "regle": "Un paragraphe regroupe ce qui va ensemble : on change de paragraphe quand on change de moment ou de lieu.",
+      "procedure": [
+        "Compte les moments de ton histoire : un moment, un paragraphe.",
+        "Écris un moment en entier, sans le mélanger avec le suivant.",
+        "Va à la ligne, et ouvre le paragraphe suivant par un connecteur de temps."
+      ],
+      "exemples": [
+        {
+          "phrase": "Je raconte l'anniversaire de Fatou.",
+          "demonstration": "Trois moments : l'arrivée, les cadeaux, la fin de la fête. Donc trois paragraphes."
+        },
+        {
+          "phrase": "Malo a cherché son chat toute la matinée dans la maison.",
+          "demonstration": "La suite se passe ailleurs : nouveau lieu, nouveau paragraphe. « L'après-midi, il a fouillé le jardin. »"
+        }
+      ],
+      "piege": "Ce n'est pas la longueur qui commande : c'est le changement de moment ou de lieu."
+    },
     "diagnostic": [
       {
         "question": "Quand commence-t-on un nouveau paragraphe dans un récit ?",
@@ -114,6 +154,26 @@
   {
     "item_code": "T27",
     "type": "qcm",
+    "lecon": {
+      "titre": "Choisir entre qui et que",
+      "regle": "« qui » remplace le mot répété quand c'est lui qui fait l'action ; « que » quand c'est quelqu'un d'autre qui agit.",
+      "procedure": [
+        "Repère le mot répété dans les deux phrases.",
+        "S'il fait l'action, écris « qui » : le verbe vient juste après.",
+        "Sinon, écris « que » — « qu' » devant une voyelle — et le sujet suit."
+      ],
+      "exemples": [
+        {
+          "phrase": "Rosalie a une écharpe. Cette écharpe pique un peu.",
+          "demonstration": "« Cette écharpe » fait l'action de piquer : « Rosalie a une écharpe qui pique un peu. »"
+        },
+        {
+          "phrase": "J'ai retrouvé la casquette. Inès cherche cette casquette.",
+          "demonstration": "Ce n'est pas la casquette qui cherche, c'est Inès : « la casquette qu'Inès cherche »."
+        }
+      ],
+      "piege": "Après « qui », on ne remet pas le mot remplacé : « une porte qui grince », jamais « qui elle grince »."
+    },
     "diagnostic": [
       {
         "question": "Quelle phrase emploie correctement « qui » ou « que » ?",
@@ -332,6 +392,26 @@
   {
     "item_code": "T30",
     "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Imparfait ou passé composé",
+      "regle": "Dans un récit au passé, l'imparfait peint le décor ; le passé composé raconte l'action qui arrive d'un coup.",
+      "procedure": [
+        "Décor, ou ce qui durait pendant ce temps-là : imparfait.",
+        "Action soudaine, souvent annoncée par « soudain » ou « tout à coup » : passé composé.",
+        "Verbe relié par « et » à un passé composé : écris seulement le participe passé."
+      ],
+      "exemples": [
+        {
+          "phrase": "Ce matin-là, la neige (recouvrir) … encore le préau.",
+          "demonstration": "C'est le décor du récit, ce qui durait : « recouvrait »."
+        },
+        {
+          "phrase": "Tout à coup, Louna a poussé la porte et (éteindre) … la lumière.",
+          "demonstration": "« a poussé » est au passé composé et « et » relie les deux verbes : on écrit « éteint »."
+        }
+      ],
+      "piege": "Une même phrase peut mélanger les deux temps : c'est ce que chaque verbe raconte qui décide."
+    },
     "diagnostic": [
       {
         "question": "Dans « Hier soir, Jade a ___ une histoire à son petit frère. (lire) », quelle forme convient ?",
@@ -426,6 +506,26 @@
   {
     "item_code": "T33",
     "type": "qcm",
+    "lecon": {
+      "titre": "Adapter les mots au texte",
+      "regle": "Les mots que tu emploies doivent aller avec le sujet du texte et avec la personne à qui tu écris.",
+      "procedure": [
+        "Demande-toi de quoi parle le texte et à qui il s'adresse.",
+        "Écarte les mots d'un autre univers, et ceux qu'on n'emploie qu'à l'oral entre camarades.",
+        "Garde celui que le reste de la phrase autorise."
+      ],
+      "exemples": [
+        {
+          "phrase": "Je décris une ferme : « les vaches rentrent dans … ».",
+          "demonstration": "« Hublot » et « cale » viennent du bateau : le mot de la ferme, c'est « l'étable »."
+        },
+        {
+          "phrase": "J'écris l'affiche du spectacle pour toute l'école.",
+          "demonstration": "« Ça va être trop bien » vient de la cour : j'écris « Venez nombreux assister au spectacle »."
+        }
+      ],
+      "piege": "Après « à toute vitesse », « flâne » ne convient pas : relis toute la phrase."
+    },
     "diagnostic": [
       {
         "question": "Tu écris une lettre à la directrice pour demander une salle. Quelle phrase convient ?",

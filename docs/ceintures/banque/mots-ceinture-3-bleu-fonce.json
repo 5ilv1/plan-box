@@ -2,6 +2,26 @@
   {
     "item_code": "M22",
     "type": "exercice",
+    "lecon": {
+      "titre": "Démonstratifs et possessifs",
+      "regle": "Le déterminant démonstratif (ce, cet, cette, ces) montre ; le déterminant possessif (mon, ton, son, ses, leur…) dit à qui c'est.",
+      "procedure": [
+        "Regarde le nom : masculin, féminin, singulier ou pluriel ?",
+        "Pour montrer : ce devant un nom masculin, cet devant une voyelle, cette devant un nom féminin, ces au pluriel.",
+        "Pour dire à qui c'est : compte les propriétaires, puis les objets."
+      ],
+      "exemples": [
+        {
+          "phrase": "cette table → au pluriel : … tables",
+          "demonstration": "Le nom passe au pluriel : cette devient « ces » — ces tables."
+        },
+        {
+          "phrase": "les baskets de Sacha → … baskets",
+          "demonstration": "Un seul propriétaire, plusieurs objets : « ses baskets »."
+        }
+      ],
+      "piege": "« ses » et « ces » s'entendent pareil : « ses » dit à qui c'est, « ces » montre."
+    },
     "diagnostic": [
       {
         "question": "Quel déterminant démonstratif convient : « ___ arbre perd ses feuilles. » ?",
@@ -140,6 +160,26 @@
   {
     "item_code": "M23",
     "type": "classement",
+    "lecon": {
+      "titre": "Le m devant m, b, p",
+      "regle": "Devant les lettres m, b et p, on écrit m à la place de n.",
+      "procedure": [
+        "Repère le n ou le m au milieu du mot.",
+        "Regarde la lettre juste après.",
+        "Si c'est m, b ou p, il faut un m ; sinon, on garde le n."
+      ],
+      "exemples": [
+        {
+          "phrase": "ponpier ou pompier ?",
+          "demonstration": "Après le n, il y a un p : il faut un m, on écrit « pompier »."
+        },
+        {
+          "phrase": "pantalon ou pamtalon ?",
+          "demonstration": "Après le n, il y a un t : ce n'est ni m, ni b, ni p, on garde le n, « pantalon »."
+        }
+      ],
+      "piege": "Quelques mots font exception, comme « bonbon » : ceux-là, on les retient par cœur."
+    },
     "diagnostic": [
       {
         "question": "Comment écrit-on le mot qui manque ? « Rosalie s'est fait mal à la ___. »",
@@ -286,6 +326,26 @@
   {
     "item_code": "M15",
     "type": "exercice",
+    "lecon": {
+      "titre": "Le féminin en -euse, -trice, -ve",
+      "regle": "Les noms en -eur font souvent leur féminin en -euse, ceux en -teur en -trice, et ceux en -f en -ve.",
+      "procedure": [
+        "Regarde d'abord si le nom masculin se termine par -teur : dans ce cas, écris -trice.",
+        "Sinon, une fin en -eur donne -euse, et une fin en -f donne -ve.",
+        "Écris le mot entier : seule la fin change."
+      ],
+      "exemples": [
+        {
+          "phrase": "un skieur → une …",
+          "demonstration": "La fin est -eur : j'écris -euse, une « skieuse »."
+        },
+        {
+          "phrase": "un inspecteur → une …",
+          "demonstration": "La fin est -teur : j'écris -trice, une « inspectrice », et non « inspecteuse »."
+        }
+      ],
+      "piege": "Quelques noms en -teur font quand même -euse, comme « un menteur, une menteuse » : on les retient par cœur."
+    },
     "diagnostic": [
       {
         "question": "Quel est le féminin de « un chercheur » ?",
@@ -424,6 +484,26 @@
   {
     "item_code": "M26",
     "type": "classement",
+    "lecon": {
+      "titre": "Trouver le champ lexical",
+      "regle": "Les mots d'un même champ lexical parlent tous du même sujet.",
+      "procedure": [
+        "Lis le titre de chaque colonne : ce sont les sujets.",
+        "Pour chaque mot, demande-toi de quoi on parle quand on l'emploie.",
+        "Range-le dans le seul sujet où il se dit naturellement."
+      ],
+      "exemples": [
+        {
+          "phrase": "le filet, le maillot, l'arbitre",
+          "demonstration": "Ces trois mots servent tous à parler d'un match : leur champ lexical est le sport."
+        },
+        {
+          "phrase": "le sifflet : le sport ou la musique ?",
+          "demonstration": "L'arbitre siffle pendant un match : ici, le mot va avec le sport."
+        }
+      ],
+      "piege": "Un mot peut faire penser à deux sujets : garde celui dont parle vraiment la liste."
+    },
     "diagnostic": [
       {
         "question": "Quel mot n'appartient PAS au champ lexical de la mer ?",
@@ -572,6 +652,26 @@
   {
     "item_code": "M43",
     "type": "exercice",
+    "lecon": {
+      "titre": "Trouver le contraire d'un mot",
+      "regle": "Le contraire d'un mot est parfois un mot tout différent, parfois le même mot avec un préfixe (in-, im-, dé-, mé-, mal-).",
+      "procedure": [
+        "Lis l'énoncé : demande-t-il d'ajouter un préfixe ?",
+        "Si oui, garde le mot entier et place le préfixe devant, sans rien enlever.",
+        "Sinon, cherche un mot qui dit exactement l'inverse."
+      ],
+      "exemples": [
+        {
+          "phrase": "*visible* → le contraire, en ajoutant un préfixe : …",
+          "demonstration": "Je garde « visible » et j'ajoute in- devant : « invisible »."
+        },
+        {
+          "phrase": "*absent* → le contraire : …",
+          "demonstration": "Aucun préfixe ne convient ici : le contraire d'« absent » est « présent », un mot tout différent."
+        }
+      ],
+      "piege": "Devant un p ou un b, in- s'écrit im- : « impatient »."
+    },
     "diagnostic": [
       {
         "question": "Quel est le contraire de « prudent », formé avec un préfixe ?",

@@ -2,6 +2,26 @@
   {
     "item_code": "M34",
     "type": "exercice",
+    "lecon": {
+      "titre": "Écrire sans faute un mot invariable",
+      "regle": "Ces mots ne changent jamais : à toi de retenir leurs accents, leurs lettres muettes et le nombre de mots.",
+      "procedure": [
+        "Lis les parenthèses : elles donnent le sens et disent si c'est un mot ou deux.",
+        "Retrouve les morceaux soudés à l'intérieur pour n'oublier aucune lettre.",
+        "Écris-le en entier, accents compris."
+      ],
+      "exemples": [
+        {
+          "phrase": "Fatou est sortie ___ la pluie. (sans se laisser arrêter par elle)",
+          "demonstration": "→ malgré : un seul mot, un accent aigu sur le e, et pas de s."
+        },
+        {
+          "phrase": "Malo range les pinceaux ___ Jade lave les pots. (en même temps ; deux mots)",
+          "demonstration": "→ pendant que : deux mots séparés, avec le t muet de « pendant »."
+        }
+      ],
+      "piege": "Certains s'écrivent en un seul mot, d'autres en deux : cela s'apprend avec l'orthographe."
+    },
     "diagnostic": [
       {
         "question": "Quel mot invariable est écrit correctement ?",
@@ -164,6 +184,25 @@
   {
     "item_code": "M35",
     "type": "qcm",
+    "lecon": {
+      "titre": "Lire un article de dictionnaire",
+      "regle": "Un article donne la nature du mot, puis ses sens numérotés, chacun suivi d'un exemple entre guillemets.",
+      "procedure": [
+        "Regarde l'abréviation juste après le mot : n. m., n. f., adj., v. donnent sa nature.",
+        "Compte les numéros : chaque numéro est un sens différent.",
+        "Pour choisir le bon, remplace le mot par chaque définition et garde celle qui va avec la phrase."
+      ],
+      "exemples": [
+        {
+          "phrase": "bourse n. f. 1. Petit sac à monnaie. 2. Argent versé pour aider à étudier.",
+          "demonstration": "n. f. : nom féminin. Dans « Yanis ouvre sa bourse », on y met des pièces : sens 1."
+        },
+        {
+          "phrase": "pesant adj. 1. Qui pèse lourd. 2. Difficile à supporter.",
+          "demonstration": "Dans « un silence pesant », rien ne pèse sur une balance : sens 2."
+        }
+      ]
+    },
     "diagnostic": [
       {
         "question": "Dans l'article « timide adj. Qui n'ose pas parler ni agir devant les autres. », que nous apprend l'abréviation adj. ?",
@@ -382,6 +421,26 @@
   {
     "item_code": "M24",
     "type": "exercice",
+    "lecon": {
+      "titre": "Accorder le participe passé",
+      "regle": "Employé pour décrire un nom, le participe passé s'accorde avec lui, comme un adjectif.",
+      "procedure": [
+        "Écris le participe passé du verbe entre parenthèses : en -é pour un verbe en -er ; sinon, dis « elle est … » pour entendre sa dernière lettre.",
+        "Regarde le nom placé devant : masculin ou féminin, singulier ou pluriel ?",
+        "Ajoute -e au féminin, -s au pluriel, les deux au féminin pluriel."
+      ],
+      "exemples": [
+        {
+          "phrase": "une photo (coller) → une photo …",
+          "demonstration": "coller est en -er → collé ; « photo » est féminin singulier → collée."
+        },
+        {
+          "phrase": "des chemins (couvrir) → des chemins …",
+          "demonstration": "couvrir n'est pas en -er : « elle est couverte » fait entendre le t → couvert ; « chemins » est masculin pluriel → couverts."
+        }
+      ],
+      "piege": "Pour un verbe en -er, le mot qui décrit le nom finit par -é, jamais par -er."
+    },
     "diagnostic": [
       {
         "question": "Comment complète-t-on : « une pomme (croquer) → une pomme … » ?",
