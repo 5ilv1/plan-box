@@ -61,6 +61,15 @@ plus.
 - Les traits d'intervalle sont hauts, les subdivisions moitié moins.
 - Les étiquettes sont centrées sous leur repère ; si elles se chevauchent au-delà
   de 12 étiquettes, n'écrire que celles demandées par `etiquettes`.
+- **Quelles graduations sont étiquetées.** Par défaut, seules les graduations
+  principales le sont. Deux exceptions, sans lesquelles le rendu est faux :
+  1. **en mode `fraction`, les sous-graduations sont étiquetées aussi** — sinon
+     une droite en quarts n'affiche que 0, 1 et 2, et l'item perd tout son sens ;
+  2. **une valeur explicitement listée dans `etiquettes` est écrite même si elle
+     tombe sur une sous-graduation** — c'est à cela que sert la liste.
+- **Les fractions ne se simplifient pas** : sur une droite en quarts, on écrit
+  `0, 1/4, 2/4, 3/4, 1`, et non `1/2` au deuxième repère. C'est la lecture des
+  parts qu'on travaille, pas la simplification.
 - Les flèches de `points` se dessinent **sous** la droite, pointe vers le haut,
   le nom au-dessus de la pointe.
 - Une droite se termine par une pointe de flèche à droite, comme au tableau.

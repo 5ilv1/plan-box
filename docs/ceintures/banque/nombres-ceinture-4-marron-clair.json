@@ -1,23 +1,22 @@
 [
   {
     "item_code": "N19",
-    "type": "qcm",
+    "type": "exercice",
     "lecon": {
-      "titre": "Un demi, un tiers, un quart",
-      "regle": "Prendre 1/4 d'une quantité, c'est la partager en 4 parts égales et en prendre une.",
+      "titre": "Écrire et utiliser une fraction",
+      "regle": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts on prend.",
       "procedure": [
-        "Lis le nombre du bas : il dit en combien de parts égales on partage.",
-        "Partage la quantité en autant de parts égales.",
-        "Le nombre du haut dit combien de parts on prend."
+        "Pour écrire une fraction : le nombre de parts égales en bas, le nombre de parts prises en haut, une barre oblique entre les deux.",
+        "Pour prendre 1/3 d'une quantité : partage-la en 3 parts égales et garde une part."
       ],
       "exemples": [
         {
-          "phrase": "Combien vaut 1/2 de 14 ?",
-          "demonstration": "Le bas dit 2 : 14, c'est 7 et 7. Une part vaut 7."
+          "phrase": "Une pomme est coupée en 2 parts égales ; Nour en mange une.",
+          "demonstration": "En bas le nombre de parts : 2 ; en haut la part mangée : 1. Nour a mangé 1/2, qu'on lit un demi."
         },
         {
           "phrase": "Combien vaut 1/3 de 15 ?",
-          "demonstration": "Le bas dit 3 : 15, c'est 5, 5 et 5. Une part vaut 5, plus petite qu'avec un partage en 2."
+          "demonstration": "Le bas dit 3 : je partage 15 en 3 parts égales — 5, 5 et 5. Une part vaut 5."
         }
       ],
       "piege": "Plus le nombre du bas est grand, plus les parts sont petites : 1/4 est plus petit que 1/3."
@@ -48,190 +47,110 @@
     ],
     "entrainement": [
       {
-        "titre": "Des parts égales",
-        "consigne": "Choisis la bonne réponse. Souviens-toi que les parts doivent toujours être égales.",
+        "titre": "J'écris la fraction",
+        "consigne": "Quand la question demande une fraction, écris-la sous la forme a/b, avec une barre oblique — par exemple 3/5 — et jamais avec une virgule. Quand la question demande un nombre d'objets ou de parts, écris-le en chiffres.",
         "questions": [
           {
-            "question": "Un gâteau est coupé en 4 parts égales. Malo en mange une. Quelle fraction du gâteau a-t-il mangée ?",
-            "options": [
-              "1/4",
-              "4/1",
-              "1/3",
-              "1/2"
-            ],
-            "reponse_correcte": 0,
-            "explication": "Le gâteau est partagé en 4 parts égales : le 4 s'écrit en bas. Malo en mange une : le 1 s'écrit en haut."
+            "id": 1,
+            "enonce": "Un gâteau est coupé en 4 parts égales. Malo en mange une part. Quelle fraction du gâteau a-t-il mangée ?",
+            "reponse_attendue": "1/4",
+            "indice": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts sont prises."
           },
           {
-            "question": "Combien vaut 1/2 de 18 ?",
-            "options": [
-              "2",
-              "36",
-              "6",
-              "9"
-            ],
-            "reponse_correcte": 3,
-            "explication": "Je partage 18 en 2 parts égales : 9 et 9. Une part vaut 9."
+            "id": 2,
+            "enonce": "Une bande est partagée en 3 parts égales. Lila en colorie 2. Quelle fraction de la bande a-t-elle coloriée ?",
+            "reponse_attendue": "2/3",
+            "indice": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts sont prises."
           },
           {
-            "question": "Combien vaut 1/4 de 24 ?",
-            "options": [
-              "4",
-              "6",
-              "20",
-              "96"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Je partage 24 en 4 parts égales : 6 + 6 + 6 + 6. Une part vaut 6."
+            "id": 3,
+            "enonce": "Une pizza est coupée en 4 parts égales. Timéo en mange 3. Quelle fraction de la pizza a-t-il mangée ?",
+            "reponse_attendue": "3/4",
+            "indice": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts sont prises."
           },
           {
-            "question": "Combien vaut 1/3 de 12 ?",
-            "options": [
-              "3",
-              "9",
-              "4",
-              "36"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Je partage 12 en 3 parts égales : 4 + 4 + 4. Une part vaut 4."
+            "id": 4,
+            "enonce": "Écris en chiffres la fraction qui se lit « un demi ».",
+            "reponse_attendue": "1/2",
+            "indice": "« demi » va avec 2, « tiers » avec 3, « quart » avec 4 : ce nombre s'écrit en bas."
           },
           {
-            "question": "Quelle est la plus grande de ces trois fractions : 1/2, 1/3, 1/4 ?",
-            "options": [
-              "1/4",
-              "1/3",
-              "1/2",
-              "elles sont égales"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Plus on partage en beaucoup de parts, plus les parts sont petites : un partage en 2 donne les plus grosses parts."
+            "id": 5,
+            "enonce": "Combien vaut 1/2 de 18 ? Écris ta réponse en chiffres.",
+            "reponse_attendue": "9",
+            "indice": "Partage 18 en 2 parts égales : une part, c'est la moitié."
           },
           {
-            "question": "Un ruban est partagé en 4 parts égales. Sacha en prend deux. Quelle part du ruban a-t-il prise ?",
-            "options": [
-              "un quart du ruban",
-              "un tiers du ruban",
-              "la moitié du ruban",
-              "le ruban entier"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Deux parts sur les quatre, c'est la moitié du ruban : 2/4 et 1/2 désignent la même part."
+            "id": 6,
+            "enonce": "Un ruban est partagé en 4 parts égales. Sacha en utilise une part ; les autres ne servent pas. Quelle fraction du ruban ne sert pas ?",
+            "reponse_attendue": "3/4",
+            "indice": "Compte d'abord les parts qui restent, puis écris-les sur le nombre total de parts."
           },
           {
-            "question": "Une tablette a 40 carrés. Adam en mange le quart. Combien de carrés a-t-il mangés ?",
-            "options": [
-              "4",
-              "20",
-              "10",
-              "36"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Je partage 40 en 4 parts égales : 10 + 10 + 10 + 10. Le quart de 40 vaut 10."
+            "id": 7,
+            "enonce": "Entre 1/2, 1/3 et 1/4, quelle est la plus grande ? Recopie-la.",
+            "reponse_attendue": "1/2",
+            "indice": "Plus le nombre du bas est grand, plus les parts sont petites."
           },
           {
-            "question": "Quelle phrase est vraie ?",
-            "options": [
-              "1/3 est plus grand que 1/2",
-              "1/4 est plus petit que 1/3",
-              "1/4 est plus grand que 1/2",
-              "1/2 est plus petit que 1/3"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Partager en 4 donne des parts plus petites que partager en 3 : 1/4 est plus petit que 1/3."
+            "id": 8,
+            "enonce": "Une tablette de chocolat a 40 carrés. Adam en mange le quart. Combien de carrés mange-t-il ? Écris ta réponse en chiffres.",
+            "reponse_attendue": "10",
+            "indice": "Le quart, c'est 1/4 : partage les 40 carrés en 4 parts égales et prends-en une."
           }
         ]
       },
       {
         "titre": "La moitié, le tiers, le quart",
-        "consigne": "Choisis la bonne réponse. Souviens-toi que les parts doivent toujours être égales.",
+        "consigne": "Quand la question demande une fraction, écris-la sous la forme a/b, avec une barre oblique — par exemple 3/5 — et jamais avec une virgule. Quand la question demande un nombre d'objets ou de parts, écris-le en chiffres.",
         "questions": [
           {
-            "question": "Une pizza est coupée en 2 parts égales. Louna en mange une. Quelle fraction de la pizza a-t-elle mangée ?",
-            "options": [
-              "2/1",
-              "1/4",
-              "2",
-              "1/2"
-            ],
-            "reponse_correcte": 3,
-            "explication": "La pizza est partagée en 2 parts égales : le 2 s'écrit en bas. Louna en mange une : le 1 s'écrit en haut."
+            "id": 1,
+            "enonce": "Une pizza est coupée en 2 parts égales. Louna en mange une part. Quelle fraction de la pizza a-t-elle mangée ?",
+            "reponse_attendue": "1/2",
+            "indice": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts sont prises."
           },
           {
-            "question": "Combien vaut 1/2 de 26 ?",
-            "options": [
-              "13",
-              "52",
-              "24",
-              "2"
-            ],
-            "reponse_correcte": 0,
-            "explication": "Je partage 26 en 2 parts égales : 13 et 13. Une part vaut 13."
+            "id": 2,
+            "enonce": "Une bande est partagée en 4 parts égales. Yanis en colorie 3. Quelle fraction de la bande a-t-il coloriée ?",
+            "reponse_attendue": "3/4",
+            "indice": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts sont prises."
           },
           {
-            "question": "Combien vaut 1/4 de 32 ?",
-            "options": [
-              "4",
-              "8",
-              "28",
-              "16"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Je partage 32 en 4 parts égales : 8 + 8 + 8 + 8. Une part vaut 8."
+            "id": 3,
+            "enonce": "Une corde est partagée en 3 parts égales. Rosalie en utilise 2. Quelle fraction de la corde utilise-t-elle ?",
+            "reponse_attendue": "2/3",
+            "indice": "Le nombre du bas dit en combien de parts égales on partage ; le nombre du haut dit combien de parts sont prises."
           },
           {
-            "question": "Combien vaut 1/3 de 33 ?",
-            "options": [
-              "3",
-              "30",
-              "11",
-              "99"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Je partage 33 en 3 parts égales : 11 + 11 + 11. Une part vaut 11."
+            "id": 4,
+            "enonce": "Écris en chiffres la fraction qui se lit « un quart ».",
+            "reponse_attendue": "1/4",
+            "indice": "« demi » va avec 2, « tiers » avec 3, « quart » avec 4 : ce nombre s'écrit en bas."
           },
           {
-            "question": "Quelle est la plus petite de ces trois fractions : 1/2, 1/3, 1/4 ?",
-            "options": [
-              "1/2",
-              "1/3",
-              "elles sont égales",
-              "1/4"
-            ],
-            "reponse_correcte": 3,
-            "explication": "Plus on partage en beaucoup de parts, plus les parts sont petites : un partage en 4 donne les plus petites parts."
+            "id": 5,
+            "enonce": "Combien vaut 1/2 de 26 ? Écris ta réponse en chiffres.",
+            "reponse_attendue": "13",
+            "indice": "Partage 26 en 2 parts égales : une part, c'est la moitié."
           },
           {
-            "question": "Une corde est partagée en 4 parts égales. Fatou en prend trois. Quelle part de la corde a-t-elle prise ?",
-            "options": [
-              "un quart de la corde",
-              "trois quarts de la corde",
-              "la moitié de la corde",
-              "un tiers de la corde"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Trois parts sur les quatre, cela s'écrit 3/4 et se dit trois quarts."
+            "id": 6,
+            "enonce": "Une feuille est partagée en 4 parts égales. Adam en colorie une part ; les autres restent blanches. Quelle fraction de la feuille reste blanche ?",
+            "reponse_attendue": "3/4",
+            "indice": "Compte d'abord les parts qui restent, puis écris-les sur le nombre total de parts."
           },
           {
-            "question": "Un sac contient 46 billes. Rosalie en prend la moitié. Combien de billes prend-elle ?",
-            "options": [
-              "46",
-              "2",
-              "23",
-              "12"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Je partage 46 en 2 parts égales : 23 et 23. La moitié de 46 vaut 23."
+            "id": 7,
+            "enonce": "Entre 1/2 et 1/3, quelle est la plus petite ? Recopie-la.",
+            "reponse_attendue": "1/3",
+            "indice": "Plus le nombre du bas est grand, plus les parts sont petites."
           },
           {
-            "question": "Quelle phrase est vraie ?",
-            "options": [
-              "1/2 est plus grand que 1/3",
-              "1/2 est plus petit que 1/4",
-              "1/3 est plus grand que 1/2",
-              "1/3 est plus petit que 1/4"
-            ],
-            "reponse_correcte": 0,
-            "explication": "Partager en 2 donne des parts plus grosses que partager en 3 : 1/2 est plus grand que 1/3."
+            "id": 8,
+            "enonce": "Un sac contient 30 billes. Fatou en prend le tiers. Combien de billes prend-elle ? Écris ta réponse en chiffres.",
+            "reponse_attendue": "10",
+            "indice": "Le tiers, c'est 1/3 : partage les 30 billes en 3 parts égales et prends-en une."
           }
         ]
       }
@@ -239,7 +158,7 @@
   },
   {
     "item_code": "N39",
-    "type": "qcm",
+    "type": "exercice",
     "lecon": {
       "titre": "Placer une fraction sur la droite",
       "regle": "Entre 0 et 1, le nombre de parts égales s'écrit en bas, le rang du repère en haut.",
@@ -286,168 +205,355 @@
     ],
     "entrainement": [
       {
-        "titre": "Sous quel repère ?",
-        "consigne": "Chaque droite graduée est décrite par la phrase : lis-la attentivement avant de répondre.",
+        "titre": "La flèche est sur quelle fraction ?",
+        "consigne": "Écris ta réponse en chiffres. Si c'est une fraction, écris-la avec une barre oblique, comme 2/5, et ne la simplifie pas.",
         "questions": [
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Quelle fraction est écrite sous le 1er repère après 0 ?",
-            "options": [
-              "1/4",
-              "2/4",
-              "4/1",
-              "4/4"
-            ],
-            "reponse_correcte": 0,
-            "explication": "L'espace est partagé en 4 parts : j'écris 4 en bas. Le point est au 1er repère depuis 0 : j'écris 1 en haut, c'est 1/4."
+            "id": 1,
+            "enonce": "Quelle fraction est repérée par la flèche A ?",
+            "reponse_attendue": "1/4",
+            "indice": "Compte d'abord les parts égales entre 0 et 1 : c'est le nombre du bas.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 4,
+              "etiquettes": [
+                0,
+                1,
+                2
+              ],
+              "fraction": {
+                "denominateur": 4
+              },
+              "points": [
+                {
+                  "valeur": 0.25,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Quelle fraction est écrite sous le 3e repère après 0 ?",
-            "options": [
-              "1/4",
-              "2/4",
-              "3/4",
-              "4/4"
-            ],
-            "reponse_correcte": 2,
-            "explication": "En bas, le nombre de parts : 4. En haut, le rang du repère : 3. Toutes les fractions proposées ont 4 en bas : c'est le rang qui décide."
+            "id": 2,
+            "enonce": "Quelle fraction est repérée par la flèche A ?",
+            "reponse_attendue": "2/3",
+            "indice": "Compte les repères depuis 0 jusqu'à la flèche : c'est le nombre du haut.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 3,
+              "etiquettes": [
+                0,
+                1,
+                2
+              ],
+              "fraction": {
+                "denominateur": 3
+              },
+              "points": [
+                {
+                  "valeur": 0.6666666666666666,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Quelle fraction est écrite sous le 2e repère après 0 ?",
-            "options": [
-              "1/3",
-              "2/3",
-              "3/3",
-              "3/2"
-            ],
-            "reponse_correcte": 1,
-            "explication": "En bas, le nombre de parts : 3. En haut, le rang du repère : 2. Le 1er repère porterait 1/3 et le 3e porterait 3/3."
+            "id": 3,
+            "enonce": "Quelle fraction est repérée par la flèche A ?",
+            "reponse_attendue": "3/4",
+            "indice": "Compte les repères depuis 0 jusqu'à la flèche : c'est le nombre du haut.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 4,
+              "etiquettes": [
+                0,
+                1,
+                2
+              ],
+              "fraction": {
+                "denominateur": 4
+              },
+              "points": [
+                {
+                  "valeur": 0.75,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Sous quel repère écrit-on 1/2 ?",
-            "options": [
-              "le 1er repère après 0",
-              "le 2e repère après 0",
-              "le 3e repère après 0",
-              "sur le repère de 1"
-            ],
-            "reponse_correcte": 1,
-            "explication": "1/2, c'est la moitié : sur 4 parts égales, la moitié en fait 2. C'est donc le 2e repère après 0, celui qui porte aussi 2/4."
+            "id": 4,
+            "enonce": "Quelle fraction est repérée par la flèche A ?",
+            "reponse_attendue": "1/2",
+            "indice": "Compte d'abord les parts égales entre 0 et 1 : c'est le nombre du bas.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 2,
+              "etiquettes": [
+                0,
+                1,
+                2
+              ],
+              "fraction": {
+                "denominateur": 2
+              },
+              "points": [
+                {
+                  "valeur": 0.5,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Sous quel repère est écrit le nombre 1 ?",
-            "options": [
-              "le 1er repère après 0",
-              "le 2e repère après 0",
-              "le 3e repère après 0",
-              "il n'y a pas de repère pour 1"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Il faut parcourir les 3 parts pour arriver à 1 : c'est le 3e repère, celui qui porte 3/3."
+            "id": 5,
+            "enonce": "Quelle fraction est repérée par la flèche A ?",
+            "reponse_attendue": "1/3",
+            "indice": "Compte d'abord les parts égales entre 0 et 1 : c'est le nombre du bas.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 3,
+              "etiquettes": [
+                0,
+                1,
+                2
+              ],
+              "fraction": {
+                "denominateur": 3
+              },
+              "points": [
+                {
+                  "valeur": 0.3333333333333333,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Combien y a-t-il de repères entre 0 et 1, sans compter celui de 0 ni celui de 1 ?",
-            "options": [
-              "2",
-              "5",
-              "3",
-              "4"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Quatre parts égales sont séparées par 3 repères intérieurs : ceux de 1/4, 2/4 et 3/4."
+            "id": 6,
+            "enonce": "Sur cette droite, en combien de parts égales l'espace entre 0 et 1 est-il partagé ?",
+            "reponse_attendue": "4",
+            "indice": "Compte les intervalles entre le repère de 0 et celui de 1.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 4,
+              "etiquettes": [
+                0,
+                1
+              ],
+              "fraction": {
+                "denominateur": 4
+              }
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Louna place un point sur 1/3 et Adam place un point sur 2/3. Lequel des deux points est le plus proche de 0 ?",
-            "options": [
-              "le point de Louna, sur 1/3",
-              "le point d'Adam, sur 2/3",
-              "les deux sont à la même distance de 0",
-              "on ne peut pas le savoir"
-            ],
-            "reponse_correcte": 0,
-            "explication": "1/3 est au 1er repère et 2/3 au 2e : c'est le point de Louna qui est le plus près de 0."
+            "id": 7,
+            "enonce": "Combien de repères y a-t-il entre 0 et 1, sans compter celui de 0 ni celui de 1 ?",
+            "reponse_attendue": "2",
+            "indice": "Ne compte que les repères situés à l'intérieur.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 3,
+              "etiquettes": [
+                0,
+                1
+              ],
+              "fraction": {
+                "denominateur": 3
+              }
+            }
           }
         ]
       },
       {
-        "titre": "La droite graduée en parts égales",
-        "consigne": "Chaque droite graduée est décrite par la phrase : lis-la attentivement avant de répondre.",
+        "titre": "Lis la fraction sur la droite",
+        "consigne": "Écris ta réponse en chiffres. Si c'est une fraction, écris-la avec une barre oblique, comme 2/5, et ne la simplifie pas.",
         "questions": [
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Sous quel repère est écrit le nombre 1 ?",
-            "options": [
-              "le 2e repère après 0",
-              "le 4e repère après 0",
-              "le 3e repère après 0",
-              "il n'y a pas de repère pour 1"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Il faut parcourir les 4 parts pour arriver à 1 : c'est le 4e repère, celui qui porte 4/4."
+            "id": 1,
+            "enonce": "Quelle fraction est repérée par la flèche B ?",
+            "reponse_attendue": "1/3",
+            "indice": "Compte d'abord les parts égales entre 0 et 1 : c'est le nombre du bas.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 3,
+              "divisions": 3,
+              "etiquettes": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "fraction": {
+                "denominateur": 3
+              },
+              "points": [
+                {
+                  "valeur": 0.3333333333333333,
+                  "nom": "B"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Sous quel repère écrit-on 1/4 ?",
-            "options": [
-              "le 4e repère après 0",
-              "le 2e repère après 0",
-              "le 1er repère après 0",
-              "sur le repère de 0"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Le nombre du haut est 1 : le point est au 1er repère après 0."
+            "id": 2,
+            "enonce": "Quelle fraction est repérée par la flèche B ?",
+            "reponse_attendue": "3/4",
+            "indice": "Compte les repères depuis 0 jusqu'à la flèche : c'est le nombre du haut.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 3,
+              "divisions": 4,
+              "etiquettes": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "fraction": {
+                "denominateur": 4
+              },
+              "points": [
+                {
+                  "valeur": 0.75,
+                  "nom": "B"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Sous quel repère écrit-on 2/3 ?",
-            "options": [
-              "le 1er repère après 0",
-              "le 2e repère après 0",
-              "le 3e repère après 0",
-              "sur le repère de 1"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Le nombre du haut est 2 : le point est au 2e repère après 0."
+            "id": 3,
+            "enonce": "Quelle fraction est repérée par la flèche B ?",
+            "reponse_attendue": "1/2",
+            "indice": "Compte d'abord les parts égales entre 0 et 1 : c'est le nombre du bas.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 3,
+              "divisions": 2,
+              "etiquettes": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "fraction": {
+                "denominateur": 2
+              },
+              "points": [
+                {
+                  "valeur": 0.5,
+                  "nom": "B"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1. Yanis a écrit 1/3 sous le 1er repère et 2/3 sous le 2e repère. En combien de parts égales l'espace entre 0 et 1 est-il partagé ?",
-            "options": [
-              "2",
-              "3",
-              "4",
-              "6"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Le nombre écrit en bas des fractions donne le nombre de parts : ici, 3."
+            "id": 4,
+            "enonce": "Quelle fraction est repérée par la flèche B ?",
+            "reponse_attendue": "1/4",
+            "indice": "Compte les repères depuis 0 jusqu'à la flèche : c'est le nombre du haut.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 3,
+              "divisions": 4,
+              "etiquettes": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "fraction": {
+                "denominateur": 4
+              },
+              "points": [
+                {
+                  "valeur": 0.25,
+                  "nom": "B"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Quelle fraction est écrite sous le repère situé juste avant celui de 1 ?",
-            "options": [
-              "3/4",
-              "1/4",
-              "4/3",
-              "2/4"
-            ],
-            "reponse_correcte": 0,
-            "explication": "Le repère juste avant 1 est le 3e depuis 0 : en haut 3, en bas 4."
+            "id": 5,
+            "enonce": "Quelle fraction est repérée par la flèche B ?",
+            "reponse_attendue": "2/3",
+            "indice": "Compte les repères depuis 0 jusqu'à la flèche : c'est le nombre du haut.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 3,
+              "divisions": 3,
+              "etiquettes": [
+                0,
+                1,
+                2,
+                3
+              ],
+              "fraction": {
+                "denominateur": 3
+              },
+              "points": [
+                {
+                  "valeur": 0.6666666666666666,
+                  "nom": "B"
+                }
+              ]
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 3 parts égales. Combien y a-t-il de repères entre 0 et 1, sans compter celui de 0 ni celui de 1 ?",
-            "options": [
-              "3",
-              "1",
-              "4",
-              "2"
-            ],
-            "reponse_correcte": 3,
-            "explication": "Trois parts égales sont séparées par 2 repères intérieurs : ceux de 1/3 et de 2/3."
+            "id": 6,
+            "enonce": "Sur cette droite, en combien de parts égales l'espace entre 0 et 1 est-il partagé ?",
+            "reponse_attendue": "3",
+            "indice": "Compte les intervalles entre le repère de 0 et celui de 1.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 3,
+              "etiquettes": [
+                0,
+                1
+              ],
+              "fraction": {
+                "denominateur": 3
+              }
+            }
           },
           {
-            "question": "Sur une droite graduée, on a marqué 0 et 1 ; l'espace entre 0 et 1 est partagé en 4 parts égales. Fatou place un point sur 1/2 et Timéo place un point sur 3/4. Lequel des deux points est le plus proche de 1 ?",
-            "options": [
-              "le point de Fatou, sur 1/2",
-              "les deux sont à la même distance de 1",
-              "le point de Timéo, sur 3/4",
-              "on ne peut pas le savoir"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Sur cette droite, 1/2 est au 2e repère et 3/4 au 3e : c'est le point de Timéo qui est le plus avancé vers 1."
+            "id": 7,
+            "enonce": "Combien de repères y a-t-il entre 0 et 1, sans compter celui de 0 ni celui de 1 ?",
+            "reponse_attendue": "3",
+            "indice": "Ne compte que les repères situés à l'intérieur.",
+            "droite": {
+              "origine": 0,
+              "pas": 1,
+              "intervalles": 2,
+              "divisions": 4,
+              "etiquettes": [
+                0,
+                1
+              ],
+              "fraction": {
+                "denominateur": 4
+              }
+            }
           }
         ]
       }

@@ -159,23 +159,23 @@
   },
   {
     "item_code": "N36",
-    "type": "qcm",
+    "type": "exercice",
     "lecon": {
       "titre": "Des fractions égales",
       "regle": "Si on multiplie ou si on divise le haut et le bas par le même nombre, la fraction ne change pas.",
       "procedure": [
-        "Cherche par combien on multiplie ou on divise le bas pour aller à l'autre fraction.",
-        "Applique exactement la même opération au nombre du haut.",
-        "Pour simplifier, cherche un nombre qui divise le haut et le bas."
+        "Pour compléter une égalité : cherche par combien on multiplie le bas, et multiplie le haut par ce même nombre.",
+        "Pour simplifier : divise le haut et le bas par un même nombre, et recommence tant que c'est possible.",
+        "Écris toujours la fraction entière, sous la forme a/b."
       ],
       "exemples": [
         {
-          "phrase": "1/7 = …/21",
-          "demonstration": "En bas, 7 × 3 = 21 ; en haut aussi : 1 × 3 = 3. Donc 1/7 = 3/21."
+          "phrase": "Complète : 1/7 = …/21",
+          "demonstration": "En bas, 7 × 3 = 21 ; en haut aussi : 1 × 3 = 3. J'écris la fraction entière : 3/21."
         },
         {
-          "phrase": "20/24 = …/6",
-          "demonstration": "En bas, 24 : 4 = 6 ; en haut aussi : 20 : 4 = 5. Donc 20/24 = 5/6."
+          "phrase": "Écris 20/24 sous sa forme la plus simple.",
+          "demonstration": "20 et 24 se divisent par 2 : 10/12. Encore par 2 : 5/6. On ne peut plus : j'écris 5/6."
         }
       ],
       "piege": "On multiplie ou on divise, on n'ajoute jamais : 3/7 n'est pas égal à 4/8."
@@ -207,189 +207,109 @@
     "entrainement": [
       {
         "titre": "La même valeur",
-        "consigne": "Choisis la bonne fraction.",
+        "consigne": "Écris ta réponse sous la forme a/b, avec une barre oblique. Chaque question dit s'il faut compléter l'égalité sans simplifier, ou donner la forme la plus simple.",
         "questions": [
           {
-            "question": "Quelle fraction est égale à 1/6 ?",
-            "options": [
-              "2/12",
-              "3/12",
-              "1/12",
-              "6/1"
-            ],
-            "reponse_correcte": 0,
-            "explication": "En bas, 6 × 2 = 12 ; en haut, 1 × 2 = 2."
+            "id": 1,
+            "enonce": "Complète l'égalité 1/6 = …/12. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "2/12",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Quelle fraction est égale à 3/8 ?",
-            "options": [
-              "6/8",
-              "3/16",
-              "6/16",
-              "8/3"
-            ],
-            "reponse_correcte": 2,
-            "explication": "En bas, 8 × 2 = 16 ; en haut, 3 × 2 = 6."
+            "id": 2,
+            "enonce": "Complète l'égalité 3/8 = …/16. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "6/16",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Complète : 2/7 = …/14. Quel nombre s'écrit en haut ?",
-            "options": [
-              "2",
-              "4",
-              "7",
-              "9"
-            ],
-            "reponse_correcte": 1,
-            "explication": "En bas, 7 × 2 = 14 : en haut aussi je multiplie par 2, donc 2 × 2 = 4."
+            "id": 3,
+            "enonce": "Complète l'égalité 2/7 = …/14. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "4/14",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Quelle est la forme la plus simple de 6/9 ?",
-            "options": [
-              "2/3",
-              "3/9",
-              "6/3",
-              "1/3"
-            ],
-            "reponse_correcte": 0,
-            "explication": "6 et 9 se divisent tous les deux par 3 : 6 : 3 = 2 et 9 : 3 = 3."
+            "id": 4,
+            "enonce": "Écris 6/8 sous sa forme la plus simple.",
+            "reponse_attendue": "3/4",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           },
           {
-            "question": "Quelle est la forme la plus simple de 14/16 ?",
-            "options": [
-              "7/16",
-              "2/8",
-              "14/8",
-              "7/8"
-            ],
-            "reponse_correcte": 3,
-            "explication": "14 et 16 se divisent tous les deux par 2 : 14 : 2 = 7 et 16 : 2 = 8."
+            "id": 5,
+            "enonce": "Écris 14/16 sous sa forme la plus simple.",
+            "reponse_attendue": "7/8",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           },
           {
-            "question": "Parmi ces fractions, laquelle n'est PAS égale à 1/5 ?",
-            "options": [
-              "3/12",
-              "3/15",
-              "2/10",
-              "4/20"
-            ],
-            "reponse_correcte": 0,
-            "explication": "3/15, 2/10 et 4/20 se simplifient toutes en 1/5 ; 3/12 se simplifie en 1/4."
+            "id": 6,
+            "enonce": "Écris 3/15 sous sa forme la plus simple.",
+            "reponse_attendue": "1/5",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           },
           {
-            "question": "Quelle fraction est égale à 2/3 ?",
-            "options": [
-              "4/9",
-              "3/2",
-              "2/9",
-              "4/6"
-            ],
-            "reponse_correcte": 3,
-            "explication": "En bas, 3 × 2 = 6 ; en haut, 2 × 2 = 4."
+            "id": 7,
+            "enonce": "Complète l'égalité 2/3 = …/6. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "4/6",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Complète : 24/36 = 2/…. Quel nombre s'écrit en bas ?",
-            "options": [
-              "2",
-              "3",
-              "6",
-              "12"
-            ],
-            "reponse_correcte": 1,
-            "explication": "En haut, 24 : 12 = 2 : en bas aussi je divise par 12, donc 36 : 12 = 3."
+            "id": 8,
+            "enonce": "Écris 20/45 sous sa forme la plus simple.",
+            "reponse_attendue": "4/9",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           }
         ]
       },
       {
         "titre": "Multiplier ou simplifier",
-        "consigne": "Choisis la bonne fraction.",
+        "consigne": "Écris ta réponse sous la forme a/b, avec une barre oblique. Chaque question dit s'il faut compléter l'égalité sans simplifier, ou donner la forme la plus simple.",
         "questions": [
           {
-            "question": "Quelle fraction est égale à 1/8 ?",
-            "options": [
-              "2/16",
-              "3/16",
-              "1/16",
-              "8/1"
-            ],
-            "reponse_correcte": 0,
-            "explication": "En bas, 8 × 2 = 16 ; en haut, 1 × 2 = 2."
+            "id": 1,
+            "enonce": "Complète l'égalité 1/8 = …/16. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "2/16",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Quelle fraction est égale à 5/7 ?",
-            "options": [
-              "10/7",
-              "5/14",
-              "10/14",
-              "7/5"
-            ],
-            "reponse_correcte": 2,
-            "explication": "En bas, 7 × 2 = 14 ; en haut, 5 × 2 = 10."
+            "id": 2,
+            "enonce": "Complète l'égalité 5/7 = …/14. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "10/14",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Complète : 4/9 = …/27. Quel nombre s'écrit en haut ?",
-            "options": [
-              "4",
-              "9",
-              "12",
-              "13"
-            ],
-            "reponse_correcte": 2,
-            "explication": "En bas, 9 × 3 = 27 : en haut aussi je multiplie par 3, donc 4 × 3 = 12."
+            "id": 3,
+            "enonce": "Complète l'égalité 4/9 = …/27. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "12/27",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Quelle est la forme la plus simple de 6/15 ?",
-            "options": [
-              "3/15",
-              "2/5",
-              "6/5",
-              "3/5"
-            ],
-            "reponse_correcte": 1,
-            "explication": "6 et 15 se divisent tous les deux par 3 : 6 : 3 = 2 et 15 : 3 = 5."
+            "id": 4,
+            "enonce": "Écris 6/15 sous sa forme la plus simple.",
+            "reponse_attendue": "2/5",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           },
           {
-            "question": "Quelle est la forme la plus simple de 10/16 ?",
-            "options": [
-              "5/16",
-              "2/8",
-              "10/8",
-              "5/8"
-            ],
-            "reponse_correcte": 3,
-            "explication": "10 et 16 se divisent tous les deux par 2 : 10 : 2 = 5 et 16 : 2 = 8."
+            "id": 5,
+            "enonce": "Écris 10/16 sous sa forme la plus simple.",
+            "reponse_attendue": "5/8",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           },
           {
-            "question": "Parmi ces fractions, laquelle n'est PAS égale à 1/4 ?",
-            "options": [
-              "2/8",
-              "3/9",
-              "3/12",
-              "5/20"
-            ],
-            "reponse_correcte": 1,
-            "explication": "2/8, 3/12 et 5/20 se simplifient toutes en 1/4 ; 3/9 se simplifie en 1/3."
+            "id": 6,
+            "enonce": "Écris 9/12 sous sa forme la plus simple.",
+            "reponse_attendue": "3/4",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           },
           {
-            "question": "Quelle fraction est égale à 6/7 ?",
-            "options": [
-              "12/14",
-              "6/14",
-              "12/7",
-              "7/6"
-            ],
-            "reponse_correcte": 0,
-            "explication": "En bas, 7 × 2 = 14 ; en haut, 6 × 2 = 12."
+            "id": 7,
+            "enonce": "Complète l'égalité 2/5 = …/20. Écris la fraction qui manque, sans la simplifier.",
+            "reponse_attendue": "8/20",
+            "indice": "Cherche par combien on multiplie le bas pour aller à l'autre fraction, puis multiplie le haut par le même nombre."
           },
           {
-            "question": "Complète : 20/45 = 4/…. Quel nombre s'écrit en bas ?",
-            "options": [
-              "4",
-              "5",
-              "15",
-              "9"
-            ],
-            "reponse_correcte": 3,
-            "explication": "En haut, 20 : 5 = 4 : en bas aussi je divise par 5, donc 45 : 5 = 9."
+            "id": 8,
+            "enonce": "Écris 16/24 sous sa forme la plus simple.",
+            "reponse_attendue": "2/3",
+            "indice": "Divise le haut et le bas par un même nombre, et recommence tant que c'est possible."
           }
         ]
       }

@@ -306,14 +306,14 @@
       "titre": "Lire une droite graduée",
       "regle": "Sur une droite graduée, deux repères voisins sont séparés du même écart.",
       "procedure": [
-        "Lis l'écart entre deux repères voisins.",
-        "Compte de cet écart en cet écart en partant de 0.",
-        "Pour placer un nombre, encadre-le par les deux repères voisins."
+        "Compte les intervalles entre les deux nombres écrits, puis partage leur écart par ce nombre.",
+        "Compte de cet écart en cet écart, en partant du nombre de gauche.",
+        "Si la flèche tombe entre deux repères, encadre-la par ces deux repères."
       ],
       "exemples": [
         {
-          "phrase": "Droite de 0 à 100, un repère tous les 5. Quel nombre est au 3e repère ?",
-          "demonstration": "Je compte 5, 10, 15 : c'est 15."
+          "phrase": "Droite de 0 à 100 partagée en 5 intervalles : le 3e repère après 0 ?",
+          "demonstration": "100 partagé en 5 : un intervalle vaut 20. Je compte 20, 40, 60 : c'est 60."
         },
         {
           "phrase": "Droite de 0 à 100, un repère tous les 10. Où se place 55 ?",
@@ -353,51 +353,154 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10 (0, 10, 20, …), quel nombre est écrit au 6e repère après 0 ?",
-            "reponse_attendue": "60",
-            "indice": "Compte de 10 en 10 en partant de 0."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "70",
+            "indice": "De 0 à 100, il y a 10 intervalles : chacun vaut 10.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 70,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 2,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit juste avant le repère 90 ?",
-            "reponse_attendue": "80",
-            "indice": "Recule d'un écart."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "30",
+            "indice": "Pars de 0 et compte les repères de 10 en 10.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": [
+                0,
+                50,
+                100
+              ],
+              "points": [
+                {
+                  "valeur": 30,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 3,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 34 se place entre deux repères. Écris le repère de gauche.",
-            "reponse_attendue": "30",
-            "indice": "Cherche le repère juste en dessous du nombre."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "35",
+            "indice": "Sur cette droite, deux repères voisins sont séparés de 5.",
+            "droite": {
+              "origine": 0,
+              "pas": 5,
+              "intervalles": 20,
+              "etiquettes": [
+                0,
+                50,
+                100
+              ],
+              "points": [
+                {
+                  "valeur": 35,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 4,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 68 se place entre deux repères. Écris le repère de droite.",
-            "reponse_attendue": "70",
-            "indice": "Cherche le repère juste au-dessus du nombre."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "45",
+            "indice": "Les petits repères partagent chaque intervalle en deux.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "divisions": 2,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 45,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 5,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 5 (0, 5, 10, 15, …), quel nombre est écrit juste après le repère 45 ?",
-            "reponse_attendue": "50",
-            "indice": "Ajoute l'écart de la droite."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "75",
+            "indice": "Quatre intervalles seulement pour aller de 0 à 100 : cherche combien vaut chacun.",
+            "droite": {
+              "origine": 0,
+              "pas": 25,
+              "intervalles": 4,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 75,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 6,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre se trouve exactement au milieu des repères 20 et 30 ?",
-            "reponse_attendue": "25",
-            "indice": "Le milieu de deux repères espacés de 10 se trouve 5 après le premier."
+            "enonce": "La flèche A n'est pas sur un repère. Écris le nombre du repère situé juste à sa gauche.",
+            "reponse_attendue": "60",
+            "indice": "Encadre la flèche par les deux repères qui l'entourent.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": [
+                0,
+                50,
+                100
+              ],
+              "points": [
+                {
+                  "valeur": 62,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 7,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit au 9e repère après 0 ?",
-            "reponse_attendue": "90",
-            "indice": "Compte de 10 en 10 en partant de 0."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "80",
+            "indice": "Cinq intervalles seulement pour aller de 0 à 100.",
+            "droite": {
+              "origine": 0,
+              "pas": 20,
+              "intervalles": 5,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 80,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 8,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 25 (0, 25, 50, …), quel nombre est écrit au 3e repère après 0 ?",
-            "reponse_attendue": "75",
-            "indice": "Compte de 25 en 25 en partant de 0."
+            "enonce": "Quel est l'écart entre deux repères voisins de cette droite ?",
+            "reponse_attendue": "10",
+            "indice": "Compte les intervalles entre 0 et 100, puis partage 100 en autant de parts.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": "bornes"
+            }
           }
         ]
       },
@@ -407,51 +510,154 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10 (0, 10, 20, …), quel nombre est écrit au 4e repère après 0 ?",
+            "enonce": "Quel nombre est repéré par la flèche A ?",
             "reponse_attendue": "40",
-            "indice": "Compte de 10 en 10 en partant de 0."
+            "indice": "De 0 à 100, il y a 10 intervalles : chacun vaut 10.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 40,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 2,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit juste après le repère 50 ?",
-            "reponse_attendue": "60",
-            "indice": "Ajoute l'écart de la droite."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "90",
+            "indice": "Pars de 0 et compte les repères de 10 en 10.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": [
+                0,
+                50,
+                100
+              ],
+              "points": [
+                {
+                  "valeur": 90,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 3,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 27 se place entre deux repères. Écris le repère de gauche.",
-            "reponse_attendue": "20",
-            "indice": "Cherche le repère juste en dessous du nombre."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "65",
+            "indice": "Sur cette droite, deux repères voisins sont séparés de 5.",
+            "droite": {
+              "origine": 0,
+              "pas": 5,
+              "intervalles": 20,
+              "etiquettes": [
+                0,
+                50,
+                100
+              ],
+              "points": [
+                {
+                  "valeur": 65,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 4,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, le nombre 83 se place entre deux repères. Écris le repère de droite.",
-            "reponse_attendue": "90",
-            "indice": "Cherche le repère juste au-dessus du nombre."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "85",
+            "indice": "Les petits repères partagent chaque intervalle en deux.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "divisions": 2,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 85,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 5,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 5 (0, 5, 10, 15, …), quel nombre est écrit juste avant le repère 30 ?",
-            "reponse_attendue": "25",
-            "indice": "Recule d'un écart."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "50",
+            "indice": "Quatre intervalles seulement pour aller de 0 à 100 : cherche combien vaut chacun.",
+            "droite": {
+              "origine": 0,
+              "pas": 25,
+              "intervalles": 4,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 50,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 6,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre se trouve exactement au milieu des repères 70 et 80 ?",
-            "reponse_attendue": "75",
-            "indice": "Le milieu de deux repères espacés de 10 se trouve 5 après le premier."
+            "enonce": "La flèche A n'est pas sur un repère. Écris le nombre du repère situé juste à sa droite.",
+            "reponse_attendue": "30",
+            "indice": "Encadre la flèche par les deux repères qui l'entourent.",
+            "droite": {
+              "origine": 0,
+              "pas": 10,
+              "intervalles": 10,
+              "etiquettes": [
+                0,
+                50,
+                100
+              ],
+              "points": [
+                {
+                  "valeur": 27,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 7,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 10, quel nombre est écrit au 8e repère après 0 ?",
-            "reponse_attendue": "80",
-            "indice": "Compte de 10 en 10 en partant de 0."
+            "enonce": "Quel nombre est repéré par la flèche A ?",
+            "reponse_attendue": "60",
+            "indice": "Cinq intervalles seulement pour aller de 0 à 100.",
+            "droite": {
+              "origine": 0,
+              "pas": 20,
+              "intervalles": 5,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 60,
+                  "nom": "A"
+                }
+              ]
+            }
           },
           {
             "id": 8,
-            "enonce": "Sur une droite graduée de 0 à 100, avec un repère tous les 20 (0, 20, 40, …), quel nombre se trouve exactement au milieu des repères 0 et 20 ?",
-            "reponse_attendue": "10",
-            "indice": "Le milieu de deux repères espacés de 20 se trouve 10 après le premier."
+            "enonce": "Quel est l'écart entre deux repères voisins de cette droite ?",
+            "reponse_attendue": "20",
+            "indice": "Compte les intervalles entre 0 et 100, puis partage 100 en autant de parts.",
+            "droite": {
+              "origine": 0,
+              "pas": 20,
+              "intervalles": 5,
+              "etiquettes": "bornes"
+            }
           }
         ]
       }

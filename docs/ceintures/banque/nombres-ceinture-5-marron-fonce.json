@@ -1,19 +1,19 @@
 [
   {
     "item_code": "N24",
-    "type": "qcm",
+    "type": "exercice",
     "lecon": {
       "titre": "Dixièmes et centièmes",
       "regle": "Une fraction décimale a 10 ou 100 pour dénominateur : elle compte des dixièmes ou des centièmes d'unité.",
       "procedure": [
         "Regarde en combien de parts égales l'unité est partagée : écris ce nombre en bas.",
         "Compte les parts prises : écris ce nombre en haut.",
-        "Lis la fraction : 10 en bas donne des dixièmes, 100 en bas des centièmes."
+        "Écris la fraction sous la forme a/b : 10 en bas donne des dixièmes, 100 en bas des centièmes."
       ],
       "exemples": [
         {
           "phrase": "Une bande est partagée en 10 parts égales ; on en colorie 5.",
-          "demonstration": "En bas, le nombre de parts : 10. En haut, les parts prises : 5. Cela s'écrit 5/10 et se lit cinq dixièmes."
+          "demonstration": "En bas, le nombre de parts : 10. En haut, les parts coloriées : 5. Cela s'écrit 5/10 et se lit cinq dixièmes."
         },
         {
           "phrase": "Un carré est partagé en 100 carreaux égaux ; on en colorie 47.",
@@ -49,189 +49,109 @@
     "entrainement": [
       {
         "titre": "Dixièmes et centièmes",
-        "consigne": "Choisis la bonne réponse.",
+        "consigne": "Écris ta réponse sous la forme a/b, avec une barre oblique : par exemple 7/10. Chaque question dit si la fraction s'écrit en dixièmes ou en centièmes.",
         "questions": [
           {
-            "question": "Une bande unité est partagée en 10 parts égales. Timéo en colorie 4. Quelle fraction de la bande a-t-il coloriée ?",
-            "options": [
-              "10/4",
-              "4/10",
-              "1/4",
-              "4/100"
-            ],
-            "reponse_correcte": 1,
-            "explication": "En bas le nombre de parts, 10 ; en haut les parts coloriées, 4."
+            "id": 1,
+            "enonce": "Un ruban unité est partagé en 10 parts égales. Timéo en colorie 4. Écris en dixièmes la fraction du ruban qu'il a coloriée.",
+            "reponse_attendue": "4/10",
+            "indice": "Le nombre de parts de l'unité s'écrit en bas ; le nombre de parts prises s'écrit en haut."
           },
           {
-            "question": "Un carré unité est partagé en 100 petits carreaux égaux. Inès en colorie 23. Quelle fraction du carré a-t-elle coloriée ?",
-            "options": [
-              "23/100",
-              "23/10",
-              "100/23",
-              "23"
-            ],
-            "reponse_correcte": 0,
-            "explication": "L'unité est partagée en 100 : j'écris 100 en bas et 23 en haut."
+            "id": 2,
+            "enonce": "Une plaque unité est partagée en 100 carreaux égaux. Inès en colorie 23. Écris en centièmes la fraction de la plaque qu'elle a coloriée.",
+            "reponse_attendue": "23/100",
+            "indice": "Le nombre de parts de l'unité s'écrit en bas ; le nombre de parts prises s'écrit en haut."
           },
           {
-            "question": "Comment écrit-on « six dixièmes » ?",
-            "options": [
-              "6/100",
-              "60/10",
-              "6/10",
-              "10/6"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Des dixièmes : 10 en bas. Il y en a six : 6 en haut."
+            "id": 3,
+            "enonce": "Écris en chiffres la fraction « six dixièmes ».",
+            "reponse_attendue": "6/10",
+            "indice": "« dixièmes » veut dire 10 en bas, « centièmes » veut dire 100 en bas."
           },
           {
-            "question": "Comment lit-on la fraction 8/100 ?",
-            "options": [
-              "huit dixièmes",
-              "huit centièmes",
-              "cent huitièmes",
-              "quatre-vingts dixièmes"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Le nombre du bas est 100 : les parts sont des centièmes. Il y en a 8."
+            "id": 4,
+            "enonce": "Écris en chiffres la fraction « huit centièmes ».",
+            "reponse_attendue": "8/100",
+            "indice": "« dixièmes » veut dire 10 en bas, « centièmes » veut dire 100 en bas."
           },
           {
-            "question": "Une unité est partagée en 100 parts égales. Quelle fraction représente une seule part ?",
-            "options": [
-              "1/10",
-              "100/1",
-              "1/100",
-              "10/100"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Une part sur les 100 parts égales : 1 en haut, 100 en bas."
+            "id": 5,
+            "enonce": "Une unité est partagée en 100 parts égales. Écris en centièmes la fraction que représente une seule part.",
+            "reponse_attendue": "1/100",
+            "indice": "Le nombre de parts de l'unité s'écrit en bas ; le nombre de parts prises s'écrit en haut."
           },
           {
-            "question": "Combien faut-il de dixièmes pour faire une unité entière ?",
-            "options": [
-              "1 dixième",
-              "5 dixièmes",
-              "100 dixièmes",
-              "10 dixièmes"
-            ],
-            "reponse_correcte": 3,
-            "explication": "L'unité est partagée en 10 parts égales : il faut les 10 parts pour la refaire entière."
+            "id": 6,
+            "enonce": "Une unité entière est partagée en dixièmes. Écris en dixièmes la fraction qui représente l'unité entière (a/b).",
+            "reponse_attendue": "10/10",
+            "indice": "Il faut toutes les parts de l'unité pour la refaire entière."
           },
           {
-            "question": "Combien de centièmes valent un dixième ?",
-            "options": [
-              "10 centièmes",
-              "1 centième",
-              "100 centièmes",
-              "1000 centièmes"
-            ],
-            "reponse_correcte": 0,
-            "explication": "L'unité vaut 10 dixièmes et aussi 100 centièmes : chaque dixième contient donc 10 centièmes."
+            "id": 7,
+            "enonce": "Un dixième, combien vaut-il en centièmes ? Écris ta réponse en centièmes, sous la forme a/b.",
+            "reponse_attendue": "10/100",
+            "indice": "Une unité vaut 10 dixièmes et aussi 100 centièmes : un dixième contient donc 10 centièmes."
           },
           {
-            "question": "Laquelle de ces fractions est une fraction décimale ?",
-            "options": [
-              "3/4",
-              "7/10",
-              "2/3",
-              "5/6"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Une fraction décimale a 10 ou 100 en bas : c'est le cas de 7/10, qui compte des dixièmes."
+            "id": 8,
+            "enonce": "Une corde unité est partagée en 10 parts égales. Sacha en utilise 3 ; les autres ne servent pas. Écris en dixièmes la fraction de la corde qui ne sert pas.",
+            "reponse_attendue": "7/10",
+            "indice": "Compte d'abord les parts qui restent, puis écris-les sur le nombre total de parts."
           }
         ]
       },
       {
         "titre": "Des parts de l'unité",
-        "consigne": "Choisis la bonne réponse.",
+        "consigne": "Écris ta réponse sous la forme a/b, avec une barre oblique : par exemple 7/10. Chaque question dit si la fraction s'écrit en dixièmes ou en centièmes.",
         "questions": [
           {
-            "question": "Un ruban unité est partagé en 10 parts égales. Malo en prend 9. Quelle fraction du ruban prend-il ?",
-            "options": [
-              "9/100",
-              "9/10",
-              "10/9",
-              "1/9"
-            ],
-            "reponse_correcte": 1,
-            "explication": "En bas le nombre de parts, 10 ; en haut les parts prises, 9."
+            "id": 1,
+            "enonce": "Une bande unité est partagée en 10 parts égales. Malo en prend 9. Écris en dixièmes la fraction de la bande qu'il prend.",
+            "reponse_attendue": "9/10",
+            "indice": "Le nombre de parts de l'unité s'écrit en bas ; le nombre de parts prises s'écrit en haut."
           },
           {
-            "question": "Une plaque unité est partagée en 100 carreaux égaux. Jade en colorie 61. Quelle fraction de la plaque a-t-elle coloriée ?",
-            "options": [
-              "61/10",
-              "100/61",
-              "61",
-              "61/100"
-            ],
-            "reponse_correcte": 3,
-            "explication": "L'unité est partagée en 100 : j'écris 100 en bas et 61 en haut."
+            "id": 2,
+            "enonce": "Une grille unité est partagée en 100 carreaux égaux. Jade en colorie 61. Écris en centièmes la fraction de la grille qu'elle a coloriée.",
+            "reponse_attendue": "61/100",
+            "indice": "Le nombre de parts de l'unité s'écrit en bas ; le nombre de parts prises s'écrit en haut."
           },
           {
-            "question": "Comment écrit-on « douze centièmes » ?",
-            "options": [
-              "12/100",
-              "12/10",
-              "100/12",
-              "12"
-            ],
-            "reponse_correcte": 0,
-            "explication": "Des centièmes : 100 en bas. Il y en a douze : 12 en haut."
+            "id": 3,
+            "enonce": "Écris en chiffres la fraction « douze centièmes ».",
+            "reponse_attendue": "12/100",
+            "indice": "« dixièmes » veut dire 10 en bas, « centièmes » veut dire 100 en bas."
           },
           {
-            "question": "Comment lit-on la fraction 5/100 ?",
-            "options": [
-              "cinq dixièmes",
-              "cinquante centièmes",
-              "cinq centièmes",
-              "cent cinquièmes"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Le nombre du bas est 100 : les parts sont des centièmes. Il y en a 5."
+            "id": 4,
+            "enonce": "Écris en chiffres la fraction « cinq dixièmes ».",
+            "reponse_attendue": "5/10",
+            "indice": "« dixièmes » veut dire 10 en bas, « centièmes » veut dire 100 en bas."
           },
           {
-            "question": "Une unité est partagée en 10 parts égales. Quelle fraction représente une seule part ?",
-            "options": [
-              "1/100",
-              "10/1",
-              "1/10",
-              "10/10"
-            ],
-            "reponse_correcte": 2,
-            "explication": "Une part sur les 10 parts égales : 1 en haut, 10 en bas."
+            "id": 5,
+            "enonce": "Une unité est partagée en 10 parts égales. Écris en dixièmes la fraction que représente une seule part.",
+            "reponse_attendue": "1/10",
+            "indice": "Le nombre de parts de l'unité s'écrit en bas ; le nombre de parts prises s'écrit en haut."
           },
           {
-            "question": "Combien faut-il de centièmes pour faire une unité entière ?",
-            "options": [
-              "10 centièmes",
-              "100 centièmes",
-              "1 centième",
-              "1000 centièmes"
-            ],
-            "reponse_correcte": 1,
-            "explication": "L'unité est partagée en 100 parts égales : il faut les 100 parts pour la refaire entière."
+            "id": 6,
+            "enonce": "Une unité entière est partagée en centièmes. Écris en centièmes la fraction qui représente l'unité entière (a/b).",
+            "reponse_attendue": "100/100",
+            "indice": "Il faut toutes les parts de l'unité pour la refaire entière."
           },
           {
-            "question": "Combien de dixièmes valent 30 centièmes ?",
-            "options": [
-              "30 dixièmes",
-              "3 dixièmes",
-              "300 dixièmes",
-              "1 dixième"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Un dixième vaut 10 centièmes : dans 30 centièmes, il y a trois paquets de 10, donc 3 dixièmes."
+            "id": 7,
+            "enonce": "Trente centièmes, combien font-ils en dixièmes ? Écris ta réponse en dixièmes, sous la forme a/b.",
+            "reponse_attendue": "3/10",
+            "indice": "Une unité vaut 10 dixièmes et aussi 100 centièmes : un dixième contient donc 10 centièmes."
           },
           {
-            "question": "Laquelle de ces fractions n'est pas une fraction décimale ?",
-            "options": [
-              "7/10",
-              "2/5",
-              "9/100",
-              "6/10"
-            ],
-            "reponse_correcte": 1,
-            "explication": "Une fraction décimale a 10 ou 100 en bas. Dans 2/5, le nombre du bas est 5 : l'unité n'est partagée ni en dixièmes ni en centièmes."
+            "id": 8,
+            "enonce": "Un damier unité est partagé en 100 carreaux égaux. Fatou en colorie 40 ; les autres restent blancs. Écris en centièmes la fraction du damier qui reste blanche.",
+            "reponse_attendue": "60/100",
+            "indice": "Compte d'abord les parts qui restent, puis écris-les sur le nombre total de parts."
           }
         ]
       }
