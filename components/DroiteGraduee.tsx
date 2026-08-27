@@ -96,28 +96,46 @@ export default function DroiteGraduee({ droite, description }: Props) {
     }
   }
 
-  // En mode fractions, ce sont les subdivisions qui portent le sens : sans
-  // leurs étiquettes, une droite en quarts n'afficherait que 0, 1, 2.
-  const etiqueterSous =
+  /** La valeur est-elle explicitement demandée par une liste `etiquettes` ? */
+  const estListee = (valeur: number): boolean =>
+    Array.isArray(etiquettes) && etiquettes.some((e) => Math.abs(e - valeur) < 1e-9);
+
+  // Par défaut, seules les graduations principales sont étiquetées. En mode
+  // fraction, les sous-graduations le sont aussi : sans elles, une droite en
+  // quarts n'afficherait que 0, 1 et 2 et l'item perdrait son sens.
+  const etiqueterSousParDefaut =
     !!droite.fraction?.denominateur &&
-    droite.etiquettes !== "aucune" &&
-    droite.etiquettes !== "bornes" &&
+    etiquettes !== "aucune" &&
+    etiquettes !== "bornes" &&
+    !Array.isArray(etiquettes) &&
     principaux.length + sous.length <= 14;
 
-  /** Les repères dont la valeur est écrite sous la droite. */
+  /** Les repères principaux dont la valeur est écrite sous la droite. */
   const doitEtiqueter = (valeur: number, index: number): boolean => {
     if (etiquettes === "aucune") return false;
     if (etiquettes === "bornes") return index === 0 || index === intervalles;
-    if (Array.isArray(etiquettes)) return etiquettes.some((e) => Math.abs(e - valeur) < 1e-9);
+    if (Array.isArray(etiquettes)) return estListee(valeur);
     // "toutes" : au-delà de 12 étiquettes, elles se chevaucheraient — on
     // retombe alors sur les bornes, comme le demande le contrat.
     if (intervalles + 1 > 12) return index === 0 || index === intervalles;
     return true;
   };
 
+  /**
+   * Les sous-graduations étiquetées : celles du mode fraction, et celles qu'une
+   * liste `etiquettes` réclame nommément — c'est à cela que sert la liste, et
+   * elle prime donc sur la règle « seules les principales sont étiquetées ».
+   */
+  const doitEtiqueterSous = (valeur: number): boolean => {
+    if (etiquettes === "aucune") return false;
+    if (estListee(valeur)) return true;
+    return etiqueterSousParDefaut;
+  };
+
   // Étiquettes et flèches vivent toutes deux sous la droite : si les deux sont
   // présentes, les flèches descendent d'un cran pour ne pas les chevaucher.
-  const yEtiquettes = etiqueterSous || principaux.some((v, i) => doitEtiqueter(v, i));
+  const yEtiquettes =
+    principaux.some((v, i) => doitEtiqueter(v, i)) || sous.some((v) => doitEtiqueterSous(v));
   const decalagePoints = yEtiquettes ? 34 : 4;
   const yFleche = Y + H_TRAIT + decalagePoints;
   const hauteur = (droite.points?.length ?? 0) > 0 ? yFleche + 58 : Y_ETIQ + 18;
@@ -181,7 +199,7 @@ export default function DroiteGraduee({ droite, description }: Props) {
               strokeWidth="1.5"
               opacity="0.55"
             />
-            {etiqueterSous && (
+            {doitEtiqueterSous(v) && (
               <text
                 x={x(v)}
                 y={Y_ETIQ}
