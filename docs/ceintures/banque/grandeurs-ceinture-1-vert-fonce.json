@@ -1,0 +1,720 @@
+[
+  {
+    "item_code": "GM12",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Estimer un ordre de grandeur",
+      "regle": "Estimer, c'est comparer l'objet à une mesure que tu connais par cœur.",
+      "procedure": [
+        "Choisis un repère familier : ta taille, une bouteille d'eau, un paquet de sucre.",
+        "Demande-toi si l'objet est plus petit, pareil, ou beaucoup plus grand que ce repère."
+      ],
+      "exemples": [
+        {
+          "phrase": "La masse d'un chien.",
+          "demonstration": "Un paquet de sucre pèse 1 kg. Un chien, c'est une dizaine de paquets : environ 10 kg, pas 10 g."
+        },
+        {
+          "phrase": "La hauteur d'un immeuble de trois étages.",
+          "demonstration": "Une porte mesure environ 2 m. Trois étages, c'est plusieurs portes empilées : environ 10 m, pas 10 cm."
+        }
+      ],
+      "piege": "Une estimation n'est jamais exacte : on cherche l'ordre de grandeur, pas le nombre juste."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle masse est la plus vraisemblable pour un cahier de classe ?",
+        "options": [
+          "2 g",
+          "2 kg",
+          "200 g",
+          "20 kg"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un cahier se soulève d'une main sans effort : il pèse quelques centaines de grammes. 2 kg serait la masse d'un gros dictionnaire."
+      },
+      {
+        "question": "Timéo écrit : « J'ai bu 3 litres d'eau pendant le repas de midi. » Pourquoi est-ce peu vraisemblable ?",
+        "options": [
+          "Parce que 3 litres, c'est deux grandes bouteilles.",
+          "Parce que 3 litres, c'est à peu près un grand verre.",
+          "Parce que 3 litres, c'est ce que contient une baignoire.",
+          "Parce que 3 litres, c'est la contenance d'une cuillère à soupe."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un verre contient environ un quart de litre : 3 litres feraient une douzaine de verres à un seul repas."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "À peu près combien ?",
+        "consigne": "Choisis la mesure la plus vraisemblable.",
+        "questions": [
+          {
+            "question": "La taille d'un élève de CE2 est d'environ :",
+            "options": [
+              "13 cm",
+              "1 300 cm",
+              "130 cm",
+              "3 m"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un élève de CE2 arrive à peu près à l'épaule d'un adulte : un peu plus d'un mètre, soit environ 130 cm."
+          },
+          {
+            "question": "La masse d'une pomme est d'environ :",
+            "options": [
+              "150 g",
+              "15 g",
+              "1 kg 500 g",
+              "15 kg"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Une pomme tient dans la main : environ 150 g. Il en faut à peu près sept pour faire 1 kg."
+          },
+          {
+            "question": "Une bouteille d'eau ordinaire contient environ :",
+            "options": [
+              "10 litres",
+              "30 litres",
+              "1 litre",
+              "3 litres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une bouteille d'eau que l'on porte dans son sac contient environ 1 litre ; 10 litres, ce serait un seau."
+          },
+          {
+            "question": "La longueur de la cour de récréation est d'environ :",
+            "options": [
+              "3 m",
+              "3 cm",
+              "300 m",
+              "30 m"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Une cour fait quelques dizaines de mètres : environ 30 m, soit une trentaine de grands pas."
+          },
+          {
+            "question": "La masse d'un chat adulte est d'environ :",
+            "options": [
+              "4 g",
+              "40 kg",
+              "400 kg",
+              "4 kg"
+            ],
+            "reponse_correcte": 3,
+            "explication": "On porte un chat dans ses bras : quelques kilogrammes. 40 kg serait la masse d'un grand enfant."
+          },
+          {
+            "question": "La longueur d'une gomme est d'environ :",
+            "options": [
+              "4 cm",
+              "40 cm",
+              "4 m",
+              "1 m"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Une gomme tient entre deux doigts : quelques centimètres seulement."
+          },
+          {
+            "question": "Une baignoire remplie contient environ :",
+            "options": [
+              "15 litres",
+              "150 litres",
+              "1 litre",
+              "1 500 litres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Il faut environ cent cinquante bouteilles d'un litre pour remplir une baignoire."
+          },
+          {
+            "question": "La masse d'un cartable rempli est d'environ :",
+            "options": [
+              "400 g",
+              "4 kg",
+              "40 kg",
+              "400 kg"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un cartable rempli pèse quelques kilogrammes : c'est déjà lourd sur le dos, mais 40 kg serait impossible à porter."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des estimations",
+        "consigne": "Choisis la mesure la plus vraisemblable.",
+        "questions": [
+          {
+            "question": "La hauteur d'une porte est d'environ :",
+            "options": [
+              "2 m",
+              "20 m",
+              "2 cm",
+              "20 cm"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un adulte passe une porte sans se baisser : elle mesure un peu plus que sa taille, environ 2 m."
+          },
+          {
+            "question": "La masse d'un œuf est d'environ :",
+            "options": [
+              "6 g",
+              "600 g",
+              "60 g",
+              "6 kg"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un œuf tient dans la main : environ 60 g. Il en faudrait une quinzaine pour faire 1 kg."
+          },
+          {
+            "question": "Un arrosoir plein contient environ :",
+            "options": [
+              "1 litre",
+              "100 litres",
+              "10 litres",
+              "1 000 litres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un arrosoir plein est lourd à porter : une dizaine de litres, soit une dizaine de bouteilles."
+          },
+          {
+            "question": "La longueur d'un stylo est d'environ :",
+            "options": [
+              "14 m",
+              "1 m 40",
+              "140 cm",
+              "14 cm"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un stylo tient dans la main : une quinzaine de centimètres. 140 cm, ce serait la taille d'un élève."
+          },
+          {
+            "question": "La masse d'un vélo d'enfant est d'environ :",
+            "options": [
+              "10 g",
+              "100 g",
+              "100 kg",
+              "10 kg"
+            ],
+            "reponse_correcte": 3,
+            "explication": "On soulève un vélo d'enfant à deux mains : une dizaine de kilogrammes."
+          },
+          {
+            "question": "La longueur d'un terrain de handball est d'environ :",
+            "options": [
+              "4 m",
+              "40 m",
+              "400 m",
+              "4 000 m"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un terrain de handball fait quelques dizaines de mètres, un peu plus que la cour de l'école."
+          },
+          {
+            "question": "La masse d'un paquet de bonbons est d'environ :",
+            "options": [
+              "2 g",
+              "200 g",
+              "2 kg",
+              "20 kg"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un paquet de bonbons se glisse dans une poche : quelques centaines de grammes."
+          },
+          {
+            "question": "Une petite piscine gonflable contient environ :",
+            "options": [
+              "5 litres",
+              "5 000 litres",
+              "50 litres",
+              "500 litres"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Il faut plusieurs centaines de litres pour remplir une petite piscine gonflable."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM13",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Lire une pesée",
+      "regle": "Quand la balance est en équilibre, l'objet vaut la somme des masses marquées posées en face.",
+      "procedure": [
+        "Vérifie que les deux plateaux sont à la même hauteur, puis additionne toutes les masses marquées.",
+        "Si on te demande ce qui manque pour atteindre un total, ou l'écart entre deux pesées, cherche le complément : le plus petit nombre, plus le manque, redonne le plus grand.",
+        "Écris seulement le nombre, dans l'unité demandée."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un pot équilibré par 200 g et 100 g.",
+          "demonstration": "J'additionne : 200 + 100 = 300. Le pot pèse 300 g."
+        },
+        {
+          "phrase": "Je veux peser 250 g et j'ai déjà posé 200 g.",
+          "demonstration": "Je cherche le complément : 200 + 50 = 250. Il me manque une masse de 50 g."
+        }
+      ],
+      "piege": "Si un plateau descend encore, la pesée n'est pas terminée."
+    },
+    "diagnostic": [
+      {
+        "question": "La balance est en équilibre. D'un côté un pot de confiture, de l'autre une masse de 500 g et une masse de 250 g. Quelle est la masse du pot ?",
+        "options": [
+          "750 g",
+          "250 g",
+          "500 g",
+          "1 250 g"
+        ],
+        "reponse_correcte": 0,
+        "explication": "À l'équilibre, l'objet vaut toutes les masses marquées réunies : 500 + 250 = 750 g."
+      },
+      {
+        "question": "Sur une balance à plateaux, le plateau du melon descend et celui des masses marquées monte. Que faut-il faire pour terminer la pesée ?",
+        "options": [
+          "Enlever des masses marquées.",
+          "Ajouter des masses marquées.",
+          "Changer le melon de plateau.",
+          "Rien : la pesée est déjà terminée."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le plateau qui descend porte le plus lourd : le melon pèse encore plus que les masses posées, il faut en ajouter."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je pèse et je lis le résultat",
+        "consigne": "Lis chaque pesée, puis écris seulement le nombre demandé, en chiffres.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Timéo équilibre sa trousse avec une masse de 200 g et une masse de 50 g. Combien de grammes pèse sa trousse ?",
+            "reponse_attendue": "250",
+            "indice": "Additionne les deux masses marquées."
+          },
+          {
+            "id": 2,
+            "enonce": "Pour équilibrer un livre, Fatou pose une masse de 500 g, une masse de 100 g et une masse de 20 g. Combien de grammes pèse le livre ?",
+            "reponse_attendue": "620",
+            "indice": "Additionne les trois masses marquées, en commençant par la plus grande."
+          },
+          {
+            "id": 3,
+            "enonce": "Nour équilibre sa gourde avec une masse de 500 g, deux masses de 100 g et une masse de 10 g. Combien de grammes pèse la gourde ?",
+            "reponse_attendue": "710",
+            "indice": "Compte deux fois la masse de 100 g."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur la balance de la cuisine, un sac de pommes de terre pèse 3 kg et un sac d'oranges pèse 2 kg. Combien de kilogrammes pèsent les deux sacs ensemble ?",
+            "reponse_attendue": "5",
+            "indice": "Additionne les deux masses lues sur la balance."
+          },
+          {
+            "id": 5,
+            "enonce": "Malo équilibre son ballon avec deux masses de 200 g et une masse de 50 g. Combien de grammes pèse le ballon ?",
+            "reponse_attendue": "450",
+            "indice": "Compte deux fois la masse de 200 g, puis ajoute les 50 g."
+          },
+          {
+            "id": 6,
+            "enonce": "Inès veut peser exactement 350 g de farine. Elle a déjà posé une masse de 200 g et une masse de 100 g. Combien de grammes doit-elle encore poser ?",
+            "reponse_attendue": "50",
+            "indice": "Cherche ce qu'il faut ajouter à ce qui est déjà posé pour atteindre le total voulu."
+          },
+          {
+            "id": 7,
+            "enonce": "Sacha équilibre son cahier avec une masse de 100 g, une masse de 50 g et deux masses de 20 g. Combien de grammes pèse le cahier ?",
+            "reponse_attendue": "190",
+            "indice": "N'oublie pas de compter deux fois la masse de 20 g."
+          },
+          {
+            "id": 8,
+            "enonce": "Jade pèse deux paquets : le paquet A affiche 640 g et le paquet B affiche 580 g. Combien de grammes le paquet A pèse-t-il de plus que le paquet B ?",
+            "reponse_attendue": "60",
+            "indice": "Compare les deux affichages : cherche l'écart entre les deux nombres."
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième série de pesées",
+        "consigne": "Lis chaque pesée, puis écris seulement le nombre demandé, en chiffres.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Yanis équilibre un dictionnaire avec une masse de 500 g, une masse de 200 g et une masse de 20 g. Combien de grammes pèse le dictionnaire ?",
+            "reponse_attendue": "720",
+            "indice": "Additionne les trois masses marquées, en commençant par la plus grande."
+          },
+          {
+            "id": 2,
+            "enonce": "Rosalie équilibre son plumier avec une masse de 200 g, une masse de 100 g, une masse de 50 g et une masse de 5 g. Combien de grammes pèse le plumier ?",
+            "reponse_attendue": "355",
+            "indice": "Additionne les quatre masses marquées, de la plus grande à la plus petite."
+          },
+          {
+            "id": 3,
+            "enonce": "Adam veut peser exactement 480 g de riz. Il a déjà posé deux masses de 200 g. Combien de grammes doit-il encore poser ?",
+            "reponse_attendue": "80",
+            "indice": "Calcule d'abord ce qui est déjà posé, puis cherche le complément."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur la balance du jardin, un sac de sable pèse 4 kg et un sac de graviers pèse 6 kg. Combien de kilogrammes pèsent les deux sacs ensemble ?",
+            "reponse_attendue": "10",
+            "indice": "Additionne les deux masses lues sur la balance."
+          },
+          {
+            "id": 5,
+            "enonce": "Lila pèse deux paquets : le paquet A affiche 320 g et le paquet B affiche 275 g. Combien de grammes le paquet A pèse-t-il de plus que le paquet B ?",
+            "reponse_attendue": "45",
+            "indice": "Cherche l'écart entre les deux affichages."
+          },
+          {
+            "id": 6,
+            "enonce": "Timéo équilibre sa règle et son équerre avec deux masses de 100 g, une masse de 20 g et une masse de 10 g. Combien de grammes pèse le tout ?",
+            "reponse_attendue": "230",
+            "indice": "Compte deux fois la masse de 100 g avant d'ajouter les petites masses."
+          },
+          {
+            "id": 7,
+            "enonce": "Nour équilibre un melon avec une masse de 500 g et une masse de 100 g. Combien de grammes pèse le melon ?",
+            "reponse_attendue": "600",
+            "indice": "Additionne les deux masses marquées."
+          },
+          {
+            "id": 8,
+            "enonce": "Malo pose deux pommes sur la balance, l'une après l'autre : la première affiche 180 g, la seconde 165 g. Combien de grammes pèsent les deux pommes ensemble ?",
+            "reponse_attendue": "345",
+            "indice": "Additionne les deux masses affichées."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM14",
+    "type": "qcm",
+    "lecon": {
+      "titre": "L'heure, la demie, le quart",
+      "regle": "Grande aiguille sur le 3 : et quart ; sur le 6 : et demie ; sur le 9 : moins le quart.",
+      "procedure": [
+        "Lis la petite aiguille : l'heure est le chiffre sur lequel elle est posée, ou celui qu'elle vient de dépasser.",
+        "Lis la grande aiguille : 12 l'heure juste, 3 et quart, 6 et demie, 9 moins le quart.",
+        "Pour « moins le quart », annonce l'heure suivante."
+      ],
+      "exemples": [
+        {
+          "phrase": "Petite aiguille juste après le 2, grande sur le 3.",
+          "demonstration": "Il est 2 h 15, c'est-à-dire deux heures et quart."
+        },
+        {
+          "phrase": "Petite aiguille tout près du 5, grande sur le 9.",
+          "demonstration": "La petite n'a pas atteint le 5 : il est 4 h 45, cinq heures moins le quart."
+        }
+      ],
+      "piege": "À 4 h 45 la petite aiguille frôle le 5 : ce n'est pourtant pas 5 h."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle heure indique cette horloge ?",
+        "options": [
+          "3 h 25",
+          "6 h 15",
+          "5 h 03",
+          "5 h 15"
+        ],
+        "reponse_correcte": 3,
+        "explication": "La petite aiguille a dépassé le 5 : l'heure est 5 h. La grande sur le 3 marque 15 minutes : il est 5 h 15.",
+        "figure": {
+          "type": "cadran",
+          "heures": 5,
+          "minutes": 15
+        }
+      },
+      {
+        "question": "Comment dit-on autrement 8 h 45 ?",
+        "options": [
+          "huit heures et quart",
+          "huit heures et demie",
+          "neuf heures moins le quart",
+          "neuf heures et quart"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Il manque un quart d'heure avant 9 h : on annonce l'heure suivante, moins le quart."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quarts et demies",
+        "consigne": "Observe chaque horloge et choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "3 h 15",
+              "3 h 03",
+              "4 h 15",
+              "3 h 45"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La petite aiguille vient de quitter le 3 et la grande est sur le 3 : il est 3 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 3,
+              "minutes": 15
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "7 h 45",
+              "6 h 45",
+              "6 h 15",
+              "9 h 30"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La petite aiguille n'a pas atteint le 7 : l'heure est 6 h. La grande sur le 9 donne 45 minutes : 6 h 45.",
+            "figure": {
+              "type": "cadran",
+              "heures": 6,
+              "minutes": 45
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "9 h 06",
+              "10 h 30",
+              "9 h 30",
+              "8 h 30"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La petite aiguille est à mi-chemin entre le 9 et le 10 et la grande est sur le 6 : il est 9 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 9,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "2 h 15",
+              "1 h 45",
+              "1 h 03",
+              "1 h 15"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille vient de quitter le 1 et la grande est sur le 3 : il est 1 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 1,
+              "minutes": 15
+            }
+          },
+          {
+            "question": "Comment dit-on autrement l'heure indiquée par cette horloge ?",
+            "options": [
+              "onze heures moins le quart",
+              "dix heures et quart",
+              "dix heures et demie",
+              "onze heures et quart"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'horloge marque 10 h 45 : il manque un quart d'heure avant 11 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 10,
+              "minutes": 45
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "3 h",
+              "4 h",
+              "4 h 30",
+              "12 h 20"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est sur le 12 : l'heure est juste. La petite est sur le 4 : il est 4 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 4,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "7 h 45",
+              "8 h 15",
+              "7 h 15",
+              "7 h 03"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La petite aiguille vient de quitter le 7 et la grande est sur le 3 : il est 7 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 7,
+              "minutes": 15
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "12 h 30",
+              "11 h",
+              "10 h 30",
+              "11 h 30"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille est entre le 11 et le 12 et la grande est sur le 6 : il est 11 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 11,
+              "minutes": 30
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Encore des quarts et des demies",
+        "consigne": "Observe chaque horloge et choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "2 h 45",
+              "3 h 45",
+              "2 h 15",
+              "9 h 10"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La petite aiguille n'a pas atteint le 3 : l'heure est 2 h. La grande sur le 9 donne 45 minutes : 2 h 45.",
+            "figure": {
+              "type": "cadran",
+              "heures": 2,
+              "minutes": 45
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "9 h 15",
+              "8 h 15",
+              "8 h 03",
+              "8 h 45"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La petite aiguille vient de quitter le 8 et la grande est sur le 3 : il est 8 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 8,
+              "minutes": 15
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "6 h 30",
+              "5 h",
+              "5 h 30",
+              "4 h 30"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La petite aiguille est à mi-chemin entre le 5 et le 6 et la grande est sur le 6 : il est 5 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 5,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "1 h 15",
+              "12 h 03",
+              "12 h 45",
+              "12 h 15"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille vient de quitter le 12 et la grande est sur le 3 : il est 12 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 12,
+              "minutes": 15
+            }
+          },
+          {
+            "question": "Comment dit-on autrement l'heure indiquée par cette horloge ?",
+            "options": [
+              "cinq heures moins le quart",
+              "quatre heures et quart",
+              "quatre heures et demie",
+              "cinq heures et quart"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'horloge marque 4 h 45 : il manque un quart d'heure avant 5 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 4,
+              "minutes": 45
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "6 h",
+              "7 h",
+              "7 h 30",
+              "12 h 35"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est sur le 12 : l'heure est juste. La petite est sur le 7 : il est 7 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 7,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "11 h 15",
+              "10 h 45",
+              "10 h 15",
+              "10 h 03"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La petite aiguille vient de quitter le 10 et la grande est sur le 3 : il est 10 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 10,
+              "minutes": 15
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "7 h 30",
+              "6 h",
+              "5 h 30",
+              "6 h 30"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille est entre le 6 et le 7 et la grande est sur le 6 : il est 6 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 6,
+              "minutes": 30
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

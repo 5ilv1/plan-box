@@ -105,7 +105,7 @@ create unique index if not exists idx_cvar_pb on ceinture_variante(eleve_id, exe
 create unique index if not exists idx_cvar_rb on ceinture_variante(rb_eleve_id, exercice_id) where rb_eleve_id is not null;
 create index if not exists idx_cvar_origine on ceinture_variante(origine_evaluation_id);
 
--- ───────────────── Seed du référentiel (5 domaines, 177 items) ─────
+-- ───────────────── Seed du référentiel (6 domaines, 206 items) ─────
 -- Ordre et type_exercice repris des fichiers de banque, qui font foi.
 
 insert into ceinture_domaine (code, nom, matiere, description, ordre) values
@@ -113,7 +113,8 @@ insert into ceinture_domaine (code, nom, matiere, description, ordre) values
   ('MOTS', 'Mots', 'français', 'Vocabulaire, classes de mots, orthographe lexicale', 1),
   ('TEXT', 'Textes', 'français', 'Lecture, production d''écrits, relecture', 3),
   ('NOMB', 'Nombres', 'maths', 'Numération, fractions, nombres décimaux', 4),
-  ('CALC', 'Calcul', 'maths', 'Calcul mental, opérations posées, problèmes', 5)
+  ('CALC', 'Calcul', 'maths', 'Calcul mental, opérations posées, problèmes', 5),
+  ('GRME', 'Grandeurs et mesures', 'maths', 'Heure, monnaie, longueurs, masses, contenances, périmètres, aires', 6)
 on conflict (code) do update set nom = excluded.nom, matiere = excluded.matiere,
   description = excluded.description, ordre = excluded.ordre;
 
@@ -295,7 +296,36 @@ insert into ceinture_item (code, domaine_code, ceinture_idx, libelle, niveau_cib
   ('C35', 'CALC', 8, 'Je calcule un pourcentage', 'CM2+', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 30),
   ('C36', 'CALC', 8, 'Je connais les critères de divisibilité par 3 et 9', 'CM2+', 'qcm', 2, 'auto', 'iParcours · Calcul', 'PIDAPI', 31),
   ('C37', 'CALC', 8, 'J''utilise l''échelle d''un plan', 'CM2+', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 32),
-  ('C42', 'CALC', 8, 'Je choisis la procédure la plus efficace : calcul mental, posé ou calculatrice', 'CM2+', 'qcm', 2, 'auto', '—', 'Ajouté', 33)
+  ('C42', 'CALC', 8, 'Je choisis la procédure la plus efficace : calcul mental, posé ou calculatrice', 'CM2+', 'qcm', 2, 'auto', '—', 'Ajouté', 33),
+  ('GM10', 'GRME', 0, 'Je lis l''heure sur un cadran à aiguilles (heures entières et demi-heures)', 'CE2', 'qcm', 2, 'auto', 'iParcours · Durées', 'Reformulé', 1),
+  ('GM11', 'GRME', 0, 'J''utilise la monnaie (je rends la monnaie, je compose une somme)', 'CE2', 'probleme_maths', 2, 'auto', 'iParcours · Monnaie', 'Reformulé', 2),
+  ('GM37', 'GRME', 0, 'Je compare et je range des objets selon leur longueur ou leur masse', 'CE2', 'classement', 2, 'auto', 'iParcours · Mesures', 'Ajouté', 3),
+  ('GM12', 'GRME', 1, 'J''estime la taille, la masse ou la contenance d''un objet', 'CE2', 'qcm', 2, 'auto', 'iParcours · Mesures', 'PIDAPI', 4),
+  ('GM13', 'GRME', 1, 'Je mesure des masses et j''effectue des pesées', 'CE2', 'exercice', 2, 'enseignant', 'Manipulation en classe', 'PIDAPI', 5),
+  ('GM14', 'GRME', 1, 'Je lis l''heure ① (heure, demie, quart)', 'CE2', 'qcm', 2, 'auto', 'iParcours · Durées', 'Reformulé', 6),
+  ('GM15', 'GRME', 2, 'Je connais les unités de mesure de longueur (m, cm, mm)', 'CE2-CM1', 'qcm', 2, 'auto', 'Outil élève · Tableau de conversion', 'PIDAPI', 7),
+  ('GM16', 'GRME', 2, 'Je mesure une longueur et j''utilise l''unité qui convient', 'CE2-CM1', 'qcm', 2, 'auto', 'iParcours · Longueurs', 'Reformulé', 8),
+  ('GM17', 'GRME', 2, 'Je trouve l''unité appropriée à un ordre de grandeur', 'CE2-CM1', 'qcm', 2, 'auto', 'iParcours · Mesures', 'PIDAPI', 9),
+  ('GM18', 'GRME', 3, 'Je lis l''heure ② (à la minute près, matin / après-midi)', 'CM1', 'qcm', 2, 'auto', 'iParcours · Durées', 'Reformulé', 10),
+  ('GM19', 'GRME', 3, 'Je convertis des longueurs', 'CM1', 'exercice', 2, 'auto', 'Outil élève · Tableau de conversion', 'PIDAPI', 11),
+  ('GM20', 'GRME', 3, 'Je convertis des durées (heure, minute, seconde)', 'CM1', 'exercice', 2, 'auto', 'iParcours · Durées', 'PIDAPI', 12),
+  ('GM22', 'GRME', 4, 'Je convertis des durées (siècles, années, semaines, jours)', 'CM1', 'exercice', 2, 'auto', 'iParcours · Durées', 'PIDAPI', 13),
+  ('GM23', 'GRME', 4, 'Je convertis des masses', 'CM1', 'exercice', 2, 'auto', 'Outil élève · Tableau de conversion', 'PIDAPI', 14),
+  ('GM38', 'GRME', 4, 'Je convertis des contenances (L, dL, cL, mL)', 'CM1', 'exercice', 2, 'auto', 'Outil élève · Tableau de conversion', 'Ajouté', 15),
+  ('GM21', 'GRME', 4, 'Je distingue angle droit, angle aigu et angle obtus', 'CM1', 'qcm', 2, 'auto', 'iParcours · Géométrie', 'Reformulé', 16),
+  ('GM24', 'GRME', 5, 'J''additionne des durées', 'CM1-CM2', 'probleme_maths', 2, 'auto', 'iParcours · Durées', 'PIDAPI', 17),
+  ('GM25', 'GRME', 5, 'Je mesure le périmètre d''une figure', 'CM1-CM2', 'exercice', 2, 'auto', 'iParcours · Périmètres', 'PIDAPI', 18),
+  ('GM26', 'GRME', 5, 'Je comprends le sens de l''aire d''une figure : le pavage', 'CM1-CM2', 'exercice', 2, 'auto', 'iParcours · Aires', 'PIDAPI', 19),
+  ('GM27', 'GRME', 6, 'Je calcule le périmètre d''une figure', 'CM2', 'exercice', 2, 'auto', 'iParcours · Périmètres', 'PIDAPI', 20),
+  ('GM28', 'GRME', 6, 'Je soustrais des durées et je calcule une durée écoulée', 'CM2', 'probleme_maths', 2, 'auto', 'iParcours · Durées', 'Reformulé', 21),
+  ('GM29', 'GRME', 6, 'Je calcule l''aire d''un carré et d''un rectangle', 'CM2', 'exercice', 2, 'auto', 'iParcours · Aires', 'Reformulé', 22),
+  ('GM30', 'GRME', 6, 'Je résous une situation de proportionnalité ① (recette)', 'CM2', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 23),
+  ('GM31', 'GRME', 7, 'Je reproduis un angle avec un gabarit', 'CM2', 'exercice', 2, 'enseignant', 'Trace papier', 'PIDAPI', 24),
+  ('GM32', 'GRME', 7, 'Je classe des mesures de longueur, de masse et de contenance après conversion', 'CM2', 'classement', 2, 'auto', 'Outil élève · Tableau de conversion', 'PIDAPI', 25),
+  ('GM33', 'GRME', 7, 'Je résous une situation de proportionnalité ② (échelle)', 'CM2', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 26),
+  ('GM34', 'GRME', 8, 'Je comprends et je calcule le volume d''un pavé droit (m³)', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Volumes', 'PIDAPI', 27),
+  ('GM35', 'GRME', 8, 'Je calcule le périmètre d''un cercle et l''aire d''un triangle', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Aires', 'PIDAPI', 28),
+  ('GM36', 'GRME', 8, 'Je mesure et je trace des angles avec un rapporteur', 'CM2+', 'exercice', 2, 'enseignant', 'Trace papier', 'Reformulé', 29)
 on conflict (code) do update set domaine_code = excluded.domaine_code,
   ceinture_idx = excluded.ceinture_idx, libelle = excluded.libelle,
   niveau_cible = excluded.niveau_cible, type_exercice = excluded.type_exercice,

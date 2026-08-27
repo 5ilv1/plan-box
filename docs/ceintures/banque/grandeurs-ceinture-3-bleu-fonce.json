@@ -1,0 +1,657 @@
+[
+  {
+    "item_code": "GM18",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Lire l'heure à la minute",
+      "regle": "La petite aiguille donne l'heure commencée, la grande les minutes : un grand trait vaut 5 minutes.",
+      "procedure": [
+        "Lis la petite aiguille : garde le nombre qu'elle a dépassé.",
+        "Compte les minutes de 5 en 5 sur les grands traits depuis le 12.",
+        "L'après-midi, de 1 h à 11 h, ajoute 12 : 4 h devient 16 h."
+      ],
+      "exemples": [
+        {
+          "phrase": "Petite aiguille entre 3 et 4, grande aiguille sur le 5.",
+          "demonstration": "Elle a dépassé le 3, donc 3 h. Le 5 vaut 5 × 5 = 25 : 3 h 25."
+        },
+        {
+          "phrase": "Petite aiguille tout près du 9, grande sur le 11.",
+          "demonstration": "Elle n'a pas atteint le 9 : il est encore 8 h. Le 11 vaut 55 : 8 h 55."
+        }
+      ],
+      "piege": "Le 4 ne vaut pas 4 minutes, mais 20."
+    },
+    "diagnostic": [
+      {
+        "question": "Il est 3 h 45 de l'après-midi. Quelle heure affiche l'horloge numérique de la gare ?",
+        "options": [
+          "3 h 45",
+          "13 h 45",
+          "16 h 45",
+          "15 h 45"
+        ],
+        "reponse_correcte": 3,
+        "explication": "L'après-midi, on ajoute 12 à l'heure lue sur le cadran : 3 + 12 = 15. Il est 15 h 45."
+      },
+      {
+        "question": "Sur un cadran, la petite aiguille est entre le 8 et le 9, et la grande aiguille est sur le 10. Quelle heure est-il ?",
+        "options": [
+          "8 h 50",
+          "9 h 50",
+          "8 h 10",
+          "10 h 40"
+        ],
+        "reponse_correcte": 0,
+        "explication": "La petite aiguille a dépassé le 8 sans atteindre le 9 : il est 8 h. La grande sur le 10 donne 10 × 5 = 50 minutes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quelle heure est-il ?",
+        "consigne": "Regarde le cadran dessiné sous chaque question, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "7 h 04",
+              "7 h 20",
+              "4 h 35",
+              "8 h 20"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La petite aiguille a dépassé le 7. La grande est sur le 4 : 4 × 5 = 20 minutes.",
+            "figure": {
+              "type": "cadran",
+              "heures": 7,
+              "minutes": 20
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "10 h 35",
+              "10 h 07",
+              "7 h 50",
+              "11 h 35"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La grande aiguille est sur le 7 : 7 × 5 = 35 minutes. La petite a dépassé le 10.",
+            "figure": {
+              "type": "cadran",
+              "heures": 10,
+              "minutes": 35
+            }
+          },
+          {
+            "id": 3,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "2 h 55",
+              "3 h 55",
+              "11 h 10",
+              "2 h 11"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La petite aiguille est presque sur le 3, mais elle ne l'a pas atteint : il est encore 2 h. Le 11 vaut 55 minutes.",
+            "figure": {
+              "type": "cadran",
+              "heures": 2,
+              "minutes": 55
+            }
+          },
+          {
+            "id": 4,
+            "question": "Ce cadran n'a pas de chiffres. Quelle heure indique-t-il ?",
+            "options": [
+              "5 h 08",
+              "8 h 25",
+              "6 h 40",
+              "5 h 40"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Je compte les grands traits depuis le haut : la grande aiguille est au huitième, soit 8 × 5 = 40 minutes. La petite a dépassé le cinquième trait.",
+            "figure": {
+              "type": "cadran",
+              "heures": 5,
+              "minutes": 40,
+              "chiffres": false
+            }
+          },
+          {
+            "id": 5,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "12 h 02",
+              "12 h 10",
+              "2 h 12",
+              "1 h 10"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est sur le 2 : 2 × 5 = 10 minutes. La petite vient de quitter le 12.",
+            "figure": {
+              "type": "cadran",
+              "heures": 12,
+              "minutes": 10
+            }
+          },
+          {
+            "id": 6,
+            "question": "Ce cadran n'a pas de chiffres. Quelle heure indique-t-il ?",
+            "options": [
+              "9 h 09",
+              "10 h 45",
+              "9 h 45",
+              "9 h 15"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La grande aiguille est au neuvième grand trait : 9 × 5 = 45 minutes. La petite a dépassé le neuvième trait sans atteindre le dixième.",
+            "figure": {
+              "type": "cadran",
+              "heures": 9,
+              "minutes": 45,
+              "chiffres": false
+            }
+          },
+          {
+            "id": 7,
+            "question": "Il est l'après-midi. Quelle heure affiche l'horloge numérique du hall ?",
+            "options": [
+              "4 h 15",
+              "14 h 15",
+              "16 h 15",
+              "16 h 03"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le cadran indique 4 h 15. L'après-midi, j'ajoute 12 : 4 + 12 = 16, donc 16 h 15.",
+            "figure": {
+              "type": "cadran",
+              "heures": 4,
+              "minutes": 15
+            }
+          },
+          {
+            "id": 8,
+            "question": "Timéo rentre de l'entraînement l'après-midi. Ce cadran sans chiffres indique l'heure : que montre l'horloge numérique du salon ?",
+            "options": [
+              "18 h 30",
+              "16 h 30",
+              "6 h 30",
+              "18 h 06"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le cadran indique 6 h 30. L'après-midi, j'ajoute 12 : 6 + 12 = 18, donc 18 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 6,
+              "minutes": 30,
+              "chiffres": false
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je lis les aiguilles",
+        "consigne": "Regarde le cadran dessiné sous chaque question, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "4 h 01",
+              "4 h 05",
+              "5 h 05",
+              "1 h 20"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est sur le 1 : 1 × 5 = 5 minutes. La petite vient de dépasser le 4.",
+            "figure": {
+              "type": "cadran",
+              "heures": 4,
+              "minutes": 5
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "11 h 25",
+              "11 h 05",
+              "12 h 25",
+              "5 h 55"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La grande aiguille est sur le 5 : 5 × 5 = 25 minutes. La petite a dépassé le 11 sans atteindre le 12.",
+            "figure": {
+              "type": "cadran",
+              "heures": 11,
+              "minutes": 25
+            }
+          },
+          {
+            "id": 3,
+            "question": "Ce cadran n'a pas de chiffres. Quelle heure indique-t-il ?",
+            "options": [
+              "1 h 08",
+              "2 h 40",
+              "1 h 40",
+              "8 h 05"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La grande aiguille est au huitième grand trait : 8 × 5 = 40 minutes. La petite a dépassé le premier trait, elle n'a pas atteint le deuxième.",
+            "figure": {
+              "type": "cadran",
+              "heures": 1,
+              "minutes": 40,
+              "chiffres": false
+            }
+          },
+          {
+            "id": 4,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "6 h 55",
+              "7 h 55",
+              "6 h 11",
+              "5 h 55"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La petite aiguille est tout près du 7 mais ne l'a pas atteint : il est encore 6 h. Le 11 vaut 55 minutes.",
+            "figure": {
+              "type": "cadran",
+              "heures": 6,
+              "minutes": 55
+            }
+          },
+          {
+            "id": 5,
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "8 h 03",
+              "3 h 40",
+              "9 h 15",
+              "8 h 15"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La grande aiguille est sur le 3 : 3 × 5 = 15 minutes. La petite a dépassé le 8.",
+            "figure": {
+              "type": "cadran",
+              "heures": 8,
+              "minutes": 15
+            }
+          },
+          {
+            "id": 6,
+            "question": "Ce cadran n'a pas de chiffres. Quelle heure indique-t-il ?",
+            "options": [
+              "12 h 09",
+              "12 h 45",
+              "1 h 45",
+              "11 h 45"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est au neuvième grand trait : 9 × 5 = 45 minutes. La petite a quitté le haut du cadran sans atteindre le trait suivant.",
+            "figure": {
+              "type": "cadran",
+              "heures": 12,
+              "minutes": 45,
+              "chiffres": false
+            }
+          },
+          {
+            "id": 7,
+            "question": "Il est l'après-midi. Quelle heure affiche l'horloge numérique de la bibliothèque ?",
+            "options": [
+              "2 h 20",
+              "12 h 20",
+              "14 h 20",
+              "14 h 04"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le cadran indique 2 h 20. L'après-midi, j'ajoute 12 : 2 + 12 = 14, donc 14 h 20.",
+            "figure": {
+              "type": "cadran",
+              "heures": 2,
+              "minutes": 20
+            }
+          },
+          {
+            "id": 8,
+            "question": "Fatou sort de l'étude l'après-midi. Quelle heure affiche l'horloge numérique du couloir ?",
+            "options": [
+              "17 h 10",
+              "15 h 10",
+              "5 h 10",
+              "17 h 02"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le cadran indique 5 h 10. L'après-midi, j'ajoute 12 : 5 + 12 = 17, donc 17 h 10.",
+            "figure": {
+              "type": "cadran",
+              "heures": 5,
+              "minutes": 10
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM19",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Convertir des longueurs",
+      "regle": "Entre deux unités voisines de km, hm, dam, m, dm, cm, mm, le nombre est multiplié ou divisé par 10.",
+      "procedure": [
+        "Repère l'unité de départ et l'unité demandée dans le tableau.",
+        "Vers une unité plus petite, multiplie par 10 pour chaque colonne franchie.",
+        "Vers une unité plus grande, divise par 10 autant de fois."
+      ],
+      "exemples": [
+        {
+          "phrase": "3 m = … cm",
+          "demonstration": "De m à cm, je franchis deux colonnes : 3 × 10 × 10 = 300. 3 m = 300 cm."
+        },
+        {
+          "phrase": "5 m 60 cm = … cm",
+          "demonstration": "Je convertis d'abord les 5 m : 500 cm. J'ajoute les 60 cm déjà en centimètres : 560 cm."
+        }
+      ],
+      "piege": "1 km ne vaut pas 100 m mais 1 000 m : trois colonnes séparent km et m."
+    },
+    "diagnostic": [
+      {
+        "question": "Un ruban mesure 400 cm. Quelle est sa longueur en mètres ?",
+        "options": [
+          "40",
+          "4",
+          "4 000",
+          "0,4"
+        ],
+        "reponse_correcte": 1,
+        "explication": "De cm vers m, on remonte de deux colonnes : on divise par 100. 400 cm font 4 m."
+      },
+      {
+        "question": "Timéo mesure 1 m 35 cm. Combien cela fait-il en centimètres ?",
+        "options": [
+          "1 350",
+          "145",
+          "1,35",
+          "135"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le mètre vaut 100 cm ; j'ajoute les 35 cm : 100 + 35 = 135 cm."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je convertis des longueurs",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "6 m = … cm",
+            "reponse_attendue": "600",
+            "indice": "De m à cm, je franchis deux colonnes."
+          },
+          {
+            "id": 2,
+            "enonce": "3 km = … m",
+            "reponse_attendue": "3000",
+            "indice": "De km à m, je franchis trois colonnes."
+          },
+          {
+            "id": 3,
+            "enonce": "9 cm = … mm",
+            "reponse_attendue": "90",
+            "indice": "De cm à mm, je franchis une seule colonne."
+          },
+          {
+            "id": 4,
+            "enonce": "2 m 40 cm = … cm",
+            "reponse_attendue": "240",
+            "indice": "Convertis d'abord les mètres, puis ajoute les centimètres qui restent."
+          },
+          {
+            "id": 5,
+            "enonce": "1 km 500 m = … m",
+            "reponse_attendue": "1500",
+            "indice": "Convertis d'abord le kilomètre, puis ajoute les mètres qui restent."
+          },
+          {
+            "id": 6,
+            "enonce": "8 000 m = … km",
+            "reponse_attendue": "8",
+            "indice": "On remonte vers une unité plus grande : on divise par 10 à chaque colonne franchie."
+          },
+          {
+            "id": 7,
+            "enonce": "500 cm = … m",
+            "reponse_attendue": "5",
+            "indice": "On remonte de deux colonnes : on divise par 100."
+          },
+          {
+            "id": 8,
+            "enonce": "60 mm = … cm",
+            "reponse_attendue": "6",
+            "indice": "On remonte d'une seule colonne : on divise par 10."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des longueurs à convertir",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "8 m = … cm",
+            "reponse_attendue": "800",
+            "indice": "De m à cm, je franchis deux colonnes."
+          },
+          {
+            "id": 2,
+            "enonce": "5 km = … m",
+            "reponse_attendue": "5000",
+            "indice": "De km à m, je franchis trois colonnes."
+          },
+          {
+            "id": 3,
+            "enonce": "4 cm = … mm",
+            "reponse_attendue": "40",
+            "indice": "De cm à mm, je franchis une seule colonne."
+          },
+          {
+            "id": 4,
+            "enonce": "3 m 70 cm = … cm",
+            "reponse_attendue": "370",
+            "indice": "Convertis d'abord les mètres, puis ajoute les centimètres qui restent."
+          },
+          {
+            "id": 5,
+            "enonce": "2 km 250 m = … m",
+            "reponse_attendue": "2250",
+            "indice": "Convertis d'abord les kilomètres, puis ajoute les mètres qui restent."
+          },
+          {
+            "id": 6,
+            "enonce": "6 000 m = … km",
+            "reponse_attendue": "6",
+            "indice": "On remonte vers une unité plus grande : on divise par 10 à chaque colonne franchie."
+          },
+          {
+            "id": 7,
+            "enonce": "900 cm = … m",
+            "reponse_attendue": "9",
+            "indice": "On remonte de deux colonnes : on divise par 100."
+          },
+          {
+            "id": 8,
+            "enonce": "120 mm = … cm",
+            "reponse_attendue": "12",
+            "indice": "On remonte d'une seule colonne : on divise par 10."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM20",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Convertir des durées",
+      "regle": "Une heure vaut 60 minutes, une minute vaut 60 secondes : les durées se convertissent avec 60, pas avec des zéros.",
+      "procedure": [
+        "Repère l'unité de départ et l'unité demandée.",
+        "Vers les minutes ou les secondes, multiplie par 60 ; dans l'autre sens, divise.",
+        "Si la durée a deux unités, convertis la plus grande, puis ajoute le reste."
+      ],
+      "exemples": [
+        {
+          "phrase": "4 h = … min",
+          "demonstration": "Chaque heure vaut 60 minutes : 4 × 60 = 240. 4 h = 240 min."
+        },
+        {
+          "phrase": "2 h 10 min = … min",
+          "demonstration": "Je convertis les 2 h : 2 × 60 = 120 min. J'ajoute les 10 min : 130 min."
+        }
+      ],
+      "piege": "Une heure ne vaut pas 100 minutes : après 59 minutes vient l'heure suivante."
+    },
+    "diagnostic": [
+      {
+        "question": "Une séance de cinéma dure 2 h. Combien de minutes cela fait-il ?",
+        "options": [
+          "200",
+          "120",
+          "20",
+          "100"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Une heure vaut 60 minutes, donc 2 × 60 = 120 minutes. Une heure ne vaut ni 100 ni 10 minutes."
+      },
+      {
+        "question": "Rosalie tient la position de la planche pendant 150 secondes. Combien de temps cela fait-il ?",
+        "options": [
+          "1 min 50 s",
+          "15 min",
+          "2 min 30 s",
+          "1 min 30 s"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une minute vaut 60 secondes : 60 + 60 = 120 secondes pour 2 minutes, et il reste 30 secondes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Heures, minutes et secondes",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "3 h = … min",
+            "reponse_attendue": "180",
+            "indice": "Multiplie le nombre d'heures par 60."
+          },
+          {
+            "id": 2,
+            "enonce": "5 min = … s",
+            "reponse_attendue": "300",
+            "indice": "Multiplie le nombre de minutes par 60."
+          },
+          {
+            "id": 3,
+            "enonce": "1 h 20 min = … min",
+            "reponse_attendue": "80",
+            "indice": "Convertis d'abord l'heure, puis ajoute les minutes qui restent."
+          },
+          {
+            "id": 4,
+            "enonce": "540 min = … h",
+            "reponse_attendue": "9",
+            "indice": "Cherche combien de fois 60 tient dans ce nombre."
+          },
+          {
+            "id": 5,
+            "enonce": "2 h 45 min = … min",
+            "reponse_attendue": "165",
+            "indice": "Convertis d'abord les heures, puis ajoute les minutes qui restent."
+          },
+          {
+            "id": 6,
+            "enonce": "180 s = … min",
+            "reponse_attendue": "3",
+            "indice": "Cherche combien de fois 60 tient dans ce nombre."
+          },
+          {
+            "id": 7,
+            "enonce": "1 h = … s",
+            "reponse_attendue": "3600",
+            "indice": "Passe d'abord aux minutes, puis des minutes aux secondes."
+          },
+          {
+            "id": 8,
+            "enonce": "240 s = … min",
+            "reponse_attendue": "4",
+            "indice": "Cherche combien de fois 60 tient dans ce nombre."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des durées à convertir",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "6 h = … min",
+            "reponse_attendue": "360",
+            "indice": "Multiplie le nombre d'heures par 60."
+          },
+          {
+            "id": 2,
+            "enonce": "8 min = … s",
+            "reponse_attendue": "480",
+            "indice": "Multiplie le nombre de minutes par 60."
+          },
+          {
+            "id": 3,
+            "enonce": "1 h 45 min = … min",
+            "reponse_attendue": "105",
+            "indice": "Convertis d'abord l'heure, puis ajoute les minutes qui restent."
+          },
+          {
+            "id": 4,
+            "enonce": "300 min = … h",
+            "reponse_attendue": "5",
+            "indice": "Cherche combien de fois 60 tient dans ce nombre."
+          },
+          {
+            "id": 5,
+            "enonce": "3 h 15 min = … min",
+            "reponse_attendue": "195",
+            "indice": "Convertis d'abord les heures, puis ajoute les minutes qui restent."
+          },
+          {
+            "id": 6,
+            "enonce": "420 s = … min",
+            "reponse_attendue": "7",
+            "indice": "Cherche combien de fois 60 tient dans ce nombre."
+          },
+          {
+            "id": 7,
+            "enonce": "2 h = … s",
+            "reponse_attendue": "7200",
+            "indice": "Passe d'abord aux minutes, puis des minutes aux secondes."
+          },
+          {
+            "id": 8,
+            "enonce": "600 s = … min",
+            "reponse_attendue": "10",
+            "indice": "Cherche combien de fois 60 tient dans ce nombre."
+          }
+        ]
+      }
+    ]
+  }
+]

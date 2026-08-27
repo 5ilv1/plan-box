@@ -1,0 +1,716 @@
+[
+  {
+    "item_code": "GM15",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Mètre, centimètre, millimètre",
+      "regle": "1 mètre vaut 100 centimètres, et 1 centimètre vaut 10 millimètres.",
+      "procedure": [
+        "Repère l'unité écrite : m, cm ou mm.",
+        "Range-les de la plus petite à la plus grande : mm, cm, m.",
+        "Applique les deux égalités : 1 m = 100 cm et 1 cm = 10 mm."
+      ],
+      "exemples": [
+        {
+          "phrase": "Combien de millimètres dans 4 cm ?",
+          "demonstration": "Chaque centimètre contient 10 millimètres : 4 × 10 = 40, donc 40 mm."
+        },
+        {
+          "phrase": "Combien de centimètres dans 2 m ?",
+          "demonstration": "Chaque mètre contient 100 centimètres : 2 × 100 = 200, donc 200 cm."
+        }
+      ],
+      "piege": "Plus l'unité est petite, plus le nombre est grand : 1 m, 100 cm et 1 000 mm sont la même longueur."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle est la plus grande de ces trois unités ?",
+        "options": [
+          "le millimètre",
+          "le centimètre",
+          "le mètre",
+          "elles mesurent la même chose"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le mètre est la plus grande des trois : il en faut 100 centimètres, ou 1 000 millimètres, pour le remplir."
+      },
+      {
+        "question": "Combien de millimètres font 3 centimètres ?",
+        "options": [
+          "30",
+          "300",
+          "13",
+          "3"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Chaque centimètre contient 10 millimètres : 3 × 10 = 30."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je connais mes unités de longueur",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Combien de centimètres y a-t-il dans 1 mètre ?",
+            "options": [
+              "10",
+              "1 000",
+              "60",
+              "100"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un mètre se partage en 100 centimètres : c'est ce que montre un mètre ruban."
+          },
+          {
+            "question": "Combien de millimètres y a-t-il dans 1 centimètre ?",
+            "options": [
+              "10",
+              "100",
+              "5",
+              "1 000"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Entre deux grands traits de la règle, il y a 10 petits traits : 1 cm vaut 10 mm."
+          },
+          {
+            "question": "Quelle est la plus petite de ces unités ?",
+            "options": [
+              "le mètre",
+              "le centimètre",
+              "le millimètre",
+              "les trois sont égales"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le millimètre est le plus petit : il en faut 10 pour faire un seul centimètre."
+          },
+          {
+            "question": "Que veut dire l'abréviation mm ?",
+            "options": [
+              "mètre",
+              "millimètre",
+              "centimètre",
+              "millier de mètres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "mm est l'abréviation de millimètre ; le mètre s'écrit m et le centimètre cm."
+          },
+          {
+            "question": "Comment range-t-on ces unités de la plus petite à la plus grande ?",
+            "options": [
+              "m, cm, mm",
+              "cm, mm, m",
+              "mm, cm, m",
+              "mm, m, cm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le millimètre est le plus petit, puis le centimètre, puis le mètre."
+          },
+          {
+            "question": "1 mètre, c'est aussi :",
+            "options": [
+              "100 mm",
+              "1 000 mm",
+              "10 cm",
+              "10 mm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "1 m vaut 100 cm, et chaque centimètre vaut 10 mm : 100 × 10 = 1 000 mm."
+          },
+          {
+            "question": "Sur une règle d'écolier, l'écart entre deux petits traits vaut :",
+            "options": [
+              "1 mm",
+              "1 cm",
+              "1 m",
+              "5 mm"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les petits traits découpent chaque centimètre en 10 parts : chaque part vaut 1 mm."
+          },
+          {
+            "question": "Quelle longueur est la plus petite ?",
+            "options": [
+              "1 cm",
+              "10 mm",
+              "1 m",
+              "1 mm"
+            ],
+            "reponse_correcte": 3,
+            "explication": "1 mm est la plus petite : 1 cm et 10 mm sont égaux, et 1 m est cent fois plus grand qu'un centimètre."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des unités de longueur",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Combien de centimètres font 3 mètres ?",
+            "options": [
+              "30",
+              "300",
+              "3 000",
+              "103"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Chaque mètre vaut 100 centimètres : 3 × 100 = 300."
+          },
+          {
+            "question": "Combien de millimètres font 7 centimètres ?",
+            "options": [
+              "7",
+              "700",
+              "17",
+              "70"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Chaque centimètre vaut 10 millimètres : 7 × 10 = 70."
+          },
+          {
+            "question": "Quelle est la plus grande de ces unités ?",
+            "options": [
+              "le centimètre",
+              "le millimètre",
+              "le mètre",
+              "le centimètre et le mètre sont égaux"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le mètre est la plus grande : il contient 100 centimètres."
+          },
+          {
+            "question": "Que veut dire l'abréviation cm ?",
+            "options": [
+              "millimètre",
+              "centimètre",
+              "mètre",
+              "centaine de mètres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "cm est l'abréviation de centimètre ; le millimètre s'écrit mm."
+          },
+          {
+            "question": "1 centimètre, c'est aussi :",
+            "options": [
+              "10 mm",
+              "100 mm",
+              "10 m",
+              "1 m"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un centimètre se partage en 10 millimètres, les petits traits de la règle."
+          },
+          {
+            "question": "Comment range-t-on ces unités de la plus grande à la plus petite ?",
+            "options": [
+              "mm, cm, m",
+              "cm, m, mm",
+              "m, cm, mm",
+              "mm, m, cm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le mètre d'abord, puis le centimètre, puis le millimètre, le plus petit des trois."
+          },
+          {
+            "question": "Une longueur d'un demi-mètre s'écrit aussi :",
+            "options": [
+              "5 cm",
+              "50 cm",
+              "500 cm",
+              "5 m"
+            ],
+            "reponse_correcte": 1,
+            "explication": "1 m vaut 100 cm : la moitié de 100, c'est 50 cm."
+          },
+          {
+            "question": "Quelle longueur est la plus grande ?",
+            "options": [
+              "80 cm",
+              "900 mm",
+              "95 cm",
+              "1 m"
+            ],
+            "reponse_correcte": 3,
+            "explication": "1 m vaut 100 cm ; 900 mm valent 90 cm. C'est donc 1 m la plus grande des quatre."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM16",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Mesurer avec une règle",
+      "regle": "Une longueur se lit à partir du zéro de la règle, et s'écrit avec l'unité qui convient à l'objet.",
+      "procedure": [
+        "Pose le bord de l'objet sur la graduation 0, puis lis la graduation d'arrivée.",
+        "Si tu n'es pas parti de 0, retranche la graduation de départ.",
+        "Choisis l'unité : le millimètre pour le très fin, le centimètre pour la trousse, le mètre pour la salle."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un ruban posé de 0 à 9.",
+          "demonstration": "Il part du zéro et s'arrête sur le 9 : il mesure 9 cm."
+        },
+        {
+          "phrase": "Un ruban posé de 4 à 17.",
+          "demonstration": "Il n'est pas parti de 0 : 17 − 4 = 13. Il mesure 13 cm."
+        }
+      ],
+      "piege": "Le bord de la règle n'est pas toujours le zéro : cherche le trait 0."
+    },
+    "diagnostic": [
+      {
+        "question": "Adam mesure une bande de papier. Il l'a posée à partir de la graduation 3 de sa règle, et l'autre bord arrive sur la graduation 14. Quelle est la longueur de la bande ?",
+        "options": [
+          "14 cm",
+          "11 cm",
+          "17 cm",
+          "3 cm"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La bande n'est pas partie de 0 : il faut retrancher la graduation de départ, 14 − 3 = 11 cm."
+      },
+      {
+        "question": "Quelle unité convient pour donner l'épaisseur d'une feuille de carton ?",
+        "options": [
+          "le mètre",
+          "le centimètre",
+          "le millimètre",
+          "le kilomètre"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une épaisseur de carton est très fine : elle se donne en millimètres, la plus petite unité de la règle."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je mesure et je choisis l'unité",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Lila pose le bord de son crayon sur la graduation 0 de sa règle. L'autre bord arrive sur la graduation 11. Quelle est la longueur du crayon ?",
+            "options": [
+              "11 mm",
+              "11 cm",
+              "1 m 10",
+              "10 cm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le crayon part du zéro et s'arrête sur le 11 : il mesure 11 cm."
+          },
+          {
+            "question": "Timéo pose son stylo à partir de la graduation 2 ; l'autre bord arrive sur la graduation 15. Quelle est la longueur du stylo ?",
+            "options": [
+              "13 cm",
+              "15 cm",
+              "17 cm",
+              "2 cm"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le stylo n'est pas parti de 0 : 15 − 2 = 13 cm."
+          },
+          {
+            "question": "Sacha mesure deux rubans avec sa règle. Le premier est posé de la graduation 0 à la graduation 9, le second de la graduation 4 à la graduation 15. Que peut-on dire ?",
+            "options": [
+              "Le premier ruban est plus long de 2 cm.",
+              "Les deux rubans ont la même longueur.",
+              "Le second ruban est plus long de 2 cm.",
+              "Le second ruban est plus long de 6 cm."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le premier ruban mesure 9 cm ; le second n'est pas parti de 0 : 15 − 4 = 11 cm. Le second dépasse le premier de 2 cm."
+          },
+          {
+            "question": "Malo mesure une ficelle plus longue que sa règle. Il reporte sa règle de 30 cm deux fois entières, puis il reste encore 15 cm. Combien de centimètres mesure la ficelle ?",
+            "options": [
+              "45 cm",
+              "75 cm",
+              "60 cm",
+              "90 cm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les deux reports valent 30 + 30 = 60 cm, et il reste 15 cm : 60 + 15 = 75 cm."
+          },
+          {
+            "question": "Fatou mesure la longueur de la salle de classe avec sa règle de 30 cm. Elle la reporte 24 fois exactement. Combien de centimètres mesure la classe ?",
+            "options": [
+              "54 cm",
+              "240 cm",
+              "72 cm",
+              "720 cm"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Chaque report vaut 30 cm : 30 × 24 = 720 cm, soit 7 m 20 pour la salle."
+          },
+          {
+            "question": "Nour a mesuré un ruban : 6 centimètres et 4 millimètres. Quelle écriture est correcte ?",
+            "options": [
+              "6 cm 4 mm",
+              "6 mm 4 cm",
+              "64 cm",
+              "6 cm 40 mm"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On écrit d'abord la grande unité, puis la petite : 6 cm 4 mm."
+          },
+          {
+            "question": "Pour mesurer la longueur de la cour, quel instrument convient le mieux ?",
+            "options": [
+              "une règle de 30 cm",
+              "un double décimètre",
+              "un mètre ruban de 10 m",
+              "une équerre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La cour fait plusieurs dizaines de mètres : un mètre ruban évite de reporter la règle des dizaines de fois."
+          },
+          {
+            "question": "Jade lit sur sa règle : le trait s'arrête entre 7 cm et 8 cm, sur le 5e petit trait après le 7. Quelle est la longueur du trait ?",
+            "options": [
+              "5 cm 7 mm",
+              "75 cm",
+              "7 cm 5 mm",
+              "7 cm 50 mm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Chaque petit trait vaut 1 mm : 5 petits traits après le 7, cela fait 7 cm 5 mm."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des mesures",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "question": "Jade pose le bord de sa gomme sur la graduation 0. L'autre bord arrive sur la graduation 5. Quelle est la longueur de la gomme ?",
+            "options": [
+              "5 mm",
+              "5 cm",
+              "5 m",
+              "50 cm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La gomme part du zéro et s'arrête sur le 5 : elle mesure 5 cm."
+          },
+          {
+            "question": "Yanis pose son feutre à partir de la graduation 5 ; l'autre bord arrive sur la graduation 18. Quelle est la longueur du feutre ?",
+            "options": [
+              "18 cm",
+              "23 cm",
+              "13 cm",
+              "5 cm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le feutre n'est pas parti de 0 : 18 − 5 = 13 cm."
+          },
+          {
+            "question": "Inès mesure deux ficelles avec sa règle. La première est posée de la graduation 0 à la graduation 7, la seconde de la graduation 3 à la graduation 16. Que peut-on dire ?",
+            "options": [
+              "La première ficelle est plus longue de 6 cm.",
+              "La seconde ficelle est plus longue de 6 cm.",
+              "La seconde ficelle est plus longue de 9 cm.",
+              "Les deux ficelles ont la même longueur."
+            ],
+            "reponse_correcte": 1,
+            "explication": "La première ficelle mesure 7 cm ; la seconde n'est pas partie de 0 : 16 − 3 = 13 cm. La seconde dépasse la première de 6 cm."
+          },
+          {
+            "question": "Timéo mesure une planche plus longue que sa règle. Il reporte sa règle de 30 cm trois fois entières, puis il reste encore 20 cm. Combien de centimètres mesure la planche ?",
+            "options": [
+              "50 cm",
+              "90 cm",
+              "110 cm",
+              "140 cm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les trois reports valent 30 + 30 + 30 = 90 cm, et il reste 20 cm : 90 + 20 = 110 cm."
+          },
+          {
+            "question": "Louna reporte sa règle de 30 cm douze fois exactement le long d'un banc. Combien de centimètres mesure le banc ?",
+            "options": [
+              "42 cm",
+              "360 cm",
+              "312 cm",
+              "120 cm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Chaque report vaut 30 cm : 30 × 12 = 360 cm."
+          },
+          {
+            "question": "Adam a mesuré un clou : 3 centimètres et 7 millimètres. Quelle écriture est correcte ?",
+            "options": [
+              "3 cm 7 mm",
+              "7 cm 3 mm",
+              "37 cm",
+              "3 mm 7 cm"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On écrit d'abord la grande unité, puis la petite : 3 cm 7 mm."
+          },
+          {
+            "question": "Pour mesurer la hauteur d'un mur de la cour, quel instrument convient le mieux ?",
+            "options": [
+              "une règle de 30 cm",
+              "un double décimètre",
+              "un mètre ruban de 5 m",
+              "une équerre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un mur dépasse largement la règle : le mètre ruban permet de mesurer d'un seul coup."
+          },
+          {
+            "question": "Rosalie lit sur sa règle : le trait s'arrête entre 9 cm et 10 cm, sur le 2e petit trait après le 9. Quelle est la longueur du trait ?",
+            "options": [
+              "2 cm 9 mm",
+              "92 cm",
+              "9 cm 20 mm",
+              "9 cm 2 mm"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Chaque petit trait vaut 1 mm : 2 petits traits après le 9, cela fait 9 cm 2 mm."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM17",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Choisir la bonne unité",
+      "regle": "La bonne unité rend le nombre raisonnable : ni ridiculement petit, ni gigantesque.",
+      "procedure": [
+        "Demande-toi ce qu'on mesure : longueur, masse, contenance ou durée.",
+        "Compare à un repère : un grand pas fait 1 m, un paquet de sucre 1 kg, une bouteille 1 litre.",
+        "Essaie l'unité et relis la phrase : si elle devient absurde, change."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un vélo pèse environ 12 …",
+          "demonstration": "Un vélo, c'est une douzaine de paquets de sucre : 12 kilogrammes. En grammes, ce serait une petite pièce."
+        },
+        {
+          "phrase": "Un trajet en train dure environ 3 …",
+          "demonstration": "Un train ne traverse pas la France en 3 minutes, ni en 3 jours : ce sont 3 heures."
+        }
+      ],
+      "piege": "Le kilomètre sert aux trajets, le mètre aux salles, le centimètre à la trousse."
+    },
+    "diagnostic": [
+      {
+        "question": "Rosalie écrit : « Mon crayon mesure 17 … ». Quelle unité manque-t-il ?",
+        "options": [
+          "millimètres",
+          "centimètres",
+          "mètres",
+          "kilomètres"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un crayon tient dans la main : 17 centimètres. En millimètres, il mesurerait 170, et 17 mm serait plus court qu'une gomme."
+      },
+      {
+        "question": "Quelle phrase est impossible ?",
+        "options": [
+          "Un cartable pèse 4 kg.",
+          "Une piscine contient 50 000 litres.",
+          "Une règle d'écolier mesure 30 cm.",
+          "Un chat pèse 5 tonnes."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Une tonne, c'est la masse d'une petite voiture : un chat se porte dans les bras, il pèse quelques kilogrammes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quelle unité manque-t-il ?",
+        "consigne": "Choisis l'unité qui convient à chaque phrase.",
+        "questions": [
+          {
+            "question": "Un adulte pèse environ 70 …",
+            "options": [
+              "tonnes",
+              "grammes",
+              "kilogrammes",
+              "litres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un paquet de sucre pèse 1 kg : un adulte, c'est environ 70 paquets."
+          },
+          {
+            "question": "La table de la classe mesure environ 120 …",
+            "options": [
+              "millimètres",
+              "centimètres",
+              "mètres",
+              "kilomètres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "120 cm, c'est un peu plus d'un mètre : la longueur d'une table. 120 m serait la longueur d'un terrain de sport."
+          },
+          {
+            "question": "Un trajet en voiture entre deux villes fait environ 110 …",
+            "options": [
+              "mètres",
+              "centimètres",
+              "kilomètres",
+              "millimètres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "110 m, ce serait à peine plus qu'un terrain de football : entre deux villes, on compte en kilomètres."
+          },
+          {
+            "question": "Une tablette de chocolat pèse environ 100 …",
+            "options": [
+              "grammes",
+              "kilogrammes",
+              "litres",
+              "mètres"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Une tablette tient dans la main : une centaine de grammes. 100 kg serait la masse d'un très gros animal."
+          },
+          {
+            "question": "Un pack de six bouteilles d'eau contient environ 9 …",
+            "options": [
+              "millilitres",
+              "grammes",
+              "mètres",
+              "litres"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Chaque bouteille contient environ 1,5 litre : six bouteilles font environ 9 litres."
+          },
+          {
+            "question": "La longueur d'une fourmi est d'environ 5 …",
+            "options": [
+              "millimètres",
+              "centimètres",
+              "mètres",
+              "kilomètres"
+            ],
+            "reponse_correcte": 0,
+            "explication": "5 mm, c'est la moitié d'un centimètre : la taille d'une fourmi. En centimètres, elle serait dix fois plus grande."
+          },
+          {
+            "question": "Un lit d'enfant mesure environ 190 …",
+            "options": [
+              "millimètres",
+              "centimètres",
+              "mètres",
+              "kilomètres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "190 cm, c'est un peu moins de 2 m : la longueur d'un lit. 190 mm serait la longueur d'une grande règle."
+          },
+          {
+            "question": "La récréation dure environ 15 …",
+            "options": [
+              "secondes",
+              "heures",
+              "minutes",
+              "jours"
+            ],
+            "reponse_correcte": 2,
+            "explication": "15 secondes, c'est le temps de traverser la cour ; 15 heures, c'est presque une journée entière."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des unités à retrouver",
+        "consigne": "Choisis l'unité qui convient à chaque phrase.",
+        "questions": [
+          {
+            "question": "Un pot de yaourt pèse environ 125 …",
+            "options": [
+              "grammes",
+              "kilogrammes",
+              "tonnes",
+              "litres"
+            ],
+            "reponse_correcte": 0,
+            "explication": "125 g : il faut huit pots pour faire 1 kg. 125 kg serait la masse de deux adultes."
+          },
+          {
+            "question": "La longueur d'un terrain de football est d'environ 100 …",
+            "options": [
+              "centimètres",
+              "kilomètres",
+              "mètres",
+              "millimètres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un terrain de football fait une centaine de mètres ; 100 km serait un trajet entre deux villes."
+          },
+          {
+            "question": "Une cuillère à café contient environ 5 …",
+            "options": [
+              "litres",
+              "millilitres",
+              "grammes",
+              "centimètres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une contenance se donne en litres ou en millilitres : une cuillère à café, c'est 5 millilitres, à peine une gorgée. 5 litres rempliraient un seau."
+          },
+          {
+            "question": "L'épaisseur d'une pièce de 1 euro est d'environ 2 …",
+            "options": [
+              "centimètres",
+              "mètres",
+              "millimètres",
+              "kilomètres"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une pièce est très fine : 2 mm. 2 cm serait l'épaisseur d'un gros livre."
+          },
+          {
+            "question": "Un sac de ciment pèse environ 35 …",
+            "options": [
+              "grammes",
+              "tonnes",
+              "litres",
+              "kilogrammes"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un sac de ciment se porte à deux, mais reste bien plus léger qu'une tonne : 35 kilogrammes."
+          },
+          {
+            "question": "Le trajet de la maison à l'école prend environ 20 …",
+            "options": [
+              "secondes",
+              "minutes",
+              "heures",
+              "jours"
+            ],
+            "reponse_correcte": 1,
+            "explication": "20 secondes ne suffisent pas à sortir de la rue, et 20 heures feraient presque une journée."
+          },
+          {
+            "question": "Une bouteille de lait contient environ 1 …",
+            "options": [
+              "millilitre",
+              "gramme",
+              "mètre",
+              "litre"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Une bouteille ordinaire contient 1 litre ; 1 millilitre tiendrait dans une goutte."
+          },
+          {
+            "question": "La largeur d'un cahier est d'environ 17 …",
+            "options": [
+              "millimètres",
+              "centimètres",
+              "mètres",
+              "kilomètres"
+            ],
+            "reponse_correcte": 1,
+            "explication": "17 cm, c'est la largeur d'un cahier posé sur la table ; 17 mm serait la largeur d'une gomme."
+          }
+        ]
+      }
+    ]
+  }
+]

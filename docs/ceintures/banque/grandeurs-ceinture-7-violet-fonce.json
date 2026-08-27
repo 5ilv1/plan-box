@@ -1,0 +1,540 @@
+[
+  {
+    "item_code": "GM31",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Reproduire un angle au gabarit",
+      "regle": "Un angle se reproduit en reportant son ouverture : la longueur des côtés ne change pas sa mesure.",
+      "procedure": [
+        "Décalque le sommet et les deux côtés du modèle : c'est ton gabarit.",
+        "Pose son sommet sur ton point et un de ses bords sur la demi-droite déjà tracée, puis trace le second côté le long du gabarit.",
+        "Pour un angle plus grand, reporte le gabarit plusieurs fois, bord contre bord, et compte tes reports."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un modèle aux côtés de 3 cm, à reproduire en grand.",
+          "demonstration": "Je reporte l'ouverture au gabarit, puis je trace des côtés de 8 cm : l'angle a la même mesure que le modèle."
+        },
+        {
+          "phrase": "Le gabarit de l'angle Q tient exactement 4 fois dans l'angle W.",
+          "demonstration": "Chaque report vaut un quart de W : pour obtenir la moitié de W, je reporte le gabarit de Q 2 fois."
+        }
+      ],
+      "piege": "Des côtés plus longs ne font pas un angle plus grand."
+    },
+    "diagnostic": [
+      {
+        "question": "Nour reproduit un angle avec un gabarit de papier calque, puis elle trace des côtés deux fois plus longs que ceux du modèle. Que peut-on dire de l'angle qu'elle obtient ?",
+        "options": [
+          "Il est deux fois plus ouvert que le modèle.",
+          "Il a la même mesure que le modèle.",
+          "Il est deux fois moins ouvert que le modèle.",
+          "On ne peut pas le savoir sans le mesurer."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le gabarit reporte l'ouverture, et l'ouverture seule fait la mesure d'un angle : allonger les côtés n'y change rien."
+      },
+      {
+        "question": "Malo pose le gabarit de l'angle A sur l'angle B. Les deux côtés de B restent à l'intérieur du gabarit. Que peut-on en conclure ?",
+        "options": [
+          "B est plus ouvert que A.",
+          "A et B ont la même ouverture.",
+          "B est moins ouvert que A.",
+          "B a des côtés plus courts que A."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Ce qui rentre dans le gabarit est plus fermé que lui : B est moins ouvert que A. S'il en était sorti, B aurait été le plus ouvert."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je reproduis, je compare",
+        "consigne": "Fais chaque tracé sur ton cahier avec ton gabarit de papier calque. Écris ensuite seulement ce qui est demandé : un mot ou un nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis l'angle A ci-dessous avec ton gabarit, en traçant des côtés bien plus longs que ceux du modèle. Ta copie est-elle plus ouverte que l'angle A ? Réponds par oui ou par non.",
+            "reponse_attendue": "non",
+            "indice": "Le gabarit reporte l'ouverture ; la longueur des côtés ne la change pas.",
+            "figure": {
+              "type": "angle",
+              "degres": 40,
+              "nom": "A"
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Le gabarit de l'angle R tient exactement 3 fois dans l'angle S et 8 fois dans l'angle T. Combien de fois de plus le gabarit de R tient-il dans T que dans S ?",
+            "reponse_attendue": "5",
+            "indice": "Compte les reports dans chacun des deux angles, puis cherche l'écart entre les deux nombres."
+          },
+          {
+            "id": 3,
+            "enonce": "Tu poses le gabarit de l'angle E sur l'angle F : ils se superposent exactement, alors que les côtés de F sont deux fois plus longs. Les deux angles ont-ils la même mesure ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "Regarde l'ouverture, pas la longueur des côtés."
+          },
+          {
+            "id": 4,
+            "enonce": "Tu as reproduit un angle au gabarit, puis tu as gommé le bout d'un de ses côtés, qui est devenu plus court. La mesure de ton angle a-t-elle changé ? Réponds par oui ou par non.",
+            "reponse_attendue": "non",
+            "indice": "Raccourcir un côté ne referme pas l'angle : l'ouverture reste la même."
+          },
+          {
+            "id": 5,
+            "enonce": "Le gabarit de l'angle M tient exactement 2 fois dans l'angle N et 8 fois dans l'angle P. Combien de fois l'angle N tient-il dans l'angle P ?",
+            "reponse_attendue": "4",
+            "indice": "N vaut 2 reports du gabarit et P en vaut 8 : cherche combien de fois 2 reports tiennent dans 8 reports."
+          },
+          {
+            "id": 6,
+            "enonce": "Le gabarit de l'angle U tient exactement 6 fois dans l'angle V, sans espace ni dépassement. Combien de fois faut-il le reporter pour obtenir la moitié de l'angle V ?",
+            "reponse_attendue": "3",
+            "indice": "La moitié de V demande la moitié des reports."
+          },
+          {
+            "id": 7,
+            "enonce": "Reproduis l'angle B ci-dessous, puis reporte-le une seconde fois juste à côté, à partir du côté que tu viens de tracer. Combien de fois l'angle B tient-il dans l'angle formé par le tout premier côté et le tout dernier ?",
+            "reponse_attendue": "2",
+            "indice": "Compte les reports de gabarit qui remplissent l'angle obtenu.",
+            "figure": {
+              "type": "angle",
+              "degres": 75,
+              "nom": "B"
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Yanis reproduit l'angle J au gabarit sur une feuille qu'il a d'abord tournée d'un quart de tour. Son angle a-t-il la même ouverture que J ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "Tourner la feuille change la position de l'angle, pas son ouverture."
+          }
+        ]
+      },
+      {
+        "titre": "Le gabarit ne ment pas",
+        "consigne": "Fais chaque tracé sur ton cahier avec ton gabarit de papier calque. Écris ensuite seulement ce qui est demandé : un mot ou un nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis l'angle L ci-dessous avec ton gabarit, en traçant des côtés bien plus courts que ceux du modèle. Ta copie est-elle aussi ouverte que l'angle L ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "Des côtés plus courts ne referment pas l'angle : l'ouverture reportée est la même.",
+            "figure": {
+              "type": "angle",
+              "degres": 55,
+              "nom": "L"
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Le gabarit de l'angle X tient exactement 2 fois dans l'angle Y et 8 fois dans l'angle Z. Combien de fois de plus le gabarit de X tient-il dans Z que dans Y ?",
+            "reponse_attendue": "6",
+            "indice": "Compte les reports dans chacun des deux angles, puis cherche l'écart entre les deux nombres."
+          },
+          {
+            "id": 3,
+            "enonce": "Adam décalque l'angle P sur son calque, puis reporte ce gabarit sur une feuille de couleur. L'angle tracé sur la feuille de couleur est-il plus ouvert que P ? Réponds par oui ou par non.",
+            "reponse_attendue": "non",
+            "indice": "Le gabarit reporte l'ouverture telle quelle, d'une feuille à l'autre."
+          },
+          {
+            "id": 4,
+            "enonce": "Jade a reproduit un angle au gabarit, puis elle a prolongé ses deux côtés jusqu'au bord de la feuille. L'ouverture de son angle est-elle restée la même ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "Prolonger les côtés allonge le dessin, pas l'ouverture."
+          },
+          {
+            "id": 5,
+            "enonce": "Le gabarit de l'angle D tient exactement 4 fois dans l'angle E et 8 fois dans l'angle F. Combien de fois l'angle E tient-il dans l'angle F ?",
+            "reponse_attendue": "2",
+            "indice": "E vaut 4 reports du gabarit et F en vaut 8 : cherche combien de fois 4 reports tiennent dans 8 reports."
+          },
+          {
+            "id": 6,
+            "enonce": "Le gabarit de l'angle G tient exactement 8 fois dans l'angle H, sans espace ni dépassement. Combien de fois faut-il le reporter pour obtenir la moitié de l'angle H ?",
+            "reponse_attendue": "4",
+            "indice": "La moitié de H demande la moitié des reports."
+          },
+          {
+            "id": 7,
+            "enonce": "Reproduis l'angle K ci-dessous, puis reporte-le encore deux fois, chaque copie collée à la précédente. Combien de fois l'angle K tient-il dans l'angle formé par le tout premier côté et le tout dernier ?",
+            "reponse_attendue": "3",
+            "indice": "Compte les reports de gabarit qui remplissent l'angle obtenu.",
+            "figure": {
+              "type": "angle",
+              "degres": 35,
+              "nom": "K"
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Louna retourne son papier calque avant de reporter le gabarit de l'angle M. L'angle qu'elle trace est-il moins ouvert que M ? Réponds par oui ou par non.",
+            "reponse_attendue": "non",
+            "indice": "Retourner le calque change le sens du dessin, pas l'écartement des deux côtés."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM32",
+    "type": "classement",
+    "lecon": {
+      "titre": "Comparer après conversion",
+      "regle": "Deux mesures ne se comparent que lorsqu'elles sont écrites dans la même unité.",
+      "procedure": [
+        "Repère de quelle grandeur il s'agit : une longueur, une masse ou une contenance.",
+        "Convertis la mesure dans l'unité principale de cette grandeur : le mètre, le kilogramme ou le litre.",
+        "Compare seulement ensuite les nombres obtenus."
+      ],
+      "exemples": [
+        {
+          "phrase": "Comparer 60 cm et 1 100 mm.",
+          "demonstration": "60 cm font 0,6 m et 1 100 mm font 1,1 m : c'est donc 1 100 mm la plus grande longueur."
+        },
+        {
+          "phrase": "Comparer 300 cL et 2 L.",
+          "demonstration": "300 cL font 3 L, et 3 est plus grand que 2 : la bouteille de 300 cL contient le plus."
+        }
+      ],
+      "piege": "Le plus grand nombre n'est pas la plus grande mesure : 300 cL, c'est plus que 2 L, mais 300 g, c'est bien moins que 2 kg."
+    },
+    "diagnostic": [
+      {
+        "question": "Rosalie doit ranger trois masses de la plus légère à la plus lourde : 1 200 g, 1 kg, 950 g. Quel rangement est correct ?",
+        "options": [
+          "950 g, 1 kg, 1 200 g",
+          "1 kg, 950 g, 1 200 g",
+          "950 g, 1 200 g, 1 kg",
+          "1 200 g, 1 kg, 950 g"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Je convertis tout en grammes : 950 g, 1 000 g, 1 200 g. Le kilogramme se glisse entre les deux autres, il ne se range pas au bout."
+      },
+      {
+        "question": "Parmi ces contenances, laquelle est exactement égale à 1 L ?",
+        "options": [
+          "10 cL",
+          "100 mL",
+          "1 000 cL",
+          "10 dL"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un litre vaut 10 dL, 100 cL et 1 000 mL : 10 cL et 100 mL sont dix fois trop petits, 1 000 cL sont dix fois trop grands."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Plus ou moins de 1 mètre, 1 kilogramme, 1 litre ?",
+        "consigne": "Chaque étiquette est une longueur, une masse ou une contenance. Convertis-la dans l'unité principale de sa grandeur (le mètre, le kilogramme ou le litre), puis range-la dans la bonne colonne.",
+        "categories": [
+          "Moins de 1 m, 1 kg ou 1 L",
+          "Exactement 1 m, 1 kg ou 1 L",
+          "Plus de 1 m, 1 kg ou 1 L"
+        ],
+        "items": [
+          {
+            "texte": "75 cm",
+            "categorie": "Moins de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "250 g",
+            "categorie": "Moins de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "50 cL",
+            "categorie": "Moins de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "800 mm",
+            "categorie": "Moins de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "100 cm",
+            "categorie": "Exactement 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "1 000 g",
+            "categorie": "Exactement 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "10 dL",
+            "categorie": "Exactement 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "1 000 mL",
+            "categorie": "Exactement 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "1 250 g",
+            "categorie": "Plus de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "1 200 mm",
+            "categorie": "Plus de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "125 cL",
+            "categorie": "Plus de 1 m, 1 kg ou 1 L"
+          },
+          {
+            "texte": "1 500 mL",
+            "categorie": "Plus de 1 m, 1 kg ou 1 L"
+          }
+        ]
+      },
+      {
+        "titre": "Plus ou moins de 2 mètres, 2 kilogrammes, 2 litres ?",
+        "consigne": "Chaque étiquette est une longueur, une masse ou une contenance. Convertis-la dans l'unité principale de sa grandeur (le mètre, le kilogramme ou le litre), puis range-la dans la bonne colonne.",
+        "categories": [
+          "Moins de 2 m, 2 kg ou 2 L",
+          "Exactement 2 m, 2 kg ou 2 L",
+          "Plus de 2 m, 2 kg ou 2 L"
+        ],
+        "items": [
+          {
+            "texte": "180 cm",
+            "categorie": "Moins de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "1 750 g",
+            "categorie": "Moins de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "150 cL",
+            "categorie": "Moins de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "1 900 mm",
+            "categorie": "Moins de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "200 cm",
+            "categorie": "Exactement 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "2 000 g",
+            "categorie": "Exactement 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "20 dL",
+            "categorie": "Exactement 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "2 000 mL",
+            "categorie": "Exactement 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "2 500 g",
+            "categorie": "Plus de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "2 200 mm",
+            "categorie": "Plus de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "250 cL",
+            "categorie": "Plus de 2 m, 2 kg ou 2 L"
+          },
+          {
+            "texte": "2 400 mL",
+            "categorie": "Plus de 2 m, 2 kg ou 2 L"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM33",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Lire une échelle",
+      "regle": "L'échelle d'un plan dit quelle longueur réelle est représentée par 1 cm du dessin.",
+      "procedure": [
+        "Lis l'échelle : elle donne ce que vaut 1 cm du plan.",
+        "Du plan vers la réalité, multiplie la longueur dessinée par ce nombre.",
+        "De la réalité vers le plan, divise la longueur réelle par ce nombre."
+      ],
+      "exemples": [
+        {
+          "phrase": "1 cm représente 4 m ; un mur mesure 7 cm sur le plan.",
+          "demonstration": "Je vais du plan vers la réalité, donc je multiplie : 7 × 4 = 28. Le mur mesure 28 m."
+        },
+        {
+          "phrase": "1 cm représente 4 m ; une allée mesure 36 m en réalité.",
+          "demonstration": "Je reviens vers le plan, donc je divise : 36 ÷ 4 = 9. Elle est dessinée sur 9 cm."
+        }
+      ],
+      "piege": "Du plan vers la réalité on multiplie ; dans l'autre sens, on divise."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un plan, 1 cm représente 5 m. Un couloir mesure 6 cm sur ce plan. Quelle est sa longueur réelle ?",
+        "options": [
+          "11 m",
+          "30 m",
+          "1,2 m",
+          "5 m"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Chaque centimètre du plan vaut 5 m, et il y en a 6 : 6 × 5 = 30 m. Le 11 vient d'une addition, le 1,2 d'une division prise à l'envers."
+      },
+      {
+        "question": "Sur une carte, 1 cm représente 2 km. Un chemin mesure 12 km en réalité. Quelle est sa longueur sur la carte ?",
+        "options": [
+          "24 cm",
+          "14 cm",
+          "6 cm",
+          "10 cm"
+        ],
+        "reponse_correcte": 2,
+        "explication": "On revient de la réalité vers la carte, donc on divise : 12 ÷ 2 = 6 cm. Multiplier donnerait 24 cm, une carte deux fois trop grande."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le plan de l'école",
+        "consigne": "Calcule, écris le résultat sans son unité, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Sur le plan de l'école, 1 cm représente 2 m. La classe de CM2 mesure 4 cm de long sur ce plan. Combien de mètres mesure-t-elle en réalité ?",
+            "resultat_attendu": "8",
+            "phrase_reponse_attendue": "La classe mesure 8 mètres en réalité.",
+            "mots_cles": [
+              "8",
+              "mètres"
+            ],
+            "indice": "Chaque centimètre du plan vaut 2 m : va du plan vers la réalité."
+          },
+          {
+            "id": 2,
+            "enonce": "Sur le plan de l'école, 1 cm représente 2 m. Le préau mesure 18 m de long en réalité. Combien de centimètres mesure-t-il sur le plan ?",
+            "resultat_attendu": "9",
+            "phrase_reponse_attendue": "Le préau mesure 9 centimètres sur le plan.",
+            "mots_cles": [
+              "9",
+              "centimètres"
+            ],
+            "indice": "Tu reviens de la réalité vers le plan : cherche combien de fois 2 m tient dans 18 m."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur le plan de l'école, 1 cm représente 2 m. La cour mesure 9 cm de large sur ce plan. Combien de mètres mesure-t-elle en réalité ?",
+            "resultat_attendu": "18",
+            "phrase_reponse_attendue": "La cour mesure 18 mètres en réalité.",
+            "mots_cles": [
+              "18",
+              "mètres"
+            ],
+            "indice": "Chaque centimètre du plan vaut 2 m."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur le plan de l'école, 1 cm représente 2 m. Le couloir mesure 24 m de long en réalité. Combien de centimètres mesure-t-il sur le plan ?",
+            "resultat_attendu": "12",
+            "phrase_reponse_attendue": "Le couloir mesure 12 centimètres sur le plan.",
+            "mots_cles": [
+              "12",
+              "centimètres"
+            ],
+            "indice": "Cherche combien de fois 2 m tient dans 24 m."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur une carte de randonnée, 1 cm représente 3 km. Le chemin du lac mesure 7 cm sur cette carte. Combien de kilomètres mesure-t-il en réalité ?",
+            "resultat_attendu": "21",
+            "phrase_reponse_attendue": "Le chemin du lac mesure 21 kilomètres.",
+            "mots_cles": [
+              "21"
+            ],
+            "indice": "Chaque centimètre de la carte vaut 3 km."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur une carte de randonnée, 1 cm représente 3 km. Un sentier mesure 27 km en réalité. Combien de centimètres mesure-t-il sur cette carte ?",
+            "resultat_attendu": "9",
+            "phrase_reponse_attendue": "Le sentier mesure 9 centimètres sur la carte.",
+            "mots_cles": [
+              "9",
+              "centimètres"
+            ],
+            "indice": "Cherche combien de fois 3 km tient dans 27 km."
+          }
+        ]
+      },
+      {
+        "titre": "Plans et cartes",
+        "consigne": "Calcule, écris le résultat sans son unité, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Sur le plan du gymnase, 1 cm représente 5 m. Le terrain mesure 8 cm de long sur ce plan. Combien de mètres mesure-t-il en réalité ?",
+            "resultat_attendu": "40",
+            "phrase_reponse_attendue": "Le terrain mesure 40 mètres en réalité.",
+            "mots_cles": [
+              "40",
+              "mètres"
+            ],
+            "indice": "Chaque centimètre du plan vaut 5 m."
+          },
+          {
+            "id": 2,
+            "enonce": "Sur le plan du gymnase, 1 cm représente 5 m. Les gradins mesurent 35 m de long en réalité. Combien de centimètres mesurent-ils sur le plan ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "Les gradins mesurent 7 centimètres sur le plan.",
+            "mots_cles": [
+              "7",
+              "centimètres"
+            ],
+            "indice": "Cherche combien de fois 5 m tient dans 35 m."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur un plan de quartier, 1 cm représente 20 m. La rue de l'école mesure 6 cm sur ce plan. Combien de mètres mesure-t-elle en réalité ?",
+            "resultat_attendu": "120",
+            "phrase_reponse_attendue": "La rue de l'école mesure 120 mètres en réalité.",
+            "mots_cles": [
+              "120",
+              "mètres"
+            ],
+            "indice": "Chaque centimètre du plan vaut 20 m."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur un plan de quartier, 1 cm représente 20 m. Le parc mesure 300 m de long en réalité. Combien de centimètres mesure-t-il sur ce plan ?",
+            "resultat_attendu": "15",
+            "phrase_reponse_attendue": "Le parc mesure 15 centimètres sur le plan.",
+            "mots_cles": [
+              "15",
+              "centimètres"
+            ],
+            "indice": "Cherche combien de fois 20 m tient dans 300 m."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur une carte, 1 cm représente 4 km. Le trajet du car mesure 6 cm sur cette carte. Combien de kilomètres mesure-t-il en réalité ?",
+            "resultat_attendu": "24",
+            "phrase_reponse_attendue": "Le trajet du car mesure 24 kilomètres.",
+            "mots_cles": [
+              "24"
+            ],
+            "indice": "Chaque centimètre de la carte vaut 4 km."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur une carte, 1 cm représente 4 km. Une rivière mesure 52 km en réalité. Combien de centimètres mesure-t-elle sur cette carte ?",
+            "resultat_attendu": "13",
+            "phrase_reponse_attendue": "La rivière mesure 13 centimètres sur la carte.",
+            "mots_cles": [
+              "13",
+              "centimètres"
+            ],
+            "indice": "Cherche combien de fois 4 km tient dans 52 km."
+          }
+        ]
+      }
+    ]
+  }
+]

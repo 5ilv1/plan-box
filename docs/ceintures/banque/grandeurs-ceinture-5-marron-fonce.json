@@ -1,0 +1,512 @@
+[
+  {
+    "item_code": "GM24",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Additionner des durées",
+      "regle": "Pour additionner deux durées, on ajoute les heures entre elles et les minutes entre elles, puis on échange 60 minutes contre 1 heure.",
+      "procedure": [
+        "Additionne les minutes d'un côté, les heures de l'autre.",
+        "Si les minutes atteignent 60, enlève-les et ajoute 1 heure.",
+        "Écris le résultat sous la forme demandée par la question."
+      ],
+      "exemples": [
+        {
+          "phrase": "50 min + 25 min",
+          "demonstration": "50 + 25 = 75 minutes, soit 1 heure et 15 minutes : 1 h 15 min."
+        },
+        {
+          "phrase": "1 h 45 min + 2 h 30 min",
+          "demonstration": "1 + 2 = 3 heures ; 45 + 30 = 75 minutes, soit 1 h et 15 min. J'ajoute cette heure : 4 h 15 min."
+        }
+      ],
+      "piege": "Les minutes se retiennent à 60, jamais à 100."
+    },
+    "diagnostic": [
+      {
+        "question": "Lila lit 40 min le matin et 35 min le soir. Combien de temps a-t-elle lu en tout ?",
+        "options": [
+          "1 h 75 min",
+          "1 h 15 min",
+          "1 h 35 min",
+          "2 h 15 min"
+        ],
+        "reponse_correcte": 1,
+        "explication": "40 + 35 = 75 minutes. Dans 75 minutes il y a 1 heure et il reste 15 minutes : 1 h 15 min. Une durée ne s'écrit jamais avec 60 minutes ou plus."
+      },
+      {
+        "question": "La séance de cinéma commence à 14 h 50 et le film dure 1 h 30 min. À quelle heure se termine-t-il ?",
+        "options": [
+          "15 h 80",
+          "16 h 30",
+          "15 h 20",
+          "16 h 20"
+        ],
+        "reponse_correcte": 3,
+        "explication": "14 h 50 + 1 h = 15 h 50, puis 15 h 50 + 30 min = 16 h 20. Le 15 h 80 vient d'une addition des minutes sans échange contre une heure."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des durées qui s'ajoutent",
+        "consigne": "Calcule, puis réponds par une phrase complète. Écris une durée sous la forme « 3 h 40 min » et une heure de la journée sous la forme « 17 h 25 ». Quand la question demande un nombre de minutes, écris seulement le nombre, sans l'unité.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Rosalie travaille 45 min en mathématiques, puis 35 min en français. Combien de temps a-t-elle travaillé en tout ? Réponds en heures et minutes.",
+            "resultat_attendu": "1 h 20 min",
+            "phrase_reponse_attendue": "Elle a travaillé 1 h 20 min en tout.",
+            "mots_cles": [
+              "1 h 20 min",
+              "travaillé"
+            ],
+            "indice": "Additionne les minutes, puis échange 60 minutes contre 1 heure."
+          },
+          {
+            "id": 2,
+            "enonce": "Timéo s'entraîne 1 h 25 min au gymnase, puis 50 min en extérieur. Combien de temps s'est-il entraîné en tout ? Réponds en heures et minutes.",
+            "resultat_attendu": "2 h 15 min",
+            "phrase_reponse_attendue": "Il s'est entraîné 2 h 15 min en tout.",
+            "mots_cles": [
+              "2 h 15 min",
+              "entraîné"
+            ],
+            "indice": "Garde l'heure de côté, additionne les minutes, puis échange 60 minutes contre 1 heure."
+          },
+          {
+            "id": 3,
+            "enonce": "Le voyage de la classe se fait en deux étapes : 2 h 40 min de car, puis 1 h 35 min de train. Combien de temps dure le voyage en tout ? Réponds en heures et minutes.",
+            "resultat_attendu": "4 h 15 min",
+            "phrase_reponse_attendue": "Le voyage dure 4 h 15 min en tout.",
+            "mots_cles": [
+              "4 h 15 min",
+              "voyage"
+            ],
+            "indice": "Additionne d'abord les heures, puis les minutes, et échange 60 minutes contre 1 heure."
+          },
+          {
+            "id": 4,
+            "enonce": "Le spectacle dure 1 h 15 min et l'entracte 25 min. Combien de minutes durent en tout le spectacle et l'entracte ?",
+            "resultat_attendu": "100",
+            "phrase_reponse_attendue": "En tout, cela dure 100 minutes.",
+            "mots_cles": [
+              "100",
+              "minutes"
+            ],
+            "indice": "Convertis d'abord 1 h 15 min en minutes, puis ajoute les 25 minutes."
+          },
+          {
+            "id": 5,
+            "enonce": "Le car part de l'école à 8 h 45 et le trajet dure 1 h 50 min. À quelle heure arrive-t-il ?",
+            "resultat_attendu": "10 h 35",
+            "phrase_reponse_attendue": "Le car arrive à 10 h 35.",
+            "mots_cles": [
+              "10 h 35",
+              "arrive"
+            ],
+            "indice": "Ajoute d'abord l'heure entière, puis les minutes."
+          },
+          {
+            "id": 6,
+            "enonce": "Nour fait 30 min de piscine, 20 min de vélo et 25 min de marche. Combien de minutes d'activité a-t-elle faites en tout ?",
+            "resultat_attendu": "75",
+            "phrase_reponse_attendue": "Elle a fait 75 minutes d'activité en tout.",
+            "mots_cles": [
+              "75",
+              "activité"
+            ],
+            "indice": "Additionne les trois durées, qui sont déjà toutes en minutes."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des durées à additionner",
+        "consigne": "Calcule, puis réponds par une phrase complète. Écris une durée sous la forme « 3 h 40 min » et une heure de la journée sous la forme « 17 h 25 ». Quand la question demande un nombre de minutes, écris seulement le nombre, sans l'unité.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Jade répète son texte 50 min le mercredi et 40 min le jeudi. Combien de temps a-t-elle répété en tout ? Réponds en heures et minutes.",
+            "resultat_attendu": "1 h 30 min",
+            "phrase_reponse_attendue": "Elle a répété 1 h 30 min en tout.",
+            "mots_cles": [
+              "1 h 30 min",
+              "répété"
+            ],
+            "indice": "Additionne les minutes, puis échange 60 minutes contre 1 heure."
+          },
+          {
+            "id": 2,
+            "enonce": "La sortie au musée dure 2 h 15 min, puis le pique-nique dure 55 min. Combien de temps dure la sortie en tout ? Réponds en heures et minutes.",
+            "resultat_attendu": "3 h 10 min",
+            "phrase_reponse_attendue": "La sortie dure 3 h 10 min en tout.",
+            "mots_cles": [
+              "3 h 10 min",
+              "sortie"
+            ],
+            "indice": "Garde les heures de côté, additionne les minutes, puis échange 60 minutes contre 1 heure."
+          },
+          {
+            "id": 3,
+            "enonce": "Sacha bricole 1 h 50 min le samedi et 3 h 25 min le dimanche. Combien de temps a-t-il bricolé en tout ? Réponds en heures et minutes.",
+            "resultat_attendu": "5 h 15 min",
+            "phrase_reponse_attendue": "Il a bricolé 5 h 15 min en tout.",
+            "mots_cles": [
+              "5 h 15 min",
+              "bricolé"
+            ],
+            "indice": "Additionne d'abord les heures, puis les minutes, et échange 60 minutes contre 1 heure."
+          },
+          {
+            "id": 4,
+            "enonce": "Le film dure 1 h 35 min et les publicités 15 min. Combien de minutes durent en tout le film et les publicités ?",
+            "resultat_attendu": "110",
+            "phrase_reponse_attendue": "En tout, cela dure 110 minutes.",
+            "mots_cles": [
+              "110",
+              "minutes"
+            ],
+            "indice": "Convertis d'abord 1 h 35 min en minutes, puis ajoute les 15 minutes."
+          },
+          {
+            "id": 5,
+            "enonce": "Le train part à 14 h 55 et le trajet dure 2 h 20 min. À quelle heure arrive-t-il ?",
+            "resultat_attendu": "17 h 15",
+            "phrase_reponse_attendue": "Le train arrive à 17 h 15.",
+            "mots_cles": [
+              "17 h 15",
+              "arrive"
+            ],
+            "indice": "Ajoute d'abord les heures entières, puis les minutes."
+          },
+          {
+            "id": 6,
+            "enonce": "Adam range la classe pendant 35 min, arrose les plantes pendant 40 min et trie les livres pendant 15 min. Combien de minutes a-t-il travaillé en tout ?",
+            "resultat_attendu": "90",
+            "phrase_reponse_attendue": "Il a travaillé 90 minutes en tout.",
+            "mots_cles": [
+              "90",
+              "travaillé"
+            ],
+            "indice": "Additionne les trois durées, qui sont déjà toutes en minutes."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM25",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Mesurer un périmètre",
+      "regle": "Le périmètre d'une figure est la longueur de son contour : on additionne les longueurs de tous ses côtés.",
+      "procedure": [
+        "Pars d'un sommet et fais le tour dans un seul sens.",
+        "Note la longueur de chaque côté rencontré.",
+        "Additionne ces longueurs jusqu'au point de départ."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un triangle de côtés 5 cm, 4 cm et 3 cm.",
+          "demonstration": "Je fais le tour : 5 + 4 + 3 = 12. Le périmètre est 12 cm."
+        },
+        {
+          "phrase": "Une figure à cinq côtés : 3, 7, 2, 5 et 4 cm.",
+          "demonstration": "Même geste, cinq côtés : 3 + 7 + 2 + 5 + 4 = 21. Le périmètre est 21 cm."
+        }
+      ],
+      "piege": "N'oublie aucun côté : un seul manque et le tour est faux."
+    },
+    "diagnostic": [
+      {
+        "question": "Un triangle a des côtés de 6 cm, 8 cm et 5 cm. Quel est son périmètre, en centimètres ?",
+        "options": [
+          "14",
+          "48",
+          "19",
+          "21"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Je fais le tour : 6 + 8 + 5 = 19. Le 14 oublie un côté et le 48 multiplie deux côtés au lieu de les additionner."
+      },
+      {
+        "question": "Que mesure-t-on quand on cherche le périmètre d'une figure ?",
+        "options": [
+          "la longueur de son contour",
+          "la place qu'elle occupe",
+          "le nombre de ses côtés",
+          "la longueur de son plus grand côté"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le périmètre est la longueur du tour de la figure. La place qu'elle occupe porte un autre nom, et le nombre de côtés n'est pas une longueur."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le tour des figures",
+        "consigne": "Additionne les longueurs de tous les côtés. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Un triangle a des côtés de 4 cm, 7 cm et 6 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "17",
+            "indice": "Additionne les trois longueurs."
+          },
+          {
+            "id": 2,
+            "enonce": "Un quadrilatère a des côtés de 3 cm, 5 cm, 8 cm et 6 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "22",
+            "indice": "Fais le tour : il y a quatre longueurs à additionner."
+          },
+          {
+            "id": 3,
+            "enonce": "Un rectangle a deux côtés de 9 cm et deux côtés de 4 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "26",
+            "indice": "N'oublie pas que chaque longueur apparaît deux fois dans le tour."
+          },
+          {
+            "id": 4,
+            "enonce": "Un pentagone a des côtés de 2 cm, 3 cm, 4 cm, 5 cm et 6 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "20",
+            "indice": "Fais le tour : il y a cinq longueurs à additionner."
+          },
+          {
+            "id": 5,
+            "enonce": "Un triangle a ses trois côtés qui mesurent 5 cm chacun. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "15",
+            "indice": "Le tour compte trois côtés, tous de la même longueur."
+          },
+          {
+            "id": 6,
+            "enonce": "Une figure en forme de L a six côtés qui mesurent 6 cm, 2 cm, 3 cm, 2 cm, 3 cm et 4 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "20",
+            "indice": "Fais le tour complet : les six longueurs comptent."
+          },
+          {
+            "id": 7,
+            "enonce": "Un potager rectangulaire a deux côtés de 12 m et deux côtés de 7 m. Quel est son périmètre, en mètres ?",
+            "reponse_attendue": "38",
+            "indice": "Chaque longueur apparaît deux fois dans le tour."
+          },
+          {
+            "id": 8,
+            "enonce": "Un triangle a des côtés de 12 cm, 15 cm et 9 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "36",
+            "indice": "Additionne les trois longueurs."
+          }
+        ]
+      },
+      {
+        "titre": "Je fais le tour",
+        "consigne": "Additionne les longueurs de tous les côtés. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Un triangle a des côtés de 9 cm, 5 cm et 7 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "21",
+            "indice": "Additionne les trois longueurs."
+          },
+          {
+            "id": 2,
+            "enonce": "Un quadrilatère a des côtés de 4 cm, 6 cm, 2 cm et 7 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "19",
+            "indice": "Fais le tour : il y a quatre longueurs à additionner."
+          },
+          {
+            "id": 3,
+            "enonce": "Un rectangle a deux côtés de 11 cm et deux côtés de 3 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "28",
+            "indice": "N'oublie pas que chaque longueur apparaît deux fois dans le tour."
+          },
+          {
+            "id": 4,
+            "enonce": "Un pentagone a des côtés de 3 cm, 4 cm, 5 cm, 6 cm et 7 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "25",
+            "indice": "Fais le tour : il y a cinq longueurs à additionner."
+          },
+          {
+            "id": 5,
+            "enonce": "Un triangle a ses trois côtés qui mesurent 8 cm chacun. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "24",
+            "indice": "Le tour compte trois côtés, tous de la même longueur."
+          },
+          {
+            "id": 6,
+            "enonce": "Une figure en forme de L a six côtés qui mesurent 5 cm, 3 cm, 2 cm, 2 cm, 3 cm et 5 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "20",
+            "indice": "Fais le tour complet : les six longueurs comptent."
+          },
+          {
+            "id": 7,
+            "enonce": "La cour de récréation est un rectangle qui a deux côtés de 25 m et deux côtés de 18 m. Quel est son périmètre, en mètres ?",
+            "reponse_attendue": "86",
+            "indice": "Chaque longueur apparaît deux fois dans le tour."
+          },
+          {
+            "id": 8,
+            "enonce": "Un triangle a des côtés de 14 cm, 11 cm et 10 cm. Quel est son périmètre, en centimètres ?",
+            "reponse_attendue": "35",
+            "indice": "Additionne les trois longueurs."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM26",
+    "type": "exercice",
+    "lecon": {
+      "titre": "L'aire, c'est le pavage",
+      "regle": "L'aire d'une figure, c'est le nombre de carreaux identiques qu'il faut pour la recouvrir entièrement, sans trou ni chevauchement.",
+      "procedure": [
+        "Repère le carreau qui sert d'unité.",
+        "Compte les carreaux entiers, rangée par rangée.",
+        "Assemble les demi-carreaux deux par deux, puis ajoute-les."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une figure recouverte par 3 rangées de 4 carreaux.",
+          "demonstration": "3 rangées de 4 carreaux : 3 × 4 = 12. Son aire est de 12 carreaux."
+        },
+        {
+          "phrase": "Une figure faite de 9 carreaux entiers et 4 demi-carreaux.",
+          "demonstration": "Les 4 demis forment 2 carreaux entiers : 9 + 2 = 11 carreaux."
+        }
+      ],
+      "piege": "Deux figures de formes différentes peuvent avoir la même aire."
+    },
+    "diagnostic": [
+      {
+        "question": "Une figure est entièrement recouverte par 4 rangées de 6 carreaux identiques. Quelle est son aire, en carreaux ?",
+        "options": [
+          "10",
+          "20",
+          "46",
+          "24"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Je compte tous les carreaux : 4 rangées de 6, soit 4 × 6 = 24. Le 10 vient de 4 + 6, et le 20 compte le tour de la figure, pas les carreaux qui la recouvrent."
+      },
+      {
+        "question": "Lila a dessiné un rectangle recouvert par 12 carreaux. Malo a dessiné une figure en forme de L recouverte elle aussi par 12 carreaux. Que peut-on dire de ces deux figures ?",
+        "options": [
+          "elles ont la même aire",
+          "le rectangle a la plus grande aire",
+          "la figure en L a la plus grande aire",
+          "on ne peut pas comparer deux figures de formes différentes"
+        ],
+        "reponse_correcte": 0,
+        "explication": "L'aire se compte en carreaux : 12 carreaux d'un côté, 12 de l'autre, donc la même aire, même si les deux figures n'ont pas la même forme."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je compte les carreaux",
+        "consigne": "Compte les carreaux qui recouvrent chaque figure. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Une figure est recouverte par 3 rangées de 5 carreaux identiques. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "15",
+            "indice": "Compte les carreaux d'une rangée, puis répète pour chaque rangée."
+          },
+          {
+            "id": 2,
+            "enonce": "Une figure est faite de 8 carreaux entiers et de 6 demi-carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "11",
+            "indice": "Assemble les demi-carreaux deux par deux avant d'ajouter."
+          },
+          {
+            "id": 3,
+            "enonce": "Un rectangle est pavé par 4 rangées de 7 carreaux identiques. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "28",
+            "indice": "Compte les carreaux d'une rangée, puis répète pour chaque rangée."
+          },
+          {
+            "id": 4,
+            "enonce": "Une figure en forme de L est faite d'une rangée de 6 carreaux surmontée d'une rangée de 2 carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "8",
+            "indice": "Compte les carreaux de chaque rangée, puis additionne les deux rangées."
+          },
+          {
+            "id": 5,
+            "enonce": "Timéo pave un rectangle de 20 carreaux avec 4 rangées identiques. Combien de carreaux y a-t-il dans chaque rangée ?",
+            "reponse_attendue": "5",
+            "indice": "Cherche le nombre qui, répété 4 fois, donne 20 carreaux."
+          },
+          {
+            "id": 6,
+            "enonce": "Une figure est faite de 10 carreaux entiers et de 4 demi-carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "12",
+            "indice": "Assemble les demi-carreaux deux par deux avant d'ajouter."
+          },
+          {
+            "id": 7,
+            "enonce": "Deux figures ont la même aire. La première est pavée par 5 rangées de 3 carreaux. Quelle est l'aire de la seconde, en carreaux ?",
+            "reponse_attendue": "15",
+            "indice": "Compte d'abord les carreaux de la première figure : la seconde en a autant."
+          },
+          {
+            "id": 8,
+            "enonce": "Nour recouvre une figure avec 9 carreaux entiers et 2 demi-carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "10",
+            "indice": "Assemble les demi-carreaux deux par deux avant d'ajouter."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des figures à paver",
+        "consigne": "Compte les carreaux qui recouvrent chaque figure. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Une figure est recouverte par 6 rangées de 4 carreaux identiques. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "24",
+            "indice": "Compte les carreaux d'une rangée, puis répète pour chaque rangée."
+          },
+          {
+            "id": 2,
+            "enonce": "Une figure est faite de 7 carreaux entiers et de 8 demi-carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "11",
+            "indice": "Assemble les demi-carreaux deux par deux avant d'ajouter."
+          },
+          {
+            "id": 3,
+            "enonce": "Un rectangle est pavé par 5 rangées de 6 carreaux identiques. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "30",
+            "indice": "Compte les carreaux d'une rangée, puis répète pour chaque rangée."
+          },
+          {
+            "id": 4,
+            "enonce": "Une figure en forme de L est faite d'une rangée de 7 carreaux surmontée d'une rangée de 3 carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "10",
+            "indice": "Compte les carreaux de chaque rangée, puis additionne les deux rangées."
+          },
+          {
+            "id": 5,
+            "enonce": "Inès pave un rectangle de 24 carreaux avec 3 rangées identiques. Combien de carreaux y a-t-il dans chaque rangée ?",
+            "reponse_attendue": "8",
+            "indice": "Cherche le nombre qui, répété 3 fois, donne 24 carreaux."
+          },
+          {
+            "id": 6,
+            "enonce": "Une figure est faite de 12 carreaux entiers et de 6 demi-carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "15",
+            "indice": "Assemble les demi-carreaux deux par deux avant d'ajouter."
+          },
+          {
+            "id": 7,
+            "enonce": "Deux figures ont la même aire. La première est pavée par 4 rangées de 5 carreaux. Quelle est l'aire de la seconde, en carreaux ?",
+            "reponse_attendue": "20",
+            "indice": "Compte d'abord les carreaux de la première figure : la seconde en a autant."
+          },
+          {
+            "id": 8,
+            "enonce": "Malo recouvre une figure avec 11 carreaux entiers et 2 demi-carreaux. Quelle est son aire, en carreaux ?",
+            "reponse_attendue": "12",
+            "indice": "Assemble les demi-carreaux deux par deux avant d'ajouter."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,683 @@
+[
+  {
+    "item_code": "GM10",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Lire l'heure et la demie",
+      "regle": "La petite aiguille donne l'heure, la grande aiguille donne les minutes.",
+      "procedure": [
+        "Lis la petite aiguille : l'heure est le chiffre sur lequel elle est posée, ou celui qu'elle vient de dépasser.",
+        "Regarde la grande aiguille : sur le 12, l'heure juste ; sur le 6, la demie."
+      ],
+      "exemples": [
+        {
+          "phrase": "Petite aiguille sur le 8, grande aiguille sur le 12.",
+          "demonstration": "La petite n'a pas quitté le 8, la grande est sur le 12 : il est 8 h."
+        },
+        {
+          "phrase": "Petite aiguille entre le 8 et le 9, grande aiguille sur le 6.",
+          "demonstration": "La petite a dépassé le 8 : c'est 8 h. La grande sur le 6 ajoute la demie : 8 h 30."
+        }
+      ],
+      "piege": "À 8 h 30, la petite aiguille a quitté le 8 : lis le chiffre dépassé, pas le suivant."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle heure indique cette horloge ?",
+        "options": [
+          "5 h 30",
+          "4 h 06",
+          "4 h 30",
+          "6 h 20"
+        ],
+        "reponse_correcte": 2,
+        "explication": "La petite aiguille a dépassé le 4 : l'heure est 4 h. La grande aiguille sur le 6 marque la demi-heure. Il est donc 4 h 30, et non 5 h 30.",
+        "figure": {
+          "type": "cadran",
+          "heures": 4,
+          "minutes": 30
+        }
+      },
+      {
+        "question": "À 7 h 30, où se trouve la petite aiguille ?",
+        "options": [
+          "sur le 7",
+          "entre le 7 et le 8",
+          "sur le 6",
+          "sur le 30"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La petite aiguille avance avec les minutes : à la demie, elle a déjà fait la moitié du chemin entre le 7 et le 8."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'heure juste et la demie",
+        "consigne": "Observe chaque horloge et choisis l'heure qu'elle indique.",
+        "questions": [
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "2 h 30",
+              "2 h",
+              "12 h 10",
+              "3 h"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est sur le 12 : il est l'heure juste. La petite aiguille est sur le 2 : il est 2 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 2,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "7 h 30",
+              "8 h 30",
+              "7 h",
+              "6 h 30"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La grande aiguille est sur le 6 : c'est la demie. La petite aiguille a dépassé le 7 : il est 7 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 7,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "10 h",
+              "12 h 55",
+              "11 h",
+              "11 h 30"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La grande aiguille est sur le 12 et la petite sur le 11 : il est 11 h juste.",
+            "figure": {
+              "type": "cadran",
+              "heures": 11,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "11 h 30",
+              "10 h",
+              "9 h 30",
+              "10 h 30"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille est entre le 10 et le 11 : l'heure est 10 h. La grande sur le 6 ajoute la demie : 10 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 10,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "9 h",
+              "9 h 30",
+              "8 h",
+              "12 h 45"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La grande aiguille est sur le 12 : l'heure est juste. La petite est sur le 9 : il est 9 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 9,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "1 h 30",
+              "12 h",
+              "12 h 30",
+              "6 h 12"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La petite aiguille vient de quitter le 12 et la grande est sur le 6 : il est 12 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 12,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "6 h 30",
+              "5 h 30",
+              "5 h",
+              "4 h 30"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La petite aiguille est entre le 5 et le 6 : l'heure est 5 h. La grande sur le 6 marque la demie : 5 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 5,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure indique cette horloge ?",
+            "options": [
+              "6 h 30",
+              "7 h",
+              "12 h 30",
+              "6 h"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les deux aiguilles sont alignées, la petite sur le 6 et la grande sur le 12 : il est 6 h juste.",
+            "figure": {
+              "type": "cadran",
+              "heures": 6,
+              "minutes": 0
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Encore des heures et des demies",
+        "consigne": "Observe chaque horloge et choisis l'heure qu'elle indique.",
+        "questions": [
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "3 h 30",
+              "3 h",
+              "2 h",
+              "12 h 15"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La grande aiguille est sur le 12 : il est l'heure juste. La petite est sur le 3 : il est 3 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 3,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "8 h 30",
+              "9 h 30",
+              "8 h",
+              "7 h 30"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La petite aiguille est entre le 8 et le 9 : l'heure est 8 h. La grande sur le 6 marque la demie : 8 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 8,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "9 h",
+              "10 h 30",
+              "10 h",
+              "12 h 50"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La grande aiguille est sur le 12 et la petite sur le 10 : il est 10 h juste.",
+            "figure": {
+              "type": "cadran",
+              "heures": 10,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "2 h 30",
+              "1 h",
+              "12 h 30",
+              "1 h 30"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille a dépassé le 1 sans atteindre le 2 : l'heure est 1 h. La grande sur le 6 donne 1 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 1,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "12 h",
+              "12 h 30",
+              "1 h",
+              "11 h"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les deux aiguilles sont sur le 12 : il est 12 h juste.",
+            "figure": {
+              "type": "cadran",
+              "heures": 12,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "4 h",
+              "5 h 30",
+              "5 h",
+              "12 h 25"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La grande aiguille est sur le 12 : l'heure est juste. La petite est sur le 5 : il est 5 h.",
+            "figure": {
+              "type": "cadran",
+              "heures": 5,
+              "minutes": 0
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "3 h 30",
+              "2 h 30",
+              "2 h",
+              "1 h 30"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La petite aiguille est entre le 2 et le 3 : l'heure est 2 h. La grande sur le 6 marque la demie : 2 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 2,
+              "minutes": 30
+            }
+          },
+          {
+            "question": "Quelle heure cette horloge indique-t-elle ?",
+            "options": [
+              "10 h 30",
+              "9 h",
+              "6 h 45",
+              "9 h 30"
+            ],
+            "reponse_correcte": 3,
+            "explication": "La petite aiguille a quitté le 9 sans atteindre le 10 : l'heure est 9 h. La grande sur le 6 donne 9 h 30.",
+            "figure": {
+              "type": "cadran",
+              "heures": 9,
+              "minutes": 30
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM11",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Payer et rendre la monnaie",
+      "regle": "Compter une somme, c'est additionner les billets puis les pièces ; rendre la monnaie, c'est chercher ce qui manque pour atteindre la somme donnée.",
+      "procedure": [
+        "Pour compter une somme, groupe les billets, puis les pièces, et additionne les deux totaux.",
+        "Pour payer, additionne tous les prix.",
+        "Pour rendre la monnaie, cherche le complément : le prix plus la monnaie rendue redonne la somme donnée."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un livre à 6 euros payé avec un billet de 10 euros.",
+          "demonstration": "Je cherche 6 + ? = 10. Comme 6 + 4 = 10, on rend 4 euros."
+        },
+        {
+          "phrase": "Trois billets de 5 euros et deux pièces de 1 euro.",
+          "demonstration": "Les billets : 5 + 5 + 5 = 15. Les pièces : 1 + 1 = 2. En tout, 15 + 2 = 17 euros."
+        }
+      ],
+      "piege": "Compte la valeur des billets et des pièces, pas leur nombre."
+    },
+    "diagnostic": [
+      {
+        "question": "Nour achète un cahier à 4 euros. Elle paie avec un billet de 10 euros. Quel calcul donne la monnaie qu'on lui rend ?",
+        "options": [
+          "10 − 4",
+          "4 − 10",
+          "10 + 4",
+          "10 × 4"
+        ],
+        "reponse_correcte": 0,
+        "explication": "La monnaie rendue, c'est ce qui reste de la somme donnée une fois le prix payé : on enlève le prix de la somme donnée."
+      },
+      {
+        "question": "Quel ensemble permet de composer exactement 13 euros ?",
+        "options": [
+          "un billet de 10 euros et une pièce de 2 euros",
+          "deux billets de 5 euros et une pièce de 2 euros",
+          "un billet de 10 euros et deux pièces de 2 euros",
+          "un billet de 5 euros et quatre pièces de 2 euros"
+        ],
+        "reponse_correcte": 3,
+        "explication": "5 + 2 + 2 + 2 + 2 = 13. Les autres donnent 12, 12 et 14 euros."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "À la boutique de l'école",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Timéo achète un livre qui coûte 7 euros. Il paie avec un billet de 10 euros. Combien d'euros la libraire lui rend-elle ?",
+            "resultat_attendu": "3",
+            "phrase_reponse_attendue": "La libraire lui rend 3 euros.",
+            "mots_cles": [
+              "3",
+              "euros"
+            ],
+            "indice": "Cherche ce qu'il faut ajouter à 7 pour arriver à 10."
+          },
+          {
+            "id": 2,
+            "enonce": "Fatou achète un ballon à 12 euros et une corde à sauter à 5 euros. Combien d'euros paie-t-elle en tout ?",
+            "resultat_attendu": "17",
+            "phrase_reponse_attendue": "Elle paie 17 euros en tout.",
+            "mots_cles": [
+              "17",
+              "euros"
+            ],
+            "indice": "Additionne les deux prix."
+          },
+          {
+            "id": 3,
+            "enonce": "Nour a un billet de 20 euros. Elle achète un jeu de cartes à 14 euros. Combien d'euros lui reste-t-il ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "Il lui reste 6 euros.",
+            "mots_cles": [
+              "6",
+              "euros"
+            ],
+            "indice": "Cherche ce qu'il faut ajouter à 14 pour arriver à 20."
+          },
+          {
+            "id": 4,
+            "enonce": "Malo doit composer une somme de 15 euros. Il a déjà posé un billet de 10 euros et une pièce de 2 euros. Combien d'euros doit-il encore ajouter ?",
+            "resultat_attendu": "3",
+            "phrase_reponse_attendue": "Il doit encore ajouter 3 euros.",
+            "mots_cles": [
+              "3",
+              "euros"
+            ],
+            "indice": "Compte d'abord ce qu'il a déjà posé, puis cherche le complément jusqu'à 15."
+          },
+          {
+            "id": 5,
+            "enonce": "Inès achète trois cahiers à 4 euros chacun. Elle paie avec un billet de 20 euros. Combien d'euros lui rend-on ?",
+            "resultat_attendu": "8",
+            "phrase_reponse_attendue": "On lui rend 8 euros.",
+            "mots_cles": [
+              "8",
+              "euros"
+            ],
+            "indice": "Calcule d'abord le prix des trois cahiers, puis cherche le complément jusqu'à 20."
+          },
+          {
+            "id": 6,
+            "enonce": "Sacha a deux billets de 5 euros et trois pièces de 2 euros dans sa tirelire. Combien d'euros a-t-il en tout ?",
+            "resultat_attendu": "16",
+            "phrase_reponse_attendue": "Il a 16 euros en tout.",
+            "mots_cles": [
+              "16",
+              "euros"
+            ],
+            "indice": "Compte d'abord les billets, puis ajoute les pièces."
+          }
+        ]
+      },
+      {
+        "titre": "Au marché du samedi",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Jade achète un livre à 9 euros et un marque-page à 2 euros. Elle paie avec un billet de 20 euros. Combien d'euros lui rend-on ?",
+            "resultat_attendu": "9",
+            "phrase_reponse_attendue": "On lui rend 9 euros.",
+            "mots_cles": [
+              "9",
+              "euros"
+            ],
+            "indice": "Additionne d'abord les deux prix, puis cherche le complément jusqu'à 20."
+          },
+          {
+            "id": 2,
+            "enonce": "Yanis a trois pièces de 2 euros et quatre pièces de 1 euro. Combien d'euros a-t-il en tout ?",
+            "resultat_attendu": "10",
+            "phrase_reponse_attendue": "Il a 10 euros en tout.",
+            "mots_cles": [
+              "10",
+              "euros"
+            ],
+            "indice": "Compte d'abord les pièces de 2 euros, puis ajoute les pièces de 1 euro."
+          },
+          {
+            "id": 3,
+            "enonce": "Louna veut composer une somme de 12 euros. Elle a posé un billet de 5 euros et deux pièces de 2 euros. Combien d'euros lui manque-t-il ?",
+            "resultat_attendu": "3",
+            "phrase_reponse_attendue": "Il lui manque 3 euros.",
+            "mots_cles": [
+              "3",
+              "euros"
+            ],
+            "indice": "Compte ce qu'elle a déjà posé, puis cherche le complément jusqu'à 12."
+          },
+          {
+            "id": 4,
+            "enonce": "Adam achète quatre places de cinéma à 6 euros chacune. Il paie avec un billet de 20 euros et un billet de 10 euros. Combien d'euros lui rend-on ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "On lui rend 6 euros.",
+            "mots_cles": [
+              "6",
+              "euros"
+            ],
+            "indice": "Calcule d'abord le prix des quatre places, puis la somme donnée."
+          },
+          {
+            "id": 5,
+            "enonce": "Rosalie a un billet de 50 euros. Elle achète une paire de chaussures à 38 euros. Combien d'euros lui reste-t-il ?",
+            "resultat_attendu": "12",
+            "phrase_reponse_attendue": "Il lui reste 12 euros.",
+            "mots_cles": [
+              "12",
+              "euros"
+            ],
+            "indice": "Cherche ce qu'il faut ajouter à 38 pour arriver à 50."
+          },
+          {
+            "id": 6,
+            "enonce": "Malo range dans son porte-monnaie deux billets de 10 euros et un billet de 5 euros. Combien d'euros contient son porte-monnaie ?",
+            "resultat_attendu": "25",
+            "phrase_reponse_attendue": "Son porte-monnaie contient 25 euros.",
+            "mots_cles": [
+              "25",
+              "euros"
+            ],
+            "indice": "Compte les deux billets de 10 euros, puis ajoute le billet de 5 euros."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM37",
+    "type": "classement",
+    "lecon": {
+      "titre": "Comparer sans mesurer",
+      "regle": "Pour comparer deux objets, place-les côte à côte, ou compare-les tous les deux à un même objet témoin.",
+      "procedure": [
+        "Choisis un témoin : une bande de papier, ou un paquet posé sur la balance.",
+        "Compare chaque objet au témoin : plus court ou plus long, plus léger ou plus lourd."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une gomme et un dictionnaire sur une balance à plateaux.",
+          "demonstration": "Le plateau du dictionnaire descend : il est plus lourd que la gomme."
+        },
+        {
+          "phrase": "Un crayon plus court que la bande, une trousse plus longue qu'elle.",
+          "demonstration": "Le crayon est du côté court, la trousse du côté long : le crayon est plus court."
+        }
+      ],
+      "piege": "Un objet plus gros n'est pas toujours plus lourd : un ballon est plus gros qu'un caillou et bien plus léger."
+    },
+    "diagnostic": [
+      {
+        "question": "Rosalie range trois objets du plus léger au plus lourd. Quel rangement est correct ?",
+        "options": [
+          "un dictionnaire, une gomme, une plume",
+          "une plume, une gomme, un dictionnaire",
+          "une gomme, une plume, un dictionnaire",
+          "une plume, un dictionnaire, une gomme"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Du plus léger au plus lourd : la plume, puis la gomme, puis le dictionnaire. Le premier de la liste doit être le plus léger."
+      },
+      {
+        "question": "Malo compare son crayon et sa trousse avec une même bande de papier. Le crayon est plus court que la bande, la trousse est plus longue que la bande. Que peut-on en conclure ?",
+        "options": [
+          "Le crayon est plus court que la trousse.",
+          "La trousse est plus courte que le crayon.",
+          "Le crayon et la trousse ont la même longueur.",
+          "On ne peut pas comparer le crayon et la trousse."
+        ],
+        "reponse_correcte": 0,
+        "explication": "La bande sert de témoin : ce qui est plus court qu'elle est plus court que ce qui est plus long qu'elle."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Plus léger ou plus lourd qu'un kilo de farine ?",
+        "consigne": "Range chaque objet dans la colonne qui lui convient.",
+        "categories": [
+          "Plus léger qu'un paquet de 1 kg de farine",
+          "Plus lourd qu'un paquet de 1 kg de farine"
+        ],
+        "items": [
+          {
+            "texte": "une gomme",
+            "categorie": "Plus léger qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "une boîte à chaussures vide",
+            "categorie": "Plus léger qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "une pomme",
+            "categorie": "Plus léger qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "une paire de ciseaux",
+            "categorie": "Plus léger qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "un pot de yaourt",
+            "categorie": "Plus léger qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "un ballon de plage gonflé",
+            "categorie": "Plus léger qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "un vélo",
+            "categorie": "Plus lourd qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "un paquet de riz de 2 kg",
+            "categorie": "Plus lourd qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "une bouteille d'eau pleine de 1,5 L",
+            "categorie": "Plus lourd qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "un sac de 10 kg de pommes de terre",
+            "categorie": "Plus lourd qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "une chaise de la classe",
+            "categorie": "Plus lourd qu'un paquet de 1 kg de farine"
+          },
+          {
+            "texte": "un seau rempli d'eau",
+            "categorie": "Plus lourd qu'un paquet de 1 kg de farine"
+          }
+        ]
+      },
+      {
+        "titre": "Plus court ou plus long qu'une règle de 30 cm ?",
+        "consigne": "Range chaque objet dans la colonne qui lui convient.",
+        "categories": [
+          "Plus court qu'une règle de 30 cm",
+          "Plus long qu'une règle de 30 cm"
+        ],
+        "items": [
+          {
+            "texte": "un trombone",
+            "categorie": "Plus court qu'une règle de 30 cm"
+          },
+          {
+            "texte": "une clé",
+            "categorie": "Plus court qu'une règle de 30 cm"
+          },
+          {
+            "texte": "une craie",
+            "categorie": "Plus court qu'une règle de 30 cm"
+          },
+          {
+            "texte": "une petite cuillère",
+            "categorie": "Plus court qu'une règle de 30 cm"
+          },
+          {
+            "texte": "un timbre",
+            "categorie": "Plus court qu'une règle de 30 cm"
+          },
+          {
+            "texte": "un dé à jouer",
+            "categorie": "Plus court qu'une règle de 30 cm"
+          },
+          {
+            "texte": "une porte",
+            "categorie": "Plus long qu'une règle de 30 cm"
+          },
+          {
+            "texte": "le tableau de la classe",
+            "categorie": "Plus long qu'une règle de 30 cm"
+          },
+          {
+            "texte": "un manche à balai",
+            "categorie": "Plus long qu'une règle de 30 cm"
+          },
+          {
+            "texte": "un lit",
+            "categorie": "Plus long qu'une règle de 30 cm"
+          },
+          {
+            "texte": "un banc de la cour",
+            "categorie": "Plus long qu'une règle de 30 cm"
+          },
+          {
+            "texte": "le couloir de l'école",
+            "categorie": "Plus long qu'une règle de 30 cm"
+          }
+        ]
+      }
+    ]
+  }
+]

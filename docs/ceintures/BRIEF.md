@@ -7,7 +7,7 @@ Le code applicatif reste à écrire.
 
 **Objectif** : en production pour la rentrée.
 
-**Périmètre livré** : les trois domaines de français et les deux premiers domaines de maths, 9 ceintures chacun.
+**Périmètre livré** : les trois domaines de français et trois des quatre domaines de maths, 9 ceintures chacun.
 
 | Domaine | Code | Items | Fichiers |
 |---|---|---|---|
@@ -16,9 +16,9 @@ Le code applicatif reste à écrire.
 | Textes | `TEXT` | 37 | `banque/textes-ceinture-*.json` |
 | Nombres | `NOMB` | 32 | `banque/nombres-ceinture-*.json` |
 | Calcul | `CALC` | 33 | `banque/calcul-ceinture-*.json` |
+| Grandeurs et mesures | `GRME` | 29 | `banque/grandeurs-ceinture-*.json` |
 
-Les deux derniers domaines de maths (Grandeurs et mesures, Espace et
-géométrie) viendront après, sur le même moteur.
+Le dernier domaine de maths (Espace et géométrie) viendra après, sur le même moteur.
 
 Toutes les banques passent `valider-banque.mjs` à 0 erreur, et chacune a été
 relue par un second modèle chargé de la démolir, puis corrigée.
@@ -200,8 +200,10 @@ Prévoir un bouton côté enseignant, pas côté élève.
 
 | Fichier | Contenu |
 |---|---|
-| `referentiel-francais.json` | Les 177 items des cinq domaines — le nom du fichier est historique, `scripts/seed-ceintures.ts` le lit sous ce nom : code, domaine, ceinture, libellé, niveau, type d'exercice **tel qu'il est écrit dans la banque**, type d'origine du référentiel, rattachement aux semaines de la P1 |
+| `referentiel-francais.json` | Les 206 items des six domaines — le nom du fichier est historique, `scripts/seed-ceintures.ts` le lit sous ce nom : code, domaine, ceinture, libellé, niveau, type d'exercice **tel qu'il est écrit dans la banque**, type d'origine du référentiel, rattachement aux semaines de la P1 |
 | `banque/` | 27 fichiers, un par ceinture et par domaine. Chaque item porte 2 questions de diagnostic et **2 variantes** d'entraînement (`entrainement` est un tableau : la variante 1 au premier passage, la variante 2 en remédiation) |
+| `SPEC-GRANDEURS.md` | Les décisions de type de Grandeurs et mesures, et la règle de l'unité : le résultat attendu est un nombre nu, l'unité est dans la question |
+| `SPEC-FIGURES.md` | Le contrat de rendu du cadran à aiguilles et de l'angle |
 | `SPEC-CALCUL.md` | Les décisions de type du domaine Calcul, le traitement des items de tables de multiplication, et ce que le moteur corrige vraiment dans un problème |
 | `SPEC-LECONS.md` | Le format de la leçon courte de chaque item, et ce que le moteur doit en faire |
 | `migration.sql` | Les 5 tables + le seed des 3 domaines et des 112 items. Additif, rejouable |

@@ -1,0 +1,705 @@
+[
+  {
+    "item_code": "GM27",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Calculer un périmètre",
+      "regle": "Le périmètre d'un carré vaut son côté multiplié par 4 ; celui d'un rectangle, la longueur plus la largeur, multipliées par 2.",
+      "procedure": [
+        "Reconnais la figure : carré ou rectangle.",
+        "Avec les côtés, applique la règle.",
+        "Si on te donne le périmètre, fais l'inverse : divise par 4 pour un carré ; prends la moitié, puis retire le côté connu pour un rectangle."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un carré de 7 cm de côté.",
+          "demonstration": "Quatre côtés égaux : 7 × 4 = 28 cm."
+        },
+        {
+          "phrase": "Un rectangle de périmètre 24 cm et de longueur 8 cm.",
+          "demonstration": "La moitié du périmètre, c'est longueur + largeur : 24 ÷ 2 = 12. Puis 12 − 8 = 4 cm de largeur."
+        }
+      ],
+      "piege": "Additionne longueur et largeur avant de multiplier."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le périmètre d'un carré de 12 cm de côté, en centimètres ?",
+        "options": [
+          "16",
+          "48",
+          "144",
+          "24"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un carré a quatre côtés égaux : 12 × 4 = 48. Le 16 vient de 12 + 4, le 24 de 12 × 2 et le 144 de 12 × 12."
+      },
+      {
+        "question": "Le périmètre d'un carré est de 36 cm. Combien mesure son côté, en centimètres ?",
+        "options": [
+          "9",
+          "18",
+          "6",
+          "32"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le périmètre vaut 4 fois le côté : je cherche le nombre qui, multiplié par 4, donne 36. C'est 9. Le 18 est la moitié de 36 et le 6 vient de 36 partagé en 6."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Carrés et rectangles",
+        "consigne": "Calcule le périmètre demandé. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel est le périmètre d'un carré de 8 cm de côté, en centimètres ?",
+            "reponse_attendue": "32",
+            "indice": "Le carré a quatre côtés égaux : multiplie par 4."
+          },
+          {
+            "id": 2,
+            "enonce": "Quel est le périmètre d'un rectangle de 12 cm de long et 7 cm de large, en centimètres ?",
+            "reponse_attendue": "38",
+            "indice": "Additionne la longueur et la largeur, puis multiplie la somme par 2."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel est le périmètre d'un rectangle de 25 m de long et 15 m de large, en mètres ?",
+            "reponse_attendue": "80",
+            "indice": "Additionne la longueur et la largeur, puis multiplie la somme par 2."
+          },
+          {
+            "id": 4,
+            "enonce": "Quel est le périmètre d'un carré de 14 cm de côté, en centimètres ?",
+            "reponse_attendue": "56",
+            "indice": "Le carré a quatre côtés égaux : multiplie par 4."
+          },
+          {
+            "id": 5,
+            "enonce": "Le périmètre d'un carré est de 40 cm. Combien mesure son côté, en centimètres ?",
+            "reponse_attendue": "10",
+            "indice": "Cherche le nombre qui, multiplié par 4, donne 40."
+          },
+          {
+            "id": 6,
+            "enonce": "Un rectangle a un périmètre de 30 cm et une longueur de 10 cm. Combien mesure sa largeur, en centimètres ?",
+            "reponse_attendue": "5",
+            "indice": "Prends la moitié du périmètre : tu obtiens la longueur plus la largeur."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel est le périmètre d'un carré de 6 m de côté, en mètres ?",
+            "reponse_attendue": "24",
+            "indice": "Le carré a quatre côtés égaux : multiplie par 4."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel est le périmètre d'un rectangle de 11 cm de long et 6 cm de large, en centimètres ?",
+            "reponse_attendue": "34",
+            "indice": "Additionne la longueur et la largeur, puis multiplie la somme par 2."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des périmètres à calculer",
+        "consigne": "Calcule le périmètre demandé. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quel est le périmètre d'un carré de 9 cm de côté, en centimètres ?",
+            "reponse_attendue": "36",
+            "indice": "Le carré a quatre côtés égaux : multiplie par 4."
+          },
+          {
+            "id": 2,
+            "enonce": "Quel est le périmètre d'un rectangle de 15 cm de long et 8 cm de large, en centimètres ?",
+            "reponse_attendue": "46",
+            "indice": "Additionne la longueur et la largeur, puis multiplie la somme par 2."
+          },
+          {
+            "id": 3,
+            "enonce": "Quel est le périmètre d'un rectangle de 30 m de long et 12 m de large, en mètres ?",
+            "reponse_attendue": "84",
+            "indice": "Additionne la longueur et la largeur, puis multiplie la somme par 2."
+          },
+          {
+            "id": 4,
+            "enonce": "Quel est le périmètre d'un carré de 11 cm de côté, en centimètres ?",
+            "reponse_attendue": "44",
+            "indice": "Le carré a quatre côtés égaux : multiplie par 4."
+          },
+          {
+            "id": 5,
+            "enonce": "Le périmètre d'un carré est de 60 cm. Combien mesure son côté, en centimètres ?",
+            "reponse_attendue": "15",
+            "indice": "Cherche le nombre qui, multiplié par 4, donne 60."
+          },
+          {
+            "id": 6,
+            "enonce": "Un rectangle a un périmètre de 26 cm et une largeur de 4 cm. Combien mesure sa longueur, en centimètres ?",
+            "reponse_attendue": "9",
+            "indice": "Prends la moitié du périmètre : tu obtiens la longueur plus la largeur."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel est le périmètre d'un carré de 5 m de côté, en mètres ?",
+            "reponse_attendue": "20",
+            "indice": "Le carré a quatre côtés égaux : multiplie par 4."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel est le périmètre d'un rectangle de 16 cm de long et 5 cm de large, en centimètres ?",
+            "reponse_attendue": "42",
+            "indice": "Additionne la longueur et la largeur, puis multiplie la somme par 2."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM28",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Calculer une durée écoulée",
+      "regle": "La durée écoulée, c'est ce qu'il faut ajouter à l'heure de départ pour atteindre l'heure d'arrivée.",
+      "procedure": [
+        "Entre deux heures de la journée, va jusqu'à l'heure ronde suivante, puis compte les heures, puis les minutes.",
+        "Pour retirer une durée d'une autre, échange 1 h contre 60 min, puis soustrais."
+      ],
+      "exemples": [
+        {
+          "phrase": "De 9 h 40 à 11 h 10.",
+          "demonstration": "20 min jusqu'à 10 h, puis 1 h, puis 10 min : 1 h 30 min."
+        },
+        {
+          "phrase": "Une recette de 2 h 15 min, dont 40 min passées.",
+          "demonstration": "J'échange 1 h contre 60 min : 1 h 75 min. 75 − 40 = 35 : 1 h 35 min."
+        }
+      ],
+      "piege": "Ne soustrais jamais 45 de 10 : échange une heure d'abord."
+    },
+    "diagnostic": [
+      {
+        "question": "Le cours de natation commence à 10 h 20 et se termine à 11 h 05. Combien de temps dure-t-il ?",
+        "options": [
+          "1 h 15 min",
+          "25 min",
+          "45 min",
+          "1 h 25 min"
+        ],
+        "reponse_correcte": 2,
+        "explication": "De 10 h 20 à 11 h il s'écoule 40 min, puis 5 min jusqu'à 11 h 05 : en tout 45 min. Le 1 h 15 min vient d'un calcul séparé des heures et des minutes."
+      },
+      {
+        "question": "Un trajet dure 3 h 10 min, dont une pause de 25 min. Combien de temps roule-t-on ?",
+        "options": [
+          "2 h 85 min",
+          "2 h 45 min",
+          "3 h 35 min",
+          "2 h 15 min"
+        ],
+        "reponse_correcte": 1,
+        "explication": "J'échange une heure contre 60 minutes : 3 h 10 min devient 2 h 70 min. Puis 70 − 25 = 45, donc 2 h 45 min. Le 2 h 85 min vient d'un échange contre 100 minutes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Combien de temps s'est-il écoulé ?",
+        "consigne": "Calcule, puis réponds par une phrase complète. Écris une durée en heures et minutes sous la forme « 3 h 50 min ». Quand la question demande un nombre de minutes ou un nombre d'heures, écris seulement le nombre, sans l'unité.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "La séance de sport commence à 14 h 15 et se termine à 15 h 50. Combien de temps dure-t-elle ? Réponds en heures et minutes.",
+            "resultat_attendu": "1 h 35 min",
+            "phrase_reponse_attendue": "La séance dure 1 h 35 min.",
+            "mots_cles": [
+              "1 h 35 min",
+              "séance"
+            ],
+            "indice": "Va d'abord jusqu'à 15 h, puis compte ce qui reste."
+          },
+          {
+            "id": 2,
+            "enonce": "Le car scolaire part à 7 h 40 et arrive à 8 h 25. Combien de minutes dure le trajet ?",
+            "resultat_attendu": "45",
+            "phrase_reponse_attendue": "Le trajet dure 45 minutes.",
+            "mots_cles": [
+              "45",
+              "trajet"
+            ],
+            "indice": "Va d'abord jusqu'à 8 h, puis compte les minutes qui restent."
+          },
+          {
+            "id": 3,
+            "enonce": "Rosalie commence ses devoirs à 17 h 50 et les termine à 18 h 30. Combien de minutes a-t-elle travaillé ?",
+            "resultat_attendu": "40",
+            "phrase_reponse_attendue": "Elle a travaillé 40 minutes.",
+            "mots_cles": [
+              "40",
+              "travaillé"
+            ],
+            "indice": "Va d'abord jusqu'à 18 h, puis compte les minutes qui restent."
+          },
+          {
+            "id": 4,
+            "enonce": "Le film dure 2 h 05 min. Malo en a déjà vu 1 h 30 min. Combien de minutes lui reste-t-il à voir ?",
+            "resultat_attendu": "35",
+            "phrase_reponse_attendue": "Il lui reste 35 minutes à voir.",
+            "mots_cles": [
+              "35",
+              "reste"
+            ],
+            "indice": "Échange 1 h contre 60 min, puis soustrais les minutes."
+          },
+          {
+            "id": 5,
+            "enonce": "La journée d'école commence à 8 h 30 et se termine à 16 h 30, avec 2 h de pause au total. Combien d'heures les élèves travaillent-ils ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "Les élèves travaillent 6 heures.",
+            "mots_cles": [
+              "6",
+              "travaillent"
+            ],
+            "indice": "Calcule d'abord la durée entre le début et la fin, puis enlève la pause."
+          },
+          {
+            "id": 6,
+            "enonce": "Le train part à 9 h 45 et arrive à 12 h 20. Combien de temps dure le voyage ? Réponds en heures et minutes.",
+            "resultat_attendu": "2 h 35 min",
+            "phrase_reponse_attendue": "Le voyage dure 2 h 35 min.",
+            "mots_cles": [
+              "2 h 35 min",
+              "voyage"
+            ],
+            "indice": "Va d'abord jusqu'à 10 h, puis compte les heures entières, puis les minutes qui restent."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des durées écoulées",
+        "consigne": "Calcule, puis réponds par une phrase complète. Écris une durée en heures et minutes sous la forme « 3 h 50 min ». Quand la question demande un nombre de minutes ou un nombre d'heures, écris seulement le nombre, sans l'unité.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Le spectacle commence à 19 h 45 et se termine à 21 h 30. Combien de temps dure-t-il ? Réponds en heures et minutes.",
+            "resultat_attendu": "1 h 45 min",
+            "phrase_reponse_attendue": "Le spectacle dure 1 h 45 min.",
+            "mots_cles": [
+              "1 h 45 min",
+              "spectacle"
+            ],
+            "indice": "Va d'abord jusqu'à 20 h, puis compte ce qui reste."
+          },
+          {
+            "id": 2,
+            "enonce": "La récréation commence à 10 h 25 et se termine à 10 h 50. Combien de minutes dure-t-elle ?",
+            "resultat_attendu": "25",
+            "phrase_reponse_attendue": "La récréation dure 25 minutes.",
+            "mots_cles": [
+              "25",
+              "récréation"
+            ],
+            "indice": "Les deux heures sont les mêmes : compte simplement de 25 jusqu'à 50."
+          },
+          {
+            "id": 3,
+            "enonce": "Yanis entre à la piscine à 15 h 40 et en sort à 16 h 35. Combien de minutes est-il resté ?",
+            "resultat_attendu": "55",
+            "phrase_reponse_attendue": "Il est resté 55 minutes.",
+            "mots_cles": [
+              "55",
+              "resté"
+            ],
+            "indice": "Va d'abord jusqu'à 16 h, puis compte les minutes qui restent."
+          },
+          {
+            "id": 4,
+            "enonce": "La randonnée doit durer 3 h 15 min. Le groupe marche déjà depuis 2 h 30 min. Combien de minutes lui reste-t-il à marcher ?",
+            "resultat_attendu": "45",
+            "phrase_reponse_attendue": "Il lui reste 45 minutes à marcher.",
+            "mots_cles": [
+              "45",
+              "reste"
+            ],
+            "indice": "Échange 1 h contre 60 min, puis soustrais les minutes."
+          },
+          {
+            "id": 5,
+            "enonce": "La bibliothèque ouvre à 9 h et ferme à 17 h, avec 1 h de fermeture le midi. Combien d'heures est-elle ouverte ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "Elle est ouverte 7 heures.",
+            "mots_cles": [
+              "7",
+              "ouverte"
+            ],
+            "indice": "Calcule d'abord la durée entre l'ouverture et la fermeture, puis enlève la pause du midi."
+          },
+          {
+            "id": 6,
+            "enonce": "L'avion décolle à 6 h 55 et atterrit à 9 h 40. Combien de temps dure le vol ? Réponds en heures et minutes.",
+            "resultat_attendu": "2 h 45 min",
+            "phrase_reponse_attendue": "Le vol dure 2 h 45 min.",
+            "mots_cles": [
+              "2 h 45 min",
+              "vol"
+            ],
+            "indice": "Va d'abord jusqu'à 7 h, puis compte les heures entières, puis les minutes qui restent."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM29",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Calculer une aire",
+      "regle": "L'aire d'un rectangle vaut sa longueur multipliée par sa largeur ; celle d'un carré, son côté multiplié par lui-même.",
+      "procedure": [
+        "Vérifie que les deux mesures sont dans la même unité.",
+        "Multiplie la longueur par la largeur.",
+        "Pour un carré, multiplie le côté par lui-même."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un rectangle de 7 cm sur 3 cm.",
+          "demonstration": "Je multiplie : 7 × 3 = 21. Son aire est de 21 cm²."
+        },
+        {
+          "phrase": "Un rectangle de 5 m de long et de 200 cm de large.",
+          "demonstration": "200 cm, c'est 2 m. Les deux mesures sont en mètres : 5 × 2 = 10. Son aire est de 10 m²."
+        }
+      ],
+      "piege": "Pour l'aire on multiplie ; pour le périmètre on fait le tour."
+    },
+    "diagnostic": [
+      {
+        "question": "Quelle est l'aire d'un rectangle de 8 cm de long et 5 cm de large, en cm² ?",
+        "options": [
+          "13",
+          "26",
+          "40",
+          "80"
+        ],
+        "reponse_correcte": 2,
+        "explication": "L'aire d'un rectangle est le produit de la longueur par la largeur : 8 × 5 = 40. Le 13 est la somme des deux mesures et le 26 est le périmètre."
+      },
+      {
+        "question": "L'aire d'un carré est de 49 cm². Combien mesure son côté, en centimètres ?",
+        "options": [
+          "24",
+          "14",
+          "12",
+          "7"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Je cherche le nombre qui, multiplié par lui-même, donne 49 : 7 × 7 = 49. Les autres ne conviennent pas : 12 × 12 = 144, 14 × 14 = 196 et 24 × 24 = 576."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "L'aire des carrés et des rectangles",
+        "consigne": "Calcule l'aire demandée. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quelle est l'aire d'un rectangle de 9 cm de long et 4 cm de large, en cm² ?",
+            "reponse_attendue": "36",
+            "indice": "Multiplie la longueur par la largeur."
+          },
+          {
+            "id": 2,
+            "enonce": "Quelle est l'aire d'un carré de 7 cm de côté, en cm² ?",
+            "reponse_attendue": "49",
+            "indice": "Multiplie le côté par lui-même."
+          },
+          {
+            "id": 3,
+            "enonce": "Quelle est l'aire d'un rectangle de 12 m de long et 6 m de large, en m² ?",
+            "reponse_attendue": "72",
+            "indice": "Multiplie la longueur par la largeur."
+          },
+          {
+            "id": 4,
+            "enonce": "Quelle est l'aire d'un carré de 10 m de côté, en m² ?",
+            "reponse_attendue": "100",
+            "indice": "Multiplie le côté par lui-même."
+          },
+          {
+            "id": 5,
+            "enonce": "Un rectangle a une aire de 48 cm² et une longueur de 8 cm. Combien mesure sa largeur, en centimètres ?",
+            "reponse_attendue": "6",
+            "indice": "Cherche le nombre qui, multiplié par 8, donne 48."
+          },
+          {
+            "id": 6,
+            "enonce": "Quelle est l'aire d'un rectangle de 15 cm de long et 3 cm de large, en cm² ?",
+            "reponse_attendue": "45",
+            "indice": "Multiplie la longueur par la largeur."
+          },
+          {
+            "id": 7,
+            "enonce": "Quelle est l'aire d'un carré de 12 cm de côté, en cm² ?",
+            "reponse_attendue": "144",
+            "indice": "Multiplie le côté par lui-même."
+          },
+          {
+            "id": 8,
+            "enonce": "Le tapis de la classe est un rectangle de 4 m de long et de 300 cm de large. Quelle est son aire, en m² ?",
+            "reponse_attendue": "12",
+            "indice": "Écris d'abord les deux mesures en mètres, puis multiplie."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des aires à calculer",
+        "consigne": "Calcule l'aire demandée. Écris seulement le nombre, sans l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quelle est l'aire d'un rectangle de 11 cm de long et 5 cm de large, en cm² ?",
+            "reponse_attendue": "55",
+            "indice": "Multiplie la longueur par la largeur."
+          },
+          {
+            "id": 2,
+            "enonce": "Quelle est l'aire d'un carré de 8 cm de côté, en cm² ?",
+            "reponse_attendue": "64",
+            "indice": "Multiplie le côté par lui-même."
+          },
+          {
+            "id": 3,
+            "enonce": "Quelle est l'aire d'un rectangle de 20 m de long et 7 m de large, en m² ?",
+            "reponse_attendue": "140",
+            "indice": "Multiplie la longueur par la largeur."
+          },
+          {
+            "id": 4,
+            "enonce": "Quelle est l'aire d'un carré de 9 m de côté, en m² ?",
+            "reponse_attendue": "81",
+            "indice": "Multiplie le côté par lui-même."
+          },
+          {
+            "id": 5,
+            "enonce": "Un rectangle a une aire de 54 cm² et une largeur de 6 cm. Combien mesure sa longueur, en centimètres ?",
+            "reponse_attendue": "9",
+            "indice": "Cherche le nombre qui, multiplié par 6, donne 54."
+          },
+          {
+            "id": 6,
+            "enonce": "Quelle est l'aire d'un rectangle de 13 cm de long et 4 cm de large, en cm² ?",
+            "reponse_attendue": "52",
+            "indice": "Multiplie la longueur par la largeur."
+          },
+          {
+            "id": 7,
+            "enonce": "Quelle est l'aire d'un carré de 11 cm de côté, en cm² ?",
+            "reponse_attendue": "121",
+            "indice": "Multiplie le côté par lui-même."
+          },
+          {
+            "id": 8,
+            "enonce": "Le préau est un rectangle de 9 m de long et de 500 cm de large. Quelle est son aire, en m² ?",
+            "reponse_attendue": "45",
+            "indice": "Écris d'abord les deux mesures en mètres, puis multiplie."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM30",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Adapter une recette",
+      "regle": "Si le nombre de parts est multiplié ou divisé par un nombre, chaque ingrédient l'est par le même nombre.",
+      "procedure": [
+        "Cherche par combien le nombre de parts est multiplié ou divisé.",
+        "Applique la même opération à l'ingrédient.",
+        "Si le passage n'est pas direct, calcule d'abord pour une seule part."
+      ],
+      "exemples": [
+        {
+          "phrase": "150 g de beurre pour 3 personnes ; on en veut 6.",
+          "demonstration": "6, c'est 3 × 2 : le beurre aussi. 150 × 2 = 300 g."
+        },
+        {
+          "phrase": "300 mL de lait pour 6 personnes ; on en veut 2.",
+          "demonstration": "2, c'est 6 ÷ 3 : le lait aussi. 300 ÷ 3 = 100 mL."
+        }
+      ],
+      "piege": "De 3 à 7 personnes, passe d'abord par une seule personne."
+    },
+    "diagnostic": [
+      {
+        "question": "Une recette de crêpes pour 4 personnes demande 250 g de farine. Combien de grammes de farine faut-il pour 8 personnes ?",
+        "options": [
+          "254",
+          "1 000",
+          "375",
+          "500"
+        ],
+        "reponse_correcte": 3,
+        "explication": "8 personnes, c'est 2 fois 4 personnes : je multiplie aussi la farine par 2, soit 250 × 2 = 500. Le 254 vient d'une addition et le 1 000 d'une multiplication par 4."
+      },
+      {
+        "question": "Pour préparer 6 muffins, il faut 3 œufs. Combien d'œufs faut-il pour 10 muffins ?",
+        "options": [
+          "5",
+          "7",
+          "6",
+          "4"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Avec 3 œufs on fait 6 muffins, donc 1 œuf donne 2 muffins. Pour 10 muffins : 10 ÷ 2 = 5 œufs. Le 7 vient de 3 + 4, une addition qui ne convient pas ici."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La recette de Fatou",
+        "consigne": "Calcule, puis réponds par une phrase complète. Dans la case résultat, écris seulement le nombre, sans l'unité.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Une recette de gâteau pour 4 personnes demande 200 g de sucre. Fatou prépare ce gâteau pour 12 personnes. Combien de grammes de sucre lui faut-il ?",
+            "resultat_attendu": "600",
+            "phrase_reponse_attendue": "Il lui faut 600 g de sucre.",
+            "mots_cles": [
+              "600",
+              "sucre"
+            ],
+            "indice": "Cherche par combien on multiplie 4 pour obtenir 12, puis multiplie le sucre par ce nombre."
+          },
+          {
+            "id": 2,
+            "enonce": "La même recette, prévue pour 4 personnes, demande 6 œufs. Combien d'œufs faut-il pour 2 personnes ?",
+            "resultat_attendu": "3",
+            "phrase_reponse_attendue": "Il faut 3 œufs.",
+            "mots_cles": [
+              "3",
+              "œufs"
+            ],
+            "indice": "2 personnes, c'est la moitié de 4 personnes."
+          },
+          {
+            "id": 3,
+            "enonce": "Pour 8 crêpes, il faut 400 mL de lait. Combien de millilitres de lait faut-il pour 2 crêpes ?",
+            "resultat_attendu": "100",
+            "phrase_reponse_attendue": "Il faut 100 millilitres de lait.",
+            "mots_cles": [
+              "100",
+              "lait"
+            ],
+            "indice": "Cherche par combien on divise 8 pour obtenir 2, puis divise le lait par ce nombre."
+          },
+          {
+            "id": 4,
+            "enonce": "Pour 5 personnes, une recette demande 750 g de pommes de terre. Combien de grammes faut-il pour 1 personne ?",
+            "resultat_attendu": "150",
+            "phrase_reponse_attendue": "Il faut 150 g de pommes de terre.",
+            "mots_cles": [
+              "150",
+              "pommes"
+            ],
+            "indice": "Partage la quantité en 5 parts égales."
+          },
+          {
+            "id": 5,
+            "enonce": "Un sirop se prépare avec 2 doses d'eau pour 1 dose de menthe. Adam verse 10 doses d'eau. Combien de doses de menthe doit-il verser ?",
+            "resultat_attendu": "5",
+            "phrase_reponse_attendue": "Il doit verser 5 doses de menthe.",
+            "mots_cles": [
+              "5",
+              "menthe"
+            ],
+            "indice": "Cherche combien de fois 2 doses d'eau tiennent dans 10 doses."
+          },
+          {
+            "id": 6,
+            "enonce": "Pour 3 personnes, il faut 180 g de riz. Combien de grammes de riz faut-il pour 7 personnes ?",
+            "resultat_attendu": "420",
+            "phrase_reponse_attendue": "Il faut 420 g de riz.",
+            "mots_cles": [
+              "420",
+              "riz"
+            ],
+            "indice": "Calcule d'abord la quantité pour 1 personne, puis multiplie par 7."
+          }
+        ]
+      },
+      {
+        "titre": "La recette de Yanis",
+        "consigne": "Calcule, puis réponds par une phrase complète. Dans la case résultat, écris seulement le nombre, sans l'unité.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Une recette de cake pour 6 personnes demande 300 g de farine. Yanis prépare ce cake pour 18 personnes. Combien de grammes de farine lui faut-il ?",
+            "resultat_attendu": "900",
+            "phrase_reponse_attendue": "Il lui faut 900 g de farine.",
+            "mots_cles": [
+              "900",
+              "farine"
+            ],
+            "indice": "Cherche par combien on multiplie 6 pour obtenir 18, puis multiplie la farine par ce nombre."
+          },
+          {
+            "id": 2,
+            "enonce": "La même recette, prévue pour 6 personnes, demande 4 œufs. Combien d'œufs faut-il pour 3 personnes ?",
+            "resultat_attendu": "2",
+            "phrase_reponse_attendue": "Il faut 2 œufs.",
+            "mots_cles": [
+              "2",
+              "œufs"
+            ],
+            "indice": "3 personnes, c'est la moitié de 6 personnes."
+          },
+          {
+            "id": 3,
+            "enonce": "Pour 10 gaufres, il faut 500 mL de lait. Combien de millilitres de lait faut-il pour 4 gaufres ?",
+            "resultat_attendu": "200",
+            "phrase_reponse_attendue": "Il faut 200 millilitres de lait.",
+            "mots_cles": [
+              "200",
+              "lait"
+            ],
+            "indice": "Calcule d'abord la quantité pour 1 gaufre, puis multiplie par 4."
+          },
+          {
+            "id": 4,
+            "enonce": "Pour 4 personnes, une recette demande 320 g de chocolat. Combien de grammes faut-il pour 1 personne ?",
+            "resultat_attendu": "80",
+            "phrase_reponse_attendue": "Il faut 80 g de chocolat.",
+            "mots_cles": [
+              "80",
+              "chocolat"
+            ],
+            "indice": "Partage la quantité en 4 parts égales."
+          },
+          {
+            "id": 5,
+            "enonce": "Une boisson se prépare avec 3 doses d'eau pour 1 dose de sirop. Louna verse 12 doses d'eau. Combien de doses de sirop doit-elle verser ?",
+            "resultat_attendu": "4",
+            "phrase_reponse_attendue": "Elle doit verser 4 doses de sirop.",
+            "mots_cles": [
+              "4",
+              "sirop"
+            ],
+            "indice": "Cherche combien de fois 3 doses d'eau tiennent dans 12 doses."
+          },
+          {
+            "id": 6,
+            "enonce": "Pour 5 personnes, il faut 400 g de pâtes. Combien de grammes de pâtes faut-il pour 8 personnes ?",
+            "resultat_attendu": "640",
+            "phrase_reponse_attendue": "Il faut 640 g de pâtes.",
+            "mots_cles": [
+              "640",
+              "pâtes"
+            ],
+            "indice": "Calcule d'abord la quantité pour 1 personne, puis multiplie par 8."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,794 @@
+[
+  {
+    "item_code": "GM22",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Siècles, années, semaines",
+      "regle": "Un siècle vaut 100 ans, une année vaut 12 mois ou 365 jours (366 si elle est bissextile), une semaine vaut 7 jours et un jour vaut 24 heures.",
+      "procedure": [
+        "Repère l'unité de départ et l'unité demandée.",
+        "Vers la plus petite unité, multiplie par 100, 12, 365, 7 ou 24 selon le couple d'unités.",
+        "Vers la plus grande unité, divise par ce même nombre."
+      ],
+      "exemples": [
+        {
+          "phrase": "6 siècles = … ans",
+          "demonstration": "Un siècle vaut 100 ans : 6 × 100 = 600 ans."
+        },
+        {
+          "phrase": "35 jours = … semaines",
+          "demonstration": "Je vais vers la plus grande unité, donc je divise : 35 ÷ 7 = 5. 35 jours font 5 semaines."
+        }
+      ],
+      "piege": "Le nombre change à chaque couple d'unités : ni 10 ni 60, mais 100, 12, 7, 24 ou 365."
+    },
+    "diagnostic": [
+      {
+        "question": "Le vieux pont du village a été construit il y a 3 siècles. Combien d'années cela fait-il ?",
+        "options": [
+          "30",
+          "300",
+          "3 000",
+          "36"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un siècle vaut 100 ans : 3 × 100 = 300 ans. Le 36 vient de 3 × 12, qui compte des mois."
+      },
+      {
+        "question": "Les vacances d'été durent 8 semaines. Combien de jours cela fait-il ?",
+        "options": [
+          "15",
+          "64",
+          "56",
+          "80"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Une semaine vaut 7 jours : 8 × 7 = 56 jours. Le 64 vient de 8 × 8 et le 80 de 8 × 10."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des siècles aux heures",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "4 siècles = … ans",
+            "reponse_attendue": "400",
+            "indice": "Un siècle vaut 100 ans : multiplie."
+          },
+          {
+            "id": 2,
+            "enonce": "3 semaines = … jours",
+            "reponse_attendue": "21",
+            "indice": "Une semaine vaut 7 jours : multiplie."
+          },
+          {
+            "id": 3,
+            "enonce": "2 ans = … mois",
+            "reponse_attendue": "24",
+            "indice": "Une année vaut 12 mois : multiplie."
+          },
+          {
+            "id": 4,
+            "enonce": "700 ans = … siècles",
+            "reponse_attendue": "7",
+            "indice": "On va vers la plus grande unité : divise par 100."
+          },
+          {
+            "id": 5,
+            "enonce": "5 jours = … heures",
+            "reponse_attendue": "120",
+            "indice": "Un jour vaut 24 heures : multiplie."
+          },
+          {
+            "id": 6,
+            "enonce": "49 jours = … semaines",
+            "reponse_attendue": "7",
+            "indice": "On va vers la plus grande unité : divise par 7."
+          },
+          {
+            "id": 7,
+            "enonce": "1 année ordinaire = … jours",
+            "reponse_attendue": "365",
+            "indice": "Une année bissextile en compte un de plus ; celle-ci ne l'est pas."
+          },
+          {
+            "id": 8,
+            "enonce": "48 mois = … ans",
+            "reponse_attendue": "4",
+            "indice": "On va vers la plus grande unité : divise par 12."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des siècles, des semaines et des jours",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "8 siècles = … ans",
+            "reponse_attendue": "800",
+            "indice": "Un siècle vaut 100 ans : multiplie."
+          },
+          {
+            "id": 2,
+            "enonce": "6 semaines = … jours",
+            "reponse_attendue": "42",
+            "indice": "Une semaine vaut 7 jours : multiplie."
+          },
+          {
+            "id": 3,
+            "enonce": "5 ans = … mois",
+            "reponse_attendue": "60",
+            "indice": "Une année vaut 12 mois : multiplie."
+          },
+          {
+            "id": 4,
+            "enonce": "500 ans = … siècles",
+            "reponse_attendue": "5",
+            "indice": "On va vers la plus grande unité : divise par 100."
+          },
+          {
+            "id": 5,
+            "enonce": "3 jours = … heures",
+            "reponse_attendue": "72",
+            "indice": "Un jour vaut 24 heures : multiplie."
+          },
+          {
+            "id": 6,
+            "enonce": "63 jours = … semaines",
+            "reponse_attendue": "9",
+            "indice": "On va vers la plus grande unité : divise par 7."
+          },
+          {
+            "id": 7,
+            "enonce": "2 années ordinaires = … jours",
+            "reponse_attendue": "730",
+            "indice": "Convertis une année, puis double le résultat."
+          },
+          {
+            "id": 8,
+            "enonce": "36 mois = … ans",
+            "reponse_attendue": "3",
+            "indice": "On va vers la plus grande unité : divise par 12."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM23",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Convertir des masses",
+      "regle": "Un kilogramme vaut 1 000 grammes et une tonne vaut 1 000 kilogrammes.",
+      "procedure": [
+        "Repère l'unité de départ et l'unité demandée.",
+        "Des kilogrammes aux grammes, ou des tonnes aux kilogrammes, multiplie par 1 000.",
+        "Dans l'autre sens, divise par 1 000."
+      ],
+      "exemples": [
+        {
+          "phrase": "5 kg = … g",
+          "demonstration": "Un kilogramme vaut 1 000 g : 5 × 1 000 = 5 000. 5 kg font 5 000 g."
+        },
+        {
+          "phrase": "6 kg 400 g = … g",
+          "demonstration": "Je convertis d'abord les 6 kg : 6 000 g. J'ajoute les 400 g déjà en grammes : 6 400 g."
+        }
+      ],
+      "piege": "Un demi-kilogramme n'est pas 50 g mais 500 g : c'est la moitié de 1 000."
+    },
+    "diagnostic": [
+      {
+        "question": "Un sac de farine pèse 2 kg. Combien de grammes pèse-t-il ?",
+        "options": [
+          "2 000",
+          "200",
+          "20 000",
+          "20"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un kilogramme vaut 1 000 g : 2 × 1 000 = 2 000 g. Le 200 vient de deux zéros ajoutés au lieu de trois, et le 20 d'un seul."
+      },
+      {
+        "question": "Le colis de Nour pèse 3 500 g. Comment peut-on aussi écrire cette masse ?",
+        "options": [
+          "3 kg 50 g",
+          "35 kg",
+          "350 kg",
+          "3 kg 500 g"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Dans 3 500 g il y a 3 fois 1 000 g, soit 3 kg, et il reste 500 g."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des kilogrammes aux grammes",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "4 kg = … g",
+            "reponse_attendue": "4000",
+            "indice": "Un kilogramme vaut 1 000 g : multiplie."
+          },
+          {
+            "id": 2,
+            "enonce": "2 kg 500 g = … g",
+            "reponse_attendue": "2500",
+            "indice": "Convertis d'abord les kilogrammes, puis ajoute les grammes qui restent."
+          },
+          {
+            "id": 3,
+            "enonce": "6 000 g = … kg",
+            "reponse_attendue": "6",
+            "indice": "Cherche combien de fois 1 000 tient dans ce nombre."
+          },
+          {
+            "id": 4,
+            "enonce": "1 t = … kg",
+            "reponse_attendue": "1000",
+            "indice": "Une tonne vaut 1 000 kilogrammes."
+          },
+          {
+            "id": 5,
+            "enonce": "un demi-kilogramme = … g",
+            "reponse_attendue": "500",
+            "indice": "Cherche la moitié de 1 000."
+          },
+          {
+            "id": 6,
+            "enonce": "3 kg 250 g = … g",
+            "reponse_attendue": "3250",
+            "indice": "Convertis d'abord les kilogrammes, puis ajoute les grammes qui restent."
+          },
+          {
+            "id": 7,
+            "enonce": "9 000 g = … kg",
+            "reponse_attendue": "9",
+            "indice": "Cherche combien de fois 1 000 tient dans ce nombre."
+          },
+          {
+            "id": 8,
+            "enonce": "2 t 400 kg = … kg",
+            "reponse_attendue": "2400",
+            "indice": "Convertis d'abord les tonnes, puis ajoute les kilogrammes qui restent."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des masses à convertir",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "7 kg = … g",
+            "reponse_attendue": "7000",
+            "indice": "Un kilogramme vaut 1 000 g : multiplie."
+          },
+          {
+            "id": 2,
+            "enonce": "1 kg 750 g = … g",
+            "reponse_attendue": "1750",
+            "indice": "Convertis d'abord le kilogramme, puis ajoute les grammes qui restent."
+          },
+          {
+            "id": 3,
+            "enonce": "8 000 g = … kg",
+            "reponse_attendue": "8",
+            "indice": "Cherche combien de fois 1 000 tient dans ce nombre."
+          },
+          {
+            "id": 4,
+            "enonce": "3 t = … kg",
+            "reponse_attendue": "3000",
+            "indice": "Une tonne vaut 1 000 kilogrammes : multiplie."
+          },
+          {
+            "id": 5,
+            "enonce": "un quart de kilogramme = … g",
+            "reponse_attendue": "250",
+            "indice": "Cherche la moitié de la moitié de 1 000."
+          },
+          {
+            "id": 6,
+            "enonce": "5 kg 100 g = … g",
+            "reponse_attendue": "5100",
+            "indice": "Convertis d'abord les kilogrammes, puis ajoute les grammes qui restent."
+          },
+          {
+            "id": 7,
+            "enonce": "2 000 g = … kg",
+            "reponse_attendue": "2",
+            "indice": "Cherche combien de fois 1 000 tient dans ce nombre."
+          },
+          {
+            "id": 8,
+            "enonce": "1 t 600 kg = … kg",
+            "reponse_attendue": "1600",
+            "indice": "Convertis d'abord la tonne, puis ajoute les kilogrammes qui restent."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM38",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Convertir des contenances",
+      "regle": "Un litre vaut 10 dL, 100 cL et 1 000 mL.",
+      "procedure": [
+        "Range les unités dans l'ordre L, dL, cL, mL et repère les deux qui t'intéressent.",
+        "Vers une unité plus petite, multiplie par 10 pour chaque colonne franchie.",
+        "Vers une unité plus grande, divise par 10 autant de fois."
+      ],
+      "exemples": [
+        {
+          "phrase": "4 L = … cL",
+          "demonstration": "De L à cL, je franchis deux colonnes : 4 × 10 × 10 = 400. 4 L font 400 cL."
+        },
+        {
+          "phrase": "30 cL = … mL",
+          "demonstration": "De cL à mL, je ne franchis qu'une colonne : 30 × 10 = 300. 30 cL font 300 mL."
+        }
+      ],
+      "piege": "Une bouteille de 50 cL ne contient pas 50 mL : elle en contient 500."
+    },
+    "diagnostic": [
+      {
+        "question": "Une brique de jus de pomme contient 1 L. Combien de centilitres cela fait-il ?",
+        "options": [
+          "10",
+          "100",
+          "1 000",
+          "110"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un litre vaut 100 cL. Le 1 000 est le nombre de millilitres, pas de centilitres."
+      },
+      {
+        "question": "Le verre doseur de la recette contient 250 mL. Combien de centilitres cela fait-il ?",
+        "options": [
+          "2 500",
+          "2,5",
+          "250",
+          "25"
+        ],
+        "reponse_correcte": 3,
+        "explication": "De mL vers cL, on remonte d'une colonne : on divise par 10. 250 mL font 25 cL."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Du litre au millilitre",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "3 L = … cL",
+            "reponse_attendue": "300",
+            "indice": "De L à cL, je franchis deux colonnes."
+          },
+          {
+            "id": 2,
+            "enonce": "2 L = … mL",
+            "reponse_attendue": "2000",
+            "indice": "De L à mL, je franchis trois colonnes."
+          },
+          {
+            "id": 3,
+            "enonce": "5 dL = … cL",
+            "reponse_attendue": "50",
+            "indice": "De dL à cL, je ne franchis qu'une colonne."
+          },
+          {
+            "id": 4,
+            "enonce": "70 cL = … mL",
+            "reponse_attendue": "700",
+            "indice": "De cL à mL, je ne franchis qu'une colonne."
+          },
+          {
+            "id": 5,
+            "enonce": "1 L 25 cL = … cL",
+            "reponse_attendue": "125",
+            "indice": "Convertis d'abord le litre, puis ajoute les centilitres qui restent."
+          },
+          {
+            "id": 6,
+            "enonce": "4 000 mL = … L",
+            "reponse_attendue": "4",
+            "indice": "On remonte de trois colonnes : on divise par 1 000."
+          },
+          {
+            "id": 7,
+            "enonce": "6 L = … dL",
+            "reponse_attendue": "60",
+            "indice": "De L à dL, je ne franchis qu'une colonne."
+          },
+          {
+            "id": 8,
+            "enonce": "800 cL = … L",
+            "reponse_attendue": "8",
+            "indice": "On remonte de deux colonnes : on divise par 100."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des contenances à convertir",
+        "consigne": "Complète chaque égalité. Écris seulement le nombre qui manque, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "7 L = … cL",
+            "reponse_attendue": "700",
+            "indice": "De L à cL, je franchis deux colonnes."
+          },
+          {
+            "id": 2,
+            "enonce": "5 L = … mL",
+            "reponse_attendue": "5000",
+            "indice": "De L à mL, je franchis trois colonnes."
+          },
+          {
+            "id": 3,
+            "enonce": "9 dL = … cL",
+            "reponse_attendue": "90",
+            "indice": "De dL à cL, je ne franchis qu'une colonne."
+          },
+          {
+            "id": 4,
+            "enonce": "60 cL = … mL",
+            "reponse_attendue": "600",
+            "indice": "De cL à mL, je ne franchis qu'une colonne."
+          },
+          {
+            "id": 5,
+            "enonce": "2 L 50 cL = … cL",
+            "reponse_attendue": "250",
+            "indice": "Convertis d'abord les litres, puis ajoute les centilitres qui restent."
+          },
+          {
+            "id": 6,
+            "enonce": "3 000 mL = … L",
+            "reponse_attendue": "3",
+            "indice": "On remonte de trois colonnes : on divise par 1 000."
+          },
+          {
+            "id": 7,
+            "enonce": "8 L = … dL",
+            "reponse_attendue": "80",
+            "indice": "De L à dL, je ne franchis qu'une colonne."
+          },
+          {
+            "id": 8,
+            "enonce": "900 cL = … L",
+            "reponse_attendue": "9",
+            "indice": "On remonte de deux colonnes : on divise par 100."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "GM21",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Aigu, droit ou obtus",
+      "regle": "Un angle aigu est plus fermé que l'angle droit, un angle obtus plus ouvert.",
+      "procedure": [
+        "Pose le coin de ton équerre sur le sommet, un bord le long d'un côté.",
+        "Si l'autre côté passe dans l'équerre, l'angle est aigu ; s'il passe dehors, il est obtus.",
+        "S'il suit le bord de l'équerre, l'angle est droit : on le code par un petit carré."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le coin d'une feuille de papier.",
+          "demonstration": "L'équerre se superpose exactement : c'est un angle droit, marqué d'un petit carré."
+        },
+        {
+          "phrase": "Des ciseaux grands ouverts.",
+          "demonstration": "La deuxième branche passe dehors : l'angle est plus ouvert que l'angle droit, donc obtus."
+        }
+      ],
+      "piege": "Des côtés très longs ne font pas un angle plus grand : c'est l'ouverture qui compte."
+    },
+    "diagnostic": [
+      {
+        "question": "Comment appelle-t-on un angle plus fermé qu'un angle droit ?",
+        "options": [
+          "un angle obtus",
+          "un angle droit",
+          "un angle aigu",
+          "un angle plat"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Plus fermé que l'angle droit, c'est un angle aigu ; plus ouvert, c'est un angle obtus."
+      },
+      {
+        "question": "Timéo pose le coin de son équerre sur un angle. Le deuxième côté de l'angle passe en dehors de l'équerre. Quel est cet angle ?",
+        "options": [
+          "un angle obtus",
+          "un angle aigu",
+          "un angle droit",
+          "un angle plat"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le côté sort de l'équerre : l'angle est plus ouvert que l'angle droit, donc obtus. S'il était passé à l'intérieur, l'angle aurait été aigu."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quel est cet angle ?",
+        "consigne": "Regarde l'angle dessiné sous chaque question, puis choisis sa nature.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel est l'angle A ?",
+            "options": [
+              "un angle aigu",
+              "un angle droit",
+              "un angle obtus"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le petit carré au sommet est le codage de l'angle droit.",
+            "figure": {
+              "type": "angle",
+              "degres": 90,
+              "nom": "A"
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quel est l'angle B ?",
+            "options": [
+              "un angle obtus",
+              "un angle aigu",
+              "un angle droit"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'angle est nettement plus fermé que le coin de l'équerre : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 40,
+              "nom": "B"
+            }
+          },
+          {
+            "id": 3,
+            "question": "Quel est l'angle C ?",
+            "options": [
+              "un angle droit",
+              "un angle aigu",
+              "un angle obtus"
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'angle est plus ouvert que le coin de l'équerre : il est obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 130,
+              "nom": "C"
+            }
+          },
+          {
+            "id": 4,
+            "question": "Quel est l'angle D ?",
+            "options": [
+              "un angle aigu",
+              "un angle obtus",
+              "un angle droit"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Il s'en faut de peu, mais l'angle reste plus fermé que l'angle droit, et il ne porte pas le petit carré : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 80,
+              "nom": "D"
+            }
+          },
+          {
+            "id": 5,
+            "question": "Quel est l'angle E ?",
+            "options": [
+              "un angle droit",
+              "un angle obtus",
+              "un angle aigu"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Il dépasse à peine l'angle droit, mais il le dépasse, et il ne porte pas le petit carré : il est obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 100,
+              "nom": "E"
+            }
+          },
+          {
+            "id": 6,
+            "question": "Quel est l'angle F ?",
+            "options": [
+              "un angle obtus",
+              "un angle droit",
+              "un angle aigu"
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'angle est très fermé : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 25,
+              "nom": "F"
+            }
+          },
+          {
+            "id": 7,
+            "question": "Quel est l'angle G ?",
+            "options": [
+              "un angle obtus",
+              "un angle aigu",
+              "un angle droit"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'angle est très ouvert, bien au-delà du coin de l'équerre : il est obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 160,
+              "nom": "G"
+            }
+          },
+          {
+            "id": 8,
+            "question": "Quel est l'angle H ?",
+            "options": [
+              "un angle aigu",
+              "un angle obtus",
+              "un angle droit"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'angle dépasse le coin de l'équerre : il est obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 120,
+              "nom": "H"
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je reconnais les angles",
+        "consigne": "Regarde l'angle dessiné sous chaque question, puis choisis sa nature.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel est l'angle M ?",
+            "options": [
+              "un angle obtus",
+              "un angle droit",
+              "un angle aigu"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le petit carré au sommet est le codage de l'angle droit.",
+            "figure": {
+              "type": "angle",
+              "degres": 90,
+              "nom": "M"
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quel est l'angle N ?",
+            "options": [
+              "un angle aigu",
+              "un angle droit",
+              "un angle obtus"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'angle est plus fermé que le coin de l'équerre : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 55,
+              "nom": "N"
+            }
+          },
+          {
+            "id": 3,
+            "question": "Quel est l'angle P ?",
+            "options": [
+              "un angle droit",
+              "un angle obtus",
+              "un angle aigu"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'angle est bien plus ouvert que le coin de l'équerre : il est obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 145,
+              "nom": "P"
+            }
+          },
+          {
+            "id": 4,
+            "question": "Quel est l'angle R ?",
+            "options": [
+              "un angle aigu",
+              "un angle droit",
+              "un angle obtus"
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'angle dépasse le coin de l'équerre et ne porte pas le petit carré : il est obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 110,
+              "nom": "R"
+            }
+          },
+          {
+            "id": 5,
+            "question": "Quel est l'angle S ?",
+            "options": [
+              "un angle obtus",
+              "un angle aigu",
+              "un angle droit"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'angle reste en dessous du coin de l'équerre : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 70,
+              "nom": "S"
+            }
+          },
+          {
+            "id": 6,
+            "question": "Quel est l'angle T ?",
+            "options": [
+              "un angle aigu",
+              "un angle obtus",
+              "un angle droit"
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'angle est très fermé, presque refermé sur lui-même : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 15,
+              "nom": "T"
+            }
+          },
+          {
+            "id": 7,
+            "question": "Quel est l'angle U ?",
+            "options": [
+              "un angle droit",
+              "un angle aigu",
+              "un angle obtus"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les deux côtés sont presque alignés : l'angle est très ouvert, donc obtus.",
+            "figure": {
+              "type": "angle",
+              "degres": 170,
+              "nom": "U"
+            }
+          },
+          {
+            "id": 8,
+            "question": "Quel est l'angle V ?",
+            "options": [
+              "un angle obtus",
+              "un angle aigu",
+              "un angle droit"
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'angle est plus fermé que le coin de l'équerre : il est aigu.",
+            "figure": {
+              "type": "angle",
+              "degres": 35,
+              "nom": "V"
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
