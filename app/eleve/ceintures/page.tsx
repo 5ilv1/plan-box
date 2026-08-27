@@ -19,6 +19,7 @@ interface DomaineEtat {
   code: string;
   slug: string;
   nom: string;
+  matiere: string;
   description: string;
   icone: string;
   courante: number;
@@ -68,6 +69,20 @@ export default function CeinturesPage() {
     );
   }
 
+  // Les domaines se rangent par matière : Mots, Phrases et Textes d'un côté,
+  // Nombres et Calcul de l'autre — Grandeurs et mesures et Géométrie
+  // viendront s'ajouter à la seconde. L'ordre de l'API est conservé.
+  const MATIERES: { cle: string; titre: string; emoji: string }[] = [
+    { cle: "français", titre: "Ceintures de français", emoji: "📖" },
+    { cle: "maths", titre: "Ceintures de mathématiques", emoji: "🔢" },
+  ];
+  const groupes = MATIERES
+    .map((m) => ({ ...m, domaines: domaines.filter((d) => d.matiere === m.cle) }))
+    .filter((g) => g.domaines.length > 0);
+  // Un domaine dont la matière ne serait pas prévue ne doit pas disparaître.
+  const orphelins = domaines.filter((d) => !MATIERES.some((m) => m.cle === d.matiere));
+  if (orphelins.length) groupes.push({ cle: "autres", titre: "Autres ceintures", emoji: "🥋", domaines: orphelins });
+
   return (
     <div style={{ maxWidth: 700, margin: "0 auto", padding: "20px 20px 120px" }}>
       <Link
@@ -84,7 +99,7 @@ export default function CeinturesPage() {
         fontSize: 24, fontWeight: 800, margin: "0 0 6px",
         fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)",
       }}>
-        🥋 Mes ceintures de français
+        🥋 Mes ceintures
       </h1>
       <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", margin: "0 0 24px" }}>
         Neuf couleurs par domaine, du vert clair au noir. À toi de monter !
@@ -102,8 +117,19 @@ export default function CeinturesPage() {
         </div>
       )}
 
-      <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-        {domaines.map((d) => {
+      {groupes.map((groupe) => (
+        <section key={groupe.cle} style={{ marginBottom: 28 }}>
+          <h2 style={{
+            fontSize: 15, fontWeight: 800, margin: "0 0 12px",
+            display: "flex", alignItems: "center", gap: 8,
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+            color: "var(--pb-on-surface)",
+          }}>
+            <span>{groupe.emoji}</span>{groupe.titre}
+          </h2>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+        {groupe.domaines.map((d) => {
           const c = d.couleurCourante;
           const ceintureCourante = d.ceintures[d.courante];
           const progression = ceintureCourante && ceintureCourante.nbItems > 0
@@ -176,7 +202,9 @@ export default function CeinturesPage() {
             </Link>
           );
         })}
-      </div>
+          </div>
+        </section>
+      ))}
     </div>
   );
 }

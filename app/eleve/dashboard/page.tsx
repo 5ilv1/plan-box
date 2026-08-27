@@ -1242,7 +1242,7 @@ export default function DashboardEleve() {
               </div>
             )}
 
-            {/* Ceintures de français (compétences) */}
+            {/* Ceintures de compétences — français et maths */}
             {ceinturesFrancais && (
               <Link
                 href="/eleve/ceintures"
@@ -1262,10 +1262,10 @@ export default function DashboardEleve() {
                   </span>
                   <div>
                     <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)" }}>
-                      Ceintures de français
+                      Mes ceintures
                     </div>
                     <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-                      Mots, Phrases et Textes
+                      Français et mathématiques
                     </div>
                   </div>
                 </div>

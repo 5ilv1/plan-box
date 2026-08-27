@@ -47,6 +47,8 @@ export interface DomaineEtat {
   code: string;
   slug: string;
   nom: string;
+  /** « français » ou « maths » — sert à grouper les domaines sur le hub. */
+  matiere: string;
   description: string;
   icone: string;
   courante: number;
@@ -201,6 +203,7 @@ export async function etatCeintures(
         code: domaine.code,
         slug: domaine.slug,
         nom: domaine.nom,
+        matiere: domaine.matiere,
         description: domaine.description,
         icone: domaine.icone,
         courante,
