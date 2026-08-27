@@ -1,0 +1,762 @@
+[
+  {
+    "item_code": "C31",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Résoudre par proportionnalité",
+      "regle": "Dans une situation de proportionnalité, on peut toujours passer par la valeur d'une seule unité.",
+      "procedure": [
+        "Divise la valeur connue par sa quantité : tu obtiens la valeur pour 1.",
+        "Multiplie cette valeur par la quantité demandée ; si celle-ci est un multiple de l'autre, multiplie directement.",
+        "Pour un nombre d'objets, essaie des quantités jusqu'à retrouver la somme dont tu disposes."
+      ],
+      "exemples": [
+        {
+          "phrase": "5 cahiers coûtent 7,50 €. Et 8 cahiers ?",
+          "demonstration": "Un cahier : 7,50 ÷ 5 = 1,50 €. Huit cahiers : 8 × 1,50 = 12 €."
+        },
+        {
+          "phrase": "200 g de farine font 5 crêpes. Et 15 crêpes ?",
+          "demonstration": "15, c'est 3 fois 5 : il faut 3 fois plus de farine, 600 g."
+        }
+      ],
+      "piege": "On ne passe pas d'une ligne à l'autre en ajoutant."
+    },
+    "diagnostic": [
+      {
+        "question": "6 croissants coûtent 4,80 €. Combien coûtent 9 croissants ?",
+        "options": [
+          "7,20 €",
+          "6,40 €",
+          "7,80 €",
+          "43,20 €"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un croissant coûte 4,80 € ÷ 6 = 0,80 €. Neuf croissants coûtent donc 9 × 0,80 € = 7,20 €."
+      },
+      {
+        "question": "Avec 250 g de farine, Malo fait 6 crêpes. Combien de crêpes fera-t-il avec 750 g ?",
+        "options": [
+          "12",
+          "18",
+          "9",
+          "24"
+        ],
+        "reponse_correcte": 1,
+        "explication": "750 g, c'est 3 fois 250 g : il fera donc 3 fois plus de crêpes, 6 × 3 = 18."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des problèmes de proportionnalité",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Chez le boulanger, 4 brioches coûtent 6 €. Rosalie en achète 10. Combien va-t-elle payer ?",
+            "resultat_attendu": "15",
+            "phrase_reponse_attendue": "Rosalie va payer 15 euros.",
+            "mots_cles": [
+              "15",
+              "euros"
+            ],
+            "indice": "Cherche d'abord le prix d'une seule brioche."
+          },
+          {
+            "id": 2,
+            "enonce": "Pour 6 personnes, une recette de gâteau demande 240 g de sucre. Timéo prépare ce gâteau pour 9 personnes. Quelle masse de sucre lui faut-il ?",
+            "resultat_attendu": "360",
+            "phrase_reponse_attendue": "Il lui faut 360 g de sucre.",
+            "mots_cles": [
+              "360",
+              "sucre"
+            ],
+            "indice": "Calcule d'abord la masse de sucre pour une seule personne."
+          },
+          {
+            "id": 3,
+            "enonce": "Un car roule toujours à la même allure : il parcourt 120 km en 2 heures. Quelle distance parcourt-il en 5 heures ?",
+            "resultat_attendu": "300",
+            "phrase_reponse_attendue": "Le car parcourt 300 km en 5 heures.",
+            "mots_cles": [
+              "300",
+              "km"
+            ],
+            "indice": "Trouve d'abord la distance parcourue en 1 heure."
+          },
+          {
+            "id": 4,
+            "enonce": "8 cahiers identiques coûtent 12 €. Combien coûtent 6 cahiers ?",
+            "resultat_attendu": "9",
+            "phrase_reponse_attendue": "6 cahiers coûtent 9 euros.",
+            "mots_cles": [
+              "9",
+              "cahiers"
+            ],
+            "indice": "Trouve le prix d'un cahier, puis multiplie par 6."
+          },
+          {
+            "id": 5,
+            "enonce": "Fatou a 18 €. Un livre de poche coûte 4,50 €. Combien de livres peut-elle acheter ?",
+            "resultat_attendu": "4",
+            "phrase_reponse_attendue": "Fatou peut acheter 4 livres.",
+            "mots_cles": [
+              "4",
+              "livres"
+            ],
+            "indice": "2 livres coûtent 9 € : combien de fois 9 € dans 18 € ?"
+          },
+          {
+            "id": 6,
+            "enonce": "Dans un jardin, 3 sachets de graines permettent de semer 12 m². Combien de sachets faut-il pour semer 40 m² ?",
+            "resultat_attendu": "10",
+            "phrase_reponse_attendue": "Il faut 10 sachets.",
+            "mots_cles": [
+              "10",
+              "sachets"
+            ],
+            "indice": "Cherche d'abord la surface semée avec un seul sachet."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des problèmes de proportionnalité",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "5 places de cinéma coûtent 40 €. Combien coûtent 8 places ?",
+            "resultat_attendu": "64",
+            "phrase_reponse_attendue": "8 places coûtent 64 euros.",
+            "mots_cles": [
+              "64",
+              "euros"
+            ],
+            "indice": "Cherche d'abord le prix d'une seule place."
+          },
+          {
+            "id": 2,
+            "enonce": "Pour 4 personnes, il faut 300 g de riz. Quelle masse de riz faut-il pour 10 personnes ?",
+            "resultat_attendu": "750",
+            "phrase_reponse_attendue": "Il faut 750 g de riz.",
+            "mots_cles": [
+              "750",
+              "riz"
+            ],
+            "indice": "Calcule d'abord la masse de riz pour une seule personne."
+          },
+          {
+            "id": 3,
+            "enonce": "Un robinet coule toujours au même débit : il remplit 45 litres en 3 minutes. Combien de litres remplit-il en 8 minutes ?",
+            "resultat_attendu": "120",
+            "phrase_reponse_attendue": "Le robinet remplit 120 litres en 8 minutes.",
+            "mots_cles": [
+              "120",
+              "litres"
+            ],
+            "indice": "Trouve d'abord le nombre de litres remplis en 1 minute."
+          },
+          {
+            "id": 4,
+            "enonce": "6 tee-shirts identiques coûtent 51 €. Combien coûtent 4 tee-shirts ?",
+            "resultat_attendu": "34",
+            "phrase_reponse_attendue": "4 tee-shirts coûtent 34 euros.",
+            "mots_cles": [
+              "34",
+              "euros"
+            ],
+            "indice": "Trouve le prix d'un tee-shirt, puis multiplie par 4."
+          },
+          {
+            "id": 5,
+            "enonce": "Adam a 27 €. Un cahier coûte 2,25 €. Combien de cahiers peut-il acheter ?",
+            "resultat_attendu": "12",
+            "phrase_reponse_attendue": "Adam peut acheter 12 cahiers.",
+            "mots_cles": [
+              "12",
+              "cahiers"
+            ],
+            "indice": "4 cahiers coûtent 9 € : combien de fois 9 € dans 27 € ?"
+          },
+          {
+            "id": 6,
+            "enonce": "Avec 4 sacs de sable, on remplit 20 seaux. Combien de sacs faut-il pour remplir 35 seaux ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "Il faut 7 sacs.",
+            "mots_cles": [
+              "7",
+              "sacs"
+            ],
+            "indice": "Cherche d'abord le nombre de seaux remplis avec un seul sac."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C34",
+    "type": "classement",
+    "lecon": {
+      "titre": "Divisible par 2, 5 ou 10",
+      "regle": "Pour savoir si un nombre est divisible par 2, par 5 ou par 10, il suffit de regarder son chiffre des unités.",
+      "procedure": [
+        "Regarde le dernier chiffre, celui des unités.",
+        "0, 2, 4, 6 ou 8 : divisible par 2. 0 ou 5 : divisible par 5.",
+        "0 : divisible par 2, par 5 et par 10 à la fois."
+      ],
+      "exemples": [
+        {
+          "phrase": "174",
+          "demonstration": "Unités : 4, qui est dans la liste 0, 2, 4, 6, 8. Donc 174 est divisible par 2, mais pas par 5."
+        },
+        {
+          "phrase": "320",
+          "demonstration": "Unités : 0, le seul chiffre qui donne les trois. 320 est divisible par 2, par 5 et par 10."
+        }
+      ],
+      "piege": "Les autres chiffres ne servent à rien : 1 358 se juge sur son 8."
+    },
+    "diagnostic": [
+      {
+        "question": "Parmi ces nombres, lequel est divisible par 5 mais pas par 2 ?",
+        "options": [
+          "230",
+          "84",
+          "175",
+          "48"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un nombre divisible par 5 se termine par 0 ou par 5. S'il se termine par 0, il est aussi divisible par 2. 175 se termine par 5 : il est divisible par 5 seulement."
+      },
+      {
+        "question": "Fatou veut partager 3 426 billes en 10 tas égaux, sans qu'il en reste. Est-ce possible ?",
+        "options": [
+          "Oui, car 3 426 est un nombre pair.",
+          "Oui, car 3 426 est dans la table de 10.",
+          "Non, car 3 426 est trop grand pour 10 tas.",
+          "Non, car 3 426 ne se termine pas par 0."
+        ],
+        "reponse_correcte": 3,
+        "explication": "Pour être partagé en 10 parts égales sans reste, un nombre doit se terminer par 0. 3 426 se termine par 6 : il restera des billes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je trie par 2, par 5 et par 10",
+        "consigne": "Range chaque nombre dans la seule colonne qui lui convient.",
+        "categories": [
+          "Divisible par 2 seulement",
+          "Divisible par 5 seulement",
+          "Divisible par 2, par 5 et par 10",
+          "Divisible par aucun des trois"
+        ],
+        "items": [
+          {
+            "texte": "34",
+            "categorie": "Divisible par 2 seulement"
+          },
+          {
+            "texte": "126",
+            "categorie": "Divisible par 2 seulement"
+          },
+          {
+            "texte": "458",
+            "categorie": "Divisible par 2 seulement"
+          },
+          {
+            "texte": "45",
+            "categorie": "Divisible par 5 seulement"
+          },
+          {
+            "texte": "175",
+            "categorie": "Divisible par 5 seulement"
+          },
+          {
+            "texte": "605",
+            "categorie": "Divisible par 5 seulement"
+          },
+          {
+            "texte": "90",
+            "categorie": "Divisible par 2, par 5 et par 10"
+          },
+          {
+            "texte": "240",
+            "categorie": "Divisible par 2, par 5 et par 10"
+          },
+          {
+            "texte": "1 350",
+            "categorie": "Divisible par 2, par 5 et par 10"
+          },
+          {
+            "texte": "27",
+            "categorie": "Divisible par aucun des trois"
+          },
+          {
+            "texte": "83",
+            "categorie": "Divisible par aucun des trois"
+          },
+          {
+            "texte": "149",
+            "categorie": "Divisible par aucun des trois"
+          }
+        ]
+      },
+      {
+        "titre": "Encore un tri par 2, par 5 et par 10",
+        "consigne": "Range chaque nombre dans la seule colonne qui lui convient.",
+        "categories": [
+          "Divisible par 2 seulement",
+          "Divisible par 5 seulement",
+          "Divisible par 2, par 5 et par 10",
+          "Divisible par aucun des trois"
+        ],
+        "items": [
+          {
+            "texte": "58",
+            "categorie": "Divisible par 2 seulement"
+          },
+          {
+            "texte": "314",
+            "categorie": "Divisible par 2 seulement"
+          },
+          {
+            "texte": "176",
+            "categorie": "Divisible par 2 seulement"
+          },
+          {
+            "texte": "95",
+            "categorie": "Divisible par 5 seulement"
+          },
+          {
+            "texte": "265",
+            "categorie": "Divisible par 5 seulement"
+          },
+          {
+            "texte": "1 145",
+            "categorie": "Divisible par 5 seulement"
+          },
+          {
+            "texte": "60",
+            "categorie": "Divisible par 2, par 5 et par 10"
+          },
+          {
+            "texte": "480",
+            "categorie": "Divisible par 2, par 5 et par 10"
+          },
+          {
+            "texte": "2 700",
+            "categorie": "Divisible par 2, par 5 et par 10"
+          },
+          {
+            "texte": "39",
+            "categorie": "Divisible par aucun des trois"
+          },
+          {
+            "texte": "71",
+            "categorie": "Divisible par aucun des trois"
+          },
+          {
+            "texte": "203",
+            "categorie": "Divisible par aucun des trois"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C33",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Contrôler la calculatrice",
+      "regle": "Avant de croire l'écran, on calcule un ordre de grandeur en arrondissant : le résultat affiché doit en être proche.",
+      "procedure": [
+        "Arrondis chaque nombre à la dizaine, à la centaine ou au millier.",
+        "Fais ce calcul arrondi dans ta tête.",
+        "Compare avec l'écran : un écart énorme signale une touche mal tapée."
+      ],
+      "exemples": [
+        {
+          "phrase": "398 × 21, l'écran affiche 8 358.",
+          "demonstration": "400 × 20 = 8 000. L'écran en est tout près : c'est plausible."
+        },
+        {
+          "phrase": "1 250 ÷ 5, l'écran affiche 6 250.",
+          "demonstration": "Diviser rend plus petit : on attend environ 250. La touche × a été tapée."
+        }
+      ],
+      "piege": "Plausible ne veut pas dire juste : l'ordre de grandeur ne repère que les grosses erreurs."
+    },
+    "diagnostic": [
+      {
+        "question": "Sacha veut calculer 412 × 29. L'écran affiche 441. Que peut-il en conclure ?",
+        "options": [
+          "Le résultat est juste, 441 est un grand nombre.",
+          "Il a tapé + au lieu de × : 412 × 29 doit être proche de 12 000.",
+          "Il a oublié un zéro, le vrai résultat est 4 410.",
+          "La calculatrice est cassée."
+        ],
+        "reponse_correcte": 1,
+        "explication": "En arrondissant, 400 × 30 = 12 000 : le résultat doit être proche de 12 000. Or 441, c'est exactement 412 + 29."
+      },
+      {
+        "question": "Jade calcule 96,4 ÷ 4. Lequel de ces affichages est plausible ?",
+        "options": [
+          "241",
+          "2,41",
+          "24,1",
+          "384"
+        ],
+        "reponse_correcte": 2,
+        "explication": "100 ÷ 4 = 25 : le résultat doit être proche de 25. Seul 24,1 en est proche ; 384 serait une multiplication."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je juge le résultat affiché",
+        "consigne": "Pour chaque calcul, dis ce qu'il faut penser du résultat affiché par la calculatrice. Tu n'as pas besoin de faire le calcul exact.",
+        "questions": [
+          {
+            "question": "Nour tape 58 × 42. L'écran affiche 100. Que s'est-il passé ?",
+            "options": [
+              "Le résultat est juste : 58 × 42 fait bien un peu plus de 100.",
+              "Elle a tapé + au lieu de × : 58 × 42 doit être proche de 2 400.",
+              "Elle a tapé − au lieu de × : la soustraction donne un petit nombre.",
+              "Elle a oublié un chiffre du premier nombre : 5 × 42 est proche de 200."
+            ],
+            "reponse_correcte": 1,
+            "explication": "60 × 40 = 2 400 : le résultat doit être proche de 2 400. Or 100, c'est exactement 58 + 42."
+          },
+          {
+            "question": "Malo calcule 1 998 + 2 005. Quel affichage est plausible ?",
+            "options": [
+              "4 003",
+              "40 030",
+              "403",
+              "3 003"
+            ],
+            "reponse_correcte": 0,
+            "explication": "2 000 + 2 000 = 4 000 : le résultat doit être tout près de 4 000."
+          },
+          {
+            "question": "Inès calcule 7 × 0,5. L'écran affiche 3,5. Elle s'inquiète parce que le résultat est plus petit que 7. A-t-elle raison de s'inquiéter ?",
+            "options": [
+              "Oui : une multiplication donne toujours un résultat plus grand que le départ.",
+              "Non : 3,5 est un nombre décimal, et un décimal est toujours plus petit.",
+              "Oui : elle a dû taper ÷ au lieu de ×, car diviser rend plus petit.",
+              "Non : multiplier par 0,5, c'est prendre la moitié, donc c'est plus petit."
+            ],
+            "reponse_correcte": 3,
+            "explication": "0,5 vaut un demi : prendre 0,5 fois un nombre, c'est en prendre la moitié. La moitié de 7 est bien 3,5."
+          },
+          {
+            "question": "Yanis calcule 4 375 ÷ 25. L'écran affiche 175. Comment vérifier rapidement ?",
+            "options": [
+              "En refaisant la même division à la calculatrice : on retrouvera le résultat.",
+              "En calculant 175 × 25 : si l'on retrouve le dividende 4 375, la division est juste.",
+              "En comptant les chiffres du résultat : un quotient a toujours 3 chiffres.",
+              "On ne peut pas vérifier une division sans refaire tout le calcul à la main."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Pour vérifier une division, on refait le chemin à l'envers : le quotient multiplié par le diviseur doit redonner le dividende."
+          },
+          {
+            "question": "Louna calcule 39,8 + 40,2. L'écran affiche 80. Ce résultat est-il plausible ?",
+            "options": [
+              "Non : la somme de deux décimaux garde toujours une virgule au résultat.",
+              "Non : il manque les chiffres après la virgule, l'écran est incomplet.",
+              "Oui : 40 + 40 = 80, et les deux parties décimales font une unité.",
+              "Oui : l'écran arrondit toujours le résultat au nombre entier le plus proche."
+            ],
+            "reponse_correcte": 2,
+            "explication": "0,8 + 0,2 = 1 exactement : le résultat tombe juste sur un nombre entier. Une somme de décimaux peut donner un entier."
+          },
+          {
+            "question": "Adam calcule le prix de 12 places à 8,50 €. L'écran affiche 102. Est-ce plausible ?",
+            "options": [
+              "Non : le résultat devrait avoir une virgule, puisqu'on multiplie 8,50 €.",
+              "Non : c'est trop grand ; 12 × 8,50 doit être proche de 20 euros.",
+              "Oui : 102 est un nombre pair, et 12 places donnent toujours un total pair.",
+              "Oui : 12 × 8 = 96, on attend donc un résultat un peu au-dessus de 96 euros."
+            ],
+            "reponse_correcte": 3,
+            "explication": "J'arrondis 8,50 € à 8 € : 12 × 8 = 96. Le vrai résultat doit être un peu au-dessus de 96, et 102 convient."
+          },
+          {
+            "question": "Fatou calcule 306 × 4. L'écran affiche 1 224. Elle regarde le dernier chiffre du résultat. Que peut-elle en dire ?",
+            "options": [
+              "Il devrait être impair, car 306 se termine par un chiffre pair.",
+              "Il devrait être un 4, car c'est le chiffre par lequel on multiplie.",
+              "Il doit être pair, car un nombre pair multiplié par 4 reste pair.",
+              "Il devrait être un 0, car 306 se termine par 6 et 6 × 4 fait 24."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Multiplier un nombre pair par 4 donne toujours un nombre pair : un résultat se terminant par un chiffre impair serait forcément faux."
+          },
+          {
+            "question": "Timéo calcule 4 500 ÷ 9. L'écran affiche 5 000. Que doit-il penser ?",
+            "options": [
+              "C'est juste : 4 500 ÷ 9 fait bien 5 000, il suffit de compter les zéros.",
+              "C'est faux : diviser par 9 donne un résultat bien plus petit que 4 500.",
+              "C'est faux : il a tapé un zéro de trop, le résultat serait plutôt 50.",
+              "C'est juste : 45 ÷ 9 = 5, donc 4 500 ÷ 9 = 5 000 en ajoutant les zéros."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Diviser par 9, c'est partager en 9 parts : le résultat est environ 9 fois plus petit, donc autour de 500, jamais plus grand que 4 500."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des écrans à contrôler",
+        "consigne": "Pour chaque calcul, dis ce qu'il faut penser du résultat affiché par la calculatrice. Tu n'as pas besoin de faire le calcul exact.",
+        "questions": [
+          {
+            "question": "Jade tape 76 × 34. L'écran affiche 110. Que s'est-il passé ?",
+            "options": [
+              "Le résultat est juste : 76 × 34 fait bien un peu plus de 110.",
+              "Elle a tapé − au lieu de × : la soustraction donne un petit nombre.",
+              "Elle a tapé + au lieu de × : 76 × 34 doit être proche de 2 400.",
+              "La calculatrice n'affiche que le début du résultat, il en manque."
+            ],
+            "reponse_correcte": 2,
+            "explication": "80 × 30 = 2 400 : le résultat doit être proche de 2 400. Or 110, c'est exactement 76 + 34."
+          },
+          {
+            "question": "Yanis calcule 3 004 − 2 996. Quel affichage est plausible ?",
+            "options": [
+              "8",
+              "80",
+              "800",
+              "6 000"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les deux nombres sont presque égaux : leur différence est toute petite. 6 000 serait leur somme."
+          },
+          {
+            "question": "Rosalie calcule 9 × 0,25. L'écran affiche 2,25. Est-ce plausible ?",
+            "options": [
+              "Non : une multiplication rend toujours plus grand que le nombre de départ.",
+              "Non : elle a dû taper ÷ au lieu de ×, car diviser rend plus petit.",
+              "Oui : 2,25 a deux chiffres après la virgule, tout comme 0,25.",
+              "Oui : 0,25 c'est un quart, et le quart de 9 est un peu plus de 2."
+            ],
+            "reponse_correcte": 3,
+            "explication": "0,25 vaut un quart : prendre 0,25 fois 9, c'est partager 9 en 4, ce qui donne 2,25."
+          },
+          {
+            "question": "Adam calcule 3 128 ÷ 8. L'écran affiche 391. Comment vérifier rapidement ?",
+            "options": [
+              "En comptant les chiffres du résultat : un quotient a toujours 3 chiffres.",
+              "En refaisant la même division à la calculatrice : on retrouvera le résultat.",
+              "En calculant 391 × 8 : si l'on retrouve le dividende 3 128, la division est juste.",
+              "On ne peut pas vérifier une division sans refaire tout le calcul à la main."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Pour vérifier une division, on refait le chemin à l'envers : le quotient multiplié par le diviseur doit redonner le dividende."
+          },
+          {
+            "question": "Sacha calcule 19,6 + 20,4. L'écran affiche 40. Ce résultat est-il plausible ?",
+            "options": [
+              "Oui : 20 + 20 = 40, et les deux parties décimales font une unité.",
+              "Non : il manque les chiffres après la virgule, l'écran est incomplet.",
+              "Non : la somme de deux décimaux garde toujours une virgule au résultat.",
+              "Oui : l'écran arrondit toujours le résultat au nombre entier le plus proche."
+            ],
+            "reponse_correcte": 0,
+            "explication": "0,6 + 0,4 = 1 exactement : 19 + 20 + 1 = 40. Une somme de décimaux peut tomber sur un nombre entier."
+          },
+          {
+            "question": "Louna calcule le prix de 15 cahiers à 2,40 €. L'écran affiche 36. Est-ce plausible ?",
+            "options": [
+              "Non : il devrait y avoir une virgule, puisqu'on multiplie 2,40 €.",
+              "Non : c'est trop grand ; 15 × 2,40 doit être proche de 17 euros.",
+              "Oui : 36 est dans la table de 6, comme le prix de départ 2,40 €.",
+              "Oui : 15 × 2 = 30 et 15 × 0,40 = 6, donc environ 36 euros."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Je découpe 2,40 € en 2 € et 0,40 € : 15 × 2 = 30 et 15 × 0,40 = 6. Le total 36 est donc plausible."
+          },
+          {
+            "question": "Nour calcule 205 × 5. L'écran affiche 1 025. Elle regarde le dernier chiffre du résultat. Que peut-elle en dire ?",
+            "options": [
+              "Il devrait être un 0, car tout produit par 5 se termine par un 0.",
+              "Il devrait être pair, car le produit de deux nombres impairs est pair.",
+              "5 × 5 = 25, donc le résultat se termine bien par un 5.",
+              "On ne peut rien dire du dernier chiffre sans poser la multiplication."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le dernier chiffre d'un produit dépend du produit des chiffres des unités : 5 × 5 = 25, qui se termine par 5."
+          },
+          {
+            "question": "Malo calcule 6 300 ÷ 7. L'écran affiche 9 000. Que doit-il penser ?",
+            "options": [
+              "C'est juste : 63 ÷ 7 = 9, donc 6 300 ÷ 7 = 9 000 avec les zéros.",
+              "C'est faux : diviser par 7 donne un résultat bien plus petit que 6 300.",
+              "C'est faux : il a tapé un zéro de trop, le résultat serait plutôt 90.",
+              "C'est juste : 6 300 ÷ 7 fait bien 9 000, il suffit de compter les zéros."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Diviser par 7, c'est partager en 7 parts : le résultat doit être environ 7 fois plus petit, autour de 900, jamais plus grand que 6 300."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C38",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Diviser un décimal",
+      "regle": "La virgule se place au quotient quand on abaisse le chiffre des dixièmes.",
+      "procedure": [
+        "Pose la division et commence par la partie entière ; si le diviseur n'y tient pas, écris 0.",
+        "En abaissant le chiffre des dixièmes, écris aussitôt la virgule au quotient.",
+        "S'il reste quelque chose, abaisse un zéro et continue."
+      ],
+      "exemples": [
+        {
+          "phrase": "4,8 ÷ 6",
+          "demonstration": "4 ÷ 6 est impossible : j'écris 0, puis la virgule. 48 dixièmes ÷ 6 = 8 dixièmes. Résultat 0,8."
+        },
+        {
+          "phrase": "7,3 ÷ 2",
+          "demonstration": "en 7 il y a 3 fois 2, il reste 1. Virgule, en 13 il y a 6 fois 2, il reste 1. J'abaisse un zéro : 10 ÷ 2 = 5. Résultat 3,65."
+        }
+      ],
+      "piege": "La virgule ne se met pas à la fin, mais au passage aux dixièmes."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien vaut 7,2 ÷ 4 ?",
+        "options": [
+          "1,8",
+          "18",
+          "1,08",
+          "2,8"
+        ],
+        "reponse_correcte": 0,
+        "explication": "en 7 il y a 1 fois 4, il reste 3. J'abaisse le 2 en posant la virgule au quotient : 32 dixièmes ÷ 4 = 8 dixièmes. Résultat : 1,8."
+      },
+      {
+        "question": "Combien vaut 9,3 ÷ 6 ?",
+        "options": [
+          "1,5",
+          "15,5",
+          "1,3",
+          "1,55"
+        ],
+        "reponse_correcte": 3,
+        "explication": "en 9 il y a 1 fois 6, il reste 3. J'abaisse le 3 : 33 dixièmes ÷ 6 = 5 dixièmes, reste 3 dixièmes. J'abaisse un zéro : 30 centièmes ÷ 6 = 5 centièmes. Résultat : 1,55."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je divise un décimal par un entier",
+        "consigne": "Pose la division sur ton cahier, puis écris le quotient. Utilise la virgule. Toutes ces divisions tombent juste.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "8,4 ÷ 4",
+            "reponse_attendue": "2,1",
+            "indice": "Commence par 8 ÷ 4, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "15,6 ÷ 3",
+            "reponse_attendue": "5,2",
+            "indice": "Commence par 15 ÷ 3, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 3,
+            "enonce": "7,5 ÷ 5",
+            "reponse_attendue": "1,5",
+            "indice": "Commence par 7 ÷ 5 : il reste quelque chose avant d'abaisser le 5."
+          },
+          {
+            "id": 4,
+            "enonce": "9,6 ÷ 8",
+            "reponse_attendue": "1,2",
+            "indice": "Commence par 9 ÷ 8, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 5,
+            "enonce": "23,4 ÷ 6",
+            "reponse_attendue": "3,9",
+            "indice": "Commence par 23 ÷ 6, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 6,
+            "enonce": "12,6 ÷ 4",
+            "reponse_attendue": "3,15",
+            "indice": "Après les dixièmes il reste encore quelque chose : abaisse un zéro et continue."
+          },
+          {
+            "id": 7,
+            "enonce": "5,4 ÷ 9",
+            "reponse_attendue": "0,6",
+            "indice": "5 ÷ 9 est impossible : le quotient commence par 0, puis vient la virgule."
+          },
+          {
+            "id": 8,
+            "enonce": "45,5 ÷ 7",
+            "reponse_attendue": "6,5",
+            "indice": "Commence par 45 ÷ 7, puis abaisse le chiffre des dixièmes."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des divisions de décimaux",
+        "consigne": "Pose la division sur ton cahier, puis écris le quotient. Utilise la virgule. Toutes ces divisions tombent juste.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "6,8 ÷ 2",
+            "reponse_attendue": "3,4",
+            "indice": "Commence par 6 ÷ 2, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 2,
+            "enonce": "18,4 ÷ 4",
+            "reponse_attendue": "4,6",
+            "indice": "Commence par 18 ÷ 4, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 3,
+            "enonce": "8,5 ÷ 5",
+            "reponse_attendue": "1,7",
+            "indice": "Commence par 8 ÷ 5 : il reste quelque chose avant d'abaisser le 5."
+          },
+          {
+            "id": 4,
+            "enonce": "5,4 ÷ 6",
+            "reponse_attendue": "0,9",
+            "indice": "5 ÷ 6 est impossible : le quotient commence par 0, puis vient la virgule."
+          },
+          {
+            "id": 5,
+            "enonce": "34,2 ÷ 9",
+            "reponse_attendue": "3,8",
+            "indice": "Commence par 34 ÷ 9, puis abaisse le chiffre des dixièmes."
+          },
+          {
+            "id": 6,
+            "enonce": "9,4 ÷ 4",
+            "reponse_attendue": "2,35",
+            "indice": "Après les dixièmes il reste encore quelque chose : abaisse un zéro et continue."
+          },
+          {
+            "id": 7,
+            "enonce": "2,4 ÷ 8",
+            "reponse_attendue": "0,3",
+            "indice": "2 ÷ 8 est impossible : le quotient commence par 0, puis vient la virgule."
+          },
+          {
+            "id": 8,
+            "enonce": "36,5 ÷ 5",
+            "reponse_attendue": "7,3",
+            "indice": "Commence par 36 ÷ 5, puis abaisse le chiffre des dixièmes."
+          }
+        ]
+      }
+    ]
+  }
+]

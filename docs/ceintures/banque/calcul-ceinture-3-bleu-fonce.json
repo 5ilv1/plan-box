@@ -1,0 +1,428 @@
+[
+  {
+    "item_code": "C22",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Les tables de 7, 8 et 9",
+      "regle": "Les tables de 7, 8 et 9 se savent par cœur : on vérifie ici que tu les sais.",
+      "procedure": [
+        "Pour les apprendre, entraîne-toi avec le module Ceintures de multiplication, ceinture Bleu foncé.",
+        "Si un « × 9 » te manque, calcule « × 10 », puis enlève le nombre.",
+        "Souviens-toi qu'on peut échanger les deux nombres : le résultat ne change pas."
+      ],
+      "exemples": [
+        {
+          "phrase": "9 × 4",
+          "demonstration": "Je passe par 10 : 4 × 10 = 40, puis j'enlève 4 : 40 − 4 = 36."
+        },
+        {
+          "phrase": "3 × 8",
+          "demonstration": "Je sais que 8 × 3 = 24 ; échanger les deux nombres ne change rien : 3 × 8 = 24."
+        }
+      ],
+      "piege": "Ne confonds pas 7 × 8 avec 6 × 9 : leurs résultats se suivent presque, mais ce ne sont pas les mêmes."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 8 × 9 ?",
+        "options": [
+          "64",
+          "81",
+          "63",
+          "72"
+        ],
+        "reponse_correcte": 3,
+        "explication": "8 × 9 = 72. 64, c'est 8 × 8 ; 81, c'est 9 × 9 ; 63, c'est 7 × 9."
+      },
+      {
+        "question": "Quel nombre manque ? 7 × … = 49",
+        "options": [
+          "7",
+          "6",
+          "8",
+          "9"
+        ],
+        "reponse_correcte": 0,
+        "explication": "49 est le résultat de 7 × 7 : c'est 7 qui manque."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Contrôle des tables de 7, 8 et 9",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "7 × 6",
+            "reponse": "42"
+          },
+          {
+            "id": 2,
+            "enonce": "8 × 6",
+            "reponse": "48"
+          },
+          {
+            "id": 3,
+            "enonce": "7 × 9",
+            "reponse": "63"
+          },
+          {
+            "id": 4,
+            "enonce": "8 × 8",
+            "reponse": "64"
+          },
+          {
+            "id": 5,
+            "enonce": "7 × 4",
+            "reponse": "28"
+          },
+          {
+            "id": 6,
+            "enonce": "9 × 6",
+            "reponse": "54"
+          },
+          {
+            "id": 7,
+            "enonce": "7 × 8",
+            "reponse": "56"
+          },
+          {
+            "id": 8,
+            "enonce": "9 × 5",
+            "reponse": "45"
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième contrôle des tables de 7, 8 et 9",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "7 × 5",
+            "reponse": "35"
+          },
+          {
+            "id": 2,
+            "enonce": "8 × 4",
+            "reponse": "32"
+          },
+          {
+            "id": 3,
+            "enonce": "9 × 9",
+            "reponse": "81"
+          },
+          {
+            "id": 4,
+            "enonce": "3 × 7",
+            "reponse": "21"
+          },
+          {
+            "id": 5,
+            "enonce": "8 × 5",
+            "reponse": "40"
+          },
+          {
+            "id": 6,
+            "enonce": "9 × 3",
+            "reponse": "27"
+          },
+          {
+            "id": 7,
+            "enonce": "9 × 7",
+            "reponse": "63"
+          },
+          {
+            "id": 8,
+            "enonce": "8 × 7",
+            "reponse": "56"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C20",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Poser une soustraction avec retenue",
+      "regle": "Quand le chiffre du haut est plus petit, ajoute-lui 10 et pose une retenue sous le chiffre suivant.",
+      "procedure": [
+        "Aligne les unités sous les unités.",
+        "Calcule colonne par colonne, en partant de la droite.",
+        "Si tu ne peux pas soustraire, ajoute 10 en haut et une retenue en bas."
+      ],
+      "exemples": [
+        {
+          "phrase": "62 − 47",
+          "demonstration": "12 − 7 = 5, je retiens 1 ; 4 + 1 = 5 et 6 − 5 = 1 : 15."
+        },
+        {
+          "phrase": "403 − 158",
+          "demonstration": "13 − 8 = 5, retenue ; 10 − 6 = 4, retenue ; 4 − 2 = 2 : 245."
+        }
+      ],
+      "piege": "Un 0 en haut ne se saute pas : il devient 10, avec une retenue de plus."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 82 − 47 ?",
+        "options": [
+          "45",
+          "35",
+          "44",
+          "129"
+        ],
+        "reponse_correcte": 1,
+        "explication": "12 − 7 = 5, je retiens 1 ; puis 4 + 1 = 5 et 8 − 5 = 3. Le résultat est 35, et non 45."
+      },
+      {
+        "question": "Combien font 300 − 126 ?",
+        "options": [
+          "226",
+          "184",
+          "274",
+          "174"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Les deux zéros deviennent 10 avec une retenue à chaque fois : 300 − 126 = 174."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Soustractions posées avec retenue",
+        "consigne": "Pose l'opération sur ton cahier, puis écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "64 − 28",
+            "reponse": "36"
+          },
+          {
+            "id": 2,
+            "enonce": "85 − 47",
+            "reponse": "38"
+          },
+          {
+            "id": 3,
+            "enonce": "152 − 76",
+            "reponse": "76"
+          },
+          {
+            "id": 4,
+            "enonce": "240 − 165",
+            "reponse": "75"
+          },
+          {
+            "id": 5,
+            "enonce": "506 − 348",
+            "reponse": "158"
+          },
+          {
+            "id": 6,
+            "enonce": "700 − 254",
+            "reponse": "446"
+          },
+          {
+            "id": 7,
+            "enonce": "1254 − 687",
+            "reponse": "567"
+          },
+          {
+            "id": 8,
+            "enonce": "3000 − 1425",
+            "reponse": "1575"
+          }
+        ]
+      },
+      {
+        "titre": "Nouvelles soustractions posées",
+        "consigne": "Pose l'opération sur ton cahier, puis écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "72 − 35",
+            "reponse": "37"
+          },
+          {
+            "id": 2,
+            "enonce": "91 − 46",
+            "reponse": "45"
+          },
+          {
+            "id": 3,
+            "enonce": "164 − 87",
+            "reponse": "77"
+          },
+          {
+            "id": 4,
+            "enonce": "320 − 145",
+            "reponse": "175"
+          },
+          {
+            "id": 5,
+            "enonce": "604 − 259",
+            "reponse": "345"
+          },
+          {
+            "id": 6,
+            "enonce": "800 − 376",
+            "reponse": "424"
+          },
+          {
+            "id": 7,
+            "enonce": "1435 − 876",
+            "reponse": "559"
+          },
+          {
+            "id": 8,
+            "enonce": "5000 − 2683",
+            "reponse": "2317"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C21",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Multiplier et diviser par 10, 100, 1 000",
+      "regle": "Multiplier par 10, 100 ou 1 000 décale les chiffres d'un, deux ou trois rangs vers la gauche ; diviser les décale d'autant vers la droite.",
+      "procedure": [
+        "Compte les zéros de 10, 100 ou 1 000 : un, deux ou trois.",
+        "Pour multiplier, écris autant de zéros à la fin du nombre entier.",
+        "Pour diviser, enlève ce nombre de zéros à la fin — à condition que le nombre entier en ait assez."
+      ],
+      "exemples": [
+        {
+          "phrase": "34 × 100",
+          "demonstration": "100 a deux zéros : j'écris 3400 ; le 3 passe des dizaines aux milliers."
+        },
+        {
+          "phrase": "8500 ÷ 100",
+          "demonstration": "100 a deux zéros : j'enlève les deux zéros de la fin, il reste 85."
+        }
+      ],
+      "piege": "On n'enlève que les zéros de la fin : 4070 ÷ 10 = 407, et non 47."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 46 × 100 ?",
+        "options": [
+          "460",
+          "46000",
+          "4600",
+          "10046"
+        ],
+        "reponse_correcte": 2,
+        "explication": "100 a deux zéros : 46 devient 4600, le 4 passe des dizaines aux milliers."
+      },
+      {
+        "question": "Combien font 7000 ÷ 100 ?",
+        "options": [
+          "70",
+          "700",
+          "7",
+          "70000"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Diviser par 100, c'est enlever deux zéros à la fin : 7000 devient 70."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Multiplier et diviser par 10, 100, 1 000",
+        "consigne": "Calcule. Écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "35 × 10",
+            "reponse": "350"
+          },
+          {
+            "id": 2,
+            "enonce": "80 × 100",
+            "reponse": "8000"
+          },
+          {
+            "id": 3,
+            "enonce": "6 × 1000",
+            "reponse": "6000"
+          },
+          {
+            "id": 4,
+            "enonce": "420 ÷ 10",
+            "reponse": "42"
+          },
+          {
+            "id": 5,
+            "enonce": "5300 ÷ 100",
+            "reponse": "53"
+          },
+          {
+            "id": 6,
+            "enonce": "9000 ÷ 1000",
+            "reponse": "9"
+          },
+          {
+            "id": 7,
+            "enonce": "204 × 100",
+            "reponse": "20400"
+          },
+          {
+            "id": 8,
+            "enonce": "60000 ÷ 1000",
+            "reponse": "60"
+          }
+        ]
+      },
+      {
+        "titre": "Encore des multiplications et des divisions",
+        "consigne": "Calcule. Écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "47 × 10",
+            "reponse": "470"
+          },
+          {
+            "id": 2,
+            "enonce": "90 × 100",
+            "reponse": "9000"
+          },
+          {
+            "id": 3,
+            "enonce": "8 × 1000",
+            "reponse": "8000"
+          },
+          {
+            "id": 4,
+            "enonce": "630 ÷ 10",
+            "reponse": "63"
+          },
+          {
+            "id": 5,
+            "enonce": "7200 ÷ 100",
+            "reponse": "72"
+          },
+          {
+            "id": 6,
+            "enonce": "4000 ÷ 1000",
+            "reponse": "4"
+          },
+          {
+            "id": 7,
+            "enonce": "308 × 100",
+            "reponse": "30800"
+          },
+          {
+            "id": 8,
+            "enonce": "50000 ÷ 1000",
+            "reponse": "50"
+          }
+        ]
+      }
+    ]
+  }
+]

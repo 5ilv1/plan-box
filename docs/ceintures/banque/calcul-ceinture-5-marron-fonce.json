@@ -1,0 +1,444 @@
+[
+  {
+    "item_code": "C25",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Additionner deux décimaux",
+      "regle": "Deux nombres à virgule donnent un entier quand leurs parties décimales, mises ensemble, font exactement 1.",
+      "procedure": [
+        "Regarde les chiffres après la virgule et vérifie s'ils se complètent à 1 : 0,2 avec 0,8 ; 0,25 avec 0,75.",
+        "Additionne les parties entières, celles qui sont devant la virgule.",
+        "Ajoute le 1 formé par les deux parties décimales."
+      ],
+      "exemples": [
+        {
+          "phrase": "3,2 + 0,8",
+          "demonstration": "0,2 et 0,8 font 1. Les parties entières font 3 + 0 = 3. Total : 3 + 1 = 4."
+        },
+        {
+          "phrase": "5,75 + 2,25",
+          "demonstration": "0,75 et 0,25 font 1. Les parties entières font 5 + 2 = 7. Total : 7 + 1 = 8."
+        }
+      ],
+      "piege": "0,4 + 0,6 ne fait pas 0,10 : dix dixièmes valent 1 tout entier."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 3,7 + 0,3 ?",
+        "options": [
+          "3,10",
+          "4",
+          "3,4",
+          "4,10"
+        ],
+        "reponse_correcte": 1,
+        "explication": "0,7 et 0,3 font 1 : j'ajoute ce 1 à la partie entière 3, ce qui donne 4. Écrire 3,10, c'est coller les chiffres au lieu de les additionner ; 3,4 et 4,10 gardent une partie décimale alors que les dixièmes se sont regroupés en 1 entier."
+      },
+      {
+        "question": "Parmi ces additions, laquelle donne un nombre entier ?",
+        "options": [
+          "2,4 + 0,5",
+          "1,2 + 0,9",
+          "3,3 + 0,7",
+          "4,5 + 0,4"
+        ],
+        "reponse_correcte": 2,
+        "explication": "0,3 et 0,7 se complètent à 1 : 3,3 + 0,7 = 4. Les autres parties décimales ne se complètent pas : 2,4 + 0,5 = 2,9 ; 1,2 + 0,9 = 2,1 ; 4,5 + 0,4 = 4,9."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Deux décimaux, un entier",
+        "consigne": "Calcule de tête, puis écris ta réponse en chiffres. Si le nombre a une virgule, écris-la.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "2,4 + 0,6",
+            "reponse_attendue": "3",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 2,
+            "enonce": "3,5 + 1,5",
+            "reponse_attendue": "5",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 3,
+            "enonce": "4,7 + 3,3",
+            "reponse_attendue": "8",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 4,
+            "enonce": "6,2 + 2,8",
+            "reponse_attendue": "9",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 5,
+            "enonce": "1,25 + 0,75",
+            "reponse_attendue": "2",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre manque ? 0,9 + … = 1",
+            "reponse_attendue": "0,1",
+            "indice": "Cherche ce qu'il faut ajouter aux chiffres après la virgule pour faire 1 tout rond."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel nombre manque ? 5,3 + … = 6",
+            "reponse_attendue": "0,7",
+            "indice": "Cherche ce qu'il faut ajouter aux chiffres après la virgule pour faire 1 tout rond."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel nombre manque ? 2,25 + … = 3",
+            "reponse_attendue": "0,75",
+            "indice": "Cherche ce qu'il faut ajouter aux chiffres après la virgule pour faire 1 tout rond."
+          }
+        ]
+      },
+      {
+        "titre": "Compléter jusqu'à l'entier",
+        "consigne": "Calcule de tête, puis écris ta réponse en chiffres. Si le nombre a une virgule, écris-la.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "1,6 + 0,4",
+            "reponse_attendue": "2",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 2,
+            "enonce": "2,7 + 1,3",
+            "reponse_attendue": "4",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 3,
+            "enonce": "5,8 + 0,2",
+            "reponse_attendue": "6",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 4,
+            "enonce": "3,4 + 4,6",
+            "reponse_attendue": "8",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 5,
+            "enonce": "0,45 + 0,55",
+            "reponse_attendue": "1",
+            "indice": "Mets ensemble les chiffres après la virgule : s'ils font 1, ajoute ce 1 aux parties entières."
+          },
+          {
+            "id": 6,
+            "enonce": "Quel nombre manque ? 7,1 + … = 8",
+            "reponse_attendue": "0,9",
+            "indice": "Cherche ce qu'il faut ajouter aux chiffres après la virgule pour faire 1 tout rond."
+          },
+          {
+            "id": 7,
+            "enonce": "Quel nombre manque ? 4,6 + … = 5",
+            "reponse_attendue": "0,4",
+            "indice": "Cherche ce qu'il faut ajouter aux chiffres après la virgule pour faire 1 tout rond."
+          },
+          {
+            "id": 8,
+            "enonce": "Quel nombre manque ? 3,75 + … = 4",
+            "reponse_attendue": "0,25",
+            "indice": "Cherche ce qu'il faut ajouter aux chiffres après la virgule pour faire 1 tout rond."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C27",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Multiples de 25 et 50",
+      "regle": "Quatre fois 25 font 100, et deux fois 50 font 100 : tout part de là.",
+      "procedure": [
+        "Pour multiplier par 25, compte de 25 en 25 : 25, 50, 75, 100, 125…",
+        "Pour multiplier par 50, groupe les 50 deux par deux : 6 × 50, c'est 3 × 100.",
+        "Pour diviser 100, souviens-toi de ses diviseurs : 1, 2, 4, 5, 10, 20, 25, 50 et 100."
+      ],
+      "exemples": [
+        {
+          "phrase": "3 × 25",
+          "demonstration": "Je compte de 25 en 25 : 25, 50, 75. Je m'arrête au 3e nombre : 3 × 25 = 75."
+        },
+        {
+          "phrase": "400 ÷ 50",
+          "demonstration": "Il y a 2 fois 50 dans 100, donc 4 × 2 = 8 fois 50 dans 400 : 400 ÷ 50 = 8."
+        }
+      ],
+      "piege": "3 n'est pas un diviseur de 100 : 100 ÷ 3 ne tombe pas juste."
+    },
+    "diagnostic": [
+      {
+        "question": "Lequel de ces nombres est un multiple de 25 ?",
+        "options": [
+          "120",
+          "160",
+          "205",
+          "175"
+        ],
+        "reponse_correcte": 3,
+        "explication": "175, c'est 7 × 25 : en comptant de 25 en 25 on passe par 150 puis 175. Les autres ne tombent pas sur un repère de 25."
+      },
+      {
+        "question": "Timéo veut ranger 100 gommettes en paquets qui contiennent tous le même nombre de gommettes, sans qu'il en reste. Quelle taille de paquet est impossible ?",
+        "options": [
+          "30",
+          "4",
+          "20",
+          "25"
+        ],
+        "reponse_correcte": 0,
+        "explication": "30 ne divise pas 100 : 3 paquets de 30 font 90 et il reste 10. En revanche 4, 20 et 25 sont des diviseurs de 100."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "25, 50 et les diviseurs de 100",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "4 × 25",
+            "reponse": "100"
+          },
+          {
+            "id": 2,
+            "enonce": "25 × 6",
+            "reponse": "150"
+          },
+          {
+            "id": 3,
+            "enonce": "7 × 50",
+            "reponse": "350"
+          },
+          {
+            "id": 4,
+            "enonce": "100 ÷ 4",
+            "reponse": "25"
+          },
+          {
+            "id": 5,
+            "enonce": "200 ÷ 25",
+            "reponse": "8"
+          },
+          {
+            "id": 6,
+            "enonce": "300 ÷ 50",
+            "reponse": "6"
+          },
+          {
+            "id": 7,
+            "enonce": "25 × 9",
+            "reponse": "225"
+          },
+          {
+            "id": 8,
+            "enonce": "100 ÷ 20",
+            "reponse": "5"
+          }
+        ]
+      },
+      {
+        "titre": "Encore 25, 50 et 100",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "25 × 8",
+            "reponse": "200"
+          },
+          {
+            "id": 2,
+            "enonce": "50 × 9",
+            "reponse": "450"
+          },
+          {
+            "id": 3,
+            "enonce": "12 × 25",
+            "reponse": "300"
+          },
+          {
+            "id": 4,
+            "enonce": "100 ÷ 5",
+            "reponse": "20"
+          },
+          {
+            "id": 5,
+            "enonce": "250 ÷ 50",
+            "reponse": "5"
+          },
+          {
+            "id": 6,
+            "enonce": "175 ÷ 25",
+            "reponse": "7"
+          },
+          {
+            "id": 7,
+            "enonce": "100 ÷ 25",
+            "reponse": "4"
+          },
+          {
+            "id": 8,
+            "enonce": "25 × 11",
+            "reponse": "275"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C32",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Diviser avec les tables",
+      "regle": "Une division exacte se lit dans les tables : 42 ÷ 6, c'est le nombre qui, multiplié par 6, donne 42.",
+      "procedure": [
+        "Pour les apprendre, entraîne-toi avec le module Ceintures de multiplication, ceinture Mauve : ici, on vérifie seulement que tu les sais.",
+        "Récite la table du diviseur jusqu'à tomber sur le nombre à diviser.",
+        "Compte le rang où tu t'es arrêté : c'est le quotient."
+      ],
+      "exemples": [
+        {
+          "phrase": "42 ÷ 6",
+          "demonstration": "Table de 6 : 6, 12, 18, 24, 30, 36, 42. Je m'arrête au 7e nombre : 42 ÷ 6 = 7."
+        },
+        {
+          "phrase": "72 ÷ 9",
+          "demonstration": "Je cherche 9 × ? = 72. Je sais que 9 × 8 = 72, donc 72 ÷ 9 = 8."
+        }
+      ],
+      "piege": "63 ÷ 9 = 7, et non 8 : 8 × 9 donne 72."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 56 ÷ 7 ?",
+        "options": [
+          "6",
+          "8",
+          "9",
+          "7"
+        ],
+        "reponse_correcte": 1,
+        "explication": "7 × 8 = 56, donc 56 ÷ 7 = 8. Le 6 vient de 42 ÷ 7, le 9 de 63 ÷ 7 et le 7 de 49 ÷ 7."
+      },
+      {
+        "question": "Quel nombre manque ? … × 6 = 54",
+        "options": [
+          "7",
+          "8",
+          "9",
+          "6"
+        ],
+        "reponse_correcte": 2,
+        "explication": "6 × 9 = 54, donc le nombre qui manque est 9 : c'est aussi le résultat de 54 ÷ 6."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Contrôle des divisions des tables",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "48 ÷ 6",
+            "reponse": "8"
+          },
+          {
+            "id": 2,
+            "enonce": "35 ÷ 5",
+            "reponse": "7"
+          },
+          {
+            "id": 3,
+            "enonce": "72 ÷ 8",
+            "reponse": "9"
+          },
+          {
+            "id": 4,
+            "enonce": "24 ÷ 4",
+            "reponse": "6"
+          },
+          {
+            "id": 5,
+            "enonce": "45 ÷ 9",
+            "reponse": "5"
+          },
+          {
+            "id": 6,
+            "enonce": "21 ÷ 7",
+            "reponse": "3"
+          },
+          {
+            "id": 7,
+            "enonce": "28 ÷ 7",
+            "reponse": "4"
+          },
+          {
+            "id": 8,
+            "enonce": "63 ÷ 7",
+            "reponse": "9"
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième contrôle des divisions des tables",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "36 ÷ 4",
+            "reponse": "9"
+          },
+          {
+            "id": 2,
+            "enonce": "40 ÷ 8",
+            "reponse": "5"
+          },
+          {
+            "id": 3,
+            "enonce": "64 ÷ 8",
+            "reponse": "8"
+          },
+          {
+            "id": 4,
+            "enonce": "18 ÷ 3",
+            "reponse": "6"
+          },
+          {
+            "id": 5,
+            "enonce": "32 ÷ 4",
+            "reponse": "8"
+          },
+          {
+            "id": 6,
+            "enonce": "81 ÷ 9",
+            "reponse": "9"
+          },
+          {
+            "id": 7,
+            "enonce": "49 ÷ 7",
+            "reponse": "7"
+          },
+          {
+            "id": 8,
+            "enonce": "60 ÷ 6",
+            "reponse": "10"
+          }
+        ]
+      }
+    ]
+  }
+]

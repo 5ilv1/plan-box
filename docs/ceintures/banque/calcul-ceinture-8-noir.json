@@ -1,0 +1,866 @@
+[
+  {
+    "item_code": "C35",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Calculer un pourcentage",
+      "regle": "Prendre x % d'un nombre, c'est partager ce nombre en 100 parts égales et en prendre x.",
+      "procedure": [
+        "Divise le nombre par 100 : tu obtiens ce que vaut 1 %.",
+        "Multiplie ce résultat par le pourcentage demandé.",
+        "Pour aller plus vite : 50 % c'est la moitié, 25 % le quart, 10 % le nombre divisé par 10."
+      ],
+      "exemples": [
+        {
+          "phrase": "20 % de 350 élèves",
+          "demonstration": "1 % de 350, c'est 350 ÷ 100 = 3,5. Donc 20 % font 20 × 3,5 = 70 élèves."
+        },
+        {
+          "phrase": "75 % de 80 €",
+          "demonstration": "75 %, ce sont trois quarts : 80 ÷ 4 = 20, puis 3 × 20 = 60 €. Le raccourci évite de passer par 1 %."
+        }
+      ],
+      "piege": "Un pourcentage ne vaut rien tout seul : 30 % de 200 font 60, mais 30 % de 50 ne font que 15."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 25 % de 60 ?",
+        "options": [
+          "15",
+          "25",
+          "35",
+          "24"
+        ],
+        "reponse_correcte": 0,
+        "explication": "25 %, c'est le quart : je partage 60 en 4 parts égales, 60 ÷ 4 = 15."
+      },
+      {
+        "question": "Dans une école de 300 élèves, 40 % mangent à la cantine. Combien d'élèves mangent à la cantine ?",
+        "options": [
+          "40",
+          "120",
+          "260",
+          "75"
+        ],
+        "reponse_correcte": 1,
+        "explication": "1 % de 300, c'est 3 élèves. Donc 40 % font 40 × 3 = 120 élèves."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je calcule un pourcentage",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Un vélo coûte 240 €. Le magasin annonce une remise de 25 %. Quel est le montant de la remise ?",
+            "resultat_attendu": "60",
+            "phrase_reponse_attendue": "La remise est de 60 euros.",
+            "mots_cles": [
+              "60",
+              "remise"
+            ],
+            "indice": "25 %, c'est le quart : partage le prix en 4 parts égales."
+          },
+          {
+            "id": 2,
+            "enonce": "Dans un collège de 450 élèves, 20 % font du sport le mercredi. Combien d'élèves font du sport le mercredi ?",
+            "resultat_attendu": "90",
+            "phrase_reponse_attendue": "90 élèves font du sport le mercredi.",
+            "mots_cles": [
+              "90",
+              "sport"
+            ],
+            "indice": "Cherche d'abord ce que vaut 1 %, en divisant par 100."
+          },
+          {
+            "id": 3,
+            "enonce": "Un manteau coûte 80 €. Il est soldé avec une réduction de 30 %. Quel est son nouveau prix ?",
+            "resultat_attendu": "56",
+            "phrase_reponse_attendue": "Le nouveau prix est de 56 euros.",
+            "mots_cles": [
+              "56",
+              "euros"
+            ],
+            "indice": "Calcule d'abord la réduction, puis retire-la du prix de départ."
+          },
+          {
+            "id": 4,
+            "enonce": "Une bouteille contient 150 cl de jus. Sacha en boit 20 %. Quelle quantité a-t-il bue ?",
+            "resultat_attendu": "30",
+            "phrase_reponse_attendue": "Sacha a bu 30 cl.",
+            "mots_cles": [
+              "30",
+              "cl"
+            ],
+            "indice": "Cherche d'abord ce que vaut 1 %, en divisant par 100."
+          },
+          {
+            "id": 5,
+            "enonce": "Un quiz compte 60 questions. Louna en a réussi 75 %. Combien de questions a-t-elle réussies ?",
+            "resultat_attendu": "45",
+            "phrase_reponse_attendue": "Louna a réussi 45 questions.",
+            "mots_cles": [
+              "45",
+              "questions"
+            ],
+            "indice": "75 %, ce sont trois quarts : partage 60 en 4 parts, puis prends-en 3."
+          },
+          {
+            "id": 6,
+            "enonce": "Un abonnement coûte 120 € par an. Son prix augmente de 5 %. De combien d'euros augmente-t-il ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "L'abonnement augmente de 6 euros.",
+            "mots_cles": [
+              "6",
+              "euros"
+            ],
+            "indice": "Cherche ce que vaut 1 % en divisant par 100, puis multiplie par 5."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des pourcentages",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Un blouson coûte 90 €. Il est soldé avec une réduction de 50 %. Combien coûte-t-il maintenant ?",
+            "resultat_attendu": "45",
+            "phrase_reponse_attendue": "Le blouson coûte maintenant 45 euros.",
+            "mots_cles": [
+              "45",
+              "euros"
+            ],
+            "indice": "50 %, c'est la moitié : partage le prix en 2."
+          },
+          {
+            "id": 2,
+            "enonce": "Une classe compte 25 élèves, et 40 % d'entre eux prennent le car. Combien d'élèves prennent le car ?",
+            "resultat_attendu": "10",
+            "phrase_reponse_attendue": "10 élèves prennent le car.",
+            "mots_cles": [
+              "10",
+              "car"
+            ],
+            "indice": "Cherche d'abord ce que vaut 10 %, en divisant par 10, puis multiplie par 4."
+          },
+          {
+            "id": 3,
+            "enonce": "Un livre compte 250 pages. Jade en a lu 30 %. Combien de pages a-t-elle lues ?",
+            "resultat_attendu": "75",
+            "phrase_reponse_attendue": "Jade a lu 75 pages.",
+            "mots_cles": [
+              "75",
+              "pages"
+            ],
+            "indice": "Cherche d'abord ce que vaut 1 %, en divisant par 100."
+          },
+          {
+            "id": 4,
+            "enonce": "Une bouteille contient 75 cl de sirop. Adam en verse 20 %. Quelle quantité verse-t-il ?",
+            "resultat_attendu": "15",
+            "phrase_reponse_attendue": "Adam verse 15 cl.",
+            "mots_cles": [
+              "15",
+              "cl"
+            ],
+            "indice": "Cherche d'abord ce que vaut 10 %, en divisant par 10, puis double-le."
+          },
+          {
+            "id": 5,
+            "enonce": "Un cinéma compte 250 places, et 60 % des places sont occupées. Combien de places sont occupées ?",
+            "resultat_attendu": "150",
+            "phrase_reponse_attendue": "150 places sont occupées.",
+            "mots_cles": [
+              "150",
+              "places"
+            ],
+            "indice": "Cherche d'abord ce que vaut 1 %, en divisant par 100."
+          },
+          {
+            "id": 6,
+            "enonce": "Un tee-shirt coûte 24 €. Son prix baisse de 25 %. Quel est son nouveau prix ?",
+            "resultat_attendu": "18",
+            "phrase_reponse_attendue": "Le nouveau prix est de 18 euros.",
+            "mots_cles": [
+              "18",
+              "euros"
+            ],
+            "indice": "Calcule d'abord la baisse, qui est le quart du prix, puis retire-la."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C36",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Divisible par 3 ou par 9",
+      "regle": "Un nombre est divisible par 3 si la somme de ses chiffres est dans la table de 3, et par 9 si elle est dans la table de 9.",
+      "procedure": [
+        "Additionne tous les chiffres du nombre.",
+        "Si la somme reste grande, recommence avec ses chiffres.",
+        "Somme dans la table de 9 : divisible par 9 et par 3 ; seulement dans celle de 3 : divisible par 3."
+      ],
+      "exemples": [
+        {
+          "phrase": "471",
+          "demonstration": "4 + 7 + 1 = 12 : dans la table de 3, pas dans celle de 9. Divisible par 3 seulement."
+        },
+        {
+          "phrase": "5 823",
+          "demonstration": "5 + 8 + 2 + 3 = 18 : la somme est dans la table de 9, donc 5 823 aussi, et par 3."
+        }
+      ],
+      "piege": "Divisible par 9 entraîne divisible par 3, jamais l'inverse."
+    },
+    "diagnostic": [
+      {
+        "question": "Lequel de ces quatre nombres est divisible par 9 ?",
+        "options": [
+          "145",
+          "581",
+          "234",
+          "412"
+        ],
+        "reponse_correcte": 2,
+        "explication": "J'additionne les chiffres : 2 + 3 + 4 = 9. La somme vaut 9, donc 234 est divisible par 9. Pour les autres, la somme ne l'est pas."
+      },
+      {
+        "question": "Le nombre 246 est-il divisible par 3 ? Et par 9 ?",
+        "options": [
+          "Il est divisible par 3 et par 9.",
+          "Il est divisible par 3 mais pas par 9.",
+          "Il est divisible par 9 mais pas par 3.",
+          "Il n'est divisible ni par 3 ni par 9."
+        ],
+        "reponse_correcte": 1,
+        "explication": "2 + 4 + 6 = 12. La somme 12 est dans la table de 3 mais pas dans celle de 9 : 246 est divisible par 3 seulement."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Divisible par 3, par 9, ou par aucun ?",
+        "consigne": "Pour chaque question, choisis la bonne explication — pas seulement la bonne réponse.",
+        "questions": [
+          {
+            "question": "Le nombre 513 est divisible…",
+            "options": [
+              "par 3 seulement",
+              "par 9 seulement",
+              "par 3 et par 9",
+              "ni par 3 ni par 9"
+            ],
+            "reponse_correcte": 2,
+            "explication": "5 + 1 + 3 = 9 : la somme est dans la table de 9, donc 513 est divisible par 9, et tout nombre divisible par 9 l'est aussi par 3."
+          },
+          {
+            "question": "Le nombre 428 est divisible…",
+            "options": [
+              "par 3 seulement",
+              "par 9 seulement",
+              "par 3 et par 9",
+              "ni par 3 ni par 9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "4 + 2 + 8 = 14. La somme 14 n'est ni dans la table de 3 ni dans celle de 9."
+          },
+          {
+            "question": "Le nombre 6 024 est divisible…",
+            "options": [
+              "par 3 seulement",
+              "par 9 seulement",
+              "par 3 et par 9",
+              "ni par 3 ni par 9"
+            ],
+            "reponse_correcte": 0,
+            "explication": "6 + 0 + 2 + 4 = 12. La somme 12 est dans la table de 3 mais pas dans celle de 9."
+          },
+          {
+            "question": "Parmi ces nombres, lequel est divisible par 3 ?",
+            "options": [
+              "125",
+              "418",
+              "531",
+              "707"
+            ],
+            "reponse_correcte": 2,
+            "explication": "5 + 3 + 1 = 9, qui est dans la table de 3. Pour les autres, les sommes 8, 13 et 14 n'y sont pas."
+          },
+          {
+            "question": "Parmi ces nombres, lequel n'est PAS divisible par 3 ?",
+            "options": [
+              "132",
+              "504",
+              "725",
+              "918"
+            ],
+            "reponse_correcte": 2,
+            "explication": "7 + 2 + 5 = 14, qui n'est pas dans la table de 3. Les autres sommes valent 6, 9 et 18."
+          },
+          {
+            "question": "Rosalie veut ranger 738 billes en 9 paquets égaux, sans qu'il en reste. Est-ce possible ?",
+            "options": [
+              "Oui : 7 + 3 + 8 = 18, et 18 est dans la table de 9.",
+              "Non : 738 ne se termine pas par 9.",
+              "Oui : parce que 738 est un nombre pair.",
+              "Non : 738 est trop petit pour faire 9 paquets."
+            ],
+            "reponse_correcte": 0,
+            "explication": "La somme des chiffres vaut 18, qui est dans la table de 9 : 738 est bien divisible par 9."
+          },
+          {
+            "question": "Parmi ces nombres, lequel est divisible par 9 ?",
+            "options": [
+              "459",
+              "236",
+              "581",
+              "742"
+            ],
+            "reponse_correcte": 0,
+            "explication": "4 + 5 + 9 = 18, qui est dans la table de 9. Les autres sommes valent 11, 14 et 13."
+          },
+          {
+            "question": "Timéo affirme : « 7 245 est divisible par 9, donc il est aussi divisible par 3. » A-t-il raison ?",
+            "options": [
+              "Non : un nombre ne peut pas être divisible par les deux à la fois.",
+              "Oui : tout nombre divisible par 9 est aussi divisible par 3.",
+              "Non : il faudrait que le nombre se termine par 3.",
+              "Oui, mais seulement parce que 7 245 se termine par 5."
+            ],
+            "reponse_correcte": 1,
+            "explication": "9 est lui-même dans la table de 3 : dès qu'un nombre se partage en 9 parts égales, il se partage aussi en 3."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des nombres à examiner",
+        "consigne": "Pour chaque question, choisis la bonne explication — pas seulement la bonne réponse.",
+        "questions": [
+          {
+            "question": "Le nombre 405 est divisible…",
+            "options": [
+              "par 3 seulement",
+              "par 9 seulement",
+              "par 3 et par 9",
+              "ni par 3 ni par 9"
+            ],
+            "reponse_correcte": 2,
+            "explication": "4 + 0 + 5 = 9 : la somme est dans la table de 9, donc 405 est divisible par 9 et aussi par 3."
+          },
+          {
+            "question": "Le nombre 517 est divisible…",
+            "options": [
+              "par 3 seulement",
+              "par 9 seulement",
+              "par 3 et par 9",
+              "ni par 3 ni par 9"
+            ],
+            "reponse_correcte": 3,
+            "explication": "5 + 1 + 7 = 13. La somme 13 n'est ni dans la table de 3 ni dans celle de 9."
+          },
+          {
+            "question": "Le nombre 4 251 est divisible…",
+            "options": [
+              "par 3 seulement",
+              "par 9 seulement",
+              "par 3 et par 9",
+              "ni par 3 ni par 9"
+            ],
+            "reponse_correcte": 0,
+            "explication": "4 + 2 + 5 + 1 = 12. La somme 12 est dans la table de 3 mais pas dans celle de 9."
+          },
+          {
+            "question": "Parmi ces nombres, lequel est divisible par 3 ?",
+            "options": [
+              "823",
+              "614",
+              "906",
+              "445"
+            ],
+            "reponse_correcte": 2,
+            "explication": "9 + 0 + 6 = 15, qui est dans la table de 3. Les autres sommes valent 13, 11 et 13."
+          },
+          {
+            "question": "Parmi ces nombres, lequel n'est PAS divisible par 9 ?",
+            "options": [
+              "279",
+              "801",
+              "648",
+              "524"
+            ],
+            "reponse_correcte": 3,
+            "explication": "5 + 2 + 4 = 11, qui n'est pas dans la table de 9. Les autres sommes valent 18, 9 et 18."
+          },
+          {
+            "question": "Malo veut ranger 522 images en paquets de 9, sans qu'il en reste. Est-ce possible ?",
+            "options": [
+              "Non : 522 ne se termine pas par 9.",
+              "Oui : 5 + 2 + 2 = 9, et 9 est dans la table de 9.",
+              "Non : parce que 522 est un nombre pair.",
+              "Oui : parce que 522 est dans la table de 2."
+            ],
+            "reponse_correcte": 1,
+            "explication": "La somme des chiffres vaut 9, qui est dans la table de 9 : 522 est bien divisible par 9."
+          },
+          {
+            "question": "Parmi ces nombres, lequel est divisible par 9 ?",
+            "options": [
+              "365",
+              "873",
+              "428",
+              "551"
+            ],
+            "reponse_correcte": 1,
+            "explication": "8 + 7 + 3 = 18, qui est dans la table de 9. Les autres sommes valent 14, 14 et 11."
+          },
+          {
+            "question": "Inès affirme : « 84 est divisible par 3, donc il est aussi divisible par 9. » A-t-elle raison ?",
+            "options": [
+              "Non : 8 + 4 = 12, qui est dans la table de 3 mais pas dans celle de 9.",
+              "Oui : 3 et 9 vont toujours ensemble.",
+              "Non : parce que 84 est un nombre pair.",
+              "Oui : car 84 est dans la table de 3."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Être divisible par 3 ne suffit pas pour l'être par 9 : il faut que la somme des chiffres soit dans la table de 9, ce que 12 n'est pas."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C37",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Utiliser l'échelle d'un plan",
+      "regle": "Une échelle 1/n signifie que 1 cm mesuré sur le plan représente n cm dans la réalité.",
+      "procedure": [
+        "Repère le nombre du bas de l'échelle.",
+        "Pour aller du plan à la réalité, multiplie la mesure du plan par ce nombre.",
+        "Convertis le résultat, qui est en centimètres, vers les mètres ou les kilomètres."
+      ],
+      "exemples": [
+        {
+          "phrase": "Échelle 1/100, un mur mesure 6 cm sur le plan.",
+          "demonstration": "6 × 100 = 600 cm, soit 6 m."
+        },
+        {
+          "phrase": "Échelle 1/50 000, 4 cm sur la carte.",
+          "demonstration": "4 × 50 000 = 200 000 cm = 2 000 m = 2 km. Sans conversion, le nombre ne dit rien."
+        }
+      ],
+      "piege": "Le produit obtenu est en centimètres : l'oublier donne une réponse cent fois trop grande."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un plan à l'échelle 1/100, un couloir mesure 8 cm. Quelle est sa longueur réelle ?",
+        "options": [
+          "80 cm",
+          "800 m",
+          "0,08 m",
+          "8 m"
+        ],
+        "reponse_correcte": 3,
+        "explication": "À l'échelle 1/100, 1 cm du plan vaut 100 cm en vrai : 8 × 100 = 800 cm, c'est-à-dire 8 m."
+      },
+      {
+        "question": "Une salle mesure 12 m de long. Sur un plan à l'échelle 1/200, quelle longueur la représente ?",
+        "options": [
+          "60 cm",
+          "6 cm",
+          "2,4 cm",
+          "0,6 cm"
+        ],
+        "reponse_correcte": 1,
+        "explication": "12 m, c'est 1 200 cm. Pour passer de la réalité au plan, on divise par 200 : 1 200 ÷ 200 = 6 cm."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je lis un plan à l'échelle",
+        "consigne": "Calcule, puis réponds par une phrase complète. Fais bien attention à l'unité demandée.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Sur le plan de la classe, à l'échelle 1/50, le tableau mesure 4 cm de long. Quelle est sa longueur réelle, en cm ?",
+            "resultat_attendu": "200",
+            "phrase_reponse_attendue": "Le tableau mesure 200 cm.",
+            "mots_cles": [
+              "200",
+              "cm"
+            ],
+            "indice": "À l'échelle 1/50, 1 cm du plan vaut 50 cm en vrai."
+          },
+          {
+            "id": 2,
+            "enonce": "Sur une carte à l'échelle 1/25 000, l'école et le stade sont séparés par 8 cm. Quelle est la distance réelle, en km ?",
+            "resultat_attendu": "2",
+            "phrase_reponse_attendue": "La distance réelle est de 2 km.",
+            "mots_cles": [
+              "2",
+              "km"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres et en kilomètres."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur un plan à l'échelle 1/200, la cour de récréation mesure 18 cm de long. Quelle est sa longueur réelle, en mètres ?",
+            "resultat_attendu": "36",
+            "phrase_reponse_attendue": "La cour mesure 36 mètres de long.",
+            "mots_cles": [
+              "36",
+              "mètres"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres."
+          },
+          {
+            "id": 4,
+            "enonce": "La classe mesure 8 m de long. Sur un plan à l'échelle 1/50, quelle longueur la représente, en cm ?",
+            "resultat_attendu": "16",
+            "phrase_reponse_attendue": "Elle est représentée par 16 cm.",
+            "mots_cles": [
+              "16",
+              "cm"
+            ],
+            "indice": "Convertis d'abord 8 m en centimètres, puis divise par 50."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur le plan d'un appartement à l'échelle 1/50, la chambre mesure 6 cm sur 5 cm. Quelle est la longueur réelle du plus grand côté, en mètres ?",
+            "resultat_attendu": "3",
+            "phrase_reponse_attendue": "Le plus grand côté mesure 3 mètres.",
+            "mots_cles": [
+              "3",
+              "mètres"
+            ],
+            "indice": "Choisis d'abord la mesure du plus grand côté, puis multiplie par 50."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur une carte à l'échelle 1/50 000, deux villages sont séparés par 10 cm. Quelle est la distance réelle, en km ?",
+            "resultat_attendu": "5",
+            "phrase_reponse_attendue": "Les deux villages sont séparés par 5 km.",
+            "mots_cles": [
+              "5",
+              "km"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres et en kilomètres."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des plans et des cartes",
+        "consigne": "Calcule, puis réponds par une phrase complète. Fais bien attention à l'unité demandée.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Sur le plan de la salle de sport, à l'échelle 1/100, un banc mesure 3 cm. Quelle est sa longueur réelle, en cm ?",
+            "resultat_attendu": "300",
+            "phrase_reponse_attendue": "Le banc mesure 300 cm.",
+            "mots_cles": [
+              "300",
+              "cm"
+            ],
+            "indice": "À l'échelle 1/100, 1 cm du plan vaut 100 cm en vrai."
+          },
+          {
+            "id": 2,
+            "enonce": "Sur une carte à l'échelle 1/25 000, un chemin mesure 20 cm. Quelle est sa longueur réelle, en km ?",
+            "resultat_attendu": "5",
+            "phrase_reponse_attendue": "Le chemin mesure 5 km.",
+            "mots_cles": [
+              "5",
+              "km"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres et en kilomètres."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur un plan à l'échelle 1/200, le préau mesure 14 cm de long. Quelle est sa longueur réelle, en mètres ?",
+            "resultat_attendu": "28",
+            "phrase_reponse_attendue": "Le préau mesure 28 mètres de long.",
+            "mots_cles": [
+              "28",
+              "mètres"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres."
+          },
+          {
+            "id": 4,
+            "enonce": "Le couloir de l'école mesure 24 m. Sur un plan à l'échelle 1/400, quelle longueur le représente, en cm ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "Il est représenté par 6 cm.",
+            "mots_cles": [
+              "6",
+              "cm"
+            ],
+            "indice": "Convertis d'abord 24 m en centimètres, puis divise par 400."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur le plan d'une maison à l'échelle 1/50, le salon mesure 8 cm de long. Quelle est sa longueur réelle, en mètres ?",
+            "resultat_attendu": "4",
+            "phrase_reponse_attendue": "Le salon mesure 4 mètres de long.",
+            "mots_cles": [
+              "4",
+              "mètres"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur une carte à l'échelle 1/50 000, deux villes sont séparées par 14 cm. Quelle est la distance réelle, en km ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "Les deux villes sont séparées par 7 km.",
+            "mots_cles": [
+              "7",
+              "km"
+            ],
+            "indice": "Multiplie d'abord pour obtenir des centimètres, puis convertis en mètres et en kilomètres."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C42",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Choisir sa procédure",
+      "regle": "Avant de calculer, on regarde les nombres : ce sont eux qui disent s'il faut la tête, le cahier ou la calculatrice.",
+      "procedure": [
+        "Nombres ronds, petits ou proches d'un nombre rond : calcule de tête.",
+        "Nombres grands mais opération simple à poser : pose-la sur le cahier.",
+        "Nombres très grands ou à plusieurs décimales : calculatrice, puis vérifie l'ordre de grandeur."
+      ],
+      "exemples": [
+        {
+          "phrase": "302 + 48",
+          "demonstration": "302 est près de 300 : 300 + 48 = 348, puis j'ajoute les 2 mis de côté, 350. Rien à écrire."
+        },
+        {
+          "phrase": "6 428 × 3 917",
+          "demonstration": "Deux nombres de quatre chiffres : calculatrice, puis je contrôle avec 6 000 × 4 000."
+        }
+      ],
+      "piege": "Sortir la calculatrice pour 25 × 4 fait perdre du temps."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le calcul le plus rapide à faire de tête, sans rien poser ni taper ?",
+        "options": [
+          "4 728 × 36",
+          "3 496 + 2 587",
+          "250 × 4",
+          "1 253 ÷ 7"
+        ],
+        "reponse_correcte": 2,
+        "explication": "250 × 4 = 1 000 : c'est un résultat connu, qui se dit sans écrire. Les trois autres demandent de poser l'opération ou une calculatrice."
+      },
+      {
+        "question": "Adam doit calculer 2 000 − 1 998. Que lui conseilles-tu ?",
+        "options": [
+          "Poser la soustraction, à cause des retenues.",
+          "Utiliser la calculatrice, les nombres sont grands.",
+          "Calculer de tête : de 1 998 à 2 000, il n'y a que 2.",
+          "Poser une addition à trous sur le cahier."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Quand les deux nombres sont très proches, on cherche l'écart de tête : la taille des nombres ne compte pas, seul l'écart compte."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "De tête, posé, ou à la calculatrice ?",
+        "consigne": "Pour chaque calcul, choisis la procédure la plus efficace. On ne demande pas le résultat, mais la méthode.",
+        "questions": [
+          {
+            "question": "Fatou doit calculer 199 + 56. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "La calculatrice : il y a une retenue à gérer dans cette addition.",
+              "Le calcul mental : 200 + 56, puis enlever 1, car 199 est juste avant 200.",
+              "Le calcul mental : 200 + 56, puis ajouter 1, car 199 est près de 200.",
+              "Poser l'addition en colonnes : c'est la seule façon de gérer la retenue."
+            ],
+            "reponse_correcte": 1,
+            "explication": "199 est tout près de 200 : on calcule avec le nombre rond, puis on corrige. Comme on a ajouté 1 à 199, il faut enlever 1 au résultat."
+          },
+          {
+            "question": "Timéo doit calculer 7 384 × 2 916. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : on arrondit les deux nombres et on donne le produit arrondi.",
+              "Poser la multiplication en colonnes : chaque chiffre du second nombre est traité à part.",
+              "Additionner 7 384 plusieurs fois : une multiplication est une addition répétée.",
+              "La calculatrice : quatre chiffres chacun ; on contrôle ensuite avec 7 000 × 3 000."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Deux nombres de quatre chiffres : la calculatrice est la seule méthode raisonnable, mais on garde le contrôle en estimant le résultat."
+          },
+          {
+            "question": "Lila doit calculer 45 × 20. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : 45 × 2 = 90, puis × 10 donne 900, sans rien écrire.",
+              "Poser la multiplication en colonnes : le second nombre a deux chiffres.",
+              "La calculatrice : un produit de deux nombres à deux chiffres est trop long.",
+              "Additionner 45 vingt fois : c'est ce que veut dire multiplier par 20."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Multiplier par 20, c'est multiplier par 2 puis par 10 : les deux étapes se font de tête."
+          },
+          {
+            "question": "Nour doit calculer 3 847 + 2 569. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : on additionne les milliers, puis les centaines, puis le reste.",
+              "La calculatrice : une addition de nombres à quatre chiffres ne se pose pas.",
+              "Poser l'addition en colonnes : les nombres sont grands, mais elle se pose vite.",
+              "Arrondir les deux nombres et donner le résultat approché : cela suffit ici."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une addition de deux nombres de quatre chiffres se pose sans difficulté : la calculatrice n'apporte rien, et un résultat approché ne répond pas à la question."
+          },
+          {
+            "question": "Malo doit calculer 500 ÷ 4. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "La calculatrice : une division par 4 donne souvent un résultat à virgule.",
+              "Poser la division : le dividende a trois chiffres, il faut donc la poser.",
+              "Poser une multiplication à trous : on cherche le nombre qui donne 500.",
+              "Le calcul mental : la moitié de 500 est 250, et la moitié de 250 est 125."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Diviser par 4, c'est prendre deux fois la moitié : avec un nombre rond comme 500, cela se fait sans rien écrire."
+          },
+          {
+            "question": "Inès doit calculer 12,7 × 8,45. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : on multiplie 13 par 8 et on ajoute une virgule à la fin.",
+              "La calculatrice : trois décimales à gérer ; on vérifie avec 13 × 8.",
+              "Poser la multiplication : avec des décimaux, c'est aussi rapide que la machine.",
+              "Arrondir les deux nombres et garder 104 comme réponse : l'écart est minime."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Trois chiffres après les virgules à gérer : la calculatrice évite l'erreur, et l'estimation 13 × 8 permet de contrôler l'écran."
+          },
+          {
+            "question": "Jade doit calculer 25 + 78 + 75. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Poser les deux additions l'une après l'autre : on ne peut pas changer l'ordre.",
+              "La calculatrice : il y a trois nombres, donc deux additions à enchaîner.",
+              "Le calcul mental : regrouper 25 + 75 pour faire 100, puis ajouter 78.",
+              "Écrire les trois nombres en colonnes : additionner de gauche à droite va plus vite."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Dans une somme, on peut changer l'ordre des nombres : repérer deux termes qui font un compte rond rend le calcul immédiat."
+          },
+          {
+            "question": "Louna doit calculer 4 872 ÷ 6. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Poser la division : le dividende est grand, mais le diviseur a un chiffre.",
+              "Le calcul mental : 4 872 ÷ 6 est un résultat que donne la table de 6.",
+              "La calculatrice : une division à grand dividende ne se pose jamais à la main.",
+              "Faire une multiplication à la place : 4 872 × 6 donne le même résultat."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un diviseur à un seul chiffre se pose sans difficulté ; le dividende, lui, est bien trop grand pour être traité de tête."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des procédures à choisir",
+        "consigne": "Pour chaque calcul, choisis la procédure la plus efficace. On ne demande pas le résultat, mais la méthode.",
+        "questions": [
+          {
+            "question": "Rosalie doit calculer 298 + 45. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "La calculatrice : il y a une retenue à gérer dans cette addition.",
+              "Poser l'addition en colonnes : c'est la seule façon de gérer la retenue.",
+              "Le calcul mental : 300 + 45, puis enlever 2, car 298 est juste avant 300.",
+              "Le calcul mental : 300 + 45, puis ajouter 2, car 298 est près de 300."
+            ],
+            "reponse_correcte": 2,
+            "explication": "298 est tout près de 300 : on calcule avec le nombre rond, puis on corrige. Comme on a ajouté 2 à 298, il faut enlever 2 au résultat."
+          },
+          {
+            "question": "Sacha doit calculer 8 926 × 4 375. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "La calculatrice : quatre chiffres chacun ; on contrôle ensuite avec 9 000 × 4 000.",
+              "Poser la multiplication en colonnes : chaque chiffre du second nombre est traité à part.",
+              "Le calcul mental : on arrondit les deux nombres et on donne le produit arrondi.",
+              "Additionner 8 926 plusieurs fois : une multiplication est une addition répétée."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Deux nombres de quatre chiffres : la calculatrice est la seule méthode raisonnable, mais on garde le contrôle en estimant le résultat."
+          },
+          {
+            "question": "Yanis doit calculer 60 × 30. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "La calculatrice : deux nombres à deux chiffres, le produit est trop grand.",
+              "Poser la multiplication en colonnes : les deux nombres ont deux chiffres.",
+              "Additionner 60 trente fois : c'est ce que veut dire multiplier par 30.",
+              "Le calcul mental : 6 × 3 = 18, puis on rétablit les deux zéros, soit 1 800."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Avec deux nombres ronds, on calcule sur les chiffres non nuls et on rétablit les zéros à la fin."
+          },
+          {
+            "question": "Jade doit calculer 5 274 − 1 896. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : on retire les milliers, puis les centaines, puis le reste.",
+              "Poser la soustraction en colonnes : les nombres sont grands, avec retenues.",
+              "Arrondir les deux nombres et donner le résultat approché : cela suffit ici.",
+              "La calculatrice : avec autant de retenues, la soustraction posée est trop risquée."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les deux nombres ne sont ni ronds ni proches l'un de l'autre : la soustraction posée est la méthode sûre, et elle reste rapide."
+          },
+          {
+            "question": "Inès doit calculer 1 000 ÷ 8. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : la moitié de 1 000 est 500, puis 250, puis 125.",
+              "La calculatrice : une division par 8 donne souvent un résultat à virgule.",
+              "Poser la division : le dividende a quatre chiffres, il faut donc la poser.",
+              "Poser une multiplication à trous : on cherche le nombre qui donne 1 000."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Diviser par 8, c'est prendre trois fois la moitié : avec un nombre rond comme 1 000, cela se fait sans rien écrire."
+          },
+          {
+            "question": "Adam doit calculer 34,6 × 7,25. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : on multiplie 35 par 7 et on ajoute une virgule à la fin.",
+              "Arrondir les deux nombres et garder 245 comme réponse : l'écart est minime.",
+              "Poser la multiplication : avec des décimaux, c'est plus sûr que la machine.",
+              "La calculatrice : trois décimales à gérer ; on vérifie avec 35 × 7, environ 245."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Trois chiffres après les virgules à gérer : la calculatrice évite l'erreur, et l'estimation 35 × 7 permet de contrôler l'écran."
+          },
+          {
+            "question": "Fatou doit calculer 47 + 88 + 53. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Poser les deux additions l'une après l'autre : on ne peut pas changer l'ordre.",
+              "Le calcul mental : regrouper 47 + 53 pour faire 100, puis ajouter 88.",
+              "Écrire les trois nombres en colonnes : additionner de gauche à droite va plus vite.",
+              "La calculatrice : il y a trois nombres, donc deux additions à enchaîner."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Dans une somme, on peut changer l'ordre des nombres : repérer deux termes qui font un compte rond rend le calcul immédiat."
+          },
+          {
+            "question": "Timéo doit calculer 5 649 ÷ 7. Quelle est la procédure la plus efficace ?",
+            "options": [
+              "Le calcul mental : 5 649 ÷ 7 est un résultat que donne la table de 7.",
+              "La calculatrice : une division à grand dividende ne se pose jamais à la main.",
+              "Poser la division : le dividende est grand, mais le diviseur a un chiffre.",
+              "Faire une multiplication à la place : 5 649 × 7 donne le même résultat."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un diviseur à un seul chiffre se pose sans difficulté ; le dividende, lui, est bien trop grand pour être traité de tête."
+          }
+        ]
+      }
+    ]
+  }
+]

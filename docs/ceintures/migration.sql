@@ -96,16 +96,15 @@ create unique index if not exists idx_cvar_pb on ceinture_variante(eleve_id, exe
 create unique index if not exists idx_cvar_rb on ceinture_variante(rb_eleve_id, exercice_id) where rb_eleve_id is not null;
 create index if not exists idx_cvar_origine on ceinture_variante(origine_evaluation_id);
 
--- ───────────────── Seed du référentiel (4 domaines, 144 items) ─────
--- Ordre et type_exercice repris des fichiers de banque, qui font foi :
--- plusieurs items ont changé de type par rapport au référentiel PIDAPI,
--- parce que le moteur ne sait pas évaluer le type d'origine (voir BRIEF §3).
+-- ───────────────── Seed du référentiel (5 domaines, 177 items) ─────
+-- Ordre et type_exercice repris des fichiers de banque, qui font foi.
 
 insert into ceinture_domaine (code, nom, matiere, description, ordre) values
   ('PHRA', 'Phrases', 'français', 'Grammaire, conjugaison, orthographe grammaticale', 2),
   ('MOTS', 'Mots', 'français', 'Vocabulaire, classes de mots, orthographe lexicale', 1),
   ('TEXT', 'Textes', 'français', 'Lecture, production d''écrits, relecture', 3),
-  ('NOMB', 'Nombres', 'maths', 'Numération, fractions, nombres décimaux', 4)
+  ('NOMB', 'Nombres', 'maths', 'Numération, fractions, nombres décimaux', 4),
+  ('CALC', 'Calcul', 'maths', 'Calcul mental, opérations posées, problèmes', 5)
 on conflict (code) do update set nom = excluded.nom, matiere = excluded.matiere,
   description = excluded.description, ordre = excluded.ordre;
 
@@ -254,7 +253,40 @@ insert into ceinture_item (code, domaine_code, ceinture_idx, libelle, niveau_cib
   ('N34', 'NOMB', 7, 'Je trouve de tête des ordres de grandeur avec des décimaux', 'CM2', 'qcm', 2, 'auto', 'Calcul du jour', 'Reformulé', 29),
   ('N35', 'NOMB', 8, 'J''intercale des nombres décimaux entre deux nombres', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 30),
   ('N36', 'NOMB', 8, 'J''écris une fraction de différentes façons (fractions égales, simplification)', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Fractions', 'PIDAPI', 31),
-  ('N41', 'NOMB', 8, 'Je passe d''une fraction à son écriture décimale et inversement', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Fractions', 'Ajouté', 32)
+  ('N41', 'NOMB', 8, 'Je passe d''une fraction à son écriture décimale et inversement', 'CM2+', 'exercice', 2, 'auto', 'iParcours · Fractions', 'Ajouté', 32),
+  ('C10', 'CALC', 0, 'Je connais les tables de multiplication de 0, 1, 2, 5 et 10', 'CE2', 'calcul_mental', 2, 'auto', 'Module Ceintures de multiplications (blanche → orange)', 'PIDAPI', 1),
+  ('C11', 'CALC', 0, 'Je pose et je calcule l''addition de deux nombres (avec retenue)', 'CE2', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'PIDAPI', 2),
+  ('C12', 'CALC', 0, 'Je pose et je calcule la soustraction de deux nombres (sans retenue)', 'CE2', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'PIDAPI', 3),
+  ('C13', 'CALC', 0, 'Je soustrais en ligne ① (sans retenue)', 'CE2', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'Reformulé', 4),
+  ('C14', 'CALC', 1, 'Je connais le sens de la multiplication', 'CE2', 'probleme_maths', 2, 'auto', 'iParcours · Calcul', 'Reformulé', 5),
+  ('C16', 'CALC', 1, 'Je pose et je calcule l''addition de plusieurs nombres', 'CE2', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'PIDAPI', 6),
+  ('C15', 'CALC', 1, 'Je pose et je calcule la multiplication par un nombre à un chiffre', 'CE2', 'calcul_mental', 2, 'auto', 'iParcours · Calcul', 'PIDAPI', 7),
+  ('C41', 'CALC', 1, 'Je calcule en ligne en décomposant (47 + 28 = 47 + 20 + 8)', 'CE2', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'Ajouté', 8),
+  ('C17', 'CALC', 2, 'Je connais les tables de multiplication de 3, 4 et 6', 'CE2-CM1', 'calcul_mental', 2, 'auto', 'Module Ceintures de multiplications (rose → vert foncé)', 'PIDAPI', 9),
+  ('C18', 'CALC', 2, 'Je soustrais en ligne rapidement ②', 'CE2-CM1', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'Reformulé', 10),
+  ('C19', 'CALC', 2, 'Je pose et je calcule la multiplication par un nombre à deux chiffres', 'CE2-CM1', 'calcul_mental', 2, 'auto', 'iParcours · Calcul', 'Reformulé', 11),
+  ('C40', 'CALC', 2, 'Je connais les compléments à 10, à 100 et à 1 000', 'CE2-CM1', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'Ajouté', 12),
+  ('C22', 'CALC', 3, 'Je connais les tables de multiplication de 7, 8 et 9', 'CM1', 'calcul_mental', 2, 'auto', 'Module Ceintures de multiplications (bleu clair → bleu foncé)', 'PIDAPI', 13),
+  ('C20', 'CALC', 3, 'Je pose et je calcule la soustraction de deux nombres avec retenue', 'CM1', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'PIDAPI', 14),
+  ('C21', 'CALC', 3, 'Je sais multiplier et diviser par 10, 100 et 1 000 des nombres entiers', 'CM1', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'Reformulé', 15),
+  ('C23', 'CALC', 4, 'Je connais le sens de la division', 'CM1', 'probleme_maths', 2, 'auto', 'iParcours · Calcul', 'Reformulé', 16),
+  ('C24', 'CALC', 4, 'Je pose et je calcule une division par un nombre à un chiffre', 'CM1', 'calcul_mental', 2, 'auto', 'iParcours · Calcul', 'Reformulé', 17),
+  ('C39', 'CALC', 4, 'Je calcule une division euclidienne : je trouve le quotient et le reste', 'CM1', 'exercice', 2, 'auto', 'iParcours · Calcul', 'Ajouté', 18),
+  ('C26', 'CALC', 4, 'J''effectue des calculs avec des parenthèses', 'CM1', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'PIDAPI', 19),
+  ('C25', 'CALC', 5, 'J''additionne de tête deux décimaux donnant un entier (2,4 + 0,6)', 'CM1-CM2', 'exercice', 2, 'auto', 'Calcul du jour', 'Reformulé', 20),
+  ('C27', 'CALC', 5, 'Je connais les multiples de 25 et de 50 et les diviseurs de 100', 'CM1-CM2', 'calcul_mental', 2, 'auto', 'Calcul du jour', 'PIDAPI', 21),
+  ('C32', 'CALC', 5, 'J''effectue de tête une division exacte issue des tables de multiplication', 'CM1-CM2', 'calcul_mental', 2, 'auto', 'Module Ceintures de multiplications (mauve → marron)', 'PIDAPI', 22),
+  ('C29', 'CALC', 6, 'Je pose et je calcule des additions et des soustractions de décimaux', 'CM2', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 23),
+  ('C28', 'CALC', 6, 'Je sais multiplier avec des décimaux', 'CM2', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 24),
+  ('C30', 'CALC', 6, 'J''identifie une situation de proportionnalité', 'CM2', 'qcm', 2, 'auto', 'iParcours · Proportionnalité', 'Reformulé', 25),
+  ('C31', 'CALC', 7, 'Je résous des problèmes de proportionnalité', 'CM2', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 26),
+  ('C34', 'CALC', 7, 'Je connais les critères de divisibilité par 2, 5 et 10', 'CM2', 'classement', 2, 'auto', 'iParcours · Calcul', 'Reformulé', 27),
+  ('C33', 'CALC', 7, 'Je contrôle le résultat donné par une calculatrice', 'CM2', 'qcm', 2, 'auto', '—', 'Reformulé', 28),
+  ('C38', 'CALC', 7, 'Je pose et je calcule la division d''un nombre décimal par un nombre entier', 'CM2', 'exercice', 2, 'auto', 'iParcours · Décimaux', 'PIDAPI', 29),
+  ('C35', 'CALC', 8, 'Je calcule un pourcentage', 'CM2+', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 30),
+  ('C36', 'CALC', 8, 'Je connais les critères de divisibilité par 3 et 9', 'CM2+', 'qcm', 2, 'auto', 'iParcours · Calcul', 'PIDAPI', 31),
+  ('C37', 'CALC', 8, 'J''utilise l''échelle d''un plan', 'CM2+', 'probleme_maths', 2, 'auto', 'iParcours · Proportionnalité', 'PIDAPI', 32),
+  ('C42', 'CALC', 8, 'Je choisis la procédure la plus efficace : calcul mental, posé ou calculatrice', 'CM2+', 'qcm', 2, 'auto', '—', 'Ajouté', 33)
 on conflict (code) do update set domaine_code = excluded.domaine_code,
   ceinture_idx = excluded.ceinture_idx, libelle = excluded.libelle,
   niveau_cible = excluded.niveau_cible, type_exercice = excluded.type_exercice,

@@ -30,6 +30,7 @@ const ITEMS_HOMOPHONES = new Set(["P47","P48","P49"]);
 const TYPES = new Set([
   "exercice", "qcm", "texte_a_trous", "classement",
   "analyse_phrase", "calcul_mental", "ecriture_contrainte", "lecture", "mots",
+  "probleme_maths",
 ]);
 
 /** Nettoyage identique à celui de la page exercice (accents supprimés). */
@@ -168,6 +169,52 @@ function validerQcm(code, e) {
   });
 }
 
+/** calcul_mental : { titre, consigne, calculs:[{id, enonce, reponse}] } */
+function validerCalculMental(ctx, e) {
+  const cs = e.calculs;
+  if (!Array.isArray(cs) || cs.length === 0) return err(ctx, "aucun calcul");
+  if (cs.length < 6 || cs.length > 12) warn(ctx, `${cs.length} calculs (6 à 12 attendus)`);
+  const vus = new Set();
+  for (const c of cs) {
+    if (!c.enonce || !String(c.enonce).trim()) err(ctx, "énoncé de calcul vide");
+    const r = String(c.reponse ?? "").trim();
+    if (!r) err(ctx, `« ${c.enonce} » : réponse vide`);
+    // Le comparateur partagé gère la virgule et l'espace des milliers, mais une
+    // réponse de plusieurs mots reste une réponse à saisir en entier.
+    if (r.split(/\s+/).length > 2 && !/^\d[\d\s]*$/.test(r))
+      warn(ctx, `« ${c.enonce} » : réponse de plus de deux mots (« ${r} »)`);
+    const cle = String(c.enonce).replace(/\s+/g, "");
+    if (vus.has(cle)) warn(ctx, `calcul en double : « ${c.enonce} »`);
+    vus.add(cle);
+  }
+}
+
+/** probleme_maths : { titre, consigne, problemes:[{id, enonce, resultat_attendu,
+ *  phrase_reponse_attendue, mots_cles[], indice}] } */
+function validerProblemeMaths(ctx, e) {
+  const ps = e.problemes;
+  if (!Array.isArray(ps) || ps.length === 0) return err(ctx, "aucun problème");
+  for (const p of ps) {
+    if (!p.enonce || !String(p.enonce).trim()) err(ctx, "énoncé de problème vide");
+    if (!String(p.resultat_attendu ?? "").trim()) err(ctx, `« ${(p.enonce||"").slice(0,40)}… » : resultat_attendu vide`);
+    const phrase = String(p.phrase_reponse_attendue ?? "");
+    if (!phrase.trim()) err(ctx, `« ${(p.enonce||"").slice(0,40)}… » : phrase_reponse_attendue vide`);
+    const cles = p.mots_cles;
+    if (!Array.isArray(cles) || cles.length === 0)
+      err(ctx, `« ${(p.enonce||"").slice(0,40)}… » : mots_cles manquants`);
+    else {
+      const sansAccent = (x) => String(x).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      for (const c of cles) {
+        // Un mot-clé absent de la phrase attendue rend la correction impossible.
+        if (!sansAccent(phrase).includes(sansAccent(c)))
+          err(ctx, `mot-clé « ${c} » absent de la phrase réponse « ${phrase} »`);
+        // Les accents ne sont PAS un risque : ProblemeMathsEleve.normaliser()
+        // les retire des deux côtés avant de comparer.
+      }
+    }
+  }
+}
+
 function validerAnalysePhrase(code, e) {
   const phrases = e.phrases ?? [];
   if (!phrases.length) return err(code, "aucune phrase");
@@ -232,6 +279,8 @@ for (const f of fichiers) {
         case "exercice":       validerExercice(ctx, e); break;
         case "qcm":            validerQcm(ctx, e); break;
         case "analyse_phrase": validerAnalysePhrase(ctx, e); break;
+        case "calcul_mental":  validerCalculMental(ctx, e); break;
+        case "probleme_maths": validerProblemeMaths(ctx, e); break;
         default:               warn(ctx, `type « ${item.type} » non contrôlé par ce validateur`);
       }
       // Deux variantes doivent différer réellement, sinon la remédiation

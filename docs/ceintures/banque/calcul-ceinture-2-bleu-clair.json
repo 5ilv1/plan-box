@@ -1,0 +1,550 @@
+[
+  {
+    "item_code": "C17",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Vérifier les tables de 3, 4 et 6",
+      "regle": "Une table se sait par cœur : ici, on vérifie seulement que tu la sais.",
+      "procedure": [
+        "Pour apprendre tes tables de 3, 4 et 6, entraîne-toi avec le module Ceintures de multiplication, jusqu'à la ceinture Vert clair.",
+        "Si un résultat te manque, récite la table jusqu'à lui.",
+        "Souviens-toi qu'on peut échanger les deux nombres : le résultat ne change pas."
+      ],
+      "exemples": [
+        {
+          "phrase": "6 × 7",
+          "demonstration": "J'avance de 6 en 6 et je compte les pas : au septième pas, j'arrive à 42."
+        },
+        {
+          "phrase": "8 × 4",
+          "demonstration": "Je sais que 4 × 8 = 32 ; l'ordre ne change rien : 8 × 4 = 32."
+        }
+      ],
+      "piege": "6 × 7 = 42 : ne le confonds pas avec 6 × 8, qui va plus loin dans la table."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 6 × 7 ?",
+        "options": [
+          "42",
+          "36",
+          "48",
+          "13"
+        ],
+        "reponse_correcte": 0,
+        "explication": "6 × 7 = 42. 36, c'est 6 × 6 ; 48, c'est 6 × 8 ; 13, c'est 6 + 7."
+      },
+      {
+        "question": "Quel nombre manque ? 4 × … = 32",
+        "options": [
+          "6",
+          "7",
+          "8",
+          "9"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Dans la table de 4, c'est 8 qui donne 32 : 4 × 8 = 32."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Contrôle des tables de 3, 4 et 6",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "3 × 7",
+            "reponse": "21"
+          },
+          {
+            "id": 2,
+            "enonce": "4 × 6",
+            "reponse": "24"
+          },
+          {
+            "id": 3,
+            "enonce": "6 × 8",
+            "reponse": "48"
+          },
+          {
+            "id": 4,
+            "enonce": "4 × 7",
+            "reponse": "28"
+          },
+          {
+            "id": 5,
+            "enonce": "6 × 5",
+            "reponse": "30"
+          },
+          {
+            "id": 6,
+            "enonce": "3 × 9",
+            "reponse": "27"
+          },
+          {
+            "id": 7,
+            "enonce": "6 × 6",
+            "reponse": "36"
+          },
+          {
+            "id": 8,
+            "enonce": "3 × 4",
+            "reponse": "12"
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième contrôle des tables de 3, 4 et 6",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "8 × 3",
+            "reponse": "24"
+          },
+          {
+            "id": 2,
+            "enonce": "3 × 5",
+            "reponse": "15"
+          },
+          {
+            "id": 3,
+            "enonce": "6 × 9",
+            "reponse": "54"
+          },
+          {
+            "id": 4,
+            "enonce": "4 × 4",
+            "reponse": "16"
+          },
+          {
+            "id": 5,
+            "enonce": "9 × 4",
+            "reponse": "36"
+          },
+          {
+            "id": 6,
+            "enonce": "6 × 3",
+            "reponse": "18"
+          },
+          {
+            "id": 7,
+            "enonce": "4 × 10",
+            "reponse": "40"
+          },
+          {
+            "id": 8,
+            "enonce": "5 × 4",
+            "reponse": "20"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C18",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Soustraire en ligne",
+      "regle": "Pour soustraire en ligne, on enlève d'abord les dizaines, puis les unités.",
+      "procedure": [
+        "Sépare le nombre à enlever en dizaines et en unités.",
+        "Enlève les dizaines : le chiffre des unités ne bouge pas.",
+        "Enlève ensuite les unités, en passant par la dizaine ronde si besoin."
+      ],
+      "exemples": [
+        {
+          "phrase": "71 − 34",
+          "demonstration": "34, c'est 30 et 4. 71 − 30 = 41, puis 41 − 4 = 37."
+        },
+        {
+          "phrase": "134 − 47",
+          "demonstration": "47, c'est 40 et 7. 134 − 40 = 94, puis 94 − 7 = 87."
+        }
+      ],
+      "piege": "Quand tu as enlevé les dizaines, n'oublie pas d'enlever aussi les unités."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 74 − 26 ?",
+        "options": [
+          "52",
+          "58",
+          "48",
+          "100"
+        ],
+        "reponse_correcte": 2,
+        "explication": "26, c'est 20 et 6 : 74 − 20 = 54, puis 54 − 6 = 48. 52, c'est le résultat qu'on obtient en soustrayant chiffre par chiffre : 7 − 2 et 6 − 4."
+      },
+      {
+        "question": "Combien font 62 − 7 ?",
+        "options": [
+          "56",
+          "55",
+          "65",
+          "45"
+        ],
+        "reponse_correcte": 1,
+        "explication": "7, c'est 2 et 5 : 62 − 2 = 60, puis 60 − 5 = 55."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Enlever les dizaines, puis les unités",
+        "consigne": "Calcule en ligne, dans ta tête. Écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "84 − 37",
+            "reponse": "47"
+          },
+          {
+            "id": 2,
+            "enonce": "74 − 9",
+            "reponse": "65"
+          },
+          {
+            "id": 3,
+            "enonce": "63 − 28",
+            "reponse": "35"
+          },
+          {
+            "id": 4,
+            "enonce": "143 − 58",
+            "reponse": "85"
+          },
+          {
+            "id": 5,
+            "enonce": "91 − 7",
+            "reponse": "84"
+          },
+          {
+            "id": 6,
+            "enonce": "82 − 35",
+            "reponse": "47"
+          },
+          {
+            "id": 7,
+            "enonce": "120 − 60",
+            "reponse": "60"
+          },
+          {
+            "id": 8,
+            "enonce": "106 − 8",
+            "reponse": "98"
+          }
+        ]
+      },
+      {
+        "titre": "Les soustractions en ligne du jour",
+        "consigne": "Calcule en ligne, dans ta tête. Écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "73 − 46",
+            "reponse": "27"
+          },
+          {
+            "id": 2,
+            "enonce": "53 − 8",
+            "reponse": "45"
+          },
+          {
+            "id": 3,
+            "enonce": "76 − 29",
+            "reponse": "47"
+          },
+          {
+            "id": 4,
+            "enonce": "154 − 67",
+            "reponse": "87"
+          },
+          {
+            "id": 5,
+            "enonce": "84 − 6",
+            "reponse": "78"
+          },
+          {
+            "id": 6,
+            "enonce": "95 − 37",
+            "reponse": "58"
+          },
+          {
+            "id": 7,
+            "enonce": "150 − 70",
+            "reponse": "80"
+          },
+          {
+            "id": 8,
+            "enonce": "104 − 7",
+            "reponse": "97"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C19",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Poser une multiplication à deux chiffres",
+      "regle": "Multiplier par un nombre à deux chiffres, c'est multiplier par les unités, puis par les dizaines, et additionner les deux résultats.",
+      "procedure": [
+        "Multiplie par le chiffre des unités : c'est la première ligne.",
+        "Écris un zéro au bout de la deuxième ligne, puis multiplie par le chiffre des dizaines.",
+        "Additionne les deux lignes."
+      ],
+      "exemples": [
+        {
+          "phrase": "23 × 14",
+          "demonstration": "23 × 4 = 92 ; 23 × 10 = 230 ; 92 + 230 = 322."
+        },
+        {
+          "phrase": "47 × 25",
+          "demonstration": "47 × 5 = 235 ; 47 × 20 = 940 ; 235 + 940 = 1175."
+        }
+      ],
+      "piege": "N'oublie pas le zéro de la deuxième ligne : tu multiplies par des dizaines, pas par des unités."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 32 × 21 ?",
+        "options": [
+          "96",
+          "672",
+          "6720",
+          "652"
+        ],
+        "reponse_correcte": 1,
+        "explication": "32 × 1 = 32 et 32 × 20 = 640 : 32 + 640 = 672."
+      },
+      {
+        "question": "Pour calculer 46 × 32, la première ligne est 46 × 2 = 92. Que vaut la deuxième ligne ?",
+        "options": [
+          "92",
+          "138",
+          "1420",
+          "1380"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le 3 de 32 vaut 3 dizaines : la deuxième ligne est 46 × 30 = 1380, avec son zéro."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Multiplications posées de la classe",
+        "consigne": "Pose l'opération sur ton cahier, puis écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "24 × 12",
+            "reponse": "288"
+          },
+          {
+            "id": 2,
+            "enonce": "36 × 21",
+            "reponse": "756"
+          },
+          {
+            "id": 3,
+            "enonce": "45 × 13",
+            "reponse": "585"
+          },
+          {
+            "id": 4,
+            "enonce": "52 × 34",
+            "reponse": "1768"
+          },
+          {
+            "id": 5,
+            "enonce": "128 × 24",
+            "reponse": "3072"
+          },
+          {
+            "id": 6,
+            "enonce": "60 × 15",
+            "reponse": "900"
+          }
+        ]
+      },
+      {
+        "titre": "Nouvelles multiplications posées",
+        "consigne": "Pose l'opération sur ton cahier, puis écris le résultat en chiffres, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "32 × 14",
+            "reponse": "448"
+          },
+          {
+            "id": 2,
+            "enonce": "27 × 31",
+            "reponse": "837"
+          },
+          {
+            "id": 3,
+            "enonce": "54 × 16",
+            "reponse": "864"
+          },
+          {
+            "id": 4,
+            "enonce": "63 × 42",
+            "reponse": "2646"
+          },
+          {
+            "id": 5,
+            "enonce": "145 × 23",
+            "reponse": "3335"
+          },
+          {
+            "id": 6,
+            "enonce": "40 × 25",
+            "reponse": "1000"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C40",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Compléter à 10, 100 et 1 000",
+      "regle": "Le complément d'un nombre, c'est ce qu'il faut ajouter pour atteindre 10, 100 ou 1 000.",
+      "procedure": [
+        "Pour aller à 10, cherche ce qui manque au chiffre.",
+        "Pour aller à 100 : si le nombre finit par un zéro, compte de dizaine en dizaine ; sinon, complète les unités jusqu'à 10 et les dizaines jusqu'à 9.",
+        "Pour aller à 1 000, monte à la centaine ronde, puis complète les centaines."
+      ],
+      "exemples": [
+        {
+          "phrase": "Complément de 64 à 100",
+          "demonstration": "Unités : 4 + 6 = 10. Dizaines : 6 + 3 = 9. Le complément est 36."
+        },
+        {
+          "phrase": "Complément de 250 à 1 000",
+          "demonstration": "Je monte à 300 avec 50, puis de 300 à 1 000 avec 700 : en tout 750."
+        }
+      ],
+      "piege": "Le complément de 25 à 100 est 75, et non 85."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien faut-il ajouter à 60 pour aller à 100 ?",
+        "options": [
+          "40",
+          "30",
+          "140",
+          "4"
+        ],
+        "reponse_correcte": 0,
+        "explication": "60, c'est 6 dizaines ; il en manque 4 pour faire 10 dizaines : 60 + 40 = 100."
+      },
+      {
+        "question": "Quel nombre complète 480 pour aller à 1 000 ?",
+        "options": [
+          "620",
+          "530",
+          "1480",
+          "520"
+        ],
+        "reponse_correcte": 3,
+        "explication": "480 + 20 = 500, puis 500 + 500 = 1 000 : il faut 520 en tout."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Compléter jusqu'à 10, 100 et 1 000",
+        "consigne": "Écris le nombre qui manque, en chiffres et sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "Complète : 6 + … = 10",
+            "reponse": "4"
+          },
+          {
+            "id": 2,
+            "enonce": "Complète : 9 + … = 10",
+            "reponse": "1"
+          },
+          {
+            "id": 3,
+            "enonce": "Complète : 70 + … = 100",
+            "reponse": "30"
+          },
+          {
+            "id": 4,
+            "enonce": "Complète : 45 + … = 100",
+            "reponse": "55"
+          },
+          {
+            "id": 5,
+            "enonce": "Complète : 82 + … = 100",
+            "reponse": "18"
+          },
+          {
+            "id": 6,
+            "enonce": "Complète : 300 + … = 1000",
+            "reponse": "700"
+          },
+          {
+            "id": 7,
+            "enonce": "Complète : 650 + … = 1000",
+            "reponse": "350"
+          },
+          {
+            "id": 8,
+            "enonce": "Complète : 990 + … = 1000",
+            "reponse": "10"
+          }
+        ]
+      },
+      {
+        "titre": "Encore des compléments",
+        "consigne": "Écris le nombre qui manque, en chiffres et sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "Complète : 3 + … = 10",
+            "reponse": "7"
+          },
+          {
+            "id": 2,
+            "enonce": "Complète : 5 + … = 10",
+            "reponse": "5"
+          },
+          {
+            "id": 3,
+            "enonce": "Complète : 40 + … = 100",
+            "reponse": "60"
+          },
+          {
+            "id": 4,
+            "enonce": "Complète : 63 + … = 100",
+            "reponse": "37"
+          },
+          {
+            "id": 5,
+            "enonce": "Complète : 28 + … = 100",
+            "reponse": "72"
+          },
+          {
+            "id": 6,
+            "enonce": "Complète : 800 + … = 1000",
+            "reponse": "200"
+          },
+          {
+            "id": 7,
+            "enonce": "Complète : 450 + … = 1000",
+            "reponse": "550"
+          },
+          {
+            "id": 8,
+            "enonce": "Complète : 970 + … = 1000",
+            "reponse": "30"
+          }
+        ]
+      }
+    ]
+  }
+]

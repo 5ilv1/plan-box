@@ -1,0 +1,556 @@
+[
+  {
+    "item_code": "C29",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Poser des décimaux",
+      "regle": "Dans une addition ou une soustraction posée de décimaux, les virgules doivent être l'une sous l'autre.",
+      "procedure": [
+        "Écris les deux nombres l'un sous l'autre, virgule sous virgule.",
+        "Complète avec des zéros pour qu'ils aient autant de chiffres après la virgule.",
+        "Calcule comme avec des entiers, puis descends la virgule."
+      ],
+      "exemples": [
+        {
+          "phrase": "5,3 + 2,84",
+          "demonstration": "J'écris 5,30 au-dessus de 2,84. 0,30 + 0,84 = 1,14 : je pose 14 et je retiens 1. Total : 8,14."
+        },
+        {
+          "phrase": "6 − 1,45",
+          "demonstration": "6 s'écrit 6,00 : sans ces zéros, rien à soustraire aux centièmes. 6,00 − 1,45 = 4,55."
+        }
+      ],
+      "piege": "Un nombre entier comme 6 se pose 6,00."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le résultat de 12,4 + 3,75 ?",
+        "options": [
+          "15,79",
+          "16,15",
+          "16,79",
+          "15,15"
+        ],
+        "reponse_correcte": 1,
+        "explication": "J'aligne les virgules : 12,40 + 3,75. 0,40 + 0,75 = 1,15 : je pose 15 centièmes et je retiens 1 unité. 12 + 3 + 1 = 16, donc 16,15."
+      },
+      {
+        "question": "Quel est le résultat de 8 − 2,6 ?",
+        "options": [
+          "6,6",
+          "6,4",
+          "5,4",
+          "5,6"
+        ],
+        "reponse_correcte": 2,
+        "explication": "J'écris 8 comme 8,0. 0 dixième − 6 dixièmes est impossible : j'emprunte une unité, 10 − 6 = 4 dixièmes, puis 7 − 2 = 5. Résultat : 5,4."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je pose et je calcule",
+        "consigne": "Pose l'opération sur ton cahier, puis écris le résultat. Utilise la virgule.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "14,5 + 6,75",
+            "reponse_attendue": "21,25",
+            "indice": "Aligne les virgules et complète 14,5 avec un zéro."
+          },
+          {
+            "id": 2,
+            "enonce": "23,8 + 9,45",
+            "reponse_attendue": "33,25",
+            "indice": "Aligne les virgules et complète 23,8 avec un zéro."
+          },
+          {
+            "id": 3,
+            "enonce": "7 + 2,6",
+            "reponse_attendue": "9,6",
+            "indice": "Le nombre entier 7 se pose 7,0."
+          },
+          {
+            "id": 4,
+            "enonce": "18,3 − 5,7",
+            "reponse_attendue": "12,6",
+            "indice": "Aligne les virgules, puis calcule comme avec des entiers."
+          },
+          {
+            "id": 5,
+            "enonce": "40 − 12,5",
+            "reponse_attendue": "27,5",
+            "indice": "Le nombre entier 40 se pose 40,0."
+          },
+          {
+            "id": 6,
+            "enonce": "9,25 − 3,8",
+            "reponse_attendue": "5,45",
+            "indice": "Complète 3,8 avec un zéro pour avoir autant de chiffres après la virgule."
+          },
+          {
+            "id": 7,
+            "enonce": "6,4 + 0,85",
+            "reponse_attendue": "7,25",
+            "indice": "Aligne les virgules et complète 6,4 avec un zéro."
+          },
+          {
+            "id": 8,
+            "enonce": "15,06 − 7,9",
+            "reponse_attendue": "7,16",
+            "indice": "Complète 7,9 avec un zéro : 7,90."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des décimaux à poser",
+        "consigne": "Pose l'opération sur ton cahier, puis écris le résultat. Utilise la virgule.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "12,6 + 8,45",
+            "reponse_attendue": "21,05",
+            "indice": "Aligne les virgules et complète 12,6 avec un zéro."
+          },
+          {
+            "id": 2,
+            "enonce": "31,7 + 5,85",
+            "reponse_attendue": "37,55",
+            "indice": "Aligne les virgules et complète 31,7 avec un zéro."
+          },
+          {
+            "id": 3,
+            "enonce": "9 + 4,35",
+            "reponse_attendue": "13,35",
+            "indice": "Le nombre entier 9 se pose 9,00."
+          },
+          {
+            "id": 4,
+            "enonce": "24,2 − 6,8",
+            "reponse_attendue": "17,4",
+            "indice": "Aligne les virgules, puis calcule comme avec des entiers."
+          },
+          {
+            "id": 5,
+            "enonce": "50 − 23,7",
+            "reponse_attendue": "26,3",
+            "indice": "Le nombre entier 50 se pose 50,0."
+          },
+          {
+            "id": 6,
+            "enonce": "8,15 − 2,9",
+            "reponse_attendue": "5,25",
+            "indice": "Complète 2,9 avec un zéro pour avoir autant de chiffres après la virgule."
+          },
+          {
+            "id": 7,
+            "enonce": "5,3 + 0,95",
+            "reponse_attendue": "6,25",
+            "indice": "Aligne les virgules et complète 5,3 avec un zéro."
+          },
+          {
+            "id": 8,
+            "enonce": "20,04 − 6,7",
+            "reponse_attendue": "13,34",
+            "indice": "Complète 6,7 avec un zéro : 6,70."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C28",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Multiplier avec des décimaux",
+      "regle": "On calcule sans la virgule, puis on la replace au résultat : autant de chiffres derrière elle qu'au départ.",
+      "procedure": [
+        "Oublie la virgule et pose la multiplication avec les entiers.",
+        "Reporte au résultat autant de chiffres après la virgule qu'au départ, en comptant depuis la droite.",
+        "Par 10, 100 ou 1 000, ne pose rien : décale chaque chiffre d'une, deux ou trois colonnes vers la gauche."
+      ],
+      "exemples": [
+        {
+          "phrase": "3,4 × 6",
+          "demonstration": "34 × 6 = 204. Un chiffre après la virgule dans 3,4, donc un aussi dans 20,4."
+        },
+        {
+          "phrase": "2,05 × 10",
+          "demonstration": "Chaque chiffre devient dix fois plus grand : les dixièmes passent aux unités, 20,5."
+        }
+      ],
+      "piege": "Multiplier par 10 n'est pas coller un zéro : 3,7 × 10 fait 37, pas 3,70."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien vaut 3,7 × 10 ?",
+        "options": [
+          "37",
+          "3,70",
+          "0,37",
+          "30,7"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Multiplier par 10, c'est rendre chaque chiffre 10 fois plus grand : les 3 unités deviennent 3 dizaines et les 7 dixièmes deviennent 7 unités. On obtient 37. Coller un zéro derrière la virgule ne change pas le nombre."
+      },
+      {
+        "question": "Combien vaut 2,4 × 3 ?",
+        "options": [
+          "6,12",
+          "6,2",
+          "72",
+          "7,2"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Je calcule d'abord 24 × 3 = 72. Dans 2,4 il y a un chiffre après la virgule, donc dans le résultat aussi : 7,2. Multiplier séparément 2 × 3 et 4 × 3 ne marche pas."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je multiplie des décimaux",
+        "consigne": "Pose la multiplication sur ton cahier quand tu en as besoin, puis écris le résultat. Utilise la virgule.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "4,7 × 10",
+            "reponse_attendue": "47",
+            "indice": "Chaque chiffre devient 10 fois plus grand : il change de colonne."
+          },
+          {
+            "id": 2,
+            "enonce": "3,25 × 100",
+            "reponse_attendue": "325",
+            "indice": "Chaque chiffre change de deux colonnes vers la gauche."
+          },
+          {
+            "id": 3,
+            "enonce": "0,6 × 100",
+            "reponse_attendue": "60",
+            "indice": "Les dixièmes deviennent des dizaines."
+          },
+          {
+            "id": 4,
+            "enonce": "5,2 × 4",
+            "reponse_attendue": "20,8",
+            "indice": "Calcule 52 × 4, puis place la virgule."
+          },
+          {
+            "id": 5,
+            "enonce": "3,6 × 5",
+            "reponse_attendue": "18",
+            "indice": "Calcule 36 × 5, puis place la virgule ; le résultat peut être un nombre entier."
+          },
+          {
+            "id": 6,
+            "enonce": "12,4 × 3",
+            "reponse_attendue": "37,2",
+            "indice": "Calcule 124 × 3, puis place la virgule."
+          },
+          {
+            "id": 7,
+            "enonce": "0,45 × 1000",
+            "reponse_attendue": "450",
+            "indice": "Chaque chiffre change de trois colonnes vers la gauche."
+          },
+          {
+            "id": 8,
+            "enonce": "7,05 × 6",
+            "reponse_attendue": "42,3",
+            "indice": "Calcule 705 × 6, puis compte deux chiffres après la virgule."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des multiplications de décimaux",
+        "consigne": "Pose la multiplication sur ton cahier quand tu en as besoin, puis écris le résultat. Utilise la virgule.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "6,3 × 10",
+            "reponse_attendue": "63",
+            "indice": "Chaque chiffre devient 10 fois plus grand : il change de colonne."
+          },
+          {
+            "id": 2,
+            "enonce": "4,75 × 100",
+            "reponse_attendue": "475",
+            "indice": "Chaque chiffre change de deux colonnes vers la gauche."
+          },
+          {
+            "id": 3,
+            "enonce": "0,8 × 100",
+            "reponse_attendue": "80",
+            "indice": "Les dixièmes deviennent des dizaines."
+          },
+          {
+            "id": 4,
+            "enonce": "6,4 × 3",
+            "reponse_attendue": "19,2",
+            "indice": "Calcule 64 × 3, puis place la virgule."
+          },
+          {
+            "id": 5,
+            "enonce": "2,5 × 8",
+            "reponse_attendue": "20",
+            "indice": "Calcule 25 × 8, puis place la virgule ; le résultat peut être un nombre entier."
+          },
+          {
+            "id": 6,
+            "enonce": "15,3 × 4",
+            "reponse_attendue": "61,2",
+            "indice": "Calcule 153 × 4, puis place la virgule."
+          },
+          {
+            "id": 7,
+            "enonce": "0,36 × 1000",
+            "reponse_attendue": "360",
+            "indice": "Chaque chiffre change de trois colonnes vers la gauche."
+          },
+          {
+            "id": 8,
+            "enonce": "8,05 × 4",
+            "reponse_attendue": "32,2",
+            "indice": "Calcule 805 × 4, puis compte deux chiffres après la virgule."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C30",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Reconnaître la proportionnalité",
+      "regle": "Deux grandeurs sont proportionnelles quand on passe de l'une à l'autre en multipliant toujours par le même nombre.",
+      "procedure": [
+        "Prends une valeur et son résultat : cherche par quel nombre on multiplie.",
+        "Refais le test avec un autre couple de valeurs.",
+        "Même nombre à chaque fois : c'est proportionnel."
+      ],
+      "exemples": [
+        {
+          "phrase": "4 cahiers coûtent 6 €, 8 cahiers coûtent 12 €.",
+          "demonstration": "De 4 à 6 on multiplie par 1,5 ; de 8 à 12 aussi. Même nombre : c'est proportionnel."
+        },
+        {
+          "phrase": "Malo a 8 ans, son frère Yanis en a 11.",
+          "demonstration": "Quand Malo aura 16 ans, Yanis en aura 19 et non 22 : on ajoute 3, on ne multiplie pas."
+        }
+      ],
+      "piege": "Deux grandeurs qui montent ensemble ne sont pas forcément proportionnelles."
+    },
+    "diagnostic": [
+      {
+        "question": "Parmi ces quatre situations, laquelle est une situation de proportionnalité ?",
+        "options": [
+          "L'âge de Nour et l'âge de son petit frère",
+          "Le nombre de croissants achetés et le prix payé, un croissant coûtant 1,10 €",
+          "La taille d'un élève et son âge",
+          "Le nombre de bougies d'un gâteau et le nombre d'invités"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Avec 2 croissants on paie 2 fois plus qu'avec 1, avec 5 croissants 5 fois plus : on multiplie toujours par le même prix. Dans les autres cas, ce n'est pas le cas."
+      },
+      {
+        "question": "Chez le primeur : 2 kg → 3 €, 4 kg → 6 €, 6 kg → 10 €. Ce tableau est-il un tableau de proportionnalité ?",
+        "options": [
+          "Oui, car les prix augmentent quand les kilos augmentent.",
+          "Oui, car il y a toujours la même différence entre les kilos et le prix.",
+          "Non, car 6 kg devraient coûter 9 €.",
+          "Non, car il faudrait connaître le prix de 1 kg."
+        ],
+        "reponse_correcte": 2,
+        "explication": "On passe des kilos au prix en multipliant par 1,5 : 2 × 1,5 = 3 et 4 × 1,5 = 6, mais 6 × 1,5 = 9. Le prix de 10 € casse la règle."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Est-ce proportionnel ?",
+        "consigne": "Pour chaque situation, dis si les deux grandeurs sont proportionnelles et choisis la bonne explication. On ne calcule pas de résultat : on décide.",
+        "questions": [
+          {
+            "question": "Un paquet de gâteaux coûte 3 €. Le nombre de paquets et le prix payé sont-ils proportionnels ?",
+            "options": [
+              "Non : le prix n'est pas toujours le même.",
+              "Oui : parce que le prix augmente.",
+              "Oui : pour 2 fois plus de paquets, on paie 2 fois plus.",
+              "Non : on ne peut pas savoir sans connaître le poids des paquets."
+            ],
+            "reponse_correcte": 2,
+            "explication": "C'est bien proportionnel, mais pas parce que le prix augmente : ici, on multiplie toujours le nombre de paquets par 3 €."
+          },
+          {
+            "question": "Louna a 9 ans et sa grande sœur Inès a 13 ans. Leurs deux âges sont-ils proportionnels ?",
+            "options": [
+              "Oui : quand l'une grandit, l'autre grandit aussi.",
+              "Non : Inès aura toujours 4 ans de plus ; on ajoute, on ne multiplie pas.",
+              "Oui : 9 et 13 sont tous les deux impairs.",
+              "Non : parce que 13 n'est pas dans la table de 9."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Entre les deux âges il y a toujours le même écart, 4 ans. En proportionnalité, on passe d'une grandeur à l'autre en multipliant par le même nombre."
+          },
+          {
+            "question": "Un tableau donne : 3 stylos → 4,50 € ; 6 stylos → 9 € ; 9 stylos → 13,50 €. Est-ce un tableau de proportionnalité ?",
+            "options": [
+              "Non : les prix ne sont pas des nombres entiers.",
+              "Oui : on multiplie toujours le nombre de stylos par 1,50 €.",
+              "Non : il manque le prix d'un seul stylo.",
+              "Non : 9 stylos devraient coûter 12 €."
+            ],
+            "reponse_correcte": 1,
+            "explication": "3 × 1,50 = 4,50, 6 × 1,50 = 9 et 9 × 1,50 = 13,50 : c'est toujours le même nombre, donc c'est proportionnel."
+          },
+          {
+            "question": "À la piscine : 2 h → 7 € ; 4 h → 14 € ; 5 h → 16 €. Est-ce proportionnel ?",
+            "options": [
+              "Oui : plus on reste, plus on paie.",
+              "Oui : les nombres d'heures augmentent régulièrement.",
+              "Non : 5 h devraient coûter 17,50 €.",
+              "Non : parce que 7 est un nombre impair."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une heure coûte 3,50 € : 2 h font 7 € et 4 h font 14 €, mais 5 h devraient faire 17,50 € et non 16 €."
+          },
+          {
+            "question": "Pour louer un vélo, on paie 5 € d'inscription, puis 2 € par heure. Le nombre d'heures et le prix payé sont-ils proportionnels ?",
+            "options": [
+              "Non : il y a 5 € à payer même pour 0 heure, on ne multiplie pas par le même nombre.",
+              "Oui : chaque heure coûte 2 €, donc c'est proportionnel.",
+              "Oui : le prix augmente régulièrement.",
+              "Non : parce que 2 h coûtent moins que 5 €."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Pour 1 h on paie 7 €, pour 2 h on paie 9 € et non 14 € : les 5 € de départ ne doublent pas. Ce n'est pas proportionnel."
+          },
+          {
+            "question": "Une recette demande 150 g de farine pour 4 crêpes. La masse de farine et le nombre de crêpes sont-elles proportionnelles ?",
+            "options": [
+              "Non : la farine se pèse et les crêpes se comptent.",
+              "Non : 150 n'est pas dans la table de 4.",
+              "Oui : parce que 150 est plus grand que 4.",
+              "Oui : pour 8 crêpes il faut 2 fois plus de farine, soit 300 g."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Pour 2 fois plus de crêpes, il faut 2 fois plus de farine, et pour 3 fois plus, 3 fois plus : on multiplie toujours par le même nombre."
+          },
+          {
+            "question": "Dans laquelle de ces situations les deux grandeurs ne sont-elles PAS proportionnelles ?",
+            "options": [
+              "Le nombre de tours de piste et la distance parcourue, un tour faisant 200 m",
+              "Le nombre de timbres achetés et le prix payé, un timbre coûtant 1,20 €",
+              "L'âge de Sacha et sa taille",
+              "Le nombre de boîtes de 6 œufs et le nombre d'œufs"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un enfant de 10 ans ne mesure pas deux fois plus qu'à 5 ans. Dans les trois autres cas, on multiplie toujours par le même nombre."
+          },
+          {
+            "question": "Au cinéma : 1 place → 8 € ; 3 places → 24 € ; 5 places → 40 €. Est-ce proportionnel ?",
+            "options": [
+              "Non : il manque les prix de 2 et de 4 places.",
+              "Oui : on multiplie toujours le nombre de places par 8 €.",
+              "Non : 5 places devraient coûter 35 €.",
+              "Oui : parce que tous les prix sont des nombres pairs."
+            ],
+            "reponse_correcte": 1,
+            "explication": "1 × 8 = 8, 3 × 8 = 24 et 5 × 8 = 40 : c'est toujours le même nombre, donc c'est proportionnel."
+          }
+        ]
+      },
+      {
+        "titre": "Proportionnel ou pas ?",
+        "consigne": "Pour chaque situation, dis si les deux grandeurs sont proportionnelles et choisis la bonne explication. On ne calcule pas de résultat : on décide.",
+        "questions": [
+          {
+            "question": "Une bouteille d'eau coûte 0,80 €. Le nombre de bouteilles et le prix payé sont-ils proportionnels ?",
+            "options": [
+              "Non : 0,80 € n'est pas un nombre entier.",
+              "Oui : on multiplie toujours le nombre de bouteilles par 0,80 €.",
+              "Non : il faudrait connaître le prix du pack.",
+              "Oui : parce que le prix augmente à chaque bouteille."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Pour 3 bouteilles on paie 3 fois le prix d'une, pour 10 bouteilles 10 fois : c'est toujours la même multiplication."
+          },
+          {
+            "question": "La taille d'un arbre et son âge sont-ils proportionnels ?",
+            "options": [
+              "Oui : plus il est vieux, plus il est grand.",
+              "Oui : un arbre de 20 ans est deux fois plus grand qu'à 10 ans.",
+              "Non : un arbre ne grandit pas deux fois plus en deux fois plus de temps.",
+              "Non : parce qu'on ne peut pas mesurer un arbre."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un arbre pousse vite au début puis ralentit : on ne passe pas de l'âge à la taille en multipliant toujours par le même nombre."
+          },
+          {
+            "question": "Un tableau donne : 4 m de tissu → 18 € ; 8 m → 36 € ; 10 m → 45 €. Est-ce proportionnel ?",
+            "options": [
+              "Oui : on multiplie toujours le nombre de mètres par 4,50 €.",
+              "Non : 10 m devraient coûter 40 €.",
+              "Non : il manque le prix de 1 m.",
+              "Oui : parce que les prix sont tous plus grands que les longueurs."
+            ],
+            "reponse_correcte": 0,
+            "explication": "4 × 4,50 = 18, 8 × 4,50 = 36 et 10 × 4,50 = 45 : c'est toujours le même nombre."
+          },
+          {
+            "question": "Location d'un jeu : 3 jours → 21 € ; 6 jours → 42 € ; 10 jours → 65 €. Est-ce proportionnel ?",
+            "options": [
+              "Oui : les prix montent quand les jours montent.",
+              "Non : 10 jours devraient coûter 70 €.",
+              "Oui : parce que 42 est le double de 21.",
+              "Non : parce que 65 est un nombre impair."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un jour coûte 7 € : 3 jours font 21 € et 6 jours font 42 €, mais 10 jours devraient faire 70 € et non 65 €."
+          },
+          {
+            "question": "Un taxi fait payer 4 € au départ, puis 1 € par kilomètre. Le nombre de kilomètres et le prix payé sont-ils proportionnels ?",
+            "options": [
+              "Oui : chaque kilomètre coûte 1 €.",
+              "Oui : le prix monte régulièrement.",
+              "Non : parce que 4 € et 1 € ne sont pas le même nombre.",
+              "Non : 2 km coûtent 6 € et non 10 €, le prix ne double pas."
+            ],
+            "reponse_correcte": 3,
+            "explication": "Pour 1 km on paie 5 €, pour 2 km on paie 6 € : les 4 € du départ ne doublent pas, ce n'est pas proportionnel."
+          },
+          {
+            "question": "Une recette demande 2 œufs pour 4 crêpes. Le nombre d'œufs et le nombre de crêpes sont-ils proportionnels ?",
+            "options": [
+              "Oui : pour 12 crêpes il faut 3 fois plus d'œufs, soit 6 œufs.",
+              "Non : on ne peut pas couper un œuf en deux.",
+              "Non : 2 et 4 ne sont pas dans la même table.",
+              "Oui : parce que 4 est le double de 2."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Pour 3 fois plus de crêpes il faut 3 fois plus d'œufs : on multiplie toujours par le même nombre."
+          },
+          {
+            "question": "Dans laquelle de ces situations les deux grandeurs sont-elles proportionnelles ?",
+            "options": [
+              "L'âge de Malo et le nombre de livres qu'il a lus",
+              "Le nombre de sachets de 8 billes et le nombre de billes",
+              "La température d'une journée et l'heure qu'il est",
+              "La masse d'un bébé et le nombre de jours depuis sa naissance"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Avec 2 fois plus de sachets, on a 2 fois plus de billes : on multiplie toujours par 8. Les trois autres situations ne suivent aucune multiplication constante."
+          },
+          {
+            "question": "Chez le marchand : 2 kg de pommes → 3,60 € ; 5 kg → 9 € ; 7 kg → 12,60 €. Est-ce proportionnel ?",
+            "options": [
+              "Non : les prix ont des virgules.",
+              "Non : 7 kg devraient coûter 12 €.",
+              "Oui : on multiplie toujours le nombre de kilos par 1,80 €.",
+              "Oui : parce qu'on ajoute toujours la même chose d'une ligne à l'autre."
+            ],
+            "reponse_correcte": 2,
+            "explication": "2 × 1,80 = 3,60, 5 × 1,80 = 9 et 7 × 1,80 = 12,60 : c'est toujours le même nombre."
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,845 @@
+[
+  {
+    "item_code": "C23",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Le sens de la division",
+      "regle": "Diviser, c'est partager en parts égales, ou chercher combien de fois un nombre tient dans un autre.",
+      "procedure": [
+        "Repère la quantité partagée : elle s'écrit en premier.",
+        "Repère en combien de parts on partage, ou par combien on groupe : ce nombre suit le signe ÷.",
+        "Cherche le nombre qui, multiplié par le second, redonne le premier."
+      ],
+      "exemples": [
+        {
+          "phrase": "12 crêpes partagées entre 3 enfants.",
+          "demonstration": "Je cherche 3 × ? = 12. Comme 3 × 4 = 12, chaque enfant reçoit 4 crêpes : 12 ÷ 3 = 4."
+        },
+        {
+          "phrase": "12 crêpes rangées par assiettes de 3 crêpes.",
+          "demonstration": "Je cherche encore 3 × ? = 12, mais le 4 compte cette fois des assiettes : 12 ÷ 3 = 4 assiettes."
+        }
+      ],
+      "piege": "La quantité partagée s'écrit toujours en premier : 12 ÷ 3, et jamais 3 ÷ 12."
+    },
+    "diagnostic": [
+      {
+        "question": "Malo partage équitablement 18 crêpes entre 3 amis. Quel calcul donne le nombre de crêpes de chaque ami ?",
+        "options": [
+          "18 + 3",
+          "18 ÷ 3",
+          "18 − 3",
+          "18 × 3"
+        ],
+        "reponse_correcte": 1,
+        "explication": "On partage une quantité en parts égales : c'est une division. La quantité partagée, 18, s'écrit en premier."
+      },
+      {
+        "question": "Un fleuriste a 36 roses. Il prépare des bouquets de 9 roses. Combien de bouquets peut-il préparer ?",
+        "options": [
+          "4",
+          "27",
+          "45",
+          "324"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Je cherche combien de fois 9 tient dans 36 : 9 × 4 = 36, donc 4 bouquets. 27, c'est 36 − 9 ; 45, c'est 36 + 9 ; 324, c'est 36 × 9."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Partager, grouper",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Rosalie partage équitablement 24 madeleines entre 4 enfants. Combien de madeleines reçoit chaque enfant ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "Chaque enfant reçoit 6 madeleines.",
+            "mots_cles": [
+              "6",
+              "madeleines"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 4, donne 24."
+          },
+          {
+            "id": 2,
+            "enonce": "À la course d'orientation, 35 élèves forment des équipes de 5 élèves. Combien d'équipes peut-on former ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "On peut former 7 équipes.",
+            "mots_cles": [
+              "7",
+              "équipes"
+            ],
+            "indice": "Cherche combien de fois 5 tient dans 35."
+          },
+          {
+            "id": 3,
+            "enonce": "Le maître range 48 feutres dans 6 pots, le même nombre dans chaque pot. Combien de feutres range-t-il dans un pot ?",
+            "resultat_attendu": "8",
+            "phrase_reponse_attendue": "Il range 8 feutres dans un pot.",
+            "mots_cles": [
+              "feutres",
+              "pot"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 6, donne 48."
+          },
+          {
+            "id": 4,
+            "enonce": "Sept entrées à la piscine coûtent 56 euros en tout. Toutes les entrées ont le même prix. Combien coûte une entrée ?",
+            "resultat_attendu": "8",
+            "phrase_reponse_attendue": "Une entrée coûte 8 euros.",
+            "mots_cles": [
+              "8",
+              "euros"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 7, donne 56."
+          },
+          {
+            "id": 5,
+            "enonce": "Inès colle 63 autocollants dans son album, 9 autocollants par page. Combien de pages remplit-elle ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "Elle remplit 7 pages.",
+            "mots_cles": [
+              "7",
+              "pages"
+            ],
+            "indice": "Cherche combien de fois 9 tient dans 63."
+          },
+          {
+            "id": 6,
+            "enonce": "À la cantine, on range 72 bouteilles d'eau dans des packs de 8 bouteilles. Combien de packs obtient-on ?",
+            "resultat_attendu": "9",
+            "phrase_reponse_attendue": "On obtient 9 packs.",
+            "mots_cles": [
+              "9",
+              "packs"
+            ],
+            "indice": "Cherche combien de fois 8 tient dans 72."
+          }
+        ]
+      },
+      {
+        "titre": "Combien pour chacun ?",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Sacha partage équitablement 30 bonbons entre 5 camarades. Combien de bonbons reçoit chaque camarade ?",
+            "resultat_attendu": "6",
+            "phrase_reponse_attendue": "Chaque camarade reçoit 6 bonbons.",
+            "mots_cles": [
+              "6",
+              "bonbons"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 5, donne 30."
+          },
+          {
+            "id": 2,
+            "enonce": "Jade trie 42 cartes en paquets de 6 cartes. Combien de paquets fait-elle ?",
+            "resultat_attendu": "7",
+            "phrase_reponse_attendue": "Elle fait 7 paquets.",
+            "mots_cles": [
+              "7",
+              "paquets"
+            ],
+            "indice": "Cherche combien de fois 6 tient dans 42."
+          },
+          {
+            "id": 3,
+            "enonce": "Pour le spectacle, on installe 54 chaises en 6 rangées qui comptent le même nombre de chaises. Combien de chaises y a-t-il dans une rangée ?",
+            "resultat_attendu": "9",
+            "phrase_reponse_attendue": "Il y a 9 chaises dans une rangée.",
+            "mots_cles": [
+              "9",
+              "chaises"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 6, donne 54."
+          },
+          {
+            "id": 4,
+            "enonce": "Une randonnée de 40 kilomètres est découpée en 8 étapes de même longueur. Quelle est la longueur d'une étape ?",
+            "resultat_attendu": "5",
+            "phrase_reponse_attendue": "Une étape mesure 5 kilomètres.",
+            "mots_cles": [
+              "5",
+              "kilomètres"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 8, donne 40."
+          },
+          {
+            "id": 5,
+            "enonce": "Au gymnase, 45 sportifs se répartissent en groupes de 9 sportifs. Combien de groupes se forment ?",
+            "resultat_attendu": "5",
+            "phrase_reponse_attendue": "Il se forme 5 groupes.",
+            "mots_cles": [
+              "groupes"
+            ],
+            "indice": "Cherche combien de fois 9 tient dans 45."
+          },
+          {
+            "id": 6,
+            "enonce": "Louna sème 64 graines dans 8 pots, le même nombre de graines dans chaque pot. Combien de graines met-elle dans un pot ?",
+            "resultat_attendu": "8",
+            "phrase_reponse_attendue": "Elle met 8 graines dans un pot.",
+            "mots_cles": [
+              "graines",
+              "pot"
+            ],
+            "indice": "Cherche le nombre qui, multiplié par 8, donne 64."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C24",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Poser une division",
+      "regle": "Dans une division posée, on divise de gauche à droite en abaissant un chiffre à la fois.",
+      "procedure": [
+        "Regarde si le diviseur tient dans le premier chiffre du dividende ; sinon, prends les deux premiers.",
+        "Écris au quotient combien de fois il y tient, multiplie, puis soustrais.",
+        "Abaisse le chiffre suivant et recommence."
+      ],
+      "exemples": [
+        {
+          "phrase": "84 ÷ 4",
+          "demonstration": "4 tient 2 fois dans 8 : j'écris 2. J'abaisse le 4 : 4 y tient 1 fois. Quotient : 21."
+        },
+        {
+          "phrase": "192 ÷ 6",
+          "demonstration": "6 ne tient pas dans 1, je prends 19 : 6 × 3 = 18, j'écris 3, il reste 1. J'abaisse le 2 : 12 ÷ 6 = 2. Quotient : 32."
+        }
+      ],
+      "piege": "Si le diviseur ne tient pas dans le premier chiffre, ne mets pas 0 au quotient."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 78 ÷ 3 ?",
+        "options": [
+          "24",
+          "29",
+          "26",
+          "36"
+        ],
+        "reponse_correcte": 2,
+        "explication": "3 tient 2 fois dans 7, il reste 1 ; j'abaisse le 8 et 18 ÷ 3 = 6. Le quotient est 26, et 3 × 26 = 78."
+      },
+      {
+        "question": "Combien de chiffres aura le quotient de 245 ÷ 5 ?",
+        "options": [
+          "1 chiffre",
+          "2 chiffres",
+          "3 chiffres",
+          "4 chiffres"
+        ],
+        "reponse_correcte": 1,
+        "explication": "5 ne tient pas dans 2 : on commence par 24, donc le quotient n'a que 2 chiffres. Ici, 245 ÷ 5 = 49."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je pose et je divise",
+        "consigne": "Pose chaque division sur ton cahier, puis écris le quotient en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "96 ÷ 4",
+            "reponse": "24"
+          },
+          {
+            "id": 2,
+            "enonce": "84 ÷ 3",
+            "reponse": "28"
+          },
+          {
+            "id": 3,
+            "enonce": "75 ÷ 5",
+            "reponse": "15"
+          },
+          {
+            "id": 4,
+            "enonce": "128 ÷ 4",
+            "reponse": "32"
+          },
+          {
+            "id": 5,
+            "enonce": "168 ÷ 6",
+            "reponse": "28"
+          },
+          {
+            "id": 6,
+            "enonce": "217 ÷ 7",
+            "reponse": "31"
+          },
+          {
+            "id": 7,
+            "enonce": "152 ÷ 8",
+            "reponse": "19"
+          },
+          {
+            "id": 8,
+            "enonce": "243 ÷ 9",
+            "reponse": "27"
+          }
+        ]
+      },
+      {
+        "titre": "Encore des divisions posées",
+        "consigne": "Pose chaque division sur ton cahier, puis écris le quotient en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "72 ÷ 3",
+            "reponse": "24"
+          },
+          {
+            "id": 2,
+            "enonce": "92 ÷ 4",
+            "reponse": "23"
+          },
+          {
+            "id": 3,
+            "enonce": "135 ÷ 5",
+            "reponse": "27"
+          },
+          {
+            "id": 4,
+            "enonce": "138 ÷ 6",
+            "reponse": "23"
+          },
+          {
+            "id": 5,
+            "enonce": "175 ÷ 7",
+            "reponse": "25"
+          },
+          {
+            "id": 6,
+            "enonce": "184 ÷ 8",
+            "reponse": "23"
+          },
+          {
+            "id": 7,
+            "enonce": "189 ÷ 9",
+            "reponse": "21"
+          },
+          {
+            "id": 8,
+            "enonce": "104 ÷ 2",
+            "reponse": "52"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C39",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Quotient et reste",
+      "regle": "Dans une division euclidienne, le reste est toujours plus petit que le diviseur.",
+      "procedure": [
+        "Cherche le plus grand multiple du diviseur qui ne dépasse pas le nombre à diviser.",
+        "Compte combien de fois le diviseur y tient : c'est le quotient.",
+        "Enlève ce multiple du nombre de départ : ce qui reste est le reste."
+      ],
+      "exemples": [
+        {
+          "phrase": "26 ÷ 4",
+          "demonstration": "Multiples de 4 : 4, 8, 12, 16, 20, 24. Le plus grand avant 26 est 24, soit 6 × 4. Quotient 6, reste 2."
+        },
+        {
+          "phrase": "53 ÷ 8",
+          "demonstration": "Le plus grand multiple de 8 avant 53 est 48, soit 6 × 8. Quotient 6, reste 5. Je vérifie : 5 est bien plus petit que 8."
+        }
+      ],
+      "piege": "Si ton reste atteint le diviseur, ton quotient est trop petit."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans la division de 47 par 5, quel est le reste ?",
+        "options": [
+          "9",
+          "7",
+          "3",
+          "2"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le plus grand multiple de 5 avant 47 est 45, soit 9 × 5. Il reste 47 − 45 = 2 ; le 9 est le quotient, pas le reste."
+      },
+      {
+        "question": "Inès divise 53 par 6. Elle annonce un quotient de 7 et un reste de 11. Comment sais-tu qu'elle s'est trompée ?",
+        "options": [
+          "le reste doit être plus petit que 6",
+          "le quotient doit être un nombre pair",
+          "on ne peut pas diviser 53 par 6",
+          "le reste doit être plus grand que le quotient"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un reste de 11 contient encore une fois 6 : le quotient était trop petit. La bonne réponse est 8 et il reste 5."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le quotient et ce qui reste",
+        "consigne": "Pose chaque division sur ton cahier. Chaque question ne demande qu'un seul nombre : écris-le en chiffres.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans la division de 38 par 5, quel est le quotient ?",
+            "reponse_attendue": "7",
+            "indice": "Cherche le plus grand multiple de 5 qui ne dépasse pas 38, puis compte combien de fois 5 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 5,
+              "intervalles": 8,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 38,
+                  "nom": "38"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Dans la division de 38 par 5, quel est le reste ?",
+            "reponse_attendue": "3",
+            "indice": "Enlève de 38 le plus grand multiple de 5 qu'il contient ; ce qui reste est plus petit que 5.",
+            "droite": {
+              "origine": 0,
+              "pas": 5,
+              "intervalles": 8,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 38,
+                  "nom": "38"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Dans la division de 41 par 6, quel est le quotient ?",
+            "reponse_attendue": "6",
+            "indice": "Cherche le plus grand multiple de 6 qui ne dépasse pas 41, puis compte combien de fois 6 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 6,
+              "intervalles": 7,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 41,
+                  "nom": "41"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Dans la division de 41 par 6, quel est le reste ?",
+            "reponse_attendue": "5",
+            "indice": "Enlève de 41 le plus grand multiple de 6 qu'il contient ; ce qui reste est plus petit que 6.",
+            "droite": {
+              "origine": 0,
+              "pas": 6,
+              "intervalles": 7,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 41,
+                  "nom": "41"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Dans la division de 59 par 7, quel est le quotient ?",
+            "reponse_attendue": "8",
+            "indice": "Cherche le plus grand multiple de 7 qui ne dépasse pas 59, puis compte combien de fois 7 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 7,
+              "intervalles": 9,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 59,
+                  "nom": "59"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Dans la division de 59 par 7, quel est le reste ?",
+            "reponse_attendue": "3",
+            "indice": "Enlève de 59 le plus grand multiple de 7 qu'il contient ; ce qui reste est plus petit que 7.",
+            "droite": {
+              "origine": 0,
+              "pas": 7,
+              "intervalles": 9,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 59,
+                  "nom": "59"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Dans la division de 100 par 8, quel est le quotient ?",
+            "reponse_attendue": "12",
+            "indice": "Cherche le plus grand multiple de 8 qui ne dépasse pas 100, puis compte combien de fois 8 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 8,
+              "intervalles": 13,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 100,
+                  "nom": "100"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Dans la division de 100 par 8, quel est le reste ?",
+            "reponse_attendue": "4",
+            "indice": "Enlève de 100 le plus grand multiple de 8 qu'il contient ; ce qui reste est plus petit que 8.",
+            "droite": {
+              "origine": 0,
+              "pas": 8,
+              "intervalles": 13,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 100,
+                  "nom": "100"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Quotient et reste, deuxième série",
+        "consigne": "Pose chaque division sur ton cahier. Chaque question ne demande qu'un seul nombre : écris-le en chiffres.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Dans la division de 29 par 4, quel est le quotient ?",
+            "reponse_attendue": "7",
+            "indice": "Cherche le plus grand multiple de 4 qui ne dépasse pas 29, puis compte combien de fois 4 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 4,
+              "intervalles": 8,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 29,
+                  "nom": "29"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Dans la division de 29 par 4, quel est le reste ?",
+            "reponse_attendue": "1",
+            "indice": "Enlève de 29 le plus grand multiple de 4 qu'il contient ; ce qui reste est plus petit que 4.",
+            "droite": {
+              "origine": 0,
+              "pas": 4,
+              "intervalles": 8,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 29,
+                  "nom": "29"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Dans la division de 50 par 6, quel est le quotient ?",
+            "reponse_attendue": "8",
+            "indice": "Cherche le plus grand multiple de 6 qui ne dépasse pas 50, puis compte combien de fois 6 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 6,
+              "intervalles": 9,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 50,
+                  "nom": "50"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Dans la division de 50 par 6, quel est le reste ?",
+            "reponse_attendue": "2",
+            "indice": "Enlève de 50 le plus grand multiple de 6 qu'il contient ; ce qui reste est plus petit que 6.",
+            "droite": {
+              "origine": 0,
+              "pas": 6,
+              "intervalles": 9,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 50,
+                  "nom": "50"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Dans la division de 45 par 7, quel est le quotient ?",
+            "reponse_attendue": "6",
+            "indice": "Cherche le plus grand multiple de 7 qui ne dépasse pas 45, puis compte combien de fois 7 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 7,
+              "intervalles": 7,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 45,
+                  "nom": "45"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Dans la division de 45 par 7, quel est le reste ?",
+            "reponse_attendue": "3",
+            "indice": "Enlève de 45 le plus grand multiple de 7 qu'il contient ; ce qui reste est plus petit que 7.",
+            "droite": {
+              "origine": 0,
+              "pas": 7,
+              "intervalles": 7,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 45,
+                  "nom": "45"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Dans la division de 93 par 9, quel est le quotient ?",
+            "reponse_attendue": "10",
+            "indice": "Cherche le plus grand multiple de 9 qui ne dépasse pas 93, puis compte combien de fois 9 y tient.",
+            "droite": {
+              "origine": 0,
+              "pas": 9,
+              "intervalles": 11,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 93,
+                  "nom": "93"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Dans la division de 93 par 9, quel est le reste ?",
+            "reponse_attendue": "3",
+            "indice": "Enlève de 93 le plus grand multiple de 9 qu'il contient ; ce qui reste est plus petit que 9.",
+            "droite": {
+              "origine": 0,
+              "pas": 9,
+              "intervalles": 11,
+              "divisions": 1,
+              "etiquettes": "bornes",
+              "points": [
+                {
+                  "valeur": 93,
+                  "nom": "93"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C26",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Calculer avec des parenthèses",
+      "regle": "Ce qui est écrit entre parenthèses se calcule en premier.",
+      "procedure": [
+        "Repère les parenthèses et calcule ce qu'elles contiennent.",
+        "Remplace la parenthèse par son résultat et récris le calcul.",
+        "Termine le calcul qui reste."
+      ],
+      "exemples": [
+        {
+          "phrase": "5 × (3 + 4)",
+          "demonstration": "Je calcule d'abord 3 + 4 = 7. Le calcul devient 5 × 7 = 35."
+        },
+        {
+          "phrase": "(12 − 4) × 3",
+          "demonstration": "Je calcule d'abord 12 − 4 = 8. Le calcul devient 8 × 3 = 24."
+        }
+      ],
+      "piege": "Quand la parenthèse est à droite, ne commence pas par la gauche : dans 30 − (2 × 9), on ne calcule pas 30 − 2."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 4 × (2 + 5) ?",
+        "options": [
+          "13",
+          "11",
+          "40",
+          "28"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Je calcule d'abord la parenthèse : 2 + 5 = 7, puis 4 × 7 = 28. Le 13 vient de 4 × 2 + 5, calculé sans tenir compte de la parenthèse."
+      },
+      {
+        "question": "Quel calcul donne 16 ?",
+        "options": [
+          "3 + (5 × 2)",
+          "3 × (5 + 2)",
+          "(3 + 5) × 2",
+          "5 × (3 + 2)"
+        ],
+        "reponse_correcte": 2,
+        "explication": "La parenthèse d'abord : 3 + 5 = 8, puis 8 × 2 = 16. Les autres donnent 13, 21 et 25."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "La parenthèse d'abord",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "(7 + 3) × 5",
+            "reponse": "50"
+          },
+          {
+            "id": 2,
+            "enonce": "25 − (4 + 6)",
+            "reponse": "15"
+          },
+          {
+            "id": 3,
+            "enonce": "(15 − 6) × 4",
+            "reponse": "36"
+          },
+          {
+            "id": 4,
+            "enonce": "6 × (2 + 9)",
+            "reponse": "66"
+          },
+          {
+            "id": 5,
+            "enonce": "(24 ÷ 4) + 7",
+            "reponse": "13"
+          },
+          {
+            "id": 6,
+            "enonce": "40 − (5 × 4)",
+            "reponse": "20"
+          },
+          {
+            "id": 7,
+            "enonce": "(18 + 12) ÷ 3",
+            "reponse": "10"
+          },
+          {
+            "id": 8,
+            "enonce": "(3 × 6) + (2 × 7)",
+            "reponse": "32"
+          }
+        ]
+      },
+      {
+        "titre": "Encore des parenthèses",
+        "consigne": "Calcule. Écris le résultat en chiffres.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "(8 + 4) × 5",
+            "reponse": "60"
+          },
+          {
+            "id": 2,
+            "enonce": "50 − (7 + 8)",
+            "reponse": "35"
+          },
+          {
+            "id": 3,
+            "enonce": "(20 − 8) × 3",
+            "reponse": "36"
+          },
+          {
+            "id": 4,
+            "enonce": "4 × (12 − 5)",
+            "reponse": "28"
+          },
+          {
+            "id": 5,
+            "enonce": "(36 ÷ 6) + 14",
+            "reponse": "20"
+          },
+          {
+            "id": 6,
+            "enonce": "100 − (9 × 6)",
+            "reponse": "46"
+          },
+          {
+            "id": 7,
+            "enonce": "(14 + 16) ÷ 5",
+            "reponse": "6"
+          },
+          {
+            "id": 8,
+            "enonce": "(5 × 4) + (3 × 8)",
+            "reponse": "44"
+          }
+        ]
+      }
+    ]
+  }
+]

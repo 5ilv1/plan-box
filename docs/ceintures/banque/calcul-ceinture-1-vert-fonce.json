@@ -1,0 +1,622 @@
+[
+  {
+    "item_code": "C14",
+    "type": "probleme_maths",
+    "lecon": {
+      "titre": "Le sens de la multiplication",
+      "regle": "Quand on additionne plusieurs fois le même nombre, on peut multiplier : 4 paquets de 5, c'est 4 × 5.",
+      "procedure": [
+        "Cherche le paquet qui se répète, et ce qu'il contient.",
+        "Compte combien de fois il se répète.",
+        "Écris « paquets × contenu », calcule, puis réponds par une phrase."
+      ],
+      "exemples": [
+        {
+          "phrase": "3 bocaux de 10 bonbons.",
+          "demonstration": "10 + 10 + 10, c'est 3 fois 10 : 3 × 10 = 30 bonbons."
+        },
+        {
+          "phrase": "5 rangées de 2 chaises.",
+          "demonstration": "2 + 2 + 2 + 2 + 2, c'est 5 fois 2 : 5 × 2 = 10 chaises. 2 × 5 donne pareil."
+        }
+      ],
+      "piege": "3 bocaux de 10 bonbons, ce n'est pas 3 + 10 : le même nombre revient, donc on multiplie."
+    },
+    "diagnostic": [
+      {
+        "question": "Lila a écrit 5 + 5 + 5 + 5. Quel calcul donne le même résultat ?",
+        "options": [
+          "4 + 4 + 4 + 4",
+          "4 × 5",
+          "5 + 4",
+          "4 × 4"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le nombre 5 est additionné 4 fois : c'est 4 fois 5, donc 4 × 5."
+      },
+      {
+        "question": "Dans un carton, il y a 10 œufs. Timéo achète 3 cartons. Quel calcul donne le nombre d'œufs ?",
+        "options": [
+          "10 + 3",
+          "10 − 3",
+          "3 × 10",
+          "10 × 10"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le carton de 10 œufs se répète 3 fois : je multiplie 3 par 10."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des paquets tout pareils",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Dans la classe, il y a 5 tables. La maîtresse pose 4 pinceaux sur chaque table. Combien y a-t-il de pinceaux en tout ?",
+            "resultat_attendu": "20",
+            "phrase_reponse_attendue": "Il y a 20 pinceaux en tout.",
+            "mots_cles": [
+              "20",
+              "pinceaux"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 2,
+            "enonce": "Timéo range ses billes dans 6 boîtes. Il met 5 billes dans chaque boîte. Combien a-t-il de billes ?",
+            "resultat_attendu": "30",
+            "phrase_reponse_attendue": "Timéo a 30 billes.",
+            "mots_cles": [
+              "30",
+              "billes"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 3,
+            "enonce": "Un paquet contient 10 gâteaux. Rosalie achète 4 paquets. Combien de gâteaux a-t-elle achetés ?",
+            "resultat_attendu": "40",
+            "phrase_reponse_attendue": "Rosalie a acheté 40 gâteaux.",
+            "mots_cles": [
+              "40",
+              "gâteaux"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 4,
+            "enonce": "Dans la cour, les élèves forment 7 rangées de 2 élèves. Combien d'élèves y a-t-il en tout ?",
+            "resultat_attendu": "14",
+            "phrase_reponse_attendue": "Il y a 14 élèves en tout.",
+            "mots_cles": [
+              "14",
+              "élèves"
+            ],
+            "indice": "Compte combien de fois le même nombre se répète, puis écris la multiplication."
+          },
+          {
+            "id": 5,
+            "enonce": "Une place de cinéma coûte 5 euros. Malo achète 9 places pour son anniversaire. Combien paie-t-il ?",
+            "resultat_attendu": "45",
+            "phrase_reponse_attendue": "Malo paie 45 euros.",
+            "mots_cles": [
+              "45",
+              "euros"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 6,
+            "enonce": "Fatou compte ses chaussettes : elle a 8 paires, et une paire, ce sont 2 chaussettes. Combien a-t-elle de chaussettes ?",
+            "resultat_attendu": "16",
+            "phrase_reponse_attendue": "Fatou a 16 chaussettes.",
+            "mots_cles": [
+              "16",
+              "chaussettes"
+            ],
+            "indice": "Compte combien de fois le même nombre se répète, puis écris la multiplication."
+          }
+        ]
+      },
+      {
+        "titre": "Combien en tout ?",
+        "consigne": "Calcule, puis réponds par une phrase complète.",
+        "problemes": [
+          {
+            "id": 1,
+            "enonce": "Sacha range 5 crayons dans chaque trousse. Il remplit 3 trousses. Combien de crayons a-t-il rangés ?",
+            "resultat_attendu": "15",
+            "phrase_reponse_attendue": "Sacha a rangé 15 crayons.",
+            "mots_cles": [
+              "15",
+              "crayons"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 2,
+            "enonce": "Au gymnase, il y a 6 terrains et 2 paniers de basket par terrain. Combien y a-t-il de paniers ?",
+            "resultat_attendu": "12",
+            "phrase_reponse_attendue": "Il y a 12 paniers.",
+            "mots_cles": [
+              "12",
+              "paniers"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 3,
+            "enonce": "Un carnet contient 10 tickets de cantine. La maîtresse prend 7 carnets. Combien de tickets a-t-elle ?",
+            "resultat_attendu": "70",
+            "phrase_reponse_attendue": "La maîtresse a 70 tickets.",
+            "mots_cles": [
+              "70",
+              "tickets"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 4,
+            "enonce": "Jade colle 4 images sur chaque page de son album. Elle remplit 5 pages. Combien d'images a-t-elle collées ?",
+            "resultat_attendu": "20",
+            "phrase_reponse_attendue": "Jade a collé 20 images.",
+            "mots_cles": [
+              "20",
+              "images"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 5,
+            "enonce": "Un livre coûte 5 euros. Adam en achète 6. Combien dépense-t-il ?",
+            "resultat_attendu": "30",
+            "phrase_reponse_attendue": "Adam dépense 30 euros.",
+            "mots_cles": [
+              "30",
+              "euros"
+            ],
+            "indice": "Cherche le paquet qui se répète et ce qu'il contient, puis multiplie l'un par l'autre."
+          },
+          {
+            "id": 6,
+            "enonce": "Nour aligne ses perles en 9 lignes de 2 perles. Combien de perles a-t-elle alignées ?",
+            "resultat_attendu": "18",
+            "phrase_reponse_attendue": "Nour a aligné 18 perles.",
+            "mots_cles": [
+              "18",
+              "perles"
+            ],
+            "indice": "Compte combien de fois le même nombre se répète, puis écris la multiplication."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C16",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Additionner plusieurs nombres",
+      "regle": "On additionne trois nombres ou plus en une seule opération posée, une colonne à la fois.",
+      "procedure": [
+        "Écris les nombres les uns sous les autres, unités sous unités.",
+        "Additionne toute la colonne des unités, écris son chiffre des unités, retiens le reste.",
+        "Recommence avec la colonne suivante, retenue comprise."
+      ],
+      "exemples": [
+        {
+          "phrase": "23 + 45 + 19",
+          "demonstration": "3 + 5 + 9 = 17 : j'écris 7, je retiens 1. Puis 2 + 4 + 1 + 1 = 8. Total : 87."
+        },
+        {
+          "phrase": "58 + 67 + 45",
+          "demonstration": "8 + 7 + 5 = 20 : j'écris 0, je retiens 2. Puis 5 + 6 + 4 + 2 = 17. Total : 170."
+        }
+      ],
+      "piege": "Avec trois nombres, la retenue vaut parfois 2, pas toujours 1."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le résultat de 26 + 34 + 18 ?",
+        "options": [
+          "78",
+          "68",
+          "88",
+          "70"
+        ],
+        "reponse_correcte": 0,
+        "explication": "6 + 4 + 8 = 18 : j'écris 8 et je retiens 1, puis 2 + 3 + 1 + 1 = 7. Cela fait 78."
+      },
+      {
+        "question": "Quel est le résultat de 47 + 38 + 29 ?",
+        "options": [
+          "104",
+          "124",
+          "94",
+          "114"
+        ],
+        "reponse_correcte": 3,
+        "explication": "7 + 8 + 9 = 24 : j'écris 4 et je retiens 2, puis 4 + 3 + 2 + 2 = 11. Cela fait 114."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Trois nombres à la fois № 1",
+        "consigne": "Pose l'addition en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "24 + 36 + 15",
+            "reponse": "75"
+          },
+          {
+            "id": 2,
+            "enonce": "49 + 26 + 17",
+            "reponse": "92"
+          },
+          {
+            "id": 3,
+            "enonce": "132 + 45 + 26",
+            "reponse": "203"
+          },
+          {
+            "id": 4,
+            "enonce": "58 + 63 + 74",
+            "reponse": "195"
+          },
+          {
+            "id": 5,
+            "enonce": "105 + 217 + 38",
+            "reponse": "360"
+          },
+          {
+            "id": 6,
+            "enonce": "16 + 24 + 35 + 42",
+            "reponse": "117"
+          },
+          {
+            "id": 7,
+            "enonce": "209 + 156 + 87",
+            "reponse": "452"
+          },
+          {
+            "id": 8,
+            "enonce": "73 + 68 + 59",
+            "reponse": "200"
+          }
+        ]
+      },
+      {
+        "titre": "Trois nombres à la fois № 2",
+        "consigne": "Pose l'addition en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "35 + 27 + 18",
+            "reponse": "80"
+          },
+          {
+            "id": 2,
+            "enonce": "56 + 39 + 24",
+            "reponse": "119"
+          },
+          {
+            "id": 3,
+            "enonce": "148 + 32 + 57",
+            "reponse": "237"
+          },
+          {
+            "id": 4,
+            "enonce": "67 + 85 + 46",
+            "reponse": "198"
+          },
+          {
+            "id": 5,
+            "enonce": "214 + 108 + 79",
+            "reponse": "401"
+          },
+          {
+            "id": 6,
+            "enonce": "23 + 31 + 45 + 52",
+            "reponse": "151"
+          },
+          {
+            "id": 7,
+            "enonce": "316 + 129 + 68",
+            "reponse": "513"
+          },
+          {
+            "id": 8,
+            "enonce": "84 + 76 + 95",
+            "reponse": "255"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C15",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Multiplier par un chiffre",
+      "regle": "On multiplie le chiffre du bas par chaque chiffre du haut, des unités vers la gauche, retenue comprise.",
+      "procedure": [
+        "Écris le grand nombre en haut, le chiffre sous les unités.",
+        "Multiplie les unités : écris leur chiffre, retiens le reste.",
+        "Multiplie la colonne suivante, ajoute la retenue, continue."
+      ],
+      "exemples": [
+        {
+          "phrase": "37 × 2",
+          "demonstration": "7 × 2 = 14 : j'écris 4, je retiens 1. 3 × 2 = 6, plus 1 : 7. Cela fait 74."
+        },
+        {
+          "phrase": "84 × 5",
+          "demonstration": "4 × 5 = 20 : j'écris 0, je retiens 2. 8 × 5 = 40, plus 2 : 42. Cela fait 420."
+        }
+      ],
+      "piege": "La retenue s'ajoute après la multiplication : 8 × 5 puis + 2, jamais (8 + 2) × 5."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le résultat de 26 × 2 ?",
+        "options": [
+          "42",
+          "412",
+          "28",
+          "52"
+        ],
+        "reponse_correcte": 3,
+        "explication": "6 × 2 = 12 : j'écris 2 et je retiens 1, puis 2 × 2 = 4, plus 1 : 5. Cela fait 52."
+      },
+      {
+        "question": "Quel est le résultat de 63 × 5 ?",
+        "options": [
+          "315",
+          "305",
+          "3015",
+          "68"
+        ],
+        "reponse_correcte": 0,
+        "explication": "3 × 5 = 15 : j'écris 5 et je retiens 1, puis 6 × 5 = 30, plus 1 : 31. Cela fait 315."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Multiplications posées № 1",
+        "consigne": "Pose la multiplication en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "34 × 2",
+            "reponse": "68"
+          },
+          {
+            "id": 2,
+            "enonce": "47 × 2",
+            "reponse": "94"
+          },
+          {
+            "id": 3,
+            "enonce": "126 × 2",
+            "reponse": "252"
+          },
+          {
+            "id": 4,
+            "enonce": "258 × 2",
+            "reponse": "516"
+          },
+          {
+            "id": 5,
+            "enonce": "23 × 5",
+            "reponse": "115"
+          },
+          {
+            "id": 6,
+            "enonce": "46 × 5",
+            "reponse": "230"
+          },
+          {
+            "id": 7,
+            "enonce": "137 × 5",
+            "reponse": "685"
+          },
+          {
+            "id": 8,
+            "enonce": "209 × 5",
+            "reponse": "1045"
+          }
+        ]
+      },
+      {
+        "titre": "Multiplications posées № 2",
+        "consigne": "Pose la multiplication en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "42 × 2",
+            "reponse": "84"
+          },
+          {
+            "id": 2,
+            "enonce": "58 × 2",
+            "reponse": "116"
+          },
+          {
+            "id": 3,
+            "enonce": "143 × 2",
+            "reponse": "286"
+          },
+          {
+            "id": 4,
+            "enonce": "367 × 2",
+            "reponse": "734"
+          },
+          {
+            "id": 5,
+            "enonce": "32 × 5",
+            "reponse": "160"
+          },
+          {
+            "id": 6,
+            "enonce": "74 × 5",
+            "reponse": "370"
+          },
+          {
+            "id": 7,
+            "enonce": "128 × 5",
+            "reponse": "640"
+          },
+          {
+            "id": 8,
+            "enonce": "305 × 5",
+            "reponse": "1525"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C41",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Calculer en ligne en décomposant",
+      "regle": "Pour ajouter un nombre de tête, on le coupe en dizaines et en unités : d'abord les dizaines, ensuite les unités.",
+      "procedure": [
+        "Coupe le deuxième nombre : 28, c'est 20 et 8.",
+        "Ajoute les dizaines au premier nombre.",
+        "Ajoute les unités au nombre obtenu, et écris ce dernier résultat."
+      ],
+      "exemples": [
+        {
+          "phrase": "53 + 24",
+          "demonstration": "24, c'est 20 et 4. 53 + 20 = 73, puis 73 + 4 = 77."
+        },
+        {
+          "phrase": "67 + 25",
+          "demonstration": "25, c'est 20 et 5. 67 + 20 = 87, puis 87 + 5 = 92 : la méthode tient même quand on dépasse la dizaine."
+        }
+      ],
+      "piege": "Dans 25, le 2 vaut deux dizaines : ajoute 20, et non 2."
+    },
+    "diagnostic": [
+      {
+        "question": "Timéo calcule 64 + 25 en ligne. Il commence par faire 64 + 20 = 84. Quel calcul doit-il faire ensuite ?",
+        "options": [
+          "84 + 25",
+          "84 + 5",
+          "64 + 5",
+          "84 − 5"
+        ],
+        "reponse_correcte": 1,
+        "explication": "25, c'est 20 et 5 : les 20 sont déjà ajoutés, il reste à ajouter les 5 au nombre obtenu."
+      },
+      {
+        "question": "Quel est le résultat de 48 + 35 ?",
+        "options": [
+          "73",
+          "713",
+          "83",
+          "93"
+        ],
+        "reponse_correcte": 2,
+        "explication": "35, c'est 30 et 5 : 48 + 30 = 78, puis 78 + 5 = 83."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je coupe en dizaines et en unités № 1",
+        "consigne": "Calcule de tête en coupant le deuxième nombre en dizaines et en unités, sans poser l'opération. Écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "43 + 28",
+            "reponse": "71"
+          },
+          {
+            "id": 2,
+            "enonce": "36 + 25",
+            "reponse": "61"
+          },
+          {
+            "id": 3,
+            "enonce": "58 + 34",
+            "reponse": "92"
+          },
+          {
+            "id": 4,
+            "enonce": "63 + 19",
+            "reponse": "82"
+          },
+          {
+            "id": 5,
+            "enonce": "45 + 38",
+            "reponse": "83"
+          },
+          {
+            "id": 6,
+            "enonce": "72 + 27",
+            "reponse": "99"
+          },
+          {
+            "id": 7,
+            "enonce": "54 + 26",
+            "reponse": "80"
+          },
+          {
+            "id": 8,
+            "enonce": "68 + 23",
+            "reponse": "91"
+          }
+        ]
+      },
+      {
+        "titre": "Je coupe en dizaines et en unités № 2",
+        "consigne": "Calcule de tête en coupant le deuxième nombre en dizaines et en unités, sans poser l'opération. Écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "39 + 24",
+            "reponse": "63"
+          },
+          {
+            "id": 2,
+            "enonce": "57 + 26",
+            "reponse": "83"
+          },
+          {
+            "id": 3,
+            "enonce": "46 + 35",
+            "reponse": "81"
+          },
+          {
+            "id": 4,
+            "enonce": "68 + 27",
+            "reponse": "95"
+          },
+          {
+            "id": 5,
+            "enonce": "74 + 18",
+            "reponse": "92"
+          },
+          {
+            "id": 6,
+            "enonce": "52 + 39",
+            "reponse": "91"
+          },
+          {
+            "id": 7,
+            "enonce": "65 + 28",
+            "reponse": "93"
+          },
+          {
+            "id": 8,
+            "enonce": "83 + 29",
+            "reponse": "112"
+          }
+        ]
+      }
+    ]
+  }
+]

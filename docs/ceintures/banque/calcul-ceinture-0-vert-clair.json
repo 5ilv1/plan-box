@@ -1,0 +1,570 @@
+[
+  {
+    "item_code": "C10",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Les tables que tu sais déjà",
+      "regle": "Multiplier par 0 donne 0, par 1 ne change rien ; les tables de 2, 5 et 10 se comptent de 2 en 2, de 5 en 5, de 10 en 10.",
+      "procedure": [
+        "Ici, on vérifie seulement que tu sais tes tables : pour les apprendre, va au module « Ceintures de multiplication », ceinture Jaune.",
+        "Regarde par quel nombre on multiplie.",
+        "Réponds sans compter sur tes doigts."
+      ],
+      "exemples": [
+        {
+          "phrase": "5 × 5",
+          "demonstration": "Je compte de 5 en 5 : 5, 10, 15, 20, 25. C'est 25."
+        },
+        {
+          "phrase": "0 × 7",
+          "demonstration": "Sept paquets vides, cela ne fait aucune bille : c'est 0."
+        }
+      ],
+      "piege": "× 0 fait toujours 0, mais × 1 garde le nombre : 8 × 1 fait 8."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 5 × 7 ?",
+        "options": [
+          "30",
+          "40",
+          "35",
+          "57"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Je compte de 5 en 5 sept fois : 5, 10, 15, 20, 25, 30, 35."
+      },
+      {
+        "question": "Combien font 9 × 0 ?",
+        "options": [
+          "0",
+          "9",
+          "90",
+          "1"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Neuf paquets qui ne contiennent rien, cela ne fait rien du tout : multiplier par 0 donne toujours 0."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Contrôle rapide : 0, 1, 2, 5 et 10",
+        "consigne": "Calcule de tête. Écris seulement le résultat, en chiffres et sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "2 × 7",
+            "reponse": "14"
+          },
+          {
+            "id": 2,
+            "enonce": "5 × 6",
+            "reponse": "30"
+          },
+          {
+            "id": 3,
+            "enonce": "10 × 8",
+            "reponse": "80"
+          },
+          {
+            "id": 4,
+            "enonce": "1 × 9",
+            "reponse": "9"
+          },
+          {
+            "id": 5,
+            "enonce": "0 × 4",
+            "reponse": "0"
+          },
+          {
+            "id": 6,
+            "enonce": "5 × 9",
+            "reponse": "45"
+          },
+          {
+            "id": 7,
+            "enonce": "2 × 8",
+            "reponse": "16"
+          },
+          {
+            "id": 8,
+            "enonce": "10 × 3",
+            "reponse": "30"
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième contrôle : 0, 1, 2, 5 et 10",
+        "consigne": "Calcule de tête. Écris seulement le résultat, en chiffres et sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "2 × 6",
+            "reponse": "12"
+          },
+          {
+            "id": 2,
+            "enonce": "5 × 8",
+            "reponse": "40"
+          },
+          {
+            "id": 3,
+            "enonce": "10 × 7",
+            "reponse": "70"
+          },
+          {
+            "id": 4,
+            "enonce": "1 × 4",
+            "reponse": "4"
+          },
+          {
+            "id": 5,
+            "enonce": "0 × 6",
+            "reponse": "0"
+          },
+          {
+            "id": 6,
+            "enonce": "5 × 3",
+            "reponse": "15"
+          },
+          {
+            "id": 7,
+            "enonce": "2 × 9",
+            "reponse": "18"
+          },
+          {
+            "id": 8,
+            "enonce": "10 × 5",
+            "reponse": "50"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C11",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Poser une addition avec retenue",
+      "regle": "Quand une colonne dépasse 9, on écrit son chiffre des unités et on retient 1 pour la colonne de gauche.",
+      "procedure": [
+        "Écris les nombres l'un sous l'autre, unités sous unités.",
+        "Additionne colonne par colonne, de droite à gauche.",
+        "Si le total dépasse 9, écris ce chiffre et reporte 1 à gauche."
+      ],
+      "exemples": [
+        {
+          "phrase": "65 + 27",
+          "demonstration": "5 + 7 = 12 : j'écris 2, je retiens 1. 6 + 2 + 1 = 9. Total : 92."
+        },
+        {
+          "phrase": "148 + 76",
+          "demonstration": "8 + 6 = 14 : j'écris 4, je retiens 1. 4 + 7 + 1 = 12 : j'écris 2, je retiens 1. Reste 1 + 1 = 2. Total : 224."
+        }
+      ],
+      "piege": "La retenue va à gauche, jamais dans la colonne déjà faite."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le résultat de 56 + 27 ?",
+        "options": [
+          "73",
+          "83",
+          "713",
+          "82"
+        ],
+        "reponse_correcte": 1,
+        "explication": "6 + 7 = 13 : j'écris 3 et je retiens 1, puis 5 + 2 + 1 = 8. Cela fait 83."
+      },
+      {
+        "question": "Quel est le résultat de 182 + 45 ?",
+        "options": [
+          "127",
+          "137",
+          "217",
+          "227"
+        ],
+        "reponse_correcte": 3,
+        "explication": "2 + 5 = 7, puis 8 + 4 = 12 : j'écris 2 et je retiens 1, et 1 + 1 = 2. Cela fait 227."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Additions posées № 1",
+        "consigne": "Pose l'addition en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "47 + 38",
+            "reponse": "85"
+          },
+          {
+            "id": 2,
+            "enonce": "156 + 27",
+            "reponse": "183"
+          },
+          {
+            "id": 3,
+            "enonce": "268 + 145",
+            "reponse": "413"
+          },
+          {
+            "id": 4,
+            "enonce": "84 + 79",
+            "reponse": "163"
+          },
+          {
+            "id": 5,
+            "enonce": "305 + 96",
+            "reponse": "401"
+          },
+          {
+            "id": 6,
+            "enonce": "237 + 189",
+            "reponse": "426"
+          },
+          {
+            "id": 7,
+            "enonce": "68 + 55",
+            "reponse": "123"
+          },
+          {
+            "id": 8,
+            "enonce": "419 + 273",
+            "reponse": "692"
+          }
+        ]
+      },
+      {
+        "titre": "Additions posées № 2",
+        "consigne": "Pose l'addition en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "36 + 48",
+            "reponse": "84"
+          },
+          {
+            "id": 2,
+            "enonce": "175 + 38",
+            "reponse": "213"
+          },
+          {
+            "id": 3,
+            "enonce": "347 + 126",
+            "reponse": "473"
+          },
+          {
+            "id": 4,
+            "enonce": "92 + 69",
+            "reponse": "161"
+          },
+          {
+            "id": 5,
+            "enonce": "408 + 95",
+            "reponse": "503"
+          },
+          {
+            "id": 6,
+            "enonce": "254 + 178",
+            "reponse": "432"
+          },
+          {
+            "id": 7,
+            "enonce": "77 + 66",
+            "reponse": "143"
+          },
+          {
+            "id": 8,
+            "enonce": "536 + 287",
+            "reponse": "823"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C12",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Poser une soustraction",
+      "regle": "Dans une soustraction posée, on retire chiffre par chiffre en partant des unités ; ici, aucun chiffre du bas n'est plus grand que celui du haut.",
+      "procedure": [
+        "Écris le plus grand nombre en haut, unités sous unités.",
+        "Soustrais colonne par colonne en partant de la droite.",
+        "Écris chaque résultat sous le trait."
+      ],
+      "exemples": [
+        {
+          "phrase": "89 − 47",
+          "demonstration": "9 − 7 = 2, puis 8 − 4 = 4. Il reste 42."
+        },
+        {
+          "phrase": "497 − 254",
+          "demonstration": "7 − 4 = 3, puis 9 − 5 = 4, puis 4 − 2 = 2. Il reste 243 : avec trois chiffres, une colonne après l'autre."
+        }
+      ],
+      "piege": "Une colonne ne se retourne pas : le plus grand nombre s'écrit toujours en haut."
+    },
+    "diagnostic": [
+      {
+        "question": "Quel est le résultat de 76 − 34 ?",
+        "options": [
+          "32",
+          "110",
+          "42",
+          "46"
+        ],
+        "reponse_correcte": 2,
+        "explication": "6 − 4 = 2, puis 7 − 3 = 4 : cela fait 42. Le signe − demande d'enlever, pas d'ajouter."
+      },
+      {
+        "question": "Quel est le résultat de 508 − 304 ?",
+        "options": [
+          "214",
+          "804",
+          "208",
+          "204"
+        ],
+        "reponse_correcte": 3,
+        "explication": "8 − 4 = 4, puis 0 − 0 = 0, puis 5 − 3 = 2 : cela fait 204. Un zéro occupe une colonne comme les autres chiffres."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Soustractions posées № 1",
+        "consigne": "Pose la soustraction en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "68 − 25",
+            "reponse": "43"
+          },
+          {
+            "id": 2,
+            "enonce": "79 − 34",
+            "reponse": "45"
+          },
+          {
+            "id": 3,
+            "enonce": "587 − 246",
+            "reponse": "341"
+          },
+          {
+            "id": 4,
+            "enonce": "96 − 52",
+            "reponse": "44"
+          },
+          {
+            "id": 5,
+            "enonce": "468 − 137",
+            "reponse": "331"
+          },
+          {
+            "id": 6,
+            "enonce": "759 − 308",
+            "reponse": "451"
+          },
+          {
+            "id": 7,
+            "enonce": "87 − 61",
+            "reponse": "26"
+          },
+          {
+            "id": 8,
+            "enonce": "946 − 523",
+            "reponse": "423"
+          }
+        ]
+      },
+      {
+        "titre": "Soustractions posées № 2",
+        "consigne": "Pose la soustraction en colonnes sur ton cahier, puis écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "57 − 23",
+            "reponse": "34"
+          },
+          {
+            "id": 2,
+            "enonce": "88 − 46",
+            "reponse": "42"
+          },
+          {
+            "id": 3,
+            "enonce": "675 − 342",
+            "reponse": "333"
+          },
+          {
+            "id": 4,
+            "enonce": "94 − 71",
+            "reponse": "23"
+          },
+          {
+            "id": 5,
+            "enonce": "396 − 184",
+            "reponse": "212"
+          },
+          {
+            "id": 6,
+            "enonce": "847 − 205",
+            "reponse": "642"
+          },
+          {
+            "id": 7,
+            "enonce": "69 − 47",
+            "reponse": "22"
+          },
+          {
+            "id": 8,
+            "enonce": "758 − 316",
+            "reponse": "442"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "C13",
+    "type": "calcul_mental",
+    "lecon": {
+      "titre": "Soustraire en ligne",
+      "regle": "Pour soustraire en ligne, on enlève chaque part dans sa colonne : unités aux unités, dizaines aux dizaines, centaines aux centaines.",
+      "procedure": [
+        "Coupe le nombre que tu enlèves en centaines, dizaines et unités.",
+        "Enlève chaque part au chiffre de sa colonne, en partant des unités.",
+        "Les colonnes où tu n'enlèves rien ne bougent pas."
+      ],
+      "exemples": [
+        {
+          "phrase": "78 − 6",
+          "demonstration": "6 unités s'enlèvent aux 8 unités : 8 − 6 = 2. Les 7 dizaines ne bougent pas : 72."
+        },
+        {
+          "phrase": "297 − 43",
+          "demonstration": "43, c'est 4 dizaines et 3 unités : 7 − 3 = 4 et 9 − 4 = 5 ; les 2 centaines ne bougent pas : 254."
+        }
+      ],
+      "piege": "Enlever 40 n'est pas enlever 4 aux unités : cherche la bonne colonne."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien font 57 − 4 ?",
+        "options": [
+          "17",
+          "53",
+          "13",
+          "61"
+        ],
+        "reponse_correcte": 1,
+        "explication": "4 unités s'enlèvent aux 7 unités : 7 − 4 = 3, et les 5 dizaines ne bougent pas. Il reste 53."
+      },
+      {
+        "question": "Combien font 86 − 30 ?",
+        "options": [
+          "56",
+          "83",
+          "116",
+          "53"
+        ],
+        "reponse_correcte": 0,
+        "explication": "30, c'est 3 dizaines : 8 − 3 = 5 dizaines, et les 6 unités ne bougent pas. Il reste 56."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "J'enlève sans poser № 1",
+        "consigne": "Calcule de tête, sans poser l'opération. Écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "47 − 5",
+            "reponse": "42"
+          },
+          {
+            "id": 2,
+            "enonce": "68 − 20",
+            "reponse": "48"
+          },
+          {
+            "id": 3,
+            "enonce": "95 − 3",
+            "reponse": "92"
+          },
+          {
+            "id": 4,
+            "enonce": "76 − 40",
+            "reponse": "36"
+          },
+          {
+            "id": 5,
+            "enonce": "259 − 7",
+            "reponse": "252"
+          },
+          {
+            "id": 6,
+            "enonce": "384 − 50",
+            "reponse": "334"
+          },
+          {
+            "id": 7,
+            "enonce": "638 − 300",
+            "reponse": "338"
+          },
+          {
+            "id": 8,
+            "enonce": "87 − 25",
+            "reponse": "62"
+          }
+        ]
+      },
+      {
+        "titre": "J'enlève sans poser № 2",
+        "consigne": "Calcule de tête, sans poser l'opération. Écris seulement le résultat, sans espace.",
+        "calculs": [
+          {
+            "id": 1,
+            "enonce": "58 − 6",
+            "reponse": "52"
+          },
+          {
+            "id": 2,
+            "enonce": "79 − 30",
+            "reponse": "49"
+          },
+          {
+            "id": 3,
+            "enonce": "86 − 4",
+            "reponse": "82"
+          },
+          {
+            "id": 4,
+            "enonce": "65 − 40",
+            "reponse": "25"
+          },
+          {
+            "id": 5,
+            "enonce": "347 − 5",
+            "reponse": "342"
+          },
+          {
+            "id": 6,
+            "enonce": "296 − 70",
+            "reponse": "226"
+          },
+          {
+            "id": 7,
+            "enonce": "759 − 400",
+            "reponse": "359"
+          },
+          {
+            "id": 8,
+            "enonce": "98 − 34",
+            "reponse": "64"
+          }
+        ]
+      }
+    ]
+  }
+]
