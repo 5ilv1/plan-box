@@ -11,6 +11,8 @@ import ExerciceStack from "@/components/ExerciceStack";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import CalcMentalStack from "@/components/CalcMentalStack";
 import { FonctionGram, QCMQuestion } from "@/types";
+import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
+import type { ProblemeMaths } from "@/types";
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -133,6 +135,26 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
           titre: ex.titre,
           type: "exercice",
           contenu: { ...c, questions: qSansIndice },
+        });
+        break;
+      }
+
+      case "probleme_maths": {
+        // Sur le modèle d'« exercice » : 2 problèmes, sans leur indice.
+        // Seul type auto-corrigeable parmi ceux qui étaient ignorés ici — son
+        // absence laissait trois évaluations de maths à 6 questions, où une
+        // seule erreur coûtait la ceinture.
+        const problemes = (c.problemes as Array<Record<string, unknown>>) ?? [];
+        if (problemes.length === 0) break;
+        const pChoisis = piocher(problemes, Math.min(2, problemes.length));
+        // On garde resultat_attendu, phrase_reponse_attendue et mots_cles :
+        // c'est ce dont ProblemeMathsEleve a besoin pour corriger seul.
+        const pSansIndice = pChoisis.map(({ indice, ...reste }) => { void indice; return reste; });
+        minis.push({
+          id: ex.id,
+          titre: ex.titre,
+          type: "probleme_maths",
+          contenu: { ...c, problemes: pSansIndice },
         });
         break;
       }
@@ -640,6 +662,16 @@ export default function PageEvaluationFinale() {
         {mini.type === "qcm" && (
           <MiniQCM
             questions={(mini.contenu.questions as QCMQuestion[]) ?? []}
+            onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
+          />
+        )}
+
+        {mini.type === "probleme_maths" && (
+          <ProblemeMathsEleve
+            titre={mini.titre}
+            theme={(mini.contenu.theme as string) ?? ""}
+            consigne={(mini.contenu.consigne as string) ?? "Calcule, puis réponds par une phrase complète."}
+            problemes={(mini.contenu.problemes as ProblemeMaths[]) ?? []}
             onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
           />
         )}
