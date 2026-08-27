@@ -102,6 +102,15 @@ export const DOMAINES: DomaineCeinture[] = [
     icone: "tag",
     ordre: 4,
   },
+  {
+    code: "CALC",
+    slug: "calcul",
+    nom: "Calcul",
+    matiere: "maths",
+    description: "Calcul mental, opérations posées, problèmes",
+    icone: "calculate",
+    ordre: 5,
+  },
 ];
 
 export function domaineParCode(code: string): DomaineCeinture | undefined {

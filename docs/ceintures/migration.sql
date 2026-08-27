@@ -78,6 +78,15 @@ create table if not exists ceinture_banque (
 create index if not exists idx_cbanque_item on ceinture_banque(item_code, usage, valide_par_enseignant);
 
 
+-- `probleme_maths` manquait à la liste des types autorisés de `exercice` : les
+-- items de Calcul qui l'utilisent (C14, C23, C31) étaient rejetés à
+-- l'insertion. Élargissement seul, aucun type existant n'est retiré.
+alter table exercice drop constraint if exists exercice_type_check;
+alter table exercice add constraint exercice_type_check check (type = any (array[
+  'exercice','calcul_mental','texte_a_trous','analyse_phrase','qcm',
+  'classement','ecriture_contrainte','revision','lecture','probleme_maths'
+]));
+
 -- Remédiation : la variante d'entraînement servie à UN élève sur UN exercice.
 -- exercice.contenu est partagé par toute la classe ; sans cette table, basculer
 -- un élève sur la variante 2 la basculerait pour tout le monde.

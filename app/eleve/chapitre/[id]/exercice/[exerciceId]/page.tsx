@@ -8,6 +8,8 @@ import LeconCeinture, { type Lecon } from "@/components/LeconCeinture";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
+import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
+import type { ProblemeMaths } from "@/types";
 
 interface Question {
   id: number;
@@ -355,6 +357,56 @@ export default function PageExerciceEleve() {
     return (
       <div style={{ maxWidth: 800, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
         <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
+      </div>
+    );
+  }
+
+  // ── Problème de maths : rendu via ProblemeMathsEleve ──
+  // Seul le résultat entre dans la note, jamais la phrase réponse — c'est le
+  // composant qui l'applique, et les 33 items de Calcul ont été écrits avec
+  // cette contrainte (docs/ceintures/SPEC-CALCUL.md).
+  if (exercice?.type === "probleme_maths" && etat === "en_cours") {
+    const contenu = exercice.contenu as Record<string, unknown>;
+    const problemes = (contenu.problemes as ProblemeMaths[]) ?? [];
+
+    return (
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "20px 20px 80px" }}>
+        {boutonRevoirLecon}
+        <div style={{ marginBottom: 20 }}>
+          <button
+            onClick={() => router.push(`/eleve/chapitre/${chapitreId}`)}
+            style={{ background: "none", border: "none", cursor: "pointer", color: "var(--pb-on-surface-variant)", fontSize: 13, marginBottom: 8 }}
+          >
+            ← Retour
+          </button>
+        </div>
+
+        <ProblemeMathsEleve
+          titre={exercice.titre}
+          theme={String(contenu.theme ?? "")}
+          consigne={String(contenu.consigne ?? "Calcule, puis réponds par une phrase complète.")}
+          problemes={problemes}
+          onTermine={async (scoreResult) => {
+            const total = scoreResult.total || problemes.length;
+            const bon = scoreResult.bon;
+
+            await fetch("/api/chapitres/exercices/resultat", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                exercice_id: exerciceId,
+                eleve_id: session?.source === "planbox" ? session.id : undefined,
+                rb_eleve_id: session?.source === "repetibox" ? parseInt(session.id, 10) : undefined,
+                score: bon,
+                total,
+              }),
+            });
+
+            setScore(bon);
+            setValide(total > 0 && bon / total >= seuilExo);
+            setEtat("resultat");
+          }}
+        />
       </div>
     );
   }
