@@ -45,11 +45,24 @@ Une seule fonction, partagée par les deux composants — la mettre dans
 `lib/comparer-reponse.ts` et l'importer des deux côtés :
 
 ```ts
-/** Espaces de toutes sortes, y compris fine et insécable. */
-const SANS_ESPACE = /[\s   ]/g;
+/**
+ * Espaces de toutes sortes : ordinaire, insécable (U+00A0), fine insécable
+ * (U+202F), et les autres qu'un traitement de texte peut glisser dans « 3 000 ».
+ */
+const ESP = "[\\s\\u00A0\\u202F\\u2007\\u2009\\u200B\\u3000]";
 
 function normaliser(s: string): string {
-  return s.trim().toLowerCase().replace(SANS_ESPACE, "").replace(/,/g, ".");
+  return s
+    .trim()
+    .toLowerCase()
+    // « 3 000 » → « 3000 » : l'espace n'est retiré qu'ENTRE DEUX CHIFFRES.
+    // Le retirer partout rendrait « lesenfants » acceptable pour « les enfants ».
+    .replace(new RegExp(`(\\d)${ESP}+(?=\\d)`, "g"), "$1")
+    // « 1 / 2 » → « 1/2 »
+    .replace(new RegExp(`(\\d)${ESP}*/${ESP}*(\\d)`, "g"), "$1/$2")
+    // le reste des espaces est simplement normalisé
+    .replace(new RegExp(`${ESP}+`, "g"), " ")
+    .replace(/,/g, "."); // toutes les virgules, pas seulement la première
 }
 
 const FRACTION = /^-?\d+\/\d+$/;
@@ -87,6 +100,11 @@ const correct = comparerReponse(calculsSession[index].reponse, reponse);
 ```
 
 ## Trois décisions à connaître
+
+**L'espace n'est retiré qu'entre deux chiffres.** Une première version le
+retirait partout : « lesenfants » devenait alors acceptable pour « les enfants »,
+ce qui relâche les 51 réponses en plusieurs mots des banques de français. La
+règle exacte est dans `normaliser()` ci-dessus.
 
 **La tolérance passe de 0,01 à 1e-9**, c'est-à-dire à l'égalité stricte aux
 erreurs d'arrondi près. `10` et `10,000` restent égaux, `3,45` et `3,46` ne le
@@ -127,3 +145,5 @@ sortir « 0 échec ».
 | `2,5` | `2,499` | faux (impossible avant) |
 | `10` | `10,000` | juste |
 | `quarante` | `Quarante` | juste |
+| `les enfants` | `lesenfants` | **faux** — l'espace ne se retire qu'entre deux chiffres |
+| `les enfants` | `Les  enfants` | juste |

@@ -4,18 +4,20 @@
 // Voir docs/ceintures/CORRECTIF-reponses-chiffrees.md pour les trois défauts
 // qu'elle corrige et les décisions assumées.
 
-/**
- * Espaces de toutes sortes : ordinaire, insécable (U+00A0), fine insécable
- * (U+202F), et les autres espaces Unicode qu'un traitement de texte peut
- * glisser dans « 3 000 ».
- */
-const SANS_ESPACE = /[\s   -​　]/g;
+const ESP = "[\\s\\u00A0\\u202F\\u2007\\u2009\\u200B\\u3000]";
 
 function normaliser(s: string): string {
   return s
     .trim()
     .toLowerCase()
-    .replace(SANS_ESPACE, "")
+    // « 3 000 » → « 3000 » : l'espace n'est retiré qu'ENTRE DEUX CHIFFRES.
+    // Le retirer partout rendrait « lesenfants » acceptable pour « les enfants »,
+    // et relâcherait les 51 réponses en plusieurs mots des banques de français.
+    .replace(new RegExp(`(\\d)${ESP}+(?=\\d)`, "g"), "$1")
+    // « 1 / 2 » → « 1/2 »
+    .replace(new RegExp(`(\\d)${ESP}*/${ESP}*(\\d)`, "g"), "$1/$2")
+    // le reste des espaces est simplement normalisé
+    .replace(new RegExp(`${ESP}+`, "g"), " ")
     .replace(/,/g, "."); // toutes les virgules, pas seulement la première
 }
 

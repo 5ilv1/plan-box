@@ -7,8 +7,12 @@
  * la fonction de l'application, reporte la modification ici — ce fichier est le
  * contrat, pas une copie décorative.
  */
-const SANS_ESPACE = /[\s   ]/g;
-const normaliser = (s) => String(s).trim().toLowerCase().replace(SANS_ESPACE, "").replace(/,/g, ".");
+const ESP = "[\\s\\u00A0\\u202F\\u2007\\u2009\\u200B\\u3000]";
+const normaliser = (s) => String(s).trim().toLowerCase()
+  .replace(new RegExp(`(\\d)${ESP}+(?=\\d)`, "g"), "$1")
+  .replace(new RegExp(`(\\d)${ESP}*/${ESP}*(\\d)`, "g"), "$1/$2")
+  .replace(new RegExp(`${ESP}+`, "g"), " ")
+  .replace(/,/g, ".");
 const FRACTION = /^-?\d+\/\d+$/;
 
 export function comparerReponse(attendue, donnee) {
@@ -47,6 +51,9 @@ const CAS = [
   ["quarante", "Quarante", true, "réponse en toutes lettres, casse ignorée"],
   ["quarante", "quarante-deux", false, "réponse en toutes lettres, différente"],
   ["40", "quarante", false, "les lettres ne valent pas les chiffres"],
+  ["les enfants", "lesenfants", false, "l'espace ne se retire QUE entre deux chiffres"],
+  ["les enfants", "Les  enfants", true, "espaces multiples et casse, réponse en mots"],
+  ["mon oncle", "mon oncle ", true, "espace final"],
 ];
 
 let echecs = 0;
