@@ -1,506 +1,506 @@
 [
- {
-  "item_code": "GM34",
-  "type": "exercice",
-  "lecon": {
-   "titre": "Le volume du pavé droit",
-   "regle": "Le volume d'un pavé droit est le produit de sa longueur, de sa largeur et de sa hauteur.",
-   "procedure": [
-    "Vérifie que les trois dimensions sont dans la même unité.",
-    "Multiplie la longueur par la largeur : c'est le nombre de cubes d'une couche.",
-    "Multiplie par la hauteur, qui donne le nombre de couches."
-   ],
-   "exemples": [
-    {
-     "phrase": "Une boîte de 5 cm sur 3 cm, haute de 2 cm.",
-     "demonstration": "Une couche du fond contient 5 × 3 = 15 cubes de 1 cm d'arête, et il y a 2 couches : 15 × 2 = 30 cm³."
+  {
+    "item_code": "GM34",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Le volume du pavé droit",
+      "regle": "Le volume d'un pavé droit est le produit de sa longueur, de sa largeur et de sa hauteur.",
+      "procedure": [
+        "Vérifie que les trois dimensions sont dans la même unité.",
+        "Multiplie la longueur par la largeur : c'est le nombre de cubes d'une couche.",
+        "Multiplie par la hauteur, qui donne le nombre de couches."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une boîte de 5 cm sur 3 cm, haute de 2 cm.",
+          "demonstration": "Une couche du fond contient 5 × 3 = 15 cubes de 1 cm d'arête, et il y a 2 couches : 15 × 2 = 30 cm³."
+        },
+        {
+          "phrase": "Une pièce de 5 m sur 4 m, haute de 3 m.",
+          "demonstration": "5 × 4 = 20 pour le sol, puis 20 × 3 = 60. Le volume est 60 m³."
+        }
+      ],
+      "piege": "Un volume demande trois dimensions, toutes écrites dans la même unité."
     },
-    {
-     "phrase": "Une pièce de 5 m sur 4 m, haute de 3 m.",
-     "demonstration": "5 × 4 = 20 pour le sol, puis 20 × 3 = 60. Le volume est 60 m³."
-    }
-   ],
-   "piege": "Un volume demande trois dimensions, toutes écrites dans la même unité."
+    "diagnostic": [
+      {
+        "question": "Combien de cubes de 1 cm d'arête faut-il pour remplir exactement une boîte de 4 cm de long, 3 cm de large et 2 cm de haut ?",
+        "options": [
+          "9",
+          "24",
+          "12",
+          "14"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Une couche du fond contient 4 × 3 = 12 cubes, et il y a 2 couches : 12 × 2 = 24. Le 12 ne compte qu'une seule couche, le 9 additionne les dimensions."
+      },
+      {
+        "question": "Quel calcul donne le volume d'un pavé droit de 8 m de long, 5 m de large et 2 m de haut ?",
+        "options": [
+          "8 + 5 + 2",
+          "8 × 5",
+          "(8 + 5) × 2",
+          "8 × 5 × 2"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le volume multiplie les trois dimensions. 8 × 5 ne donne que l'aire du sol, et (8 + 5) × 2 est le calcul d'un périmètre."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Des boîtes et des pièces",
+        "consigne": "Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Un pavé droit mesure 6 cm de long, 4 cm de large et 3 cm de haut. Quel est son volume, en centimètres cubes ?",
+            "reponse_attendue": "72",
+            "indice": "Multiplie les trois dimensions, deux par deux."
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de cubes de 1 cm d'arête faut-il pour remplir exactement une boîte de 5 cm de long, 4 cm de large et 2 cm de haut ?",
+            "reponse_attendue": "40",
+            "indice": "Compte d'abord les cubes d'une couche du fond, puis multiplie par le nombre de couches."
+          },
+          {
+            "id": 3,
+            "enonce": "Une pièce mesure 7 m de long, 4 m de large et 3 m de haut. Quel est son volume, en mètres cubes ?",
+            "reponse_attendue": "84",
+            "indice": "Multiplie la longueur par la largeur, puis par la hauteur."
+          },
+          {
+            "id": 4,
+            "enonce": "Un cube a une arête de 5 cm. Quel est son volume, en centimètres cubes ?",
+            "reponse_attendue": "125",
+            "indice": "Dans un cube, les trois dimensions sont égales."
+          },
+          {
+            "id": 5,
+            "enonce": "La couche du fond d'une caisse contient 18 cubes, et la caisse peut recevoir 4 couches identiques. Combien de cubes contient-elle en tout ?",
+            "reponse_attendue": "72",
+            "indice": "Le nombre de cubes d'une couche se multiplie par le nombre de couches."
+          },
+          {
+            "id": 6,
+            "enonce": "Un pavé droit a un volume de 60 cm³. Sa base mesure 5 cm sur 4 cm. Quelle est sa hauteur, en centimètres ?",
+            "reponse_attendue": "3",
+            "indice": "Calcule d'abord le nombre de cubes d'une couche, puis cherche combien de couches donnent 60."
+          },
+          {
+            "id": 7,
+            "enonce": "Un aquarium a la forme d'un pavé droit de 8 dm de long, 5 dm de large et 4 dm de haut. Quel est son volume, en décimètres cubes ?",
+            "reponse_attendue": "160",
+            "indice": "Les trois dimensions sont déjà dans la même unité : multiplie-les."
+          },
+          {
+            "id": 8,
+            "enonce": "Une benne mesure 4 m de long, 2 m de large et 2 m de haut. Combien de mètres cubes de sable peut-elle contenir au maximum ?",
+            "reponse_attendue": "16",
+            "indice": "Le volume de sable est le volume du pavé droit."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des volumes",
+        "consigne": "Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Un pavé droit mesure 9 cm de long, 5 cm de large et 2 cm de haut. Quel est son volume, en centimètres cubes ?",
+            "reponse_attendue": "90",
+            "indice": "Multiplie les trois dimensions, deux par deux."
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de cubes de 1 cm d'arête faut-il pour remplir exactement une boîte de 6 cm de long, 3 cm de large et 3 cm de haut ?",
+            "reponse_attendue": "54",
+            "indice": "Compte d'abord les cubes d'une couche du fond, puis multiplie par le nombre de couches."
+          },
+          {
+            "id": 3,
+            "enonce": "Une salle de classe mesure 8 m de long, 5 m de large et 3 m de haut. Quel est son volume, en mètres cubes ?",
+            "reponse_attendue": "120",
+            "indice": "Multiplie la longueur par la largeur, puis par la hauteur."
+          },
+          {
+            "id": 4,
+            "enonce": "Un cube a une arête de 4 cm. Quel est son volume, en centimètres cubes ?",
+            "reponse_attendue": "64",
+            "indice": "Dans un cube, les trois dimensions sont égales."
+          },
+          {
+            "id": 5,
+            "enonce": "La couche du fond d'un carton contient 24 cubes, et le carton peut recevoir 5 couches identiques. Combien de cubes contient-il en tout ?",
+            "reponse_attendue": "120",
+            "indice": "Le nombre de cubes d'une couche se multiplie par le nombre de couches."
+          },
+          {
+            "id": 6,
+            "enonce": "Un pavé droit a un volume de 96 cm³. Sa base mesure 8 cm sur 4 cm. Quelle est sa hauteur, en centimètres ?",
+            "reponse_attendue": "3",
+            "indice": "Calcule d'abord le nombre de cubes d'une couche, puis cherche combien de couches donnent 96."
+          },
+          {
+            "id": 7,
+            "enonce": "Un bac à sable a la forme d'un pavé droit de 6 dm de long, 5 dm de large et 3 dm de haut. Quel est son volume, en décimètres cubes ?",
+            "reponse_attendue": "90",
+            "indice": "Les trois dimensions sont déjà dans la même unité : multiplie-les."
+          },
+          {
+            "id": 8,
+            "enonce": "Une piscine gonflable mesure 3 m de long, 2 m de large et 0,5 m de haut. Combien de mètres cubes d'eau contient-elle une fois pleine ?",
+            "reponse_attendue": "3",
+            "indice": "Multiplie d'abord les deux dimensions du fond, puis multiplie par la hauteur."
+          }
+        ]
+      }
+    ]
   },
-  "diagnostic": [
-   {
-    "question": "Combien de cubes de 1 cm d'arête faut-il pour remplir exactement une boîte de 4 cm de long, 3 cm de large et 2 cm de haut ?",
-    "options": [
-     "9",
-     "24",
-     "12",
-     "14"
-    ],
-    "reponse_correcte": 1,
-    "explication": "Une couche du fond contient 4 × 3 = 12 cubes, et il y a 2 couches : 12 × 2 = 24. Le 12 ne compte qu'une seule couche, le 9 additionne les dimensions."
-   },
-   {
-    "question": "Quel calcul donne le volume d'un pavé droit de 8 m de long, 5 m de large et 2 m de haut ?",
-    "options": [
-     "8 + 5 + 2",
-     "8 × 5",
-     "(8 + 5) × 2",
-     "8 × 5 × 2"
-    ],
-    "reponse_correcte": 3,
-    "explication": "Le volume multiplie les trois dimensions. 8 × 5 ne donne que l'aire du sol, et (8 + 5) × 2 est le calcul d'un périmètre."
-   }
-  ],
-  "entrainement": [
-   {
-    "titre": "Des boîtes et des pièces",
-    "consigne": "Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité.",
-    "questions": [
-     {
-      "id": 1,
-      "enonce": "Un pavé droit mesure 6 cm de long, 4 cm de large et 3 cm de haut. Quel est son volume, en centimètres cubes ?",
-      "reponse_attendue": "72",
-      "indice": "Multiplie les trois dimensions, deux par deux."
-     },
-     {
-      "id": 2,
-      "enonce": "Combien de cubes de 1 cm d'arête faut-il pour remplir exactement une boîte de 5 cm de long, 4 cm de large et 2 cm de haut ?",
-      "reponse_attendue": "40",
-      "indice": "Compte d'abord les cubes d'une couche du fond, puis multiplie par le nombre de couches."
-     },
-     {
-      "id": 3,
-      "enonce": "Une pièce mesure 7 m de long, 4 m de large et 3 m de haut. Quel est son volume, en mètres cubes ?",
-      "reponse_attendue": "84",
-      "indice": "Multiplie la longueur par la largeur, puis par la hauteur."
-     },
-     {
-      "id": 4,
-      "enonce": "Un cube a une arête de 5 cm. Quel est son volume, en centimètres cubes ?",
-      "reponse_attendue": "125",
-      "indice": "Dans un cube, les trois dimensions sont égales."
-     },
-     {
-      "id": 5,
-      "enonce": "La couche du fond d'une caisse contient 18 cubes, et la caisse peut recevoir 4 couches identiques. Combien de cubes contient-elle en tout ?",
-      "reponse_attendue": "72",
-      "indice": "Le nombre de cubes d'une couche se multiplie par le nombre de couches."
-     },
-     {
-      "id": 6,
-      "enonce": "Un pavé droit a un volume de 60 cm³. Sa base mesure 5 cm sur 4 cm. Quelle est sa hauteur, en centimètres ?",
-      "reponse_attendue": "3",
-      "indice": "Calcule d'abord le nombre de cubes d'une couche, puis cherche combien de couches donnent 60."
-     },
-     {
-      "id": 7,
-      "enonce": "Un aquarium a la forme d'un pavé droit de 8 dm de long, 5 dm de large et 4 dm de haut. Quel est son volume, en décimètres cubes ?",
-      "reponse_attendue": "160",
-      "indice": "Les trois dimensions sont déjà dans la même unité : multiplie-les."
-     },
-     {
-      "id": 8,
-      "enonce": "Une benne mesure 4 m de long, 2 m de large et 2 m de haut. Combien de mètres cubes de sable peut-elle contenir au maximum ?",
-      "reponse_attendue": "16",
-      "indice": "Le volume de sable est le volume du pavé droit."
-     }
-    ]
-   },
-   {
-    "titre": "Encore des volumes",
-    "consigne": "Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité.",
-    "questions": [
-     {
-      "id": 1,
-      "enonce": "Un pavé droit mesure 9 cm de long, 5 cm de large et 2 cm de haut. Quel est son volume, en centimètres cubes ?",
-      "reponse_attendue": "90",
-      "indice": "Multiplie les trois dimensions, deux par deux."
-     },
-     {
-      "id": 2,
-      "enonce": "Combien de cubes de 1 cm d'arête faut-il pour remplir exactement une boîte de 6 cm de long, 3 cm de large et 3 cm de haut ?",
-      "reponse_attendue": "54",
-      "indice": "Compte d'abord les cubes d'une couche du fond, puis multiplie par le nombre de couches."
-     },
-     {
-      "id": 3,
-      "enonce": "Une salle de classe mesure 8 m de long, 5 m de large et 3 m de haut. Quel est son volume, en mètres cubes ?",
-      "reponse_attendue": "120",
-      "indice": "Multiplie la longueur par la largeur, puis par la hauteur."
-     },
-     {
-      "id": 4,
-      "enonce": "Un cube a une arête de 4 cm. Quel est son volume, en centimètres cubes ?",
-      "reponse_attendue": "64",
-      "indice": "Dans un cube, les trois dimensions sont égales."
-     },
-     {
-      "id": 5,
-      "enonce": "La couche du fond d'un carton contient 24 cubes, et le carton peut recevoir 5 couches identiques. Combien de cubes contient-il en tout ?",
-      "reponse_attendue": "120",
-      "indice": "Le nombre de cubes d'une couche se multiplie par le nombre de couches."
-     },
-     {
-      "id": 6,
-      "enonce": "Un pavé droit a un volume de 96 cm³. Sa base mesure 8 cm sur 4 cm. Quelle est sa hauteur, en centimètres ?",
-      "reponse_attendue": "3",
-      "indice": "Calcule d'abord le nombre de cubes d'une couche, puis cherche combien de couches donnent 96."
-     },
-     {
-      "id": 7,
-      "enonce": "Un bac à sable a la forme d'un pavé droit de 6 dm de long, 5 dm de large et 3 dm de haut. Quel est son volume, en décimètres cubes ?",
-      "reponse_attendue": "90",
-      "indice": "Les trois dimensions sont déjà dans la même unité : multiplie-les."
-     },
-     {
-      "id": 8,
-      "enonce": "Une piscine gonflable mesure 3 m de long, 2 m de large et 0,5 m de haut. Combien de mètres cubes d'eau contient-elle une fois pleine ?",
-      "reponse_attendue": "3",
-      "indice": "Multiplie d'abord les deux dimensions du fond, puis multiplie par la hauteur."
-     }
-    ]
-   }
-  ]
- },
- {
-  "item_code": "GM35",
-  "type": "exercice",
-  "lecon": {
-   "titre": "Le cercle et le triangle",
-   "regle": "Le périmètre d'un cercle vaut π × diamètre, et l'aire d'un triangle vaut base × hauteur ÷ 2.",
-   "procedure": [
-    "Pour le cercle, prends le diamètre ; si on te donne le rayon, double-le.",
-    "Multiplie ce diamètre par 3,14 : tu obtiens le périmètre, que tu arrondis au dixième si l'énoncé le demande.",
-    "Pour le triangle, multiplie la base par sa hauteur, puis divise par 2."
-   ],
-   "exemples": [
-    {
-     "phrase": "Un cercle de rayon 3 cm, avec π = 3,14.",
-     "demonstration": "Le diamètre vaut 2 × 3 = 6 cm, puis 3,14 × 6 = 18,84 : arrondi au dixième, le périmètre mesure 18,8 cm."
+  {
+    "item_code": "GM35",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Le cercle et le triangle",
+      "regle": "Le périmètre d'un cercle vaut π × diamètre, et l'aire d'un triangle vaut base × hauteur ÷ 2.",
+      "procedure": [
+        "Pour le cercle, prends le diamètre ; si on te donne le rayon, double-le.",
+        "Multiplie ce diamètre par 3,14 : tu obtiens le périmètre, que tu arrondis au dixième si l'énoncé le demande.",
+        "Pour le triangle, multiplie la base par sa hauteur, puis divise par 2."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un cercle de rayon 3 cm, avec π = 3,14.",
+          "demonstration": "Le diamètre vaut 2 × 3 = 6 cm, puis 3,14 × 6 = 18,84 : arrondi au dixième, le périmètre mesure 18,8 cm."
+        },
+        {
+          "phrase": "Un triangle de base 8 cm et de hauteur 5 cm.",
+          "demonstration": "8 × 5 = 40, puis 40 ÷ 2 = 20 : l'aire vaut 20 cm², la moitié de celle du rectangle."
+        }
+      ],
+      "piege": "Le rayon n'est pas le diamètre : double-le avant de multiplier par 3,14."
     },
-    {
-     "phrase": "Un triangle de base 8 cm et de hauteur 5 cm.",
-     "demonstration": "8 × 5 = 40, puis 40 ÷ 2 = 20 : l'aire vaut 20 cm², la moitié de celle du rectangle."
-    }
-   ],
-   "piege": "Le rayon n'est pas le diamètre : double-le avant de multiplier par 3,14."
+    "diagnostic": [
+      {
+        "question": "Quel calcul donne le périmètre d'un cercle de rayon 4 cm, avec π = 3,14 ?",
+        "options": [
+          "3,14 × 8",
+          "3,14 × 4",
+          "3,14 × 4 × 4",
+          "8 × 8"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le périmètre se calcule avec le diamètre : 2 × 4 = 8, donc 3,14 × 8. Multiplier par le rayon donnerait un cercle deux fois trop petit."
+      },
+      {
+        "question": "Un triangle a une base de 10 cm et une hauteur de 6 cm. Quelle est son aire ?",
+        "options": [
+          "60 cm²",
+          "16 cm²",
+          "30 cm²",
+          "20 cm²"
+        ],
+        "reponse_correcte": 2,
+        "explication": "10 × 6 = 60, puis 60 ÷ 2 = 30 cm². Le 60 est l'aire du rectangle entier, le 16 vient d'une addition, et le 20 d'une division par 3 au lieu de 2."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Autour du cercle et du triangle",
+        "consigne": "Prends π = 3,14. Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité ; s'il a une virgule, écris-la.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Un cercle a un diamètre de 10 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "31,4",
+            "indice": "Multiplie le diamètre par 3,14."
+          },
+          {
+            "id": 2,
+            "enonce": "Un cercle a un rayon de 9 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "56,5",
+            "indice": "Trouve d'abord le diamètre en doublant le rayon."
+          },
+          {
+            "id": 3,
+            "enonce": "Une roue de vélo a un diamètre de 45 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "141,3",
+            "indice": "Multiplie le diamètre par 3,14."
+          },
+          {
+            "id": 4,
+            "enonce": "Un triangle a une base de 12 cm et une hauteur de 7 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "42",
+            "indice": "Multiplie la base par la hauteur, puis divise par 2."
+          },
+          {
+            "id": 5,
+            "enonce": "Un triangle a une base de 9 cm et une hauteur de 6 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "27",
+            "indice": "Multiplie la base par la hauteur, puis divise par 2."
+          },
+          {
+            "id": 6,
+            "enonce": "Un triangle rectangle a ses deux côtés perpendiculaires qui mesurent 7 cm et 4 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "14",
+            "indice": "Dans un triangle rectangle, les deux côtés perpendiculaires servent de base et de hauteur."
+          },
+          {
+            "id": 7,
+            "enonce": "Un cercle a un diamètre de 13 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "40,8",
+            "indice": "Multiplie le diamètre par 3,14."
+          },
+          {
+            "id": 8,
+            "enonce": "Un triangle a une base de 15 cm et une hauteur de 8 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "60",
+            "indice": "Multiplie la base par la hauteur, puis divise par 2."
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième série : cercles et triangles",
+        "consigne": "Prends π = 3,14. Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité ; s'il a une virgule, écris-la.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Un cercle a un diamètre de 20 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "62,8",
+            "indice": "Multiplie le diamètre par 3,14."
+          },
+          {
+            "id": 2,
+            "enonce": "Un cercle a un rayon de 11 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "69,1",
+            "indice": "Trouve d'abord le diamètre en doublant le rayon."
+          },
+          {
+            "id": 3,
+            "enonce": "Une roue de trottinette a un diamètre de 12 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "37,7",
+            "indice": "Multiplie le diamètre par 3,14."
+          },
+          {
+            "id": 4,
+            "enonce": "Un triangle a une base de 10 cm et une hauteur de 7 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "35",
+            "indice": "Multiplie la base par la hauteur, puis divise par 2."
+          },
+          {
+            "id": 5,
+            "enonce": "Un triangle a une base de 14 cm et une hauteur de 6 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "42",
+            "indice": "Multiplie la base par la hauteur, puis divise par 2."
+          },
+          {
+            "id": 6,
+            "enonce": "Un triangle rectangle a ses deux côtés perpendiculaires qui mesurent 9 cm et 6 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "27",
+            "indice": "Dans un triangle rectangle, les deux côtés perpendiculaires servent de base et de hauteur."
+          },
+          {
+            "id": 7,
+            "enonce": "Un cercle a un diamètre de 5 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
+            "reponse_attendue": "15,7",
+            "indice": "Multiplie le diamètre par 3,14."
+          },
+          {
+            "id": 8,
+            "enonce": "Un triangle a une base de 20 cm et une hauteur de 9 cm. Quelle est son aire, en centimètres carrés ?",
+            "reponse_attendue": "90",
+            "indice": "Multiplie la base par la hauteur, puis divise par 2."
+          }
+        ]
+      }
+    ]
   },
-  "diagnostic": [
-   {
-    "question": "Quel calcul donne le périmètre d'un cercle de rayon 4 cm, avec π = 3,14 ?",
-    "options": [
-     "3,14 × 8",
-     "3,14 × 4",
-     "3,14 × 4 × 4",
-     "8 × 8"
-    ],
-    "reponse_correcte": 0,
-    "explication": "Le périmètre se calcule avec le diamètre : 2 × 4 = 8, donc 3,14 × 8. Multiplier par le rayon donnerait un cercle deux fois trop petit."
-   },
-   {
-    "question": "Un triangle a une base de 10 cm et une hauteur de 6 cm. Quelle est son aire ?",
-    "options": [
-     "60 cm²",
-     "16 cm²",
-     "30 cm²",
-     "20 cm²"
-    ],
-    "reponse_correcte": 2,
-    "explication": "10 × 6 = 60, puis 60 ÷ 2 = 30 cm². Le 60 est l'aire du rectangle entier, le 16 vient d'une addition, et le 20 d'une division par 3 au lieu de 2."
-   }
-  ],
-  "entrainement": [
-   {
-    "titre": "Autour du cercle et du triangle",
-    "consigne": "Prends π = 3,14. Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité ; s'il a une virgule, écris-la.",
-    "questions": [
-     {
-      "id": 1,
-      "enonce": "Un cercle a un diamètre de 10 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "31,4",
-      "indice": "Multiplie le diamètre par 3,14."
-     },
-     {
-      "id": 2,
-      "enonce": "Un cercle a un rayon de 9 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "56,5",
-      "indice": "Trouve d'abord le diamètre en doublant le rayon."
-     },
-     {
-      "id": 3,
-      "enonce": "Une roue de vélo a un diamètre de 45 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "141,3",
-      "indice": "Multiplie le diamètre par 3,14."
-     },
-     {
-      "id": 4,
-      "enonce": "Un triangle a une base de 12 cm et une hauteur de 7 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "42",
-      "indice": "Multiplie la base par la hauteur, puis divise par 2."
-     },
-     {
-      "id": 5,
-      "enonce": "Un triangle a une base de 9 cm et une hauteur de 6 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "27",
-      "indice": "Multiplie la base par la hauteur, puis divise par 2."
-     },
-     {
-      "id": 6,
-      "enonce": "Un triangle rectangle a ses deux côtés perpendiculaires qui mesurent 7 cm et 4 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "14",
-      "indice": "Dans un triangle rectangle, les deux côtés perpendiculaires servent de base et de hauteur."
-     },
-     {
-      "id": 7,
-      "enonce": "Un cercle a un diamètre de 13 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "40,8",
-      "indice": "Multiplie le diamètre par 3,14."
-     },
-     {
-      "id": 8,
-      "enonce": "Un triangle a une base de 15 cm et une hauteur de 8 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "60",
-      "indice": "Multiplie la base par la hauteur, puis divise par 2."
-     }
-    ]
-   },
-   {
-    "titre": "Deuxième série : cercles et triangles",
-    "consigne": "Prends π = 3,14. Calcule sur ton cahier, puis écris seulement le nombre demandé, sans écrire l'unité ; s'il a une virgule, écris-la.",
-    "questions": [
-     {
-      "id": 1,
-      "enonce": "Un cercle a un diamètre de 20 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "62,8",
-      "indice": "Multiplie le diamètre par 3,14."
-     },
-     {
-      "id": 2,
-      "enonce": "Un cercle a un rayon de 11 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "69,1",
-      "indice": "Trouve d'abord le diamètre en doublant le rayon."
-     },
-     {
-      "id": 3,
-      "enonce": "Une roue de trottinette a un diamètre de 12 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "37,7",
-      "indice": "Multiplie le diamètre par 3,14."
-     },
-     {
-      "id": 4,
-      "enonce": "Un triangle a une base de 10 cm et une hauteur de 7 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "35",
-      "indice": "Multiplie la base par la hauteur, puis divise par 2."
-     },
-     {
-      "id": 5,
-      "enonce": "Un triangle a une base de 14 cm et une hauteur de 6 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "42",
-      "indice": "Multiplie la base par la hauteur, puis divise par 2."
-     },
-     {
-      "id": 6,
-      "enonce": "Un triangle rectangle a ses deux côtés perpendiculaires qui mesurent 9 cm et 6 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "27",
-      "indice": "Dans un triangle rectangle, les deux côtés perpendiculaires servent de base et de hauteur."
-     },
-     {
-      "id": 7,
-      "enonce": "Un cercle a un diamètre de 5 cm. Quel est son périmètre, en centimètres ? Arrondis au dixième. (π = 3,14)",
-      "reponse_attendue": "15,7",
-      "indice": "Multiplie le diamètre par 3,14."
-     },
-     {
-      "id": 8,
-      "enonce": "Un triangle a une base de 20 cm et une hauteur de 9 cm. Quelle est son aire, en centimètres carrés ?",
-      "reponse_attendue": "90",
-      "indice": "Multiplie la base par la hauteur, puis divise par 2."
-     }
-    ]
-   }
-  ]
- },
- {
-  "item_code": "GM36",
-  "type": "exercice",
-  "lecon": {
-   "titre": "Mesurer et tracer au rapporteur",
-   "regle": "La mesure d'un angle se lit en degrés, sur la graduation du rapporteur qui part de 0 sur l'un de ses côtés.",
-   "procedure": [
-    "Pose le centre du rapporteur sur le sommet et le 0 d'une graduation sur un côté.",
-    "Lis le nombre où passe l'autre côté, sur cette même graduation.",
-    "Pour tracer : pose le centre à l'extrémité de ta demi-droite, marque le nombre voulu sur la graduation qui part de 0, puis joins."
-   ],
-   "exemples": [
-    {
-     "phrase": "Un angle dont le second côté passe devant le 65 et devant le 115.",
-     "demonstration": "Je regarde l'angle : il est plus fermé que l'angle droit, donc je lis 65 — il mesure 65°."
+  {
+    "item_code": "GM36",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Mesurer et tracer au rapporteur",
+      "regle": "La mesure d'un angle se lit en degrés, sur la graduation du rapporteur qui part de 0 sur l'un de ses côtés.",
+      "procedure": [
+        "Pose le centre du rapporteur sur le sommet et le 0 d'une graduation sur un côté.",
+        "Lis le nombre où passe l'autre côté, sur cette même graduation.",
+        "Pour tracer : pose le centre à l'extrémité de ta demi-droite, marque le nombre voulu sur la graduation qui part de 0, puis joins."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un angle dont le second côté passe devant le 65 et devant le 115.",
+          "demonstration": "Je regarde l'angle : il est plus fermé que l'angle droit, donc je lis 65 — il mesure 65°."
+        },
+        {
+          "phrase": "Tracer un angle de 125°.",
+          "demonstration": "Je marque le 125 sur la graduation qui part de 0, puis je joins ce point à l'extrémité."
+        }
+      ],
+      "piege": "Le rapporteur porte deux graduations : si l'angle est plus fermé que l'angle droit, lis le plus petit nombre, sinon 65° devient 115°."
     },
-    {
-     "phrase": "Tracer un angle de 125°.",
-     "demonstration": "Je marque le 125 sur la graduation qui part de 0, puis je joins ce point à l'extrémité."
-    }
-   ],
-   "piege": "Le rapporteur porte deux graduations : regarde si l'angle est plus fermé ou plus ouvert que l'angle droit, sinon 65° devient 115°."
-  },
-  "diagnostic": [
-   {
-    "question": "Inès mesure un angle nettement plus fermé qu'un angle droit. Sur son rapporteur, le second côté passe à la fois devant le 40 et devant le 140. Combien mesure cet angle ?",
-    "options": [
-     "40°",
-     "140°",
-     "100°",
-     "180°"
+    "diagnostic": [
+      {
+        "question": "Inès mesure un angle nettement plus fermé qu'un angle droit. Sur son rapporteur, le second côté passe à la fois devant le 40 et devant le 140. Combien mesure cet angle ?",
+        "options": [
+          "40°",
+          "140°",
+          "100°",
+          "180°"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Un angle plus fermé que l'angle droit mesure moins de 90° : c'est 40°. Le 140 est la lecture de l'autre graduation."
+      },
+      {
+        "question": "Où faut-il placer le centre du rapporteur pour mesurer un angle ?",
+        "options": [
+          "au milieu d'un côté",
+          "à l'extrémité du plus long côté",
+          "n'importe où sur la feuille",
+          "sur le sommet de l'angle"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Le centre du rapporteur se pose sur le sommet, et le 0 se règle sur un côté : sans cela, la lecture ne veut rien dire."
+      }
     ],
-    "reponse_correcte": 0,
-    "explication": "Un angle plus fermé que l'angle droit mesure moins de 90° : c'est 40°. Le 140 est la lecture de l'autre graduation."
-   },
-   {
-    "question": "Où faut-il placer le centre du rapporteur pour mesurer un angle ?",
-    "options": [
-     "au milieu d'un côté",
-     "à l'extrémité du plus long côté",
-     "n'importe où sur la feuille",
-     "sur le sommet de l'angle"
-    ],
-    "reponse_correcte": 3,
-    "explication": "Le centre du rapporteur se pose sur le sommet, et le 0 se règle sur un côté : sans cela, la lecture ne veut rien dire."
-   }
-  ],
-  "entrainement": [
-   {
-    "titre": "Je mesure, je trace",
-    "consigne": "Mesure ou trace sur ton cahier avec ton rapporteur, puis écris seulement le nombre demandé, sans écrire le mot degré ni le petit rond.",
-    "questions": [
-     {
-      "id": 1,
-      "enonce": "Tu mesures l'angle A ci-dessous. Son second côté passe devant le 60 et devant le 120. Combien mesure-t-il, en degrés ?",
-      "reponse_attendue": "60",
-      "indice": "Un angle plus fermé que l'angle droit mesure moins de 90°.",
-      "figure": {
-       "type": "angle",
-       "degres": 60,
-       "nom": "A"
+    "entrainement": [
+      {
+        "titre": "Je mesure, je trace",
+        "consigne": "Mesure ou trace sur ton cahier avec ton rapporteur, puis écris seulement le nombre demandé, sans écrire le mot degré ni le petit rond.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Tu mesures l'angle A ci-dessous. Son second côté passe devant le 60 et devant le 120. Combien mesure-t-il, en degrés ?",
+            "reponse_attendue": "60",
+            "indice": "Un angle plus fermé que l'angle droit mesure moins de 90°.",
+            "figure": {
+              "type": "angle",
+              "degres": 60,
+              "nom": "A"
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Tu mesures l'angle B ci-dessous. Son second côté passe devant le 50 et devant le 130. Combien mesure-t-il, en degrés ?",
+            "reponse_attendue": "130",
+            "indice": "Un angle plus ouvert que l'angle droit mesure plus de 90°.",
+            "figure": {
+              "type": "angle",
+              "degres": 130,
+              "nom": "B"
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Trace un angle de 45° au rapporteur, puis trace un second angle de 45° collé au premier, à partir du côté que tu viens de tracer. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
+            "reponse_attendue": "90",
+            "indice": "Additionne les deux angles tracés."
+          },
+          {
+            "id": 4,
+            "enonce": "Tu mesures un angle au rapporteur et tu lis 75°. Ton voisin trace le même angle, mais avec des côtés deux fois plus longs. Combien mesure l'angle de ton voisin, en degrés ?",
+            "reponse_attendue": "75",
+            "indice": "La longueur des côtés ne change pas la mesure d'un angle."
+          },
+          {
+            "id": 5,
+            "enonce": "Un angle plat mesure 180°. Une demi-droite le partage en deux angles : l'un d'eux mesure 110°. Combien mesure l'autre, en degrés ?",
+            "reponse_attendue": "70",
+            "indice": "Cherche ce qu'il faut ajouter à 110 pour atteindre 180."
+          },
+          {
+            "id": 6,
+            "enonce": "Trace un angle droit, puis, à l'intérieur, trace un angle de 35° à partir de l'un de ses côtés. Combien mesure l'angle qui reste, en degrés ?",
+            "reponse_attendue": "55",
+            "indice": "Un angle droit mesure 90° : enlève la part déjà tracée."
+          },
+          {
+            "id": 7,
+            "enonce": "Tu mesures l'angle C ci-dessous. Son second côté passe devant le 25 et devant le 155. Combien mesure-t-il, en degrés ?",
+            "reponse_attendue": "25",
+            "indice": "Un angle très fermé mesure beaucoup moins que 90°.",
+            "figure": {
+              "type": "angle",
+              "degres": 25,
+              "nom": "C"
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Trois angles de 50° sont tracés côte à côte à partir d'une même demi-droite, chacun collé au précédent. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
+            "reponse_attendue": "150",
+            "indice": "Additionne les trois angles, ou multiplie 50 par 3."
+          }
+        ]
+      },
+      {
+        "titre": "Deuxième série au rapporteur",
+        "consigne": "Mesure ou trace sur ton cahier avec ton rapporteur, puis écris seulement le nombre demandé, sans écrire le mot degré ni le petit rond.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Tu mesures l'angle D ci-dessous. Son second côté passe devant le 70 et devant le 110. Combien mesure-t-il, en degrés ?",
+            "reponse_attendue": "70",
+            "indice": "Un angle plus fermé que l'angle droit mesure moins de 90°.",
+            "figure": {
+              "type": "angle",
+              "degres": 70,
+              "nom": "D"
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Tu mesures l'angle E ci-dessous. Son second côté passe devant le 35 et devant le 145. Combien mesure-t-il, en degrés ?",
+            "reponse_attendue": "145",
+            "indice": "Un angle plus ouvert que l'angle droit mesure plus de 90°.",
+            "figure": {
+              "type": "angle",
+              "degres": 145,
+              "nom": "E"
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Trace un angle de 30° au rapporteur, puis trace un second angle de 30° collé au premier, à partir du côté que tu viens de tracer. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
+            "reponse_attendue": "60",
+            "indice": "Additionne les deux angles tracés."
+          },
+          {
+            "id": 4,
+            "enonce": "Tu mesures un angle au rapporteur et tu lis 105°. Ton voisin trace le même angle, mais avec des côtés trois fois plus courts. Combien mesure l'angle de ton voisin, en degrés ?",
+            "reponse_attendue": "105",
+            "indice": "La longueur des côtés ne change pas la mesure d'un angle."
+          },
+          {
+            "id": 5,
+            "enonce": "Un angle plat mesure 180°. Une demi-droite le partage en deux angles : l'un d'eux mesure 65°. Combien mesure l'autre, en degrés ?",
+            "reponse_attendue": "115",
+            "indice": "Cherche ce qu'il faut ajouter à 65 pour atteindre 180."
+          },
+          {
+            "id": 6,
+            "enonce": "Trace un angle droit, puis, à l'intérieur, trace un angle de 20° à partir de l'un de ses côtés. Combien mesure l'angle qui reste, en degrés ?",
+            "reponse_attendue": "70",
+            "indice": "Un angle droit mesure 90° : enlève la part déjà tracée."
+          },
+          {
+            "id": 7,
+            "enonce": "Tu mesures l'angle F ci-dessous. Son second côté passe devant le 15 et devant le 165. Combien mesure-t-il, en degrés ?",
+            "reponse_attendue": "15",
+            "indice": "Un angle très fermé mesure beaucoup moins que 90°.",
+            "figure": {
+              "type": "angle",
+              "degres": 15,
+              "nom": "F"
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Quatre angles de 40° sont tracés côte à côte à partir d'une même demi-droite, chacun collé au précédent. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
+            "reponse_attendue": "160",
+            "indice": "Additionne les quatre angles, ou multiplie 40 par 4."
+          }
+        ]
       }
-     },
-     {
-      "id": 2,
-      "enonce": "Tu mesures l'angle B ci-dessous. Son second côté passe devant le 50 et devant le 130. Combien mesure-t-il, en degrés ?",
-      "reponse_attendue": "130",
-      "indice": "Un angle plus ouvert que l'angle droit mesure plus de 90°.",
-      "figure": {
-       "type": "angle",
-       "degres": 130,
-       "nom": "B"
-      }
-     },
-     {
-      "id": 3,
-      "enonce": "Trace un angle de 45° au rapporteur, puis trace un second angle de 45° collé au premier, à partir du côté que tu viens de tracer. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
-      "reponse_attendue": "90",
-      "indice": "Additionne les deux angles tracés."
-     },
-     {
-      "id": 4,
-      "enonce": "Tu mesures un angle au rapporteur et tu lis 75°. Ton voisin trace le même angle, mais avec des côtés deux fois plus longs. Combien mesure l'angle de ton voisin, en degrés ?",
-      "reponse_attendue": "75",
-      "indice": "La longueur des côtés ne change pas la mesure d'un angle."
-     },
-     {
-      "id": 5,
-      "enonce": "Un angle plat mesure 180°. Une demi-droite le partage en deux angles : l'un d'eux mesure 110°. Combien mesure l'autre, en degrés ?",
-      "reponse_attendue": "70",
-      "indice": "Cherche ce qu'il faut ajouter à 110 pour atteindre 180."
-     },
-     {
-      "id": 6,
-      "enonce": "Trace un angle droit, puis, à l'intérieur, trace un angle de 35° à partir de l'un de ses côtés. Combien mesure l'angle qui reste, en degrés ?",
-      "reponse_attendue": "55",
-      "indice": "Un angle droit mesure 90° : enlève la part déjà tracée."
-     },
-     {
-      "id": 7,
-      "enonce": "Tu mesures l'angle C ci-dessous. Son second côté passe devant le 25 et devant le 155. Combien mesure-t-il, en degrés ?",
-      "reponse_attendue": "25",
-      "indice": "Un angle très fermé mesure beaucoup moins que 90°.",
-      "figure": {
-       "type": "angle",
-       "degres": 25,
-       "nom": "C"
-      }
-     },
-     {
-      "id": 8,
-      "enonce": "Trois angles de 50° sont tracés côte à côte à partir d'une même demi-droite, chacun collé au précédent. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
-      "reponse_attendue": "150",
-      "indice": "Additionne les trois angles, ou multiplie 50 par 3."
-     }
     ]
-   },
-   {
-    "titre": "Deuxième série au rapporteur",
-    "consigne": "Mesure ou trace sur ton cahier avec ton rapporteur, puis écris seulement le nombre demandé, sans écrire le mot degré ni le petit rond.",
-    "questions": [
-     {
-      "id": 1,
-      "enonce": "Tu mesures l'angle D ci-dessous. Son second côté passe devant le 70 et devant le 110. Combien mesure-t-il, en degrés ?",
-      "reponse_attendue": "70",
-      "indice": "Un angle plus fermé que l'angle droit mesure moins de 90°.",
-      "figure": {
-       "type": "angle",
-       "degres": 70,
-       "nom": "D"
-      }
-     },
-     {
-      "id": 2,
-      "enonce": "Tu mesures l'angle E ci-dessous. Son second côté passe devant le 35 et devant le 145. Combien mesure-t-il, en degrés ?",
-      "reponse_attendue": "145",
-      "indice": "Un angle plus ouvert que l'angle droit mesure plus de 90°.",
-      "figure": {
-       "type": "angle",
-       "degres": 145,
-       "nom": "E"
-      }
-     },
-     {
-      "id": 3,
-      "enonce": "Trace un angle de 30° au rapporteur, puis trace un second angle de 30° collé au premier, à partir du côté que tu viens de tracer. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
-      "reponse_attendue": "60",
-      "indice": "Additionne les deux angles tracés."
-     },
-     {
-      "id": 4,
-      "enonce": "Tu mesures un angle au rapporteur et tu lis 105°. Ton voisin trace le même angle, mais avec des côtés trois fois plus courts. Combien mesure l'angle de ton voisin, en degrés ?",
-      "reponse_attendue": "105",
-      "indice": "La longueur des côtés ne change pas la mesure d'un angle."
-     },
-     {
-      "id": 5,
-      "enonce": "Un angle plat mesure 180°. Une demi-droite le partage en deux angles : l'un d'eux mesure 65°. Combien mesure l'autre, en degrés ?",
-      "reponse_attendue": "115",
-      "indice": "Cherche ce qu'il faut ajouter à 65 pour atteindre 180."
-     },
-     {
-      "id": 6,
-      "enonce": "Trace un angle droit, puis, à l'intérieur, trace un angle de 20° à partir de l'un de ses côtés. Combien mesure l'angle qui reste, en degrés ?",
-      "reponse_attendue": "70",
-      "indice": "Un angle droit mesure 90° : enlève la part déjà tracée."
-     },
-     {
-      "id": 7,
-      "enonce": "Tu mesures l'angle F ci-dessous. Son second côté passe devant le 15 et devant le 165. Combien mesure-t-il, en degrés ?",
-      "reponse_attendue": "15",
-      "indice": "Un angle très fermé mesure beaucoup moins que 90°.",
-      "figure": {
-       "type": "angle",
-       "degres": 15,
-       "nom": "F"
-      }
-     },
-     {
-      "id": 8,
-      "enonce": "Quatre angles de 40° sont tracés côte à côte à partir d'une même demi-droite, chacun collé au précédent. Combien mesure l'angle formé par le tout premier côté et le tout dernier, en degrés ?",
-      "reponse_attendue": "160",
-      "indice": "Additionne les quatre angles, ou multiplie 40 par 4."
-     }
-    ]
-   }
-  ]
- }
+  }
 ]

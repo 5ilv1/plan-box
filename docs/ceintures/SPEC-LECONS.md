@@ -58,7 +58,7 @@ et la variante 2.
   qui ne diffèrent que par les prénoms n'apprennent rien.
 - `piege` : facultatif, une phrase. L'erreur que les élèves font vraiment.
 
-Longueur totale : **80 à 120 mots**, les deux exemples compris. Elle se lit en trente secondes, debout,
+Longueur totale : **80 à 150 mots**, les deux exemples compris — deux démonstrations écrites en entier coûtent une trentaine de mots à elles seules. Au-delà de 150, c'est le piège ou une démonstration qu'il faut resserrer, jamais un exemple qu'il faut supprimer. Elle se lit en trente secondes, debout,
 avant de commencer. Ce n'est pas la leçon du cahier, c'est le rappel du geste.
 
 ## Les cinq règles de rédaction

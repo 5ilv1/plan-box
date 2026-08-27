@@ -404,7 +404,7 @@
       "exemples": [
         {
           "phrase": "407/100",
-          "demonstration": "Deux zéros en bas : deux chiffres après la virgule. Dans 407, je compte 0 puis 7 : c'est 4,07."
+          "demonstration": "Deux zéros en bas, donc deux chiffres après la virgule : 407/100 s'écrit 4,07."
         },
         {
           "phrase": "9,4 en dixièmes",
@@ -555,10 +555,9 @@
       "titre": "Décomposer et recomposer un décimal",
       "regle": "Après la virgule, le 1er chiffre compte les dixièmes et le 2e chiffre compte les centièmes.",
       "procedure": [
-        "Les places ne changent jamais : unités avant la virgule, dixièmes à la 1re place après, centièmes à la 2e.",
-        "Pour décomposer un nombre, lis le chiffre qui occupe la place demandée.",
-        "Pour fabriquer un nombre, écris un chiffre à chaque place, et 0 si elle manque.",
-        "Dans l'autre sens, place un chiffre par rang après la virgule, et mets un 0 là où un rang manque."
+        "Écris d'abord la partie entière, puis regarde après la virgule.",
+        "Le 1er chiffre après la virgule compte les dixièmes, le 2e les centièmes.",
+        "Dans l'autre sens, place un chiffre par rang et mets un 0 là où un rang manque."
       ],
       "exemples": [
         {

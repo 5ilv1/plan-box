@@ -17,7 +17,7 @@
         },
         {
           "phrase": "Le gabarit de l'angle Q tient exactement 4 fois dans l'angle W.",
-          "demonstration": "Chaque report vaut un quart de W : pour obtenir la moitié de W, je reporte le gabarit de Q 2 fois."
+          "demonstration": "Chaque report vaut un quart de W : pour la moitié, je reporte le gabarit 2 fois."
         }
       ],
       "piege": "Des côtés plus longs ne font pas un angle plus grand."

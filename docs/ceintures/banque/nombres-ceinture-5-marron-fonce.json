@@ -20,7 +20,7 @@
           "demonstration": "En bas 100, en haut 47 : 47/100, quarante-sept centièmes. Les parts sont cent fois plus petites que l'unité."
         }
       ],
-      "piege": "Cent parts, ce sont des centièmes : trois centièmes s'écrit 3/100, jamais 3/10. Une unité vaut 10 dixièmes ou 100 centièmes, donc un dixième vaut dix centièmes."
+      "piege": "Cent parts, ce sont des centièmes : trois centièmes s'écrit 3/100, jamais 3/10."
     },
     "diagnostic": [
       {
@@ -178,7 +178,7 @@
           "demonstration": "Il faut 8 huitièmes pour faire 1, et je n'en ai que 5 : pas même un paquet entier. Donc 0 < 5/8 < 1."
         }
       ],
-      "piege": "Quand le nombre du haut est un multiple du nombre du bas, la fraction vaut un entier exactement : 10/5 vaut 2."
+      "piege": "Si le nombre du haut est un multiple de celui du bas, la fraction vaut un entier : 10/5 vaut 2."
     },
     "diagnostic": [
       {
