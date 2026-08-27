@@ -6,12 +6,20 @@ import { CEINTURES, genererCalculs, descriptionCeinture, SEUIL_EVAL, type Calcul
 interface Props {
   eleveId?: string;
   repetiboxEleveId?: number;
+  /**
+   * Ouvre le module sur cette couleur au lieu de la ceinture courante de
+   * l'élève — utilisé par le bouton des leçons de Calcul (C10, C17, C22, C32),
+   * qui renvoient chacune vers leur couleur. Si l'élève l'a déjà dépassée,
+   * c'est une révision : la progression se dérivant du MAXIMUM des ceintures
+   * réussies, rejouer une couleur inférieure ne le fait jamais régresser.
+   */
+  ceintureImposee?: number;
   onTermine: (score: { bon: number; total: number }) => void;
 }
 
 type Phase = "accueil" | "countdown" | "jeu" | "resultat";
 
-export default function CeintureMultiplication({ eleveId, repetiboxEleveId, onTermine }: Props) {
+export default function CeintureMultiplication({ eleveId, repetiboxEleveId, ceintureImposee, onTermine }: Props) {
   const [ceintureIndex, setCeintureIndex] = useState(0);
   const [chargement, setChargement] = useState(true);
   const [dernierScore, setDernierScore] = useState<number | null>(null); // % dernier entraînement
@@ -38,12 +46,12 @@ export default function CeintureMultiplication({ eleveId, repetiboxEleveId, onTe
     fetch(`/api/ceinture-progression?${params}`)
       .then((r) => r.json())
       .then((data) => {
-        setCeintureIndex(data.ceinture_index ?? 0);
+        setCeintureIndex(ceintureImposee ?? data.ceinture_index ?? 0);
         setDernierScore(data.dernier_score_pct ?? null);
         setChargement(false);
       })
       .catch(() => setChargement(false));
-  }, [eleveId, repetiboxEleveId]);
+  }, [eleveId, repetiboxEleveId, ceintureImposee]);
 
   const ceinture = CEINTURES[ceintureIndex] ?? CEINTURES[0];
 

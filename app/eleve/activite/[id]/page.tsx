@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
 import { useEleveSession } from "@/hooks/useEleveSession";
@@ -24,6 +24,7 @@ import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
 // en attendant d'être fiabilisé. Cf. commit désactivation dictée.
 // import DicteeCorrection from "@/components/DicteeCorrection";
 import CeintureMultiplication from "@/components/CeintureMultiplication";
+import { CEINTURES } from "@/lib/ceintures";
 import { FonctionGram } from "@/types";
 // PDF affiché via iframe natif (compatible Safari iOS / anciens iPad)
 
@@ -71,6 +72,17 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
 export default function PageActivite() {
   const router = useRouter();
   const { id } = useParams<{ id: string }>();
+  // ?ceinture=Jaune — ouvre le module de multiplications sur cette couleur.
+  // Utilisé par le bouton des leçons de Calcul (C10, C17, C22, C32).
+  const parametresUrl = useSearchParams();
+  const ceintureImposee = (() => {
+    const nom = parametresUrl.get("ceinture");
+    if (!nom) return undefined;
+    const trouvee = CEINTURES.find(
+      (c) => c.nom.toLowerCase() === decodeURIComponent(nom).toLowerCase(),
+    );
+    return trouvee?.index;
+  })();
   const supabase = createClient();
 
   const { session, chargement: chargementSession } = useEleveSession();
@@ -1056,6 +1068,7 @@ export default function PageActivite() {
                 <CeintureMultiplication
                   eleveId={session?.source === "planbox" ? session.id : undefined}
                   repetiboxEleveId={session?.source === "repetibox" ? parseInt(session.id, 10) : undefined}
+                  ceintureImposee={ceintureImposee}
                   onTermine={(score) => {
                     if (id !== "ceinture") {
                       marquerFait(score, score.bon / score.total >= 0.9 ? "fait" : "en_cours");

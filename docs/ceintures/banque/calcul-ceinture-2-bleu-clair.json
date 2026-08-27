@@ -20,7 +20,11 @@
           "demonstration": "Je sais que 4 × 8 = 32 ; l'ordre ne change rien : 8 × 4 = 32."
         }
       ],
-      "piege": "6 × 7 = 42 : ne le confonds pas avec 6 × 8, qui va plus loin dans la table."
+      "piege": "6 × 7 = 42 : ne le confonds pas avec 6 × 8, qui va plus loin dans la table.",
+      "lien": {
+        "module": "ceinture-multiplication",
+        "ceinture": "Vert clair"
+      }
     },
     "diagnostic": [
       {

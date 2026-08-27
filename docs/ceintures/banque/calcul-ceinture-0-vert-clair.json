@@ -20,7 +20,11 @@
           "demonstration": "Sept paquets vides, cela ne fait aucune bille : c'est 0."
         }
       ],
-      "piege": "× 0 fait toujours 0, mais × 1 garde le nombre : 8 × 1 fait 8."
+      "piege": "× 0 fait toujours 0, mais × 1 garde le nombre : 8 × 1 fait 8.",
+      "lien": {
+        "module": "ceinture-multiplication",
+        "ceinture": "Jaune"
+      }
     },
     "diagnostic": [
       {

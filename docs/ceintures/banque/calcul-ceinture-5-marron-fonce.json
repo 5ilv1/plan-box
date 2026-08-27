@@ -320,7 +320,11 @@
           "demonstration": "Je cherche 9 × ? = 72. Je sais que 9 × 8 = 72, donc 72 ÷ 9 = 8."
         }
       ],
-      "piege": "63 ÷ 9 = 7, et non 8 : 8 × 9 donne 72."
+      "piege": "63 ÷ 9 = 7, et non 8 : 8 × 9 donne 72.",
+      "lien": {
+        "module": "ceinture-multiplication",
+        "ceinture": "Mauve"
+      }
     },
     "diagnostic": [
       {

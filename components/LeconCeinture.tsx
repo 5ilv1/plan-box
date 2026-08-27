@@ -18,12 +18,33 @@ export interface ExempleLecon {
   demonstration: string;
 }
 
+/**
+ * Renvoi vers un module existant. Aujourd'hui un seul : les ceintures de
+ * multiplications, pour les quatre items de Calcul qui sont des contrôles
+ * courts (C10 Jaune, C17 Vert clair, C22 Bleu foncé, C32 Mauve).
+ */
+export interface LienLecon {
+  module: string;
+  ceinture: string;
+}
+
 export interface Lecon {
   titre: string;
   regle: string;
   procedure: string[];
   exemples: ExempleLecon[];
   piege?: string;
+  lien?: LienLecon;
+}
+
+/** Destination d'un `lien` de leçon. `null` si le module est inconnu. */
+function urlDuLien(lien: LienLecon): string | null {
+  if (lien.module === "ceinture-multiplication") {
+    // Le module s'ouvre directement sur la couleur nommée : l'élève de C10
+    // arrive sur la Jaune, pas sur l'accueil.
+    return `/eleve/activite/ceinture?ceinture=${encodeURIComponent(lien.ceinture)}`;
+  }
+  return null;
 }
 
 interface Props {
@@ -150,6 +171,24 @@ export default function LeconCeinture({ lecon, itemLibelle, mode, onFermer }: Pr
               {lecon.piege}
             </p>
           </div>
+        )}
+
+        {lecon.lien && urlDuLien(lecon.lien) && (
+          <a
+            href={urlDuLien(lecon.lien)!}
+            style={{
+              display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+              width: "100%", padding: "13px 20px", borderRadius: 13, marginBottom: 10,
+              background: "linear-gradient(135deg, #FFF7ED, #FEF3C7)",
+              border: "1.5px solid rgba(245,158,11,0.35)",
+              color: "#92400E", textDecoration: "none",
+              fontSize: 15, fontWeight: 800,
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+            }}
+          >
+            <span className="ms" style={{ fontSize: 20 }}>military_tech</span>
+            M&apos;entraîner sur la ceinture {lecon.lien.ceinture.toLowerCase()} →
+          </a>
         )}
 
         <button

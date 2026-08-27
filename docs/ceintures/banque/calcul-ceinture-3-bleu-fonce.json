@@ -20,7 +20,11 @@
           "demonstration": "Je sais que 8 × 3 = 24 ; échanger les deux nombres ne change rien : 3 × 8 = 24."
         }
       ],
-      "piege": "Ne confonds pas 7 × 8 avec 6 × 9 : leurs résultats se suivent presque, mais ce ne sont pas les mêmes."
+      "piege": "Ne confonds pas 7 × 8 avec 6 × 9 : leurs résultats se suivent presque, mais ce ne sont pas les mêmes.",
+      "lien": {
+        "module": "ceinture-multiplication",
+        "ceinture": "Bleu foncé"
+      }
     },
     "diagnostic": [
       {
