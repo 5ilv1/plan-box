@@ -5,11 +5,16 @@ import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import { domaineParSlug } from "@/lib/ceintures-competences";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 
 interface QuestionPosee {
   item_code: string;
   question: string;
   options: string[];
+  /** Figure ou droite dessinée avec la question. Voir SPEC-FIGURES.md. */
+  figure?: Figure;
+  droite?: Droite;
 }
 
 interface Donnees {
@@ -287,6 +292,11 @@ export default function DiagnosticPage() {
       }}>
         {q.question}
       </p>
+
+      {/* Une question qui montre un cadran ou une droite la dessine ici :
+          « Quelle heure indique cette horloge ? » sans horloge n'a pas de sens. */}
+      {q.droite && <DroiteGraduee droite={q.droite} />}
+      {q.figure && <FigureGeo figure={q.figure} />}
 
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {q.options.map((opt, j) => {

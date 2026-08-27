@@ -155,7 +155,7 @@ export default function DroiteGraduee({ droite, description }: Props) {
         width="100%"
         role="img"
         aria-label={resume}
-        style={{ display: "block", overflow: "visible", color: "var(--pb-on-surface, #1a1a1a)" }}
+        style={{ display: "block", overflow: "visible" }}
       >
         {/* Zones surlignées, dessinées en premier pour rester derrière */}
         {(droite.zones ?? []).map((z, i) => (

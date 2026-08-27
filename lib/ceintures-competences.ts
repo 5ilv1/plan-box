@@ -111,6 +111,15 @@ export const DOMAINES: DomaineCeinture[] = [
     icone: "calculate",
     ordre: 5,
   },
+  {
+    code: "GRME",
+    slug: "grandeurs",
+    nom: "Grandeurs et mesures",
+    matiere: "maths",
+    description: "Heure, monnaie, longueurs, masses, contenances, périmètres, aires",
+    icone: "straighten",
+    ordre: 6,
+  },
 ];
 
 export function domaineParCode(code: string): DomaineCeinture | undefined {

@@ -19,6 +19,9 @@ interface QuestionBanque {
   options: string[];
   reponse_correcte: number;
   explication?: string;
+  /** Figure ou droite dessinée avec la question. Voir SPEC-FIGURES.md. */
+  figure?: unknown;
+  droite?: unknown;
 }
 
 /** Question telle qu'elle part chez l'élève : sans la réponse. */
@@ -26,6 +29,8 @@ interface QuestionPosee {
   item_code: string;
   question: string;
   options: string[];
+  figure?: unknown;
+  droite?: unknown;
 }
 
 async function chargerCeinture(domaineCode: string, idx: number) {
@@ -109,7 +114,15 @@ export async function GET(req: NextRequest) {
     const dItem = (banque ?? []).filter((b) => b.item_code === item.code);
     for (const b of dItem) {
       const c = b.contenu as unknown as QuestionBanque;
-      questions.push({ item_code: item.code, question: c.question, options: c.options });
+      // La figure part avec la question : « Quelle heure indique cette
+      // horloge ? » sans horloge n'a pas de sens, y compris au diagnostic.
+      questions.push({
+        item_code: item.code,
+        question: c.question,
+        options: c.options,
+        ...(c.figure ? { figure: c.figure } : {}),
+        ...(c.droite ? { droite: c.droite } : {}),
+      });
     }
   }
 

@@ -185,6 +185,10 @@ export interface ProblemeMaths {
   phrase_reponse_attendue: string;     // ex: "Le train arrive à 11 h 45."
   mots_cles: string[];                 // mots devant figurer dans la phrase réponse (permissif)
   indice: string;                      // piste pour avancer
+  // Figure ou droite graduée dessinée sous l'énoncé, quand le problème en
+  // déclare une. Voir SPEC-FIGURES.md et SPEC-DROITE-GRADUEE.md.
+  figure?: unknown;
+  droite?: unknown;
 }
 
 export interface ProblemeMathsIA {

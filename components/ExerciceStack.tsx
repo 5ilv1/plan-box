@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { comparerReponse } from "@/lib/comparer-reponse";
 import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
 
 interface Question {
   id: number;
@@ -11,6 +12,8 @@ interface Question {
   indice?: string;
   /** Droite graduée dessinée au-dessus de l'énoncé. Voir SPEC-DROITE-GRADUEE.md. */
   droite?: Droite;
+  /** Figure dessinée sous l'énoncé. Voir SPEC-FIGURES.md. */
+  figure?: Figure;
 }
 
 interface ExerciceStackProps {
@@ -279,6 +282,9 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
           }}>
             {q.enonce}
           </div>
+
+          {/* Figure, quand la question en déclare une */}
+          {q.figure && <FigureGeo figure={q.figure} />}
 
           {/* Indice */}
           {q.indice && showIndice && (

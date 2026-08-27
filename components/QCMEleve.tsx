@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
 
 interface QCMQuestion {
   question: string;
@@ -10,6 +11,8 @@ interface QCMQuestion {
   explication?: string;
   /** Droite graduée dessinée au-dessus de l'énoncé. Voir SPEC-DROITE-GRADUEE.md. */
   droite?: Droite;
+  /** Figure dessinée sous l'énoncé. Voir SPEC-FIGURES.md. */
+  figure?: Figure;
 }
 
 interface Props {
@@ -74,6 +77,7 @@ export default function QCMEleve({ titre, questions, onTermine }: Props) {
               <span style={{ color: "#92400E", marginRight: 6 }}>Q{i + 1}.</span>
               {q.question}
             </p>
+            {q.figure && <FigureGeo figure={q.figure} />}
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {q.options.map((opt, j) => {
                 const isChoisi = choisi === j;

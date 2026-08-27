@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { ProblemeMaths } from "@/types";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
 
 interface Props {
   titre: string;
@@ -122,6 +124,9 @@ export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, 
     );
   }
 
+  const droiteDuProbleme = (problemeCourant as { droite?: Droite }).droite;
+  const figureDuProbleme = (problemeCourant as { figure?: Figure }).figure;
+
   return (
     <div style={{ padding: "1rem 0" }}>
       {/* Progression */}
@@ -164,6 +169,12 @@ export default function ProblemeMathsEleve({ titre, theme, consigne, problemes, 
       }}>
         {problemeCourant.enonce}
       </div>
+
+      {/* Droite graduée et figure, quand le problème en déclare une : un
+          problème de durées porte un cadran, un problème de proportionnalité
+          peut porter une droite. Voir SPEC-FIGURES.md. */}
+      {droiteDuProbleme && <DroiteGraduee droite={droiteDuProbleme} />}
+      {figureDuProbleme && <FigureGeo figure={figureDuProbleme} />}
 
       {/* Bouton indice */}
       <div style={{ marginBottom: 16 }}>
