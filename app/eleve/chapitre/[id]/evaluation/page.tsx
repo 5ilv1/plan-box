@@ -51,6 +51,17 @@ function melanger<T>(arr: T[]): T[] {
 }
 
 /** Prend n éléments aléatoires d'un tableau */
+/**
+ * Plafonds de composition de l'évaluation. Aucune évaluation de ceinture ne
+ * doit dépasser 20 questions — mesuré par docs/ceintures/test-longueur-evaluations.mjs.
+ *
+ * `texte_a_trous` n'a délibérément PAS de plafond : y prélever déplace les
+ * homophones sur le mauvais mot (docs/ceintures/CORRECTIF-piocher.md). Sa
+ * réduction s'est faite dans la banque, en passant six textes de 5 à 4 trous.
+ */
+const MAX_CLASSEMENT = 4;
+const MAX_GROUPES_ANALYSE = 4;
+
 function piocher<T>(arr: T[], n: number): T[] {
   return melanger(arr).slice(0, n);
 }
@@ -91,10 +102,32 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
       }
 
       case "classement": {
-        // Garder toutes les catégories mais seulement 4-5 items
+        // 4 items, mais tirés de façon ÉQUILIBRÉE : un par catégorie d'abord,
+        // le reste au hasard. Un simple piocher() laissait une catégorie sans
+        // aucun item dans 38 % des tirages — jusqu'à 85 % sur les exercices à
+        // 4 catégories (C34, M30, P18) — et l'exercice y perdait son sens.
+        // La banque n'a jamais plus de 4 catégories, toutes pourvues : les
+        // représenter toutes est donc toujours possible.
         const items = (c.items as Array<{ texte: string; categorie: string }>) ?? [];
         if (items.length === 0) break;
-        const itemsChoisis = piocher(items, Math.min(5, items.length));
+
+        const parCategorie = new Map<string, typeof items>();
+        for (const item of items) {
+          const liste = parCategorie.get(item.categorie) ?? [];
+          liste.push(item);
+          parCategorie.set(item.categorie, liste);
+        }
+
+        const retenus: typeof items = [];
+        for (const liste of parCategorie.values()) {
+          const [premier] = piocher(liste, 1);
+          if (premier) retenus.push(premier);
+        }
+        const reste = items.filter((i) => !retenus.includes(i));
+        retenus.push(...piocher(reste, Math.max(0, MAX_CLASSEMENT - retenus.length)));
+
+        // Mélangé pour que l'ordre ne trahisse pas les catégories.
+        const itemsChoisis = piocher(retenus, retenus.length);
         minis.push({
           id: ex.id,
           titre: ex.titre,
@@ -174,10 +207,22 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
       }
 
       case "analyse_phrase": {
-        // Prendre 1-2 phrases
+        // Plafonner par GROUPES et non par phrases : une phrase en porte de 2
+        // à 8, donc « 2 phrases » coûtait de 4 à 16 questions. On prend des
+        // phrases ENTIÈRES, dans l'ordre, tant que le total des groupes tient
+        // sous le plafond — et au moins une, même si elle le dépasse à elle
+        // seule. Une phrase tronquée n'aurait pas de sens à analyser.
         const phrases = (c.phrases as Array<{ texte: string; groupes: Array<{ mots: string; fonction: string; debut: number; fin: number }> }>) ?? [];
         if (phrases.length === 0) break;
-        const pChoisis = piocher(phrases, Math.min(2, phrases.length));
+
+        const pChoisis: typeof phrases = [];
+        let groupesRetenus = 0;
+        for (const phrase of phrases) {
+          const cout = phrase.groupes?.length ?? 0;
+          if (pChoisis.length > 0 && groupesRetenus + cout > MAX_GROUPES_ANALYSE) break;
+          pChoisis.push(phrase);
+          groupesRetenus += cout;
+        }
         minis.push({
           id: ex.id,
           titre: ex.titre,
