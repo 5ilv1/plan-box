@@ -290,7 +290,10 @@ export default function PageBibliotheque() {
                 )}
                 {l.duree_lecture && (
                   <div style={{
-                    display: "flex", alignItems: "center", gap: 3, marginTop: 3,
+                    // Titre et auteur héritent du centrage du bouton ; une ligne
+                    // flex ne l'hérite pas, il faut le lui dire.
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    gap: 3, marginTop: 3,
                     fontSize: 11, color: "var(--pb-on-surface-variant)",
                   }}>
                     <span className="ms" style={{ fontSize: 13 }}>schedule</span>

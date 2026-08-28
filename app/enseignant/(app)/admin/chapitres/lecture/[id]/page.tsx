@@ -130,11 +130,18 @@ export default function PageChapitreLectureDetail() {
   const fileInputCouvRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    charger();
+    // Seul appel qui remplit le formulaire d'infos : le premier.
+    charger(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chapitreId]);
 
-  async function charger() {
+  /**
+   * `remplirInfos` ne vaut true qu'au premier chargement. Les rechargements qui
+   * suivent une génération rafraîchissent la liste des chapitres, mais ne
+   * doivent PAS réécrire le formulaire d'infos : ils effaceraient l'auteur, la
+   * couverture et la présentation en cours de saisie, non encore enregistrés.
+   */
+  async function charger(remplirInfos = false) {
     // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
     // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
     try {
@@ -150,7 +157,7 @@ export default function PageChapitreLectureDetail() {
       setChapitre(ch);
       setExercices((exRes.exercices ?? []) as Exercice[]);
       setNiveaux((nivRes.data ?? []) as Niveau[]);
-      if (ch) {
+      if (ch && remplirInfos) {
         setEditNiveauId(ch.niveau_id ?? "");
         setEditResume(ch.resume ?? "");
         setEditAuteur(ch.auteur ?? "");
