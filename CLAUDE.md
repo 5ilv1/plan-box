@@ -197,6 +197,7 @@ Repetibox. `badge_eleve.eleve_id` et `ceinture_resultat.repetibox_eleve_id` sont
 4. **Exercices -er/-é** : UNIQUEMENT verbes du 1er groupe, INTERDIT 2e/3e groupe dans les prompts
 5. **Texte à trous -er/-é** : utiliser des `<select>` dropdown, pas des inputs texte (sinon impossible de répondre)
 6. **env vars** : dans les scripts CLI, charger avec `export $(grep -v '^#' .env.local | xargs)` avant d'exécuter
+7. **Dates en heure locale** : ne JAMAIS appeler `toISOString()` sur une `Date` construite en heure locale (`new Date(a, m, j)`, `setDate()`). En France (UTC+1/+2) le résultat recule d'un jour. Pour les conversions semaine ↔ date, utiliser `lib/semaine-iso.ts` (`lundiDeSemaine()`, `semaineISO()`), qui calcule tout en UTC ; sinon formater à la main avec `getFullYear()/getMonth()/getDate()`
 
 ## Joseph — Agent de test et correction
 
