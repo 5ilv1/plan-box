@@ -18,6 +18,7 @@ Quand un nombre est écrit en toutes lettres, il prend un trait d'union entre TO
 - mille-neuf-cent-quatre-vingt-dix, deux-mille-vingt-six
 - un-million-deux-cent-mille
 Les mots « millier », « million », « milliard » restent des noms et suivent la même règle de liaison.
+FRANÇAIS DE FRANCE UNIQUEMENT : soixante-dix, quatre-vingts, quatre-vingt-dix. Les formes belges et suisses — septante, huitante, octante, nonante — sont INTERDITES.
 Cette règle s'applique PARTOUT : énoncés, questions, options, réponses attendues, corrections, indices, titres et consignes.`;
 
 /**
