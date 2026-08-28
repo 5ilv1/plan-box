@@ -17,13 +17,24 @@ interface Props {
   disponibles: DomaineChoisissable[];
   /** Choix déjà enregistré, si l'élève rouvre la fenêtre pour le modifier. */
   dejaChoisis?: string[];
+  /** Vrai quand ce sera l'unique changement autorisé de la semaine. */
+  dernierChangement?: boolean;
+  /** Message d'erreur renvoyé par l'API (choix déjà changé, réseau…). */
+  erreur?: string | null;
   onValider: (codes: string[]) => Promise<void> | void;
   onFermer: () => void;
 }
 
 const MAX = 2;
 
-export default function CeinturesSemaineModal({ disponibles, dejaChoisis, onValider, onFermer }: Props) {
+const MATIERES: { cle: string; titre: string; emoji: string }[] = [
+  { cle: "français", titre: "Français", emoji: "📖" },
+  { cle: "maths", titre: "Mathématiques", emoji: "🔢" },
+];
+
+export default function CeinturesSemaineModal({
+  disponibles, dejaChoisis, dernierChangement, erreur, onValider, onFermer,
+}: Props) {
   const [selection, setSelection] = useState<string[]>(dejaChoisis ?? []);
   const [envoi, setEnvoi] = useState(false);
 
@@ -73,14 +84,47 @@ export default function CeinturesSemaineModal({ disponibles, dejaChoisis, onVali
             Tes ceintures de la semaine
           </h2>
         </div>
-        <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", marginBottom: 20 }}>
+        <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", marginBottom: 16 }}>
           Choisis les <strong>deux domaines</strong> que tu veux travailler cette semaine. Ce sont
           les seuls qui s&apos;afficheront sur ton tableau de bord — tu pourras en changer la
           semaine prochaine.
         </p>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10 }}>
-          {disponibles.map((d) => {
+        {dernierChangement && (
+          <p style={{
+            fontSize: 13, fontWeight: 600, color: "#B45309",
+            background: "rgba(180,83,9,0.08)", border: "1px solid rgba(180,83,9,0.2)",
+            borderRadius: 12, padding: "10px 14px", marginBottom: 16,
+          }}>
+            ⚠️ C&apos;est ton seul changement de la semaine. Après ça, tes deux domaines seront
+            fixés jusqu&apos;à lundi prochain.
+          </p>
+        )}
+
+        {erreur && (
+          <p style={{
+            fontSize: 13, fontWeight: 600, color: "#DC2626",
+            background: "rgba(220,38,38,0.08)", border: "1px solid rgba(220,38,38,0.2)",
+            borderRadius: 12, padding: "10px 14px", marginBottom: 16,
+          }}>
+            {erreur}
+          </p>
+        )}
+
+        {MATIERES.map((m) => {
+          const domainesMatiere = disponibles.filter((d) => d.matiere === m.cle);
+          if (domainesMatiere.length === 0) return null;
+          return (
+            <div key={m.cle} style={{ marginBottom: 18 }}>
+              <div style={{
+                fontSize: 12, fontWeight: 800, textTransform: "uppercase",
+                letterSpacing: "0.06em", color: "var(--pb-on-surface-variant)",
+                marginBottom: 8,
+              }}>
+                {m.emoji} {m.titre}
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))", gap: 10 }}>
+          {domainesMatiere.map((d) => {
             const choisi = selection.includes(d.code);
             const teinte = d.couleurCourante?.hex ?? "#7CB342";
             return (
@@ -136,7 +180,10 @@ export default function CeinturesSemaineModal({ disponibles, dejaChoisis, onVali
               </button>
             );
           })}
-        </div>
+              </div>
+            </div>
+          );
+        })}
 
         <div style={{ display: "flex", alignItems: "center", gap: 12, marginTop: 22 }}>
           <button

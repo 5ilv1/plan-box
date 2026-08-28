@@ -21,3 +21,12 @@ create unique index if not exists ceinture_choix_semaine_rb
 
 -- RLS active sans policy : seules les routes API (service_role) y accèdent.
 alter table public.ceinture_choix_semaine enable row level security;
+
+-- L'élève choisit ses deux domaines en début de semaine, puis peut changer
+-- d'avis UNE fois. Au-delà, le choix est figé jusqu'au lundi suivant.
+alter table public.ceinture_choix_semaine
+  add column if not exists nb_modifications integer not null default 0;
+
+alter table public.ceinture_choix_semaine
+  add constraint ceinture_choix_semaine_un_seul_changement
+  check (nb_modifications between 0 and 1);

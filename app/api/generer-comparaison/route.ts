@@ -43,6 +43,7 @@ RÈGLES STRICTES :
 - Progresse en difficulté : les premières paires sont faciles, les dernières demandent de la réflexion
 - Glisse des pièges pédagogiques utiles au niveau ${niveau} (nombre de chiffres trompeur, zéros intercalés, décimales de longueurs différentes)
 - Écris les nombres tels qu'ils doivent s'afficher, sans texte autour (pas d'unité, pas de phrase)
+- UNIQUEMENT des nombres positifs ou nuls : les nombres relatifs ne sont pas au programme du cycle 3
 - Le titre est court ; la consigne est claire pour un enfant
 
 Réponds UNIQUEMENT en JSON valide, sans backticks :
@@ -85,6 +86,9 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
       // Formes belges/suisses : hors programme en France, et illisibles pour le
       // vérificateur. On écarte plutôt que de servir un nombre non vérifié.
       if (/septante|huitante|octante|nonante/i.test(`${gauche} ${droite}`)) continue;
+
+      // Nombres relatifs : hors programme au cycle 3.
+      if (/(^|[\s(])[-−]\s*\d/.test(`${gauche} ${droite}`)) continue;
 
       const calcule = signeEntre(gauche, droite);
       const signe = calcule ?? (["<", ">", "="].includes(p.signe) ? p.signe : null);

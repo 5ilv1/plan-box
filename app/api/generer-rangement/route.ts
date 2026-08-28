@@ -32,7 +32,7 @@ RÈGLES STRICTES :
 - Progresse en difficulté d'une série à l'autre
 - Vocabulaire et nombres adaptés au niveau ${niveau} (8-11 ans)
 ${cle === "alphabetique" ? "- Inclus au moins une série où plusieurs mots commencent par la même lettre (il faut alors comparer la 2e, voire la 3e lettre)" : ""}
-${cle === "croissant" || cle === "decroissant" ? "- Varie les écritures (nombres à chiffres, éventuellement décimaux) mais reste comparable au sein d'une série" : ""}
+${cle === "croissant" || cle === "decroissant" ? "- Varie les écritures (nombres à chiffres, éventuellement décimaux) mais reste comparable au sein d'une série\n- UNIQUEMENT des nombres positifs ou nuls : les nombres relatifs ne sont pas au programme du cycle 3" : ""}
 
 Réponds UNIQUEMENT en JSON valide, sans backticks :
 {
@@ -71,6 +71,9 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
         .map((e: string) => e.trim());
       if (elements.length < 3) continue;
       if (new Set(elements).size !== elements.length) continue; // doublons → série ambiguë
+
+      // Nombres relatifs : hors programme au cycle 3, la série entière est écartée.
+      if (elements.some((e: string) => /(^|[\s(])[-−]\s*\d/.test(e))) continue;
 
       const recalcule = ordonner(elements, cle);
       if (cle === "croissant" || cle === "decroissant") {

@@ -280,8 +280,10 @@ export default function DashboardEleve() {
     domaines: string[];
     disponibles: DomaineChoisissable[];
     doitChoisir: boolean;
+    peutChanger: boolean;
   } | null>(null);
   const [modalCeintures, setModalCeintures] = useState(false);
+  const [erreurChoix, setErreurChoix] = useState<string | null>(null);
   // L'onboarding avatar (élèves Repetibox) redirige hors du tableau de bord :
   // tant qu'on ne sait pas s'il va se déclencher, aucune autre fenêtre ne s'ouvre.
   const [avatarPret, setAvatarPret] = useState(false);
@@ -456,6 +458,7 @@ export default function DashboardEleve() {
           domaines: json.domaines ?? [],
           disponibles: json.disponibles ?? [],
           doitChoisir: !!json.doitChoisir,
+          peutChanger: json.peutChanger !== false,
         });
         // L'ouverture est décidée plus bas : elle attend l'onboarding avatar.
       })
@@ -486,11 +489,27 @@ export default function DashboardEleve() {
       });
       const json = await res.json();
       if (res.ok && !json.erreur) {
-        setChoixSemaine((prev) => prev ? { ...prev, domaines: json.domaines ?? codes, doitChoisir: false } : prev);
+        setChoixSemaine((prev) => prev ? {
+          ...prev,
+          domaines: json.domaines ?? codes,
+          doitChoisir: false,
+          peutChanger: json.peutChanger !== false,
+        } : prev);
+        setErreurChoix(null);
         setModalCeintures(false);
+        return;
+      }
+      // 409 : le changement unique de la semaine a déjà été utilisé.
+      setErreurChoix(json.erreur ?? "Impossible d'enregistrer. Réessaie.");
+      if (json.peutChanger === false) {
+        setChoixSemaine((prev) => prev ? {
+          ...prev,
+          domaines: json.domaines ?? prev.domaines,
+          peutChanger: false,
+        } : prev);
       }
     } catch {
-      /* réseau : la fenêtre reste ouverte, l'élève peut réessayer */
+      setErreurChoix("Impossible d'enregistrer. Réessaie.");
     }
   }
 
@@ -1367,6 +1386,49 @@ export default function DashboardEleve() {
               </div>
             )}
 
+            {/* Toutes mes ceintures — accès au suivi complet des 7 domaines */}
+            {(choixSemaine?.disponibles.length ?? 0) > 0 && (
+              <Link
+                href="/eleve/ceintures"
+                className="pb-card"
+                style={{
+                  display: "block", textDecoration: "none", color: "inherit",
+                  padding: "18px 20px",
+                  background: "linear-gradient(135deg, rgba(124,179,66,0.10), rgba(124,179,66,0.02))",
+                  border: "1px solid rgba(124,179,66,0.25)",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
+                  <span className="ms" style={{ fontSize: 26, color: "#7CB342" }}>workspace_premium</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{
+                      fontSize: 15, fontWeight: 800,
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                      color: "var(--pb-on-surface)",
+                    }}>
+                      Toutes mes ceintures
+                    </div>
+                    <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                      Ton avancement dans les 7 domaines
+                    </div>
+                  </div>
+                </div>
+                <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", marginBottom: 10 }}>
+                  {choixSemaine?.peutChanger
+                    ? "Tu peux encore changer tes domaines de la semaine."
+                    : "Tes domaines de la semaine sont fixés jusqu'à lundi."}
+                </div>
+                <div style={{
+                  display: "inline-flex", alignItems: "center", gap: 6,
+                  background: "#7CB342", color: "white", padding: "8px 18px",
+                  borderRadius: 999, fontSize: 13, fontWeight: 700,
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                }}>
+                  Voir mon parcours →
+                </div>
+              </Link>
+            )}
+
             {/* Ceintures de multiplications */}
             {ceintureActive && (
               <Link
@@ -1776,10 +1838,10 @@ export default function DashboardEleve() {
                         🥋 Tes ceintures de la semaine
                       </div>
                     </div>
-                    {(choixSemaine?.disponibles.length ?? 0) >= 2 && (
+                    {(choixSemaine?.disponibles.length ?? 0) >= 2 && choixSemaine?.peutChanger && (
                       <button
                         type="button"
-                        onClick={() => setModalCeintures(true)}
+                        onClick={() => { setErreurChoix(null); setModalCeintures(true); }}
                         style={{
                           background: "none", border: "none", cursor: "pointer",
                           fontSize: 12, fontWeight: 700, color: "#5A8C2E",
@@ -2593,8 +2655,10 @@ export default function DashboardEleve() {
         <CeinturesSemaineModal
           disponibles={choixSemaine.disponibles}
           dejaChoisis={choixSemaine.domaines}
+          dernierChangement={choixSemaine.domaines.length > 0 && choixSemaine.peutChanger}
+          erreur={erreurChoix}
           onValider={enregistrerChoixSemaine}
-          onFermer={() => setModalCeintures(false)}
+          onFermer={() => { setErreurChoix(null); setModalCeintures(false); }}
         />
       )}
 

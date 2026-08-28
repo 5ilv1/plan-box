@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEleveSession } from "@/hooks/useEleveSession";
+import CeinturesSemaineModal, { DomaineChoisissable } from "@/components/CeinturesSemaineModal";
 
 interface CeintureEtat {
   idx: number;
@@ -34,6 +35,13 @@ export default function CeinturesPage() {
 
   const [domaines, setDomaines] = useState<DomaineEtat[]>([]);
   const [chargement, setChargement] = useState(true);
+  const [choix, setChoix] = useState<{
+    domaines: string[];
+    disponibles: DomaineChoisissable[];
+    peutChanger: boolean;
+  } | null>(null);
+  const [modalOuverte, setModalOuverte] = useState(false);
+  const [erreurChoix, setErreurChoix] = useState<string | null>(null);
 
   useEffect(() => {
     if (chargementSession) return;
@@ -56,8 +64,51 @@ export default function CeinturesPage() {
         setChargement(false);
       });
 
+    fetch(`/api/ceintures/choix-semaine?${param}`, { signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((json) => {
+        if (ctrl.signal.aborted || json?.erreur) return;
+        setChoix({
+          domaines: json.domaines ?? [],
+          disponibles: json.disponibles ?? [],
+          peutChanger: json.peutChanger !== false,
+        });
+      })
+      .catch(() => {});
+
     return () => ctrl.abort();
   }, [chargementSession, session, router]);
+
+  async function enregistrerChoix(codes: string[]) {
+    if (!session) return;
+    const corps = session.source === "planbox"
+      ? { eleve_id: session.id, domaines: codes }
+      : { rb_eleve_id: session.id, domaines: codes };
+    try {
+      const res = await fetch("/api/ceintures/choix-semaine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corps),
+      });
+      const json = await res.json();
+      if (res.ok && !json.erreur) {
+        setChoix((prev) => prev ? {
+          ...prev,
+          domaines: json.domaines ?? codes,
+          peutChanger: json.peutChanger !== false,
+        } : prev);
+        setErreurChoix(null);
+        setModalOuverte(false);
+        return;
+      }
+      setErreurChoix(json.erreur ?? "Impossible d'enregistrer. Réessaie.");
+      if (json.peutChanger === false) {
+        setChoix((prev) => prev ? { ...prev, peutChanger: false } : prev);
+      }
+    } catch {
+      setErreurChoix("Impossible d'enregistrer. Réessaie.");
+    }
+  }
 
   if (chargement || chargementSession) {
     return (
@@ -104,6 +155,72 @@ export default function CeinturesPage() {
       <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", margin: "0 0 24px" }}>
         Neuf couleurs par domaine, du vert clair au noir. À toi de monter !
       </p>
+
+      {/* Domaines de la semaine — rappel et changement unique */}
+      {choix && choix.disponibles.length >= 2 && (
+        <div
+          className="pb-card"
+          style={{
+            padding: "16px 18px", marginBottom: 24,
+            background: "linear-gradient(135deg, rgba(124,179,66,0.10), rgba(124,179,66,0.02))",
+            border: "1px solid rgba(124,179,66,0.25)",
+          }}
+        >
+          <div style={{
+            fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+            textTransform: "uppercase", color: "#5A8C2E", marginBottom: 8,
+          }}>
+            Tes domaines de la semaine
+          </div>
+
+          {choix.domaines.length > 0 ? (
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 12 }}>
+              {choix.domaines.map((code) => {
+                const d = domaines.find((x) => x.code === code);
+                if (!d) return null;
+                const teinte = d.couleurCourante?.hex ?? "#7CB342";
+                return (
+                  <span
+                    key={code}
+                    style={{
+                      display: "inline-flex", alignItems: "center", gap: 6,
+                      padding: "6px 14px", borderRadius: 999,
+                      background: "white", border: `1.5px solid ${teinte}55`,
+                      fontSize: 13, fontWeight: 700, color: "var(--pb-on-surface)",
+                    }}
+                  >
+                    <span style={{ width: 9, height: 9, borderRadius: "50%", background: teinte }} />
+                    {d.nom}
+                  </span>
+                );
+              })}
+            </div>
+          ) : (
+            <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", margin: "0 0 12px" }}>
+              Tu n&apos;as pas encore choisi tes deux domaines pour cette semaine.
+            </p>
+          )}
+
+          {choix.peutChanger ? (
+            <button
+              type="button"
+              onClick={() => { setErreurChoix(null); setModalOuverte(true); }}
+              className="pb-btn"
+              style={{
+                borderRadius: 999, padding: "8px 18px", fontSize: 13, fontWeight: 700,
+                background: "#7CB342", color: "white", border: "none",
+              }}
+            >
+              {choix.domaines.length > 0 ? "Changer mes domaines" : "Choisir mes domaines"}
+            </button>
+          ) : (
+            <p style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", margin: 0 }}>
+              🔒 Tu as déjà utilisé ton changement de la semaine. Tu pourras en choisir de
+              nouveaux lundi prochain.
+            </p>
+          )}
+        </div>
+      )}
 
       {domaines.length === 0 && (
         <div style={{
@@ -205,6 +322,17 @@ export default function CeinturesPage() {
           </div>
         </section>
       ))}
+
+      {modalOuverte && choix && (
+        <CeinturesSemaineModal
+          disponibles={choix.disponibles}
+          dejaChoisis={choix.domaines}
+          dernierChangement={choix.domaines.length > 0 && choix.peutChanger}
+          erreur={erreurChoix}
+          onValider={enregistrerChoix}
+          onFermer={() => { setErreurChoix(null); setModalOuverte(false); }}
+        />
+      )}
     </div>
   );
 }

@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     const [{ data: choix }, domaines] = await Promise.all([
       admin
         .from("ceinture_choix_semaine")
-        .select("domaines")
+        .select("domaines, nb_modifications")
         .eq(col, val)
         .eq("lundi", lundi)
         .maybeSingle(),
@@ -62,6 +62,7 @@ export async function GET(req: NextRequest) {
       }));
 
     const enregistres: string[] = choix?.domaines ?? [];
+    const nbModifications: number = choix?.nb_modifications ?? 0;
     // Un domaine qui n'est plus disponible (terminé depuis) sort du choix.
     const codesDispo = new Set(disponibles.map((d) => d.code));
     const retenus = enregistres.filter((c) => codesDispo.has(c));
@@ -72,6 +73,9 @@ export async function GET(req: NextRequest) {
       disponibles,
       // Rien à choisir s'il n'y a pas au moins deux domaines ouverts.
       doitChoisir: retenus.length === 0 && disponibles.length >= 2,
+      // Le choix initial, puis un seul changement dans la semaine.
+      peutChanger: retenus.length === 0 || nbModifications < 1,
+      nbModifications,
     });
   } catch (e) {
     console.error("[ceintures/choix-semaine GET]", e);
@@ -115,8 +119,37 @@ export async function POST(req: NextRequest) {
     const lundi = lundiCourant();
     const [col, val] = filtreEleve(eleve);
 
-    // Un seul choix par élève et par semaine : on remplace le précédent.
-    await admin.from("ceinture_choix_semaine").delete().eq(col, val).eq("lundi", lundi);
+    const { data: existant } = await admin
+      .from("ceinture_choix_semaine")
+      .select("id, domaines, nb_modifications")
+      .eq(col, val)
+      .eq("lundi", lundi)
+      .maybeSingle();
+
+    // Choix initial, puis un seul changement : au-delà, la semaine est figée.
+    if (existant) {
+      if ((existant.nb_modifications ?? 0) >= 1) {
+        return NextResponse.json(
+          {
+            erreur: "Tu as déjà changé tes domaines cette semaine. Tu pourras en choisir de nouveaux lundi prochain.",
+            domaines: existant.domaines,
+            peutChanger: false,
+          },
+          { status: 409 },
+        );
+      }
+
+      const { error } = await admin
+        .from("ceinture_choix_semaine")
+        .update({ domaines, nb_modifications: 1 })
+        .eq("id", existant.id);
+
+      if (error) {
+        console.error("[ceintures/choix-semaine POST]", error);
+        return NextResponse.json({ erreur: error.message }, { status: 500 });
+      }
+      return NextResponse.json({ lundi, domaines, peutChanger: false, nbModifications: 1 });
+    }
 
     const { error } = await admin.from("ceinture_choix_semaine").insert({
       eleve_id: eleve.eleveId,
@@ -130,7 +163,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ erreur: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ lundi, domaines });
+    return NextResponse.json({ lundi, domaines, peutChanger: true, nbModifications: 0 });
   } catch (e) {
     console.error("[ceintures/choix-semaine POST]", e);
     return NextResponse.json({ erreur: "Erreur d'enregistrement" }, { status: 500 });
