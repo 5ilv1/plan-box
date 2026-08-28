@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { comparerReponse } from "@/lib/comparer-reponse";
+import { comparerReponseDetail } from "@/lib/comparer-reponse";
 import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 import FigureGeo, { type Figure } from "@/components/FigureGeo";
 
@@ -31,6 +31,7 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
   const [termine, setTermine] = useState(false);
   const [sortie, setSortie] = useState<"droite" | "gauche" | null>(null);
   const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
+  const [remarque, setRemarque] = useState<string | null>(null);
   const [bonneReponse, setBonneReponse] = useState<string | null>(null);
   const [showIndice, setShowIndice] = useState(false);
   const [reponsesSauvees, setReponsesSauvees] = useState<{ id: number; reponse: string; correcte: boolean | null }[]>([]);
@@ -58,9 +59,12 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
     // Comparaison partagée avec CalcMentalStack : gère l'espace des milliers,
     // les fractions, et resserre la tolérance au strict.
     // Voir docs/ceintures/CORRECTIF-reponses-chiffrees.md.
-    const correct = comparerReponse(q.reponse_attendue, reponse);
+    // `comparerReponseDetail` accepte en plus la graphie traditionnelle d'un
+    // nombre en toutes lettres et renvoie alors la remarque à afficher.
+    const { correcte: correct, remarque: mot } = comparerReponseDetail(q.reponse_attendue, reponse);
 
     setFeedback(correct ? "correct" : "incorrect");
+    setRemarque(mot ?? null);
     if (!correct) setBonneReponse(q.reponse_attendue);
     if (correct) setScore(s => s + 1);
 
@@ -71,6 +75,7 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
       setTimeout(() => {
         setSortie(null);
         setFeedback(null);
+        setRemarque(null);
         setBonneReponse(null);
         setReponse("");
         setShowIndice(false);
@@ -83,7 +88,7 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
           setIndex(i => i + 1);
         }
       }, 380);
-    }, 1200);
+    }, mot ? 4200 : 1200);
   }
 
   // Écran de fin
@@ -301,9 +306,20 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
 
           {/* Feedback bonne réponse */}
           {feedback === "correct" && (
-            <div style={{ textAlign: "center", fontWeight: 800, fontSize: 20, color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <span className="ms" style={{ fontSize: 28 }}>check_circle</span>
-              Bonne réponse !
+            <div style={{ textAlign: "center" }}>
+              <div style={{ fontWeight: 800, fontSize: 20, color: "#16A34A", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+                <span className="ms" style={{ fontSize: 28 }}>check_circle</span>
+                Bonne réponse !
+              </div>
+              {remarque && (
+                <div style={{
+                  marginTop: 10, padding: "10px 14px", borderRadius: 12,
+                  background: "rgba(180,83,9,0.08)", border: "1px solid rgba(180,83,9,0.2)",
+                  fontSize: 13, fontWeight: 600, color: "#B45309", lineHeight: 1.45,
+                }}>
+                  ✏️ {remarque}
+                </div>
+              )}
             </div>
           )}
 

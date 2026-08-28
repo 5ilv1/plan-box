@@ -4,6 +4,8 @@
 // Voir docs/ceintures/CORRECTIF-reponses-chiffrees.md pour les trois défauts
 // qu'elle corrige et les décisions assumées.
 
+import { evaluerNombreEnLettres } from "@/lib/comparaison-nombres";
+
 const ESP = "[\\s\\u00A0\\u202F\\u2007\\u2009\\u200B\\u3000]";
 
 function normaliser(s: string): string {
@@ -56,4 +58,47 @@ export function comparerReponse(attendue: string, donnee: string): boolean {
   const na = parseFloat(a);
   const nd = parseFloat(d);
   return !isNaN(na) && !isNaN(nd) && Math.abs(na - nd) < 1e-9;
+}
+
+// ── Nombres écrits en toutes lettres ─────────────────────────────────────────
+
+/**
+ * `true` si l'écriture est un nombre composé en toutes lettres.
+ *
+ * Le mot isolé est exclu à dessein : sans cela « une » vaudrait « un », et un
+ * item qui demande l'article serait faussement validé.
+ */
+function estNombreCompose(txt: string): boolean {
+  return /[\s-]/.test(txt.trim()) && evaluerNombreEnLettres(txt) !== null;
+}
+
+export interface ResultatComparaison {
+  correcte: boolean;
+  /** Remarque pédagogique à afficher en plus de la correction. */
+  remarque?: string;
+}
+
+/**
+ * Comme `comparerReponse`, mais tolère la graphie traditionnelle d'un nombre en
+ * toutes lettres — « quatre cent cinquante » pour « quatre-cent-cinquante » —
+ * et renvoie alors une remarque rappelant la règle des traits d'union.
+ *
+ * Les DEUX écritures doivent être en lettres : « 450 » ne vaut pas
+ * « quatre-cent-cinquante », sinon l'exercice « écris ce nombre en lettres »
+ * s'auto-validerait.
+ */
+export function comparerReponseDetail(attendue: string, donnee: string): ResultatComparaison {
+  if (comparerReponse(attendue, donnee)) return { correcte: true };
+
+  const a = (attendue ?? "").trim();
+  const d = (donnee ?? "").trim();
+  if (!estNombreCompose(a) || !estNombreCompose(d)) return { correcte: false };
+  if (evaluerNombreEnLettres(a) !== evaluerNombreEnLettres(d)) return { correcte: false };
+
+  // Même nombre, graphie différente : accepté, avec un mot sur la règle.
+  const remarque = a.includes("-") && !d.includes("-")
+    ? `C'est juste ! On écrit aussi « ${a} » : depuis 1990, tous les éléments d'un nombre en lettres se relient par des traits d'union.`
+    : undefined;
+
+  return { correcte: true, remarque };
 }

@@ -12,7 +12,7 @@ import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
 import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
 import type { ProblemeMaths } from "@/types";
-import { comparerReponse } from "@/lib/comparer-reponse";
+import { comparerReponseDetail } from "@/lib/comparer-reponse";
 
 interface Question {
   id: number;
@@ -73,6 +73,7 @@ export default function PageExerciceEleve() {
   const [qcmChoisi, setQcmChoisi] = useState<number | null>(null);
   const [resultats, setResultats] = useState<boolean[]>([]);
   const [afficherCorrection, setAfficherCorrection] = useState(false);
+  const [remarque, setRemarque] = useState<string | null>(null);
 
   // Résultat final
   const [score, setScore] = useState(0);
@@ -217,9 +218,9 @@ export default function PageExerciceEleve() {
       // « 45208 », les décimales à virgule et les fractions. La comparaison
       // textuelle reste en second pour les réponses en toutes lettres, où la
       // ponctuation doit être ignorée.
-      correct =
-        comparerReponse(q.reponse, reponseEleve) ||
-        normaliser(reponseEleve) === normaliser(q.reponse);
+      const detail = comparerReponseDetail(q.reponse, reponseEleve);
+      correct = detail.correcte || normaliser(reponseEleve) === normaliser(q.reponse);
+      setRemarque(detail.remarque ?? null);
     }
 
     setResultats((prev) => [...prev, correct]);
@@ -228,6 +229,7 @@ export default function PageExerciceEleve() {
 
   async function passerSuivant() {
     setAfficherCorrection(false);
+    setRemarque(null);
     setReponseEleve("");
     setQcmChoisi(null);
 
@@ -1065,6 +1067,15 @@ export default function PageExerciceEleve() {
               <p style={{ fontSize: 15, color: "#DC2626", marginTop: 10, textAlign: "center" }}>
                 Réponse : <strong>{q.reponse}</strong>
               </p>
+            )}
+            {afficherCorrection && remarque && (
+              <div style={{
+                marginTop: 10, padding: "10px 14px", borderRadius: 12,
+                background: "rgba(180,83,9,0.08)", border: "1px solid rgba(180,83,9,0.2)",
+                fontSize: 13, fontWeight: 600, color: "#B45309", lineHeight: 1.45,
+              }}>
+                ✏️ {remarque}
+              </div>
             )}
           </div>
         )}
