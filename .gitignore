@@ -45,3 +45,7 @@ next-env.d.ts
 
 # Sauvegardes locales avant remise à zéro d'année
 backups/
+
+# Audit sécurité : décrit des failles encore ouvertes sur une app en ligne.
+# Le dépôt est public — ce fichier ne doit jamais y être poussé.
+docs/securite/

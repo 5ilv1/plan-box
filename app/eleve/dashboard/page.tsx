@@ -648,8 +648,17 @@ export default function DashboardEleve() {
       // Requêtes secondaires (non-bloquantes) — avec signal
       if (rbId) {
         fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`, { signal })
-          .then((r) => r.json())
-          .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
+          .then(async (r) => {
+            // 401 = session expirée : on la rafraîchit et on retente une fois,
+            // sinon le bloc révisions disparaîtrait sans rien dire à l'élève.
+            if (r.status === 401) {
+              if (!(await reparerSession())) return null;
+              const retry = await fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`, { signal });
+              return retry.ok ? retry.json() : null;
+            }
+            return r.ok ? r.json() : null;
+          })
+          .then((json) => { if (!signal.aborted && json) setChapitresRB(json.chapitres ?? []); })
           .catch(() => {});
       }
 
@@ -733,8 +742,17 @@ export default function DashboardEleve() {
       // podcasts est lent ou échoue (élève avec beaucoup de podcasts), rien ne
       // bloque jamais l'affichage des ceintures, du calcul ou du problème.
       fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
-        .then((r) => r.json())
-        .then((json) => { if (!signal.aborted) setChapitresRB(json.chapitres ?? []); })
+        .then(async (r) => {
+          // 401 = session expirée : on la rafraîchit et on retente une fois,
+          // sinon le bloc révisions disparaîtrait sans rien dire à l'élève.
+          if (r.status === 401) {
+            if (!(await reparerSession())) return null;
+            const retry = await fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal });
+            return retry.ok ? retry.json() : null;
+          }
+          return r.ok ? r.json() : null;
+        })
+        .then((json) => { if (!signal.aborted && json) setChapitresRB(json.chapitres ?? []); })
         .catch(() => {});
 
       fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal })
@@ -1042,7 +1060,11 @@ export default function DashboardEleve() {
     try {
       const params = new URLSearchParams({ rb_eleve_id: String(rbId) });
       if (session?.source !== "repetibox") params.set("pb_eleve_id", session!.id);
-      const res = await fetch(`/api/revisions-repetibox-jour?${params}`);
+      let res = await fetch(`/api/revisions-repetibox-jour?${params}`);
+      if (res.status === 401 && (await reparerSession())) {
+        res = await fetch(`/api/revisions-repetibox-jour?${params}`);
+      }
+      if (!res.ok) return;
       const json = await res.json();
       const url = json.chapitres?.[0]?.token_url;
       if (url) {

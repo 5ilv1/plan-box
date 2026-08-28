@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server"
 import { createAdminClient } from "@/lib/supabase-admin"
+import { requireProprietaireOuEnseignant } from "@/lib/server-auth"
 
 // GET /api/revisions-repetibox-jour?rb_eleve_id=42&pb_eleve_id=uuid (pb_eleve_id optionnel)
 // Retourne les chapitres avec des cartes dues aujourd'hui dans Repetibox,
@@ -17,8 +18,18 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "rb_eleve_id requis" }, { status: 400 })
   }
 
-  const admin = createAdminClient()
   const rbId = parseInt(rbEleveId, 10)
+
+  // Réservé à l'élève concerné (ou à l'enseignant) : plus bas, cette route
+  // crée un qr_tokens valable 8 h et le renvoie dans token_url. Ce token
+  // s'échange contre une session complète via /api/qr-login/verify.
+  const { error: refus } = await requireProprietaireOuEnseignant(
+    pbEleveId,
+    Number.isFinite(rbId) ? rbId : null,
+  )
+  if (refus) return refus
+
+  const admin = createAdminClient()
 
   // ── Vérification d'activation ────────────────────────────────────────────
   if (pbEleveId) {
