@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
 import { extraireTextePdf } from "@/lib/pdf-extract-client";
+import { extraireEpub, estEpub } from "@/lib/epub-extract-client";
 
 interface LectureQuestion {
   id?: number;
@@ -258,7 +259,7 @@ export default function PageChapitreLectureDetail() {
     // Contrôle taille côté client (évite les crashs navigateur sur gros fichiers)
     const TAILLE_MAX_MO = 25;
     if (file.size > TAILLE_MAX_MO * 1024 * 1024) {
-      setErreurUpload(`PDF trop volumineux (${Math.round(file.size / 1024 / 1024)} MB). Max ${TAILLE_MAX_MO} MB — essaie de compresser le PDF.`);
+      setErreurUpload(`Fichier trop volumineux (${Math.round(file.size / 1024 / 1024)} MB). Max ${TAILLE_MAX_MO} MB — essaie de compresser le PDF.`);
       return;
     }
     setPdfLivre({ name: file.name, file });
@@ -270,6 +271,24 @@ export default function PageChapitreLectureDetail() {
     setEnExtraction(true);
     setErreurUpload("");
     try {
+      // Titres déjà générés en BDD, pour ne pas les reproposer.
+      const dejaGeneres = new Set(chapitresLus.map((e) => (e.titre ?? "").trim().toLowerCase()));
+
+      // EPUB : le livre déclare lui-même ses chapitres (spine + sommaire).
+      // Pas d'appel IA, pas de détection à l'aveugle — on lit la structure.
+      if (estEpub(pdfLivre.file)) {
+        const epub = await extraireEpub(pdfLivre.file);
+        setChapitresExtraits(
+          epub.chapitres.map((c) => {
+            const dejaFait = dejaGeneres.has(c.titre.trim().toLowerCase());
+            return { ...c, selectionne: !dejaFait, dejaFait };
+          }),
+        );
+        // L'EPUB porte aussi ses métadonnées : on complète ce qui est vide.
+        if (epub.auteur && !editAuteur.trim()) setEditAuteur(epub.auteur);
+        return;
+      }
+
       // Extraction locale du texte dans le navigateur (pdfjs) pour
       // éviter la limite 4.5 MB de Vercel sur le body serverless.
       const texteBrut = await extraireTextePdf(pdfLivre.file);
@@ -284,18 +303,14 @@ export default function PageChapitreLectureDetail() {
         setErreurUpload(json.erreur ?? "Erreur lors de l'extraction.");
         return;
       }
-      // Titres des chapitres déjà générés en BDD (normalisés pour comparaison)
-      const titresDejaGeneres = new Set(
-        chapitresLus.map((e) => (e.titre ?? "").trim().toLowerCase())
-      );
       const extraits = (json.resultat.chapitres as Array<{ ordre: number; titre: string; texte: string; nb_mots: number }>).map((c) => {
-        const dejaFait = titresDejaGeneres.has(c.titre.trim().toLowerCase());
+        const dejaFait = dejaGeneres.has(c.titre.trim().toLowerCase());
         return { ...c, selectionne: !dejaFait, dejaFait };
       });
       setChapitresExtraits(extraits);
     } catch (err) {
       console.error("[extraireChapitres]", err);
-      setErreurUpload(err instanceof Error ? err.message : "Erreur lors de l'extraction du PDF.");
+      setErreurUpload(err instanceof Error ? err.message : "Erreur lors de l'extraction du fichier.");
     } finally {
       setEnExtraction(false);
     }
@@ -361,9 +376,26 @@ export default function PageChapitreLectureDetail() {
   }
 
   // ── Ajout manuel ─────────────────────────────────────────────────────────
-  function handlePdfManuel(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePdfManuel(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Un EPUB ne se transmet pas comme document à l'IA : on lit son texte ici
+    // et on bascule le formulaire en mode « texte », que l'enseignant peut
+    // alors relire et découper avant de générer.
+    if (estEpub(file)) {
+      setErreurAjout("");
+      try {
+        const epub = await extraireEpub(file);
+        setAjoutTexte(epub.texteBrut);
+        setAjoutMode("texte");
+        setAjoutPdf(null);
+      } catch (err) {
+        setErreurAjout(err instanceof Error ? err.message : "EPUB illisible.");
+      }
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = () => setAjoutPdf({ name: file.name, base64: (reader.result as string).split(",")[1] });
     reader.readAsDataURL(file);
@@ -372,7 +404,7 @@ export default function PageChapitreLectureDetail() {
   async function ajouterManuel() {
     if (!ajoutTitre.trim()) { setErreurAjout("Titre du chapitre requis."); return; }
     if (ajoutMode === "texte" && !ajoutTexte.trim()) { setErreurAjout("Colle le texte du chapitre."); return; }
-    if (ajoutMode === "pdf" && !ajoutPdf) { setErreurAjout("Ajoute un PDF."); return; }
+    if (ajoutMode === "pdf" && !ajoutPdf) { setErreurAjout("Ajoute un PDF ou un EPUB."); return; }
 
     setEnAjoutManuel(true);
     setErreurAjout("");
@@ -425,7 +457,7 @@ export default function PageChapitreLectureDetail() {
     if (!file) return;
     const TAILLE_MAX_MO = 25;
     if (file.size > TAILLE_MAX_MO * 1024 * 1024) {
-      setErreurAjoutUnique(`PDF trop volumineux (max ${TAILLE_MAX_MO} MB).`);
+      setErreurAjoutUnique(`Fichier trop volumineux (max ${TAILLE_MAX_MO} MB).`);
       return;
     }
     setAjoutUniquePdf({ name: file.name, file });
@@ -446,11 +478,13 @@ export default function PageChapitreLectureDetail() {
         texteComplet = ajoutUniqueTexte;
       } else {
         if (!ajoutUniquePdf) {
-          setErreurAjoutUnique("Ajoute un PDF.");
+          setErreurAjoutUnique("Ajoute un PDF ou un EPUB.");
           setEnAjoutUnique(false);
           return;
         }
-        texteComplet = await extraireTextePdf(ajoutUniquePdf.file);
+        texteComplet = estEpub(ajoutUniquePdf.file)
+          ? (await extraireEpub(ajoutUniquePdf.file)).texteBrut
+          : await extraireTextePdf(ajoutUniquePdf.file);
       }
 
       const titre = chapitre?.titre ?? "Texte intégral";
@@ -821,7 +855,7 @@ export default function PageChapitreLectureDetail() {
               style={{ background: "#7C3AED", borderColor: "#7C3AED", display: "flex", alignItems: "center", gap: 6 }}
             >
               <span className="ms" style={{ fontSize: 18 }}>upload_file</span>
-              Uploader le livre complet (PDF)
+              Uploader le livre complet (PDF ou EPUB)
             </button>
             <button
               className="btn-secondary"
@@ -882,7 +916,7 @@ export default function PageChapitreLectureDetail() {
                   cursor: "pointer",
                 }}
               >
-                📎 PDF
+                📎 Fichier
               </button>
               <button
                 onClick={() => setAjoutUniqueMode("texte")}
@@ -904,7 +938,7 @@ export default function PageChapitreLectureDetail() {
               <div style={{ marginBottom: 14 }}>
                 <input
                   type="file"
-                  accept="application/pdf"
+                  accept="application/pdf,application/epub+zip,.epub"
                   onChange={handlePdfUnique}
                   disabled={enAjoutUnique}
                   style={{ fontSize: 13 }}
@@ -962,15 +996,18 @@ export default function PageChapitreLectureDetail() {
             {!chapitresExtraits ? (
               <>
                 <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 8 }}>
-                  Charge le PDF complet du livre. L'IA détectera les chapitres et extraira le texte de chacun. Tu valideras la liste avant de générer les QCM.
+                  Charge le livre complet, en PDF ou en EPUB. Tu valideras la liste des chapitres avant de générer les QCM.
+                </p>
+                <p style={{ fontSize: 12, color: "#166534", background: "#DCFCE7", padding: "8px 12px", borderRadius: 6, marginBottom: 8 }}>
+                  ✅ <strong>EPUB recommandé</strong> : le livre porte sa propre table des matières, les chapitres sont donc lus directement — instantané, exact, et sans limite de longueur.
                 </p>
                 <p style={{ fontSize: 12, color: "#92400E", background: "#FEF3C7", padding: "8px 12px", borderRadius: 6, marginBottom: 12 }}>
-                  ⚠️ Pour un livre long (&gt;100 pages), tu risques la limite de tokens/min. Préfère alors l'ajout manuel chapitre par chapitre, ou découpe le PDF en parties de ~50 pages.
+                  ⚠️ En PDF, les chapitres sont détectés par l'IA. Pour un livre long (&gt;100 pages), tu risques la limite de tokens/min : préfère alors l'ajout manuel chapitre par chapitre, ou découpe le PDF en parties de ~50 pages.
                 </p>
                 <input
                   ref={fileInputRef}
                   type="file"
-                  accept="application/pdf"
+                  accept="application/pdf,application/epub+zip,.epub"
                   onChange={handlePdfLivre}
                   style={{ marginBottom: 12 }}
                 />
@@ -1189,7 +1226,7 @@ export default function PageChapitreLectureDetail() {
                 className={ajoutMode === "pdf" ? "btn-primary" : "btn-secondary"}
                 style={{ flex: 1, fontSize: 13 }}
               >
-                Importer un PDF
+                Importer un fichier
               </button>
             </div>
 
@@ -1221,11 +1258,11 @@ export default function PageChapitreLectureDetail() {
               </div>
             ) : (
               <div style={{ marginBottom: 12 }}>
-                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>PDF du chapitre *</label>
+                <label style={{ display: "block", fontSize: 13, fontWeight: 600, marginBottom: 5 }}>PDF ou EPUB du chapitre *</label>
                 <input
                   ref={fileInputManuelRef}
                   type="file"
-                  accept="application/pdf"
+                  accept="application/pdf,application/epub+zip,.epub"
                   onChange={handlePdfManuel}
                 />
                 {ajoutPdf && (
