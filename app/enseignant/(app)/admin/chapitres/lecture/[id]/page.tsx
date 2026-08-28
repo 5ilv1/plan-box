@@ -210,6 +210,26 @@ export default function PageChapitreLectureDetail() {
     }
   }
 
+  /** Envoie une image vers le bucket `couvertures` et renvoie son URL publique. */
+  async function televerserCouverture(file: File): Promise<string> {
+    const presignRes = await fetch("/api/upload-couverture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom: file.name }),
+    });
+    const { token, path, publicUrl, error } = await presignRes.json();
+    if (error) throw new Error(error);
+
+    const { createClient } = await import("@/lib/supabase");
+    const supa = createClient();
+    const { error: upErr } = await supa.storage
+      .from("couvertures")
+      .uploadToSignedUrl(path, token, file);
+    if (upErr) throw upErr;
+
+    return publicUrl as string;
+  }
+
   async function uploadCouverture(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -219,22 +239,7 @@ export default function PageChapitreLectureDetail() {
     }
     setEnUploadCouv(true);
     try {
-      const presignRes = await fetch("/api/upload-couverture", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: file.name }),
-      });
-      const { token, path, publicUrl, error } = await presignRes.json();
-      if (error) throw new Error(error);
-
-      const { createClient } = await import("@/lib/supabase");
-      const supa = createClient();
-      const { error: upErr } = await supa.storage
-        .from("couvertures")
-        .uploadToSignedUrl(path, token, file);
-      if (upErr) throw upErr;
-
-      setEditCouverture(publicUrl);
+      setEditCouverture(await televerserCouverture(file));
     } catch (err) {
       console.error("[uploadCouverture]", err);
       alert("Erreur upload : " + (err instanceof Error ? err.message : String(err)));
@@ -284,8 +289,19 @@ export default function PageChapitreLectureDetail() {
             return { ...c, selectionne: !dejaFait, dejaFait };
           }),
         );
-        // L'EPUB porte aussi ses métadonnées : on complète ce qui est vide.
+        // L'EPUB porte aussi ses métadonnées et sa couverture : on complète ce
+        // qui est vide, sans jamais écraser ce que l'enseignant a déjà mis.
         if (epub.auteur && !editAuteur.trim()) setEditAuteur(epub.auteur);
+        if (epub.couverture && !editCouverture) {
+          setEnUploadCouv(true);
+          try {
+            setEditCouverture(await televerserCouverture(epub.couverture));
+          } catch (err) {
+            console.error("[couverture EPUB]", err);
+          } finally {
+            setEnUploadCouv(false);
+          }
+        }
         return;
       }
 
@@ -999,7 +1015,7 @@ export default function PageChapitreLectureDetail() {
                   Charge le livre complet, en PDF ou en EPUB. Tu valideras la liste des chapitres avant de générer les QCM.
                 </p>
                 <p style={{ fontSize: 12, color: "#166534", background: "#DCFCE7", padding: "8px 12px", borderRadius: 6, marginBottom: 8 }}>
-                  ✅ <strong>EPUB recommandé</strong> : le livre porte sa propre table des matières, les chapitres sont donc lus directement — instantané, exact, et sans limite de longueur.
+                  ✅ <strong>EPUB recommandé</strong> : le livre porte sa table des matières, sa couverture et son auteur. Tout est lu directement dans le fichier — instantané, exact, sans limite de longueur et sans appel à l&apos;IA.
                 </p>
                 <p style={{ fontSize: 12, color: "#92400E", background: "#FEF3C7", padding: "8px 12px", borderRadius: 6, marginBottom: 12 }}>
                   ⚠️ En PDF, les chapitres sont détectés par l'IA. Pour un livre long (&gt;100 pages), tu risques la limite de tokens/min : préfère alors l'ajout manuel chapitre par chapitre, ou découpe le PDF en parties de ~50 pages.

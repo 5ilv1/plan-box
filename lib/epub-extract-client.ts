@@ -23,6 +23,8 @@ export interface ContenuEpub {
   /** Métadonnées de l'OPF, quand elles sont présentes. */
   titre: string | null;
   auteur: string | null;
+  /** Image de couverture embarquée dans l'archive, prête à être envoyée. */
+  couverture: File | null;
 }
 
 /** Un EPUB est une archive ZIP dont le premier fichier est `mimetype`. */
@@ -105,6 +107,36 @@ function lireSommaire(doc: Document, cheminSommaire: string): Map<string, string
 }
 
 /**
+ * Localise l'image de couverture dans le manifeste.
+ *
+ * Trois conventions se croisent : `properties="cover-image"` (EPUB 3),
+ * `<meta name="cover" content="ID">` (EPUB 2), et à défaut un identifiant ou
+ * un nom de fichier qui contient « cover » ou « couverture ».
+ */
+function trouverCouverture(
+  opf: Document,
+  manifeste: Map<string, { chemin: string; type: string; proprietes: string }>,
+): { chemin: string; type: string } | null {
+  const estImage = (m: { type: string }) => m.type.startsWith("image/");
+
+  for (const [, m] of manifeste) {
+    if (m.proprietes.includes("cover-image") && estImage(m)) return m;
+  }
+
+  const idMeta = Array.from(opf.querySelectorAll("metadata meta"))
+    .find((m) => m.getAttribute("name") === "cover")
+    ?.getAttribute("content");
+  const parMeta = idMeta ? manifeste.get(idMeta) : undefined;
+  if (parMeta && estImage(parMeta)) return parMeta;
+
+  for (const [id, m] of manifeste) {
+    if (!estImage(m)) continue;
+    if (/cover|couverture/i.test(id) || /cover|couverture/i.test(m.chemin)) return m;
+  }
+  return null;
+}
+
+/**
  * Lit un EPUB et renvoie ses chapitres dans l'ordre de lecture (le *spine*).
  *
  * Les EPUB protégés par DRM sont chiffrés : la lecture échoue avec un message
@@ -177,7 +209,18 @@ export async function extraireEpub(file: File): Promise<ContenuEpub> {
     }
   }
 
-  // 4. Parcours du spine — l'ordre de lecture voulu par l'éditeur
+  // 4. Couverture : elle est dans l'archive, inutile d'aller la chercher ailleurs.
+  let couverture: File | null = null;
+  const refCouv = trouverCouverture(opf, manifeste);
+  if (refCouv) {
+    const donnees = await zip.file(refCouv.chemin)?.async("blob");
+    if (donnees) {
+      const ext = refCouv.chemin.split(".").pop()?.toLowerCase() ?? "jpg";
+      couverture = new File([donnees], `couverture.${ext}`, { type: refCouv.type });
+    }
+  }
+
+  // 5. Parcours du spine — l'ordre de lecture voulu par l'éditeur
   const chapitres: ChapitreEpub[] = [];
   for (const ref of Array.from(opf.querySelectorAll("spine > itemref"))) {
     const item = manifeste.get(ref.getAttribute("idref") ?? "");
@@ -213,5 +256,6 @@ export async function extraireEpub(file: File): Promise<ContenuEpub> {
     chapitres,
     titre,
     auteur,
+    couverture,
   };
 }
