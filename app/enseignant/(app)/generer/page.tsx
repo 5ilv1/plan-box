@@ -27,6 +27,8 @@ import GenererDicteeForm from "@/components/GenererDicteeForm";
 import GenererTexteATrousForm from "@/components/GenererTexteATrousForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
 import GenererClassementForm from "@/components/GenererClassementForm";
+import GenererComparaisonForm from "@/components/GenererComparaisonForm";
+import GenererRangementForm from "@/components/GenererRangementForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
 import GenererQCMForm from "@/components/GenererQCMForm";
 import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
@@ -35,7 +37,7 @@ import DicteePreview from "@/components/DicteePreview";
 import BanqueExercices from "@/components/BanqueExercices";
 import RepetiboxLink from "@/components/RepetiboxLink";
 
-type TypeBloc = "exercice" | "calcul_mental" | "ressource" | "dictee" | "texte_a_trous" | "analyse_phrase" | "classement" | "lecture" | "qcm" | "probleme_maths";
+type TypeBloc = "exercice" | "calcul_mental" | "ressource" | "dictee" | "texte_a_trous" | "analyse_phrase" | "classement" | "comparaison" | "rangement" | "lecture" | "qcm" | "probleme_maths";
 type Etape = "formulaire" | "chargement" | "apercu" | "sauvegarde";
 
 interface TexteATrousData {
@@ -49,6 +51,20 @@ interface AnalysePhraseData {
   titre: string;
   consigne: string;
   phrases: { texte: string; groupes: { mots: string; fonction: string; debut: number; fin: number }[] }[];
+}
+
+interface ComparaisonData {
+  titre: string;
+  consigne: string;
+  avec_egalite?: boolean;
+  paires: { gauche: string; droite: string; signe: string }[];
+}
+
+interface RangementData {
+  titre: string;
+  consigne: string;
+  critere: string;
+  series: { elements: string[] }[];
 }
 
 interface ClassementData {
@@ -90,6 +106,8 @@ type ContenuPreview =
   | { type: "texte_a_trous"; data: TexteATrousData }
   | { type: "analyse_phrase"; data: AnalysePhraseData }
   | { type: "classement"; data: ClassementData }
+  | { type: "comparaison"; data: ComparaisonData }
+  | { type: "rangement"; data: RangementData }
   | { type: "lecture"; data: LectureData }
   | { type: "qcm"; data: QCMData }
   | { type: "probleme_maths"; data: ProblemeMathsData };
@@ -172,7 +190,7 @@ function PageGenererInner() {
   const defaultChapitreId = searchParams.get("chapitre") ?? undefined;
   const supabase = createClient();
 
-  const TYPES_VALIDES: TypeBloc[] = ["exercice", "calcul_mental", "ressource", "dictee", "texte_a_trous", "analyse_phrase", "classement", "lecture", "qcm", "probleme_maths"];
+  const TYPES_VALIDES: TypeBloc[] = ["exercice", "calcul_mental", "ressource", "dictee", "texte_a_trous", "analyse_phrase", "classement", "comparaison", "rangement", "lecture", "qcm", "probleme_maths"];
   const [typeBloc, setTypeBloc] = useState<TypeBloc>("exercice");
 
   // Synchronise le type avec le paramètre URL ?type=... au montage et à chaque changement d'URL
@@ -485,6 +503,42 @@ function PageGenererInner() {
       return;
     }
 
+    // ── Comparaison de nombres ────────────────────────────────────────
+    if (params.type === "comparaison") {
+      const res = await fetch("/api/generer-comparaison", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+      const json = await res.json();
+      if (!res.ok || json.erreur) {
+        setErreur(json.erreur ?? "Erreur lors de la génération.");
+        setEtape("formulaire");
+        return;
+      }
+      setContenu({ type: "comparaison", data: json.resultat as ComparaisonData });
+      setEtape("apercu");
+      return;
+    }
+
+    // ── Rangement ─────────────────────────────────────────────────────
+    if (params.type === "rangement") {
+      const res = await fetch("/api/generer-rangement", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(params),
+      });
+      const json = await res.json();
+      if (!res.ok || json.erreur) {
+        setErreur(json.erreur ?? "Erreur lors de la génération.");
+        setEtape("formulaire");
+        return;
+      }
+      setContenu({ type: "rangement", data: json.resultat as RangementData });
+      setEtape("apercu");
+      return;
+    }
+
     // ── Classement ────────────────────────────────────────────────────
     if (params.type === "classement") {
       const p = params as any;
@@ -646,6 +700,12 @@ function PageGenererInner() {
         ...contenuFinal.data,
         genere_par_ia: (paramsEnCours as any).mode === "ia",
       };
+    } else if (contenuFinal.type === "comparaison" || contenuFinal.type === "rangement") {
+      contenuJsonb = {
+        ...contenuFinal.data,
+        genere_par_ia: true,
+        modele_utilise: "claude-sonnet-4-6",
+      };
     } else if (contenuFinal.type === "lecture") {
       contenuJsonb = {
         ...contenuFinal.data,
@@ -692,6 +752,10 @@ function PageGenererInner() {
         ? (contenuFinal.data as AnalysePhraseData).titre
         : contenuFinal.type === "classement"
         ? (contenuFinal.data as ClassementData).titre
+        : contenuFinal.type === "comparaison"
+        ? (contenuFinal.data as ComparaisonData).titre
+        : contenuFinal.type === "rangement"
+        ? (contenuFinal.data as RangementData).titre
         : contenuFinal.type === "lecture"
         ? (contenuFinal.data as LectureData).titre
         : contenuFinal.type === "qcm"
@@ -1221,8 +1285,8 @@ function PageGenererInner() {
             <>
               <div className="tabs" style={{ marginBottom: 0 }}>
                 <button
-                  className={`tab${typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture" || typeBloc === "qcm" || typeBloc === "probleme_maths" ? " active" : ""}`}
-                  onClick={() => { if (typeBloc !== "exercice" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "lecture" && typeBloc !== "qcm" && typeBloc !== "probleme_maths") setTypeBloc("exercice"); }}
+                  className={`tab${typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "comparaison" || typeBloc === "rangement" || typeBloc === "lecture" || typeBloc === "qcm" || typeBloc === "probleme_maths" ? " active" : ""}`}
+                  onClick={() => { if (typeBloc !== "exercice" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "comparaison" && typeBloc !== "rangement" && typeBloc !== "lecture" && typeBloc !== "qcm" && typeBloc !== "probleme_maths") setTypeBloc("exercice"); }}
                 >
                   <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>edit_note</span> Exercice
                 </button>
@@ -1248,7 +1312,7 @@ function PageGenererInner() {
               </div>
 
               {/* Sous-sélecteur pour les exercices */}
-              {(typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "lecture" || typeBloc === "qcm" || typeBloc === "probleme_maths") && (
+              {(typeBloc === "exercice" || typeBloc === "texte_a_trous" || typeBloc === "analyse_phrase" || typeBloc === "classement" || typeBloc === "comparaison" || typeBloc === "rangement" || typeBloc === "lecture" || typeBloc === "qcm" || typeBloc === "probleme_maths") && (
                 <div style={{
                   display: "flex", gap: 10, padding: "16px 0 8px",
                   marginBottom: 16, flexWrap: "wrap",
@@ -1328,6 +1392,40 @@ function PageGenererInner() {
                     </div>
                     <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
                       Trier des éléments dans les bonnes catégories
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => setTypeBloc("comparaison")}
+                    style={{
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
+                      border: typeBloc === "comparaison" ? "2px solid #0D9488" : "1px solid var(--border)",
+                      background: typeBloc === "comparaison" ? "rgba(13,148,136,0.06)" : "white",
+                      cursor: "pointer", textAlign: "left", transition: "all 0.15s",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span className="ms" style={{ fontSize: 22, color: typeBloc === "comparaison" ? "#0D9488" : "var(--text-secondary)" }}>compare_arrows</span>
+                      <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: typeBloc === "comparaison" ? "#0D9488" : "var(--text)" }}>Comparaison</span>
+                    </div>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
+                      Placer &lt; ou &gt; entre deux nombres
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => setTypeBloc("rangement")}
+                    style={{
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
+                      border: typeBloc === "rangement" ? "2px solid #B45309" : "1px solid var(--border)",
+                      background: typeBloc === "rangement" ? "rgba(180,83,9,0.06)" : "white",
+                      cursor: "pointer", textAlign: "left", transition: "all 0.15s",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span className="ms" style={{ fontSize: 22, color: typeBloc === "rangement" ? "#B45309" : "var(--text-secondary)" }}>sort</span>
+                      <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: typeBloc === "rangement" ? "#B45309" : "var(--text)" }}>Rangement</span>
+                    </div>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
+                      Ranger des étiquettes de gauche à droite
                     </p>
                   </button>
                   <button
@@ -1584,6 +1682,24 @@ function PageGenererInner() {
               />
             )}
 
+            {/* Formulaire comparaison */}
+            {etape === "formulaire" && typeBloc === "comparaison" && (
+              <GenererComparaisonForm
+                onGenerer={generer}
+                chargement={chargementEnCours}
+                defaultValues={paramsEnCours?.type === "comparaison" ? paramsEnCours as any : undefined}
+              />
+            )}
+
+            {/* Formulaire rangement */}
+            {etape === "formulaire" && typeBloc === "rangement" && (
+              <GenererRangementForm
+                onGenerer={generer}
+                chargement={chargementEnCours}
+                defaultValues={paramsEnCours?.type === "rangement" ? paramsEnCours as any : undefined}
+              />
+            )}
+
             {/* Formulaire lecture */}
             {etape === "formulaire" && typeBloc === "lecture" && (
               <GenererLectureForm
@@ -1710,6 +1826,71 @@ function PageGenererInner() {
                     disabled={etape === "sauvegarde" || !contenu}
                     style={{ flex: 1 }}
                   >
+                    {etape === "sauvegarde" ? "Enregistrement..." : "Valider et affecter"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Aperçu comparaison */}
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "comparaison" && contenu?.type === "comparaison" && (
+              <div style={{ padding: 24 }}>
+                <h3 style={{ fontWeight: 700, fontSize: "1.125rem", marginBottom: 8 }}>{contenu.data.titre}</h3>
+                <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: 16 }}>{contenu.data.consigne}</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 16 }}>
+                  {contenu.data.paires.map((pa, i) => (
+                    <div key={i} style={{
+                      display: "flex", alignItems: "center", gap: 12,
+                      padding: "8px 14px", borderRadius: 10,
+                      background: "var(--blue-50)", border: "1px solid var(--blue-100)",
+                    }}>
+                      <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)", width: 20 }}>{i + 1}.</span>
+                      <span style={{ flex: 1, textAlign: "right", fontWeight: 700 }}>{pa.gauche}</span>
+                      <span style={{ fontWeight: 800, color: "var(--primary)", width: 24, textAlign: "center" }}>{pa.signe}</span>
+                      <span style={{ flex: 1, fontWeight: 700 }}>{pa.droite}</span>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                  {contenu.data.paires.length} comparaisons — signes vérifiés par calcul, pas par l&apos;IA
+                </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+                  <button className="btn-ghost" onClick={() => setEtape("formulaire")}>Annuler</button>
+                  <button className="btn-primary" onClick={() => contenu && valider(contenu)} disabled={etape === "sauvegarde" || !contenu} style={{ flex: 1 }}>
+                    {etape === "sauvegarde" ? "Enregistrement..." : "Valider et affecter"}
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Aperçu rangement */}
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "rangement" && contenu?.type === "rangement" && (
+              <div style={{ padding: 24 }}>
+                <h3 style={{ fontWeight: 700, fontSize: "1.125rem", marginBottom: 8 }}>{contenu.data.titre}</h3>
+                <p style={{ color: "var(--text-secondary)", fontSize: "0.875rem", marginBottom: 16 }}>{contenu.data.consigne}</p>
+                <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 16 }}>
+                  {contenu.data.series.map((serie, i) => (
+                    <div key={i} style={{ background: "var(--blue-50)", borderRadius: 12, padding: "12px 16px", border: "1px solid var(--blue-100)" }}>
+                      <div style={{ fontWeight: 700, fontSize: "0.75rem", color: "var(--primary)", marginBottom: 8, textTransform: "uppercase" }}>
+                        Série {i + 1}
+                      </div>
+                      <div style={{ display: "flex", flexWrap: "wrap", gap: 6, alignItems: "center" }}>
+                        {serie.elements.map((el, j) => (
+                          <span key={j} style={{
+                            padding: "5px 12px", borderRadius: 999, background: "white",
+                            border: "1px solid var(--blue-100)", fontSize: "0.875rem", fontWeight: 600,
+                          }}>{el}</span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                  Ordre attendu affiché ci-dessus — les étiquettes seront mélangées pour l&apos;élève.
+                </p>
+                <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+                  <button className="btn-ghost" onClick={() => setEtape("formulaire")}>Annuler</button>
+                  <button className="btn-primary" onClick={() => contenu && valider(contenu)} disabled={etape === "sauvegarde" || !contenu} style={{ flex: 1 }}>
                     {etape === "sauvegarde" ? "Enregistrement..." : "Valider et affecter"}
                   </button>
                 </div>
@@ -2004,7 +2185,7 @@ function PageGenererInner() {
             )}
 
             {/* Aperçu exercice/calcul/ressource */}
-            {(etape === "apercu" || etape === "sauvegarde") && typeBloc !== "dictee" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "lecture" && typeBloc !== "qcm" && typeBloc !== "probleme_maths" && contenu && (
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc !== "dictee" && typeBloc !== "texte_a_trous" && typeBloc !== "analyse_phrase" && typeBloc !== "classement" && typeBloc !== "comparaison" && typeBloc !== "rangement" && typeBloc !== "lecture" && typeBloc !== "qcm" && typeBloc !== "probleme_maths" && contenu && (
               <div>
                 <ExercicePreview
                   contenu={contenu as any}

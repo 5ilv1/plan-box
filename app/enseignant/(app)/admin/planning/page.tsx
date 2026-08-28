@@ -66,6 +66,8 @@ const COULEURS_TYPE: Record<string, { bg: string; border: string; color: string 
 
 const ICONES_TYPE: Record<string, string> = {
   exercice: "edit_note",
+  comparaison: "compare_arrows",
+  rangement: "sort",
   calcul_mental: "pin",
   ressource: "open_in_new",
   eval: "quiz",
@@ -170,7 +172,7 @@ export default function PageAdminPlanning() {
   // Duplication avec régénération IA
   const [enDuplication, setEnDuplication] = useState(false);
   const [erreurDuplication, setErreurDuplication] = useState("");
-  const TYPES_DUPLICABLES = new Set(["exercice", "qcm", "texte_a_trous", "calcul_mental", "analyse_phrase", "classement", "ecriture_contrainte", "revision", "probleme_maths"]);
+  const TYPES_DUPLICABLES = new Set(["exercice", "qcm", "texte_a_trous", "calcul_mental", "analyse_phrase", "classement", "comparaison", "rangement", "ecriture_contrainte", "revision", "probleme_maths"]);
 
   // Regénération IA
   const [regenMode, setRegenMode]     = useState(false);

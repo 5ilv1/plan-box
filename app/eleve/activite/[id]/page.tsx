@@ -17,6 +17,8 @@ import AtelierEcriture from "@/components/AtelierEcriture";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import ClassementEleve from "@/components/ClassementEleve";
+import ComparaisonEleve from "@/components/ComparaisonEleve";
+import RangementEleve from "@/components/RangementEleve";
 import LectureEleve from "@/components/LectureEleve";
 import QCMEleve from "@/components/QCMEleve";
 import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
@@ -54,6 +56,8 @@ function typeBadgeConfig(type: string, ressource?: RessourceIA | null) {
   if (type === "texte_a_trous") return { label: "Texte à trous", tagClass: "primary", icon: "text_fields", subtitle: "Complète les mots manquants dans le texte" };
   if (type === "analyse_phrase") return { label: "Analyse de phrase", tagClass: "secondary", icon: "schema", subtitle: "Identifie les fonctions des groupes de mots" };
   if (type === "classement") return { label: "Classement", tagClass: "primary", icon: "category", subtitle: "Classe les éléments dans les bonnes catégories" };
+  if (type === "comparaison") return { label: "Comparaison de nombres", tagClass: "primary", icon: "compare_arrows", subtitle: "Place le bon signe entre les deux nombres" };
+  if (type === "rangement") return { label: "Ranger dans l'ordre", tagClass: "primary", icon: "sort", subtitle: "Range les étiquettes de gauche à droite" };
   if (type === "lecture") return { label: "Lecture", tagClass: "secondary", icon: "auto_stories", subtitle: "Lis le texte puis réponds aux questions" };
   if (type === "qcm") return { label: "QCM", tagClass: "primary", icon: "quiz", subtitle: "Choisis la bonne réponse pour chaque question" };
   if (type === "probleme_maths") return { label: "Problèmes de maths", tagClass: "primary", icon: "functions", subtitle: "Lis, calcule, puis écris ta phrase réponse" };
@@ -447,6 +451,8 @@ export default function PageActivite() {
   const texteATrous = bloc.type === "texte_a_trous" ? (bloc.contenu as unknown as { titre: string; consigne: string; texte_complet: string; trous: { position: number; mot: string; indice?: string }[] }) : null;
   const analysePhrase = bloc.type === "analyse_phrase" ? (bloc.contenu as unknown as { titre: string; consigne: string; phrases: { texte: string; groupes: { mots: string; fonction: FonctionGram; debut: number; fin: number }[] }[]; fonctionsActives: FonctionGram[] }) : null;
   const classementData = bloc.type === "classement" ? (bloc.contenu as unknown as { titre: string; consigne: string; categories: string[]; items: { texte: string; categorie: string }[] }) : null;
+  const comparaisonData = bloc.type === "comparaison" ? (bloc.contenu as unknown as { titre: string; consigne: string; avec_egalite?: boolean; paires: { gauche: string; droite: string; signe: string }[] }) : null;
+  const rangementData = bloc.type === "rangement" ? (bloc.contenu as unknown as { titre: string; consigne: string; critere: string; series: { elements: string[] }[] }) : null;
   const lectureData = bloc.type === "lecture" ? (bloc.contenu as unknown as { titre: string; texte: string; questions: { id: number; question: string; choix: string[]; reponse: number }[] }) : null;
   const qcmData = bloc.type === "qcm" ? (bloc.contenu as unknown as { titre?: string; questions: { question: string; options: string[]; reponse_correcte: number; explication?: string }[] }) : null;
   const problemeMaths = bloc.type === "probleme_maths" ? (bloc.contenu as unknown as { titre: string; theme: string; consigne: string; problemes: { id: number; enonce: string; resultat_attendu: string; phrase_reponse_attendue: string; mots_cles: string[]; indice: string }[] }) : null;
@@ -992,6 +998,51 @@ export default function PageActivite() {
               </div>
             )}
 
+            {/* ── Comparaison de nombres ── */}
+            {comparaisonData && (etat as string) === "en_cours" && (
+              <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
+                <ComparaisonEleve
+                  titre={comparaisonData.titre}
+                  consigne={comparaisonData.consigne}
+                  paires={comparaisonData.paires}
+                  avecEgalite={comparaisonData.avec_egalite}
+                  onTermine={(score, repEleve) => {
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                  }}
+                />
+              </div>
+            )}
+            {comparaisonData && (etat as string) === "termine" && (
+              <div className="pb-card" style={{ textAlign: "center", padding: "32px 24px" }}>
+                <span className="ms" style={{ fontSize: 48, color: "#16A34A" }}>check_circle</span>
+                <p style={{ fontWeight: 800, fontSize: 20, color: "#16A34A", marginTop: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Comparaisons terminées !
+                </p>
+              </div>
+            )}
+
+            {/* ── Rangement ── */}
+            {rangementData && (etat as string) === "en_cours" && (
+              <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
+                <RangementEleve
+                  titre={rangementData.titre}
+                  consigne={rangementData.consigne}
+                  series={rangementData.series}
+                  onTermine={(score, repEleve) => {
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                  }}
+                />
+              </div>
+            )}
+            {rangementData && (etat as string) === "termine" && (
+              <div className="pb-card" style={{ textAlign: "center", padding: "32px 24px" }}>
+                <span className="ms" style={{ fontSize: 48, color: "#16A34A" }}>check_circle</span>
+                <p style={{ fontWeight: 800, fontSize: 20, color: "#16A34A", marginTop: 8, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  Tout est rangé !
+                </p>
+              </div>
+            )}
+
             {/* ── Lecture ── */}
             {lectureData && (etat as string) === "en_cours" && (
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
@@ -1203,7 +1254,7 @@ export default function PageActivite() {
             ) : null}
 
             {/* Fallback */}
-            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !lectureData && !qcmData && !problemeMaths && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && bloc.type !== "ceinture_multiplication" && (
+            {!exercice && !calcMental && !texteATrous && !analysePhrase && !classementData && !comparaisonData && !rangementData && !lectureData && !qcmData && !problemeMaths && !ressource && !fichierMaths && !dictee && !mots && !leconCopier && !ecriture && bloc.type !== "ceinture_multiplication" && (
               <div className="pb-card" style={{ textAlign: "center", padding: "48px 32px" }}>
                 <div style={{ fontSize: 48, marginBottom: 16 }}>📄</div>
                 <p style={{ color: "var(--pb-on-surface-variant)", marginBottom: 28 }}>

@@ -342,6 +342,8 @@ export type TypeBloc =
   | "texte_a_trous"
   | "analyse_phrase"
   | "classement"
+  | "comparaison"
+  | "rangement"
   | "lecture"
   | "probleme_maths"
   | "ceinture_multiplication";
@@ -467,6 +469,8 @@ export const TYPE_BLOC_CONFIG: Record<
   texte_a_trous:  { icone: "text_fields", libelle: "Texte à trous",    couleur: "#0E7490" },
   analyse_phrase: { icone: "schema",      libelle: "Analyse de phrase", couleur: "#6D28D9" },
   classement:     { icone: "category",    libelle: "Classement",        couleur: "#0369A1" },
+  comparaison:    { icone: "compare_arrows", libelle: "Comparaison de nombres", couleur: "#0D9488" },
+  rangement:      { icone: "sort",         libelle: "Ranger dans l'ordre", couleur: "#B45309" },
   lecture:         { icone: "auto_stories", libelle: "Lecture",          couleur: "#7C3AED" },
   probleme_maths:  { icone: "functions",    libelle: "Problèmes de maths", couleur: "#0F766E" },
   ceinture_multiplication: { icone: "military_tech", libelle: "Ceintures de multiplications", couleur: "#F59E0B" },
