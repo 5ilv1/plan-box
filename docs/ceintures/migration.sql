@@ -147,7 +147,7 @@ insert into ceinture_item (code, domaine_code, ceinture_idx, libelle, niveau_cib
   ('P54', 'PHRA', 5, 'Je conjugue au futur simple', 'CM1-CM2', 'texte_a_trous', 2, 'auto', 'P2 · Conjugaison', 'Ajouté', 24),
   ('P49', 'PHRA', 5, 'Homophones ③ : je choisis entre ce / se et entre ces / ses', 'CM1-CM2', 'texte_a_trous', 2, 'auto', 'Ma P''tite Règle', 'Déplacé', 25),
   ('P53', 'PHRA', 5, 'Je conjugue à l''imparfait (être, avoir, verbes en -ER)', 'CM1', 'texte_a_trous', 2, 'auto', 'P2 · Conjugaison', 'Ajouté', 26),
-  ('P32', 'PHRA', 6, 'J''identifie et j''accorde l''attribut du sujet', 'CM2', 'analyse_phrase', 2, 'auto', '—', 'PIDAPI', 27),
+  ('P32', 'PHRA', 6, 'J''identifie et j''accorde l''attribut du sujet', 'CM2', 'texte_a_trous', 2, 'auto', '—', 'PIDAPI', 27),
   ('P33', 'PHRA', 6, 'Je conjugue avoir à tous les temps étudiés', 'CM2', 'exercice', 2, 'auto', '—', 'Reformulé', 28),
   ('P34', 'PHRA', 6, 'J''identifie les expansions du groupe nominal (adjectif, complément du nom, relative)', 'CM2', 'classement', 2, 'auto', '—', 'Reformulé', 29),
   ('P37', 'PHRA', 6, 'Je conjugue au présent les verbes fréquents ③ : voir, dire', 'CM2', 'texte_a_trous', 2, 'auto', 'S6 · Conjugaison CM2', 'Reformulé', 30),

@@ -1,14 +1,14 @@
 [
   {
     "item_code": "P32",
-    "type": "analyse_phrase",
+    "type": "texte_a_trous",
     "lecon": {
       "titre": "Reconnaître l'attribut du sujet",
       "regle": "Après un verbe d'état (être, sembler, paraître, devenir, rester), le groupe qui dit comment est le sujet est son attribut, et il s'accorde avec lui.",
       "procedure": [
-        "Repère le verbe : est-ce un verbe d'état ?",
+        "Repère le verbe : est-ce un verbe d'état (être, sembler, paraître, devenir, rester) ?",
         "Si oui, le groupe qui suit dit comment est le sujet : c'est l'attribut.",
-        "Si le verbe n'est pas un verbe d'état, le groupe qui suit n'est pas un attribut : c'est un complément."
+        "Accorde-le avec le sujet — le vrai sujet, pas le mot le plus proche."
       ],
       "exemples": [
         {
@@ -20,7 +20,7 @@
           "demonstration": "« paraissent » est un verbe d'état ; « anciennes » dit comment sont les photos et s'accorde avec elles : attribut."
         }
       ],
-      "piege": "« Yanis dessine un visage » ne dit pas comment est Yanis : ce n'est pas un attribut."
+      "piege": "« Les crayons de la maîtresse sont neufs » : c'est avec crayons que l'attribut s'accorde, pas avec maîtresse."
     },
     "diagnostic": [
       {
@@ -48,244 +48,66 @@
     ],
     "entrainement": [
       {
-        "titre": "Portraits de classe",
-        "consigne": "Trouve la fonction de chaque groupe.",
-        "phrases": [
+        "titre": "Le jour des photos",
+        "consigne": "Complète chaque phrase en accordant l'adjectif donné entre parenthèses.",
+        "texte_complet": "Les jumelles de Nour semblent (inquiet) inquiètes avant de passer. Les crayons de la maîtresse sont (neuf) neufs. À dix heures, la cour devient (bruyant) bruyante. Ces vieilles photos paraissent (précieux) précieuses à ma grand-mère. Sur le chemin du retour, Timéo et Malo restent (bavard) bavards.",
+        "trous": [
           {
-            "texte": "Lila est très curieuse",
-            "groupes": [
-              {
-                "mots": "Lila",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "est",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "très curieuse",
-                "fonction": "Attribut",
-                "debut": 2,
-                "fin": 3
-              }
-            ]
+            "position": 0,
+            "mot": "inquiètes",
+            "indice": "Qui semble inquiet ? Cherche le sujet, pas le nom le plus proche du verbe."
           },
           {
-            "texte": "Les deux frères semblent inquiets",
-            "groupes": [
-              {
-                "mots": "Les deux frères",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 2
-              },
-              {
-                "mots": "semblent",
-                "fonction": "Verbe",
-                "debut": 3,
-                "fin": 3
-              },
-              {
-                "mots": "inquiets",
-                "fonction": "Attribut",
-                "debut": 4,
-                "fin": 4
-              }
-            ]
+            "position": 1,
+            "mot": "neufs",
+            "indice": "Ce sont les crayons qui sont neufs, pas la maîtresse."
           },
           {
-            "texte": "Fatou est une grande lectrice",
-            "groupes": [
-              {
-                "mots": "Fatou",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "est",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "une grande lectrice",
-                "fonction": "Attribut",
-                "debut": 2,
-                "fin": 4
-              }
-            ]
+            "position": 2,
+            "mot": "bruyante",
+            "indice": "Remplace le sujet par « elle » pour entendre l'accord."
           },
           {
-            "texte": "Fatou présente son personnage",
-            "groupes": [
-              {
-                "mots": "Fatou",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "présente",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "son personnage",
-                "fonction": "COD",
-                "debut": 2,
-                "fin": 3
-              }
-            ]
+            "position": 3,
+            "mot": "précieuses",
+            "indice": "Le verbe paraître est un verbe d'état : l'adjectif s'accorde avec le sujet."
           },
           {
-            "texte": "Timéo feuillette un vieil album",
-            "groupes": [
-              {
-                "mots": "Timéo",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "feuillette",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "un vieil album",
-                "fonction": "COD",
-                "debut": 2,
-                "fin": 4
-              }
-            ]
+            "position": 4,
+            "mot": "bavards",
+            "indice": "Deux garçons : remplace le sujet par « ils »."
           }
         ]
       },
       {
-        "titre": "Les nouveaux de l'école",
-        "consigne": "Trouve la fonction de chaque groupe.",
-        "phrases": [
+        "titre": "Le couloir de l'école",
+        "consigne": "Complète chaque phrase en accordant l'adjectif donné entre parenthèses.",
+        "texte_complet": "Les affiches du couloir semblent (ancien) anciennes. Au printemps, les jardins de ma voisine deviennent (vert) verts. Après le spectacle, Inès et Jade paraissent (joyeux) joyeuses. Pour toute la classe, cette histoire reste (mystérieux) mystérieuse. Les yeux de Louna sont (clair) clairs.",
+        "trous": [
           {
-            "texte": "Nour paraît timide",
-            "groupes": [
-              {
-                "mots": "Nour",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "paraît",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "timide",
-                "fonction": "Attribut",
-                "debut": 2,
-                "fin": 2
-              }
-            ]
+            "position": 0,
+            "mot": "anciennes",
+            "indice": "Ce sont les affiches qui sont anciennes, pas le couloir."
           },
           {
-            "texte": "Les nouveaux élèves deviennent plus confiants",
-            "groupes": [
-              {
-                "mots": "Les nouveaux élèves",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 2
-              },
-              {
-                "mots": "deviennent",
-                "fonction": "Verbe",
-                "debut": 3,
-                "fin": 3
-              },
-              {
-                "mots": "plus confiants",
-                "fonction": "Attribut",
-                "debut": 4,
-                "fin": 5
-              }
-            ]
+            "position": 1,
+            "mot": "verts",
+            "indice": "Cherche le sujet du verbe devenir : qui devient vert ?"
           },
           {
-            "texte": "Sacha est un garçon rêveur",
-            "groupes": [
-              {
-                "mots": "Sacha",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "est",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "un garçon rêveur",
-                "fonction": "Attribut",
-                "debut": 2,
-                "fin": 4
-              }
-            ]
+            "position": 2,
+            "mot": "joyeuses",
+            "indice": "Deux filles : remplace le sujet par « elles »."
           },
           {
-            "texte": "Sacha corrige son brouillon",
-            "groupes": [
-              {
-                "mots": "Sacha",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "corrige",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "son brouillon",
-                "fonction": "COD",
-                "debut": 2,
-                "fin": 3
-              }
-            ]
+            "position": 3,
+            "mot": "mystérieuse",
+            "indice": "Le verbe rester est ici un verbe d'état : accorde avec le sujet."
           },
           {
-            "texte": "Jade décore son cadre",
-            "groupes": [
-              {
-                "mots": "Jade",
-                "fonction": "Sujet",
-                "debut": 0,
-                "fin": 0
-              },
-              {
-                "mots": "décore",
-                "fonction": "Verbe",
-                "debut": 1,
-                "fin": 1
-              },
-              {
-                "mots": "son cadre",
-                "fonction": "COD",
-                "debut": 2,
-                "fin": 3
-              }
-            ]
+            "position": 4,
+            "mot": "clairs",
+            "indice": "Ce sont les yeux qui sont clairs, pas Louna."
           }
         ]
       }

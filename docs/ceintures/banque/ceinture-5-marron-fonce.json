@@ -71,11 +71,6 @@
             "position": 3,
             "mot": "brille",
             "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
-          },
-          {
-            "position": 4,
-            "mot": "pousse",
-            "indice": "Pose la question « Qui est-ce qui… ? » : dans une question, le sujet est souvent placé après le verbe."
           }
         ]
       },
@@ -103,11 +98,6 @@
             "position": 3,
             "mot": "commence",
             "indice": "Pose la question « Qui est-ce qui… ? » : dans une question, le sujet est souvent placé après le verbe."
-          },
-          {
-            "position": 4,
-            "mot": "attirent",
-            "indice": "Pose la question « Qui est-ce qui… ? » : le sujet n'est pas toujours le mot placé juste devant le verbe."
           }
         ]
       }
@@ -185,11 +175,6 @@
             "position": 3,
             "mot": "mis",
             "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
-          },
-          {
-            "position": 4,
-            "mot": "attendu",
-            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
           }
         ]
       },
@@ -216,11 +201,6 @@
           {
             "position": 3,
             "mot": "entendu",
-            "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
-          },
-          {
-            "position": 4,
-            "mot": "répondu",
             "indice": "Avec l'auxiliaire avoir, le participe passé ne s'accorde pas avec le sujet."
           }
         ]
@@ -286,11 +266,6 @@
             "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
           },
           {
-            "position": 1,
-            "mot": "décoreras",
-            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
-          },
-          {
             "position": 2,
             "mot": "récitera",
             "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
@@ -330,11 +305,6 @@
           {
             "position": 3,
             "mot": "gonflerez",
-            "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
-          },
-          {
-            "position": 4,
-            "mot": "filmeront",
             "indice": "Au futur simple, on garde l'infinitif en entier, puis on ajoute -ai, -as, -a, -ons, -ez ou -ont."
           }
         ]
@@ -410,11 +380,6 @@
             "indice": "Si tu peux dire « les siens » ou « les siennes », c'est le petit mot qui dit à qui c'est."
           },
           {
-            "position": 3,
-            "mot": "se",
-            "indice": "Remplace le sujet par « je » : si le petit mot devient « me », c'est celui qui accompagne le verbe."
-          },
-          {
             "position": 4,
             "mot": "ces",
             "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
@@ -445,11 +410,6 @@
             "position": 3,
             "mot": "ses",
             "indice": "Si tu peux dire « les siens » ou « les siennes », c'est le petit mot qui dit à qui c'est."
-          },
-          {
-            "position": 4,
-            "mot": "ce",
-            "indice": "Essaie d'ajouter « …-là » après le nom : si ça marche, c'est le petit mot qui montre."
           }
         ]
       }
@@ -527,11 +487,6 @@
             "position": 3,
             "mot": "avaient",
             "indice": "Verbe avoir à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
-          },
-          {
-            "position": 4,
-            "mot": "chantait",
-            "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
           }
         ]
       },
@@ -559,11 +514,6 @@
             "position": 3,
             "mot": "dansaient",
             "indice": "À l'imparfait, le verbe prend -ait quand le sujet vaut « il » ou « elle », et -aient quand il vaut « ils » ou « elles »."
-          },
-          {
-            "position": 4,
-            "mot": "avait",
-            "indice": "Verbe avoir à l'imparfait : demande-toi d'abord si le sujet vaut « il » ou « ils »."
           }
         ]
       }

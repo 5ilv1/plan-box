@@ -537,11 +537,6 @@
             "position": 3,
             "mot": "bondirent",
             "indice": "Le sujet vaut « ils » : cherche la terminaison du pluriel pour un verbe en -IR."
-          },
-          {
-            "position": 4,
-            "mot": "courut",
-            "indice": "Certains verbes font leur passé simple en -ut au singulier."
           }
         ]
       },
@@ -569,11 +564,6 @@
             "position": 3,
             "mot": "franchirent",
             "indice": "Le sujet vaut « ils » : cherche la terminaison du pluriel."
-          },
-          {
-            "position": 4,
-            "mot": "disparut",
-            "indice": "Certains verbes font leur passé simple en -ut au singulier."
           }
         ]
       }
