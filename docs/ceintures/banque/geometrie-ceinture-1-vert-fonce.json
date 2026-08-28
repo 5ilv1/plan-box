@@ -1,0 +1,1660 @@
+[
+  {
+    "item_code": "EG13",
+    "type": "classement",
+    "lecon": {
+      "titre": "Reconnaitre un polygone",
+      "regle": "Un polygone est une figure fermée dont tous les côtés sont des segments droits.",
+      "procedure": [
+        "Fais le tour de la figure avec ton doigt : reviens-tu à ton point de départ ?",
+        "Regarde ensuite chaque côté : tous doivent être des traits droits, sans arrondi.",
+        "Si les deux réponses sont oui, c'est un polygone."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le contour d'une enveloppe posée à plat.",
+          "demonstration": "Je fais le tour : je reviens au départ, elle est fermée. Chaque côté est un trait droit. C'est un polygone."
+        },
+        {
+          "phrase": "Une ligne brisée de 3 segments dont les deux bouts ne se rejoignent pas.",
+          "demonstration": "Tous les traits sont droits, mais je ne reviens pas au départ : la figure n'est pas fermée, ce n'est pas un polygone."
+        }
+      ],
+      "piege": "Un rond est bien fermé, mais son contour n'est pas fait de segments : ce n'est pas un polygone."
+    },
+    "diagnostic": [
+      {
+        "question": "Rosalie a tracé une figure fermée avec 11 traits droits, tous tirés à la règle. Comment appelle-t-on cette figure ?",
+        "options": [
+          "un polygone",
+          "une ligne brisée ouverte",
+          "un cercle",
+          "une courbe"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Elle est fermée et tous ses côtés sont des segments droits : c'est un polygone. Le nombre de côtés n'a pas d'importance."
+      },
+      {
+        "question": "Timéo dit : « Toutes les figures fermées sont des polygones. » A-t-il raison ?",
+        "options": [
+          "Oui, il suffit qu'une figure soit fermée.",
+          "Non : il faut aussi que tous les côtés soient des segments droits.",
+          "Non : il faut aussi qu'elle ait exactement 4 côtés.",
+          "Oui, sauf si elle a plus de 6 côtés."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Être fermée ne suffit pas : un rond est fermé et n'est pas un polygone. Il faut en plus que chaque côté soit un segment droit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Polygone ou pas ?",
+        "consigne": "Chaque figure est décrite avec des mots. Classe-la dans la bonne colonne.",
+        "categories": [
+          "Polygone",
+          "Pas un polygone"
+        ],
+        "items": [
+          {
+            "texte": "Une figure fermée formée de 3 segments.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée dont les 4 côtés sont tous droits.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée formée de 5 segments.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée à 6 côtés, tirés entièrement à la règle.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée à 8 côtés droits, comme un panneau stop.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée à 12 côtés droits, en forme de croix.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Le contour d'une bulle de savon, tout arrondi.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une figure fermée dont le contour est une seule courbe, comme un œuf.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une figure fermée formée de 2 segments et d'un demi-cercle.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une ligne brisée ouverte qui monte comme un escalier.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une figure formée de 7 segments dont les extrémités ne se rejoignent pas.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Un segment tiré à la règle.",
+            "categorie": "Pas un polygone"
+          }
+        ]
+      },
+      {
+        "titre": "Le tri de Yanis",
+        "consigne": "Chaque figure est décrite avec des mots. Classe-la dans la bonne colonne.",
+        "categories": [
+          "Polygone",
+          "Pas un polygone"
+        ],
+        "items": [
+          {
+            "texte": "Une figure fermée qui a 7 côtés, tous tirés à la règle.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée qui a 9 côtés, tous droits.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée qui a 10 côtés droits.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Le contour fermé d'une étoile à 5 branches, formé de 10 traits droits.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Une figure fermée dont le contour est fait de 4 traits droits de longueurs différentes.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Le contour fermé d'une flèche, formé de 7 traits droits.",
+            "categorie": "Polygone"
+          },
+          {
+            "texte": "Le contour d'une pièce de monnaie posée sur la feuille.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une figure fermée qui a 3 côtés droits et un côté arrondi.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une figure fermée en forme de goutte d'eau, sans aucun trait droit.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une ligne brisée ouverte de 5 segments, comme un éclair.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Deux segments qui se croisent en formant une croix.",
+            "categorie": "Pas un polygone"
+          },
+          {
+            "texte": "Une ligne courbe qui part d'un point et n'y revient pas.",
+            "categorie": "Pas un polygone"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG14",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Compter les axes de symétrie",
+      "regle": "Un axe de symétrie est un pli qui partage la figure en deux moitiés qui se superposent exactement.",
+      "procedure": [
+        "Cherche un pli qui rabat la figure exactement sur elle-même. Sur le quadrillage, commence par le pli vertical et le pli horizontal.",
+        "Essaie ensuite les plis en diagonale, et tout autre pli que la figure te suggère : un axe peut être penché.",
+        "Compte tous les plis qui marchent : c'est le nombre d'axes de symétrie."
+      ],
+      "exemples": [
+        {
+          "phrase": "La lettre A dessinée sur le quadrillage.",
+          "demonstration": "Le pli vertical du milieu rabat la moitié gauche sur la moitié droite : il marche. Les autres plis, non. La lettre A a 1 axe de symétrie."
+        },
+        {
+          "phrase": "La lettre H dessinée sur le quadrillage.",
+          "demonstration": "Ici le pli vertical marche, et le pli horizontal aussi. Les plis en diagonale, non. La lettre H a donc 2 axes de symétrie."
+        }
+      ],
+      "piege": "Ne t'arrête pas aux plis vertical et horizontal : un axe peut être penché dans n'importe quelle direction."
+    },
+    "diagnostic": [
+      {
+        "question": "Malo plie une figure en deux le long d'un trait. Les deux moitiés se recouvrent exactement. Que peut-il dire de ce trait ?",
+        "options": [
+          "C'est un côté de la figure.",
+          "C'est un axe de symétrie de la figure.",
+          "C'est une diagonale, mais pas un axe de symétrie.",
+          "C'est le milieu d'un côté de la figure."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Quand le pli fait se superposer exactement les deux moitiés, ce pli est un axe de symétrie."
+      },
+      {
+        "question": "Nour essaie tous les plis sur une figure : le pli vertical marche, le pli horizontal marche, et les deux plis en diagonale marchent aussi. Combien d'axes de symétrie a cette figure ?",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Chaque pli qui fait se superposer les deux moitiés est un axe de symétrie : ici il y en a 4. L'erreur la plus fréquente est d'oublier de compter les plis en diagonale."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Combien d'axes de symétrie ?",
+        "consigne": "Regarde la figure dessinée sur le quadrillage et écris son nombre d'axes de symétrie. Écris seulement le nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Lila observe cette figure. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "2",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Nour observe cette figure. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "4",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Timéo observe cette figure. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "1",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      4,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Fatou observe cette figure en forme de croix. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "2",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      9,
+                      3
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      4,
+                      7
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Malo observe cette figure. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "0",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Inès observe cette figure en forme de maison. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "1",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Sacha observe cette figure. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "0",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Jade observe cette figure en forme de T. Combien a-t-elle d'axes de symétrie ?",
+            "reponse_attendue": "1",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les plis en diagonale — et n'oublie pas qu'un axe peut être penché.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      8,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Ce pointillé est-il un axe de symétrie ?",
+        "consigne": "Un trait est tracé en pointillés sur chaque figure. Dis si c'est un axe de symétrie de la figure : réponds par oui ou par non.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Louna a tracé ce pointillé. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      9,
+                      2
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    5,
+                    1
+                  ],
+                  "a": [
+                    5,
+                    5
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Adam a tracé ce pointillé. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    6
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Jade a tracé ce pointillé. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "non",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      7,
+                      2
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    2,
+                    2
+                  ],
+                  "a": [
+                    7,
+                    4
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Yanis a tracé ce pointillé. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      5,
+                      6
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    5,
+                    0
+                  ],
+                  "a": [
+                    5,
+                    7
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Fatou a tracé ce pointillé. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "non",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    2
+                  ],
+                  "a": [
+                    8,
+                    2
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Sacha a tracé ce pointillé. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "non",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    0
+                  ],
+                  "a": [
+                    3,
+                    7
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Inès a tracé ce pointillé sur une figure en forme de croix. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      8,
+                      6
+                    ],
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      6,
+                      8
+                    ],
+                    [
+                      3,
+                      8
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ],
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    8
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Timéo a tracé ce pointillé sur une figure en forme de flèche. Est-ce un axe de symétrie de la figure ?",
+            "reponse_attendue": "non",
+            "indice": "Plie la figure par la pensée le long du pointillé : les deux moitiés se recouvrent-elles exactement ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    0
+                  ],
+                  "a": [
+                    4,
+                    6
+                  ],
+                  "pointille": true
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG15",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Cases et nœuds",
+      "regle": "Une case se repère par une lettre et un chiffre (B4), un nœud par deux nombres (4;2).",
+      "procedure": [
+        "Regarde si on demande une case (un carreau) ou un nœud (un coin de carreau).",
+        "Pour une case, compte les colonnes depuis la gauche (A, B, C…) puis les lignes depuis le bas.",
+        "Pour un nœud, pars du nœud (0;0), en bas à gauche : compte à droite, puis en haut."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le pion de Rosalie est dans la 4e colonne, sur la 3e ligne.",
+          "demonstration": "La 4e colonne est la colonne D : le pion est dans la case D3."
+        },
+        {
+          "phrase": "Le point T est à 6 carreaux à droite du nœud (0;0), et 1 plus haut.",
+          "demonstration": "D'abord les pas vers la droite, puis ceux vers le haut : T est le nœud (6;1)."
+        }
+      ],
+      "piege": "Pour une case, la lettre avant le chiffre ; pour un nœud, la droite avant le haut."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un quadrillage, les colonnes sont nommées A, B, C… depuis la gauche et les lignes 1, 2, 3… depuis le bas. Le jeton de Jade est dans la troisième colonne, sur la deuxième ligne. Quelle est sa case ?",
+        "options": [
+          "B3",
+          "C2",
+          "3C",
+          "2C"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La troisième colonne est la colonne C, la deuxième ligne porte le numéro 2 : la case est C2. On écrit toujours la lettre avant le chiffre."
+      },
+      {
+        "question": "Sur un quadrillage, le coin en bas à gauche est le nœud (0;0). Le point R se trouve 5 carreaux à droite et 2 carreaux plus haut. Quelles sont ses coordonnées ?",
+        "options": [
+          "(2;5)",
+          "(5;0)",
+          "(0;5)",
+          "(5;2)"
+        ],
+        "reponse_correcte": 3,
+        "explication": "On écrit d'abord les carreaux vers la droite, puis ceux vers le haut : (5;2). Le nœud (2;5) est un tout autre nœud."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Dans quelle case ?",
+        "consigne": "Les colonnes sont nommées A, B, C… depuis la gauche et les lignes 1, 2, 3… depuis le bas. Écris la case coloriée avec une lettre puis un chiffre, sans espace (exemple : B4).",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Le jeton de Lila est posé sur la case coloriée. Quelle est cette case ?",
+            "reponse_attendue": "C2",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Nour a colorié une case de son quadrillage. Quelle est cette case ?",
+            "reponse_attendue": "A4",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      0,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Le trésor est caché dans la case coloriée. Quelle est cette case ?",
+            "reponse_attendue": "F1",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      5,
+                      0
+                    ],
+                    [
+                      6,
+                      0
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Timéo a posé sa gomme sur la case coloriée. Quelle est cette case ?",
+            "reponse_attendue": "D6",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      3,
+                      6
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Fatou a colorié une case de son quadrillage. Quelle est cette case ?",
+            "reponse_attendue": "G3",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      7,
+                      2
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      6,
+                      3
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Le pion de Malo est sur la case coloriée. Quelle est cette case ?",
+            "reponse_attendue": "B5",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      2,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Inès a colorié une case de son quadrillage. Quelle est cette case ?",
+            "reponse_attendue": "E4",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sacha a posé son dé sur la case coloriée. Quelle est cette case ?",
+            "reponse_attendue": "C1",
+            "indice": "Compte les colonnes depuis la gauche, puis les lignes depuis le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      0
+                    ],
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Sur quel nœud ?",
+        "consigne": "Le coin en bas à gauche du quadrillage est le nœud (0;0). Écris les coordonnées du point demandé sous la forme (x;y) : d'abord les carreaux vers la droite, puis les carreaux vers le haut.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quelles sont les coordonnées du point A ?",
+            "reponse_attendue": "(2;1)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    7,
+                    2
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Quelles sont les coordonnées du point B ?",
+            "reponse_attendue": "(5;4)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    7,
+                    2
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Quelles sont les coordonnées du point C ?",
+            "reponse_attendue": "(7;2)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    7,
+                    2
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Quelles sont les coordonnées du point D ?",
+            "reponse_attendue": "(1;6)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    1,
+                    6
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    4,
+                    0
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    3
+                  ],
+                  "nom": "F"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Quelles sont les coordonnées du point E ?",
+            "reponse_attendue": "(4;0)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    1,
+                    6
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    4,
+                    0
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    3
+                  ],
+                  "nom": "F"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Quelles sont les coordonnées du point F ?",
+            "reponse_attendue": "(8;3)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    1,
+                    6
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    4,
+                    0
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    3
+                  ],
+                  "nom": "F"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Quelles sont les coordonnées du point G ?",
+            "reponse_attendue": "(3;5)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "points": [
+                {
+                  "at": [
+                    3,
+                    5
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    9,
+                    1
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    0,
+                    3
+                  ],
+                  "nom": "K"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Quelles sont les coordonnées du point H ?",
+            "reponse_attendue": "(9;1)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "points": [
+                {
+                  "at": [
+                    3,
+                    5
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    9,
+                    1
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    0,
+                    3
+                  ],
+                  "nom": "K"
+                }
+              ]
+            }
+          },
+          {
+            "id": 9,
+            "enonce": "Quelles sont les coordonnées du point K ?",
+            "reponse_attendue": "(0;3)",
+            "indice": "Pars du nœud (0;0), compte les carreaux vers la droite, puis vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "points": [
+                {
+                  "at": [
+                    3,
+                    5
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    9,
+                    1
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    0,
+                    3
+                  ],
+                  "nom": "K"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

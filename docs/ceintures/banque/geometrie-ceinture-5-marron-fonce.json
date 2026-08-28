@@ -1,0 +1,1311 @@
+[
+  {
+    "item_code": "EG27",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Compter faces, sommets et arêtes",
+      "regle": "Un solide se décrit par son nombre de faces, de sommets et d'arêtes.",
+      "procedure": [
+        "Repère les deux bases et le tour : cube, pavé droit et prisme droit sont bâtis ainsi.",
+        "Compte les côtés d'une base : le prisme droit a autant de faces autour, deux fois plus de sommets, trois fois plus d'arêtes.",
+        "Pour la pyramide, ajoute la pointe : un sommet de plus, une arête par côté de base."
+      ],
+      "exemples": [
+        {
+          "phrase": "Les arêtes d'un prisme droit à bases triangulaires.",
+          "demonstration": "Sa base a 3 côtés : 3 arêtes en haut, 3 en bas, 3 debout. 3 × 3 = 9 arêtes."
+        },
+        {
+          "phrase": "Les sommets d'une pyramide à base carrée.",
+          "demonstration": "Le carré de la base donne 4 sommets, et la pointe en ajoute un : 4 + 1 = 5 sommets."
+        }
+      ],
+      "piege": "La boule n'a ni face plate, ni arête, ni sommet ; le cylindre n'a aucun sommet."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien de sommets a une pyramide dont la base est un carré ?",
+        "options": [
+          "4",
+          "5",
+          "6",
+          "8"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Il y a 4 sommets autour du carré de la base, plus la pointe : 4 + 1 = 5. Le 4 oublie la pointe."
+      },
+      {
+        "question": "Combien d'arêtes a une pyramide dont la base est un pentagone, c'est-à-dire une figure à 5 côtés ?",
+        "options": [
+          "5",
+          "6",
+          "10",
+          "15"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Les 5 côtés du pentagone donnent 5 arêtes, et 5 autres arêtes montent vers la pointe : 5 + 5 = 10. Le 5 oublie celles qui montent."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je compte sur les solides",
+        "consigne": "Réponds à chaque question par un nombre seulement, sans écrire de mot ni d'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien de faces a une pyramide dont la base est un triangle ?",
+            "reponse_attendue": "4",
+            "indice": "La base triangulaire, puis les faces qui montent vers la pointe."
+          },
+          {
+            "id": 2,
+            "enonce": "Combien d'arêtes a une pyramide dont la base est un triangle ?",
+            "reponse_attendue": "6",
+            "indice": "Les arêtes du triangle de la base, puis celles qui montent vers la pointe."
+          },
+          {
+            "id": 3,
+            "enonce": "Combien de sommets a une boule ?",
+            "reponse_attendue": "0",
+            "indice": "Cherche un coin pointu sur un ballon."
+          },
+          {
+            "id": 4,
+            "enonce": "Combien de faces a une pyramide dont la base est un carré ?",
+            "reponse_attendue": "5",
+            "indice": "La base, puis les faces triangulaires qui montent vers la pointe."
+          },
+          {
+            "id": 5,
+            "enonce": "Combien d'arêtes a une pyramide dont la base est un carré ?",
+            "reponse_attendue": "8",
+            "indice": "Les arêtes du carré de la base, puis celles qui montent vers la pointe."
+          },
+          {
+            "id": 6,
+            "enonce": "Combien de faces a un prisme droit dont les bases sont des triangles ?",
+            "reponse_attendue": "5",
+            "indice": "Les deux bases, puis une face rectangulaire par côté de la base."
+          },
+          {
+            "id": 7,
+            "enonce": "Combien de sommets a un prisme droit dont les bases sont des triangles ?",
+            "reponse_attendue": "6",
+            "indice": "Compte les sommets d'une base, puis ceux de l'autre."
+          },
+          {
+            "id": 8,
+            "enonce": "Combien de faces plates a un cylindre ?",
+            "reponse_attendue": "2",
+            "indice": "Cherche ses disques : le reste est une surface courbe."
+          },
+          {
+            "id": 9,
+            "enonce": "Un prisme droit a des bases qui sont des hexagones, c'est-à-dire des figures à 6 côtés. Combien a-t-il d'arêtes ?",
+            "reponse_attendue": "18",
+            "indice": "Une arête par côté en haut, autant en bas, autant debout."
+          }
+        ]
+      },
+      {
+        "titre": "Encore des solides à décrire",
+        "consigne": "Réponds à chaque question par un nombre seulement, sans écrire de mot ni d'unité.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien de sommets a une pyramide dont la base est un triangle ?",
+            "reponse_attendue": "4",
+            "indice": "Les sommets du triangle de la base, puis la pointe."
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de faces a un prisme droit dont les bases sont des hexagones, c'est-à-dire des figures à 6 côtés ?",
+            "reponse_attendue": "8",
+            "indice": "Les deux bases, puis une face rectangulaire par côté de la base."
+          },
+          {
+            "id": 3,
+            "enonce": "Combien d'arêtes a un prisme droit dont les bases sont des triangles ?",
+            "reponse_attendue": "9",
+            "indice": "Une arête par côté en haut, autant en bas, autant debout."
+          },
+          {
+            "id": 4,
+            "enonce": "Combien de faces triangulaires a une pyramide dont la base est un carré ?",
+            "reponse_attendue": "4",
+            "indice": "Ne compte pas la base : elle est carrée."
+          },
+          {
+            "id": 5,
+            "enonce": "Combien de faces plates a un cône ?",
+            "reponse_attendue": "1",
+            "indice": "Pose-le sur la table : qu'est-ce qui touche la table ?"
+          },
+          {
+            "id": 6,
+            "enonce": "Combien de sommets a un cylindre ?",
+            "reponse_attendue": "0",
+            "indice": "Cherche un coin pointu sur une boîte de conserve."
+          },
+          {
+            "id": 7,
+            "enonce": "Combien de faces plates a une boule ?",
+            "reponse_attendue": "0",
+            "indice": "Passe la main sur un ballon : trouves-tu une partie plate ?"
+          },
+          {
+            "id": 8,
+            "enonce": "Un prisme droit a des bases qui sont des pentagones, c'est-à-dire des figures à 5 côtés. Combien a-t-il de faces en tout ?",
+            "reponse_attendue": "7",
+            "indice": "Les deux bases, puis une face rectangulaire par côté de la base."
+          },
+          {
+            "id": 9,
+            "enonce": "Un prisme droit a des bases qui sont des pentagones, c'est-à-dire des figures à 5 côtés. Combien a-t-il de sommets ?",
+            "reponse_attendue": "10",
+            "indice": "Compte les sommets d'une base, puis ceux de l'autre."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG28",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Tracer une parallèle",
+      "regle": "Deux droites parallèles gardent partout le même écart : pour en tracer une, reporte le même écart en deux endroits éloignés.",
+      "procedure": [
+        "À l'équerre, trace deux perpendiculaires à (d), loin l'une de l'autre.",
+        "Sur chacune, reporte le même écart depuis (d) et marque un point.",
+        "Relie les deux points à la règle et prolonge : c'est la parallèle à (d)."
+      ],
+      "exemples": [
+        {
+          "phrase": "Tracer la parallèle à (d) à 3 cm de (d).",
+          "demonstration": "Je marque un point à 3 cm de (d) à gauche, un autre à 3 cm à droite, puis je relie."
+        },
+        {
+          "phrase": "Sur un quadrillage, (d) avance de 2 carreaux et monte de 1.",
+          "demonstration": "Depuis M, je répète le même déplacement : 2 carreaux à droite, 1 vers le haut. Ces nœuds reliés donnent une parallèle à (d)."
+        }
+      ],
+      "piege": "Deux droites qui ne se coupent pas sur ta feuille peuvent se rejoindre plus loin : mesure l'écart aux deux bouts."
+    },
+    "diagnostic": [
+      {
+        "question": "Nour veut tracer la droite parallèle à (d) qui passe à 4 cm de (d). Elle a déjà marqué un point à 4 cm de (d). Que doit-elle faire ensuite ?",
+        "options": [
+          "relier ce point à une extrémité de (d)",
+          "tracer par ce point une droite qui ne touche pas (d)",
+          "marquer un second point à 4 cm de (d), loin du premier, puis relier les deux points",
+          "marquer un second point à 8 cm de (d), puis relier les deux points"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Deux points reportés au même écart, et éloignés l'un de l'autre, suffisent à tracer la parallèle. Un seul point ne fixe pas la direction de la droite."
+      },
+      {
+        "question": "Malo a tracé deux droites qu'il croit parallèles. Il mesure l'écart entre elles : 5 cm près du bord gauche, 4 cm près du bord droit. Que peut-il en conclure ?",
+        "options": [
+          "son tracé est réussi, car les deux droites ne se touchent pas",
+          "son tracé est raté, car deux parallèles gardent partout le même écart",
+          "son tracé est réussi, car l'écart reste proche de 5 cm",
+          "il ne peut rien dire : l'écart entre deux parallèles change toujours"
+        ],
+        "reponse_correcte": 1,
+        "explication": "L'écart a diminué de 1 cm : les deux droites se rapprochent et finiront par se couper. Elles ne sont donc pas parallèles."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je trace des parallèles",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier avec ta règle et ton équerre. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis la droite (d) et le point M sur ton cahier à carreaux, puis trace la droite parallèle à (d) qui passe par M. Combien de carreaux séparent (d) de la droite que tu as tracée ?",
+            "reponse_attendue": "4",
+            "indice": "Pars de (d) et monte tout droit jusqu'à M en comptant les carreaux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    8,
+                    2
+                  ],
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    3,
+                    6
+                  ],
+                  "nom": "M"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Sur ton cahier, trace une droite (d), puis la droite (d') parallèle à (d) qui passe à 5 cm de (d). Prolonge les deux droites jusqu'aux bords de la feuille. Combien de points communs ont-elles ?",
+            "reponse_attendue": "0",
+            "indice": "L'écart reste le même partout : les deux droites peuvent-elles se rejoindre ?"
+          },
+          {
+            "id": 3,
+            "enonce": "Sur ton cahier, trace une droite (d) et la parallèle (d') située à 3 cm de (d). Mesure maintenant l'écart entre (d) et (d') tout au bout de ton tracé. Combien de centimètres mesures-tu ?",
+            "reponse_attendue": "3",
+            "indice": "Si ton tracé est réussi, l'écart ne change pas d'un bout à l'autre."
+          },
+          {
+            "id": 4,
+            "enonce": "Reproduis la droite (d) et le point N sur ton cahier à carreaux, puis trace la parallèle à (d) qui passe par N. Quand ta droite avance de 4 carreaux vers la droite, de combien de carreaux monte-t-elle ?",
+            "reponse_attendue": "2",
+            "indice": "Compte d'abord de combien (d) monte quand elle avance de 4 carreaux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "N"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une droite (d). À l'équerre, trace ensuite deux droites différentes perpendiculaires à (d). Ces deux nouvelles droites sont-elles parallèles entre elles ?",
+            "reponse_attendue": "oui",
+            "indice": "Mesure leur écart en deux endroits éloignés."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur ton cahier, trace une droite (a), puis (b) parallèle à (a) à 2 cm de (a), puis (c) parallèle à (b) à 3 cm de (b), de l'autre côté de (b) par rapport à (a). Quel écart, en centimètres, sépare (a) de (c) ?",
+            "reponse_attendue": "5",
+            "indice": "Fais un schéma : les trois droites se suivent dans l'ordre (a), (b), (c)."
+          },
+          {
+            "id": 7,
+            "enonce": "Timéo voulait tracer (d2) parallèle à (d1). A-t-il réussi ?",
+            "reponse_attendue": "non",
+            "indice": "Compte l'écart entre les deux droites tout à gauche du dessin, puis tout à droite.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    4
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    8,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Rosalie voulait tracer (d2) parallèle à (d1). A-t-elle réussi ?",
+            "reponse_attendue": "oui",
+            "indice": "Compte l'écart entre les deux droites tout à gauche du dessin, puis tout à droite.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    3
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Le même écart partout",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier avec ta règle et ton équerre. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis la droite (d) et le point P sur ton cahier à carreaux, puis trace la droite parallèle à (d) qui passe par P. Combien de carreaux séparent (d) de la droite que tu as tracée ?",
+            "reponse_attendue": "4",
+            "indice": "Pars de (d) et avance tout droit jusqu'à P en comptant les carreaux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    2,
+                    1
+                  ],
+                  "a": [
+                    2,
+                    7
+                  ],
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    6,
+                    3
+                  ],
+                  "nom": "P"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Sur ton cahier, trace une droite (d), puis la parallèle (d1) située à 3 cm de (d) et la parallèle (d2) située à 9 cm de (d), toutes les deux du même côté de (d). Quel écart, en centimètres, sépare (d1) de (d2) ?",
+            "reponse_attendue": "6",
+            "indice": "Fais un schéma : (d), puis (d1), puis (d2) se suivent dans cet ordre."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur ton cahier, trace deux droites parallèles (d) et (d'), puis prolonge-les le plus loin possible des deux côtés de la feuille. Se coupent-elles ?",
+            "reponse_attendue": "non",
+            "indice": "L'écart entre elles change-t-il quand tu les prolonges ?"
+          },
+          {
+            "id": 4,
+            "enonce": "Reproduis la droite (d) et le point Q sur ton cahier à carreaux, puis trace la parallèle à (d) qui passe par Q. Quand ta droite avance de 6 carreaux vers la droite, de combien de carreaux monte-t-elle ?",
+            "reponse_attendue": "4",
+            "indice": "Regarde de combien (d) monte quand elle avance de 3 carreaux, puis recommence une fois.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    10,
+                    7
+                  ],
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une droite (d) et un point A qui n'est pas sur (d). Trace la parallèle à (d) qui passe par A. Combien de droites parallèles à (d) peux-tu tracer qui passent par A ?",
+            "reponse_attendue": "1",
+            "indice": "Essaie d'en tracer une deuxième par A qui garde le même écart avec (d)."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur ton cahier, trace une droite (a) et la parallèle (b) située à 4 cm de (a). Trace ensuite (c), parallèle à (a) et à 4 cm de (a) elle aussi, mais de l'autre côté de (a). Quel écart, en centimètres, sépare (b) de (c) ?",
+            "reponse_attendue": "8",
+            "indice": "Fais un schéma : (a) est entre (b) et (c)."
+          },
+          {
+            "id": 7,
+            "enonce": "Fatou voulait tracer (d2) parallèle à (d1). A-t-elle réussi ?",
+            "reponse_attendue": "oui",
+            "indice": "Compte l'écart entre les deux droites tout à gauche du dessin, puis tout à droite.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    8,
+                    5
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    8,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Yanis voulait tracer (d2) parallèle à (d1). A-t-il réussi ?",
+            "reponse_attendue": "non",
+            "indice": "Compte l'écart entre les deux droites tout à gauche du dessin, puis tout à droite.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    6
+                  ],
+                  "a": [
+                    9,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG37",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Trouver les axes de symétrie",
+      "regle": "Un axe de symétrie est une droite qui plie la figure en deux moitiés se superposant exactement.",
+      "procedure": [
+        "Décalque la figure et essaie de plier le calque : pli vertical, horizontal, penché.",
+        "Garde chaque pli où les deux moitiés se recouvrent exactement, et trace-le à la règle.",
+        "Compte les axes tracés ; si aucun pli ne marche, la réponse est 0."
+      ],
+      "exemples": [
+        {
+          "phrase": "La lettre E tracée en gros sur une feuille blanche.",
+          "demonstration": "Le pli horizontal du milieu rabat la barre du haut sur celle du bas : il marche. Le pli vertical, non. E a 1 axe."
+        },
+        {
+          "phrase": "Une étoile à cinq branches.",
+          "demonstration": "Le pli qui passe par une pointe et par le creux opposé superpose les deux moitiés : un par pointe, donc 5 axes."
+        }
+      ],
+      "piege": "Sur une figure penchée, les axes sont penchés aussi : ne cherche pas seulement les plis verticaux et horizontaux."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien d'axes de symétrie a un rectangle qui n'est pas un carré ?",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le pli vertical du milieu et le pli horizontal du milieu marchent, mais pas les diagonales : cela fait 2 axes. Le carré, lui, en a 4."
+      },
+      {
+        "question": "Rosalie cherche les axes de symétrie de plusieurs figures. Laquelle n'en a aucun ?",
+        "options": [
+          "un carré",
+          "un triangle dont deux côtés ont la même longueur",
+          "un parallélogramme qui n'est ni un losange ni un rectangle",
+          "un rectangle"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Ses côtés opposés sont bien égaux, mais aucun pli ne superpose ses deux moitiés : il a 0 axe de symétrie."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Combien d'axes de symétrie ?",
+        "consigne": "Reproduis chaque figure sur ton cahier, trace à la règle tous ses axes de symétrie, puis écris combien tu en as tracés. Écris seulement le nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien d'axes de symétrie a la figure ABCD ?",
+            "reponse_attendue": "4",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les deux plis en diagonale.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien d'axes de symétrie a la figure EFGH ?",
+            "reponse_attendue": "2",
+            "indice": "Les plis en diagonale font-ils tomber les coins les uns sur les autres ?",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "EFGH",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Combien d'axes de symétrie a la figure IJKL ?",
+            "reponse_attendue": "0",
+            "indice": "Essaie tous les plis, y compris les plis penchés : garde seulement ceux qui superposent les deux moitiés.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "IJKL",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Combien d'axes de symétrie a la figure MNP ?",
+            "reponse_attendue": "1",
+            "indice": "Cherche un pli qui passe par un sommet et par le milieu du côté d'en face.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      10,
+                      1
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "nom": "MNP",
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Combien d'axes de symétrie a la figure QRST ?",
+            "reponse_attendue": "2",
+            "indice": "Essaie les plis qui joignent deux sommets opposés, puis ceux qui joignent les milieux de deux côtés opposés.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      8,
+                      5
+                    ],
+                    [
+                      5,
+                      9
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "nom": "QRST",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Combien d'axes de symétrie a la figure UVW ?",
+            "reponse_attendue": "0",
+            "indice": "Compare les longueurs des trois côtés avant de chercher un pli.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      2
+                    ],
+                    [
+                      5,
+                      7
+                    ]
+                  ],
+                  "nom": "UVW"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Yanis trace sur son cahier un triangle dont chaque côté mesure 6 cm. Combien d'axes de symétrie a ce triangle ?",
+            "reponse_attendue": "3",
+            "indice": "Essaie le pli qui part de chacun des trois sommets."
+          },
+          {
+            "id": 8,
+            "enonce": "Combien d'axes de symétrie a la figure XYZT ?",
+            "reponse_attendue": "1",
+            "indice": "Deux côtés courts sont marqués d'un trait et deux côtés longs de deux traits : cherche le pli qui les échange.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      5,
+                      9
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "nom": "XYZT",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Des axes bien cachés",
+        "consigne": "Reproduis chaque figure sur ton cahier, trace à la règle tous ses axes de symétrie, puis écris combien tu en as tracés. Écris seulement le nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien d'axes de symétrie a la figure PQRS ?",
+            "reponse_attendue": "4",
+            "indice": "La figure est penchée : ses axes le sont aussi. Essaie les plis qui joignent deux sommets opposés, puis ceux qui joignent les milieux de deux côtés opposés.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      5,
+                      7
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "PQRS",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien d'axes de symétrie a la figure KLMN ?",
+            "reponse_attendue": "2",
+            "indice": "La figure est penchée : ne cherche pas seulement les plis verticaux et horizontaux.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      8,
+                      7
+                    ],
+                    [
+                      4,
+                      9
+                    ]
+                  ],
+                  "nom": "KLMN",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Combien d'axes de symétrie a la figure WXYZ ?",
+            "reponse_attendue": "0",
+            "indice": "Essaie tous les plis, y compris les plis penchés : garde seulement ceux qui superposent les deux moitiés.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      8,
+                      2
+                    ],
+                    [
+                      10,
+                      6
+                    ],
+                    [
+                      4,
+                      5
+                    ]
+                  ],
+                  "nom": "WXYZ",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Combien d'axes de symétrie a la figure EFG ?",
+            "reponse_attendue": "1",
+            "indice": "Cherche un pli qui passe par un sommet et par le milieu du côté d'en face.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      7,
+                      2
+                    ],
+                    [
+                      4,
+                      9
+                    ]
+                  ],
+                  "nom": "EFG",
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Combien d'axes de symétrie a la figure TUVW ?",
+            "reponse_attendue": "2",
+            "indice": "Essaie les plis qui joignent deux sommets opposés, puis ceux qui joignent les milieux de deux côtés opposés.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      10,
+                      4
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "nom": "TUVW",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Combien d'axes de symétrie a la figure HIJ ?",
+            "reponse_attendue": "0",
+            "indice": "Un pli le long d'un côté de l'angle droit rabat-il vraiment la figure sur elle-même ?",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "HIJ",
+                  "angles_droits": [
+                    0
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Louna trace sur son cahier un quadrilatère dont chaque côté mesure 6 cm et dont tous les angles sont droits. Combien d'axes de symétrie a cette figure ?",
+            "reponse_attendue": "4",
+            "indice": "Essaie le pli vertical, le pli horizontal, puis les deux plis en diagonale."
+          },
+          {
+            "id": 8,
+            "enonce": "Combien d'axes de symétrie a la figure ABCDE ?",
+            "reponse_attendue": "1",
+            "indice": "Deux côtés portent un trait et deux autres portent deux traits : cherche le pli qui les échange.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      4,
+                      8
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCDE",
+                  "angles_droits": [
+                    0,
+                    1
+                  ],
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

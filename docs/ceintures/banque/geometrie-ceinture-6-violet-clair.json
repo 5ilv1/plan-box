@@ -1,0 +1,2081 @@
+[
+  {
+    "item_code": "EG29",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Reproduire une figure",
+      "regle": "Reproduire une figure, c'est reporter exactement les mêmes longueurs et les mêmes angles, jamais dessiner à l'œil.",
+      "procedure": [
+        "Repère un sommet de départ et place-le sur ton cahier.",
+        "Pour chaque sommet suivant, compte le déplacement sur le quadrillage, ou mesure la longueur et l'angle.",
+        "Referme la figure sur ton point de départ, puis vérifie chaque côté."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une figure en L sur quadrillage, en partant du sommet A.",
+          "demonstration": "De A je vais 4 carreaux à droite, 3 vers le haut, 2 à gauche, 2 vers le haut, 2 à gauche, puis 5 vers le bas : je retombe sur A."
+        },
+        {
+          "phrase": "Un pentagone codé, sans aucune longueur écrite.",
+          "demonstration": "[EF] porte le même trait que [GH], qui mesure 5 cm : je trace [EF] de 5 cm sans le mesurer sur le dessin."
+        }
+      ],
+      "piege": "Une figure reproduite « à peu près » est fausse : compte les carreaux, ne devine pas."
+    },
+    "diagnostic": [
+      {
+        "question": "Rosalie doit reproduire sur son cahier une figure tracée sur un quadrillage. Quelle méthode lui donne une reproduction exacte ?",
+        "options": [
+          "regarder la figure et la dessiner à main levée, à peu près de la même taille",
+          "placer un premier sommet, puis reporter pour chaque côté le nombre de carreaux à parcourir et le sens du déplacement",
+          "mesurer seulement le plus grand côté et deviner les autres",
+          "commencer par le milieu de la figure et dessiner sans compter les carreaux"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Reproduire, c'est reporter les mêmes déplacements d'un sommet au suivant : on compte les carreaux un par un, on ne dessine pas à l'œil."
+      },
+      {
+        "question": "Adam veut faire reproduire son rectangle par Jade, qui ne le voit pas. Quelles indications suffisent pour qu'elle le reproduise exactement ?",
+        "options": [
+          "la longueur d'un seul côté",
+          "le nombre d'angles droits de la figure",
+          "les longueurs de deux côtés qui se suivent",
+          "le nombre de côtés de la figure"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Dans un rectangle, les côtés opposés sont égaux : deux côtés qui se suivent donnent la longueur et la largeur, et cela suffit pour le reproduire."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je reproduis, puis je constate",
+        "consigne": "Reproduis chaque figure sur ton cahier, à carreaux ou à la règle et à l'équerre selon le cas, puis réponds. Écris seulement un nombre, sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis la figure ABCDEF ci-dessous sur ton cahier à carreaux, en reportant chaque déplacement d'un sommet au suivant. Combien de carreaux mesure le côté [CD] ?",
+            "reponse_attendue": "3",
+            "indice": "Pose ton doigt sur C et avance jusqu'à D en comptant les carreaux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCDEF"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Reproduis la figure ABCDEFGH ci-dessous sur ton cahier à carreaux. Combien de carreaux mesure le côté [HA] ?",
+            "reponse_attendue": "5",
+            "indice": "Le côté [HA] est vertical : compte les carreaux de H jusqu'à A.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCDEFGH"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Reproduis cette croix sur ton cahier à carreaux. Quelle est sa largeur totale, en carreaux, de son bord gauche à son bord droit ?",
+            "reponse_attendue": "6",
+            "indice": "Pars du côté vertical le plus à gauche et compte les carreaux jusqu'au côté vertical le plus à droite.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      5,
+                      7
+                    ],
+                    [
+                      3,
+                      7
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCDEFGHIJKL"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Reproduis la figure ABCDEFGH ci-dessous sur ton cahier à carreaux. Combien de carreaux mesure le côté [DE] ?",
+            "reponse_attendue": "3",
+            "indice": "Le côté [DE] est vertical : compte les carreaux de D jusqu'à E.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCDEFGH"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur la figure ci-dessous, aucune longueur n'est écrite : les côtés marqués du même nombre de traits ont la même longueur. On te dit que [AB] mesure 6 cm et que [BC] mesure 3 cm. Reproduis la figure sur ton cahier. Combien de centimètres mesure le côté [CD] ?",
+            "reponse_attendue": "6",
+            "indice": "Compte les traits portés par [CD], puis cherche l'autre côté qui en porte autant.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Sur la figure ci-dessous, aucune longueur n'est écrite : les côtés marqués du même nombre de traits ont la même longueur. On te dit que [AB] mesure 6 cm et que [EA] mesure 4 cm. Reproduis la figure sur ton cahier. Combien de centimètres mesure le côté [BC] ?",
+            "reponse_attendue": "4",
+            "indice": "Cherche le côté qui porte le même nombre de traits que [BC].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      6,
+                      0
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      3,
+                      7
+                    ],
+                    [
+                      0,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCDE",
+                  "angles_droits": [
+                    0,
+                    1,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Timéo reproduit une figure sur son cahier à carreaux. Il part du point A, avance de 5 carreaux vers la droite, monte de 3 carreaux, recule de 5 carreaux vers la gauche, puis descend de 3 carreaux. Combien de carreaux séparent son point d'arrivée du point A ?",
+            "reponse_attendue": "0",
+            "indice": "Refais son trajet sur ton cahier : où se trouve son crayon à la fin ?"
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, reproduis à la règle et à l'équerre un rectangle ABCD tel que AB = 7 cm et BC = 4 cm, puis trace ses deux diagonales. Combien de triangles ta figure contient-elle alors ?",
+            "reponse_attendue": "8",
+            "indice": "Compte d'abord les quatre petits triangles, puis ceux que forment deux petits triangles mis bout à bout."
+          }
+        ]
+      },
+      {
+        "titre": "Je reproduis sans me tromper",
+        "consigne": "Reproduis chaque figure sur ton cahier, à carreaux ou à la règle et à l'équerre selon le cas, puis réponds. Écris seulement un nombre, sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis la figure ABCDEF ci-dessous sur ton cahier à carreaux, en reportant chaque déplacement d'un sommet au suivant. Combien de carreaux mesure le côté [EF] ?",
+            "reponse_attendue": "3",
+            "indice": "Le côté [EF] est horizontal : compte les carreaux de E jusqu'à F.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCDEF"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Reproduis le pentagone ABCDE ci-dessous sur ton cahier à carreaux. Pour aller de C à D, tu recules de 3 carreaux vers la gauche : de combien de carreaux montes-tu en même temps ?",
+            "reponse_attendue": "2",
+            "indice": "Un côté oblique se reporte en deux temps : le déplacement horizontal, puis le déplacement vertical.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCDE"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Reproduis la figure ABCDEFGH ci-dessous sur ton cahier à carreaux. Les côtés [CD] et [DE] ont-ils la même longueur ? Réponds par oui ou non.",
+            "reponse_attendue": "non",
+            "indice": "Compte les carreaux de [CD], puis ceux de [DE], et compare les deux nombres.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCDEFGH"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Sur la figure ci-dessous, aucune longueur n'est écrite : les côtés marqués du même nombre de traits ont la même longueur. On te dit que [AB] mesure 5 cm et que [BC] mesure 3 cm. Reproduis la figure sur ton cahier. Combien de centimètres mesure le côté [DA] ?",
+            "reponse_attendue": "3",
+            "indice": "Regarde combien de traits porte [DA], puis cherche quel autre côté en porte autant.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur la figure ci-dessous, aucune longueur n'est écrite : les côtés marqués du même nombre de traits ont la même longueur. On te dit que [AB] mesure 5 cm et que [BC] mesure 7 cm. Reproduis la figure sur ton cahier. Combien de centimètres mesure le côté [CD] ?",
+            "reponse_attendue": "7",
+            "indice": "Compte les traits de [CD] : ils t'indiquent avec quel autre côté il est égal.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      0
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      3,
+                      8
+                    ],
+                    [
+                      0,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Nour reproduit une figure sur son cahier à carreaux. Elle part du point M, monte de 4 carreaux, avance de 6 carreaux vers la droite, descend de 4 carreaux, puis recule de 6 carreaux vers la gauche. Son crayon revient-il exactement sur M ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Refais son trajet sur ton cahier et regarde où s'arrête ton crayon."
+          },
+          {
+            "id": 7,
+            "enonce": "Inès reproduit une figure sur son cahier à carreaux. Elle part du point P, avance de 4 carreaux vers la droite, monte de 3 carreaux, recule de 2 carreaux vers la gauche, puis descend de 3 carreaux. Combien de carreaux séparent son point d'arrivée du point P ?",
+            "reponse_attendue": "2",
+            "indice": "Refais son trajet, puis compte les carreaux entre son point d'arrivée et P."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, reproduis à la règle et à l'équerre un carré EFGH dont le côté [EF] mesure 5 cm, puis trace la diagonale [EG]. Combien de triangles ta figure contient-elle alors ?",
+            "reponse_attendue": "2",
+            "indice": "La diagonale coupe le carré : regarde de part et d'autre du trait que tu viens de tracer."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG30",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Construire le symétrique",
+      "regle": "Le symétrique d'un point par rapport à un axe est de l'autre côté, à la même distance, sur la perpendiculaire à l'axe passant par ce point.",
+      "procedure": [
+        "Depuis le point, rejoins l'axe perpendiculairement et compte la distance.",
+        "Reporte la même distance de l'autre côté de l'axe : tu obtiens le point symétrique.",
+        "Recommence pour chaque sommet, puis relie les points obtenus."
+      ],
+      "exemples": [
+        {
+          "phrase": "L'axe est vertical, le point A est à 3 carreaux à gauche.",
+          "demonstration": "Je compte 3 carreaux de A jusqu'à l'axe, puis 3 carreaux de l'autre côté, sur la même ligne : c'est A'."
+        },
+        {
+          "phrase": "Le point B est posé exactement sur l'axe.",
+          "demonstration": "Sa distance à l'axe vaut 0 : en reportant 0 de l'autre côté, je retombe sur B. Un point de l'axe est son propre symétrique."
+        }
+      ],
+      "piege": "Vérifie en pliant ta feuille le long de l'axe : les deux figures doivent se superposer."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un quadrillage, l'axe de symétrie est vertical et le point A se trouve à 4 carreaux à gauche de cet axe. Où se trouve son symétrique A' ?",
+        "options": [
+          "à 4 carreaux à droite de l'axe, sur la même ligne que A",
+          "à 8 carreaux à droite de l'axe, sur la même ligne que A",
+          "à 4 carreaux à gauche de l'axe, deux lignes plus haut",
+          "sur l'axe, juste en face de A"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le symétrique est de l'autre côté de l'axe, à la même distance et sur la même ligne : 4 carreaux à droite. Le 8 vient d'un élève qui compte l'aller et le retour."
+      },
+      {
+        "question": "Fatou a construit le symétrique d'un triangle par rapport à un axe. Comment peut-elle vérifier son tracé sans rien mesurer ?",
+        "options": [
+          "en vérifiant que les deux triangles sont du même côté de l'axe",
+          "en vérifiant que les deux triangles ont le même nombre de côtés",
+          "en pliant sa feuille le long de l'axe : les deux triangles doivent se superposer",
+          "en vérifiant que les deux triangles touchent l'axe"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Deux figures symétriques par rapport à un axe se superposent exactement quand on plie la feuille le long de cet axe. Avoir le même nombre de côtés ne suffit pas."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le symétrique du point",
+        "consigne": "Reproduis chaque quadrillage sur ton cahier, place le point et l'axe (d) en pointillés, puis construis le point symétrique demandé. Écris ses coordonnées sous la forme (x;y), sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Construis A', le symétrique du point A par rapport à l'axe (d). Quelles sont les coordonnées de A' ?",
+            "reponse_attendue": "(10;3)",
+            "indice": "Compte les carreaux de A jusqu'à l'axe, puis reporte-les de l'autre côté sur la même ligne.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    6,
+                    0
+                  ],
+                  "a": [
+                    6,
+                    8
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    3
+                  ],
+                  "nom": "A"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Construis B', le symétrique du point B par rapport à l'axe (d). Quelles sont les coordonnées de B' ?",
+            "reponse_attendue": "(11;6)",
+            "indice": "Compte les carreaux de B jusqu'à l'axe, puis reporte-les de l'autre côté sur la même ligne.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    6,
+                    0
+                  ],
+                  "a": [
+                    6,
+                    8
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    6
+                  ],
+                  "nom": "B"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Ici l'axe (d) est penché : il passe par les coins des carreaux. Construis C', le symétrique du point C par rapport à (d). Quelles sont les coordonnées de C' ?",
+            "reponse_attendue": "(6;2)",
+            "indice": "Compte les carreaux en diagonale, pas à l'horizontale : C' est de l'autre côté du pli, à la même distance.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    0
+                  ],
+                  "a": [
+                    8,
+                    8
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    6
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Construis D', le symétrique du point D par rapport à l'axe (d). Quelles sont les coordonnées de D' ?",
+            "reponse_attendue": "(6;7)",
+            "indice": "Quelle distance sépare D de l'axe ? Reporte cette même distance de l'autre côté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    6,
+                    0
+                  ],
+                  "a": [
+                    6,
+                    8
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Ici l'axe (d) est horizontal. Construis E', le symétrique du point E par rapport à (d). Quelles sont les coordonnées de E' ?",
+            "reponse_attendue": "(2;2)",
+            "indice": "Avec un axe horizontal, on descend ou on monte : la colonne du point ne change pas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    4
+                  ],
+                  "a": [
+                    12,
+                    4
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    6
+                  ],
+                  "nom": "E"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Ici l'axe (d) est horizontal. Construis F', le symétrique du point F par rapport à (d). Quelles sont les coordonnées de F' ?",
+            "reponse_attendue": "(9;7)",
+            "indice": "Compte les carreaux de F jusqu'à l'axe, puis reporte-les au-dessus de l'axe.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    4
+                  ],
+                  "a": [
+                    12,
+                    4
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    9,
+                    1
+                  ],
+                  "nom": "F"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Ici l'axe (d) est horizontal. Construis G', le symétrique du point G par rapport à (d). Quelles sont les coordonnées de G' ?",
+            "reponse_attendue": "(11;3)",
+            "indice": "Le point G est juste au-dessus de l'axe : son symétrique sera juste en dessous.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    4
+                  ],
+                  "a": [
+                    12,
+                    4
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    11,
+                    5
+                  ],
+                  "nom": "G"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Attention, l'axe (d) n'est plus au milieu du quadrillage. Construis H', le symétrique du point H par rapport à (d). Quelles sont les coordonnées de H' ?",
+            "reponse_attendue": "(5;2)",
+            "indice": "Repère d'abord la colonne où passe l'axe, puis compte les carreaux qui séparent H de cette colonne.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    0
+                  ],
+                  "a": [
+                    3,
+                    8
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    2
+                  ],
+                  "nom": "H"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je construis, puis je constate",
+        "consigne": "Fais chaque tracé sur ton cahier, avec ta règle, ton équerre ou ton calque, puis réponds. Écris seulement un nombre, sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sur ton cahier, trace une droite (d) et place un point A qui n'est pas sur (d). Construis A', le symétrique de A par rapport à (d), puis trace le segment [AA']. Ce segment est-il perpendiculaire à (d) ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Pose ton équerre sur (d) : que fait le segment [AA'] au moment où il traverse l'axe ?"
+          },
+          {
+            "id": 2,
+            "enonce": "Sur ton cahier, trace une droite (d) et place un point B à 3 cm de (d). Construis B', le symétrique de B par rapport à (d), puis mesure la distance entre B et B'. Combien de centimètres mesure-t-elle ?",
+            "reponse_attendue": "6",
+            "indice": "Le trajet de B à B' traverse l'axe : il fait deux fois la distance de B à (d)."
+          },
+          {
+            "id": 3,
+            "enonce": "Sur ton cahier, trace une droite (d) et place un point C exactement sur (d). Construis C', le symétrique de C par rapport à (d). Combien de centimètres séparent C de C' ?",
+            "reponse_attendue": "0",
+            "indice": "Quelle distance sépare C de l'axe ? Reporte cette distance de l'autre côté."
+          },
+          {
+            "id": 4,
+            "enonce": "Reproduis ce quadrillage sur ton cahier, puis construis le symétrique du triangle ABC par rapport à l'axe (d). Combien de carreaux séparent le sommet B de son symétrique B' ?",
+            "reponse_attendue": "4",
+            "indice": "Compte d'abord les carreaux entre B et l'axe, puis pense que B' est à la même distance de l'autre côté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABC",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    5,
+                    0
+                  ],
+                  "a": [
+                    5,
+                    7
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace un segment [MN] de 7 cm, puis une droite (d) qui ne le coupe pas. Construis [M'N'], le symétrique de [MN] par rapport à (d), et mesure-le. Combien de centimètres mesure [M'N'] ?",
+            "reponse_attendue": "7",
+            "indice": "Construis d'abord M', puis N', et relie-les avant de mesurer."
+          },
+          {
+            "id": 6,
+            "enonce": "Reproduis ce quadrillage sur ton cahier, puis construis le symétrique du quadrilatère ABCD par rapport à l'axe horizontal (d). Combien de carreaux séparent le sommet D de son symétrique D' ?",
+            "reponse_attendue": "6",
+            "indice": "Compte d'abord les carreaux entre D et l'axe, puis pense que D' est à la même distance de l'autre côté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    3
+                  ],
+                  "a": [
+                    11,
+                    3
+                  ],
+                  "pointille": true,
+                  "nom": "d"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Sur ton cahier, trace une droite (d) et un point P qui n'est pas sur (d). Construis P', le symétrique de P par rapport à (d), puis construis le symétrique de P' par rapport à (d). Ce dernier point est-il confondu avec P ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Reporte deux fois la même distance, une fois d'un côté de l'axe, une fois de l'autre."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier à carreaux, trace un axe vertical (d). Place un point R à 3 carreaux à gauche de (d), puis un point S à 3 carreaux à droite de (d) mais deux lignes plus haut que R. Le point S est-il le symétrique de R par rapport à (d) ? Réponds par oui ou non.",
+            "reponse_attendue": "non",
+            "indice": "Plie ta feuille le long de (d) : R vient-il se poser exactement sur S ?"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG38",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Lire le codage d'une figure",
+      "regle": "Sur une figure, le petit carré marque un angle droit et les côtés portant le même nombre de traits sont de même longueur.",
+      "procedure": [
+        "Cherche d'abord les petits carrés : chacun marque un angle droit.",
+        "Compte ensuite les traits de chaque côté : un trait va avec un trait, deux avec deux.",
+        "Traduis le codage en phrases, puis sers-t'en pour répondre."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un quadrilatère dont le sommet B porte un petit carré.",
+          "demonstration": "Ce petit carré dit que l'angle en B est droit. Aucun côté ne porte de trait : je ne sais rien de leurs longueurs."
+        },
+        {
+          "phrase": "Une figure où [MN] mesure 9 cm et où [PQ] porte autant de traits que [MN].",
+          "demonstration": "Le même nombre de traits veut dire la même longueur : [PQ] mesure 9 cm, sans le mesurer sur le dessin."
+        }
+      ],
+      "piege": "Un côté sans trait n'est pas plus court : le codage ne dit rien de sa longueur."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur une figure, un petit carré est dessiné au sommet B, dans le coin. Que signifie ce codage ?",
+        "options": [
+          "que le côté [AB] mesure 1 cm",
+          "que l'angle en B est un angle droit",
+          "que B est le milieu d'un côté",
+          "que la figure entière est un carré"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le petit carré posé dans un coin est le codage de l'angle droit. Il ne renseigne ni sur les longueurs ni sur la nature de la figure entière."
+      },
+      {
+        "question": "Lila doit reproduire un quadrilatère codé. Le côté [AB] mesure 7 cm et le côté [CD] porte le même nombre de traits que [AB]. Que doit-elle faire ?",
+        "options": [
+          "tracer [CD] de 3,5 cm, la moitié de [AB]",
+          "mesurer [CD] sur le dessin avec sa règle",
+          "tracer [CD] de 7 cm, comme [AB]",
+          "tracer [CD] de 14 cm, le double de [AB]"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Deux côtés qui portent le même nombre de traits ont la même longueur : [CD] mesure donc 7 cm, comme [AB]."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ce que dit le codage",
+        "consigne": "Regarde le codage de la figure dessinée sous chaque question, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "En lisant seulement le codage de cette figure, de quelle figure s'agit-il ?",
+            "options": [
+              "un rectangle",
+              "un losange",
+              "un carré",
+              "un trapèze"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les quatre côtés portent un trait : ils ont tous la même longueur. Aucun sommet ne porte le petit carré, donc rien ne permet d'affirmer que les angles sont droits : on ne peut pas dire que c'est un carré. Un quadrilatère à quatre côtés égaux, c'est un losange.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      3
+                    ],
+                    [
+                      4,
+                      0
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      4,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Sur cette figure, le côté [AB] mesure 6 cm. Que peux-tu dire du côté [CD] ?",
+            "options": [
+              "il mesure 3 cm",
+              "on ne peut pas le savoir",
+              "il mesure 6 cm",
+              "il mesure 12 cm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "[CD] porte le même nombre de traits que [AB] : les deux côtés ont la même longueur, donc 6 cm.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      6,
+                      0
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Sur cette figure, le côté [BC] mesure 3 cm. Combien mesure le côté [AD] ?",
+            "options": [
+              "3 cm",
+              "6 cm",
+              "1,5 cm",
+              "on ne peut pas le savoir"
+            ],
+            "reponse_correcte": 0,
+            "explication": "[AD] et [BC] portent chacun deux traits : ils ont la même longueur, donc 3 cm.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Combien d'angles droits le codage de cette figure indique-t-il ?",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux sommets seulement portent le petit carré : le codage indique deux angles droits, et rien ne permet d'en affirmer davantage.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      8,
+                      0
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      0,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Que t'apprend le codage de cette figure ?",
+            "options": [
+              "ses quatre côtés ont la même longueur",
+              "ses quatre angles sont droits",
+              "aucun de ses côtés n'a la même longueur qu'un autre",
+              "[AB] et [AD] ont la même longueur, et [BC] et [CD] aussi"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un trait sur [AB] et sur [AD] : ces deux côtés sont égaux. Deux traits sur [BC] et sur [CD] : ces deux-là sont égaux entre eux, mais pas aux premiers.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      4,
+                      0
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      4,
+                      9
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Les côtés opposés de cette figure sont codés égaux, mais aucun sommet ne porte le petit carré. Peut-on affirmer que c'est un rectangle ?",
+            "options": [
+              "oui, car ses côtés opposés sont égaux",
+              "oui, car tout quadrilatère à côtés opposés égaux est un rectangle",
+              "non, car un rectangle n'a jamais de côtés opposés égaux",
+              "non, car rien n'indique que ses angles sont droits"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un rectangle a quatre angles droits. Le codage n'en indique aucun : on ne peut donc pas affirmer que c'en est un.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      8,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Cette figure est posée sur la pointe. D'après son codage, qu'est-ce que c'est ?",
+            "options": [
+              "un losange qui n'est pas un carré",
+              "un trapèze",
+              "un carré",
+              "un rectangle qui n'est pas un carré"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Quatre côtés d'un trait, donc égaux, et quatre petits carrés, donc quatre angles droits : c'est un carré, même s'il est posé sur la pointe.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      4,
+                      0
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      4,
+                      8
+                    ],
+                    [
+                      0,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Sur cette figure, le côté [AB] ne porte aucun trait. Que peux-tu en conclure ?",
+            "options": [
+              "[AB] a la même longueur que [CD]",
+              "[AB] est forcément le côté le plus court",
+              "le codage ne dit rien de la longueur de [AB]",
+              "[AB] a la même longueur que [BC]"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un côté sans trait n'est comparé à aucun autre : le codage ne donne aucune information sur sa longueur.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      8,
+                      0
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "J'utilise le codage",
+        "consigne": "Regarde le codage de la figure dessinée sous chaque question, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Sur cette figure, le côté [AB] mesure 4 cm. Combien de côtés de la figure mesurent 4 cm ?",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les quatre côtés portent le même trait : ils ont tous la même longueur, donc 4 cm chacun.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      2
+                    ],
+                    [
+                      5,
+                      0
+                    ],
+                    [
+                      10,
+                      2
+                    ],
+                    [
+                      5,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Sur cette figure, le côté [BC] mesure 5 cm. Combien mesure le côté [AD] ?",
+            "options": [
+              "2,5 cm",
+              "5 cm",
+              "7 cm",
+              "10 cm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "[AD] porte les deux mêmes traits que [BC] : les deux côtés ont la même longueur, donc 5 cm.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      10,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Combien de petits carrés d'angle droit le codage de cette figure porte-t-il ?",
+            "options": [
+              "4",
+              "2",
+              "1",
+              "0"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Chacun des quatre sommets porte un petit carré : le codage indique quatre angles droits.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Le codage de cette figure indique-t-il que deux côtés ont la même longueur ?",
+            "options": [
+              "oui, [AB] et [CD]",
+              "oui, les quatre côtés",
+              "non, aucun côté ne porte de trait",
+              "oui, [BC] et [AD]"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Aucun côté ne porte de trait d'égalité : ici le codage signale seulement deux angles droits.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      6,
+                      0
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      0,
+                      2
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Sur ce triangle, le côté [BC] mesure 6 cm. Combien mesure le côté [CA] ?",
+            "options": [
+              "3 cm",
+              "8 cm",
+              "12 cm",
+              "6 cm"
+            ],
+            "reponse_correcte": 3,
+            "explication": "[BC] et [CA] portent le même trait : ils ont la même longueur, donc 6 cm.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      8,
+                      0
+                    ],
+                    [
+                      4,
+                      6
+                    ]
+                  ],
+                  "nom": "ABC",
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "D'après le codage, quels côtés de cette figure ont la même longueur ?",
+            "options": [
+              "[AB] et [CD]",
+              "[BC] et [AD]",
+              "les quatre côtés",
+              "aucun côté n'est marqué"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Seuls [BC] et [AD] portent un trait : ce sont eux qui ont la même longueur. [AB] et [CD] ne portent rien.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Le codage de cette figure indique quatre angles droits, mais aucune égalité de longueur. Que peux-tu affirmer ?",
+            "options": [
+              "c'est un losange",
+              "c'est un carré",
+              "c'est un rectangle",
+              "on ne peut rien affirmer du tout"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un quadrilatère dont les quatre angles sont droits est un rectangle. Rien n'indique que ses quatre côtés sont égaux : on ne peut pas dire que c'est un carré.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Jade reproduit cette figure. Elle a tracé le côté [CD] de 5 cm. Combien doit mesurer le côté [DE] ?",
+            "options": [
+              "2,5 cm",
+              "3 cm",
+              "5 cm",
+              "10 cm"
+            ],
+            "reponse_correcte": 2,
+            "explication": "[CD] et [DE] portent chacun deux traits : ils ont la même longueur, donc 5 cm.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      0,
+                      0
+                    ],
+                    [
+                      6,
+                      0
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      3,
+                      6
+                    ],
+                    [
+                      0,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCDE",
+                  "angles_droits": [
+                    0,
+                    1,
+                    3
+                  ],
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

@@ -1,0 +1,1929 @@
+[
+  {
+    "item_code": "EG10",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Point, droite, segment, milieu",
+      "regle": "Un segment s'arrête sur deux extrémités, une droite se prolonge sans fin, et le milieu d'un segment le partage en deux parties égales.",
+      "procedure": [
+        "Regarde les deux bouts du trait : marqués par deux points, c'est un segment ; sinon, c'est une droite.",
+        "Les points portent une lettre majuscule, les droites une lettre minuscule.",
+        "Pour un milieu, compte les carreaux des deux côtés du point : il en faut autant."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un trait tracé du point A au point B, sans dépasser.",
+          "demonstration": "Ses deux bouts sont marqués : c'est le segment AB, et A et B sont ses extrémités."
+        },
+        {
+          "phrase": "Le segment AB mesure 6 carreaux et Lila place le point M à 3 carreaux de A.",
+          "demonstration": "De A à M, 3 carreaux ; de M à B, 3 carreaux : M est bien le milieu."
+        }
+      ],
+      "piege": "Un point posé sur un segment n'en est pas forcément le milieu."
+    },
+    "diagnostic": [
+      {
+        "question": "Timéo trace un trait à la règle qui s'arrête sur deux points marqués R et S. Comment s'appelle ce trait ?",
+        "options": [
+          "un point",
+          "une droite",
+          "un segment",
+          "un milieu"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un trait qui s'arrête sur deux extrémités est un segment. Une droite, elle, se prolonge des deux côtés sans s'arrêter."
+      },
+      {
+        "question": "Le point M est le milieu du segment AB. Qu'est-ce que cela veut dire ?",
+        "options": [
+          "M partage le segment AB en deux parties de la même longueur.",
+          "M est le point le plus haut du segment AB.",
+          "M est l'une des deux extrémités du segment AB.",
+          "M est un point placé juste à côté du segment AB."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le milieu est sur le segment, à la même distance des deux extrémités : il coupe le segment en deux parties égales."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Points, droites et segments",
+        "consigne": "Choisis la bonne réponse. Quand une figure est dessinée, compte les carreaux pour vérifier.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Que peux-tu dire du point M ?",
+            "options": [
+              "C'est une extrémité du segment AB.",
+              "Il est plus proche de B que de A.",
+              "C'est le milieu du segment AB.",
+              "Il n'est pas sur le segment AB."
+            ],
+            "reponse_correcte": 2,
+            "explication": "De A à M il y a 3 carreaux, et de M à B il y en a 3 aussi : M partage le segment en deux parties égales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 4
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    4,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "B"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Le point P est-il le milieu du segment CD ?",
+            "options": [
+              "Oui, parce qu'il est posé sur le segment CD.",
+              "Non, parce qu'il n'est pas à la même distance de C et de D.",
+              "Oui, parce qu'il partage le segment CD en deux.",
+              "Non, parce qu'il n'est pas sur le segment CD."
+            ],
+            "reponse_correcte": 1,
+            "explication": "De C à P il y a 2 carreaux, mais de P à D il y en a 6 : les deux parties ne sont pas égales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 4
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    9,
+                    2
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    2
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    3,
+                    2
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    9,
+                    2
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Une ligne bien droite, tracée à la règle, qui se prolonge des deux côtés sans jamais s'arrêter : comment l'appelle-t-on ?",
+            "options": [
+              "un segment",
+              "un point",
+              "une droite",
+              "un milieu"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La droite n'a pas d'extrémité : elle continue des deux côtés. Le segment, lui, s'arrête sur deux points."
+          },
+          {
+            "id": 4,
+            "question": "Le segment AB mesure 12 cm et M est son milieu. Combien mesure le segment AM ?",
+            "options": [
+              "24 cm",
+              "6 cm",
+              "12 cm",
+              "2 cm"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le milieu coupe le segment en deux parties égales : chacune mesure la moitié de 12 cm, soit 6 cm."
+          },
+          {
+            "id": 5,
+            "question": "Parmi les points E, F et G, lequel est le milieu du segment KL ?",
+            "options": [
+              "le point E",
+              "le point F",
+              "le point G",
+              "aucun des trois"
+            ],
+            "reponse_correcte": 1,
+            "explication": "De K à F il y a 4 carreaux, et de F à L il y en a 4 aussi. Pour E et G, les deux parties sont différentes.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 5
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    9,
+                    3
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    3
+                  ],
+                  "nom": "K"
+                },
+                {
+                  "at": [
+                    3,
+                    3
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    5,
+                    3
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    7,
+                    3
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    9,
+                    3
+                  ],
+                  "nom": "L"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Sur une figure de géométrie, avec quoi nomme-t-on un point ?",
+            "options": [
+              "une lettre majuscule",
+              "un chiffre",
+              "une lettre minuscule",
+              "un mot entier"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les points se nomment par des lettres majuscules : A, B, M… Les droites, elles, portent souvent une lettre minuscule."
+          },
+          {
+            "id": 7,
+            "question": "Sur cette figure, quel point est sur la droite d ?",
+            "options": [
+              "le point N",
+              "le point Q",
+              "les deux points",
+              "aucun des deux"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le point N est posé sur la droite d ; le point Q est au-dessus, il n'est pas dessus.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    3
+                  ],
+                  "a": [
+                    9,
+                    3
+                  ],
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    3,
+                    3
+                  ],
+                  "nom": "N"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Malo trace la droite d sur sa feuille, d'un bord à l'autre. Que pourrait-il faire avec une feuille plus grande ?",
+            "options": [
+              "La droite deviendrait un segment.",
+              "La droite aurait enfin deux extrémités.",
+              "Il pourrait la prolonger encore, des deux côtés.",
+              "Il ne pourrait rien tracer de plus."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une droite n'a pas d'extrémité : la feuille l'arrête, pas elle. Elle se prolonge sans fin des deux côtés."
+          }
+        ]
+      },
+      {
+        "titre": "Je relis une figure : points, droites, segments",
+        "consigne": "Choisis la bonne réponse. Quand une figure est dessinée, compte les carreaux pour vérifier.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Que peux-tu dire du point I ?",
+            "options": [
+              "C'est une extrémité du segment UV.",
+              "C'est le milieu du segment UV.",
+              "Il est plus proche de U que de V.",
+              "Il n'est pas sur le segment UV."
+            ],
+            "reponse_correcte": 1,
+            "explication": "De U à I il y a 3 carreaux, et de I à V il y en a 3 aussi : les deux parties sont égales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 5,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    2,
+                    1
+                  ],
+                  "a": [
+                    2,
+                    7
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "U"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "I"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "V"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Une ligne droite qui a un début et une fin, marqués par deux points : comment s'appelle-t-elle ?",
+            "options": [
+              "une droite",
+              "un milieu",
+              "un point",
+              "un segment"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Deux extrémités, donc un segment. Une droite, elle, n'a ni début ni fin."
+          },
+          {
+            "id": 3,
+            "question": "Le point H est-il le milieu du segment JK ?",
+            "options": [
+              "Oui, parce qu'il est à la même distance de J et de K.",
+              "Non, parce qu'il est plus proche de J que de K.",
+              "Oui, parce qu'il est posé sur le segment JK.",
+              "Non, parce qu'il n'est pas sur le segment JK."
+            ],
+            "reponse_correcte": 0,
+            "explication": "De J à H, on avance de 3 carreaux et on monte de 2 ; de H à K, on avance encore de 3 carreaux et on monte de 2. Les deux parties sont égales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "J"
+                },
+                {
+                  "at": [
+                    4,
+                    3
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    7,
+                    5
+                  ],
+                  "nom": "K"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Le segment CD mesure 8 cm et M est son milieu. Combien mesure le segment MD ?",
+            "options": [
+              "4 cm",
+              "8 cm",
+              "16 cm",
+              "2 cm"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le milieu coupe le segment en deux parties égales : chacune mesure la moitié de 8 cm, soit 4 cm."
+          },
+          {
+            "id": 5,
+            "question": "Sur cette figure, quel point n'est pas sur la droite d ?",
+            "options": [
+              "le point A",
+              "le point B",
+              "le point C",
+              "aucun des trois"
+            ],
+            "reponse_correcte": 2,
+            "explication": "A et B sont posés sur la droite d. Le point C est à côté : il n'est pas sur la droite.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    0,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    5
+                  ],
+                  "nom": "d"
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    2
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Sur une figure de géométrie, comment nomme-t-on le plus souvent une droite ?",
+            "options": [
+              "par une lettre minuscule, comme d",
+              "par une lettre majuscule, comme A",
+              "par un chiffre, comme 3",
+              "par une croix"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Une droite porte une lettre minuscule ; la lettre majuscule et la croix servent pour les points."
+          },
+          {
+            "id": 7,
+            "question": "Le point Z est-il sur le segment PQ ?",
+            "options": [
+              "Oui, il est posé sur le segment PQ.",
+              "Non, il est en dehors du segment PQ, après le point Q.",
+              "Oui, c'est même le milieu du segment PQ.",
+              "Non, il est en dessous du segment PQ."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le segment s'arrête sur Q. Le point Z est aligné avec P et Q, mais il est plus loin : il n'appartient pas au segment.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 4
+              },
+              "segments": [
+                {
+                  "de": [
+                    2,
+                    2
+                  ],
+                  "a": [
+                    6,
+                    2
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    2
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    6,
+                    2
+                  ],
+                  "nom": "Q"
+                },
+                {
+                  "at": [
+                    8,
+                    2
+                  ],
+                  "nom": "Z"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Combien d'extrémités a un segment ?",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "aucune"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un segment s'arrête des deux côtés : il a exactement deux extrémités, qui sont deux points."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG11",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Carré, rectangle ou cercle",
+      "regle": "Le cercle est une ligne courbe fermée sans coin ; le rectangle a 4 côtés et 4 coins droits ; le carré a aussi 4 côtés égaux.",
+      "procedure": [
+        "Si la ligne est courbe et fermée, sans aucun coin, c'est un cercle.",
+        "Sinon compte les côtés : il en faut 4, et les 4 coins comme le coin d'une feuille.",
+        "Compare les côtés : tous égaux, c'est un carré ; sinon, c'est un rectangle."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une figure à 4 coins droits, avec deux côtés longs et deux côtés courts.",
+          "demonstration": "4 coins droits : c'est un carré ou un rectangle ; les côtés ne sont pas tous égaux, donc un rectangle."
+        },
+        {
+          "phrase": "Une figure à 4 côtés égaux et 4 coins droits, posée sur la pointe.",
+          "demonstration": "Sa position ne compte pas : 4 coins droits et 4 côtés égaux, c'est un carré, simplement penché."
+        }
+      ],
+      "piege": "Des coins droits ne suffisent pas : il faut aussi 4 côtés."
+    },
+    "diagnostic": [
+      {
+        "question": "Fatou dessine un carré. Que peut-elle dire de ses 4 côtés ?",
+        "options": [
+          "Ils ont tous la même longueur.",
+          "Deux côtés sont longs et deux côtés sont courts.",
+          "Ils sont tous courbes.",
+          "Trois côtés sont égaux et le quatrième est plus court."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le carré a 4 côtés de la même longueur. Quand deux côtés sont longs et deux sont courts, la figure est un rectangle."
+      },
+      {
+        "question": "Inès dit : « Ma figure a 4 côtés et 4 coins droits, mais ses côtés n'ont pas tous la même longueur. » Quelle figure a-t-elle dessinée ?",
+        "options": [
+          "un carré",
+          "un cercle",
+          "un rectangle",
+          "un triangle"
+        ],
+        "reponse_correcte": 2,
+        "explication": "4 côtés et 4 coins droits : c'est un rectangle. Ce n'est pas un carré, car pour cela il faudrait aussi que les 4 côtés soient égaux."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quelle est cette figure ?",
+        "consigne": "Regarde la figure dessinée sous chaque question, puis choisis son nom le plus précis.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quelle est cette figure ?",
+            "options": [
+              "un cercle",
+              "un carré",
+              "un rectangle dont les côtés ne sont pas tous égaux",
+              "un triangle"
+            ],
+            "reponse_correcte": 1,
+            "explication": "4 coins droits et 4 côtés de la même longueur : son nom le plus précis est carré.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quel est le nom de cette figure ?",
+            "options": [
+              "un carré",
+              "un triangle",
+              "un rectangle dont les côtés ne sont pas tous égaux",
+              "un cercle"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Ses 4 coins sont droits, mais deux côtés sont plus longs que les deux autres : c'est un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Cette figure, comment s'appelle-t-elle ?",
+            "options": [
+              "un cercle",
+              "un carré",
+              "un rectangle",
+              "un triangle"
+            ],
+            "reponse_correcte": 0,
+            "explication": "C'est une ligne courbe fermée, sans aucun côté droit et sans aucun coin : c'est un cercle.",
+            "figure": {
+              "type": "polygone",
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    4
+                  ],
+                  "rayon": 3
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Quel nom donnes-tu à cette figure ?",
+            "options": [
+              "un carré",
+              "un cercle",
+              "un triangle",
+              "un rectangle"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Elle n'a que 3 côtés : c'est un triangle, ce n'est ni un carré ni un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Quelle est cette figure ?",
+            "options": [
+              "un carré",
+              "un rectangle",
+              "un cercle",
+              "ni un carré, ni un rectangle, ni un cercle"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Elle a bien 4 côtés droits, mais aucun de ses coins n'est droit : ce n'est ni un carré ni un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      10,
+                      2
+                    ],
+                    [
+                      8,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Quel est le nom de cette figure ?",
+            "options": [
+              "un rectangle",
+              "un carré",
+              "un cercle",
+              "ni un carré, ni un rectangle, ni un cercle"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Elle est penchée, mais ses 4 coins sont droits et deux côtés sont plus longs que les deux autres : c'est un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      4,
+                      0
+                    ],
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      3,
+                      7
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Cette figure, comment s'appelle-t-elle ?",
+            "options": [
+              "ni un carré, ni un rectangle, ni un cercle",
+              "un rectangle dont les côtés ne sont pas tous égaux",
+              "un carré",
+              "un cercle"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Elle est penchée, mais ses 4 coins sont droits et ses 4 côtés ont la même longueur : c'est un carré.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      2,
+                      6
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Quel nom donnes-tu à cette figure ?",
+            "options": [
+              "un carré",
+              "ni un carré, ni un rectangle, ni un cercle",
+              "un rectangle",
+              "un cercle"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Compte ses côtés : il y en a 5. Un carré et un rectangle en ont exactement 4.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      4,
+                      7
+                    ],
+                    [
+                      0,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je reconnais les carrés, les rectangles et les cercles",
+        "consigne": "Regarde la figure dessinée sous chaque question, puis choisis son nom le plus précis.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel est le nom de cette figure ?",
+            "options": [
+              "un cercle",
+              "un triangle",
+              "un carré",
+              "un rectangle dont les côtés ne sont pas tous égaux"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Ses 4 coins sont droits, mais elle est plus haute que large : ses côtés ne sont pas tous égaux, c'est un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      8
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quel nom donnes-tu à cette figure ?",
+            "options": [
+              "un rectangle",
+              "un cercle",
+              "un carré",
+              "ni un carré, ni un rectangle, ni un cercle"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Aucun côté droit, aucun coin : c'est une ligne courbe fermée, donc un cercle.",
+            "figure": {
+              "type": "polygone",
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    5
+                  ],
+                  "rayon": 4
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Quelle est cette figure ?",
+            "options": [
+              "un carré",
+              "un rectangle dont les côtés ne sont pas tous égaux",
+              "un cercle",
+              "un triangle"
+            ],
+            "reponse_correcte": 0,
+            "explication": "4 coins droits et 4 côtés de la même longueur : son nom le plus précis est carré.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      2
+                    ],
+                    [
+                      8,
+                      8
+                    ],
+                    [
+                      2,
+                      8
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Cette figure, comment s'appelle-t-elle ?",
+            "options": [
+              "un triangle",
+              "un rectangle",
+              "un carré",
+              "un cercle"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Elle n'a que 3 côtés et 3 coins : c'est un triangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      2
+                    ],
+                    [
+                      4,
+                      6
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Quel nom donnes-tu à cette figure ?",
+            "options": [
+              "un cercle",
+              "ni un carré, ni un rectangle, ni un cercle",
+              "un carré",
+              "un rectangle dont les côtés ne sont pas tous égaux"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Elle est posée sur la pointe, mais ses 4 coins sont droits et ses 4 côtés sont de la même longueur : c'est un carré.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      3,
+                      6
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Quelle est cette figure ?",
+            "options": [
+              "un carré",
+              "un cercle",
+              "ni un carré, ni un rectangle, ni un cercle",
+              "un rectangle"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Elle est penchée, mais ses 4 coins sont droits et deux de ses côtés sont bien plus longs que les deux autres : c'est un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      0,
+                      3
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Quel est le nom de cette figure ?",
+            "options": [
+              "un rectangle",
+              "ni un carré, ni un rectangle, ni un cercle",
+              "un carré",
+              "un cercle"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Elle a 4 côtés droits, mais ses coins ne sont pas droits : ce n'est ni un carré ni un rectangle.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      10,
+                      5
+                    ],
+                    [
+                      4,
+                      6
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Cette figure, comment s'appelle-t-elle ?",
+            "options": [
+              "un rectangle",
+              "un carré",
+              "ni un carré, ni un rectangle, ni un cercle",
+              "un cercle"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Elle a des coins droits, mais compte ses côtés : il y en a 6. Un carré et un rectangle en ont exactement 4.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG12",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Reconnaitre les angles droits",
+      "regle": "Un angle est droit quand il a la même ouverture que le coin de ton équerre.",
+      "procedure": [
+        "Pose le coin de ton équerre sur le sommet de l'angle.",
+        "Fais glisser un bord de l'équerre le long d'un des deux côtés.",
+        "Si le second côté suit l'autre bord, l'angle est droit ; sinon, il ne l'est pas."
+      ],
+      "exemples": [
+        {
+          "phrase": "Le coin d'une porte, en bas, contre le sol.",
+          "demonstration": "Je pose l'équerre au sol contre la porte : le sol suit un bord, la porte suit l'autre. L'angle est droit."
+        },
+        {
+          "phrase": "Une figure à 4 sommets, penchée, dont les coins ne se ressemblent pas.",
+          "demonstration": "Je teste les 4 sommets un par un : sur trois, le côté passe à côté du bord. Cette figure a 1 angle droit."
+        }
+      ],
+      "piege": "Un angle droit peut être penché, et une figure peut n'en avoir aucun : réponds 0 sans hésiter."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien d'angles droits a la figure ABCD ?",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "reponse_correcte": 1,
+        "explication": "En A et en B, les deux côtés se croisent comme le coin d'une feuille : ce sont des angles droits. En C et en D, les côtés partent en biais : ces angles ne sont pas droits.",
+        "figure": {
+          "type": "polygone",
+          "grille": {
+            "colonnes": 7,
+            "lignes": 7
+          },
+          "polygones": [
+            {
+              "sommets": [
+                [
+                  1,
+                  1
+                ],
+                [
+                  6,
+                  1
+                ],
+                [
+                  6,
+                  6
+                ],
+                [
+                  1,
+                  3
+                ]
+              ],
+              "nom": "ABCD"
+            }
+          ]
+        }
+      },
+      {
+        "question": "Nour pose le coin de son équerre sur un sommet de sa figure : les deux côtés suivent exactement les deux bords de l'équerre. Que peut-elle dire de cet angle ?",
+        "options": [
+          "Il est droit.",
+          "Il est plus ouvert qu'un angle droit.",
+          "Il est plus fermé qu'un angle droit.",
+          "Ce n'est pas un angle."
+        ],
+        "reponse_correcte": 0,
+        "explication": "Quand les deux côtés suivent les deux bords de l'équerre, l'angle a la même ouverture que le coin de l'équerre : il est droit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Compte les angles droits",
+        "consigne": "Compte les angles droits de la figure dessinée. Écris seulement le nombre, sans autre mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien d'angles droits a la figure ABCD ?",
+            "reponse_attendue": "4",
+            "indice": "Pose le coin de ton équerre sur chaque sommet, l'un après l'autre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien d'angles droits a la figure EFGH ?",
+            "reponse_attendue": "2",
+            "indice": "Teste les quatre sommets un par un : n'en oublie aucun.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "EFGH"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Combien d'angles droits a la figure IJKLM ?",
+            "reponse_attendue": "3",
+            "indice": "Cette figure a 5 sommets : compare chacun au coin de ta feuille.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "IJKLM"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Combien d'angles droits a la figure NOPQ ?",
+            "reponse_attendue": "0",
+            "indice": "Un coin peut ressembler à un angle droit sans en être un : vérifie avec l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "nom": "NOPQ"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Combien d'angles droits a la figure RSTU ?",
+            "reponse_attendue": "4",
+            "indice": "Pose le coin de ton équerre sur chaque sommet, l'un après l'autre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "nom": "RSTU"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Combien d'angles droits a la figure VWXY ?",
+            "reponse_attendue": "1",
+            "indice": "Commence par le sommet où un côté est couché et l'autre debout.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      6,
+                      8
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "VWXY"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Combien d'angles droits a la figure ABCDEF ?",
+            "reponse_attendue": "2",
+            "indice": "Cette figure a 6 sommets : teste-les tous, même ceux du haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      2,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCDEF"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Combien d'angles droits a la figure GHIJ ?",
+            "reponse_attendue": "0",
+            "indice": "Un coin peut ressembler à un angle droit sans en être un : vérifie avec l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      2
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      2,
+                      6
+                    ]
+                  ],
+                  "nom": "GHIJ"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Encore des angles droits à compter",
+        "consigne": "Compte les angles droits de la figure dessinée. Écris seulement le nombre, sans autre mot.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien d'angles droits a la figure KLMN ?",
+            "reponse_attendue": "4",
+            "indice": "Pose le coin de ton équerre sur chaque sommet, l'un après l'autre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      7
+                    ],
+                    [
+                      2,
+                      7
+                    ]
+                  ],
+                  "nom": "KLMN"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien d'angles droits a la figure PQRST ?",
+            "reponse_attendue": "3",
+            "indice": "Cette figure a 5 sommets : compare chacun au coin de ta feuille.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "nom": "PQRST"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Combien d'angles droits a la figure UVWX ?",
+            "reponse_attendue": "2",
+            "indice": "Teste les quatre sommets un par un : n'en oublie aucun.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "UVWX"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Combien d'angles droits a la figure ABCD ?",
+            "reponse_attendue": "0",
+            "indice": "Un coin peut ressembler à un angle droit sans en être un : vérifie avec l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Combien d'angles droits a la figure EFGH ?",
+            "reponse_attendue": "4",
+            "indice": "Une figure penchée peut avoir des angles droits : fais tourner ton équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      3,
+                      6
+                    ]
+                  ],
+                  "nom": "EFGH"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Combien d'angles droits a la figure JKLMN ?",
+            "reponse_attendue": "1",
+            "indice": "Commence par le sommet où un côté est couché et l'autre debout.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      5,
+                      6
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "nom": "JKLMN"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Combien d'angles droits a la figure RSTUVW ?",
+            "reponse_attendue": "2",
+            "indice": "Cette figure a 6 sommets : teste-les tous, même ceux du haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "nom": "RSTUVW"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Combien d'angles droits a la figure CDEF ?",
+            "reponse_attendue": "1",
+            "indice": "Commence par le sommet où un côté est couché et l'autre debout.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "nom": "CDEF"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

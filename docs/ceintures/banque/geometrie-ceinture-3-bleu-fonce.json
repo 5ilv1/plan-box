@@ -1,0 +1,2388 @@
+[
+  {
+    "item_code": "EG20",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Parallèles ou sécantes",
+      "regle": "Deux droites sont parallèles quand elles gardent partout le même écart : même prolongées très loin, elles ne se coupent jamais.",
+      "procedure": [
+        "Prolonge les deux droites à la règle, d'un côté puis de l'autre.",
+        "Compare l'écart entre elles à un bout, puis à l'autre bout.",
+        "Si l'écart est le même partout, elles sont parallèles ; s'il change, elles sont sécantes."
+      ],
+      "exemples": [
+        {
+          "phrase": "Les deux bords longs d'une règle plate.",
+          "demonstration": "L'écart vaut 3 cm en haut et 3 cm en bas : il ne change pas, ces deux bords sont parallèles."
+        },
+        {
+          "phrase": "Deux droites qui ne se coupent pas sur le dessin : 4 carreaux d'écart à gauche, 2 à droite.",
+          "demonstration": "L'écart diminue de 2 carreaux : prolongées vers la droite, elles finiront par se rejoindre. Elles sont sécantes."
+        }
+      ],
+      "piege": "Deux droites qui ne se coupent pas sur ta feuille peuvent être sécantes : prolonge-les pour le savoir."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur son quadrillage, Timéo mesure l'écart entre deux droites : 3 carreaux à gauche du dessin, 3 carreaux au milieu, 3 carreaux à droite. Que peut-on dire de ces deux droites ?",
+        "options": [
+          "Elles sont sécantes.",
+          "Elles sont perpendiculaires.",
+          "Elles sont parallèles.",
+          "On ne peut pas le savoir sans équerre."
+        ],
+        "reponse_correcte": 2,
+        "explication": "L'écart reste le même d'un bout à l'autre : les deux droites ne se rejoindront jamais, elles sont parallèles."
+      },
+      {
+        "question": "Jade dit : « Ces deux droites ne se coupent pas sur ma feuille, donc elles sont parallèles. » A-t-elle raison ?",
+        "options": [
+          "Oui, deux droites qui ne se touchent pas sont parallèles.",
+          "Non : il faut les prolonger ; si l'écart entre elles change, elles finiront par se couper.",
+          "Non : deux droites sont parallèles seulement si elles ont la même longueur.",
+          "Oui, à condition qu'elles soient toutes les deux horizontales."
+        ],
+        "reponse_correcte": 1,
+        "explication": "La feuille est trop petite pour décider. On regarde l'écart : s'il change, les droites sont sécantes même si le croisement est hors de la feuille."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Parallèles ou pas ?",
+        "consigne": "Sur chaque dessin, on a tracé une partie de deux droites d1 et d2. Choisis la phrase qui convient.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles se coupent déjà sur le dessin.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les deux droites restent à 3 carreaux l'une de l'autre d'un bout à l'autre : l'écart ne change pas, elles sont parallèles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    9,
+                    2
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles se coupent déjà sur le dessin."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le croisement est visible sur le dessin : les deux droites sont sécantes.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    1
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    2,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles se coupent déjà sur le dessin.",
+              "Elles sont parallèles.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les deux droites montent de la même façon : 1 carreau vers le haut pour 2 carreaux vers la droite. L'écart vaut 2 carreaux partout, elles sont parallèles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    9,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles se coupent déjà sur le dessin.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Elles se ressemblent, mais l'écart passe de 4 carreaux à gauche à 5 carreaux à droite : prolongées vers la gauche, elles se couperont.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    3
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    8
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles se coupent déjà sur le dessin.",
+              "Elles sont parallèles."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les deux droites sont verticales et séparées de 4 carreaux sur toute leur hauteur : elles sont parallèles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    2,
+                    1
+                  ],
+                  "a": [
+                    2,
+                    7
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    6,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles sont parallèles.",
+              "Elles se coupent déjà sur le dessin."
+            ],
+            "reponse_correcte": 0,
+            "explication": "L'écart passe de 5 carreaux à gauche à 1 carreau à droite : elles se rapprochent et se couperont un peu plus loin, hors du dessin.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    4
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    6
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles se coupent déjà sur le dessin.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles sont parallèles."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les deux droites se croisent au milieu du dessin : elles sont sécantes.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    9,
+                    6
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    2,
+                    7
+                  ],
+                  "a": [
+                    8,
+                    1
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles se coupent déjà sur le dessin."
+            ],
+            "reponse_correcte": 1,
+            "explication": "d1 est horizontale, d2 monte doucement : l'écart passe de 3 carreaux à 4 carreaux. Prolongées vers la gauche, elles se couperont.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    1
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "L'écart reste-t-il le même ?",
+        "consigne": "Sur chaque dessin, on a tracé une partie de deux droites d1 et d2. Choisis la phrase qui convient.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles se coupent déjà sur le dessin.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles sont parallèles."
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les deux droites montent de la même façon et l'écart vaut 3 carreaux partout : elles sont parallèles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    4
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    8,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles sont parallèles.",
+              "Elles se coupent déjà sur le dessin."
+            ],
+            "reponse_correcte": 0,
+            "explication": "d1 est horizontale, d2 monte : l'écart passe de 5 carreaux à 4 carreaux. Prolongées vers la droite, elles se couperont.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    6
+                  ],
+                  "a": [
+                    8,
+                    6
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    2
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles se coupent déjà sur le dessin.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le point de croisement se voit sur le dessin : les deux droites sont sécantes.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    8,
+                    6
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    2,
+                    7
+                  ],
+                  "a": [
+                    7,
+                    2
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles se coupent déjà sur le dessin.",
+              "Elles sont parallèles.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'écart passe de 4 carreaux à gauche à 5 carreaux à droite : d2 monte plus vite que d1, elles se couperont à gauche du dessin.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    3
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    8,
+                    8
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles se coupent déjà sur le dessin."
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les deux traits n'ont pas la même longueur, mais ils montent tous les deux de 1 carreau pour 2 carreaux vers la droite : les droites sont parallèles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    5,
+                    4
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    3
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge.",
+              "Elles se coupent déjà sur le dessin.",
+              "Elles sont parallèles."
+            ],
+            "reponse_correcte": 1,
+            "explication": "L'une descend, l'autre monte : elles se croisent au milieu du dessin.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    7
+                  ],
+                  "a": [
+                    9,
+                    3
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    9,
+                    6
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles se coupent déjà sur le dessin.",
+              "Elles sont parallèles.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les deux droites sont verticales et séparées de 4 carreaux sur toute leur hauteur : elles sont parallèles, même si les traits n'ont pas la même longueur.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    1
+                  ],
+                  "a": [
+                    3,
+                    8
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    7,
+                    2
+                  ],
+                  "a": [
+                    7,
+                    6
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Que peut-on dire des droites d1 et d2 ?",
+            "options": [
+              "Elles sont parallèles.",
+              "Elles se coupent déjà sur le dessin.",
+              "Elles ne se coupent pas sur le dessin, mais elles se couperont si on les prolonge."
+            ],
+            "reponse_correcte": 2,
+            "explication": "L'écart passe de 6 carreaux à gauche à 2 carreaux à droite : les droites se rapprochent et se couperont hors du dessin.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    7
+                  ],
+                  "a": [
+                    8,
+                    5
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    3
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG21",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Reconnaitre un solide",
+      "regle": "On reconnait un solide à ses faces : leur nature, leur nombre, leur forme.",
+      "procedure": [
+        "Cherche d'abord une surface courbe : la boule, le cylindre et le cône en ont une.",
+        "Compte alors les faces plates : zéro pour la boule, une pour le cône, deux pour le cylindre.",
+        "Sinon, regarde la forme des faces : six carrés pour le cube, six rectangles pour le pavé droit, un carré et quatre triangles pour la pyramide."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un solide qui a deux faces plates en forme de disque.",
+          "demonstration": "Il a une surface courbe, donc ni cube ni pavé droit. Deux faces plates : c'est le cylindre."
+        },
+        {
+          "phrase": "Un solide dont les six faces sont des rectangles, sans carré.",
+          "demonstration": "Aucune surface courbe, six faces plates : cube ou pavé droit. Aucun carré, donc pavé droit."
+        }
+      ],
+      "piege": "Cône et cylindre ont tous deux une surface courbe : le nombre de faces plates les distingue."
+    },
+    "diagnostic": [
+      {
+        "question": "Adam veut un solide qui tienne debout tout seul et dont toutes les faces sont plates. Lequel de ces solides ne convient pas ?",
+        "options": [
+          "le cube",
+          "le pavé droit",
+          "la boule",
+          "la pyramide"
+        ],
+        "reponse_correcte": 2,
+        "explication": "La boule n'a aucune face plate : sa surface est entièrement courbe, elle roule au lieu de tenir debout."
+      },
+      {
+        "question": "Louna range ses solides et met ensemble tous ceux qui ont une surface courbe. Quel groupe forme-t-elle ?",
+        "options": [
+          "le cube, le pavé droit et la pyramide",
+          "la boule, le cylindre et le cône",
+          "la boule, le cube et le cylindre",
+          "le cône, la pyramide et le pavé droit"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Seuls la boule, le cylindre et le cône ont une surface courbe. Le cube, le pavé droit et la pyramide n'ont que des faces plates."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quel solide se cache derrière la description ?",
+        "consigne": "Lis la description, puis choisis le solide qui lui correspond.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel solide a deux faces plates en forme de disque, reliées par une surface courbe ?",
+            "options": [
+              "le cône",
+              "la boule",
+              "le cylindre",
+              "la pyramide"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Deux disques et une surface courbe : c'est le cylindre. Le cône n'a qu'un seul disque."
+          },
+          {
+            "id": 2,
+            "question": "Quel solide a six faces carrées identiques ?",
+            "options": [
+              "la pyramide",
+              "le cube",
+              "le cylindre",
+              "le cône"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Six faces carrées toutes pareilles : c'est le cube."
+          },
+          {
+            "id": 3,
+            "question": "Quel solide n'a aucune face plate et aucun sommet ?",
+            "options": [
+              "la boule",
+              "le cylindre",
+              "le cône",
+              "le cube"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La boule est ronde partout : aucune face plate, aucun sommet. Le cylindre a deux disques plats et le cône a une pointe."
+          },
+          {
+            "id": 4,
+            "question": "Quel solide a une seule face plate, en forme de disque, et se termine par une pointe ?",
+            "options": [
+              "le cylindre",
+              "la pyramide",
+              "la boule",
+              "le cône"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un seul disque, une surface courbe et une pointe : c'est le cône."
+          },
+          {
+            "id": 5,
+            "question": "Quel solide a six faces rectangulaires dont aucune n'est un carré ?",
+            "options": [
+              "le cube",
+              "le pavé droit",
+              "la pyramide",
+              "le cylindre"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Six rectangles, aucun carré : c'est le pavé droit. Si toutes les faces étaient des carrés, ce serait un cube."
+          },
+          {
+            "id": 6,
+            "question": "Quel solide a une base carrée et quatre faces triangulaires qui se rejoignent en un même sommet ?",
+            "options": [
+              "le cône",
+              "le cube",
+              "la pyramide",
+              "le pavé droit"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une base carrée et quatre triangles qui montent vers une pointe : c'est la pyramide."
+          },
+          {
+            "id": 7,
+            "question": "Inès pose chaque solide sur la table et le pousse du doigt. Lequel roule dans toutes les directions ?",
+            "options": [
+              "le cylindre",
+              "le cube",
+              "la boule",
+              "le cône"
+            ],
+            "reponse_correcte": 2,
+            "explication": "La boule roule dans tous les sens. Le cylindre ne roule que dans un sens, et le cône tourne en rond."
+          },
+          {
+            "id": 8,
+            "question": "Quelles sont les faces d'un cube ?",
+            "options": [
+              "six rectangles qui ne sont pas des carrés",
+              "six carrés identiques",
+              "un carré et quatre triangles",
+              "deux disques et une surface courbe"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le cube a six faces, et toutes sont des carrés de la même taille."
+          }
+        ]
+      },
+      {
+        "titre": "Les solides autour de nous",
+        "consigne": "Lis chaque question, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel solide a cinq faces : un carré et quatre triangles ?",
+            "options": [
+              "le cube",
+              "la pyramide",
+              "le pavé droit",
+              "le cône"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un carré pour la base et quatre triangles sur les côtés : c'est la pyramide à base carrée."
+          },
+          {
+            "id": 2,
+            "question": "Quel solide a la forme d'une boîte à chaussures ?",
+            "options": [
+              "le cube",
+              "le cylindre",
+              "le pavé droit",
+              "la pyramide"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une boîte à chaussures a six faces rectangulaires : c'est un pavé droit."
+          },
+          {
+            "id": 3,
+            "question": "Quel solide a la forme d'une boîte de conserve ?",
+            "options": [
+              "le cône",
+              "le cylindre",
+              "la boule",
+              "le cube"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux disques plats reliés par une surface courbe : c'est un cylindre."
+          },
+          {
+            "id": 4,
+            "question": "Quel solide a la forme d'un ballon de handball ?",
+            "options": [
+              "la boule",
+              "le cylindre",
+              "le cône",
+              "la pyramide"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un ballon est rond partout : c'est une boule."
+          },
+          {
+            "id": 5,
+            "question": "Quel solide a la forme d'un chapeau de fête pointu, posé sur sa base ronde ?",
+            "options": [
+              "la pyramide",
+              "le cube",
+              "le cône",
+              "le cylindre"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Une base ronde et une pointe : c'est un cône. La pyramide, elle, a une base carrée et des faces plates."
+          },
+          {
+            "id": 6,
+            "question": "Quel solide a la forme d'un dé à jouer ?",
+            "options": [
+              "la boule",
+              "le cylindre",
+              "la pyramide",
+              "le cube"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Un dé a six faces carrées identiques : c'est un cube."
+          },
+          {
+            "id": 7,
+            "question": "Combien de faces plates a un cône ?",
+            "options": [
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le cône a une seule face plate, le disque de sa base ; tout le reste est une surface courbe."
+          },
+          {
+            "id": 8,
+            "question": "Quelle phrase est fausse ?",
+            "options": [
+              "La boule n'a aucun sommet.",
+              "Le cylindre a deux faces plates.",
+              "Le cube a six faces carrées.",
+              "La pyramide à base carrée n'a que des faces triangulaires."
+            ],
+            "reponse_correcte": 3,
+            "explication": "C'est faux : elle a aussi sa base, qui est un carré. Les trois autres phrases sont vraies."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG22",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Les figures cachées",
+      "regle": "Dans un dessin complexe, un triangle ou un quadrilatère peut être un morceau seul ou plusieurs morceaux réunis.",
+      "procedure": [
+        "Compte d'abord les morceaux les plus petits, ceux qui n'ont aucun trait à l'intérieur.",
+        "Réunis ensuite deux morceaux voisins, puis trois, et compte les côtés du contour obtenu.",
+        "Écris chaque figure trouvée par ses sommets, puis recompte ta liste."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un triangle ABC coupé par le segment [CM], avec M sur [AB].",
+          "demonstration": "Les petits morceaux sont ACM et MCB. Réunis, ils forment ABC, qui est aussi un triangle : en tout 3 triangles."
+        },
+        {
+          "phrase": "Un rectangle ABCD coupé par [MN], avec M sur [AB] et N sur [DC].",
+          "demonstration": "AMND et MBCN ont 4 côtés ; réunis, ils forment ABCD, qui en a 4 aussi : 3 quadrilatères en tout."
+        }
+      ],
+      "piege": "En réunissant deux morceaux, on obtient souvent une figure à 5 ou 6 côtés : compte les côtés avant de la ranger."
+    },
+    "diagnostic": [
+      {
+        "question": "Lila trace un triangle ABC, puis le segment [CM] qui joint C au milieu M du côté [AB]. Combien de triangles la figure contient-elle en tout ?",
+        "options": [
+          "2",
+          "3",
+          "4",
+          "6"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Il y a les deux petits triangles ACM et MCB, et aussi le grand triangle ABC qu'ils forment ensemble : 3 en tout."
+      },
+      {
+        "question": "Rosalie compte les triangles d'une figure complexe. Elle ne prend que les petits morceaux qui n'ont aucun trait à l'intérieur. Que lui manque-t-il ?",
+        "options": [
+          "Rien : ce sont les seuls triangles de la figure.",
+          "Les morceaux qui touchent le bord de la figure.",
+          "Les triangles formés en réunissant plusieurs morceaux voisins.",
+          "Les quadrilatères de la figure."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Deux ou trois morceaux voisins réunis forment souvent un triangle plus grand : il faut aussi le compter."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Compte les triangles et les quadrilatères",
+        "consigne": "Regarde bien la figure, puis compte. Une figure peut être un seul morceau ou plusieurs morceaux voisins réunis : compte-les toutes. Écris seulement le nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "8",
+            "indice": "Commence par les 4 petits triangles, puis cherche ceux formés par deux petits voisins réunis.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    5
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "1",
+            "indice": "Cherche les contours à 4 côtés : les morceaux de cette figure en ont-ils vraiment 4 ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    5
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "9",
+            "indice": "Il y a les 4 petits, puis ceux formés de 2 petits voisins, puis la figure entière.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    7,
+                    3
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "6",
+            "indice": "Tous les triangles ont le sommet C. Change à chaque fois les deux points de la base.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      5,
+                      5
+                    ]
+                  ],
+                  "nom": "ABC",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    5,
+                    5
+                  ],
+                  "a": [
+                    3,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    5,
+                    5
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    3,
+                    1
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "2",
+            "indice": "Un seul trait de la figure est en biais : seuls les morceaux qui le touchent peuvent être des triangles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    4,
+                    5
+                  ],
+                  "nom": "N"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "4",
+            "indice": "N'oublie pas celui qu'on obtient en réunissant le triangle AMN et le rectangle MBCN.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    4,
+                    5
+                  ],
+                  "nom": "N"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "6",
+            "indice": "Il y a les 3 bandes, puis celles formées de 2 bandes voisines, puis la figure entière.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    1
+                  ],
+                  "a": [
+                    3,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    5,
+                    1
+                  ],
+                  "a": [
+                    5,
+                    5
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "3",
+            "indice": "Les trois morceaux sont des triangles ; regarde ensuite si deux morceaux réunis en forment encore un.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    5
+                  ],
+                  "nom": "S"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Encore des figures à débusquer",
+        "consigne": "Regarde bien la figure, puis compte. Une figure peut être un seul morceau ou plusieurs morceaux voisins réunis : compte-les toutes. Écris seulement le nombre.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "8",
+            "indice": "Compte les 4 petits triangles, puis les 4 grands formés de deux petits voisins.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    7
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    7
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "1",
+            "indice": "Compte les côtés du contour de chaque morceau avant de le ranger.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    7
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    7
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "6",
+            "indice": "Il y a les 3 bandes, puis celles formées de 2 bandes voisines, puis la figure entière.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      7
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    6,
+                    3
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    6,
+                    5
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "3",
+            "indice": "Tous les triangles ont le sommet D : change les deux autres points sur le côté [AB].",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    3,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    5,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    3,
+                    1
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "3",
+            "indice": "Un seul morceau a 4 côtés ; agrandis-le ensuite en lui ajoutant un triangle voisin, puis les deux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    3,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    5,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    3,
+                    1
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "6",
+            "indice": "Il y a 2 petits triangles en haut ; les autres se forment en réunissant des morceaux voisins.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      5,
+                      9
+                    ]
+                  ],
+                  "nom": "ABC",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    5
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    5,
+                    9
+                  ],
+                  "a": [
+                    5,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    3,
+                    5
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    7,
+                    5
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Combien de quadrilatères cette figure contient-elle en tout ?",
+            "reponse_attendue": "4",
+            "indice": "N'oublie pas celui qu'on obtient en réunissant le triangle APQ et le rectangle du haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    7,
+                    3
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    3
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    3
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    7,
+                    3
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Combien de triangles cette figure contient-elle en tout ?",
+            "reponse_attendue": "2",
+            "indice": "Un seul trait de la figure est en biais : seuls les morceaux qui le touchent peuvent être des triangles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    7,
+                    3
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    3
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    3
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    7,
+                    3
+                  ],
+                  "nom": "Q"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG23",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Construire un quadrilatère particulier",
+      "regle": "Chaque figure particulière se construit à partir de ce qui la définit : longueurs égales, angles droits, côtés parallèles.",
+      "procedure": [
+        "Repère la propriété qui définit la figure demandée.",
+        "Choisis l'instrument : la règle graduée pour les longueurs, l'équerre pour les angles droits.",
+        "Trace, puis vérifie la propriété sur chaque côté et chaque angle."
+      ],
+      "exemples": [
+        {
+          "phrase": "Trace un losange de 4 cm de côté.",
+          "demonstration": "Le losange est défini par ses quatre côtés égaux : je reporte 4 cm quatre fois de suite, puis je contrôle les longueurs à la règle."
+        },
+        {
+          "phrase": "Trace un triangle ABC rectangle en A, avec AB = 5 cm et AC = 3 cm.",
+          "demonstration": "Je trace [AB] de 5 cm, je pose l'équerre en A pour la perpendiculaire, j'y reporte 3 cm pour placer C, puis je referme par [BC]."
+        }
+      ],
+      "piege": "Fais d'abord un schéma à main levée avec les mesures dessus : tu verras où poser l'équerre."
+    },
+    "diagnostic": [
+      {
+        "question": "Malo veut tracer un losange. Quelle propriété doit-il absolument respecter ?",
+        "options": [
+          "Ses quatre côtés ont la même longueur.",
+          "Ses quatre angles sont droits.",
+          "Il a exactement deux côtés parallèles.",
+          "Ses deux diagonales ont la même longueur."
+        ],
+        "reponse_correcte": 0,
+        "explication": "C'est la définition du losange : quatre côtés de même longueur. Quatre angles droits, ce serait un rectangle."
+      },
+      {
+        "question": "Yanis trace un rectangle ABCD avec AB = 7 cm et BC = 4 cm. Combien mesure le côté [DC] ?",
+        "options": [
+          "4 cm",
+          "7 cm",
+          "11 cm",
+          "On ne peut pas le savoir."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Dans un rectangle, les côtés opposés ont la même longueur : [DC] est opposé à [AB], il mesure donc 7 cm."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je construis, puis je constate",
+        "consigne": "Fais chaque tracé sur ton cahier, avec ta règle et ton équerre. Puis réponds à la question : écris seulement un nombre, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Trace un losange ABCD dont le côté [AB] mesure 5 cm. Combien de côtés de ce losange mesurent 5 cm ?",
+            "reponse_attendue": "4",
+            "indice": "Repense à ce qui définit le losange."
+          },
+          {
+            "id": 2,
+            "enonce": "Trace un rectangle ABCD tel que AB = 6 cm et BC = 3 cm, puis trace ses deux diagonales [AC] et [BD]. Mesure-les. Ont-elles la même longueur ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Compare les deux mesures au millimètre près."
+          },
+          {
+            "id": 3,
+            "enonce": "Trace un parallélogramme ABCD qui n'a aucun angle droit, puis ses deux diagonales [AC] et [BD]. Mesure-les. Ont-elles la même longueur ? Réponds par oui ou non.",
+            "reponse_attendue": "non",
+            "indice": "Mesure chaque diagonale à la règle graduée, d'un sommet à celui d'en face."
+          },
+          {
+            "id": 4,
+            "enonce": "Trace un triangle ABC rectangle en A, tel que AB = 4 cm et AC = 3 cm. Combien d'angles droits ce triangle a-t-il ?",
+            "reponse_attendue": "1",
+            "indice": "Vérifie les trois angles à l'équerre, un par un."
+          },
+          {
+            "id": 5,
+            "enonce": "Trace un rectangle ABCD, puis la diagonale [AC]. Combien de triangles rectangles apparaissent dans la figure ?",
+            "reponse_attendue": "2",
+            "indice": "La diagonale partage le rectangle : contrôle l'angle droit de chaque morceau à l'équerre."
+          },
+          {
+            "id": 6,
+            "enonce": "Trace un rectangle ABCD qui n'est pas un carré. Ce rectangle est-il aussi un losange ? Réponds par oui ou non.",
+            "reponse_attendue": "non",
+            "indice": "Mesure ses quatre côtés et compare-les."
+          },
+          {
+            "id": 7,
+            "enonce": "Trace un losange MNPQ qui n'est pas un carré. Combien de ses angles sont droits ?",
+            "reponse_attendue": "0",
+            "indice": "Passe l'équerre sur chacun des quatre angles."
+          },
+          {
+            "id": 8,
+            "enonce": "Trace un rectangle ABCD en traçant à l'équerre l'angle droit en A, puis en B, puis en C. Vérifie l'angle en D à l'équerre : est-il droit lui aussi ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Pose l'équerre sur le quatrième angle avant de répondre."
+          }
+        ]
+      },
+      {
+        "titre": "Je reproduis, puis je constate",
+        "consigne": "Fais chaque tracé sur ton cahier, avec ta règle et ton équerre. Puis réponds à la question : écris seulement un nombre, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Reproduis le quadrilatère ABCD ci-dessous sur ton cahier, en respectant les carreaux, puis trace sa diagonale [AC]. Combien de carreaux mesure-t-elle ?",
+            "reponse_attendue": "8",
+            "indice": "Sur ta figure, compte les carreaux de A jusqu'à C en suivant la ligne du quadrillage.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      5,
+                      7
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Reproduis le quadrilatère ABCD ci-dessous sur ton cahier, en respectant les carreaux, puis trace sa diagonale [BD]. Combien de carreaux mesure-t-elle ?",
+            "reponse_attendue": "6",
+            "indice": "Sur ta figure, compte les carreaux de B jusqu'à D en suivant la colonne du quadrillage.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      5,
+                      7
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Trace un carré ABCD de 5 cm de côté. Ce carré est-il aussi un losange ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Mesure ses quatre côtés et compare-les à la définition du losange."
+          },
+          {
+            "id": 4,
+            "enonce": "Trace un parallélogramme ABCD tel que AB = 6 cm et BC = 4 cm. Combien mesure le côté [DC], en centimètres ?",
+            "reponse_attendue": "6",
+            "indice": "Dans un parallélogramme, regarde les côtés qui se font face."
+          },
+          {
+            "id": 5,
+            "enonce": "Trace un trapèze ABCD dont les côtés [AB] et [DC] sont parallèles, puis prolonge ces deux côtés à la règle, très loin de part et d'autre. Se coupent-ils ? Réponds par oui ou non.",
+            "reponse_attendue": "non",
+            "indice": "Regarde si l'écart entre les deux prolongements change."
+          },
+          {
+            "id": 6,
+            "enonce": "Trace un losange ABCD de 4 cm de côté, puis ses deux diagonales. Vérifie à l'équerre : se coupent-elles en formant un angle droit ? Réponds par oui ou non.",
+            "reponse_attendue": "oui",
+            "indice": "Pose ton équerre sur le point où les deux diagonales se croisent."
+          },
+          {
+            "id": 7,
+            "enonce": "Trace deux segments [EG] et [FH] perpendiculaires, l'un de 8 cm, l'autre de 6 cm, qui se coupent en leur milieu. Joins E à F, F à G, G à H, puis H à E : tu obtiens un losange. Combien de centimètres mesure son côté [EF] ?",
+            "reponse_attendue": "5",
+            "indice": "Mesure [EF] à la règle graduée sur la figure que tu viens de tracer."
+          },
+          {
+            "id": 8,
+            "enonce": "Trace un parallélogramme ABCD qui n'est pas un rectangle. Combien de ses angles sont droits ?",
+            "reponse_attendue": "0",
+            "indice": "Contrôle les quatre angles à l'équerre."
+          }
+        ]
+      }
+    ]
+  }
+]

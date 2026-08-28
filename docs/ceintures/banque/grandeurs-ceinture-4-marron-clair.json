@@ -582,10 +582,10 @@
               "un angle droit"
             ],
             "reponse_correcte": 0,
-            "explication": "Il s'en faut de peu, mais l'angle reste plus fermé que l'angle droit, et il ne porte pas le petit carré : il est aigu.",
+            "explication": "L'angle est plus fermé que le coin de l'équerre : il est aigu.",
             "figure": {
               "type": "angle",
-              "degres": 80,
+              "degres": 65,
               "nom": "D"
             }
           },
@@ -598,10 +598,10 @@
               "un angle aigu"
             ],
             "reponse_correcte": 1,
-            "explication": "Il dépasse à peine l'angle droit, mais il le dépasse, et il ne porte pas le petit carré : il est obtus.",
+            "explication": "L'angle est plus ouvert que le coin de l'équerre, et il ne porte pas le petit carré : il est obtus.",
             "figure": {
               "type": "angle",
-              "degres": 100,
+              "degres": 115,
               "nom": "E"
             }
           },

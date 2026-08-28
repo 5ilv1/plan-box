@@ -1,0 +1,1712 @@
+[
+  {
+    "item_code": "EG16",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Côté, sommet, angle",
+      "regle": "Dans un polygone, un côté est un segment du contour, un sommet est un coin où deux côtés se rejoignent, et un angle est l'ouverture formée à ce sommet.",
+      "procedure": [
+        "Pour compter les côtés, suis le contour et compte les segments.",
+        "Pour compter les sommets, compte les coins où le tracé change de direction.",
+        "Retiens qu'un polygone a autant de côtés que de sommets et d'angles."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un triangle.",
+          "demonstration": "Je suis le contour : 3 segments, donc 3 côtés. Le tracé change de direction 3 fois : 3 sommets, et donc 3 angles."
+        },
+        {
+          "phrase": "Une figure fermée à 6 côtés.",
+          "demonstration": "À chaque coin, deux côtés se rejoignent en un sommet : 6 côtés donnent 6 sommets et 6 angles, même si les côtés n'ont pas la même longueur."
+        }
+      ],
+      "piege": "Un sommet n'est pas forcément en haut : c'est un coin, où qu'il soit."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans un polygone, comment appelle-t-on le coin où deux côtés se rejoignent ?",
+        "options": [
+          "un angle",
+          "un sommet",
+          "un côté",
+          "un contour"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le point où deux côtés se rejoignent est un sommet. L'angle, lui, est l'ouverture formée à ce sommet par les deux côtés."
+      },
+      {
+        "question": "Quelle phrase est vraie pour tous les polygones ?",
+        "options": [
+          "Il y a plus de côtés que de sommets.",
+          "Il y a plus de sommets que de côtés.",
+          "Il y a autant de côtés que de sommets.",
+          "Il y a deux fois plus d'angles que de côtés."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Chaque côté relie deux sommets et chaque sommet réunit deux côtés : un polygone a toujours autant de côtés, de sommets et d'angles."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots de la figure",
+        "consigne": "Certaines questions sont accompagnées d'une figure : regarde-la avant de choisir la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Combien de côtés a cette figure ?",
+            "options": [
+              "4",
+              "6",
+              "5"
+            ],
+            "reponse_correcte": 0,
+            "explication": "En suivant le contour, on compte 4 segments : la figure a 4 côtés.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Sur cette figure, qu'est-ce que le point B ?",
+            "options": [
+              "un côté de la figure",
+              "un sommet de la figure",
+              "un angle de la figure"
+            ],
+            "reponse_correcte": 1,
+            "explication": "B est un coin où deux côtés se rejoignent : c'est un sommet.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      5,
+                      5
+                    ]
+                  ],
+                  "nom": "ABC"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Combien de sommets a cette figure ?",
+            "options": [
+              "5",
+              "7",
+              "6"
+            ],
+            "reponse_correcte": 2,
+            "explication": "On compte 6 coins où le tracé change de direction : la figure a 6 sommets.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Combien d'angles a cette figure ?",
+            "options": [
+              "5",
+              "4",
+              "3"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Il y a un angle à chaque sommet. La figure a 5 sommets, donc 5 angles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Sur cette figure, qu'est-ce que le segment AB ?",
+            "options": [
+              "un angle de la figure",
+              "un côté de la figure",
+              "un sommet de la figure"
+            ],
+            "reponse_correcte": 1,
+            "explication": "AB est un segment du contour qui relie deux sommets voisins : c'est un côté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Sur cette figure, combien de côtés se rejoignent au sommet C ?",
+            "options": [
+              "3",
+              "1",
+              "2"
+            ],
+            "reponse_correcte": 2,
+            "explication": "En C se rejoignent le côté BC et le côté CD : deux côtés, comme à chaque sommet d'un polygone.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      4,
+                      5
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCDE"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Un polygone a 8 côtés. Combien a-t-il d'angles ?",
+            "options": [
+              "16",
+              "9",
+              "8"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un polygone a autant d'angles que de côtés : 8 côtés, donc 8 angles."
+          },
+          {
+            "id": 8,
+            "question": "Sur cette figure, comment appelle-t-on l'ouverture formée au sommet A par les deux côtés qui s'y rejoignent ?",
+            "options": [
+              "un sommet",
+              "un angle",
+              "un côté"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le sommet est le point ; l'ouverture entre les deux côtés qui partent de ce point est l'angle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "ABC"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je nomme ce que je vois",
+        "consigne": "Certaines questions sont accompagnées d'une figure : regarde-la avant de choisir la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Combien de côtés a cette figure ?",
+            "options": [
+              "4",
+              "3",
+              "5"
+            ],
+            "reponse_correcte": 2,
+            "explication": "En suivant le contour, on compte 5 segments : la figure a 5 côtés.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Sur cette figure, qu'est-ce que le point R ?",
+            "options": [
+              "un côté de la figure",
+              "un sommet de la figure",
+              "un angle de la figure"
+            ],
+            "reponse_correcte": 1,
+            "explication": "R est un coin où deux côtés se rejoignent : c'est un sommet.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "nom": "PQRS"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Combien de sommets a cette figure ?",
+            "options": [
+              "4",
+              "5",
+              "6"
+            ],
+            "reponse_correcte": 0,
+            "explication": "On compte 4 coins où le tracé change de direction : la figure a 4 sommets.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Combien d'angles a cette figure ?",
+            "options": [
+              "3",
+              "4",
+              "5"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Il y a un angle à chaque sommet. La figure a 3 sommets, donc 3 angles.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      4,
+                      5
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Sur cette figure, qu'est-ce que le segment MN ?",
+            "options": [
+              "un sommet de la figure",
+              "un angle de la figure",
+              "un côté de la figure"
+            ],
+            "reponse_correcte": 2,
+            "explication": "MN est un segment du contour qui relie deux sommets voisins : c'est un côté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "nom": "MNOP"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Un côté d'un polygone relie combien de sommets ?",
+            "options": [
+              "1",
+              "2",
+              "3"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un côté est un segment : il a deux extrémités, et chacune est un sommet de la figure."
+          },
+          {
+            "id": 7,
+            "question": "Un polygone a 6 angles. Combien a-t-il de côtés ?",
+            "options": [
+              "3",
+              "6",
+              "12"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un polygone a autant de côtés que d'angles : 6 angles, donc 6 côtés."
+          },
+          {
+            "id": 8,
+            "question": "Comment appelle-t-on chacun des segments qui forment le contour d'un polygone ?",
+            "options": [
+              "les sommets",
+              "les angles",
+              "les côtés"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les segments du contour sont les côtés ; les sommets sont les points qui les relient."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG17",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Face, arête, sommet",
+      "regle": "Sur un solide, une face est une surface plane, une arête est le segment où deux faces se rejoignent, et un sommet est le coin où les arêtes arrivent.",
+      "procedure": [
+        "Pour les faces, cherche les surfaces plates, comme le dessus d'une boîte.",
+        "Pour les arêtes, suis du doigt les bords où deux faces se touchent.",
+        "Pour les sommets, repère les coins piquants du solide."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un dé à jouer est un cube.",
+          "demonstration": "Ses surfaces plates portent les points : ce sont ses 6 faces. Les bords qui les séparent sont ses 12 arêtes, et ses coins sont ses 8 sommets."
+        },
+        {
+          "phrase": "Une boîte à chaussures est un pavé droit.",
+          "demonstration": "Je compte pareil : 6 faces, 12 arêtes, 8 sommets. Seules les faces changent, ce sont des rectangles."
+        }
+      ],
+      "piege": "« Sommet » ne veut pas dire « en haut » : un cube posé sur la table a 4 sommets en bas."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un solide, comment appelle-t-on le segment où deux faces se rejoignent ?",
+        "options": [
+          "une arête",
+          "un sommet",
+          "une face",
+          "un angle"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Le segment où deux faces se rejoignent est une arête. Le sommet, lui, est un point, pas un segment."
+      },
+      {
+        "question": "Combien de sommets a un cube ?",
+        "options": [
+          "6",
+          "12",
+          "4",
+          "8"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Un cube a 8 sommets : 4 sur la face du dessus et 4 sur la face du dessous. Le 6 est son nombre de faces et le 12 son nombre d'arêtes."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Les mots du solide",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Sur un solide, comment appelle-t-on une surface plane ?",
+            "options": [
+              "une arête",
+              "une face",
+              "un sommet"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une surface plane du solide est une face."
+          },
+          {
+            "id": 2,
+            "question": "Combien de faces a un cube ?",
+            "options": [
+              "4",
+              "6",
+              "8"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un cube a 6 faces : le dessus, le dessous et les 4 côtés."
+          },
+          {
+            "id": 3,
+            "question": "Combien d'arêtes a un pavé droit ?",
+            "options": [
+              "8",
+              "6",
+              "12"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un pavé droit a 12 arêtes : 4 en haut, 4 en bas et 4 debout."
+          },
+          {
+            "id": 4,
+            "question": "Comment appelle-t-on le point où plusieurs arêtes se rejoignent ?",
+            "options": [
+              "un sommet",
+              "une face",
+              "une arête"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le point où plusieurs arêtes se rejoignent est un sommet."
+          },
+          {
+            "id": 5,
+            "question": "Lila passe son doigt le long d'un bord droit de sa boîte, là où deux faces se touchent. Que suit-elle ?",
+            "options": [
+              "une face",
+              "une arête",
+              "un sommet"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le bord où deux faces se touchent est une arête."
+          },
+          {
+            "id": 6,
+            "question": "Combien de sommets a un pavé droit ?",
+            "options": [
+              "8",
+              "12",
+              "6"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un pavé droit a 8 sommets, comme un cube : 4 en haut et 4 en bas."
+          },
+          {
+            "id": 7,
+            "question": "Les faces d'un cube sont toutes…",
+            "options": [
+              "des triangles",
+              "des rectangles de tailles différentes",
+              "des carrés identiques"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les 6 faces d'un cube sont des carrés tous identiques."
+          },
+          {
+            "id": 8,
+            "question": "Timéo pose un cube à plat sur la table. Combien de faces du cube ne touchent pas la table ?",
+            "options": [
+              "4",
+              "5",
+              "6"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le cube a 6 faces et une seule est posée sur la table : il en reste 5."
+          }
+        ]
+      },
+      {
+        "titre": "Je connais mes solides",
+        "consigne": "Choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Combien de faces a un pavé droit ?",
+            "options": [
+              "6",
+              "8",
+              "12"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Un pavé droit a 6 faces, comme un cube : le dessus, le dessous et les 4 côtés."
+          },
+          {
+            "id": 2,
+            "question": "Le coin d'un solide, là où plusieurs arêtes se rejoignent, s'appelle…",
+            "options": [
+              "une face",
+              "une arête",
+              "un sommet"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Ce coin est un sommet : c'est un point, pas un segment ni une surface."
+          },
+          {
+            "id": 3,
+            "question": "Le long d'une arête, combien de faces se rejoignent ?",
+            "options": [
+              "1",
+              "2",
+              "3"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Une arête est justement le segment où deux faces se rejoignent."
+          },
+          {
+            "id": 4,
+            "question": "Sur un cube, combien d'arêtes partent de chaque sommet ?",
+            "options": [
+              "2",
+              "3",
+              "4"
+            ],
+            "reponse_correcte": 1,
+            "explication": "À chaque coin d'un cube, trois arêtes se rejoignent : une vers la droite, une vers l'avant et une vers le haut."
+          },
+          {
+            "id": 5,
+            "question": "Une face d'un solide, c'est…",
+            "options": [
+              "un point",
+              "une surface plane",
+              "un segment"
+            ],
+            "reponse_correcte": 1,
+            "explication": "La face est une surface plane ; le segment est l'arête et le point est le sommet."
+          },
+          {
+            "id": 6,
+            "question": "Fatou fabrique le squelette d'un cube avec des pailles : une paille par arête. Combien de pailles lui faut-il ?",
+            "options": [
+              "6",
+              "8",
+              "12"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Un cube a 12 arêtes : il faut donc 12 pailles."
+          },
+          {
+            "id": 7,
+            "question": "Sur un pavé droit qui n'est pas un cube, les faces sont…",
+            "options": [
+              "des rectangles",
+              "des triangles",
+              "des cercles"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les faces d'un pavé droit sont des rectangles ; quand ce sont tous des carrés, le pavé est un cube."
+          },
+          {
+            "id": 8,
+            "question": "Yanis a peint en bleu deux faces opposées d'un pavé droit. Combien de faces lui reste-t-il à peindre ?",
+            "options": [
+              "3",
+              "4",
+              "6"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le pavé droit a 6 faces : 6 − 2 = 4 faces ne sont pas encore peintes."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG18",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Deux droites perpendiculaires",
+      "regle": "Deux droites sont perpendiculaires quand elles se croisent en formant un angle droit.",
+      "procedure": [
+        "Pose le coin de ton équerre sur le point où les deux droites se croisent.",
+        "Fais glisser un bord de l'équerre le long de la première droite.",
+        "Si la seconde droite suit exactement l'autre bord, elles sont perpendiculaires : marque le petit carré."
+      ],
+      "exemples": [
+        {
+          "phrase": "Les deux bords d'une feuille qui se rejoignent dans un coin.",
+          "demonstration": "Je pose le coin de mon équerre dans le coin de la feuille : chaque bord suit un bord de l'équerre. Ils sont donc perpendiculaires."
+        },
+        {
+          "phrase": "Tracer la perpendiculaire à (d) qui passe par le point A.",
+          "demonstration": "Je pose un bord de l'équerre le long de (d), je la fais glisser jusqu'à ce que l'autre bord touche A, puis je trace."
+        }
+      ],
+      "piege": "Deux droites qui se croisent ne sont pas toujours perpendiculaires : sans équerre, l'œil se trompe souvent."
+    },
+    "diagnostic": [
+      {
+        "question": "Quand dit-on que deux droites sont perpendiculaires ?",
+        "options": [
+          "quand elles ne se croisent jamais",
+          "quand elles se croisent en formant un angle droit",
+          "quand elles ont la même longueur",
+          "quand elles se croisent en formant un angle pointu"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Perpendiculaires veut dire : elles se croisent et l'angle formé est un angle droit."
+      },
+      {
+        "question": "Quel instrument permet de vérifier que deux droites sont perpendiculaires ?",
+        "options": [
+          "le compas",
+          "la règle graduée",
+          "l'équerre",
+          "le mètre ruban"
+        ],
+        "reponse_correcte": 2,
+        "explication": "C'est l'équerre : son coin est un angle droit, on le pose sur le croisement des deux droites."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Perpendiculaires ou non ?",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Écris ensuite ta réponse en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Les droites d1 et d2 sont-elles perpendiculaires ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur leur croisement et regarde si les deux droites suivent les deux bords.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    7,
+                    2
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Les droites d3 et d4 sont-elles perpendiculaires ?",
+            "reponse_attendue": "non",
+            "indice": "Deux droites qui se croisent ne forment pas toujours un angle droit : vérifie avec le coin de l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    4
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ],
+                  "nom": "d4"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Parmi les droites d2 et d3, combien sont perpendiculaires à la droite d1 ?",
+            "reponse_attendue": "1",
+            "indice": "Teste-les une par une avec le coin de ton équerre posé sur d1.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    3
+                  ],
+                  "a": [
+                    8,
+                    3
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    3,
+                    1
+                  ],
+                  "a": [
+                    3,
+                    5
+                  ],
+                  "nom": "d2"
+                },
+                {
+                  "de": [
+                    5,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    5
+                  ],
+                  "nom": "d3"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Sur ton cahier, trace une droite (d) et place un point A dessus. Trace la perpendiculaire à (d) qui passe par A. Autour de A, tes deux droites découpent des coins : combien de ces coins sont des angles droits ?",
+            "reponse_attendue": "4",
+            "indice": "Vérifie chaque coin avec l'équerre, un par un, en tournant autour de A."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace un segment [AB]. Trace la perpendiculaire à (AB) qui passe par A, puis la perpendiculaire à (AB) qui passe par B. Ces deux droites se coupent-elles ?",
+            "reponse_attendue": "non",
+            "indice": "Prolonge tes deux tracés le plus loin possible sur la feuille et regarde."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur ton cahier, trace une droite (d) et un point M en dehors de (d). Combien de perpendiculaires à (d) passant par M peux-tu tracer ?",
+            "reponse_attendue": "1",
+            "indice": "Essaie d'en tracer une deuxième avec ton équerre : que se passe-t-il ?"
+          },
+          {
+            "id": 7,
+            "enonce": "Sur cette figure, le côté AB est-il perpendiculaire au côté BC ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur le sommet B.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur cette figure, le côté CD est-il perpendiculaire au côté DA ?",
+            "reponse_attendue": "non",
+            "indice": "Pose le coin de ton équerre sur le sommet D.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      5
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je vérifie à l'équerre",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Écris ensuite ta réponse en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Les droites d1 et d2 sont-elles perpendiculaires ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur leur croisement et regarde si les deux droites suivent les deux bords.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    1
+                  ],
+                  "a": [
+                    3,
+                    6
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    8,
+                    4
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Les droites d3 et d4 sont-elles perpendiculaires ?",
+            "reponse_attendue": "non",
+            "indice": "Deux droites qui se croisent ne forment pas toujours un angle droit : vérifie avec le coin de l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    8,
+                    2
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    2,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    6
+                  ],
+                  "nom": "d4"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Parmi les droites d2, d3 et d4, combien sont perpendiculaires à la droite d1 ?",
+            "reponse_attendue": "2",
+            "indice": "Teste-les une par une avec le coin de ton équerre posé sur d1.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    10,
+                    4
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    3,
+                    1
+                  ],
+                  "a": [
+                    3,
+                    7
+                  ],
+                  "nom": "d2"
+                },
+                {
+                  "de": [
+                    6,
+                    2
+                  ],
+                  "a": [
+                    6,
+                    7
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    10,
+                    5
+                  ],
+                  "nom": "d4"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Sur ton cahier, trace deux droites perpendiculaires. Combien de points ont-elles en commun ?",
+            "reponse_attendue": "1",
+            "indice": "Regarde ton tracé : compte les endroits où les deux droites se touchent."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une droite (d) et place dessus deux points A et B. Trace la perpendiculaire à (d) passant par A, puis la perpendiculaire à (d) passant par B. Combien de points communs ces deux perpendiculaires ont-elles ?",
+            "reponse_attendue": "0",
+            "indice": "Prolonge tes deux tracés le plus loin possible sur la feuille et regarde."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur cette figure, combien de côtés du polygone sont perpendiculaires au côté AB ?",
+            "reponse_attendue": "2",
+            "indice": "Fais glisser un bord de ton équerre le long de AB et examine les autres côtés un par un.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCDE"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Sur cette figure, le côté BC est-il perpendiculaire au côté CD ?",
+            "reponse_attendue": "non",
+            "indice": "Pose le coin de ton équerre sur le sommet C.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur cette figure, le côté DA est-il perpendiculaire au côté AB ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur le sommet A.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "ABCD"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG19",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Le cercle au compas",
+      "regle": "Tous les points d'un cercle sont à la même distance du centre : cette distance est le rayon, et le diamètre en est le double.",
+      "procedure": [
+        "Écarte ton compas sur ta règle, de 0 jusqu'au rayon.",
+        "Pique la pointe sur le centre et ne la bouge plus.",
+        "Fais tourner le compas d'un tour complet."
+      ],
+      "exemples": [
+        {
+          "phrase": "Trace le cercle de centre O et de rayon 3 cm.",
+          "demonstration": "J'écarte le compas de 0 à 3 sur ma règle, je pique en O et je tourne : chaque point est à 3 cm de O."
+        },
+        {
+          "phrase": "Trace le cercle de centre A et de diamètre 8 cm.",
+          "demonstration": "Le diamètre vaut deux rayons, donc le rayon vaut 8 ÷ 2 = 4 cm. J'écarte le compas de 4 cm et je pique en A."
+        }
+      ],
+      "piege": "Quand on te donne le diamètre, n'écarte pas le compas de cette longueur : il s'ouvre toujours du rayon."
+    },
+    "diagnostic": [
+      {
+        "question": "Comment appelle-t-on la distance entre le centre d'un cercle et un point de ce cercle ?",
+        "options": [
+          "le diamètre",
+          "le rayon",
+          "le centre",
+          "le côté"
+        ],
+        "reponse_correcte": 1,
+        "explication": "C'est le rayon. Le diamètre, lui, traverse le cercle en passant par le centre et vaut deux rayons."
+      },
+      {
+        "question": "Un cercle a un rayon de 5 cm. Quel est son diamètre ?",
+        "options": [
+          "2,5 cm",
+          "5 cm",
+          "10 cm",
+          "15 cm"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le diamètre vaut deux fois le rayon : 5 × 2 = 10 cm."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Rayon et diamètre",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Écris ensuite ta réponse en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Le cercle dessiné a pour centre O et passe par A. Le segment [OA] mesure 3 carreaux. Combien de carreaux mesure le diamètre de ce cercle ?",
+            "reponse_attendue": "6",
+            "indice": "Le segment [OA] est un rayon ; le diamètre en vaut deux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    4
+                  ],
+                  "rayon": 3
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    4
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    7,
+                    4
+                  ],
+                  "nom": "A"
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    4
+                  ],
+                  "a": [
+                    7,
+                    4
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Un cercle a un rayon de 4 cm. Combien de centimètres mesure son diamètre ?",
+            "reponse_attendue": "8",
+            "indice": "Le diamètre vaut deux fois le rayon."
+          },
+          {
+            "id": 3,
+            "enonce": "Un cercle a un diamètre de 14 cm. Combien de centimètres mesure son rayon ?",
+            "reponse_attendue": "7",
+            "indice": "Le rayon est la moitié du diamètre."
+          },
+          {
+            "id": 4,
+            "enonce": "Sur ton cahier, trace le cercle de centre O et de rayon 4 cm. Place les points A, B et C sur ce cercle, puis mesure OB. Combien de centimètres mesure OB ?",
+            "reponse_attendue": "4",
+            "indice": "Tous les points du cercle sont à la même distance du centre."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace le cercle de centre O et de rayon 3 cm, puis le cercle de centre O et de rayon 5 cm. Ces deux cercles se coupent-ils ?",
+            "reponse_attendue": "non",
+            "indice": "Regarde ton tracé : cherche un point qui appartiendrait aux deux cercles à la fois."
+          },
+          {
+            "id": 6,
+            "enonce": "De combien de centimètres dois-tu écarter ton compas pour tracer un cercle de diamètre 10 cm ?",
+            "reponse_attendue": "5",
+            "indice": "Le compas s'ouvre toujours de la longueur du rayon."
+          },
+          {
+            "id": 7,
+            "enonce": "Sur cette figure, le segment [AB] passe par le centre O et mesure 8 carreaux. Combien de carreaux mesure le rayon de ce cercle ?",
+            "reponse_attendue": "4",
+            "indice": "Un segment qui traverse le cercle en passant par le centre est un diamètre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 9
+              },
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    5
+                  ],
+                  "rayon": 4
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    9,
+                    5
+                  ],
+                  "nom": "B"
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, trace le cercle de centre O et de rayon 5 cm. Le point M est à 5 cm de O : le point M est-il sur ce cercle ?",
+            "reponse_attendue": "oui",
+            "indice": "Compare la distance OM avec le rayon du cercle."
+          }
+        ]
+      },
+      {
+        "titre": "Je manie le compas",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Écris ensuite ta réponse en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Le cercle dessiné a pour centre C et passe par D. Le segment [CD] mesure 2 carreaux. Combien de carreaux mesure le diamètre de ce cercle ?",
+            "reponse_attendue": "4",
+            "indice": "Le segment [CD] est un rayon ; le diamètre en vaut deux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    3
+                  ],
+                  "rayon": 2
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    3
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    4,
+                    5
+                  ],
+                  "nom": "D"
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    3
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Un cercle a un rayon de 6 cm. Combien de centimètres mesure son diamètre ?",
+            "reponse_attendue": "12",
+            "indice": "Le diamètre vaut deux fois le rayon."
+          },
+          {
+            "id": 3,
+            "enonce": "Un cercle a un diamètre de 18 cm. Combien de centimètres mesure son rayon ?",
+            "reponse_attendue": "9",
+            "indice": "Le rayon est la moitié du diamètre."
+          },
+          {
+            "id": 4,
+            "enonce": "De combien de centimètres dois-tu écarter ton compas pour tracer un cercle de diamètre 6 cm ?",
+            "reponse_attendue": "3",
+            "indice": "Le compas s'ouvre toujours de la longueur du rayon."
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace le cercle de centre O et de rayon 4 cm. Place un point P sur le cercle et trace le segment [OP]. Le segment [OP] est-il un rayon de ce cercle ?",
+            "reponse_attendue": "oui",
+            "indice": "Un rayon relie le centre à un point du cercle."
+          },
+          {
+            "id": 6,
+            "enonce": "Sur ton cahier, trace le cercle de centre O et de rayon 4 cm, puis trace un diamètre [AB] de ce cercle. Combien de centimètres mesure [AB] ?",
+            "reponse_attendue": "8",
+            "indice": "Un diamètre est fait de deux rayons mis bout à bout."
+          },
+          {
+            "id": 7,
+            "enonce": "Sur ton cahier, place deux points E et F éloignés de 5 cm. Trace le cercle de centre E qui passe par F. Combien de centimètres mesure le rayon de ce cercle ?",
+            "reponse_attendue": "5",
+            "indice": "Regarde de combien tu as dû écarter ton compas pour piquer en E et atteindre F."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur cette figure, O est le centre du cercle et le point M est marqué à l'intérieur. Le segment [OM] est-il un rayon de ce cercle ?",
+            "reponse_attendue": "non",
+            "indice": "Regarde où se trouve M : est-il sur le trait du cercle ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    4
+                  ],
+                  "rayon": 3
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    4
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "M"
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    4
+                  ],
+                  "a": [
+                    6,
+                    4
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

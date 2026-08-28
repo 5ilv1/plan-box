@@ -1,0 +1,2864 @@
+[
+  {
+    "item_code": "EG24",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Le patron du cube",
+      "regle": "Le patron d'un cube est fait de six carrés identiques dont le côté mesure l'arête du cube.",
+      "procedure": [
+        "Compte les carrés : il en faut six, tous de la même taille.",
+        "Colle-les par un côté entier, jamais par un coin.",
+        "Plie par la pensée : chaque carré doit couvrir une face, sans en recouvrir deux."
+      ],
+      "exemples": [
+        {
+          "phrase": "Une colonne de quatre carrés, avec un carré collé à gauche et un à droite du deuxième.",
+          "demonstration": "Je plie la colonne en anneau : ses quatre carrés font le tour du cube. Les deux carrés des côtés se rabattent sur les deux faces qui restent, il se referme."
+        },
+        {
+          "phrase": "Une bande de quatre carrés, avec deux carrés collés au-dessus des deux premiers.",
+          "demonstration": "Six carrés, pourtant en pliant, les deux du haut se posent au même endroit et une face reste ouverte : ce n'est pas un patron."
+        }
+      ],
+      "piege": "Six carrés ne suffisent pas : encore faut-il qu'ils se referment."
+    },
+    "diagnostic": [
+      {
+        "question": "Combien de carrés faut-il pour former le patron d'un cube ?",
+        "options": [
+          "4",
+          "6",
+          "8",
+          "12"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un cube a six faces, donc son patron a six carrés. Le 8 est le nombre de sommets et le 12 celui des arêtes."
+      },
+      {
+        "question": "Jade veut construire un cube dont l'arête mesure 5 cm. Que doit mesurer le côté de chaque carré de son patron ?",
+        "options": [
+          "10 cm",
+          "2,5 cm",
+          "5 cm",
+          "20 cm"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Chaque côté d'un carré du patron devient une arête du cube : il mesure donc la même longueur, 5 cm."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ce patron se referme-t-il ?",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Ce dessin est-il un patron de cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Compte d'abord les carrés, puis plie le dessin par la pensée, carré après carré.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 4
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "En pliant ce dessin, obtient-on un cube ?",
+            "reponse_attendue": "non",
+            "indice": "Plie par la pensée, rangée par rangée : où arrive chaque carré de la rangée du haut ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Ce dessin se referme-t-il en cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Compte d'abord les carrés, puis plie le dessin par la pensée, carré après carré.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Peut-on plier ce dessin pour obtenir un cube ?",
+            "reponse_attendue": "non",
+            "indice": "Plie par la pensée, carré après carré : que deviennent les deux derniers carrés de la bande ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 4
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      7,
+                      2
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      6,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une bande de quatre carrés de 3 cm de côté, puis colle un carré au-dessus du premier carré de la bande et un carré en dessous de ce même premier carré. Ce dessin est-il un patron de cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie la bande en anneau autour du cube, puis rabats les deux carrés qui dépassent."
+          },
+          {
+            "id": 6,
+            "enonce": "Timéo veut construire un cube dont l'arête mesure 7 cm. Combien de centimètres doit mesurer le côté de chaque carré de son patron ?",
+            "reponse_attendue": "7",
+            "indice": "Quand on plie le patron, le côté d'un carré devient une arête du cube."
+          },
+          {
+            "id": 7,
+            "enonce": "Combien de carrés manque-t-il à ce dessin pour qu'il devienne un patron de cube ?",
+            "reponse_attendue": "1",
+            "indice": "Compte les carrés dessinés, puis compare avec le nombre de faces d'un cube.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, trace une bande de quatre carrés de 4 cm de côté, puis colle un carré au-dessus du premier carré et un carré au-dessus du dernier carré. Ce dessin est-il un patron de cube ?",
+            "reponse_attendue": "non",
+            "indice": "Plie la bande en anneau, puis rabats les deux carrés du haut : arrivent-ils sur deux faces différentes ?"
+          }
+        ]
+      },
+      {
+        "titre": "Je construis un patron de cube",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Ce dessin est-il un patron de cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Compte d'abord les carrés, puis plie le dessin par la pensée, carré après carré.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "En pliant ce dessin, obtient-on un cube ?",
+            "reponse_attendue": "non",
+            "indice": "Plie par la pensée, carré après carré : que devient le cinquième carré de la bande ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Ce dessin se referme-t-il en cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Compte d'abord les carrés, puis plie le dessin par la pensée, carré après carré.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      5,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Peut-on plier ce dessin pour obtenir un cube ?",
+            "reponse_attendue": "non",
+            "indice": "Plie par la pensée les deux carrés du haut, l'un après l'autre : où arrive le second ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une bande de quatre carrés de 5 cm de côté, puis colle un carré en dessous du premier carré et un carré au-dessus du troisième carré. Ce dessin est-il un patron de cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie la bande en anneau autour du cube, puis rabats les deux carrés qui dépassent."
+          },
+          {
+            "id": 6,
+            "enonce": "Louna veut construire un cube dont l'arête mesure 6 cm. Combien de centimètres doit mesurer le côté de chaque carré de son patron ?",
+            "reponse_attendue": "6",
+            "indice": "Quand on plie le patron, le côté d'un carré devient une arête du cube."
+          },
+          {
+            "id": 7,
+            "enonce": "Combien de carrés manque-t-il à ce dessin pour qu'il devienne un patron de cube ?",
+            "reponse_attendue": "2",
+            "indice": "Compte les carrés dessinés, puis compare avec le nombre de faces d'un cube.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 4
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Adam a tracé son patron avec cinq carrés de 4 cm de côté et un carré de 6 cm de côté. Ce dessin peut-il se refermer en cube ?",
+            "reponse_attendue": "non",
+            "indice": "Regarde la taille des carrés : les faces d'un cube sont-elles toutes pareilles ?"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG25",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Perpendiculaires à l'équerre",
+      "regle": "Deux droites sont perpendiculaires quand elles se croisent en formant un angle droit, même penchées sur la feuille.",
+      "procedure": [
+        "Pose le coin de ton équerre sur leur point de croisement.",
+        "Fais glisser un bord de l'équerre le long de la première droite.",
+        "Si la seconde droite suit exactement l'autre bord, elles sont perpendiculaires."
+      ],
+      "exemples": [
+        {
+          "phrase": "Deux droites penchées se croisent au milieu de la feuille.",
+          "demonstration": "Je pose le coin de l'équerre sur leur croisement, un bord sur la première droite : la seconde s'écarte de l'autre bord, elles ne sont donc pas perpendiculaires."
+        },
+        {
+          "phrase": "Tracer la perpendiculaire à une droite penchée (d) passant par M.",
+          "demonstration": "Je glisse un bord de l'équerre le long de (d) jusqu'à ce que l'autre bord touche M, puis je trace le long de ce bord."
+        }
+      ],
+      "piege": "Ne juge jamais à l'œil sur une figure penchée : seule l'équerre décide."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur la feuille de Fatou, deux droites penchées se croisent et le croisement a l'air droit. Que peut-elle en conclure ?",
+        "options": [
+          "elles sont sûrement perpendiculaires, puisque ça se voit",
+          "elles ne peuvent pas être perpendiculaires, car elles sont penchées",
+          "rien pour l'instant : il faut vérifier avec l'équerre avant de conclure",
+          "elles sont forcément parallèles"
+        ],
+        "reponse_correcte": 2,
+        "explication": "L'œil se trompe sur les droites penchées : seul le coin de l'équerre posé sur le croisement permet de conclure."
+      },
+      {
+        "question": "Inès a tracé une droite (d) très penchée. Elle veut tracer la perpendiculaire à (d) qui passe par le point M. Que doit-elle faire avec son équerre ?",
+        "options": [
+          "poser un bord de l'équerre le long de (d), puis la faire glisser jusqu'à ce que l'autre bord touche M",
+          "poser un bord de l'équerre le long du bord de sa feuille, puis tracer vers M",
+          "poser le coin de l'équerre sur M, sans regarder (d)",
+          "mesurer avec son équerre la distance entre (d) et M"
+        ],
+        "reponse_correcte": 0,
+        "explication": "L'équerre se cale d'abord sur la droite, puis glisse le long d'elle jusqu'au point : c'est ce glissement qui garde l'angle droit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Perpendiculaires, même penchées",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier avec ta règle et ton équerre. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Les droites d1 et d2 sont-elles perpendiculaires ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur leur croisement et fais glisser un bord le long de d1.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    7
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Les droites d3 et d4 sont-elles perpendiculaires ?",
+            "reponse_attendue": "non",
+            "indice": "Deux droites penchées qui se croisent ne forment pas toujours un angle droit : vérifie au coin de l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    8,
+                    6
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    2,
+                    6
+                  ],
+                  "a": [
+                    8,
+                    1
+                  ],
+                  "nom": "d4"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Parmi les droites d2 et d3, combien sont perpendiculaires à la droite d1 ?",
+            "reponse_attendue": "1",
+            "indice": "Teste-les une par une, en reposant le coin de ton équerre sur chaque croisement.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    8,
+                    2
+                  ],
+                  "a": [
+                    5,
+                    8
+                  ],
+                  "nom": "d2"
+                },
+                {
+                  "de": [
+                    1,
+                    7
+                  ],
+                  "a": [
+                    9,
+                    2
+                  ],
+                  "nom": "d3"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Sur cette figure, le côté [AD] est-il perpendiculaire au côté [AB] ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur le sommet A et fais glisser un bord le long de [AB].",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 10
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      5,
+                      9
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une droite penchée (d) et un point A sur (d), puis trace la perpendiculaire à (d) passant par A. Fais maintenant tourner ta feuille d'un quart de tour. Tes deux droites sont-elles encore perpendiculaires ?",
+            "reponse_attendue": "oui",
+            "indice": "Repose ton équerre sur le croisement, la feuille tournée : l'angle a-t-il changé ?"
+          },
+          {
+            "id": 6,
+            "enonce": "Sur ton cahier, trace une droite penchée (d1), puis (d2) perpendiculaire à (d1), puis (d3) perpendiculaire à (d2) et différente de (d1). Les droites (d1) et (d3) se coupent-elles ?",
+            "reponse_attendue": "non",
+            "indice": "Prolonge (d1) et (d3) le plus loin possible sur ta feuille et regarde."
+          },
+          {
+            "id": 7,
+            "enonce": "Sur ton cahier, trace un rectangle ABCD dont aucun côté ne suit le bord de ta feuille. Avec ton équerre, examine ses quatre côtés : combien d'entre eux sont perpendiculaires au côté [AB] ?",
+            "reponse_attendue": "2",
+            "indice": "Fais glisser un bord de ton équerre le long de [AB] et teste les côtés un par un."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur cette figure, le côté [CD] est-il perpendiculaire au côté [DA] ?",
+            "reponse_attendue": "non",
+            "indice": "Pose le coin de ton équerre sur le sommet D et fais glisser un bord le long de [DA].",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 10
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      5,
+                      9
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je vérifie et je trace à l'équerre",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier avec ta règle et ton équerre. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Les droites d1 et d2 sont-elles perpendiculaires ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur leur croisement et fais glisser un bord le long de d1.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    2
+                  ],
+                  "a": [
+                    7,
+                    8
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    2,
+                    7
+                  ],
+                  "a": [
+                    8,
+                    1
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Les droites d3 et d4 sont-elles perpendiculaires ?",
+            "reponse_attendue": "non",
+            "indice": "Deux droites penchées qui se croisent ne forment pas toujours un angle droit : vérifie au coin de l'équerre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    4
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    3,
+                    6
+                  ],
+                  "a": [
+                    9,
+                    1
+                  ],
+                  "nom": "d4"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Parmi les droites d2, d3 et d4, combien sont perpendiculaires à la droite d1 ?",
+            "reponse_attendue": "2",
+            "indice": "Teste-les une par une, en reposant le coin de ton équerre sur chaque croisement.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    7
+                  ],
+                  "nom": "d1"
+                },
+                {
+                  "de": [
+                    10,
+                    0
+                  ],
+                  "a": [
+                    4,
+                    8
+                  ],
+                  "nom": "d2"
+                },
+                {
+                  "de": [
+                    2,
+                    5
+                  ],
+                  "a": [
+                    5,
+                    1
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    1,
+                    7
+                  ],
+                  "a": [
+                    10,
+                    5
+                  ],
+                  "nom": "d4"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Sur cette figure, le côté [CB] est-il perpendiculaire au côté [CD] ?",
+            "reponse_attendue": "non",
+            "indice": "Pose le coin de ton équerre sur le sommet C et fais glisser un bord le long de [CB].",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      5,
+                      8
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace une droite penchée (d), puis deux droites différentes perpendiculaires à (d). Ces deux nouvelles droites sont-elles perpendiculaires entre elles ?",
+            "reponse_attendue": "non",
+            "indice": "Pose le coin de ton équerre là où ces deux droites se croiseraient : se croisent-elles seulement ?"
+          },
+          {
+            "id": 6,
+            "enonce": "Sur ton cahier, trace une droite penchée (d1), puis (d2) perpendiculaire à (d1), puis (d3) perpendiculaire à (d2) et différente de (d1), puis (d4) perpendiculaire à (d3). Parmi (d2), (d3) et (d4), combien sont perpendiculaires à (d1) ?",
+            "reponse_attendue": "2",
+            "indice": "Teste (d2), (d3) puis (d4) contre (d1) avec ton équerre, une par une."
+          },
+          {
+            "id": 7,
+            "enonce": "Sur ton cahier, trace une droite penchée (d) et un point P en dehors de (d). Avec ton équerre, cherche toutes les droites perpendiculaires à (d) qui passent par P. Combien y en a-t-il ?",
+            "reponse_attendue": "1",
+            "indice": "Trace-en une, puis essaie d'en tracer une autre qui passe encore par P."
+          },
+          {
+            "id": 8,
+            "enonce": "Sur cette figure, le côté [BA] est-il perpendiculaire au côté [BC] ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur le sommet B et fais glisser un bord le long de [BA].",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      5,
+                      8
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "plein": false
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG26",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Les trois triangles particuliers",
+      "regle": "Un triangle rectangle a un angle droit, un isocèle deux côtés de même longueur, un équilatéral trois côtés de même longueur.",
+      "procedure": [
+        "Cherche d'abord un angle droit : le petit carré au sommet, ou ton équerre.",
+        "Compare ensuite les côtés : les traits identiques marquent les longueurs égales.",
+        "Deux côtés égaux : isocèle. Trois : équilatéral. Ni l'un ni l'autre, et pas d'angle droit : quelconque."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un triangle dont deux côtés portent chacun un petit trait.",
+          "demonstration": "Les deux traits disent que ces côtés ont la même longueur : le triangle est isocèle."
+        },
+        {
+          "phrase": "Un triangle de côtés 5 cm, 5 cm et 5 cm.",
+          "demonstration": "Les trois côtés sont égaux : il est équilatéral. À l'équerre, aucun de ses coins n'est un angle droit."
+        }
+      ],
+      "piege": "Un triangle qui a un angle droit reste rectangle, même posé de travers."
+    },
+    "diagnostic": [
+      {
+        "question": "Comment appelle-t-on un triangle qui a exactement deux côtés de la même longueur ?",
+        "options": [
+          "un triangle rectangle",
+          "un triangle isocèle",
+          "un triangle équilatéral",
+          "un triangle quelconque"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Deux côtés de la même longueur, c'est un triangle isocèle. S'il en avait trois, il serait équilatéral."
+      },
+      {
+        "question": "Rosalie pose son équerre sur un coin de son triangle : le coin est un angle droit. Comment s'appelle ce triangle ?",
+        "options": [
+          "un triangle équilatéral",
+          "un triangle isocèle",
+          "un triangle rectangle",
+          "un triangle quelconque"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Un triangle qui possède un angle droit s'appelle un triangle rectangle."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Quel est ce triangle ?",
+        "consigne": "Regarde la figure ou lis l'énoncé, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel est le triangle ABC ?",
+            "options": [
+              "un triangle isocèle",
+              "un triangle rectangle",
+              "un triangle équilatéral",
+              "un triangle quelconque"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le petit carré au sommet A signale un angle droit : c'est un triangle rectangle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABC",
+                  "plein": false,
+                  "angles_droits": [
+                    0
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quel est le triangle DEF ?",
+            "options": [
+              "un triangle rectangle",
+              "un triangle équilatéral",
+              "un triangle isocèle",
+              "un triangle quelconque"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Les deux côtés [EF] et [FD] portent le même trait : ils ont la même longueur, donc le triangle est isocèle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "nom": "DEF",
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Quel est le triangle GHK ?",
+            "options": [
+              "un triangle quelconque",
+              "un triangle isocèle",
+              "un triangle rectangle",
+              "un triangle équilatéral"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Aucun angle droit, aucun côté de même longueur : ce triangle n'a rien de particulier, il est quelconque.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      2
+                    ],
+                    [
+                      6,
+                      4
+                    ]
+                  ],
+                  "nom": "GHK",
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Quel est le triangle MNP ?",
+            "options": [
+              "un triangle équilatéral",
+              "un triangle isocèle",
+              "un triangle quelconque",
+              "un triangle rectangle"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Le petit carré au sommet N signale un angle droit, même si le triangle est posé de travers : c'est un triangle rectangle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      4,
+                      8
+                    ],
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      8,
+                      1
+                    ]
+                  ],
+                  "nom": "MNP",
+                  "plein": false,
+                  "angles_droits": [
+                    1
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Un triangle a ses trois côtés qui mesurent 6 cm. Quel est ce triangle ?",
+            "options": [
+              "un triangle équilatéral",
+              "un triangle quelconque",
+              "un triangle isocèle",
+              "un triangle rectangle"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les trois côtés ont la même longueur : le triangle est équilatéral."
+          },
+          {
+            "id": 6,
+            "question": "Malo trace un triangle dont deux côtés mesurent 4 cm et le troisième 6 cm. Quel est ce triangle ?",
+            "options": [
+              "un triangle équilatéral",
+              "un triangle isocèle",
+              "un triangle rectangle",
+              "un triangle quelconque"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Deux côtés seulement ont la même longueur : le triangle est isocèle, pas équilatéral."
+          },
+          {
+            "id": 7,
+            "question": "Quelle est la particularité d'un triangle rectangle ?",
+            "options": [
+              "il a deux côtés de la même longueur",
+              "il a trois côtés de la même longueur",
+              "il a quatre côtés",
+              "il a un angle droit"
+            ],
+            "reponse_correcte": 3,
+            "explication": "C'est l'angle droit qui fait le triangle rectangle. Un triangle n'a jamais quatre côtés."
+          },
+          {
+            "id": 8,
+            "question": "Combien de côtés de la même longueur a un triangle équilatéral ?",
+            "options": [
+              "1",
+              "2",
+              "3",
+              "4"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Équilatéral veut dire que les trois côtés ont la même longueur. Avec deux côtés égaux, on dit isocèle."
+          }
+        ]
+      },
+      {
+        "titre": "Je nomme et je décris les triangles",
+        "consigne": "Regarde la figure ou lis l'énoncé, puis choisis la bonne réponse.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Quel est le triangle RST ?",
+            "options": [
+              "un triangle quelconque",
+              "un triangle rectangle",
+              "un triangle équilatéral",
+              "un triangle isocèle"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Le petit carré au sommet S signale un angle droit : c'est un triangle rectangle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      1,
+                      5
+                    ],
+                    [
+                      7,
+                      5
+                    ]
+                  ],
+                  "nom": "RST",
+                  "plein": false,
+                  "angles_droits": [
+                    1
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Quel est le triangle UVZ ?",
+            "options": [
+              "un triangle isocèle",
+              "un triangle équilatéral",
+              "un triangle rectangle",
+              "un triangle quelconque"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le petit carré au sommet V signale un angle droit, même si le triangle est penché : c'est un triangle rectangle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      3,
+                      7
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "nom": "UVZ",
+                  "plein": false,
+                  "angles_droits": [
+                    1
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Quel est le triangle EFG ?",
+            "options": [
+              "un triangle isocèle",
+              "un triangle rectangle",
+              "un triangle quelconque",
+              "un triangle équilatéral"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Les côtés [FG] et [GE] portent le même trait : ils ont la même longueur, donc le triangle est isocèle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      5,
+                      5
+                    ]
+                  ],
+                  "nom": "EFG",
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Quel est le triangle KLM ?",
+            "options": [
+              "un triangle équilatéral",
+              "un triangle rectangle",
+              "un triangle isocèle",
+              "un triangle quelconque"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Aucun angle droit et trois côtés de longueurs différentes : ce triangle est quelconque.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      9,
+                      3
+                    ]
+                  ],
+                  "nom": "KLM",
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Un triangle a un côté de 3 cm, un côté de 5 cm et un côté de 7 cm, et aucun angle droit. Quel est ce triangle ?",
+            "options": [
+              "un triangle isocèle",
+              "un triangle quelconque",
+              "un triangle rectangle",
+              "un triangle équilatéral"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Les trois côtés ont des longueurs différentes et il n'y a pas d'angle droit : le triangle est quelconque."
+          },
+          {
+            "id": 6,
+            "question": "Nour trace un triangle dont deux côtés mesurent 7 cm et le troisième 4 cm. Quel est ce triangle ?",
+            "options": [
+              "un triangle rectangle",
+              "un triangle quelconque",
+              "un triangle équilatéral",
+              "un triangle isocèle"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Deux côtés seulement ont la même longueur : le triangle est isocèle."
+          },
+          {
+            "id": 7,
+            "question": "Quelle est la particularité d'un triangle équilatéral ?",
+            "options": [
+              "il a trois côtés de la même longueur",
+              "il a un angle droit",
+              "il a deux côtés de la même longueur",
+              "il a trois angles droits"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Équilatéral veut dire trois côtés de la même longueur. Un triangle ne peut pas avoir trois angles droits."
+          },
+          {
+            "id": 8,
+            "question": "Dans un triangle rectangle, combien y a-t-il d'angles droits ?",
+            "options": [
+              "0",
+              "1",
+              "2",
+              "3"
+            ],
+            "reponse_correcte": 1,
+            "explication": "Un triangle rectangle possède exactement un angle droit ; ses deux autres coins sont plus fermés."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG39",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Coder un déplacement",
+      "regle": "Sur un quadrillage, chaque flèche d'un codage fait avancer d'un carreau dans sa direction.",
+      "procedure": [
+        "Lis le nœud de départ (x;y) : x compte les carreaux vers la droite, y vers le haut.",
+        "Ajoute les flèches → à x, retire les flèches ← de x.",
+        "Ajoute les flèches ↑ à y, retire les flèches ↓ de y."
+      ],
+      "exemples": [
+        {
+          "phrase": "Départ (1;2), codage → → → ↑.",
+          "demonstration": "Trois flèches vers la droite : 1 + 3 = 4. Une vers le haut : 2 + 1 = 3. J'arrive en (4;3)."
+        },
+        {
+          "phrase": "Départ (6;5), codage ← ← ↓ ↓ ↓.",
+          "demonstration": "Deux flèches vers la gauche : 6 − 2 = 4. Trois vers le bas : 5 − 3 = 2. J'arrive en (4;2)."
+        }
+      ],
+      "piege": "Les flèches → et ← ne changent que le premier nombre, les flèches ↑ et ↓ que le second."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un quadrillage, Timéo part du nœud (2;3) et suit le codage → → ↑. Sur quel nœud arrive-t-il ?",
+        "options": [
+          "(3;5)",
+          "(5;4)",
+          "(4;4)",
+          "(2;6)"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Deux flèches vers la droite : 2 + 2 = 4. Une flèche vers le haut : 3 + 1 = 4. On arrive en (4;4)."
+      },
+      {
+        "question": "Nour a suivi le codage → → → ↑ et elle est arrivée sur le nœud (6;5). De quel nœud était-elle partie ?",
+        "options": [
+          "(3;4)",
+          "(9;6)",
+          "(3;6)",
+          "(6;1)"
+        ],
+        "reponse_correcte": 0,
+        "explication": "Pour revenir en arrière, on défait le déplacement : 6 − 3 = 3 et 5 − 1 = 4. Le départ était (3;4)."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Sur quel nœud arrives-tu ?",
+        "consigne": "Le coin en bas à gauche du quadrillage est le nœud (0;0). Une flèche → avance d'un carreau vers la droite, ← vers la gauche, ↑ vers le haut, ↓ vers le bas. Écris le nœud demandé sous la forme (x;y), sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Tu pars du nœud A et tu suis le codage → → → ↑ ↑. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(5;3)",
+            "indice": "Compte d'abord les flèches horizontales, puis les flèches verticales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Tu pars du nœud B et tu suis le codage ↓ ↓ ↓ → → → → →. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(6;3)",
+            "indice": "Compte d'abord les flèches horizontales, puis les flèches verticales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    1,
+                    6
+                  ],
+                  "nom": "B"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Tu pars du nœud C et tu suis le codage ← ← ← ↑ ↑ ↑ ↑. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(5;6)",
+            "indice": "Les flèches ← font reculer le premier nombre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    8,
+                    2
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Tu pars du nœud D et tu suis le codage → ↑ → ↑ → ↑. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(6;6)",
+            "indice": "Regroupe les flèches : compte celles vers la droite, puis celles vers le haut.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    3,
+                    3
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Tu pars du nœud E et tu suis le codage ← ← ← ← ↓ ↓. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(3;5)",
+            "indice": "Les flèches ← et ↓ font diminuer les nombres.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    7,
+                    7
+                  ],
+                  "nom": "E"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Tu pars du nœud F et tu suis le codage → → → → → ↓ ↓ ↓. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(5;1)",
+            "indice": "Compte d'abord les flèches horizontales, puis les flèches verticales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    0,
+                    4
+                  ],
+                  "nom": "F"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Tu pars du nœud G et tu suis le codage ↑ ↑ ↑ ← ←. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(2;5)",
+            "indice": "Les flèches ← font reculer le premier nombre, les flèches ↑ font monter le second.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    4,
+                    2
+                  ],
+                  "nom": "G"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Tu pars du nœud H et tu suis le codage ← ← ← ← ← ← ↓ ↓ ↓ ↓. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(3;1)",
+            "indice": "Compte bien les six flèches vers la gauche, puis les quatre vers le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "points": [
+                {
+                  "at": [
+                    9,
+                    5
+                  ],
+                  "nom": "H"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Le nœud d'arrivée, le nœud de départ",
+        "consigne": "Le coin en bas à gauche du quadrillage est le nœud (0;0). Une flèche → avance d'un carreau vers la droite, ← vers la gauche, ↑ vers le haut, ↓ vers le bas. Écris le nœud demandé sous la forme (x;y), sans espace.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Tu pars du nœud A et tu suis le codage → → ↑ → ↑ ↑ ↑. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(4;5)",
+            "indice": "Compte d'abord les flèches horizontales, puis les flèches verticales.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Lila est arrivée sur le nœud B après avoir suivi le codage ↑ ↑ → → → →. De quel nœud était-elle partie ?",
+            "reponse_attendue": "(3;4)",
+            "indice": "Pour retrouver le départ, défais le déplacement : retire ce que les flèches ont ajouté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    7,
+                    6
+                  ],
+                  "nom": "B"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Tu pars du nœud C et tu suis le codage ← ← ↓ ↓ ↓. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(6;2)",
+            "indice": "Les flèches ← et ↓ font diminuer les nombres.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Sacha est arrivé sur le nœud D après avoir suivi le codage ← ← ← ↓ ↓. De quel nœud était-il parti ?",
+            "reponse_attendue": "(5;3)",
+            "indice": "Pour retrouver le départ, défais le déplacement : rends ce que les flèches ont enlevé.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Tu pars du nœud E et tu suis le codage ↓ → → → → ↓ →. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(5;4)",
+            "indice": "Regroupe les flèches : cinq vers la droite, deux vers le bas.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    0,
+                    6
+                  ],
+                  "nom": "E"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Yanis est arrivé sur le nœud F après avoir suivi le codage → → → ↓ ↓ ↓ ↓. De quel nœud était-il parti ?",
+            "reponse_attendue": "(6;6)",
+            "indice": "Pour retrouver le départ, défais le déplacement : rends ce que les flèches ont enlevé.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    9,
+                    2
+                  ],
+                  "nom": "F"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Tu pars du nœud G et tu suis le codage ↑ ↑ ↑ ↑ ← ←. Sur quel nœud arrives-tu ?",
+            "reponse_attendue": "(3;5)",
+            "indice": "Les flèches ← font reculer le premier nombre, les flèches ↑ font monter le second.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "G"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Louna est arrivée sur le nœud H après avoir suivi le codage ↑ ↑ → → → → →. De quel nœud était-elle partie ?",
+            "reponse_attendue": "(1;3)",
+            "indice": "Pour retrouver le départ, défais le déplacement : retire ce que les flèches ont ajouté.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "points": [
+                {
+                  "at": [
+                    6,
+                    5
+                  ],
+                  "nom": "H"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  }
+]

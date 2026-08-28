@@ -1,0 +1,3553 @@
+[
+  {
+    "item_code": "EG34",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Les patrons du cube et du pavé",
+      "regle": "Le patron d'un pavé droit est fait de six rectangles qui vont deux par deux : les faces opposées sont identiques.",
+      "procedure": [
+        "Note les trois dimensions du pavé : longueur, largeur, hauteur.",
+        "Associe-les deux par deux : trois rectangles, et deux de chaque.",
+        "Range quatre faces en une bande, puis colle le dessus et le dessous."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un pavé droit de 9 cm sur 4 cm sur 2 cm.",
+          "demonstration": "J'associe : 9 sur 4, 9 sur 2, 4 sur 2. Deux rectangles de chaque, soit six."
+        },
+        {
+          "phrase": "Un pavé droit de 4 cm sur 4 cm sur 7 cm.",
+          "demonstration": "Les couples sont 4 sur 4, 4 sur 7 et 4 sur 7 : deux carrés de 4 cm et quatre rectangles de 4 cm sur 7 cm."
+        }
+      ],
+      "piege": "Six rectangles ne suffisent pas : ils doivent aller deux par deux et se refermer sans se recouvrir."
+    },
+    "diagnostic": [
+      {
+        "question": "Malo a dessiné une bande de quatre carrés collés les uns à la suite des autres. Combien de carrés doit-il encore ajouter pour obtenir un patron de cube ?",
+        "options": [
+          "1",
+          "2",
+          "3",
+          "4"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Un cube a six faces. La bande de quatre carrés en donne quatre : il en manque deux, un pour le dessus et un pour le dessous."
+      },
+      {
+        "question": "Dans le patron d'un pavé droit dont les trois dimensions sont différentes, combien trouve-t-on de rectangles de tailles différentes ?",
+        "options": [
+          "6",
+          "2",
+          "3",
+          "1"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Les trois dimensions s'associent deux par deux : longueur-largeur, longueur-hauteur, largeur-hauteur. Cela fait trois tailles de rectangles, deux fois chacune, donc six rectangles en tout."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Patrons de cubes et de pavés",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Réponds ensuite en un seul mot : un nombre sans unité, une lettre, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quand on plie ce patron pour fermer le cube, le point A vient se coller sur un autre point marqué. Lequel ?",
+            "reponse_attendue": "C",
+            "indice": "Enroule la bande des quatre carrés par la pensée : le bord du haut reste en haut tout du long.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    3
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    1,
+                    2
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    5,
+                    3
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    5,
+                    2
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de carreaux ce patron de pavé droit recouvre-t-il ?",
+            "reponse_attendue": "22",
+            "indice": "Compte les carreaux rectangle par rectangle, puis additionne les six résultats.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      9,
+                      3
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      6,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      9,
+                      3
+                    ],
+                    [
+                      11,
+                      3
+                    ],
+                    [
+                      11,
+                      4
+                    ],
+                    [
+                      9,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "En pliant ce dessin, obtient-on un pavé droit ?",
+            "reponse_attendue": "non",
+            "indice": "Plie les deux grands rectangles par la pensée : où arrivent-ils tous les deux ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 12,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      3
+                    ],
+                    [
+                      9,
+                      3
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      6,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      9,
+                      3
+                    ],
+                    [
+                      11,
+                      3
+                    ],
+                    [
+                      11,
+                      4
+                    ],
+                    [
+                      9,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      4,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      9,
+                      4
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      6,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Timéo trace le patron d'un pavé droit de 6 cm de long, 4 cm de large et 3 cm de haut. Combien de rectangles de 6 cm sur 4 cm ce patron contient-il ?",
+            "reponse_attendue": "2",
+            "indice": "Cherche la face opposée à celle de 6 cm sur 4 cm : que mesure-t-elle ?"
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace le patron d'un pavé droit de 5 cm sur 3 cm sur 2 cm, sur du papier quadrillé au centimètre. Combien de carreaux ton patron couvre-t-il en tout ?",
+            "reponse_attendue": "62",
+            "indice": "Calcule l'aire de chacune des six faces, puis additionne-les. Les faces vont deux par deux."
+          },
+          {
+            "id": 6,
+            "enonce": "Le patron d'un pavé droit contient deux rectangles de 7 cm sur 2 cm et deux rectangles de 7 cm sur 5 cm. Combien de centimètres mesure le plus grand côté des deux rectangles qui manquent ?",
+            "reponse_attendue": "5",
+            "indice": "Retrouve d'abord les trois dimensions du pavé, puis associe les deux qui n'ont pas encore servi ensemble."
+          },
+          {
+            "id": 7,
+            "enonce": "Ce dessin se referme-t-il en pavé droit ?",
+            "reponse_attendue": "oui",
+            "indice": "Plie d'abord les quatre rabats autour du rectangle du milieu, puis rabats le dernier rectangle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      6,
+                      2
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      5,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      5
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      5,
+                      7
+                    ],
+                    [
+                      2,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, trace le patron d'un pavé droit de 6 cm sur 6 cm sur 2 cm, découpe-le et plie-le. Les deux carrés se retrouvent-ils l'un en face de l'autre ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "Dans un pavé droit, deux faces identiques sont toujours opposées."
+          }
+        ]
+      },
+      {
+        "titre": "Je construis un patron de pavé droit",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier. Réponds ensuite en un seul mot : un nombre sans unité, une lettre, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Quand on plie ce patron pour fermer le cube, le point P vient se coller sur un autre point marqué. Lequel ?",
+            "reponse_attendue": "R",
+            "indice": "Enroule la bande des quatre carrés par la pensée : le bord de gauche reste à gauche tout du long.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 5,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      2,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    3,
+                    1
+                  ],
+                  "nom": "Q"
+                },
+                {
+                  "at": [
+                    2,
+                    5
+                  ],
+                  "nom": "R"
+                },
+                {
+                  "at": [
+                    3,
+                    5
+                  ],
+                  "nom": "S"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Combien de carreaux ce patron de cube recouvre-t-il ?",
+            "reponse_attendue": "24",
+            "indice": "Compte d'abord les carreaux d'un seul carré, puis compte les carrés du patron.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      5,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      3
+                    ],
+                    [
+                      9,
+                      3
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      7,
+                      5
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      5
+                    ],
+                    [
+                      3,
+                      5
+                    ],
+                    [
+                      3,
+                      7
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "En pliant ce dessin, obtient-on un cube ?",
+            "reponse_attendue": "oui",
+            "indice": "Enroule la bande des quatre carrés, puis regarde où arrivent les deux carrés isolés.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      2,
+                      3
+                    ],
+                    [
+                      1,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      2,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      3,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Une boîte a la forme d'un pavé droit de 9 cm de long, 5 cm de large et 4 cm de haut. Combien de rectangles de 5 cm sur 4 cm son patron contient-il ?",
+            "reponse_attendue": "2",
+            "indice": "Cherche la face opposée à celle de 5 cm sur 4 cm : que mesure-t-elle ?"
+          },
+          {
+            "id": 5,
+            "enonce": "Sur ton cahier, trace le patron d'un pavé droit de 7 cm sur 4 cm sur 3 cm, sur du papier quadrillé au centimètre. Combien de carreaux ton patron couvre-t-il en tout ?",
+            "reponse_attendue": "122",
+            "indice": "Calcule l'aire de chacune des six faces, puis additionne-les. Les faces vont deux par deux."
+          },
+          {
+            "id": 6,
+            "enonce": "Le patron d'un pavé droit contient deux rectangles de 9 cm sur 3 cm et deux rectangles de 9 cm sur 6 cm. Combien de centimètres mesure le plus grand côté des deux rectangles qui manquent ?",
+            "reponse_attendue": "6",
+            "indice": "Retrouve d'abord les trois dimensions du pavé, puis associe les deux qui n'ont pas encore servi ensemble."
+          },
+          {
+            "id": 7,
+            "enonce": "Peut-on plier ce dessin pour obtenir un cube ?",
+            "reponse_attendue": "non",
+            "indice": "Plie le premier carré isolé, puis le second : le second retombe-t-il sur une face libre ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 6,
+                "lignes": 5
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      1,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      3,
+                      1
+                    ],
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      4,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      4,
+                      3
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      4,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, trace le patron d'un pavé droit de 5 cm sur 5 cm sur 8 cm, découpe-le et plie-le. Combien d'arêtes de 5 cm ton pavé a-t-il ?",
+            "reponse_attendue": "8",
+            "indice": "Un pavé droit a douze arêtes. Compte d'abord celles qui mesurent 8 cm, puis déduis les autres."
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG35",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Se déplacer sur un plan",
+      "regle": "Sur un plan, le nord est en haut, l'est à droite, le sud en bas, l'ouest à gauche ; mais la droite du marcheur change avec sa direction.",
+      "procedure": [
+        "Pose ton doigt sur le départ et compte les carreaux un par un.",
+        "Pour une direction donnée en points cardinaux, glisse toujours du même côté de la feuille.",
+        "Pour « tourne à droite », mets-toi à la place du marcheur avant de repartir."
+      ],
+      "exemples": [
+        {
+          "phrase": "Depuis M, avance de 4 carreaux vers l'est.",
+          "demonstration": "L'est est à droite : je compte quatre carreaux vers la droite et je lis la lettre d'arrivée."
+        },
+        {
+          "phrase": "Tu marches vers le sud, puis tu tournes à droite.",
+          "demonstration": "Le marcheur descend la feuille : sa droite montre l'ouest. Il repart donc vers la gauche du plan."
+        }
+      ],
+      "piege": "« À droite » n'est pas « à droite de la feuille » : tout dépend d'où tu regardes."
+    },
+    "diagnostic": [
+      {
+        "question": "Nour marche vers l'ouest. Elle tourne à droite. Vers quelle direction marche-t-elle maintenant ?",
+        "options": [
+          "vers le sud",
+          "vers le nord",
+          "vers l'est",
+          "vers l'ouest"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Quand on regarde vers l'ouest, le nord est à sa droite. Ce serait le sud si elle avait tourné à gauche."
+      },
+      {
+        "question": "Sur le plan du quartier, le nord est vers le haut de la feuille. Timéo déplace son doigt vers la droite de la feuille. Dans quelle direction se déplace-t-il ?",
+        "options": [
+          "vers le nord",
+          "vers l'ouest",
+          "vers le sud",
+          "vers l'est"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Quand le nord est en haut, l'est est à droite de la feuille et l'ouest à gauche."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le plan du quartier",
+        "consigne": "Sur ce plan, le nord est en haut, le sud en bas, l'est à droite et l'ouest à gauche. Quand on te demande de tourner à droite ou à gauche, c'est la droite ou la gauche de celui qui marche, pas celle de la feuille. Réponds par la seule lettre du lieu où tu arrives.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sur ton cahier, reproduis ce plan. Tu pars ensuite de C en regardant vers le nord et tu avances de 3 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "F",
+            "indice": "Le nord est en haut : monte en comptant les carreaux un par un.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Tu pars de C et tu avances de 8 carreaux vers l'ouest. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "A",
+            "indice": "L'ouest est à gauche de la feuille : glisse ton doigt vers la gauche.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Tu pars de E en regardant vers l'est. Tu avances de 4 carreaux, puis tu tournes à gauche et tu avances de 3 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "I",
+            "indice": "Marque d'abord l'étape où tu t'arrêtes, puis cherche vers où regarde le marcheur après son quart de tour.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Tu pars de G en regardant vers le sud. Tu avances de 6 carreaux, puis tu tournes à gauche et tu avances de 4 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "B",
+            "indice": "Le marcheur descend la feuille : de quel côté de la feuille se trouve sa gauche ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Tu pars de I et tu avances de 3 carreaux vers le sud, puis de 4 carreaux vers l'ouest. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "E",
+            "indice": "Fais les deux déplacements l'un après l'autre et note le lieu de l'étape.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Tu pars de A en regardant vers le nord. Tu avances de 6 carreaux, puis tu tournes à droite et tu avances de 4 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "H",
+            "indice": "Le marcheur monte la feuille : de quel côté de la feuille se trouve sa droite ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Tu pars de F et tu avances de 3 carreaux vers le nord, puis de 8 carreaux vers l'ouest. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "G",
+            "indice": "Fais les deux déplacements l'un après l'autre et note le lieu de l'étape.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, reproduis ce plan, puis trace le trajet suivant : depuis D, 8 carreaux vers l'est, puis 3 carreaux vers le sud. Sur quel lieu ton trajet se termine-t-il ?",
+            "reponse_attendue": "C",
+            "indice": "Trace le trajet au crayon, carreau par carreau, avant de lire la lettre d'arrivée.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 11,
+                "lignes": 8
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      2
+                    ],
+                    [
+                      5,
+                      2
+                    ],
+                    [
+                      5,
+                      3
+                    ],
+                    [
+                      3,
+                      3
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      9,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    2,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    10,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    2,
+                    7
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    6,
+                    7
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    10,
+                    7
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Le plan de l'école",
+        "consigne": "Sur ce plan, le nord est en haut, le sud en bas, l'est à droite et l'ouest à gauche. Quand on te demande de tourner à droite ou à gauche, c'est la droite ou la gauche de celui qui marche, pas celle de la feuille. Réponds par la seule lettre du lieu où tu arrives.",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Sur ton cahier, reproduis ce plan. Tu pars ensuite de A en regardant vers l'est et tu avances de 7 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "C",
+            "indice": "L'est est à droite de la feuille : glisse ton doigt vers la droite en comptant.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Tu pars de G et tu avances de 3 carreaux vers le sud. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "D",
+            "indice": "Le sud est en bas de la feuille : descends en comptant les carreaux.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Tu pars de D en regardant vers le nord. Tu avances de 3 carreaux, puis tu tournes à droite et tu avances de 4 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "H",
+            "indice": "Le marcheur monte la feuille : de quel côté de la feuille se trouve sa droite ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Tu pars de I en regardant vers l'ouest. Tu avances de 3 carreaux, puis tu tournes à gauche et tu avances de 3 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "E",
+            "indice": "Le marcheur va de la droite vers la gauche de la feuille : de quel côté de la feuille se trouve sa gauche ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Tu pars de F et tu avances de 3 carreaux vers l'ouest, puis de 4 carreaux vers le sud. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "B",
+            "indice": "Fais les deux déplacements l'un après l'autre et note le lieu de l'étape.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Tu pars de H en regardant vers le sud. Tu avances de 7 carreaux, puis tu tournes à droite et tu avances de 4 carreaux. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "A",
+            "indice": "Le marcheur descend la feuille : de quel côté de la feuille se trouve sa droite ?",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Tu pars de B et tu avances de 7 carreaux vers le nord, puis de 3 carreaux vers l'est. Sur quel lieu arrives-tu ?",
+            "reponse_attendue": "I",
+            "indice": "Fais les deux déplacements l'un après l'autre et note le lieu de l'étape.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, reproduis ce plan, puis trace le trajet suivant : depuis E, 4 carreaux vers l'ouest, puis 3 carreaux vers le nord. Sur quel lieu ton trajet se termine-t-il ?",
+            "reponse_attendue": "G",
+            "indice": "Trace le trajet au crayon, carreau par carreau, avant de lire la lettre d'arrivée.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 9
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      4,
+                      2
+                    ],
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      2,
+                      4
+                    ]
+                  ],
+                  "plein": false
+                },
+                {
+                  "sommets": [
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      7,
+                      6
+                    ],
+                    [
+                      7,
+                      7
+                    ],
+                    [
+                      6,
+                      7
+                    ]
+                  ],
+                  "plein": false
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "D"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    8,
+                    5
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    1,
+                    8
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    5,
+                    8
+                  ],
+                  "nom": "H"
+                },
+                {
+                  "at": [
+                    8,
+                    8
+                  ],
+                  "nom": "I"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG36",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Reproduire un triangle",
+      "regle": "Trois longueurs forment un triangle seulement si la somme des deux plus petites dépasse la plus grande.",
+      "procedure": [
+        "Additionne les deux plus petites longueurs et compare-les à la plus grande.",
+        "Trace le plus grand côté à la règle, de A à B.",
+        "Ouvre le compas à la deuxième longueur pour un arc depuis A, à la troisième pour un arc depuis B."
+      ],
+      "exemples": [
+        {
+          "phrase": "Un triangle de 4 cm, 6 cm et 7 cm.",
+          "demonstration": "4 + 6 = 10, qui dépasse 7 : possible. Je trace [AB] de 7 cm, un arc de 4 cm depuis A, un de 6 cm depuis B : C est au croisement."
+        },
+        {
+          "phrase": "Un triangle de 3 cm, 5 cm et 8 cm.",
+          "demonstration": "3 + 5 = 8 : la somme ne dépasse pas 8. Les arcs se touchent sans se croiser, les points sont alignés."
+        }
+      ],
+      "piege": "Deux longueurs qui font juste la troisième ne suffisent pas."
+    },
+    "diagnostic": [
+      {
+        "question": "Avec lequel de ces quatre groupes de longueurs peut-on tracer un triangle ?",
+        "options": [
+          "3 cm, 4 cm et 8 cm",
+          "5 cm, 8 cm et 15 cm",
+          "6 cm, 7 cm et 10 cm",
+          "2 cm, 3 cm et 6 cm"
+        ],
+        "reponse_correcte": 2,
+        "explication": "Il faut que la somme des deux plus petites longueurs dépasse la plus grande : 6 + 7 = 13, qui dépasse 10. Dans les trois autres cas la somme reste inférieure à la plus grande longueur, et les arcs de compas ne se croisent jamais."
+      },
+      {
+        "question": "Sacha veut reproduire un triangle dont il connait la longueur des trois côtés. Quels instruments lui suffisent ?",
+        "options": [
+          "la règle et le rapporteur",
+          "la règle et le compas",
+          "l'équerre seule",
+          "le compas seul"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La règle sert à tracer le premier côté, et le compas à reporter les deux autres longueurs : leurs arcs se croisent sur le troisième sommet."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Ce triangle est-il traçable ?",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier avec la règle, l'équerre et le compas. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Peut-on tracer un triangle dont les côtés mesurent 3 cm, 4 cm et 9 cm ?",
+            "reponse_attendue": "non",
+            "indice": "Additionne les deux plus petites longueurs et compare le résultat à la plus grande."
+          },
+          {
+            "id": 2,
+            "enonce": "Peut-on tracer un triangle dont les côtés mesurent 5 cm, 6 cm et 8 cm ?",
+            "reponse_attendue": "oui",
+            "indice": "Additionne les deux plus petites longueurs et compare le résultat à la plus grande."
+          },
+          {
+            "id": 3,
+            "enonce": "Peut-on tracer un triangle dont les côtés mesurent 2 cm, 5 cm et 7 cm ?",
+            "reponse_attendue": "non",
+            "indice": "Additionne les deux plus petites longueurs : le résultat dépasse-t-il vraiment la plus grande, ou l'égale-t-il ?"
+          },
+          {
+            "id": 4,
+            "enonce": "Sur ton cahier, trace à la règle et au compas un triangle ABC tel que AB = 6 cm, AC = 6 cm et BC = 6 cm. Combien d'axes de symétrie ta figure a-t-elle ?",
+            "reponse_attendue": "3",
+            "indice": "Cherche les plis qui rabattent le triangle exactement sur lui-même : il y en a un par sommet."
+          },
+          {
+            "id": 5,
+            "enonce": "Pour reproduire un triangle dont tu connais les trois longueurs, tu traces d'abord un côté à la règle. Combien d'arcs de cercle dois-tu ensuite tracer au compas pour placer le troisième sommet ?",
+            "reponse_attendue": "2",
+            "indice": "Un arc part de chaque extrémité du côté déjà tracé."
+          },
+          {
+            "id": 6,
+            "enonce": "Peut-on tracer un triangle qui a un angle droit et deux côtés de même longueur ?",
+            "reponse_attendue": "oui",
+            "indice": "Sur ton cahier, trace un angle droit, reporte 4 cm sur chacun de ses deux côtés, puis referme la figure."
+          },
+          {
+            "id": 7,
+            "enonce": "Reproduis ce triangle sur ton cahier avec la règle et l'équerre, puis vérifie ses trois angles. Combien d'angles droits a-t-il ?",
+            "reponse_attendue": "1",
+            "indice": "Pose le coin de ton équerre sur chacun des trois sommets, l'un après l'autre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 7,
+                "lignes": 6
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABC",
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Reproduis ce triangle sur ton cahier avec la règle et le compas, puis mesure ses trois côtés. Combien de ses côtés ont la même longueur ?",
+            "reponse_attendue": "2",
+            "indice": "Reporte chaque côté au compas et compare les trois écartements.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      4,
+                      5
+                    ]
+                  ],
+                  "nom": "MNP",
+                  "plein": false
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Je reproduis des triangles",
+        "consigne": "Certaines questions demandent un tracé sur ton cahier avec la règle, l'équerre et le compas. Réponds ensuite en un seul mot : un nombre sans unité, ou « oui », ou « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Peut-on tracer un triangle dont les côtés mesurent 2 cm, 3 cm et 8 cm ?",
+            "reponse_attendue": "non",
+            "indice": "Additionne les deux plus petites longueurs et compare le résultat à la plus grande."
+          },
+          {
+            "id": 2,
+            "enonce": "Peut-on tracer un triangle dont les côtés mesurent 4 cm, 7 cm et 9 cm ?",
+            "reponse_attendue": "oui",
+            "indice": "Additionne les deux plus petites longueurs et compare le résultat à la plus grande."
+          },
+          {
+            "id": 3,
+            "enonce": "Peut-on tracer un triangle dont les côtés mesurent 3 cm, 6 cm et 9 cm ?",
+            "reponse_attendue": "non",
+            "indice": "Additionne les deux plus petites longueurs : le résultat dépasse-t-il vraiment la plus grande, ou l'égale-t-il ?"
+          },
+          {
+            "id": 4,
+            "enonce": "Sur ton cahier, trace à la règle et au compas un triangle DEF tel que DE = 8 cm, DF = 5 cm et EF = 5 cm. Combien d'axes de symétrie ta figure a-t-elle ?",
+            "reponse_attendue": "1",
+            "indice": "Deux côtés seulement sont égaux : un seul pli peut rabattre la figure sur elle-même."
+          },
+          {
+            "id": 5,
+            "enonce": "Combien de longueurs faut-il connaitre au minimum pour reproduire un triangle à la règle et au compas ?",
+            "reponse_attendue": "3",
+            "indice": "Chaque côté du triangle doit être reporté : compte les côtés."
+          },
+          {
+            "id": 6,
+            "enonce": "Peut-on tracer un triangle dont deux côtés mesurent 5 cm et dont le troisième mesure 9 cm ?",
+            "reponse_attendue": "oui",
+            "indice": "Additionne les deux longueurs de 5 cm et compare le résultat à 9 cm."
+          },
+          {
+            "id": 7,
+            "enonce": "Reproduis ce triangle sur ton cahier avec la règle et l'équerre, puis vérifie ses trois angles. Combien d'angles droits a-t-il ?",
+            "reponse_attendue": "1",
+            "indice": "Pose le coin de ton équerre sur chacun des trois sommets, l'un après l'autre.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      2,
+                      5
+                    ],
+                    [
+                      6,
+                      5
+                    ]
+                  ],
+                  "nom": "RST",
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Sur ton cahier, trace au compas un triangle GHI tel que GH = 4 cm, GI = 4 cm et HI = 4 cm, puis vérifie ses trois angles à l'équerre. Combien d'angles droits trouves-tu ?",
+            "reponse_attendue": "0",
+            "indice": "Pose le coin de ton équerre sur chacun des trois sommets : tes trois angles sont-ils tous pareils ?"
+          }
+        ]
+      }
+    ]
+  }
+]

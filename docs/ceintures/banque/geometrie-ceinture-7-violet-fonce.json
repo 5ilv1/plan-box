@@ -1,0 +1,2508 @@
+[
+  {
+    "item_code": "EG31",
+    "type": "exercice",
+    "lecon": {
+      "titre": "Lire un schéma à main levée",
+      "regle": "Sur un schéma à main levée, le dessin n'est pas à la bonne taille : seuls les nombres écrits et le codage disent vrai.",
+      "procedure": [
+        "Relève les longueurs données par un nombre.",
+        "Lis le codage : même nombre de traits, même longueur ; petit carré, angle droit.",
+        "Reporte ces longueurs à la règle, et ces angles droits à l'équerre."
+      ],
+      "exemples": [
+        {
+          "phrase": "Rectangle ABCD, AB = 7 cm, deux traits sur [AB] et sur [CD].",
+          "demonstration": "[CD] porte les mêmes deux traits que [AB] : je la trace de 7 cm, même si le schéma la dessine plus courte."
+        },
+        {
+          "phrase": "Segment [AB] de 8 cm, son milieu O, et le cercle de centre O passant par A.",
+          "demonstration": "O est le milieu, donc OA = 8 ÷ 2 = 4 cm : j'ouvre mon compas de 4 cm."
+        }
+      ],
+      "piege": "Ne mesure jamais un schéma à main levée : c'est le codage qui commande, pas le dessin."
+    },
+    "diagnostic": [
+      {
+        "question": "Sur un schéma à main levée, Lila lit : le quadrilatère MNPQ porte le petit carré à ses quatre sommets, MN = 5 cm, et les côtés [MN] et [PQ] portent chacun un trait. Sur le dessin, [PQ] est deux fois plus court que [MN]. Quelle longueur Lila doit-elle donner à [PQ] en vraie grandeur ?",
+        "options": [
+          "2,5 cm",
+          "5 cm",
+          "10 cm",
+          "on ne peut pas le savoir"
+        ],
+        "reponse_correcte": 1,
+        "explication": "Le trait unique porté par [MN] et par [PQ] code deux côtés de même longueur : [PQ] mesure 5 cm. Un schéma à main levée ne se mesure pas à la règle."
+      },
+      {
+        "question": "Sacha construit une figure d'après un schéma à main levée. Le sommet R porte le petit carré, mais sur le dessin cet angle est nettement plus ouvert qu'un angle droit. Que doit faire Sacha ?",
+        "options": [
+          "reproduire l'angle tel qu'il est dessiné, en le mesurant sur le schéma",
+          "tracer un angle un peu plus ouvert que l'angle droit",
+          "choisir lui-même l'ouverture de cet angle",
+          "tracer un angle droit à l'équerre, comme le dit le petit carré"
+        ],
+        "reponse_correcte": 3,
+        "explication": "Sur un schéma à main levée le dessin est approximatif : c'est le codage qui dit la vérité, et le petit carré impose un angle droit."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Je construis d'après un schéma à main levée",
+        "consigne": "Chaque dessin est un schéma à main levée : les longueurs du dessin sont fausses, seuls les nombres écrits et le codage sont exacts. Construis la figure en vraie grandeur sur ton cahier, puis réponds par un nombre sans unité, ou par « oui », ou par « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Voici le schéma à main levée du rectangle ABCD. On donne AB = 6 cm et BC = 4 cm. Construis ce rectangle en vraie grandeur. Combien mesure le côté [AD], en centimètres ?",
+            "reponse_attendue": "4",
+            "indice": "Suis les traits d'égalité : quel autre côté porte le même nombre de traits que [AD] ?",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Voici le schéma à main levée d'une figure : le segment [KL], son milieu M, et le cercle de centre M qui passe par K. On donne KL = 10 cm. Construis la figure en vraie grandeur. Combien mesure le rayon de ce cercle, en centimètres ?",
+            "reponse_attendue": "5",
+            "indice": "Le rayon du cercle, c'est la distance de M à K. Où se trouve M sur [KL] ?",
+            "figure": {
+              "type": "polygone",
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    9,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "K"
+                },
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    9,
+                    4
+                  ],
+                  "nom": "L"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    4
+                  ],
+                  "rayon": 4
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Voici le schéma à main levée du rectangle PQRS et de sa diagonale [PR]. On donne PQ = 8 cm, QR = 6 cm et PR = 10 cm. Construis la figure en vraie grandeur, puis trace la seconde diagonale [QS] et mesure-la. Combien mesure [QS], en centimètres ?",
+            "reponse_attendue": "10",
+            "indice": "Trace [QS] à la règle sur ta construction, puis mesure-la et compare-la à [PR].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      8,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "PQRS",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    6
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Voici le schéma à main levée du rectangle EFGH, du milieu M de [EF] et du milieu N de [HG]. On donne EF = 7 cm et FG = 3 cm. Construis la figure en vraie grandeur, puis trace [MN]. Combien mesure [MN], en centimètres ?",
+            "reponse_attendue": "3",
+            "indice": "Le segment [MN] traverse le rectangle dans le même sens que [FG].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "EFGH",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    4
+                  ],
+                  "pointille": true
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    4,
+                    4
+                  ],
+                  "nom": "N"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Voici le schéma à main levée du quadrilatère WXYZ : ses quatre côtés portent un trait, et aucun sommet ne porte le petit carré de l'angle droit. Avant de construire, peux-tu être sûr que cette figure est un carré ? Réponds par oui ou par non.",
+            "reponse_attendue": "non",
+            "indice": "Le codage renseigne sur les longueurs des côtés. Dit-il quelque chose sur les angles ?",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      4,
+                      0
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      4,
+                      2
+                    ]
+                  ],
+                  "nom": "WXYZ",
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Voici le schéma à main levée du rectangle RSTU et du cercle de centre S qui passe par R. On donne RS = 4 cm et ST = 3 cm. Construis la figure en vraie grandeur. Combien mesure le diamètre de ce cercle, en centimètres ?",
+            "reponse_attendue": "8",
+            "indice": "Trouve d'abord le rayon : c'est la distance de S à R. Le diamètre en vaut deux.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      5,
+                      7
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "nom": "RSTU",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    4
+                  ],
+                  "rayon": 4
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Voici le schéma à main levée du rectangle IJKL et du cercle de centre I et de rayon 2 cm. On donne IJ = 5 cm et JK = 4 cm. Construis la figure en vraie grandeur. Ce cercle coupe-t-il le côté [KL] ? Réponds par oui ou par non.",
+            "reponse_attendue": "non",
+            "indice": "Compare le rayon du cercle et la distance qui sépare I du côté [KL].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      3,
+                      3
+                    ],
+                    [
+                      8,
+                      3
+                    ],
+                    [
+                      8,
+                      7
+                    ],
+                    [
+                      3,
+                      7
+                    ]
+                  ],
+                  "nom": "IJKL",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    3,
+                    3
+                  ],
+                  "rayon": 3
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Voici le schéma à main levée de deux rectangles ABCD et DCEF qui se touchent par le côté [DC]. On donne AB = 6 cm, BC = 3 cm et CE = 2 cm. Construis la figure en vraie grandeur. Combien mesure le côté [EF], en centimètres ?",
+            "reponse_attendue": "6",
+            "indice": "Suis les traits d'égalité de proche en proche : ils relient [EF] à [DC], et [DC] à [AB].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      6,
+                      1
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      1,
+                      4
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                },
+                {
+                  "sommets": [
+                    [
+                      1,
+                      4
+                    ],
+                    [
+                      6,
+                      4
+                    ],
+                    [
+                      6,
+                      6
+                    ],
+                    [
+                      1,
+                      6
+                    ]
+                  ],
+                  "nom": "DCEF",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Encore des schémas à main levée",
+        "consigne": "Chaque dessin est un schéma à main levée : les longueurs du dessin sont fausses, seuls les nombres écrits et le codage sont exacts. Construis la figure en vraie grandeur sur ton cahier, puis réponds par un nombre sans unité, ou par « oui », ou par « non ».",
+        "questions": [
+          {
+            "id": 1,
+            "enonce": "Voici le schéma à main levée du quadrilatère ABCD : ses quatre sommets portent le petit carré, les côtés [AB] et [CD] portent deux traits, les côtés [BC] et [DA] portent un trait. On donne AB = 8 cm et BC = 5 cm. Construis la figure en vraie grandeur. Combien mesure le côté [DA], en centimètres ?",
+            "reponse_attendue": "5",
+            "indice": "Cherche l'autre côté qui porte le même nombre de traits que [DA].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      2
+                    ],
+                    [
+                      2,
+                      2
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Voici le schéma à main levée d'un cercle de centre O dont le diamètre mesure 14 cm, et de l'un de ses rayons [OA]. Construis ce cercle au compas en vraie grandeur. Combien mesure [OA], en centimètres ?",
+            "reponse_attendue": "7",
+            "indice": "Le diamètre vaut deux fois le rayon.",
+            "figure": {
+              "type": "polygone",
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    4
+                  ],
+                  "a": [
+                    7,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    4
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    7,
+                    4
+                  ],
+                  "nom": "A"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    4
+                  ],
+                  "rayon": 3
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "enonce": "Voici le schéma à main levée de la figure ABCDEF, en forme de L : deux côtés voisins y sont toujours perpendiculaires. Le petit carré de l'angle droit est marqué à tous les sommets, sauf au sommet D, où la figure rentre vers l'intérieur. On donne AB = 11 cm, BC = 3 cm, CD = 7 cm, DE = 5 cm et EF = 4 cm. Construis la figure en vraie grandeur. Combien mesure le côté [FA], en centimètres ?",
+            "reponse_attendue": "8",
+            "indice": "Pour revenir de F à A, tu redescends de toute la hauteur montée en deux fois : additionne BC et DE.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      8,
+                      1
+                    ],
+                    [
+                      8,
+                      4
+                    ],
+                    [
+                      5,
+                      4
+                    ],
+                    [
+                      5,
+                      7
+                    ],
+                    [
+                      1,
+                      7
+                    ]
+                  ],
+                  "nom": "ABCDEF",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    4,
+                    5
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "enonce": "Voici le schéma à main levée du quadrilatère ABCD : ses quatre côtés portent un trait, et seul le sommet B porte le petit carré de l'angle droit. On donne AB = 6 cm. Construis la figure en vraie grandeur, puis trace ses deux diagonales [AC] et [BD]. Se coupent-elles en formant un angle droit ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "Construis d'abord la figure, puis pose ton équerre au point où les deux diagonales se croisent : ne réponds pas de tête.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      5,
+                      1
+                    ],
+                    [
+                      5,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    1
+                  ],
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      3,
+                      1
+                    ]
+                  ],
+                  "plein": false
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "enonce": "Voici le schéma à main levée du rectangle KLMN et du cercle de centre K qui passe par N. On donne KL = 9 cm et LM = 6 cm. Construis la figure en vraie grandeur. Combien mesure le rayon de ce cercle, en centimètres ?",
+            "reponse_attendue": "6",
+            "indice": "Le rayon vaut KN. Quel autre côté porte le même nombre de traits que [KN] ?",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      4,
+                      4
+                    ],
+                    [
+                      10,
+                      4
+                    ],
+                    [
+                      10,
+                      8
+                    ],
+                    [
+                      4,
+                      8
+                    ]
+                  ],
+                  "nom": "KLMN",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    4
+                  ],
+                  "rayon": 4
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "enonce": "Voici le schéma à main levée du rectangle RSTU et du point V, milieu de [RS]. On donne RS = 10 cm et ST = 4 cm. Construis la figure en vraie grandeur, puis trace [VT] et [VU] et mesure-les à la règle. Ces deux segments ont-ils la même longueur ? Réponds par oui ou par non.",
+            "reponse_attendue": "oui",
+            "indice": "V est à égale distance de R et de S : regarde si la figure se replie sur elle-même de part et d'autre de V.",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      9,
+                      1
+                    ],
+                    [
+                      9,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "RSTU",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    5,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ],
+                  "pointille": true
+                },
+                {
+                  "de": [
+                    5,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    5
+                  ],
+                  "pointille": true
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "V"
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "enonce": "Voici le schéma à main levée : le segment [AB], le point C placé sur [AB], et le cercle de centre C qui passe par A. On donne AB = 15 cm et AC = 6 cm. Construis la figure en vraie grandeur. Combien mesure [CB], en centimètres ?",
+            "reponse_attendue": "9",
+            "indice": "Les deux morceaux [AC] et [CB] mis bout à bout redonnent [AB].",
+            "figure": {
+              "type": "polygone",
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    10,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    10,
+                    4
+                  ],
+                  "nom": "B"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    4
+                  ],
+                  "rayon": 4
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "enonce": "Voici le schéma à main levée du rectangle GHIJ, du point K placé sur [GH] et du segment [KL] perpendiculaire à (GH), avec L sur [JI]. On donne GH = 11 cm, HI = 4 cm et GK = 3 cm. Construis la figure en vraie grandeur. Combien mesure [KL], en centimètres ?",
+            "reponse_attendue": "4",
+            "indice": "[KL] traverse le rectangle dans le même sens que [HI].",
+            "figure": {
+              "type": "polygone",
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      10,
+                      1
+                    ],
+                    [
+                      10,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "GHIJ",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false,
+                  "cotes_egaux": [
+                    [
+                      0,
+                      1
+                    ],
+                    [
+                      2,
+                      1
+                    ],
+                    [
+                      1,
+                      2
+                    ],
+                    [
+                      3,
+                      2
+                    ]
+                  ]
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    5
+                  ],
+                  "pointille": true
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    1
+                  ],
+                  "nom": "K"
+                },
+                {
+                  "at": [
+                    4,
+                    5
+                  ],
+                  "nom": "L"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG32",
+    "type": "qcm",
+    "lecon": {
+      "titre": "Suivre un programme pas à pas",
+      "regle": "Un programme se contrôle étape par étape : chaque étape doit être respectée avant qu'on passe à la suivante.",
+      "procedure": [
+        "Lis l'étape 1 et cherche sur la figure ce qu'elle annonce.",
+        "Si elle est respectée, passe à la suivante ; sinon, tu tiens l'étape fautive."
+      ],
+      "exemples": [
+        {
+          "phrase": "« 1. Trace [AB] de 6 carreaux. 2. Place M, milieu de [AB]. » Sur la figure, [AB] fait 6 carreaux et M est à 2 carreaux de A.",
+          "demonstration": "L'étape 1 est bonne. Le milieu est à 3 carreaux, pas à 2 : l'écart est à l'étape 2."
+        },
+        {
+          "phrase": "« 1. Trace le cercle de centre O et de rayon 4 carreaux. 2. Trace un rayon [OA]. » Le cercle dessiné a 3 carreaux de rayon.",
+          "demonstration": "Je m'arrête à l'étape 1 : inutile de regarder la suite."
+        }
+      ],
+      "piege": "Cherche non pas l'erreur la plus visible, mais la première : une étape ratée fausse la suite."
+    },
+    "diagnostic": [
+      {
+        "question": "Un programme commence ainsi : « Étape 1 : trace un segment [AB] de 5 cm. Étape 2 : trace la perpendiculaire à (AB) passant par B. » Timéo a tracé un segment [AB] de 5 cm, puis une droite qui passe par A en formant un angle droit avec (AB). Où son tracé s'écarte-t-il du programme ?",
+        "options": [
+          "à l'étape 1",
+          "à l'étape 2",
+          "aux deux étapes",
+          "nulle part : son tracé est correct"
+        ],
+        "reponse_correcte": 1,
+        "explication": "La longueur de [AB] est la bonne, l'étape 1 est donc respectée. L'étape 2 demandait la perpendiculaire passant par B, pas par A."
+      },
+      {
+        "question": "Un programme dit : « Étape 3 : place le point C sur le cercle, puis trace le segment [OC]. » Rosalie a placé C à l'intérieur du cercle, puis a tracé [OC]. Qu'a-t-elle fait ?",
+        "options": [
+          "elle a respecté l'étape, car [OC] est bien tracé",
+          "elle a respecté l'étape, car C est bien dans le cercle",
+          "elle s'est écartée du programme : C devait être placé sur le cercle lui-même",
+          "elle s'est écartée du programme : il ne fallait pas tracer [OC]"
+        ],
+        "reponse_correcte": 2,
+        "explication": "« Sur le cercle » désigne le trait du cercle, pas la surface qu'il entoure : C devait être placé sur le trait, à la distance du rayon."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Où le tracé s'écarte-t-il ?",
+        "consigne": "Lis le programme de construction, puis regarde la figure obtenue par l'élève. Construis la figure sur ton cahier si tu en as besoin, puis dis où le tracé s'écarte du programme.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Programme : « Étape 1 : trace un segment [AB] de 7 carreaux. Étape 2 : trace la perpendiculaire à (AB) passant par A. Étape 3 : place le point C sur cette perpendiculaire, à 3 carreaux de A, puis trace [BC]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le segment [AB] tracé mesure 5 carreaux au lieu de 7. Les étapes 2 et 3 sont bien respectées : la perpendiculaire passe par A et C est à 3 carreaux de A.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    4
+                  ]
+                },
+                {
+                  "de": [
+                    6,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Programme : « Étape 1 : trace un segment [MN] de 6 carreaux. Étape 2 : trace la perpendiculaire à (MN) passant par le milieu de [MN]. Étape 3 : sur cette perpendiculaire, place le point P à 4 carreaux de (MN), puis trace [MP] et [NP]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 1,
+            "explication": "[MN] mesure bien 6 carreaux et P est bien à 4 carreaux de (MN). Mais la perpendiculaire a été tracée en N : elle devait passer par le milieu de [MN], à 3 carreaux de M.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "N"
+                },
+                {
+                  "at": [
+                    7,
+                    5
+                  ],
+                  "nom": "P"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Programme : « Étape 1 : trace un segment [RS] de 8 carreaux. Étape 2 : trace la perpendiculaire à (RS) passant par R. Étape 3 : sur cette perpendiculaire, place le point T à 5 carreaux de R. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 2,
+            "explication": "[RS] mesure bien 8 carreaux et la perpendiculaire passe bien par R. Mais T est à 3 carreaux de R au lieu de 5.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "R"
+                },
+                {
+                  "at": [
+                    9,
+                    1
+                  ],
+                  "nom": "S"
+                },
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "T"
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Programme : « Étape 1 : trace un segment [EF] de 5 carreaux. Étape 2 : trace la perpendiculaire à (EF) passant par F. Étape 3 : place le point G sur cette perpendiculaire, à 2 carreaux de F, puis trace [EG]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 3,
+            "explication": "[EF] mesure 5 carreaux, la perpendiculaire passe par F, G est à 2 carreaux de F et [EG] est tracé : les trois étapes sont respectées.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 5
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    6,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    3
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    3
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    6,
+                    3
+                  ],
+                  "nom": "G"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Programme : « Étape 1 : trace un segment [AB] de 6 carreaux. Étape 2 : trace la droite parallèle à (AB) qui passe 3 carreaux au-dessus de (AB). Étape 3 : place le point C sur cette droite, juste au-dessus de A, puis trace [AC]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 1,
+            "explication": "[AB] mesure bien 6 carreaux, et C est bien juste au-dessus de A. Mais la droite de l'étape 2 s'éloigne de (AB) : 3 carreaux au-dessus au départ, 6 carreaux au-dessus à son autre bout. Elle n'est donc pas parallèle à (AB).",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    7,
+                    7
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "C"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Programme : « Étape 1 : trace un cercle de centre O et de rayon 3 carreaux. Étape 2 : place un point A sur ce cercle. Étape 3 : trace le rayon [OA]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le cercle tracé a un rayon de 2 carreaux au lieu de 3. A est bien placé sur ce cercle et [OA] est bien tracé : l'écart vient de la première étape.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    4,
+                    4
+                  ],
+                  "a": [
+                    6,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    4
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "A"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    4,
+                    4
+                  ],
+                  "rayon": 2
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Programme : « Étape 1 : trace un cercle de centre O et de rayon 4 carreaux. Étape 2 : trace un diamètre [AB] de ce cercle. Étape 3 : place le point M, milieu de [OA]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 2,
+            "explication": "Le rayon vaut bien 4 carreaux et [AB] passe bien par O : c'est un diamètre. Mais le milieu de [OA] est à 2 carreaux de O, alors que M a été placé à 3 carreaux de O.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    9,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    1,
+                    4
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    9,
+                    4
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "M"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    4
+                  ],
+                  "rayon": 4
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Programme : « Étape 1 : trace un segment [KL] de 6 carreaux. Étape 2 : trace la perpendiculaire à (KL) passant par K. Étape 3 : trace la perpendiculaire à (KL) passant par L. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 3,
+            "explication": "[KL] mesure 6 carreaux, et les deux droites tracées forment bien un angle droit avec (KL), l'une en K et l'autre en L : les trois étapes sont respectées.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "K"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "L"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "titre": "Le programme a-t-il été suivi ?",
+        "consigne": "Lis le programme de construction, puis regarde la figure obtenue par l'élève. Construis la figure sur ton cahier si tu en as besoin, puis dis où le tracé s'écarte du programme.",
+        "questions": [
+          {
+            "id": 1,
+            "question": "Programme : « Étape 1 : trace un segment [AB] de 5 carreaux. Étape 2 : trace [BC] perpendiculaire à [AB] en B, de 3 carreaux. Étape 3 : trace [CD] perpendiculaire à [BC] en C, de 5 carreaux. Étape 4 : trace [DA]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 2,
+            "explication": "[AB] fait 5 carreaux et [BC] 3 carreaux en formant un angle droit : les deux premières étapes sont bonnes. Mais [CD] ne mesure que 4 carreaux au lieu de 5, et la figure ne se referme pas en rectangle.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 8,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    6,
+                    1
+                  ],
+                  "a": [
+                    6,
+                    4
+                  ]
+                },
+                {
+                  "de": [
+                    6,
+                    4
+                  ],
+                  "a": [
+                    2,
+                    4
+                  ]
+                },
+                {
+                  "de": [
+                    2,
+                    4
+                  ],
+                  "a": [
+                    1,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    6,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    6,
+                    4
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    2,
+                    4
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "question": "Programme : « Étape 1 : trace un segment [EF] de 6 carreaux. Étape 2 : trace [FG] perpendiculaire à [EF] en F, de 4 carreaux. Étape 3 : trace [GH] parallèle à [EF], de 6 carreaux. Étape 4 : trace [HE]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 1,
+            "explication": "[EF] mesure bien 6 carreaux. Mais [FG] part en biais : il ne forme pas un angle droit avec [EF]. Les étapes 3 et 4 ont ensuite été faites sur ce tracé faussé.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    7,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    9,
+                    5
+                  ],
+                  "a": [
+                    3,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    3,
+                    5
+                  ],
+                  "a": [
+                    1,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "E"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "F"
+                },
+                {
+                  "at": [
+                    9,
+                    5
+                  ],
+                  "nom": "G"
+                },
+                {
+                  "at": [
+                    3,
+                    5
+                  ],
+                  "nom": "H"
+                }
+              ]
+            }
+          },
+          {
+            "id": 3,
+            "question": "Programme : « Étape 1 : trace un cercle de centre O et de rayon 3 carreaux. Étape 2 : trace un diamètre [AB] de ce cercle. Étape 3 : trace la perpendiculaire à (AB) passant par O. Étape 4 : elle coupe le cercle en C et en D ; trace [AC]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 0,
+            "explication": "Le cercle a été tracé avec un rayon de 2 carreaux au lieu de 3. Tout le reste suit correctement le programme, mais l'écart est déjà à la première étape.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    4
+                  ],
+                  "a": [
+                    7,
+                    4
+                  ]
+                },
+                {
+                  "de": [
+                    5,
+                    2
+                  ],
+                  "a": [
+                    5,
+                    6
+                  ]
+                },
+                {
+                  "de": [
+                    3,
+                    4
+                  ],
+                  "a": [
+                    5,
+                    6
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "O"
+                },
+                {
+                  "at": [
+                    3,
+                    4
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    7,
+                    4
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    5,
+                    6
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    5,
+                    2
+                  ],
+                  "nom": "D"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    4
+                  ],
+                  "rayon": 2
+                }
+              ]
+            }
+          },
+          {
+            "id": 4,
+            "question": "Programme : « Étape 1 : trace un segment [KL] de 8 carreaux. Étape 2 : place le point M, milieu de [KL]. Étape 3 : trace la perpendiculaire à (KL) passant par M. Étape 4 : sur cette perpendiculaire, place le point N à 3 carreaux de M. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 4,
+            "explication": "[KL] mesure 8 carreaux, M est bien à 4 carreaux de K comme de L, la droite tracée en M forme un angle droit avec (KL), et N est à 3 carreaux de M : rien ne s'écarte du programme.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    9,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    5,
+                    1
+                  ],
+                  "a": [
+                    5,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "K"
+                },
+                {
+                  "at": [
+                    9,
+                    1
+                  ],
+                  "nom": "L"
+                },
+                {
+                  "at": [
+                    5,
+                    1
+                  ],
+                  "nom": "M"
+                },
+                {
+                  "at": [
+                    5,
+                    4
+                  ],
+                  "nom": "N"
+                }
+              ]
+            }
+          },
+          {
+            "id": 5,
+            "question": "Programme : « Étape 1 : trace un segment [PQ] de 6 carreaux. Étape 2 : place le point R, milieu de [PQ]. Étape 3 : trace la perpendiculaire à (PQ) passant par R. Étape 4 : sur cette perpendiculaire, place le point S à 5 carreaux de R. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 3,
+            "explication": "Les trois premières étapes sont respectées : 6 carreaux, R au milieu, angle droit en R. Mais S n'est qu'à 3 carreaux de R, alors que le programme en demandait 5.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 6
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    4,
+                    1
+                  ],
+                  "a": [
+                    4,
+                    4
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "P"
+                },
+                {
+                  "at": [
+                    7,
+                    1
+                  ],
+                  "nom": "Q"
+                },
+                {
+                  "at": [
+                    4,
+                    1
+                  ],
+                  "nom": "R"
+                },
+                {
+                  "at": [
+                    4,
+                    4
+                  ],
+                  "nom": "S"
+                }
+              ]
+            }
+          },
+          {
+            "id": 6,
+            "question": "Programme : « Étape 1 : trace un segment [UV] de 8 carreaux. Étape 2 : place le point W, milieu de [UV]. Étape 3 : trace le cercle de centre W qui passe par U. Étape 4 : trace le segment [WV]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 2,
+            "explication": "W est bien le milieu de [UV], à 4 carreaux de U. Mais le cercle a été tracé avec un rayon de 3 carreaux : il ne passe pas par U, alors que le programme l'exigeait.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 9
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    5,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "U"
+                },
+                {
+                  "at": [
+                    9,
+                    5
+                  ],
+                  "nom": "V"
+                },
+                {
+                  "at": [
+                    5,
+                    5
+                  ],
+                  "nom": "W"
+                }
+              ],
+              "cercles": [
+                {
+                  "centre": [
+                    5,
+                    5
+                  ],
+                  "rayon": 3
+                }
+              ]
+            }
+          },
+          {
+            "id": 7,
+            "question": "Programme : « Étape 1 : trace un segment [AB] de 7 carreaux. Étape 2 : trace la perpendiculaire à (AB) passant par A. Étape 3 : trace la droite parallèle à (AB) située 4 carreaux au-dessus ; elle coupe la perpendiculaire en C. Étape 4 : place le point D sur cette parallèle, à 5 carreaux de C, puis trace [BD]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 4,
+            "explication": "[AB] fait 7 carreaux, la perpendiculaire passe par A, la parallèle reste à 4 carreaux de (AB) sur toute sa longueur, et D est à 5 carreaux de C : les quatre étapes sont respectées.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 10,
+                "lignes": 8
+              },
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    8,
+                    1
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    1,
+                    6
+                  ]
+                },
+                {
+                  "de": [
+                    1,
+                    5
+                  ],
+                  "a": [
+                    9,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    6,
+                    5
+                  ],
+                  "a": [
+                    8,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    1,
+                    1
+                  ],
+                  "nom": "A"
+                },
+                {
+                  "at": [
+                    8,
+                    1
+                  ],
+                  "nom": "B"
+                },
+                {
+                  "at": [
+                    1,
+                    5
+                  ],
+                  "nom": "C"
+                },
+                {
+                  "at": [
+                    6,
+                    5
+                  ],
+                  "nom": "D"
+                }
+              ]
+            }
+          },
+          {
+            "id": 8,
+            "question": "Programme : « Étape 1 : trace un carré ABCD de 4 carreaux de côté. Étape 2 : trace la diagonale [AC]. Étape 3 : place le point O, milieu de [AC]. Étape 4 : trace le segment [OB]. » Voici la figure obtenue. Où le tracé s'écarte-t-il du programme ?",
+            "options": [
+              "à l'étape 1",
+              "à l'étape 2",
+              "à l'étape 3",
+              "à l'étape 4",
+              "nulle part : le tracé respecte le programme"
+            ],
+            "reponse_correcte": 0,
+            "explication": "La figure tracée mesure 6 carreaux de long et 4 carreaux de haut : ses côtés n'ont pas tous la même longueur, ce n'est pas un carré de 4 carreaux de côté. La diagonale, le milieu O et [OB] suivent ensuite correctement le programme.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "polygones": [
+                {
+                  "sommets": [
+                    [
+                      1,
+                      1
+                    ],
+                    [
+                      7,
+                      1
+                    ],
+                    [
+                      7,
+                      5
+                    ],
+                    [
+                      1,
+                      5
+                    ]
+                  ],
+                  "nom": "ABCD",
+                  "angles_droits": [
+                    0,
+                    1,
+                    2,
+                    3
+                  ],
+                  "plein": false
+                }
+              ],
+              "segments": [
+                {
+                  "de": [
+                    1,
+                    1
+                  ],
+                  "a": [
+                    7,
+                    5
+                  ]
+                },
+                {
+                  "de": [
+                    4,
+                    3
+                  ],
+                  "a": [
+                    7,
+                    1
+                  ]
+                }
+              ],
+              "points": [
+                {
+                  "at": [
+                    4,
+                    3
+                  ],
+                  "nom": "O"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "item_code": "EG33",
+    "type": "texte_a_trous",
+    "lecon": {
+      "titre": "Rédiger un programme",
+      "regle": "Un programme de construction se rédige étape par étape, avec les mots exacts de la géométrie, pour qu'on l'exécute sans deviner.",
+      "procedure": [
+        "Numérote les étapes : une seule action par étape.",
+        "Nomme chaque point par une lettre et donne chaque longueur avec son unité.",
+        "Remplace les à-peu-près par le mot exact : perpendiculaire, parallèle, milieu, centre, rayon, diamètre, diagonale, sommet."
+      ],
+      "exemples": [
+        {
+          "phrase": "« Trace un trait qui coupe (AB) bien droit au point M. »",
+          "demonstration": "« Bien droit » ne veut rien dire : j'écris « Trace la perpendiculaire à (AB) passant par M »."
+        },
+        {
+          "phrase": "« Fais un rond de 4 cm autour de O. »",
+          "demonstration": "Rayon ou diamètre ? J'écris « Trace le cercle de centre O et de rayon 4 cm » : l'étape devient exécutable."
+        }
+      ],
+      "piege": "Un mot vague — « en biais », « un rond » — oblige à deviner : deux élèves obtiennent alors deux figures différentes."
+    },
+    "diagnostic": [
+      {
+        "question": "Dans un programme de construction, on lit : « Trace la droite qui passe par C et qui forme un angle droit avec (AB). » Par quelle étape plus courte peut-on la remplacer ?",
+        "options": [
+          "Trace la parallèle à (AB) passant par C.",
+          "Trace la perpendiculaire à (AB) passant par C.",
+          "Trace le milieu de [AB] passant par C.",
+          "Trace la diagonale de (AB) passant par C."
+        ],
+        "reponse_correcte": 1,
+        "explication": "Deux droites qui se croisent en formant un angle droit sont perpendiculaires : ce seul mot remplace toute la phrase."
+      },
+      {
+        "question": "Nour veut décrire un cercle qui passe par le point A, sachant qu'elle pique son compas en O et que OA = 4 cm. Comment doit-elle rédiger cette étape ?",
+        "options": [
+          "Trace le cercle de milieu O et de rayon 4 cm.",
+          "Trace le cercle de centre O et de diamètre 4 cm.",
+          "Trace le cercle de centre O et de rayon 4 cm.",
+          "Trace le cercle de sommet O et de rayon 4 cm."
+        ],
+        "reponse_correcte": 2,
+        "explication": "Le point où l'on pique le compas est le centre du cercle, et la distance du centre à un point du cercle est le rayon. Ici OA = 4 cm est donc un rayon, pas un diamètre."
+      }
+    ],
+    "entrainement": [
+      {
+        "titre": "Le programme de Fatou",
+        "consigne": "Complète le programme de construction avec le mot de géométrie qui convient. Écris un seul mot par trou, sans article. Recopie ensuite le programme complet sur ton cahier et construis la figure.",
+        "texte_complet": "Voici le programme de construction que Fatou a rédigé, avec des mots effacés. Étape 1 : trace un segment [AB] de 8 cm ; A et B sont ses deux extrémités. Étape 2 : place le point M à 4 cm de A et à 4 cm de B, de sorte qu'il partage [AB] en deux moitiés de même longueur : M est le milieu de [AB]. Étape 3 : à l'équerre, trace la droite qui passe par M et qui forme avec (AB) un angle de 90 degrés ; cette droite est perpendiculaire à (AB). Étape 4 : trace maintenant la droite qui passe par A, qui ne coupe jamais la droite de l'étape 3 et qui en reste partout à la même distance : elle est parallèle à cette droite. Étape 5 : place enfin le point C sur la droite de l'étape 3, à 3 cm de M, puis relie A, M et C ; l'angle qui a pour sommet M mesure 90 degrés.",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "segment",
+            "indice": "Un morceau de droite limité par deux extrémités."
+          },
+          {
+            "position": 1,
+            "mot": "milieu",
+            "indice": "Le point qui coupe un segment en deux parties de même longueur."
+          },
+          {
+            "position": 2,
+            "mot": "perpendiculaire",
+            "indice": "Se dit de deux droites qui se croisent en formant un angle droit."
+          },
+          {
+            "position": 3,
+            "mot": "parallèle",
+            "indice": "Se dit de deux droites qui gardent partout le même écart et ne se coupent jamais."
+          },
+          {
+            "position": 4,
+            "mot": "sommet",
+            "indice": "Le point de rencontre des deux côtés d'un angle."
+          }
+        ]
+      },
+      {
+        "titre": "Le programme de Yanis",
+        "consigne": "Complète le programme de construction avec le mot de géométrie qui convient. Écris un seul mot par trou, sans article. Recopie ensuite le programme complet sur ton cahier et construis la figure.",
+        "texte_complet": "Voici le programme de construction que Yanis a rédigé, avec des mots effacés. Étape 1 : place un point O, puis pique la pointe de ton compas sur ce point : O est le centre du cercle que tu vas tracer. Étape 2 : ouvre ton compas de 3 cm et trace le cercle ; cette distance de 3 cm, qui sépare O de chaque point du cercle, porte le nom de rayon. Étape 3 : place un point E sur le cercle, puis trace la droite (OE) ; elle recoupe le cercle en un point F. Le segment [EF] passe par O et mesure 6 cm : c'est un diamètre du cercle. Étape 4 : à l'équerre, trace la droite qui passe par O et qui forme un angle de 90 degrés avec (EF) ; cette droite est perpendiculaire à (EF). Étape 5 : place enfin le point I sur [OE], à 1,5 cm de O ; puisque OI et IE mesurent tous les deux 1,5 cm, le point I est le milieu de [OE].",
+        "trous": [
+          {
+            "position": 0,
+            "mot": "centre",
+            "indice": "Le point sur lequel on pique la pointe du compas."
+          },
+          {
+            "position": 1,
+            "mot": "rayon",
+            "indice": "La distance qui sépare le centre d'un point du cercle."
+          },
+          {
+            "position": 2,
+            "mot": "diamètre",
+            "indice": "Le segment qui traverse le cercle en passant par son centre."
+          },
+          {
+            "position": 3,
+            "mot": "perpendiculaire",
+            "indice": "Se dit de deux droites qui se croisent en formant un angle droit."
+          },
+          {
+            "position": 4,
+            "mot": "milieu",
+            "indice": "Le point qui coupe un segment en deux parties de même longueur."
+          }
+        ]
+      }
+    ]
+  }
+]

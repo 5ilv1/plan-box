@@ -215,6 +215,106 @@ function validerProblemeMaths(ctx, e) {
   }
 }
 
+/**
+ * Contrôle une figure (clé optionnelle `figure` sur une question).
+ * Contrat : docs/ceintures/SPEC-FIGURES.md.
+ * Une coordonnée fausse ne se voit pas à la relecture du JSON : elle se voit
+ * au dessin, c'est-à-dire trop tard.
+ */
+function validerFigure(ctx, f) {
+  if (!f || typeof f !== "object") return err(ctx, "figure : objet attendu");
+  if (!["cadran", "angle", "polygone"].includes(f.type)) {
+    return err(ctx, `figure : type « ${f.type} » inconnu (cadran, angle ou polygone)`);
+  }
+  if (f.type === "cadran") {
+    const h = f.heures, m = f.minutes;
+    if (!Number.isInteger(h) || h < 0 || h > 23) err(ctx, "cadran : heures entières entre 0 et 23");
+    if (!Number.isInteger(m) || m < 0 || m > 59) err(ctx, "cadran : minutes entières entre 0 et 59");
+    return;
+  }
+  if (f.type === "angle") {
+    const d = Number(f.degres);
+    if (!(d > 0 && d < 180)) err(ctx, "angle : degrés strictement entre 0 et 180");
+    // 89° ou 91° se lisent « droit » à l'œil : l'item devient un piège visuel.
+    if (d !== 90 && Math.abs(d - 90) < 12) {
+      err(ctx, `angle : ${d}° est indiscernable d'un angle droit — s'en écarter d'au moins 12°`);
+    }
+    return;
+  }
+  // polygone
+  const G = f.grille;
+  if (G && (!Number.isInteger(G.colonnes) || !Number.isInteger(G.lignes) || G.colonnes < 2 || G.lignes < 2)) {
+    err(ctx, "polygone : grille = { colonnes, lignes } entiers ≥ 2");
+  }
+  const entier = (p) => Array.isArray(p) && p.length === 2 && p.every((v) => Number.isInteger(v) && v >= 0);
+  const dedans = (p) => !G || (p[0] <= G.colonnes && p[1] <= G.lignes);
+  const verifPt = (p, quoi) => {
+    if (!entier(p)) return err(ctx, `${quoi} : coordonnées entières positives attendues, reçu ${JSON.stringify(p)}`);
+    if (!dedans(p)) err(ctx, `${quoi} : le point ${JSON.stringify(p)} sort de la grille`);
+  };
+  const rien = !(f.polygones || []).length && !(f.segments || []).length
+    && !(f.points || []).length && !(f.cercles || []).length;
+  if (rien) err(ctx, "polygone : figure vide (ni polygones, ni segments, ni points, ni cercles)");
+
+  (f.polygones || []).forEach((pol, i) => {
+    const S = pol.sommets;
+    if (!Array.isArray(S) || S.length < 3) return err(ctx, `polygone#${i + 1} : au moins 3 sommets`);
+    S.forEach((p) => verifPt(p, `polygone#${i + 1}`));
+    const vus = new Set();
+    S.forEach((p) => {
+      const k = JSON.stringify(p);
+      if (vus.has(k)) err(ctx, `polygone#${i + 1} : sommet ${k} répété`);
+      vus.add(k);
+    });
+    if (pol.nom && pol.nom.length !== S.length) {
+      err(ctx, `polygone#${i + 1} : « ${pol.nom} » a ${pol.nom.length} lettre(s) pour ${S.length} sommet(s)`);
+    }
+    (pol.angles_droits || []).forEach((k) => {
+      if (!Number.isInteger(k) || k < 0 || k >= S.length) {
+        return err(ctx, `polygone#${i + 1} : angle droit sur le sommet ${k}, qui n'existe pas`);
+      }
+      // Le codage doit dire la vérité : un angle marqué droit doit l'être.
+      const n = S.length, [ax, ay] = S[k], [px, py] = S[(k - 1 + n) % n], [nx, ny] = S[(k + 1) % n];
+      const scal = (px - ax) * (nx - ax) + (py - ay) * (ny - ay);
+      if (scal !== 0) err(ctx, `polygone#${i + 1} : le sommet ${k} est codé droit mais ne l'est pas`);
+    });
+    (pol.cotes_egaux || []).forEach((c) => {
+      if (!Array.isArray(c) || !Number.isInteger(c[0]) || c[0] < 0 || c[0] >= S.length) {
+        err(ctx, `polygone#${i + 1} : côté ${JSON.stringify(c)} hors de la figure`);
+      }
+    });
+    // Les côtés marqués du même nombre de traits doivent avoir la même longueur.
+    const parNb = {};
+    (pol.cotes_egaux || []).forEach(([k, nb]) => {
+      if (!Number.isInteger(k) || k < 0 || k >= S.length) return;
+      const n = S.length, [ax, ay] = S[k], [bx, by] = S[(k + 1) % n];
+      (parNb[nb || 1] ??= []).push([(bx - ax) ** 2 + (by - ay) ** 2, k]);
+    });
+    Object.entries(parNb).forEach(([nb, L]) => {
+      if (L.length < 2) return warn(ctx, `polygone#${i + 1} : un seul côté porte ${nb} trait(s) — la marque d'égalité n'égale rien`);
+      if (new Set(L.map((x) => x[0])).size > 1) {
+        err(ctx, `polygone#${i + 1} : les côtés ${L.map((x) => x[1]).join(", ")} portent ${nb} trait(s) mais n'ont pas la même longueur`);
+      }
+    });
+  });
+  (f.segments || []).forEach((sg, i) => {
+    verifPt(sg.de, `segment#${i + 1}`); verifPt(sg.a, `segment#${i + 1}`);
+    if (JSON.stringify(sg.de) === JSON.stringify(sg.a)) err(ctx, `segment#${i + 1} : longueur nulle`);
+  });
+  (f.points || []).forEach((pt, i) => verifPt(pt.at, `point#${i + 1}`));
+  (f.cercles || []).forEach((c, i) => {
+    verifPt(c.centre, `cercle#${i + 1}`);
+    if (!(Number(c.rayon) > 0)) err(ctx, `cercle#${i + 1} : rayon strictement positif attendu`);
+  });
+}
+
+/** Parcourt une variante et contrôle toutes les figures qu'elle porte. */
+function validerFigures(ctx, e) {
+  (e.questions || []).forEach((q, i) => { if (q.figure) validerFigure(`${ctx} q${i + 1}`, q.figure); });
+  (e.problemes || []).forEach((q, i) => { if (q.figure) validerFigure(`${ctx} pb${i + 1}`, q.figure); });
+  if (e.figure) validerFigure(ctx, e.figure);
+}
+
 function validerAnalysePhrase(code, e) {
   const phrases = e.phrases ?? [];
   if (!phrases.length) return err(code, "aucune phrase");
@@ -283,6 +383,7 @@ for (const f of fichiers) {
         case "probleme_maths": validerProblemeMaths(ctx, e); break;
         default:               warn(ctx, `type « ${item.type} » non contrôlé par ce validateur`);
       }
+      validerFigures(ctx, e);
       // Deux variantes doivent différer réellement, sinon la remédiation
       // ressert le même contenu à un élève qui vient d'échouer.
       const sig = JSON.stringify(e.texte_complet ?? e.questions ?? e.items ?? e.phrases ?? e);
