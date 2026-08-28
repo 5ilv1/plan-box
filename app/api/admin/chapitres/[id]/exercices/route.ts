@@ -38,25 +38,34 @@ export async function GET(
   }
 
   // Mode normal : exercices + stats
-  // Chercher d'abord dans banque_exercices, puis fallback sur exercice
+  //
+  // `exercice` est le parcours du chapitre ; `banque_exercices` est une
+  // bibliothèque réutilisable, indépendante. Cette route sert à afficher et à
+  // dupliquer le parcours : c'est donc `exercice` qui fait foi.
+  //
+  // L'ordre était inversé, et le repli est tout ou rien : UNE seule ligne dans
+  // la banque suffisait à masquer l'intégralité du parcours. « Le futur de
+  // l'indicatif » affichait ainsi 2 exercices au lieu de 8, et « Dupliquer »
+  // n'en aurait recopié que 2.
   let { data: exercices, error } = await admin
-    .from("banque_exercices")
+    .from("exercice")
     .select("*")
     .eq("chapitre_id", chapitreId)
     .order("ordre", { ascending: true, nullsFirst: false })
     .order("created_at", { ascending: true });
 
-  // Fallback : si pas d'exercices dans la banque, chercher dans la table exercice
+  // Repli sur la banque pour un chapitre sans parcours propre. Aucun chapitre
+  // n'est dans ce cas aujourd'hui ; conservé par prudence.
   if (!error && (!exercices || exercices.length === 0)) {
-    const fallback = await admin
-      .from("exercice")
+    const repli = await admin
+      .from("banque_exercices")
       .select("*")
       .eq("chapitre_id", chapitreId)
       .order("ordre", { ascending: true, nullsFirst: false })
       .order("created_at", { ascending: true });
-    if (!fallback.error) {
-      exercices = fallback.data;
-      error = fallback.error;
+    if (!repli.error) {
+      exercices = repli.data;
+      error = repli.error;
     }
   }
 
