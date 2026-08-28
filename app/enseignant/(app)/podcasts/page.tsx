@@ -89,6 +89,7 @@ export default function PodcastsEnseignant() {
   const [editUrl, setEditUrl] = useState("");
   const [editUrlInitiale, setEditUrlInitiale] = useState(""); // pour pouvoir supprimer l'ancien fichier après remplacement
   const [editMatiere, setEditMatiere] = useState("");
+  const [editTranscription, setEditTranscription] = useState("");
   const [editFichierNom, setEditFichierNom] = useState<string | null>(null);
   const [editUploadProgress, setEditUploadProgress] = useState<"idle" | "uploading" | "done" | "erreur">("idle");
   const [enSauvegarde, setEnSauvegarde] = useState(false);
@@ -265,6 +266,10 @@ export default function PodcastsEnseignant() {
     setEditUrl(url);
     setEditUrlInitiale(url);
     setEditMatiere((p.contenu?.matiere as string) ?? "");
+    // La transcription vit sur la tâche « podcast », comme à la création.
+    const tachePodcast = ((p.contenu?.taches ?? []) as Array<{ sous_type?: string; transcription?: string }>)
+      .find((t) => t.sous_type === "podcast");
+    setEditTranscription(tachePodcast?.transcription ?? "");
     setEditFichierNom(null);
     setEditUploadProgress("idle");
   }
@@ -282,7 +287,16 @@ export default function PodcastsEnseignant() {
       let contenuMaj = { ...editPodcast.contenu };
       const taches = contenuMaj.taches as Array<Record<string, unknown>> | undefined;
       if (taches && taches.length > 0) {
-        contenuMaj = { ...contenuMaj, taches: taches.map((t, i) => i === 0 ? { ...t, url: editUrl } : t) };
+        contenuMaj = {
+          ...contenuMaj,
+          taches: taches.map((t, i) => {
+            let maj = i === 0 ? { ...t, url: editUrl } : { ...t };
+            // La transcription se pose sur la tâche « podcast », celle que
+            // l'affectation ira chercher pour générer le QCM.
+            if (t.sous_type === "podcast") maj = { ...maj, transcription: editTranscription };
+            return maj;
+          }),
+        };
       }
       contenuMaj = { ...contenuMaj, matiere: editMatiere || null };
       const ancienTitre = editPodcast.titre;
@@ -860,6 +874,25 @@ export default function PodcastsEnseignant() {
             </Field>
             <Field label="Matière (optionnel)">
               <input className="form-input" value={editMatiere} onChange={(e) => setEditMatiere(e.target.value)} placeholder="Ex : Histoire…" style={{ width: "100%", fontSize: 14 }} />
+            </Field>
+            <Field label="Transcription (optionnel)">
+              <textarea
+                className="form-input"
+                value={editTranscription}
+                onChange={(e) => setEditTranscription(e.target.value)}
+                placeholder="Colle ici la transcription ou le résumé du podcast…"
+                rows={5}
+                style={{ width: "100%", fontSize: 14, resize: "vertical" }}
+              />
+              {editTranscription.trim().length >= 50 ? (
+                <div style={{ fontSize: 12, color: "#16A34A", marginTop: 4, fontWeight: 600 }}>
+                  Un QCM de 10 questions sera généré à la prochaine affectation.
+                </div>
+              ) : (
+                <div style={{ fontSize: 12, color: "#B45309", marginTop: 4, fontWeight: 600 }}>
+                  Il faut au moins 50 caractères pour qu&apos;un QCM puisse être généré.
+                </div>
+              )}
             </Field>
           </div>
           <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", marginTop: 20 }}>
