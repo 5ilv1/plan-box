@@ -68,7 +68,10 @@ export async function GET(req: Request) {
 
   const theme = await fetch(`${base}/api/generer-theme-ecriture`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${process.env.CRON_SECRET}`,
+    },
     body: JSON.stringify({ force: true, mode: modeActuel }),
   }).then((r) => r.json());
 

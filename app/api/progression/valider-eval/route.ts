@@ -155,7 +155,12 @@ export async function POST(req: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     fetch(`${baseUrl}/api/progression/remediation`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        // Appel serveur → serveur : aucun cookie de session ne part avec.
+        // Il faut donc signer, sinon middleware.ts refuse la requête.
+        Authorization: `Bearer ${process.env.CRON_SECRET}`,
+      },
       body: JSON.stringify({ eleveId, chapitreId, planTravailId, questionsRatees }),
     }).catch((e) => console.warn("[valider-eval] Appel remédiation échoué:", e));
   }
