@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -37,6 +38,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans explication, sans markdown :
     const msg = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
+      system: REGLE_NOMBRES_EN_LETTRES,
       messages: [{ role: "user", content: prompt }],
     });
 

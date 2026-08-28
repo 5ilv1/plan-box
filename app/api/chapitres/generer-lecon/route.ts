@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
+import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -98,6 +99,7 @@ Règles STRICTES :
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 3000,
+      system: REGLE_NOMBRES_EN_LETTRES,
       messages: [{ role: "user", content: prompt }],
     });
 

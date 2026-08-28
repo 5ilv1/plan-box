@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
 
 export const maxDuration = 120; // 2 min max (Vercel Pro)
 
@@ -46,6 +47,7 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans texte avant o
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
+      system: REGLE_NOMBRES_EN_LETTRES,
       messages: [{ role: "user", content: prompt }],
     });
 
