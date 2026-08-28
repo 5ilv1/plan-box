@@ -603,23 +603,23 @@
     "type": "qcm",
     "lecon": {
       "titre": "Carré, rectangle ou cercle",
-      "regle": "Le cercle est une ligne courbe fermée sans coin ; le rectangle a 4 côtés et 4 coins droits ; le carré a aussi 4 côtés égaux.",
+      "regle": "Le cercle est une ligne courbe fermée, sans angle ; le rectangle a 4 côtés et 4 angles droits ; le carré a aussi 4 côtés égaux.",
       "procedure": [
-        "Si la ligne est courbe et fermée, sans aucun coin, c'est un cercle.",
-        "Sinon compte les côtés : il en faut 4, et les 4 coins comme le coin d'une feuille.",
+        "Si la ligne est courbe et fermée, sans aucun angle, c'est un cercle.",
+        "Sinon compte les côtés : il en faut 4, et les 4 angles doivent être droits, comme le coin d'une feuille.",
         "Compare les côtés : tous égaux, c'est un carré ; sinon, c'est un rectangle."
       ],
       "exemples": [
         {
-          "phrase": "Une figure à 4 coins droits, avec deux côtés longs et deux côtés courts.",
-          "demonstration": "4 coins droits : c'est un carré ou un rectangle ; les côtés ne sont pas tous égaux, donc un rectangle."
+          "phrase": "Une figure à 4 angles droits, avec deux côtés longs et deux côtés courts.",
+          "demonstration": "4 angles droits : c'est un carré ou un rectangle ; les côtés ne sont pas tous égaux, donc un rectangle."
         },
         {
-          "phrase": "Une figure à 4 côtés égaux et 4 coins droits, posée sur la pointe.",
-          "demonstration": "Sa position ne compte pas : 4 coins droits et 4 côtés égaux, c'est un carré, simplement penché."
+          "phrase": "Une figure à 4 côtés égaux et 4 angles droits, posée sur la pointe.",
+          "demonstration": "Sa position ne compte pas : 4 angles droits et 4 côtés égaux, c'est un carré, simplement penché."
         }
       ],
-      "piege": "Des coins droits ne suffisent pas : il faut aussi 4 côtés."
+      "piege": "Des angles droits ne suffisent pas : il faut aussi 4 côtés."
     },
     "diagnostic": [
       {
@@ -634,7 +634,7 @@
         "explication": "Le carré a 4 côtés de la même longueur. Quand deux côtés sont longs et deux sont courts, la figure est un rectangle."
       },
       {
-        "question": "Inès dit : « Ma figure a 4 côtés et 4 coins droits, mais ses côtés n'ont pas tous la même longueur. » Quelle figure a-t-elle dessinée ?",
+        "question": "Inès dit : « Ma figure a 4 côtés et 4 angles droits, mais ses côtés n'ont pas tous la même longueur. » Quelle figure a-t-elle dessinée ?",
         "options": [
           "un carré",
           "un cercle",
@@ -642,7 +642,7 @@
           "un triangle"
         ],
         "reponse_correcte": 2,
-        "explication": "4 côtés et 4 coins droits : c'est un rectangle. Ce n'est pas un carré, car pour cela il faudrait aussi que les 4 côtés soient égaux."
+        "explication": "4 côtés et 4 angles droits : c'est un rectangle. Ce n'est pas un carré, car pour cela il faudrait aussi que les 4 côtés soient égaux."
       }
     ],
     "entrainement": [
@@ -660,7 +660,7 @@
               "un triangle"
             ],
             "reponse_correcte": 1,
-            "explication": "4 coins droits et 4 côtés de la même longueur : son nom le plus précis est carré.",
+            "explication": "4 angles droits et 4 côtés de la même longueur : son nom le plus précis est carré.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -697,7 +697,7 @@
               "un cercle"
             ],
             "reponse_correcte": 2,
-            "explication": "Ses 4 coins sont droits, mais deux côtés sont plus longs que les deux autres : c'est un rectangle.",
+            "explication": "Ses 4 angles sont droits, mais deux côtés sont plus longs que les deux autres : c'est un rectangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -734,7 +734,7 @@
               "un triangle"
             ],
             "reponse_correcte": 0,
-            "explication": "C'est une ligne courbe fermée, sans aucun côté droit et sans aucun coin : c'est un cercle.",
+            "explication": "C'est une ligne courbe fermée, sans aucun côté droit et sans aucun angle : c'est un cercle.",
             "figure": {
               "type": "polygone",
               "cercles": [
@@ -791,7 +791,7 @@
               "ni un carré, ni un rectangle, ni un cercle"
             ],
             "reponse_correcte": 3,
-            "explication": "Elle a bien 4 côtés droits, mais aucun de ses coins n'est droit : ce n'est ni un carré ni un rectangle.",
+            "explication": "Elle a bien 4 côtés droits, mais aucun de ses angles n'est droit : ce n'est ni un carré ni un rectangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -828,7 +828,7 @@
               "ni un carré, ni un rectangle, ni un cercle"
             ],
             "reponse_correcte": 0,
-            "explication": "Elle est penchée, mais ses 4 coins sont droits et deux côtés sont plus longs que les deux autres : c'est un rectangle.",
+            "explication": "Elle est penchée, mais ses 4 angles sont droits et deux côtés sont plus longs que les deux autres : c'est un rectangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -865,7 +865,7 @@
               "un cercle"
             ],
             "reponse_correcte": 2,
-            "explication": "Elle est penchée, mais ses 4 coins sont droits et ses 4 côtés ont la même longueur : c'est un carré.",
+            "explication": "Elle est penchée, mais ses 4 angles sont droits et ses 4 côtés ont la même longueur : c'est un carré.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -949,7 +949,7 @@
               "un rectangle dont les côtés ne sont pas tous égaux"
             ],
             "reponse_correcte": 3,
-            "explication": "Ses 4 coins sont droits, mais elle est plus haute que large : ses côtés ne sont pas tous égaux, c'est un rectangle.",
+            "explication": "Ses 4 angles sont droits, mais elle est plus haute que large : ses côtés ne sont pas tous égaux, c'est un rectangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -986,7 +986,7 @@
               "ni un carré, ni un rectangle, ni un cercle"
             ],
             "reponse_correcte": 1,
-            "explication": "Aucun côté droit, aucun coin : c'est une ligne courbe fermée, donc un cercle.",
+            "explication": "Aucun côté droit, aucun angle : c'est une ligne courbe fermée, donc un cercle.",
             "figure": {
               "type": "polygone",
               "cercles": [
@@ -1010,7 +1010,7 @@
               "un triangle"
             ],
             "reponse_correcte": 0,
-            "explication": "4 coins droits et 4 côtés de la même longueur : son nom le plus précis est carré.",
+            "explication": "4 angles droits et 4 côtés de la même longueur : son nom le plus précis est carré.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -1047,7 +1047,7 @@
               "un cercle"
             ],
             "reponse_correcte": 0,
-            "explication": "Elle n'a que 3 côtés et 3 coins : c'est un triangle.",
+            "explication": "Elle n'a que 3 côtés et 3 angles : c'est un triangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -1080,7 +1080,7 @@
               "un rectangle dont les côtés ne sont pas tous égaux"
             ],
             "reponse_correcte": 2,
-            "explication": "Elle est posée sur la pointe, mais ses 4 coins sont droits et ses 4 côtés sont de la même longueur : c'est un carré.",
+            "explication": "Elle est posée sur la pointe, mais ses 4 angles sont droits et ses 4 côtés sont de la même longueur : c'est un carré.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -1117,7 +1117,7 @@
               "un rectangle"
             ],
             "reponse_correcte": 3,
-            "explication": "Elle est penchée, mais ses 4 coins sont droits et deux de ses côtés sont bien plus longs que les deux autres : c'est un rectangle.",
+            "explication": "Elle est penchée, mais ses 4 angles sont droits et deux de ses côtés sont bien plus longs que les deux autres : c'est un rectangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -1154,7 +1154,7 @@
               "un cercle"
             ],
             "reponse_correcte": 1,
-            "explication": "Elle a 4 côtés droits, mais ses coins ne sont pas droits : ce n'est ni un carré ni un rectangle.",
+            "explication": "Elle a 4 côtés droits, mais ses angles ne sont pas droits : ce n'est ni un carré ni un rectangle.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -1191,7 +1191,7 @@
               "un cercle"
             ],
             "reponse_correcte": 2,
-            "explication": "Elle a des coins droits, mais compte ses côtés : il y en a 6. Un carré et un rectangle en ont exactement 4.",
+            "explication": "Elle a des angles droits, mais compte ses côtés : il y en a 6. Un carré et un rectangle en ont exactement 4.",
             "figure": {
               "type": "polygone",
               "polygones": [
@@ -1247,7 +1247,7 @@
           "demonstration": "Je pose l'équerre au sol contre la porte : le sol suit un bord, la porte suit l'autre. L'angle est droit."
         },
         {
-          "phrase": "Une figure à 4 sommets, penchée, dont les coins ne se ressemblent pas.",
+          "phrase": "Une figure à 4 sommets, penchée, dont les angles ne se ressemblent pas.",
           "demonstration": "Je teste les 4 sommets un par un : sur trois, le côté passe à côté du bord. Cette figure a 1 angle droit."
         }
       ],
@@ -1428,7 +1428,7 @@
             "id": 4,
             "enonce": "Combien d'angles droits a la figure NOPQ ?",
             "reponse_attendue": "0",
-            "indice": "Un coin peut ressembler à un angle droit sans en être un : vérifie avec l'équerre.",
+            "indice": "À l'œil, un angle peut sembler droit sans l'être : vérifie avec l'équerre.",
             "figure": {
               "type": "polygone",
               "grille": {
@@ -1580,7 +1580,7 @@
             "id": 8,
             "enonce": "Combien d'angles droits a la figure GHIJ ?",
             "reponse_attendue": "0",
-            "indice": "Un coin peut ressembler à un angle droit sans en être un : vérifie avec l'équerre.",
+            "indice": "À l'œil, un angle peut sembler droit sans l'être : vérifie avec l'équerre.",
             "figure": {
               "type": "polygone",
               "grille": {
@@ -1734,7 +1734,7 @@
             "id": 4,
             "enonce": "Combien d'angles droits a la figure ABCD ?",
             "reponse_attendue": "0",
-            "indice": "Un coin peut ressembler à un angle droit sans en être un : vérifie avec l'équerre.",
+            "indice": "À l'œil, un angle peut sembler droit sans l'être : vérifie avec l'équerre.",
             "figure": {
               "type": "polygone",
               "grille": {

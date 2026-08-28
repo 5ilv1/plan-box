@@ -67,7 +67,7 @@
             "id": 3,
             "enonce": "Combien de sommets a une boule ?",
             "reponse_attendue": "0",
-            "indice": "Cherche un coin pointu sur un ballon."
+            "indice": "Cherche un sommet pointu sur un ballon."
           },
           {
             "id": 4,
@@ -145,7 +145,7 @@
             "id": 6,
             "enonce": "Combien de sommets a un cylindre ?",
             "reponse_attendue": "0",
-            "indice": "Cherche un coin pointu sur une boîte de conserve."
+            "indice": "Cherche un sommet pointu sur une boîte de conserve."
           },
           {
             "id": 7,
@@ -679,7 +679,7 @@
             "id": 2,
             "enonce": "Combien d'axes de symétrie a la figure EFGH ?",
             "reponse_attendue": "2",
-            "indice": "Les plis en diagonale font-ils tomber les coins les uns sur les autres ?",
+            "indice": "Les plis en diagonale font-ils tomber les sommets les uns sur les autres ?",
             "figure": {
               "type": "polygone",
               "polygones": [

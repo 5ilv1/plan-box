@@ -7,7 +7,7 @@
       "regle": "Dans un polygone, un côté est un segment du contour, un sommet est un coin où deux côtés se rejoignent, et un angle est l'ouverture formée à ce sommet.",
       "procedure": [
         "Pour compter les côtés, suis le contour et compte les segments.",
-        "Pour compter les sommets, compte les coins où le tracé change de direction.",
+        "Pour compter les sommets, compte les sommets, là où le tracé change de direction.",
         "Retiens qu'un polygone a autant de côtés que de sommets et d'angles."
       ],
       "exemples": [
@@ -137,7 +137,7 @@
               "6"
             ],
             "reponse_correcte": 2,
-            "explication": "On compte 6 coins où le tracé change de direction : la figure a 6 sommets.",
+            "explication": "On compte 6 sommets, là où le tracé change de direction : la figure a 6 sommets.",
             "figure": {
               "type": "polygone",
               "grille": {
@@ -454,7 +454,7 @@
               "6"
             ],
             "reponse_correcte": 0,
-            "explication": "On compte 4 coins où le tracé change de direction : la figure a 4 sommets.",
+            "explication": "On compte 4 sommets, là où le tracé change de direction : la figure a 4 sommets.",
             "figure": {
               "type": "polygone",
               "grille": {
@@ -608,7 +608,7 @@
       "procedure": [
         "Pour les faces, cherche les surfaces plates, comme le dessus d'une boîte.",
         "Pour les arêtes, suis du doigt les bords où deux faces se touchent.",
-        "Pour les sommets, repère les coins piquants du solide."
+        "Pour les sommets, repère les pointes où plusieurs arêtes se rejoignent."
       ],
       "exemples": [
         {
@@ -1013,9 +1013,9 @@
           },
           {
             "id": 4,
-            "enonce": "Sur ton cahier, trace une droite (d) et place un point A dessus. Trace la perpendiculaire à (d) qui passe par A. Autour de A, tes deux droites découpent des coins : combien de ces coins sont des angles droits ?",
+            "enonce": "Sur ton cahier, trace une droite (d) et place un point A dessus. Trace la perpendiculaire à (d) qui passe par A. Autour de A, tes deux droites découpent quatre angles : combien de ces angles sont droits ?",
             "reponse_attendue": "4",
-            "indice": "Vérifie chaque coin avec l'équerre, un par un, en tournant autour de A."
+            "indice": "Vérifie chaque angle avec l'équerre, un par un, en tournant autour de A."
           },
           {
             "id": 5,

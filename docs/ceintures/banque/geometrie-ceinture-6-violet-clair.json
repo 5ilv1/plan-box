@@ -1176,7 +1176,7 @@
     },
     "diagnostic": [
       {
-        "question": "Sur une figure, un petit carré est dessiné au sommet B, dans le coin. Que signifie ce codage ?",
+        "question": "Sur une figure, un petit carré est dessiné au sommet B. Que signifie ce codage ?",
         "options": [
           "que le côté [AB] mesure 1 cm",
           "que l'angle en B est un angle droit",
@@ -1184,7 +1184,7 @@
           "que la figure entière est un carré"
         ],
         "reponse_correcte": 1,
-        "explication": "Le petit carré posé dans un coin est le codage de l'angle droit. Il ne renseigne ni sur les longueurs ni sur la nature de la figure entière."
+        "explication": "Le petit carré posé à un sommet est le codage de l'angle droit. Il ne renseigne ni sur les longueurs ni sur la nature de la figure entière."
       },
       {
         "question": "Lila doit reproduire un quadrilatère codé. Le côté [AB] mesure 7 cm et le côté [CD] porte le même nombre de traits que [AB]. Que doit-elle faire ?",

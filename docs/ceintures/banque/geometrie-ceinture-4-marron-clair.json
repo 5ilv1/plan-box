@@ -1963,7 +1963,7 @@
         },
         {
           "phrase": "Un triangle de côtés 5 cm, 5 cm et 5 cm.",
-          "demonstration": "Les trois côtés sont égaux : il est équilatéral. À l'équerre, aucun de ses coins n'est un angle droit."
+          "demonstration": "Les trois côtés sont égaux : il est équilatéral. À l'équerre, aucun de ses angles n'est droit."
         }
       ],
       "piege": "Un triangle qui a un angle droit reste rectangle, même posé de travers."
@@ -1981,7 +1981,7 @@
         "explication": "Deux côtés de la même longueur, c'est un triangle isocèle. S'il en avait trois, il serait équilatéral."
       },
       {
-        "question": "Rosalie pose son équerre sur un coin de son triangle : le coin est un angle droit. Comment s'appelle ce triangle ?",
+        "question": "Rosalie pose son équerre sur un angle de son triangle : cet angle est droit. Comment s'appelle ce triangle ?",
         "options": [
           "un triangle équilatéral",
           "un triangle isocèle",
@@ -2441,7 +2441,7 @@
               "3"
             ],
             "reponse_correcte": 1,
-            "explication": "Un triangle rectangle possède exactement un angle droit ; ses deux autres coins sont plus fermés."
+            "explication": "Un triangle rectangle possède exactement un angle droit ; ses deux autres angles sont plus fermés."
           }
         ]
       }
