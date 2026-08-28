@@ -200,7 +200,7 @@
           "On ne peut pas le savoir"
         ],
         "reponse_correcte": 2,
-        "explication": "« Hier » et le verbe « a perdu » disent que l'action est déjà finie : c'est le passé."
+        "explication": "« L'an dernier » et le verbe « a déménagé » disent que l'action est déjà finie : c'est le passé."
       },
       {
         "question": "« Demain, Malo plantera un arbre dans la cour. » Quand se passe l'action ?",
@@ -471,15 +471,15 @@
           },
           {
             "id": 3,
-            "enonce": "Écris le verbe : Fatou raconte une histoire drôle.",
-            "reponse_attendue": "raconte",
-            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
+            "enonce": "Écris le verbe : Adam secoue son parapluie.",
+            "reponse_attendue": "secoue",
+            "indice": "Mets la phrase à la forme négative, puis recopie le mot encadré tel qu'il est écrit ici."
           },
           {
             "id": 4,
             "enonce": "Écris le verbe : Le chat dort sous la table.",
             "reponse_attendue": "dort",
-            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 5,
@@ -491,13 +491,13 @@
             "id": 6,
             "enonce": "Écris le verbe : Nous chantons dans la cour.",
             "reponse_attendue": "chantons",
-            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
+            "indice": "Mets la phrase à la forme négative, puis recopie le mot encadré tel qu'il est écrit ici."
           },
           {
             "id": 7,
             "enonce": "Écris le verbe : Sacha remplit sa gourde.",
             "reponse_attendue": "remplit",
-            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 8,
@@ -515,25 +515,25 @@
             "id": 1,
             "enonce": "Écris le verbe : Louna prépare son cartable.",
             "reponse_attendue": "prépare",
-            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 2,
             "enonce": "Écris le verbe : Le vent souffle très fort.",
             "reponse_attendue": "souffle",
-            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
+            "indice": "Dis la phrase avec « ne … pas » : le mot qui se retrouve entre les deux, c'est le verbe."
           },
           {
             "id": 3,
             "enonce": "Écris le verbe : Vous écoutez la maîtresse.",
             "reponse_attendue": "écoutez",
-            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
+            "indice": "Mets la phrase à la forme négative, puis recopie le mot encadré tel qu'il est écrit ici."
           },
           {
             "id": 4,
             "enonce": "Écris le verbe : Inès plie sa feuille en deux.",
             "reponse_attendue": "plie",
-            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 5,
@@ -545,13 +545,13 @@
             "id": 6,
             "enonce": "Écris le verbe : Malo pousse la porte de la classe.",
             "reponse_attendue": "pousse",
-            "indice": "Mets la phrase à la forme négative : le mot encadré est le verbe."
+            "indice": "Mets la phrase à la forme négative, puis recopie le mot encadré tel qu'il est écrit ici."
           },
           {
             "id": 7,
             "enonce": "Écris le verbe : Je remplis mon verre d'eau.",
             "reponse_attendue": "remplis",
-            "indice": "Dis la phrase avec « ne … pas », puis recopie le mot encadré tel qu'il est écrit."
+            "indice": "Encadre avec « ne … pas ». Devant une voyelle, « ne » devient « n' », mais le mot encadré reste le verbe."
           },
           {
             "id": 8,
@@ -588,7 +588,7 @@
     },
     "diagnostic": [
       {
-        "question": "Dans quelle phrase le mot au pluriel est-il bien écrit ?",
+        "question": "Dans quelle phrase tous les mots sont-ils bien écrits ?",
         "options": [
           "Timéo range ses cahier dans son casier.",
           "Timéo range son cahiers dans son casier.",
@@ -599,7 +599,7 @@
         "explication": "« ses cahiers » : quand il y en a plusieurs, le nom prend un -s."
       },
       {
-        "question": "Dans quelle phrase le pluriel est-il bien écrit ?",
+        "question": "Une seule de ces phrases est écrite sans faute de pluriel. Laquelle ?",
         "options": [
           "Les élève écoutent la maîtresse.",
           "Les élèves écoutent la maîtresse.",

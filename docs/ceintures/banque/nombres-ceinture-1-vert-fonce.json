@@ -175,7 +175,7 @@
         },
         {
           "phrase": "3 unités, 7 centaines et 0 dizaine.",
-          "demonstration": "Je place 7 aux centaines, 0 aux dizaines, 3 aux unités : je lis 703, et non 373."
+          "demonstration": "Je place 7 aux centaines, 0 aux dizaines, 3 aux unités : je lis 703, et non 370."
         }
       ],
       "piege": "Un zéro ne se supprime pas : sans lui, 703 deviendrait 73."
@@ -319,10 +319,11 @@
     "item_code": "N14",
     "type": "exercice",
     "lecon": {
-      "titre": "Décomposer et encadrer",
+      "titre": "Décomposer, comparer, encadrer",
       "regle": "Un nombre à trois chiffres se décompose en centaines, dizaines et unités : 528 = 500 + 20 + 8.",
       "procedure": [
         "Pour décomposer, écris la valeur de chaque chiffre.",
+        "Pour comparer, regarde d'abord les centaines ; si elles sont égales, compare les dizaines, puis les unités.",
         "À la dizaine, mets un 0 aux unités, puis ajoute une dizaine pour la borne du haut.",
         "À la centaine, mets un 0 aux dizaines et aux unités, puis ajoute une centaine."
       ],
@@ -330,6 +331,10 @@
         {
           "phrase": "Écris en chiffres 900 + 40 + 2.",
           "demonstration": "9 centaines, 4 dizaines, 2 unités : j'écris 942."
+        },
+        {
+          "phrase": "Quel est le plus grand : 478 ou 487 ?",
+          "demonstration": "Même chiffre aux centaines : 4 et 4. Je compare les dizaines : 8 dizaines, c'est plus que 7. C'est 487."
         },
         {
           "phrase": "Encadre 368 à la centaine.",
@@ -414,6 +419,12 @@
             "enonce": "Quel nombre vient juste avant 410 ?",
             "reponse_attendue": "409",
             "indice": "Enlève 1 : tu changes de dizaine."
+          },
+          {
+            "id": 9,
+            "enonce": "Quel est le plus grand : 439 ou 493 ?",
+            "reponse_attendue": "493",
+            "indice": "Les centaines sont les mêmes : regarde les dizaines."
           }
         ]
       },
@@ -468,6 +479,12 @@
             "enonce": "Quel nombre vient juste avant 300 ?",
             "reponse_attendue": "299",
             "indice": "Enlève 1 : tu changes de centaine."
+          },
+          {
+            "id": 9,
+            "enonce": "Quel est le plus petit : 208 ou 280 ?",
+            "reponse_attendue": "208",
+            "indice": "Les centaines sont les mêmes : regarde les dizaines."
           }
         ]
       }

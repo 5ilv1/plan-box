@@ -145,15 +145,15 @@
         "consigne": "Choisis la mesure la plus vraisemblable.",
         "questions": [
           {
-            "question": "La hauteur d'une porte est d'environ :",
+            "question": "La hauteur d'une salle de classe est d'environ :",
             "options": [
-              "2 m",
-              "20 m",
-              "2 cm",
-              "20 cm"
+              "3 m",
+              "30 m",
+              "3 cm",
+              "30 cm"
             ],
             "reponse_correcte": 0,
-            "explication": "Un adulte passe une porte sans se baisser : elle mesure un peu plus que sa taille, environ 2 m."
+            "explication": "Une salle de classe est un peu plus haute qu'une porte : environ 3 m. 30 m, ce serait un immeuble de dix étages."
           },
           {
             "question": "La masse d'un œuf est d'environ :",
@@ -290,8 +290,8 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "Timéo équilibre sa trousse avec une masse de 200 g et une masse de 50 g. Combien de grammes pèse sa trousse ?",
-            "reponse_attendue": "250",
+            "enonce": "Timéo équilibre sa trousse avec une masse de 200 g et une masse de 20 g. Combien de grammes pèse sa trousse ?",
+            "reponse_attendue": "220",
             "indice": "Additionne les deux masses marquées."
           },
           {
@@ -320,8 +320,8 @@
           },
           {
             "id": 6,
-            "enonce": "Inès veut peser exactement 350 g de farine. Elle a déjà posé une masse de 200 g et une masse de 100 g. Combien de grammes doit-elle encore poser ?",
-            "reponse_attendue": "50",
+            "enonce": "Inès veut peser exactement 370 g de farine. Elle a déjà posé une masse de 200 g et une masse de 100 g. Combien de grammes doit-elle encore poser ?",
+            "reponse_attendue": "70",
             "indice": "Cherche ce qu'il faut ajouter à ce qui est déjà posé pour atteindre le total voulu."
           },
           {
@@ -652,16 +652,16 @@
           {
             "question": "Comment dit-on autrement l'heure indiquée par cette horloge ?",
             "options": [
-              "cinq heures moins le quart",
-              "quatre heures et quart",
-              "quatre heures et demie",
-              "cinq heures et quart"
+              "deux heures moins le quart",
+              "une heure et quart",
+              "une heure et demie",
+              "deux heures et quart"
             ],
             "reponse_correcte": 0,
-            "explication": "L'horloge marque 4 h 45 : il manque un quart d'heure avant 5 h.",
+            "explication": "L'horloge marque 1 h 45 : il manque un quart d'heure avant 2 h.",
             "figure": {
               "type": "cadran",
-              "heures": 4,
+              "heures": 1,
               "minutes": 45
             }
           },

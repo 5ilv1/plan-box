@@ -133,13 +133,13 @@
           },
           {
             "id": 7,
-            "enonce": "9 × 7",
-            "reponse": "63"
+            "enonce": "9 × 8",
+            "reponse": "72"
           },
           {
             "id": 8,
-            "enonce": "8 × 7",
-            "reponse": "56"
+            "enonce": "7 × 7",
+            "reponse": "49"
           }
         ]
       }

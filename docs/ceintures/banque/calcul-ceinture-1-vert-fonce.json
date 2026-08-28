@@ -29,21 +29,21 @@
           "4 + 4 + 4 + 4",
           "4 × 5",
           "5 + 4",
-          "4 × 4"
+          "5 × 5"
         ],
         "reponse_correcte": 1,
         "explication": "Le nombre 5 est additionné 4 fois : c'est 4 fois 5, donc 4 × 5."
       },
       {
-        "question": "Dans un carton, il y a 10 œufs. Timéo achète 3 cartons. Quel calcul donne le nombre d'œufs ?",
+        "question": "Dans un carton, il y a 10 œufs. Timéo achète 3 cartons. Quelle addition donne le nombre d'œufs ?",
         "options": [
           "10 + 3",
-          "10 − 3",
-          "3 × 10",
-          "10 × 10"
+          "3 + 3 + 3",
+          "10 + 10 + 10",
+          "10 + 10 + 10 + 10"
         ],
         "reponse_correcte": 2,
-        "explication": "Le carton de 10 œufs se répète 3 fois : je multiplie 3 par 10."
+        "explication": "Le carton de 10 œufs se répète 3 fois : 10 + 10 + 10 = 30, c'est-à-dire 3 × 10."
       }
     ],
     "entrainement": [
@@ -97,7 +97,7 @@
           },
           {
             "id": 5,
-            "enonce": "Une place de cinéma coûte 5 euros. Malo achète 9 places pour son anniversaire. Combien paie-t-il ?",
+            "enonce": "Une place de cinéma coûte 5 euros. Malo achète 9 places pour son anniversaire. Combien d'euros paie-t-il ?",
             "resultat_attendu": "45",
             "phrase_reponse_attendue": "Malo paie 45 euros.",
             "mots_cles": [
@@ -169,7 +169,7 @@
           },
           {
             "id": 5,
-            "enonce": "Un livre coûte 5 euros. Adam en achète 6. Combien dépense-t-il ?",
+            "enonce": "Un livre coûte 5 euros. Adam en achète 6. Combien d'euros dépense-t-il ?",
             "resultat_attendu": "30",
             "phrase_reponse_attendue": "Adam dépense 30 euros.",
             "mots_cles": [

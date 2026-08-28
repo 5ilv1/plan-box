@@ -161,7 +161,7 @@
           },
           {
             "id": 3,
-            "question": "Une ligne bien droite, tracée à la règle, qui se prolonge des deux côtés sans jamais s'arrêter : comment l'appelle-t-on ?",
+            "question": "Un trait tracé à la règle, qui se prolonge des deux côtés sans jamais s'arrêter : comment l'appelle-t-on ?",
             "options": [
               "un segment",
               "un point",
@@ -385,7 +385,7 @@
           },
           {
             "id": 2,
-            "question": "Une ligne droite qui a un début et une fin, marqués par deux points : comment s'appelle-t-elle ?",
+            "question": "Un trait qui a un début et une fin, marqués par deux points : comment s'appelle-t-il ?",
             "options": [
               "une droite",
               "un milieu",
@@ -631,7 +631,7 @@
           "Trois côtés sont égaux et le quatrième est plus court."
         ],
         "reponse_correcte": 0,
-        "explication": "Le carré a 4 côtés de la même longueur. Quand deux côtés sont longs et deux sont courts, la figure est un rectangle."
+        "explication": "Le carré a 4 côtés de la même longueur. Quand une figure a 4 angles droits avec deux côtés longs et deux côtés courts, c'est un rectangle."
       },
       {
         "question": "Inès dit : « Ma figure a 4 côtés et 4 angles droits, mais ses côtés n'ont pas tous la même longueur. » Quelle figure a-t-elle dessinée ?",

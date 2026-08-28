@@ -6,7 +6,7 @@
       "titre": "Écrire un nombre en chiffres",
       "regle": "Dans un nombre plus petit que 10000, le mot « mille » sépare les milliers des centaines, dizaines et unités.",
       "procedure": [
-        "Repère le mot « mille » : ce qui est dit avant donne le chiffre des milliers.",
+        "Repère le mot « mille » : ce qui est dit avant donne le chiffre des milliers, et si rien n'est dit avant, ce chiffre est 1.",
         "Écris ensuite les centaines, les dizaines et les unités du groupe qui suit.",
         "Mets un 0 à chaque rang qui n'est pas cité."
       ],
@@ -193,15 +193,15 @@
         "explication": "Les quatre nombres ont le même chiffre des milliers : tu compares les centaines, puis les dizaines."
       },
       {
-        "question": "Rosalie range 4205, 4025 et 4250 du plus petit au plus grand. Quel nombre écrit-elle en dernier ?",
+        "question": "Rosalie range 4205, 4025, 4250 et 4052 du plus petit au plus grand. Quel nombre écrit-elle en dernier ?",
         "options": [
           "4205",
           "4025",
           "4250",
-          "4520"
+          "4052"
         ],
         "reponse_correcte": 2,
-        "explication": "En dernier, on écrit le plus grand. Les trois nombres ont 4 milliers : 2 centaines pour deux d'entre eux, et 4250 a le plus de dizaines."
+        "explication": "En dernier, on écrit le plus grand. Les quatre nombres ont 4 milliers : compare les centaines, 4205 et 4250 en ont 2, les deux autres aucune ; entre ces deux-là, 4250 a le plus de dizaines."
       }
     ],
     "entrainement": [

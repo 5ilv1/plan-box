@@ -29,7 +29,7 @@
           "190",
           "181",
           "200",
-          "900"
+          "280"
         ],
         "reponse_correcte": 0,
         "explication": "De 10 en 10, tu ajoutes 10 : 180 + 10 = 190."
@@ -40,7 +40,7 @@
           "370",
           "1360",
           "460",
-          "3600"
+          "361"
         ],
         "reponse_correcte": 2,
         "explication": "De 100 en 100, seul le nombre de centaines augmente de 1 : 360 + 100 = 460."
@@ -146,7 +146,7 @@
     "type": "exercice",
     "lecon": {
       "titre": "Les nombres jusqu'à 100",
-      "regle": "Un nombre plus petit que 100 s'écrit avec son chiffre des dizaines, puis son chiffre des unités.",
+      "regle": "Un nombre de deux chiffres s'écrit avec son chiffre des dizaines, puis son chiffre des unités.",
       "procedure": [
         "Pour écrire un nombre en chiffres, dis combien il a de dizaines, puis combien d'unités.",
         "Pour comparer, regarde d'abord les dizaines ; si elles sont égales, compare les unités.",
@@ -231,13 +231,13 @@
           },
           {
             "id": 7,
-            "enonce": "Encadre 63 entre deux dizaines entières : 60 < 63 < … Quel nombre manque ?",
+            "enonce": "Encadre 63 entre deux dizaines entières qui se suivent : 60 < 63 < … Quel nombre manque ?",
             "reponse_attendue": "70",
             "indice": "Cherche la dizaine entière juste au-dessus."
           },
           {
             "id": 8,
-            "enonce": "Encadre 38 entre deux dizaines entières : … < 38 < 40. Quel nombre manque ?",
+            "enonce": "Encadre 38 entre deux dizaines entières qui se suivent : … < 38 < 40. Quel nombre manque ?",
             "reponse_attendue": "30",
             "indice": "Cherche la dizaine entière juste en dessous."
           }
@@ -285,13 +285,13 @@
           },
           {
             "id": 7,
-            "enonce": "Encadre 47 entre deux dizaines entières : 40 < 47 < … Quel nombre manque ?",
+            "enonce": "Encadre 47 entre deux dizaines entières qui se suivent : 40 < 47 < … Quel nombre manque ?",
             "reponse_attendue": "50",
             "indice": "Cherche la dizaine entière juste au-dessus."
           },
           {
             "id": 8,
-            "enonce": "Encadre 24 entre deux dizaines entières : … < 24 < 30. Quel nombre manque ?",
+            "enonce": "Encadre 24 entre deux dizaines entières qui se suivent : … < 24 < 30. Quel nombre manque ?",
             "reponse_attendue": "20",
             "indice": "Cherche la dizaine entière juste en dessous."
           }
@@ -327,7 +327,7 @@
         "question": "Sur une droite graduée de 0 à 100 avec un repère tous les 10, quel nombre est écrit au 5e repère après 0 ?",
         "options": [
           "5",
-          "15",
+          "40",
           "50",
           "500"
         ],

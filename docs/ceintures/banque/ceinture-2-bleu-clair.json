@@ -280,7 +280,7 @@
       "procedure": [
         "Pose la question « Qui est-ce qui… ? » devant le verbe pour trouver le sujet.",
         "Ce sujet désigne-t-il un seul être — « il », « elle » — ou plusieurs — « ils », « elles » ?",
-        "Un seul : écris -e. Plusieurs : écris -ent."
+        "Remplaçable par « il » ou « elle » : écris -e. Remplaçable par « ils » ou « elles » : écris -ent."
       ],
       "exemples": [
         {
@@ -292,7 +292,7 @@
           "demonstration": "Qui est-ce qui grimpe ? Les élèves : plusieurs, c'est « ils » → j'écris « grimpent »."
         }
       ],
-      "piege": "-e et -ent se prononcent pareil : compte les êtres du sujet, ne te fie pas à ton oreille."
+      "piege": "-e et -ent se prononcent pareil : remplace le sujet par un pronom, ne te fie pas à ton oreille. Attention : « nous » et « vous » désignent eux aussi plusieurs personnes, et pourtant le verbe n'y prend pas -ent (nous parlons, vous parlez)."
     },
     "diagnostic": [
       {

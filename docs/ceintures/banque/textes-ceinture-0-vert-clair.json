@@ -8,7 +8,7 @@
       "procedure": [
         "Regarde le tout premier mot : a-t-il une majuscule ?",
         "Regarde le tout dernier signe : y a-t-il un point ?",
-        "La seule réponse « non » te dit ce qui manque."
+        "Si tu as répondu « oui » deux fois, la phrase est correcte ; sinon, le « non » te dit ce qui manque."
       ],
       "exemples": [
         {
@@ -284,10 +284,10 @@
           "Où habite Sacha ?",
           "Quel âge a Sacha ?",
           "Comment s'appelle le frère de Sacha ?",
-          "Que porte Sacha sur le nez ?"
+          "Que porte Sacha ?"
         ],
         "reponse_correcte": 3,
-        "explication": "Un morceau de texte ne répond qu'à une seule question : ici, il dit ce que Sacha porte, pas où il habite ni son âge."
+        "explication": "Ce morceau parle de ce que Sacha porte : il ne dit ni où il habite, ni quel âge il a, ni comment s'appelle son frère. Avant de recopier, vérifie que le morceau répond bien à la question posée."
       }
     ],
     "entrainement": [
@@ -310,7 +310,7 @@
             "id": 2,
             "question": "D'où vient Rosalie ?",
             "choix": [
-              "du préau de l'école",
+              "de la grande école de la ville, tout près d'ici",
               "de la table de Timéo",
               "d'une petite école au bord de la mer",
               "de la fenêtre de la classe"
@@ -333,7 +333,7 @@
             "question": "À qui était le gilet que porte Rosalie ?",
             "choix": [
               "à Timéo",
-              "à la maîtresse",
+              "à la maîtresse de son ancienne école",
               "à sa mère",
               "à sa grande sœur"
             ],
@@ -352,10 +352,10 @@
           },
           {
             "id": 6,
-            "question": "Que Timéo a-t-il prêté à Rosalie le deuxième jour ?",
+            "question": "Qu'est-ce que Timéo a prêté à Rosalie le deuxième jour ?",
             "choix": [
               "son taille-crayon",
-              "son cartable",
+              "son cahier de dessin plein de chevaux",
               "son élastique",
               "son carnet"
             ],
@@ -383,7 +383,7 @@
             "question": "Comment est la barbe de Papi Gino ?",
             "choix": [
               "une barbe blanche très courte",
-              "des lunettes rondes",
+              "des lunettes rondes posées sur la table de la cuisine",
               "une canne en bois",
               "un toit rouge"
             ],
@@ -415,7 +415,7 @@
             "id": 5,
             "question": "Que font Yanis et son grand-père quand il pleut ?",
             "choix": [
-              "ils s'occupent du jardin",
+              "ils s'occupent du jardin et ils restent dehors tout l'après-midi",
               "ils sortent la boîte de dominos et ils écoutent la radio",
               "ils partent en Italie",
               "ils cherchent les lunettes de Papi Gino"
@@ -539,7 +539,7 @@
               "Jade lit une bande dessinée et elle rit toute seule.",
               "Jade lit une bande dessinée elle rit et toute seule.",
               "Et Jade lit une bande dessinée elle rit toute seule.",
-              "Jade lit une bande dessinée et. elle rit toute seule."
+              "Jade lit une bande dessinée et. Elle rit toute seule."
             ],
             "reponse_correcte": 0,
             "explication": "On garde une seule phrase, avec « et » entre les deux idées et un seul point à la fin."

@@ -434,15 +434,15 @@
     },
     "diagnostic": [
       {
-        "question": "Combien faut-il ajouter à 60 pour aller à 100 ?",
+        "question": "Combien faut-il ajouter à 47 pour aller à 100 ?",
         "options": [
-          "40",
-          "30",
-          "140",
-          "4"
+          "53",
+          "63",
+          "43",
+          "57"
         ],
         "reponse_correcte": 0,
-        "explication": "60, c'est 6 dizaines ; il en manque 4 pour faire 10 dizaines : 60 + 40 = 100."
+        "explication": "47 + 3 = 50, puis 50 + 50 = 100 : il faut 53. Les unités vont jusqu'à 10 (7 + 3), mais les dizaines seulement jusqu'à 9 (4 + 5) : 63 est l'erreur la plus fréquente."
       },
       {
         "question": "Quel nombre complète 480 pour aller à 1 000 ?",

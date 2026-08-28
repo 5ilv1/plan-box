@@ -89,17 +89,17 @@
             "id": 3,
             "question": "Quelle heure indique cette horloge ?",
             "options": [
-              "2 h 55",
-              "3 h 55",
-              "11 h 10",
-              "2 h 11"
+              "2 h 40",
+              "3 h 40",
+              "8 h 10",
+              "2 h 08"
             ],
             "reponse_correcte": 0,
-            "explication": "La petite aiguille est presque sur le 3, mais elle ne l'a pas atteint : il est encore 2 h. Le 11 vaut 55 minutes.",
+            "explication": "La grande aiguille est sur le 8 : 8 × 5 = 40 minutes. La petite a dépassé le 2 sans atteindre le 3 : il est 2 h.",
             "figure": {
               "type": "cadran",
               "heures": 2,
-              "minutes": 55
+              "minutes": 40
             }
           },
           {
@@ -252,17 +252,17 @@
             "id": 4,
             "question": "Quelle heure indique cette horloge ?",
             "options": [
-              "6 h 55",
-              "7 h 55",
-              "6 h 11",
-              "5 h 55"
+              "6 h 35",
+              "7 h 35",
+              "5 h 35",
+              "6 h 07"
             ],
             "reponse_correcte": 0,
-            "explication": "La petite aiguille est tout près du 7 mais ne l'a pas atteint : il est encore 6 h. Le 11 vaut 55 minutes.",
+            "explication": "La grande aiguille est sur le 7 : 7 × 5 = 35 minutes. La petite a dépassé le 6 sans atteindre le 7 : il est 6 h.",
             "figure": {
               "type": "cadran",
               "heures": 6,
-              "minutes": 55
+              "minutes": 35
             }
           },
           {

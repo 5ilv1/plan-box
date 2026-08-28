@@ -7,7 +7,7 @@
       "regle": "Dans un polygone, un côté est un segment du contour, un sommet est un coin où deux côtés se rejoignent, et un angle est l'ouverture formée à ce sommet.",
       "procedure": [
         "Pour compter les côtés, suis le contour et compte les segments.",
-        "Pour compter les sommets, compte les sommets, là où le tracé change de direction.",
+        "Pour compter les sommets, compte les coins, là où le tracé change de direction.",
         "Retiens qu'un polygone a autant de côtés que de sommets et d'angles."
       ],
       "exemples": [
@@ -671,7 +671,7 @@
               "8"
             ],
             "reponse_correcte": 1,
-            "explication": "Un cube a 6 faces : le dessus, le dessous et les 4 côtés."
+            "explication": "Un cube a 6 faces : celle du dessus, celle du dessous et les 4 faces autour."
           },
           {
             "id": 3,
@@ -754,7 +754,7 @@
               "12"
             ],
             "reponse_correcte": 0,
-            "explication": "Un pavé droit a 6 faces, comme un cube : le dessus, le dessous et les 4 côtés."
+            "explication": "Un pavé droit a 6 faces, comme un cube : celle du dessus, celle du dessous et les 4 faces autour."
           },
           {
             "id": 2,
@@ -1109,44 +1109,7 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "Les droites d1 et d2 sont-elles perpendiculaires ?",
-            "reponse_attendue": "oui",
-            "indice": "Pose le coin de ton équerre sur leur croisement et regarde si les deux droites suivent les deux bords.",
-            "figure": {
-              "type": "polygone",
-              "grille": {
-                "colonnes": 9,
-                "lignes": 7
-              },
-              "segments": [
-                {
-                  "de": [
-                    3,
-                    1
-                  ],
-                  "a": [
-                    3,
-                    6
-                  ],
-                  "nom": "d1"
-                },
-                {
-                  "de": [
-                    1,
-                    4
-                  ],
-                  "a": [
-                    8,
-                    4
-                  ],
-                  "nom": "d2"
-                }
-              ]
-            }
-          },
-          {
-            "id": 2,
-            "enonce": "Les droites d3 et d4 sont-elles perpendiculaires ?",
+            "enonce": "Sur cette figure, les droites d1 et d2 sont-elles perpendiculaires ?",
             "reponse_attendue": "non",
             "indice": "Deux droites qui se croisent ne forment pas toujours un angle droit : vérifie avec le coin de l'équerre.",
             "figure": {
@@ -1165,7 +1128,7 @@
                     8,
                     2
                   ],
-                  "nom": "d3"
+                  "nom": "d1"
                 },
                 {
                   "de": [
@@ -1175,6 +1138,43 @@
                   "a": [
                     6,
                     6
+                  ],
+                  "nom": "d2"
+                }
+              ]
+            }
+          },
+          {
+            "id": 2,
+            "enonce": "Sur cette figure, les droites d3 et d4 sont-elles perpendiculaires ?",
+            "reponse_attendue": "oui",
+            "indice": "Pose le coin de ton équerre sur leur croisement et regarde si les deux droites suivent les deux bords.",
+            "figure": {
+              "type": "polygone",
+              "grille": {
+                "colonnes": 9,
+                "lignes": 7
+              },
+              "segments": [
+                {
+                  "de": [
+                    3,
+                    1
+                  ],
+                  "a": [
+                    3,
+                    6
+                  ],
+                  "nom": "d3"
+                },
+                {
+                  "de": [
+                    1,
+                    4
+                  ],
+                  "a": [
+                    8,
+                    4
                   ],
                   "nom": "d4"
                 }

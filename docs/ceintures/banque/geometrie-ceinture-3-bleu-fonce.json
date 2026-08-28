@@ -570,7 +570,7 @@
               "Elles se coupent déjà sur le dessin."
             ],
             "reponse_correcte": 0,
-            "explication": "Les deux traits n'ont pas la même longueur, mais ils montent tous les deux de 1 carreau pour 2 carreaux vers la droite : les droites sont parallèles.",
+            "explication": "Les deux traits n'ont pas la même longueur et ne commencent pas au même endroit, mais ils montent tous les deux de 1 carreau pour 2 carreaux vers la droite : l'écart vaut 4 carreaux partout, les droites sont parallèles.",
             "figure": {
               "type": "polygone",
               "grille": {
@@ -581,21 +581,21 @@
                 {
                   "de": [
                     1,
-                    2
+                    4
                   ],
                   "a": [
-                    5,
-                    4
+                    7,
+                    7
                   ],
                   "nom": "d1"
                 },
                 {
                   "de": [
-                    4,
+                    3,
                     1
                   ],
                   "a": [
-                    8,
+                    7,
                     3
                   ],
                   "nom": "d2"
@@ -742,7 +742,7 @@
       "procedure": [
         "Cherche d'abord une surface courbe : la boule, le cylindre et le cône en ont une.",
         "Compte alors les faces plates : zéro pour la boule, une pour le cône, deux pour le cylindre.",
-        "Sinon, regarde la forme des faces : six carrés pour le cube, six rectangles pour le pavé droit, un carré et quatre triangles pour la pyramide."
+        "Sinon, regarde la forme des faces : six carrés pour le cube, six rectangles pour le pavé droit, un carré et quatre triangles pour la pyramide à base carrée."
       ],
       "exemples": [
         {
@@ -782,8 +782,8 @@
     ],
     "entrainement": [
       {
-        "titre": "Quel solide se cache derrière la description ?",
-        "consigne": "Lis la description, puis choisis le solide qui lui correspond.",
+        "titre": "Les solides et leurs faces",
+        "consigne": "Lis chaque question, puis choisis la bonne réponse.",
         "questions": [
           {
             "id": 1,

@@ -332,7 +332,7 @@
       "titre": "Accorder le déterminant",
       "regle": "Le déterminant prend le genre et le nombre du nom qu'il accompagne.",
       "procedure": [
-        "Repère le nom placé juste après le trou.",
+        "Repère le nom qui suit le trou : il y a parfois un adjectif entre les deux.",
         "Dis s'il est masculin ou féminin, singulier ou pluriel.",
         "Garde le déterminant du même genre et du même nombre ; devant une voyelle, prends la forme qui s'y accroche."
       ],
@@ -378,15 +378,15 @@
         "consigne": "Choisis le seul déterminant qui s'accorde avec le nom de la phrase.",
         "questions": [
           {
-            "question": "Nour pose ___ trousse sur la table.",
+            "question": "Nour pose ___ gomme sur la table.",
             "options": [
               "son",
               "ses",
               "sa",
-              "cette"
+              "ces"
             ],
             "reponse_correcte": 2,
-            "explication": "« trousse » est féminin singulier : le possessif est « sa »."
+            "explication": "« gomme » est féminin singulier : le possessif est « sa »."
           },
           {
             "question": "Louna a mis ___ nouvelle robe pour la photo de classe.",
@@ -581,7 +581,7 @@
         },
         {
           "phrase": "Sacha a peur ___ l'orage.",
-          "demonstration": "Ici, c'est le verbe qui décide : on dit toujours « avoir peur de » ; « peur avec », « peur pour » n'existent pas → j'écris « de »."
+          "demonstration": "Ici, c'est le verbe qui décide : on dit « avoir peur de quelque chose » ; « peur avec l'orage » sonne faux → j'écris « de »."
         }
       ],
       "piege": "Quand deux mots semblent possibles, choisis celui qui va avec le verbe de la phrase, pas celui qui te vient en premier."

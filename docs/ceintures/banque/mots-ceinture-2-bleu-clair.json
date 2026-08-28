@@ -6,7 +6,7 @@
       "titre": "Les mots invariables sans faute",
       "regle": "Un mot invariable garde toujours la même orthographe, avec ses accents et ses lettres muettes.",
       "procedure": [
-        "Lis la parenthèse : elle donne le sens du mot et sa première lettre.",
+        "Lis la parenthèse : elle donne le sens du mot, et souvent sa première lettre ou sa longueur.",
         "Cherche un mot plus court caché à l'intérieur : il t'aide à ne rien oublier.",
         "Écris le mot, puis vérifie sa fin : accent, lettre muette."
       ],
@@ -20,7 +20,7 @@
           "demonstration": "J'écris « d'abord » : une apostrophe après le d, et un d muet à la fin."
         }
       ],
-      "piege": "Ces mots ne prennent jamais de s de pluriel."
+      "piege": "Ces mots ne changent jamais, même quand plusieurs personnes font l'action. Mais attention : le s de « alors », « puis », « depuis » ou « longtemps » fait partie du mot, il ne s'enlève jamais."
     },
     "diagnostic": [
       {
@@ -85,7 +85,7 @@
             "id": 6,
             "enonce": "Il est huit heures : la classe commence ___. (en ce moment ; le mot commence par m)",
             "reponse_attendue": "maintenant",
-            "indice": "Deux fois les lettres -na-, et -ant à la fin."
+            "indice": "On y voit « main » au début, et il se termine par -ant."
           },
           {
             "id": 7,
@@ -151,7 +151,7 @@
             "id": 6,
             "enonce": "Rosalie a terminé son travail : elle peut ___ lire. (en ce moment, tout de suite ; le mot commence par m)",
             "reponse_attendue": "maintenant",
-            "indice": "Deux fois les lettres -na-, et -ant à la fin."
+            "indice": "On y voit « main » au début, et il se termine par -ant."
           },
           {
             "id": 7,
@@ -620,15 +620,15 @@
         "explication": "Le pronom remplace « Lila et Malo » : plusieurs personnes, dont un garçon, donc « ils »."
       },
       {
-        "question": "Par quel pronom personnel sujet peux-tu remplacer « Sacha et Yanis » ?",
+        "question": "Par quel pronom personnel sujet peux-tu remplacer « Louna et moi » ?",
         "options": [
           "elles",
-          "nous",
           "vous",
+          "nous",
           "ils"
         ],
-        "reponse_correcte": 3,
-        "explication": "Deux garçons dont on parle : c'est « ils », le pronom de la 3e personne du pluriel."
+        "reponse_correcte": 2,
+        "explication": "Dans « Louna et moi », je fais partie de ceux qui font l'action et qui parlent : on dit « nous »."
       }
     ],
     "entrainement": [
