@@ -68,6 +68,7 @@ Les deux coexistent dans les progressions, assignations et résultats.
 | `evaluation_resultat` | Résultats d'évaluation |
 | `banque_exercices` | Banque d'exercices réutilisables |
 | `user_preferences` | Préférences UI (nav_order) |
+| `ceinture_choix_semaine` | Domaines de ceintures choisis par l'élève pour la semaine |
 
 ### Relations FK critiques
 Avant de supprimer un chapitre, nettoyer dans cet ordre :
@@ -89,6 +90,56 @@ Avant de supprimer un chapitre, nettoyer dans cet ordre :
 | `ecriture_contrainte` | `consigne`, `contraintes[]`, `nb_phrases` | Écriture libre avec contraintes |
 | `calcul_mental` | `questions[{expression, reponse}]` | Calcul mental |
 | `analyse_phrase` | `phrases[{phrase, analyse}]` | Analyse grammaticale |
+| `classement` | `categories[]`, `items[{texte, categorie}]` | Trier des éléments par catégorie |
+| `comparaison` | `paires[{gauche, droite, signe}]`, `avec_egalite` | Placer < ou > entre deux nombres |
+| `rangement` | `critere`, `series[{elements[]}]` | Ranger des étiquettes de gauche à droite |
+
+### Vérification des types numériques
+`comparaison` et `rangement` ne font **jamais** confiance à l'IA sur le résultat :
+- Le signe et l'ordre sont recalculés côté serveur (`lib/comparaison-nombres.ts`, `lib/rangement.ts`).
+- `evaluerNombre()` lit les écritures françaises — espaces de milliers, virgule décimale,
+  fractions, × ÷ — **et** les nombres en toutes lettres (« un-million-deux-cent-mille »).
+- Une paire ou une série non vérifiable est **écartée**, jamais servie fausse.
+- Interdits et filtrés : nombres relatifs (hors programme cycle 3) et formes belges/suisses
+  (septante, huitante, octante, nonante).
+- Le générateur demande 2 items de marge et coupe au nombre saisi après filtrage.
+
+## Génération IA — règles communes
+
+`lib/prompts-communs.ts` est injecté en `system` dans les 14 routes de génération :
+- **`REGLE_NOMBRES_EN_LETTRES`** : un nombre écrit en toutes lettres prend un trait d'union
+  entre TOUS ses éléments (`trois-cent-vingt-deux`). La règle n'impose pas d'écrire en
+  lettres — les chiffres restent libres. Français de France uniquement.
+- **`extraireJSON()`** : isole le premier objet JSON d'une réponse en suivant l'imbrication
+  des accolades. Les modèles ajoutent souvent une phrase après l'objet, ce qui fait échouer
+  un `JSON.parse` sur la réponse brute.
+
+## Tableau de bord élève
+
+Les blocs de `plan_travail` sont répartis en **trois paniers** par `repartirBlocs()`
+(`app/eleve/dashboard/page.tsx`), partagé par les trois points de chargement (PlanBox,
+Repetibox, rafraîchissement 30 s) :
+
+| Panier | Contenu |
+|--------|---------|
+| **En retard** | jour passé et `statut != 'fait'` → bandeau rouge, masqué s'il est vide |
+| **Aujourd'hui** | date du jour, ou `periodicite = 'semaine'`, ou ressource reportée |
+| **Reste de la semaine** | à venir, dans la semaine en cours |
+
+- La fenêtre de chargement remonte **7 jours avant le lundi** : le travail non fait la
+  semaine précédente ne disparaît pas au changement de semaine.
+- Dictées et mots sont exclus du rattrapage (activités de classe, `filtrerDicteesMotsJourStrict`).
+
+## Avatar élève
+
+Le customiseur vit **dans Plan Box** depuis la rentrée (`/eleve/avatar`), plus par SSO vers
+Repetibox : envoyer un CE2 dans l'autre application au milieu de son onboarding était fragile.
+L'avatar reste stocké dans `eleve.avatar_bigheads` (table Repetibox, base partagée) et suit
+donc l'élève dans les deux applications ; Repetibox garde son propre écran.
+
+⚠️ L'onboarding avatar **redirige hors du tableau de bord**. Toute autre fenêtre modale doit
+attendre l'état `avatarPret` du dashboard, sinon elle s'affiche une fraction de seconde avant
+la redirection.
 
 ## Ma P'tite Règle — Catégories
 
@@ -134,19 +185,19 @@ NEXT_PUBLIC_REPETIBOX_URL      # URL Repetibox
 - **Vercel** : auto-deploy sur push `main`
 - **URL prod** : https://plan-box-phi.vercel.app
 
-## Ceintures de compétences (français)
+## Ceintures de compétences
 
-Référentiel PIDAPI adapté : 3 domaines × 9 couleurs (vert clair → noir), 112 items.
+Référentiel PIDAPI adapté, étendu à 7 domaines × 9 couleurs (vert clair → noir).
 Conception et décisions dans `docs/ceintures/BRIEF.md`.
 
 **Règle d'architecture** : une ceinture est une ligne de `chapitres`
-(`sous_matiere = 'ceinture-mots|phrases|textes'`), un item est une ligne de
+(`sous_matiere = 'ceinture-<domaine>'`), un item est une ligne de
 `exercice` portant `contenu.item_code`. Tout le cycle entraînement → évaluation
 réutilise le moteur existant — ne pas en construire un second.
 
 | Table | Rôle |
 |-------|------|
-| `ceinture_domaine` | MOTS, PHRA, TEXT (les 4 domaines de maths viendront) |
+| `ceinture_domaine` | 7 domaines : MOTS, PHRA, TEXT (français) · NOMB, CALC, GRME, GEOM (maths) |
 | `ceinture_item` | le référentiel : code, ceinture, libellé, type d'exercice |
 | `ceinture_chapitre` | (domaine, ceinture_idx) → `chapitre_id` |
 | `ceinture_diagnostic` | une passation : questions, réponses, items acquis |
@@ -167,6 +218,20 @@ réutilise le moteur existant — ne pas en construire un second.
 - Non-régression obligatoire après toute modification de
   `app/eleve/chapitre/[id]/evaluation/page.tsx` :
   `node docs/ceintures/test-piocher.mjs` doit sortir « 0 exercice affecté ».
+
+### Affichage côté élève
+
+7 domaines (`sous_matiere = "ceinture-<domaine>"`, 9 couleurs chacun). Ils sont **filtrés**
+de la page Chapitres, de `mes-chapitres` et de la section « Chapitres & règles » du planning :
+ils ont leur propre parcours sur `/eleve/ceintures`.
+
+**Choix hebdomadaire** : l'élève choisit 2 domaines à sa première connexion de la semaine
+(quel que soit le jour — mardi la semaine de la rentrée). Seuls ces deux-là s'affichent sur
+son tableau de bord.
+- Table `ceinture_choix_semaine`, une ligne par élève et par lundi.
+- Choix initial + **UNE** modification : `nb_modifications` (contrainte `between 0 and 1`),
+  refus `409` côté API, bouton masqué côté élève.
+- API : `app/api/ceintures/choix-semaine/route.ts` · Fenêtre : `components/CeinturesSemaineModal.tsx`
 
 ## Changer d'année (remise à zéro)
 
