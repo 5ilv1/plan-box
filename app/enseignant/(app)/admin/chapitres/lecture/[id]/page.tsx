@@ -128,6 +128,8 @@ export default function PageChapitreLectureDetail() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const fileInputManuelRef = useRef<HTMLInputElement>(null);
   const fileInputCouvRef = useRef<HTMLInputElement>(null);
+  const fileInputEpubCouvRef = useRef<HTMLInputElement>(null);
+  const [erreurCouvEpub, setErreurCouvEpub] = useState("");
 
   useEffect(() => {
     // Seul appel qui remplit le formulaire d'infos : le premier.
@@ -195,6 +197,31 @@ export default function PageChapitreLectureDetail() {
       setErreurAutoInfos(err instanceof Error ? err.message : "Erreur");
     } finally {
       setEnAutoInfos(false);
+    }
+  }
+
+  /**
+   * Reprend la couverture (et l'auteur, s'il manque) d'un EPUB sans toucher aux
+   * chapitres : de quoi réparer une fiche vidée sans réimporter tout le livre.
+   */
+  async function couvertureDepuisEpub(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setErreurCouvEpub("");
+    setEnUploadCouv(true);
+    try {
+      const epub = await extraireEpub(file);
+      if (!epub.couverture) {
+        setErreurCouvEpub("Cet EPUB ne contient pas d'image de couverture.");
+        return;
+      }
+      setEditCouverture(await televerserCouverture(epub.couverture));
+      if (epub.auteur && !editAuteur.trim()) setEditAuteur(epub.auteur);
+    } catch (err) {
+      setErreurCouvEpub(err instanceof Error ? err.message : "EPUB illisible.");
+    } finally {
+      setEnUploadCouv(false);
+      if (fileInputEpubCouvRef.current) fileInputEpubCouvRef.current.value = "";
     }
   }
 
@@ -739,6 +766,27 @@ export default function PageChapitreLectureDetail() {
               >
                 {enUploadCouv ? "Upload…" : editCouverture ? "Changer" : "Ajouter une couverture"}
               </button>
+              <input
+                ref={fileInputEpubCouvRef}
+                type="file"
+                accept="application/epub+zip,.epub"
+                onChange={couvertureDepuisEpub}
+                style={{ display: "none" }}
+              />
+              <button
+                className="btn-secondary"
+                onClick={() => fileInputEpubCouvRef.current?.click()}
+                disabled={enUploadCouv}
+                title="Reprend la couverture de l'EPUB sans réimporter les chapitres"
+                style={{ width: "100%", fontSize: 12, padding: "6px 8px", marginTop: 4 }}
+              >
+                📗 Depuis l&apos;EPUB
+              </button>
+              {erreurCouvEpub && (
+                <p style={{ fontSize: 11, color: "#DC2626", marginTop: 4, lineHeight: 1.35 }}>
+                  {erreurCouvEpub}
+                </p>
+              )}
               {editCouverture && (
                 <button
                   className="btn-ghost"
