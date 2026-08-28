@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import { PlanTravail, Progression, Chapitre, Notification, TYPE_BLOC_CONFIG } from "@/types";
 import { CEINTURES } from "@/lib/ceintures";
+import CeinturesSemaineModal, { DomaineChoisissable } from "@/components/CeinturesSemaineModal";
 import ActivityCard from "@/components/ActivityCard";
 import NotifCard from "@/components/NotifCard";
 import Avatar from "@/components/Avatar";
@@ -72,6 +73,8 @@ const TYPE_BLOC_MS: Record<string, { icon: string; color: string; bg: string }> 
   probleme_maths:{ icon: "functions",    color: "#0D9488", bg: "rgba(13,148,136,0.1)" },
   ecriture:      { icon: "edit_note",    color: "#7C3AED", bg: "rgba(124,58,237,0.1)" },
   ceinture_multiplication: { icon: "military_tech", color: "#F59E0B", bg: "rgba(245,158,11,0.1)" },
+  comparaison: { icon: "compare_arrows", color: "#0D9488", bg: "rgba(13,148,136,0.1)" },
+  rangement: { icon: "sort", color: "#B45309", bg: "rgba(180,83,9,0.1)" },
 };
 
 function groupParChapitre(blocs: PlanTravail[]): ProgressionChapitre[] {
@@ -147,6 +150,37 @@ function filtrerBlocsConditionnels(blocs: PlanTravail[]): PlanTravail[] {
  * même si l'élève ne les a pas faites. Donc on exclut celles dont la
  * date_assignation ≠ aujourd'hui (passée comme future).
  */
+/**
+ * Répartit les blocs chargés en trois paniers : en retard (jour passé et non
+ * fait), aujourd'hui, et le reste de la semaine. Les blocs en périodicité
+ * « semaine » sont toujours du jour ; les ressources non faites des semaines
+ * précédentes gardent leur traitement « reporté » et ne sont pas en retard.
+ */
+function repartirBlocs(blocs: PlanTravail[], aujourd_hui: string, debut: string) {
+  const estReporte = (b: PlanTravail) =>
+    b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
+  const estEnRetard = (b: PlanTravail) =>
+    b.periodicite !== "semaine" &&
+    b.statut !== "fait" &&
+    b.date_assignation < aujourd_hui &&
+    !estReporte(b);
+
+  return {
+    enRetard: blocs.filter(estEnRetard),
+    aujourdhui: blocs.filter(
+      (b) => !estEnRetard(b) &&
+        (b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporte(b)),
+    ),
+    semaine: blocs.filter(
+      (b) => !estEnRetard(b) && b.periodicite !== "semaine" &&
+        b.date_assignation !== aujourd_hui && !estReporte(b) &&
+        // la fenêtre remonte 7 jours en arrière pour le rattrapage : ce qui
+        // précède le lundi n'appartient pas au « reste de la semaine »
+        b.date_assignation >= debut,
+    ),
+  };
+}
+
 function filtrerDicteesMotsJourStrict(blocs: PlanTravail[], aujourd_hui: string): PlanTravail[] {
   return blocs.filter((b) => {
     if (b.type !== "dictee" && b.type !== "mots") return true;
@@ -156,7 +190,7 @@ function filtrerDicteesMotsJourStrict(blocs: PlanTravail[], aujourd_hui: string)
 
 // ─── Cache stale-while-revalidate (sessionStorage) ────────────────────────────
 // Bump la version à chaque changement de shape pour invalider les caches obsolètes.
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const cacheKey = (id: string) => `pb_dash_${CACHE_VERSION}_${id}`;
 
 interface DashCache {
@@ -166,6 +200,7 @@ interface DashCache {
   progressionExos: ProgressionChapitre[];
   blocsAujourdhui: PlanTravail[];
   blocsSemaine: PlanTravail[];
+  blocsEnRetard: PlanTravail[];
   notifications: Notification[];
   chapitresRB: Array<{ chapitre_id: number; chapitre_nom: string; nb_cartes_dues: number; token_url: string }>;
   podcastsQcm: Array<{ id: string; titre: string; qcm_id: string }>;
@@ -220,6 +255,7 @@ export default function DashboardEleve() {
   const [progressionExos, setProgressionExos]       = useState<ProgressionChapitre[]>([]);
   const [blocsAujourdhui, setBlocsAujourdhui]       = useState<PlanTravail[]>([]);
   const [blocsSemaine, setBlocsSemaine]             = useState<PlanTravail[]>([]);
+  const [blocsEnRetard, setBlocsEnRetard]           = useState<PlanTravail[]>([]);
   const [notifications, setNotifications]           = useState<Notification[]>([]);
   const [chapitresRB, setChapitresRB]               = useState<Array<{ chapitre_id: number; chapitre_nom: string; nb_cartes_dues: number; token_url: string }>>([]);
   const [podcastsQcm, setPodcastsQcm]               = useState<Array<{ id: string; titre: string; qcm_id: string }>>([]);
@@ -237,8 +273,18 @@ export default function DashboardEleve() {
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
   const [ceinturesFrancais, setCeinturesFrancais] = useState<{
     couleurCourante: { nom: string; hex: string; hexFond: string } | null;
-    domaines: Array<{ code: string; nom: string; couleurCourante: { hex: string } | null }>;
+    domaines: Array<{ code: string; slug?: string; nom: string; icone?: string; commence?: boolean; couleurCourante: { nom?: string; hex: string; hexFond?: string } | null }>;
   } | null>(null);
+  // Les deux domaines de ceintures choisis pour la semaine en cours.
+  const [choixSemaine, setChoixSemaine] = useState<{
+    domaines: string[];
+    disponibles: DomaineChoisissable[];
+    doitChoisir: boolean;
+  } | null>(null);
+  const [modalCeintures, setModalCeintures] = useState(false);
+  // L'onboarding avatar (élèves Repetibox) redirige hors du tableau de bord :
+  // tant qu'on ne sait pas s'il va se déclencher, aucune autre fenêtre ne s'ouvre.
+  const [avatarPret, setAvatarPret] = useState(false);
   const [bibliothequePeutChoisir, setBibliothequePeutChoisir] = useState(false);
   const [bibliothequeEnCours, setBibliothequeEnCours]         = useState<{ chapitre_id: string; titre: string; auteur: string | null; couverture_url: string | null; pourcentage: number } | null>(null);
 
@@ -280,9 +326,14 @@ export default function DashboardEleve() {
     lundi.setDate(aujourd_hui.getDate() - ((jourSemaine + 6) % 7));
     const fin = new Date(lundi);
     fin.setDate(lundi.getDate() + 6);
+    // On remonte une semaine avant le lundi : un travail non fait la semaine
+    // précédente reste « en retard » et ne disparaît pas au changement de semaine.
+    const debutRetard = new Date(lundi);
+    debutRetard.setDate(lundi.getDate() - 7);
     return {
-      debut: lundi.toISOString().split("T")[0],
-      fin:   fin.toISOString().split("T")[0],
+      debut:       lundi.toISOString().split("T")[0],
+      fin:         fin.toISOString().split("T")[0],
+      debutRetard: debutRetard.toISOString().split("T")[0],
     };
   }
 
@@ -301,6 +352,7 @@ export default function DashboardEleve() {
       setProgressionExos(cache.progressionExos);
       setBlocsAujourdhui(cache.blocsAujourdhui);
       setBlocsSemaine(cache.blocsSemaine);
+      setBlocsEnRetard(cache.blocsEnRetard ?? []);
       setNotifications(cache.notifications);
       setChapitresRB(cache.chapitresRB);
       setPodcastsQcm(cache.podcastsQcm);
@@ -345,7 +397,9 @@ export default function DashboardEleve() {
   // bloque l'accès au dashboard tant que ce n'est pas fait. L'avatar est stocké
   // côté Repetibox (table eleve) — Plan Box ne fait que le lire.
   useEffect(() => {
-    if (chargementSession || !session || session.source !== "repetibox") return;
+    if (chargementSession || !session) return;
+    // Les élèves PlanBox n'ont pas d'onboarding avatar : rien ne les retient.
+    if (session.source !== "repetibox") { setAvatarPret(true); return; }
     let annule = false;
     (async () => {
       try {
@@ -356,9 +410,12 @@ export default function DashboardEleve() {
         const json = await res.json();
         if (!json.avatar_bigheads && !annule) {
           window.location.href = "/api/sso/redirect-repetibox?dest=" + encodeURIComponent("/eleve/avatar");
+          return; // redirection en cours : on laisse `avatarPret` à false
         }
+        if (!annule) setAvatarPret(true);
       } catch {
         /* Erreur réseau : on ne bloque pas (fail-open) pour ne pas piéger l'élève. */
+        if (!annule) setAvatarPret(true);
       }
     })();
     return () => { annule = true; };
@@ -381,6 +438,59 @@ export default function DashboardEleve() {
       .catch(() => {});
     return () => ctrl.abort();
   }, [session]);
+
+  // ── Choix hebdomadaire des domaines de ceintures ───────────────────────────
+  useEffect(() => {
+    if (!session) return;
+    const ctrl = new AbortController();
+    const qs = session.source === "planbox"
+      ? `eleve_id=${session.id}`
+      : `rb_eleve_id=${session.id}`;
+    fetch(`/api/ceintures/choix-semaine?${qs}`, { signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((json) => {
+        if (ctrl.signal.aborted || json?.erreur) return;
+        setChoixSemaine({
+          domaines: json.domaines ?? [],
+          disponibles: json.disponibles ?? [],
+          doitChoisir: !!json.doitChoisir,
+        });
+        // L'ouverture est décidée plus bas : elle attend l'onboarding avatar.
+      })
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [session]);
+
+  // Première connexion de la semaine → fenêtre de choix, mais jamais avant que
+  // l'onboarding avatar de la rentrée soit réglé (il redirige hors de la page).
+  const choixDejaPropose = useRef(false);
+  useEffect(() => {
+    if (!avatarPret || choixDejaPropose.current) return;
+    if (!choixSemaine?.doitChoisir) return;
+    choixDejaPropose.current = true;
+    setModalCeintures(true);
+  }, [avatarPret, choixSemaine]);
+
+  async function enregistrerChoixSemaine(codes: string[]) {
+    if (!session) return;
+    const corps = session.source === "planbox"
+      ? { eleve_id: session.id, domaines: codes }
+      : { rb_eleve_id: session.id, domaines: codes };
+    try {
+      const res = await fetch("/api/ceintures/choix-semaine", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(corps),
+      });
+      const json = await res.json();
+      if (res.ok && !json.erreur) {
+        setChoixSemaine((prev) => prev ? { ...prev, domaines: json.domaines ?? codes, doitChoisir: false } : prev);
+        setModalCeintures(false);
+      }
+    } catch {
+      /* réseau : la fenêtre reste ouverte, l'élève peut réessayer */
+    }
+  }
 
   // ── Ceintures de compétences (français) ────────────────────────────────────
   useEffect(() => {
@@ -407,7 +517,7 @@ export default function DashboardEleve() {
   async function chargerPB(eleveId: string, signal: AbortSignal) {
     try {
       const aujourd_hui = new Date().toISOString().split("T")[0];
-      const { debut, fin } = getBornesSemaine();
+      const { debut, fin, debutRetard } = getBornesSemaine();
 
       const [
         { data: eleveData },
@@ -422,7 +532,7 @@ export default function DashboardEleve() {
         supabase.from("pb_progression").select("*, chapitres(*)").eq("eleve_id", eleveId).order("updated_at", { ascending: false }),
         supabase.from("plan_travail").select("*, chapitres(*)")
           .eq("eleve_id", eleveId)
-          .gte("date_assignation", debut)
+          .gte("date_assignation", debutRetard)
           .lte("date_assignation", fin)
           .order("created_at", { ascending: true }),
         supabase.from("plan_travail").select("*, chapitres(*)")
@@ -464,9 +574,10 @@ export default function DashboardEleve() {
         ]),
         aujourd_hui,
       );
-      const estReporte = (b: PlanTravail) => b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
-      setBlocsAujourdhui(blocs.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporte(b)));
-      setBlocsSemaine(blocs.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui && !estReporte(b)));
+      const paniers = repartirBlocs(blocs, aujourd_hui, debut);
+      setBlocsAujourdhui(paniers.aujourdhui);
+      setBlocsSemaine(paniers.semaine);
+      setBlocsEnRetard(paniers.enRetard);
       setProgressionExos(groupParChapitre((blocsExos ?? []) as unknown as PlanTravail[]));
 
       const podcasts = ((podcastData ?? []) as any[])
@@ -663,11 +774,11 @@ export default function DashboardEleve() {
         .catch(() => {});
 
       const aujourd_hui = new Date().toISOString().split("T")[0];
-      const { debut, fin } = getBornesSemaine();
+      const { debut, fin, debutRetard } = getBornesSemaine();
 
       // 3 requêtes ciblées en parallèle au lieu d'une grosse qui charge tout
       const [resSemaine, resExos, resPodcasts] = await Promise.all([
-        fetch(`/api/mon-plan-travail?rb=${rbId}&debut=${debut}&fin=${fin}`, { signal }),
+        fetch(`/api/mon-plan-travail?rb=${rbId}&debut=${debutRetard}&fin=${fin}`, { signal }),
         fetch(`/api/mon-plan-travail?rb=${rbId}&types=exercice,calcul_mental,eval`, { signal }),
         fetch(`/api/mon-plan-travail?rb=${rbId}&types=ressource`, { signal }),
       ]);
@@ -687,9 +798,10 @@ export default function DashboardEleve() {
         filtrerBlocsConditionnels(blocsSemaine),
         aujourd_hui,
       );
-      const estReporteRB = (b: PlanTravail) => b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
-      setBlocsAujourdhui(blocsWeekFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporteRB(b)));
-      setBlocsSemaine(blocsWeekFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui && !estReporteRB(b)));
+      const paniersRB = repartirBlocs(blocsWeekFiltered, aujourd_hui, debut);
+      setBlocsAujourdhui(paniersRB.aujourdhui);
+      setBlocsSemaine(paniersRB.semaine);
+      setBlocsEnRetard(paniersRB.enRetard);
 
       setProgressionExos(groupParChapitre(blocsExos));
 
@@ -752,13 +864,13 @@ export default function DashboardEleve() {
     if (!s) return;
 
     const aujourd_hui = new Date().toISOString().split("T")[0];
-    const { debut, fin } = getBornesSemaine();
+    const { debut, fin, debutRetard } = getBornesSemaine();
 
     try {
       let blocsWeek: PlanTravail[] = [];
 
       if (s.source === "repetibox") {
-        const res = await fetch(`/api/mon-plan-travail?rb=${s.id}&debut=${debut}&fin=${fin}`, signal ? { signal } : undefined);
+        const res = await fetch(`/api/mon-plan-travail?rb=${s.id}&debut=${debutRetard}&fin=${fin}`, signal ? { signal } : undefined);
         if (signal?.aborted) return;
         const json = await res.json();
         blocsWeek = json.blocs ?? [];
@@ -768,7 +880,7 @@ export default function DashboardEleve() {
             .from("plan_travail")
             .select("*, chapitres(*)")
             .eq("eleve_id", s.id)
-            .gte("date_assignation", debut)
+            .gte("date_assignation", debutRetard)
             .lte("date_assignation", fin)
             .order("created_at", { ascending: true }),
           supabase
@@ -789,13 +901,12 @@ export default function DashboardEleve() {
         filtrerBlocsConditionnels(blocsWeek),
         aujourd_hui,
       );
-      const estReporteRafraichi = (b: PlanTravail) => b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
-      const nouvsAujourd = blocsFiltered.filter((b) => b.periodicite === "semaine" || b.date_assignation === aujourd_hui || estReporteRafraichi(b));
-      const nouvsSemaine = blocsFiltered.filter((b) => b.periodicite !== "semaine" && b.date_assignation !== aujourd_hui && !estReporteRafraichi(b));
+      const paniers = repartirBlocs(blocsFiltered, aujourd_hui, debut);
 
       if (!signal?.aborted) {
-        setBlocsAujourdhui((prev) => sigBlocs(nouvsAujourd) !== sigBlocs(prev) ? nouvsAujourd : prev);
-        setBlocsSemaine((prev) => sigBlocs(nouvsSemaine) !== sigBlocs(prev) ? nouvsSemaine : prev);
+        setBlocsAujourdhui((prev) => sigBlocs(paniers.aujourdhui) !== sigBlocs(prev) ? paniers.aujourdhui : prev);
+        setBlocsSemaine((prev) => sigBlocs(paniers.semaine) !== sigBlocs(prev) ? paniers.semaine : prev);
+        setBlocsEnRetard((prev) => sigBlocs(paniers.enRetard) !== sigBlocs(prev) ? paniers.enRetard : prev);
       }
     } catch { /* silencieux — inclut AbortError */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -834,6 +945,7 @@ export default function DashboardEleve() {
       progressionExos,
       blocsAujourdhui,
       blocsSemaine,
+      blocsEnRetard,
       notifications,
       chapitresRB,
       podcastsQcm,
@@ -849,7 +961,7 @@ export default function DashboardEleve() {
     });
   }, [
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
-    blocsAujourdhui, blocsSemaine, notifications, chapitresRB, podcastsQcm,
+    blocsAujourdhui, blocsSemaine, blocsEnRetard, notifications, chapitresRB, podcastsQcm,
     podcastsSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
     dailyProblemSolved, chapitresAssignes, serieParcours, calculJour,
   ]);
@@ -1033,6 +1145,17 @@ export default function DashboardEleve() {
     });
   // Le parcours « à la une » = celui déjà commencé le plus récemment (sinon le plus avancé).
   const parcoursALaUne = parcoursEnCours.find((ch) => ch.nbValides > 0) ?? parcoursEnCours[0] ?? null;
+
+  // Ceintures affichées : les deux domaines choisis pour la semaine. Tant que le
+  // choix n'est pas fait, on n'affiche que les domaines déjà commencés — un
+  // domaine jamais travaillé n'a rien à faire dans le travail du jour.
+  const domainesSemaine = (() => {
+    const tous = ceinturesFrancais?.domaines ?? [];
+    if (!tous.length) return [];
+    const choisis = choixSemaine?.domaines ?? [];
+    if (choisis.length > 0) return tous.filter((d) => choisis.includes(d.code));
+    return tous.filter((d) => d.commence);
+  })();
 
   const initiales = session?.prenom
     ? session.prenom.charAt(0).toUpperCase() + (session.nom?.charAt(0).toUpperCase() ?? "")
@@ -1240,66 +1363,6 @@ export default function DashboardEleve() {
                   </button>
                 )}
               </div>
-            )}
-
-            {/* Ceintures de compétences — français et maths */}
-            {ceinturesFrancais && (
-              <Link
-                href="/eleve/ceintures"
-                className="pb-card"
-                style={{
-                  display: "block", textDecoration: "none", color: "inherit",
-                  background: ceinturesFrancais.couleurCourante
-                    ? `linear-gradient(135deg, ${ceinturesFrancais.couleurCourante.hexFond}, white)`
-                    : "linear-gradient(135deg, #F1F8E9, white)",
-                  border: `1.5px solid ${ceinturesFrancais.couleurCourante?.hex ?? "#7CB342"}40`,
-                  padding: "20px",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
-                  <span className="ms" style={{ fontSize: 28, color: ceinturesFrancais.couleurCourante?.hex ?? "#7CB342" }}>
-                    workspace_premium
-                  </span>
-                  <div>
-                    <div style={{ fontSize: 15, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)" }}>
-                      Mes ceintures
-                    </div>
-                    <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-                      Français et mathématiques
-                    </div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-                  {ceinturesFrancais.domaines.map((d) => (
-                    <span
-                      key={d.code}
-                      style={{
-                        display: "inline-flex", alignItems: "center", gap: 5,
-                        padding: "4px 10px", borderRadius: 999,
-                        background: "rgba(255,255,255,0.7)",
-                        border: "1px solid rgba(0,0,0,0.06)",
-                        fontSize: 12, fontWeight: 700,
-                      }}
-                    >
-                      <span style={{
-                        width: 9, height: 9, borderRadius: "50%",
-                        background: d.couleurCourante?.hex ?? "#1A1A1A",
-                        flexShrink: 0,
-                      }} />
-                      {d.nom}
-                    </span>
-                  ))}
-                </div>
-                <div style={{
-                  display: "inline-flex", alignItems: "center", gap: 6,
-                  background: ceinturesFrancais.couleurCourante?.hex ?? "#7CB342",
-                  color: "white", padding: "8px 18px",
-                  borderRadius: 999, fontSize: 13, fontWeight: 700,
-                  fontFamily: "'Plus Jakarta Sans', sans-serif",
-                }}>
-                  Voir mes ceintures →
-                </div>
-              </Link>
             )}
 
             {/* Ceintures de multiplications */}
@@ -1691,6 +1754,81 @@ export default function DashboardEleve() {
                 </div>
               </div>
 
+              {/* ══ Ceintures de la semaine ══ */}
+              {domainesSemaine.length > 0 && (
+                <div
+                  className="pb-card"
+                  style={{
+                    padding: "20px 22px", marginBottom: 24,
+                    background: "linear-gradient(135deg, rgba(124,179,66,0.10), rgba(124,179,66,0.02))",
+                    border: "1px solid rgba(124,179,66,0.25)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <span className="ms" style={{ fontSize: 22, color: "#7CB342" }}>workspace_premium</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+                        textTransform: "uppercase", color: "#5A8C2E",
+                      }}>
+                        🥋 Tes ceintures de la semaine
+                      </div>
+                    </div>
+                    {(choixSemaine?.disponibles.length ?? 0) >= 2 && (
+                      <button
+                        type="button"
+                        onClick={() => setModalCeintures(true)}
+                        style={{
+                          background: "none", border: "none", cursor: "pointer",
+                          fontSize: 12, fontWeight: 700, color: "#5A8C2E",
+                          padding: "4px 8px", borderRadius: 8,
+                        }}
+                      >
+                        Changer
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                    {domainesSemaine.map((d) => {
+                      const teinte = d.couleurCourante?.hex ?? "#7CB342";
+                      return (
+                        <Link
+                          key={d.code}
+                          href={d.slug ? `/eleve/ceintures/${d.slug}` : "/eleve/ceintures"}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 12,
+                            padding: "14px 16px", borderRadius: 14,
+                            background: "white", border: `1.5px solid ${teinte}40`,
+                            textDecoration: "none", color: "inherit",
+                          }}
+                        >
+                          <span className="ms" style={{ fontSize: 24, color: teinte, flexShrink: 0 }}>
+                            {d.icone ?? "workspace_premium"}
+                          </span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{
+                              fontWeight: 800, fontSize: 15,
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                              color: "var(--pb-on-surface)",
+                            }}>
+                              {d.nom}
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
+                              <span style={{ width: 9, height: 9, borderRadius: "50%", background: teinte, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                                {d.couleurCourante?.nom ? `Ceinture ${d.couleurCourante.nom.toLowerCase()}` : "Domaine terminé"}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="ms" style={{ fontSize: 18, color: teinte, flexShrink: 0 }}>chevron_right</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* ══ Parcours à la une / Transition après le travail du jour ══ */}
               {parcoursALaUne && (() => {
                 const journeeFinie = totalTaches > 0 && nbFaitAujourd_hui === totalTaches;
@@ -1747,7 +1885,90 @@ export default function DashboardEleve() {
                 );
               })()}
 
-              {blocsAujourdhui.length === 0 && chapitresRB.length === 0 ? (
+              {/* ══ En retard ══ (uniquement s'il y a du rattrapage) */}
+              {blocsEnRetard.length > 0 && (
+                <div
+                  className="pb-card"
+                  style={{
+                    padding: "18px 20px", marginBottom: 24,
+                    borderLeft: "4px solid #DC2626",
+                    background: "linear-gradient(135deg, rgba(220,38,38,0.06), rgba(220,38,38,0.01))",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
+                    <span className="ms" style={{ fontSize: 20, color: "#DC2626" }}>schedule</span>
+                    <span style={{
+                      fontSize: 13, fontWeight: 800, color: "#DC2626",
+                      textTransform: "uppercase", letterSpacing: "0.06em",
+                      fontFamily: "'Plus Jakarta Sans', sans-serif",
+                    }}>
+                      En retard
+                    </span>
+                    <span style={{
+                      background: "rgba(220,38,38,0.12)", color: "#DC2626", fontWeight: 700,
+                      fontSize: 11, padding: "2px 8px", borderRadius: 999,
+                    }}>
+                      {blocsEnRetard.length}
+                    </span>
+                    <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", marginLeft: 4 }}>
+                      À rattraper dès que tu peux
+                    </span>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                    {blocsEnRetard.map((b) => {
+                      const ms = TYPE_BLOC_MS[b.type] ?? { icon: "task_alt", color: "#6B7280", bg: "rgba(107,114,128,0.1)" };
+                      const jour = new Date(b.date_assignation + "T12:00:00").toLocaleDateString("fr-FR", {
+                        weekday: "long", day: "numeric", month: "long",
+                      });
+                      return (
+                        <div
+                          key={b.id}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 12,
+                            padding: "12px 14px", borderRadius: 12,
+                            background: "white", border: "1px solid rgba(220,38,38,0.15)",
+                          }}
+                        >
+                          <div style={{
+                            width: 36, height: 36, borderRadius: 10, flexShrink: 0,
+                            background: ms.bg, display: "flex", alignItems: "center", justifyContent: "center",
+                          }}>
+                            <span className="ms" style={{ fontSize: 20, color: ms.color }}>{ms.icon}</span>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{
+                              fontSize: 14, fontWeight: 700,
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                              color: "var(--pb-on-surface)",
+                              overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
+                            }}>
+                              {b.titre}
+                            </div>
+                            <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                              Prévu {jour}
+                            </div>
+                          </div>
+                          {b.contenu && (
+                            <Link
+                              href={`/eleve/activite/${b.id}`}
+                              className="pb-btn"
+                              style={{
+                                padding: "8px 18px", fontSize: 13, borderRadius: 999,
+                                flexShrink: 0, whiteSpace: "nowrap",
+                                background: "#DC2626", color: "white",
+                              }}
+                            >
+                              Rattraper →
+                            </Link>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {blocsAujourdhui.length === 0 && chapitresRB.length === 0 && blocsEnRetard.length === 0 ? (
                 <div className="pb-card" style={{ textAlign: "center", padding: "48px 24px" }}>
                   <span className="ms" style={{ fontSize: 44, color: "var(--pb-primary)", marginBottom: 12, display: "block" }}>celebration</span>
                   <p style={{ fontWeight: 700, fontSize: 16, color: "var(--pb-on-surface)", marginBottom: 4 }}>Journée libre !</p>
@@ -1873,6 +2094,8 @@ export default function DashboardEleve() {
                       texte_a_trous:  { label: "Texte à trous",    color: "#0E7490", bg: "rgba(14,116,144,0.08)" },
                       analyse_phrase: { label: "Analyse de phrase", color: "#6D28D9", bg: "rgba(109,40,217,0.08)" },
                       classement: { label: "Classement", color: "#0369A1", bg: "rgba(3,105,161,0.08)" },
+                      comparaison: { label: "Comparaison", color: "#0D9488", bg: "rgba(13,148,136,0.08)" },
+                      rangement: { label: "Rangement", color: "#B45309", bg: "rgba(180,83,9,0.08)" },
                       lecture: { label: "Lecture", color: "#7C3AED", bg: "rgba(124,58,237,0.08)" },
                       probleme_maths: { label: "Problèmes de maths", color: "#0D9488", bg: "rgba(13,148,136,0.08)" },
                       ceinture_multiplication: { label: "Ceintures", color: "#F59E0B", bg: "rgba(245,158,11,0.08)" },
@@ -1890,11 +2113,13 @@ export default function DashboardEleve() {
                       texte_a_trous:  "Complète les mots manquants.",
                       analyse_phrase: "Identifie les fonctions grammaticales.",
                       classement: "Classe les éléments dans les bonnes catégories.",
+                      comparaison: "Place le bon signe entre les deux nombres.",
+                      rangement: "Range les étiquettes de gauche à droite.",
                       lecture: "Lis le texte puis réponds aux questions.",
                       probleme_maths: "Lis, calcule, puis écris ta phrase réponse.",
                       ceinture_multiplication: "Entraîne-toi sur les tables de multiplication.",
                     };
-                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "lecture", "probleme_maths", "ceinture_multiplication"];
+                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "comparaison", "rangement", "lecture", "probleme_maths", "ceinture_multiplication"];
                     const tousBlocs = [
                       ...groupesEnLigne.flatMap(([, { blocs }]) => blocs),
                       ...blocsEnLigneLibres,
@@ -2360,6 +2585,16 @@ export default function DashboardEleve() {
           Quitter
         </button>
       </nav>
+
+      {/* ── Choix des ceintures de la semaine ── */}
+      {modalCeintures && choixSemaine && choixSemaine.disponibles.length > 0 && (
+        <CeinturesSemaineModal
+          disponibles={choixSemaine.disponibles}
+          dejaChoisis={choixSemaine.domaines}
+          onValider={enregistrerChoixSemaine}
+          onFermer={() => setModalCeintures(false)}
+        />
+      )}
 
     </div>
   );
