@@ -120,6 +120,15 @@ export const DOMAINES: DomaineCeinture[] = [
     icone: "straighten",
     ordre: 6,
   },
+  {
+    code: "ESGE",
+    slug: "geometrie",
+    nom: "Espace et géométrie",
+    matiere: "maths",
+    description: "Vocabulaire, figures, solides, symétrie, repérage, constructions",
+    icone: "square_foot",
+    ordre: 7,
+  },
 ];
 
 export function domaineParCode(code: string): DomaineCeinture | undefined {

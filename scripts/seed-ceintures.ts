@@ -71,16 +71,25 @@ async function seedDomaine(domaine: DomaineCeinture) {
 
   if (errItems) throw new Error(`ceinture_item illisible : ${errItems.message}`);
 
-  const attendus = referentiel.filter((r) => r.domaine === domaine.code);
   if (!items?.length) {
     throw new Error(
       `Aucun item ${domaine.code} en base — jouer docs/ceintures/migration.sql d'abord.`,
     );
   }
-  if (items.length !== attendus.length) {
+
+  // Contrôle croisé avec referentiel-francais.json, quand il couvre le
+  // domaine. Ce fichier s'est arrêté aux six premiers : la source de vérité
+  // des items est `migration.sql`, dont la base est le reflet. Un domaine
+  // absent du JSON n'est donc pas une anomalie, il n'a simplement pas de
+  // second témoin.
+  const attendus = referentiel.filter((r) => r.domaine === domaine.code);
+  if (attendus.length && items.length !== attendus.length) {
     throw new Error(
       `${items.length} items ${domaine.code} en base pour ${attendus.length} au référentiel — migration incomplète.`,
     );
+  }
+  if (!attendus.length) {
+    console.log(`  (pas de contrôle croisé : ${domaine.code} est absent de referentiel-francais.json)`);
   }
 
   // La répartition qui fait foi est celle de la BASE, qui vient du seed de

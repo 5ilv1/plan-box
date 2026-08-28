@@ -56,6 +56,7 @@ const PREFIXE: Record<string, string> = {
   "nombres-": "NOMB",
   "calcul-": "CALC",
   "grandeurs-": "GRME",
+  "geometrie-": "ESGE",
 };
 
 interface QuestionDiagnostic {
