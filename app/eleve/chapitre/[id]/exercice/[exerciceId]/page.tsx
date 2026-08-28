@@ -12,6 +12,7 @@ import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
 import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
 import type { ProblemeMaths } from "@/types";
+import { comparerReponse } from "@/lib/comparer-reponse";
 
 interface Question {
   id: number;
@@ -201,6 +202,7 @@ export default function PageExerciceEleve() {
     }
   }
 
+  // Ponctuation ignorée et espaces uniformisés : tolérance des réponses en toutes lettres.
   const normaliser = (s: string) => s.toLowerCase().trim().replace(/[.,;:!?'"()«»]/g, "").replace(/\s+/g, " ");
 
   const verifierReponse = useCallback(() => {
@@ -211,7 +213,13 @@ export default function PageExerciceEleve() {
     if (q.options && qcmChoisi !== null) {
       correct = qcmChoisi === q.reponseIdx;
     } else {
-      correct = normaliser(reponseEleve) === normaliser(q.reponse);
+      // `comparerReponse` d'abord : c'est lui qui accepte « 45 208 » pour
+      // « 45208 », les décimales à virgule et les fractions. La comparaison
+      // textuelle reste en second pour les réponses en toutes lettres, où la
+      // ponctuation doit être ignorée.
+      correct =
+        comparerReponse(q.reponse, reponseEleve) ||
+        normaliser(reponseEleve) === normaliser(q.reponse);
     }
 
     setResultats((prev) => [...prev, correct]);
