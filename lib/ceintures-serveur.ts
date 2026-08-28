@@ -53,6 +53,8 @@ export interface DomaineEtat {
   icone: string;
   courante: number;
   termine: boolean;
+  /** L'élève a déjà travaillé ce domaine : ceinture acquise, item validé ou diagnostic passé. */
+  commence: boolean;
   couleurCourante: { nom: string; hex: string; hexFond: string } | null;
   ceintures: CeintureEtat[];
 }
@@ -198,6 +200,8 @@ export async function etatCeintures(
 
       const termine = courante >= NB_CEINTURES;
       const cCourante = termine ? null : couleur(courante);
+      const commence =
+        courante > 0 || ceintures.some((c) => c.diagnosticFait || c.nbValides > 0);
 
       return {
         code: domaine.code,
@@ -208,6 +212,7 @@ export async function etatCeintures(
         icone: domaine.icone,
         courante,
         termine,
+        commence,
         couleurCourante: cCourante
           ? { nom: cCourante.nom, hex: cCourante.hex, hexFond: cCourante.hexFond }
           : null,
