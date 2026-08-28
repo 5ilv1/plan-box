@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { dureeLectureLisible } from "@/lib/duree-lecture";
 
 /**
  * GET /api/bibliotheque?eleve_id=UUID ou ?rb_id=NUMBER
@@ -68,9 +69,21 @@ export async function GET(req: NextRequest) {
     .in("chapitre_id", chapIds);
 
   const nbExosMap: Record<string, number> = {};
+  // Mots du livre, pour en estimer le temps de lecture. L'évaluation finale est
+  // exclue des deux comptes : ce sont des questions, pas le texte du livre.
+  const nbMotsMap: Record<string, number> = {};
+
   for (const e of exercices ?? []) {
-    const estEval = (e.contenu as Record<string, unknown>)?.est_evaluation_finale === true;
-    if (!estEval) nbExosMap[e.chapitre_id] = (nbExosMap[e.chapitre_id] ?? 0) + 1;
+    const contenu = (e.contenu ?? {}) as Record<string, unknown>;
+    if (contenu.est_evaluation_finale === true) continue;
+
+    nbExosMap[e.chapitre_id] = (nbExosMap[e.chapitre_id] ?? 0) + 1;
+
+    const texte = typeof contenu.texte === "string" ? contenu.texte : "";
+    if (texte) {
+      const mots = texte.split(/\s+/).filter(Boolean).length;
+      nbMotsMap[e.chapitre_id] = (nbMotsMap[e.chapitre_id] ?? 0) + mots;
+    }
   }
 
   // Livres déjà choisis par l'élève
@@ -100,6 +113,7 @@ export async function GET(req: NextRequest) {
       couverture_url: (ch as Record<string, unknown>).couverture_url ?? null,
       niveau: (ch as Record<string, unknown>).niveaux,
       nb_chapitres: nbExosMap[ch.id] ?? 0,
+      duree_lecture: dureeLectureLisible(nbMotsMap[ch.id] ?? 0),
       deja_choisi: choisIds.has(ch.id),
     }));
 

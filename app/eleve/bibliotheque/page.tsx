@@ -12,6 +12,7 @@ interface Livre {
   couverture_url: string | null;
   niveau?: { nom: string } | null;
   nb_chapitres: number;
+  duree_lecture: string | null;
   deja_choisi: boolean;
 }
 
@@ -287,6 +288,15 @@ export default function PageBibliotheque() {
                     {l.auteur}
                   </div>
                 )}
+                {l.duree_lecture && (
+                  <div style={{
+                    display: "flex", alignItems: "center", gap: 3, marginTop: 3,
+                    fontSize: 11, color: "var(--pb-on-surface-variant)",
+                  }}>
+                    <span className="ms" style={{ fontSize: 13 }}>schedule</span>
+                    {l.duree_lecture}
+                  </div>
+                )}
               </button>
             );
           })}
@@ -422,6 +432,15 @@ export default function PageBibliotheque() {
                     <span className="ms" style={{ fontSize: 16 }}>bookmark</span>
                     {detail.nb_chapitres} chapitre{detail.nb_chapitres > 1 ? "s" : ""}
                   </div>
+                  {detail.duree_lecture && (
+                    <div
+                      style={{ display: "flex", alignItems: "center", gap: 4 }}
+                      title="Estimation à partir de la longueur du texte"
+                    >
+                      <span className="ms" style={{ fontSize: 16 }}>schedule</span>
+                      {detail.duree_lecture} de lecture
+                    </div>
+                  )}
                   {detail.niveau?.nom && (
                     <div style={{ display: "flex", alignItems: "center", gap: 4 }}>
                       <span className="ms" style={{ fontSize: 16 }}>school</span>
