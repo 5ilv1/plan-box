@@ -393,9 +393,11 @@ export default function DashboardEleve() {
 
   // ── Onboarding avatar obligatoire (élèves Repetibox) ────────────────────────
   // Vérification FRAÎCHE (jamais le cache) : si l'élève Repetibox n'a pas encore
-  // créé son avatar, on le redirige vers le customiseur Repetibox (via SSO) et on
-  // bloque l'accès au dashboard tant que ce n'est pas fait. L'avatar est stocké
-  // côté Repetibox (table eleve) — Plan Box ne fait que le lire.
+  // créé son avatar, on le renvoie vers le customiseur et on bloque l'accès au
+  // dashboard tant que ce n'est pas fait. Le customiseur est local (/eleve/avatar)
+  // depuis la rentrée : renvoyer un CE2 vers l'autre application au milieu de son
+  // onboarding était fragile. L'avatar reste stocké dans `eleve.avatar_bigheads`,
+  // table Repetibox, donc il suit l'élève dans les deux applications.
   useEffect(() => {
     if (chargementSession || !session) return;
     // Les élèves PlanBox n'ont pas d'onboarding avatar : rien ne les retient.
@@ -409,7 +411,7 @@ export default function DashboardEleve() {
         if (!res.ok || annule) return;
         const json = await res.json();
         if (!json.avatar_bigheads && !annule) {
-          window.location.href = "/api/sso/redirect-repetibox?dest=" + encodeURIComponent("/eleve/avatar");
+          router.push("/eleve/avatar");
           return; // redirection en cours : on laisse `avatarPret` à false
         }
         if (!annule) setAvatarPret(true);
