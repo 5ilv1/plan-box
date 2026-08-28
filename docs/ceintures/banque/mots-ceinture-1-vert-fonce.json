@@ -53,31 +53,31 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "___, nous sommes mardi 16 septembre. (le jour où nous sommes, ni hier ni demain)",
+            "enonce": "___, nous sommes mardi 16 septembre. (le jour où nous sommes, pas celui d'avant ni celui d'après)",
             "reponse_attendue": "aujourd'hui",
             "indice": "Ce mot s'écrit en trois morceaux collés, avec une apostrophe après le d."
           },
           {
             "id": 2,
-            "enonce": "Lila a piscine ___. (le jour juste après aujourd'hui)",
+            "enonce": "Lila a piscine ___. (le jour qui vient après celui où nous sommes)",
             "reponse_attendue": "demain",
             "indice": "Ce mot se termine par -ain."
           },
           {
             "id": 3,
-            "enonce": "Le maître a corrigé les cahiers ___. (le jour juste avant aujourd'hui)",
+            "enonce": "Le maître a corrigé les cahiers ___. (le jour qui vient avant celui où nous sommes)",
             "reponse_attendue": "hier",
             "indice": "Ce mot commence par un h qu'on n'entend pas."
           },
           {
             "id": 4,
-            "enonce": "Nour est ___ à l'heure. (le contraire de jamais)",
+            "enonce": "Nour est ___ à l'heure. (chaque fois, sans exception)",
             "reponse_attendue": "toujours",
             "indice": "Ce mot se termine par un s, même quand il n'y a qu'une personne."
           },
           {
             "id": 5,
-            "enonce": "Timéo ne perd ___ son cahier. (le contraire de toujours)",
+            "enonce": "Timéo ne perd ___ son cahier. (pas une seule fois)",
             "reponse_attendue": "jamais",
             "indice": "Ce mot se termine par -ais et garde toujours son s."
           },
@@ -95,7 +95,7 @@
           },
           {
             "id": 8,
-            "enonce": "Adam est ___ content de son résultat. (synonyme de vraiment, placé devant un adjectif)",
+            "enonce": "Adam a ___ bien réussi son exercice. (synonyme de vraiment)",
             "reponse_attendue": "très",
             "indice": "Ce mot porte un accent grave sur le e et se termine par un s."
           },
@@ -119,31 +119,31 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "Sacha est de service ___. (le jour où nous sommes, ni hier ni demain)",
+            "enonce": "Sacha est de service ___. (le jour où nous sommes, pas celui d'avant ni celui d'après)",
             "reponse_attendue": "aujourd'hui",
             "indice": "Ce mot s'écrit en trois morceaux collés, avec une apostrophe après le d."
           },
           {
             "id": 2,
-            "enonce": "Nous avons gymnase ___. (le jour juste après aujourd'hui)",
+            "enonce": "Nous avons gymnase ___. (le jour qui vient après celui où nous sommes)",
             "reponse_attendue": "demain",
             "indice": "Ce mot se termine par -ain."
           },
           {
             "id": 3,
-            "enonce": "Jade a perdu son écharpe ___. (le jour juste avant aujourd'hui)",
+            "enonce": "Jade a perdu son écharpe ___. (le jour qui vient avant celui où nous sommes)",
             "reponse_attendue": "hier",
             "indice": "Ce mot commence par un h qu'on n'entend pas."
           },
           {
             "id": 4,
-            "enonce": "Louna remet ___ les feutres dans la boîte. (le contraire de jamais)",
+            "enonce": "Louna remet ___ les feutres dans la boîte. (chaque fois, sans exception)",
             "reponse_attendue": "toujours",
             "indice": "Ce mot se termine par un s, même quand il n'y a qu'une personne."
           },
           {
             "id": 5,
-            "enonce": "Inès ne se moque ___ des autres. (le contraire de toujours)",
+            "enonce": "Inès ne se moque ___ des autres. (pas une seule fois)",
             "reponse_attendue": "jamais",
             "indice": "Ce mot se termine par -ais et garde toujours son s."
           },
@@ -161,7 +161,7 @@
           },
           {
             "id": 8,
-            "enonce": "Le gâteau de la cantine était ___ bon. (synonyme de vraiment, placé devant un adjectif)",
+            "enonce": "Rosalie a ___ bien récité sa poésie. (synonyme de vraiment)",
             "reponse_attendue": "très",
             "indice": "Ce mot porte un accent grave sur le e et se termine par un s."
           },
@@ -190,7 +190,7 @@
       "procedure": [
         "Écris d'abord le nom masculin en entier, avec ses lettres muettes.",
         "Ajoute un -e à la fin, sans rien enlever.",
-        "Relis : la lettre muette du masculin s'entend maintenant."
+        "Relis : quand le masculin se termine par une lettre muette, on l'entend maintenant."
       ],
       "exemples": [
         {
@@ -496,7 +496,7 @@
             "categorie": "Adjectif"
           },
           {
-            "texte": "Louna a des joues *roses*.",
+            "texte": "Louna a des cheveux *courts*.",
             "categorie": "Adjectif"
           },
           {

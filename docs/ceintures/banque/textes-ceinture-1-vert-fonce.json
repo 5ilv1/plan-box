@@ -202,7 +202,7 @@
       "procedure": [
         "Pourrais-tu le voir sur une photo ? Oui → l'apparence : cheveux, yeux, vêtements.",
         "Sinon, la phrase dit-elle comment il est d'habitude ? Oui → le caractère.",
-        "Si elle raconte seulement ce qu'il fait un jour, ce n'est ni l'un ni l'autre."
+        "Si elle raconte seulement ce qu'il fait, même chaque semaine, ce n'est ni l'un ni l'autre."
       ],
       "exemples": [
         {
@@ -214,7 +214,7 @@
           "demonstration": "Aller à la piscine un samedi : ni l'un ni l'autre. « Encourage toujours » dit le caractère."
         }
       ],
-      "piege": "Une action ne montre le caractère que si elle se répète : « toujours », « jamais »."
+      "piege": "Ce qu'un personnage fait — sortir le chien, aller au marché — n'est ni son apparence ni son caractère, même s'il le fait chaque semaine : pour le caractère, cherche la phrase qui dit comment il est, patient, curieux ou têtu."
     },
     "diagnostic": [
       {
@@ -646,7 +646,7 @@
           "demonstration": "Les deux partent : on ajoute, donc « et ». Avec « ou », on croirait qu'il doit en abandonner une."
         }
       ],
-      "piege": "« ou bien » veut dire la même chose que « ou » : il se place entre les deux possibilités, jamais au début."
+      "piege": "« ou bien » veut dire la même chose que « ou » : il se place entre les deux possibilités, à l'intérieur d'une seule phrase."
     },
     "diagnostic": [
       {
@@ -694,7 +694,7 @@
               "Rosalie prend un pain au chocolat et une brioche.",
               "Rosalie prend un pain au chocolat, une brioche.",
               "Rosalie prend un pain au chocolat ou une brioche.",
-              "Rosalie prend un pain au chocolat ou. Une brioche."
+              "Rosalie prend un pain au chocolat et puis une brioche."
             ],
             "reponse_correcte": 2,
             "explication": "Avec « ou », Rosalie n'emporte qu'une seule des deux viennoiseries."

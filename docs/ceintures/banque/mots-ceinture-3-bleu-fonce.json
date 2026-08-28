@@ -7,7 +7,7 @@
       "regle": "Le déterminant démonstratif (ce, cet, cette, ces) montre ; le déterminant possessif (mon, ton, son, ses, leur…) dit à qui c'est.",
       "procedure": [
         "Regarde le nom : masculin, féminin, singulier ou pluriel ?",
-        "Pour montrer : ce devant un nom masculin, cet devant une voyelle, cette devant un nom féminin, ces au pluriel.",
+        "Pour montrer : ce devant un nom masculin, cet devant un nom masculin qui commence par une voyelle ou un h muet, cette devant un nom féminin, ces au pluriel.",
         "Pour dire à qui c'est : compte les propriétaires, puis les objets."
       ],
       "exemples": [
@@ -195,13 +195,13 @@
       {
         "question": "Quel mot est écrit correctement ?",
         "options": [
-          "tronpette",
-          "trompette",
-          "tronpète",
-          "trompete"
+          "conpter",
+          "grinper",
+          "temps",
+          "trenbler"
         ],
-        "reponse_correcte": 1,
-        "explication": "Devant un p, on écrit m et non n : trompette."
+        "reponse_correcte": 2,
+        "explication": "Devant un p, on écrit m et non n : « temps » est le seul mot bien écrit. Les trois autres ont gardé un n devant un p ou un b."
       }
     ],
     "entrainement": [
@@ -330,7 +330,7 @@
       "titre": "Le féminin en -euse, -trice, -ve",
       "regle": "Les noms en -eur font souvent leur féminin en -euse, ceux en -teur en -trice, et ceux en -f en -ve.",
       "procedure": [
-        "Regarde d'abord si le nom masculin se termine par -teur : dans ce cas, écris -trice.",
+        "Regarde d'abord si le nom masculin se termine par -teur : le plus souvent, tu écris -trice (un acteur, une actrice).",
         "Sinon, une fin en -eur donne -euse, et une fin en -f donne -ve.",
         "Écris le mot entier : seule la fin change."
       ],
@@ -431,8 +431,8 @@
         "questions": [
           {
             "id": 1,
-            "enonce": "un chanteur → une …",
-            "reponse_attendue": "chanteuse",
+            "enonce": "un joueur → une …",
+            "reponse_attendue": "joueuse",
             "indice": "Le nom se termine par -eur."
           },
           {
@@ -606,7 +606,7 @@
             "categorie": "La forêt"
           },
           {
-            "texte": "le champignon",
+            "texte": "la clairière",
             "categorie": "La forêt"
           },
           {
@@ -687,12 +687,12 @@
       {
         "question": "Quel mot est le contraire de « monter » ?",
         "options": [
-          "descendre",
           "remonter",
           "démonter",
+          "descendre",
           "monteur"
         ],
-        "reponse_correcte": 0,
+        "reponse_correcte": 2,
         "explication": "Un contraire n'est pas toujours formé avec un préfixe : le contraire de monter est un tout autre mot, descendre."
       }
     ],

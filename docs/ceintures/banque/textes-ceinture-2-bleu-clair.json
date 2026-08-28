@@ -306,7 +306,7 @@
           "Chaque phrase commence par une majuscule et se termine par un point.",
           "Chaque phrase contient un sujet et un verbe conjugué.",
           "Aucune phrase ne dépasse dix mots.",
-          "Tes quatre phrases ne commencent pas toutes par le même mot."
+          "Aucune phrase ne contient plus d'un « et »."
         ],
         "nb_phrases": 4,
         "exemple": "Adam enfile sa plus belle chemise."
@@ -318,7 +318,7 @@
     "type": "ecriture_contrainte",
     "lecon": {
       "titre": "Organiser un portrait physique",
-      "regle": "Un portrait physique dit seulement ce qu'on voit, et il suit toujours le même chemin : visage, cheveux, yeux, vêtements.",
+      "regle": "Un portrait physique dit seulement ce qu'on voit. Pour qu'on s'y retrouve, tu ranges tes phrases dans le même ordre à chaque fois : visage, cheveux, yeux, vêtements.",
       "procedure": [
         "Écris une phrase par élément, dans cet ordre exact.",
         "Ajoute au moins un adjectif à chaque phrase.",
@@ -349,7 +349,7 @@
         "explication": "Un portrait physique dit ce qu'on voit : le visage, les cheveux, les yeux, les vêtements."
       },
       {
-        "question": "Dans quel portrait les informations sont-elles rangées dans l'ordre : le visage, puis les cheveux, puis les yeux, puis les vêtements ?",
+        "question": "Dans quel portrait les informations physiques sont-elles rangées dans le bon ordre ?",
         "options": [
           "Il a les yeux verts. Son visage est rond. Il porte un jean troué. Ses cheveux sont courts.",
           "Ses cheveux sont courts. Il a les yeux verts. Son visage est rond. Il porte un jean troué.",
@@ -381,7 +381,6 @@
           "Tu écris quatre phrases, dans cet ordre : le visage, les cheveux, les yeux, les vêtements.",
           "Chaque phrase contient au moins un adjectif.",
           "Chaque phrase ne parle que d'un seul élément : tu ne mélanges pas les cheveux et les vêtements dans la même phrase.",
-          "Tu n'écris pas deux fois le prénom Rosalie.",
           "Tu emploies au moins deux verbes autres que « être » et « avoir ».",
           "Tu ne dis rien de son caractère ni de ses goûts."
         ],
@@ -520,7 +519,7 @@
             "explication": "Il manque la majuscule, ou le point, ou les deux dans les autres versions."
           },
           {
-            "question": "Quelle phrase se comprend bien ?",
+            "question": "Ces quatre phrases sont bien écrites. Une seule veut vraiment dire quelque chose : laquelle ?",
             "options": [
               "La maîtresse allume la lumière parce qu'il fait trop clair.",
               "La maîtresse allume la lumière parce qu'il fait trop sombre.",
@@ -592,7 +591,7 @@
             "explication": "Le premier mot d'une phrase prend toujours une majuscule, même quand c'est un prénom."
           },
           {
-            "question": "Quelle phrase se comprend bien ?",
+            "question": "Ces quatre phrases sont bien écrites. Une seule veut vraiment dire quelque chose : laquelle ?",
             "options": [
               "Le maître ouvre la fenêtre parce qu'il fait trop froid dans la classe.",
               "Le maître ouvre la fenêtre parce qu'il fait trop chaud dans la classe.",

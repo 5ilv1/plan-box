@@ -6,18 +6,18 @@
       "titre": "Écrire un portrait moral",
       "regle": "Le portrait moral dit comment le personnage est à l'intérieur : ses qualités, ses goûts, son défaut.",
       "procedure": [
-        "Écris une phrase par qualité, en montrant ce que le personnage fait.",
+        "Écris une phrase par qualité, et nomme cette qualité : généreuse, patiente, courageuse…",
         "Ajoute une phrase sur ce qu'il aime : ses goûts.",
         "Termine par un seul défaut. Relis : rien sur son apparence."
       ],
       "exemples": [
         {
-          "phrase": "Une qualité : « Fatou tient toujours ses promesses. »",
-          "demonstration": "Cette phrase ne dit rien de ce qu'on voit : elle montre une qualité, Fatou est fidèle à sa parole."
+          "phrase": "Une qualité : « Fatou est fidèle à sa parole : elle tient toujours ses promesses. »",
+          "demonstration": "« Fidèle à sa parole » nomme la qualité ; la fin de la phrase dit en quoi. Rien de ce qui se voit."
         },
         {
-          "phrase": "Un défaut : « Fatou s'impatiente dès qu'on la fait attendre. »",
-          "demonstration": "Un défaut gêne les autres. Une seule phrase suffit, et « s'impatiente » dit tout."
+          "phrase": "Un défaut : « Fatou devient impatiente dès qu'on la fait attendre. »",
+          "demonstration": "Un défaut gêne les autres. Un seul suffit : « impatiente » le nomme, et « devient » évite de répéter « est »."
         }
       ],
       "piege": "« Elle a de longs cheveux » n'a rien à faire ici : c'est l'apparence."
@@ -59,7 +59,7 @@
           "Tu n'emploies pas plus de deux fois le verbe « être »."
         ],
         "nb_phrases": 5,
-        "exemple": "Louna écoute jusqu'au bout ceux qui lui parlent."
+        "exemple": "Louna reste patiente : elle écoute jusqu'au bout ceux qui lui parlent."
       },
       {
         "titre": "Le portrait moral d'Adam",
@@ -73,7 +73,7 @@
           "Tu emploies au moins trois adjectifs de caractère différents."
         ],
         "nb_phrases": 5,
-        "exemple": "Adam prête ses affaires sans qu'on ait besoin de les demander."
+        "exemple": "Adam est généreux : il prête ses affaires sans qu'on ait besoin de les demander."
       }
     ]
   },
@@ -597,13 +597,13 @@
           {
             "question": "Dans quelle phrase le verbe est-il mal accordé ?",
             "options": [
-              "Les bougies s'éteint d'un coup.",
+              "Les bougies brille sur le gâteau.",
               "La bougie s'éteint d'un coup.",
               "Les invités chantent en chœur.",
               "Fatou souffle très fort."
             ],
             "reponse_correcte": 0,
-            "explication": "Le sujet « les bougies » vaut « elles » : il faut écrire « s'éteignent »."
+            "explication": "Le sujet « les bougies » vaut « elles » : un verbe en -ER prend alors -ent, il faut écrire « brillent »."
           },
           {
             "question": "Comment faut-il écrire le groupe nominal de « des (beau) tableaux » ?",

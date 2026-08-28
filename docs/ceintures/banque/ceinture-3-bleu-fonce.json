@@ -82,7 +82,7 @@
       {
         "titre": "La course du stade",
         "consigne": "Le verbe est donné à l'infinitif entre parenthèses. Écris-le au présent.",
-        "texte_complet": "Au stade, nous (obéir) obéissons au signal du départ. Vous (réussir) réussissez votre course. Les coureurs (ralentir) ralentissent avant la ligne blanche. Sacha (rougir) rougit de fierté. Les plus jeunes (grandir) grandissent vite et courent déjà comme les grands.",
+        "texte_complet": "Au stade, nous (obéir) obéissons au signal du départ. Vous (réussir) réussissez votre course. Les coureurs (ralentir) ralentissent avant la ligne blanche. Sacha (rougir) rougit de fierté. Les plus jeunes (grandir) grandissent vite et rattrapent déjà les grands.",
         "trous": [
           {
             "position": 0,
@@ -406,7 +406,7 @@
       "procedure": [
         "Trouve le sujet du verbe.",
         "Remplace-le par « il », « elle », « ils » ou « elles ».",
-        "Avec « ils » ou « elles », écris -ent ; avec « il » ou « elle », écris -e."
+        "Avec « ils » ou « elles », un verbe en -ER prend -ent ; avec « il » ou « elle », il prend -e."
       ],
       "exemples": [
         {
@@ -418,7 +418,7 @@
           "demonstration": "Le sujet « Le petit voisin » se remplace par « il » → terminaison -e : j'écris « remue »."
         }
       ],
-      "piege": "« nous » et « vous » désignent pourtant plusieurs personnes, et ne prennent jamais -ent : on écrit -ons et -ez."
+      "piege": "« nous » et « vous » désignent pourtant plusieurs personnes, et ne prennent jamais -ent : avec un verbe en -ER, on écrit -ons et -ez."
     },
     "diagnostic": [
       {

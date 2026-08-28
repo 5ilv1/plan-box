@@ -181,7 +181,7 @@
       "exemples": [
         {
           "phrase": "___ ballon roule sous le banc.",
-          "demonstration": "On dit « un ballon » : le nom est masculin singulier, donc « Le ballon roule sous le banc »."
+          "demonstration": "On dit « un ballon » : le nom est masculin singulier. Il faut donc un déterminant masculin singulier, « le » ou « un » — ni « la », ni « des »."
         },
         {
           "phrase": "Rosalie colle ___ affiches dans le couloir.",
@@ -419,7 +419,7 @@
       "exemples": [
         {
           "phrase": "Adam monte tout en haut du toboggan sans hésiter.",
-          "demonstration": "Il n'a pas peur : Adam est courageux. « prudent » dirait le contraire."
+          "demonstration": "Il n'a pas peur : Adam est courageux. « peureux » dirait exactement l'inverse."
         },
         {
           "phrase": "Inès mesure moins que tous ses camarades.",
@@ -441,15 +441,15 @@
         "explication": "Aider les autres et prêter ses affaires, c'est être serviable. Les autres mots ne disent pas ce que fait Louna."
       },
       {
-        "question": "Timéo a les cheveux qui font des boucles. Quel adjectif décrit ses cheveux ?",
+        "question": "Les cheveux de Timéo tombent tout droits. Quel adjectif décrit ses cheveux ?",
         "options": [
+          "châtains",
+          "bouclés",
           "raides",
-          "longs",
-          "blonds",
-          "bouclés"
+          "courts"
         ],
-        "reponse_correcte": 3,
-        "explication": "Des cheveux qui font des boucles sont des cheveux bouclés. Les autres adjectifs parlent d'autre chose : la longueur, la couleur, la forme droite."
+        "reponse_correcte": 2,
+        "explication": "Des cheveux qui tombent tout droits sont des cheveux raides. Les autres adjectifs parlent d'autre chose : la couleur, les boucles, la longueur."
       }
     ],
     "entrainement": [
