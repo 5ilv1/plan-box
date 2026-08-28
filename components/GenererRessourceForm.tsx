@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AssignationSelecteur, ParamsRessource, SousTypeRessource, TacheRessource } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
+import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 const SOUS_TYPES: {
   value: SousTypeRessource;
@@ -54,25 +55,6 @@ const ASSIGNATION_VIDE: AssignationSelecteur = {
   groupeNoms: [],
 };
 
-function semaineCourante(): string {
-  const d = new Date();
-  const jan4 = new Date(d.getFullYear(), 0, 4);
-  const startOfWeek1 = new Date(jan4);
-  startOfWeek1.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7));
-  const diff = (d.getTime() - startOfWeek1.getTime()) / (7 * 24 * 3600 * 1000);
-  const week = Math.floor(diff) + 1;
-  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
-}
-
-function lundiDeSemaine(semaine: string): string {
-  const [annee, w] = semaine.split("-W");
-  const numSemaine = parseInt(w, 10);
-  const jan4 = new Date(parseInt(annee, 10), 0, 4);
-  const lundi = new Date(jan4);
-  lundi.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7) + (numSemaine - 1) * 7);
-  return lundi.toISOString().split("T")[0];
-}
-
 const TACHE_VIDE: TacheRessource = { sous_type: "video", label: "", texte: "", url: "", reference: "" };
 
 interface GenererRessourceFormProps {
@@ -107,7 +89,7 @@ export default function GenererRessourceForm({
   const [dateAssignation, setDateAssignation] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const [semaineAssignation, setSemaineAssignation] = useState(semaineCourante());
+  const [semaineAssignation, setSemaineAssignation] = useState(semaineISO());
   const [dateLimite, setDateLimite] = useState("");
 
   const aucunAssigne =

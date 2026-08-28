@@ -4,6 +4,7 @@ import { useState } from "react";
 import { AssignationSelecteur, ParamsExercice } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
 import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
+import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface GenererExerciceFormProps {
   onGenerer: (params: ParamsExercice) => void;
@@ -18,27 +19,6 @@ const ASSIGNATION_VIDE: AssignationSelecteur = {
   eleveUids: [],
   groupeNoms: [],
 };
-
-/** Retourne la semaine courante au format "YYYY-Www" pour <input type="week"> */
-function semaineCourante(): string {
-  const d = new Date();
-  const jan4 = new Date(d.getFullYear(), 0, 4);
-  const startOfWeek1 = new Date(jan4);
-  startOfWeek1.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7));
-  const diff = (d.getTime() - startOfWeek1.getTime()) / (7 * 24 * 3600 * 1000);
-  const week = Math.floor(diff) + 1;
-  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
-}
-
-/** Convertit "YYYY-Www" en date ISO du lundi de cette semaine */
-function lundiDeSemaine(semaine: string): string {
-  const [annee, w] = semaine.split("-W");
-  const numSemaine = parseInt(w, 10);
-  const jan4 = new Date(parseInt(annee, 10), 0, 4);
-  const lundi = new Date(jan4);
-  lundi.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7) + (numSemaine - 1) * 7);
-  return lundi.toISOString().split("T")[0];
-}
 
 export default function GenererExerciceForm({
   onGenerer,
@@ -64,7 +44,7 @@ export default function GenererExerciceForm({
   const [assignation, setAssignation] = useState<AssignationSelecteur>(dv?.assignation ?? ASSIGNATION_VIDE);
   const [periodicite, setPeriodicite] = useState<"jour" | "semaine">(dv?.periodicite ?? "jour");
   const [dateAssignation, setDateAssignation] = useState(dv?.dateAssignation ?? new Date().toISOString().split("T")[0]);
-  const [semaineAssignation, setSemaineAssignation] = useState(semaineCourante());
+  const [semaineAssignation, setSemaineAssignation] = useState(semaineISO());
   const [dateLimite, setDateLimite] = useState("");
 
   function handleSubmit(e: React.FormEvent) {

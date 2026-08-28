@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
 import { TYPE_BLOC_CONFIG, STATUT_BLOC_CONFIG, TypeBloc, StatutBloc } from "@/types";
+import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface BlocTravail {
   id: string;
@@ -49,24 +50,6 @@ function formatDateLabel(dateStr: string, today: string): string {
   });
 }
 
-function getISOWeek(dateStr: string): string {
-  const d = new Date(dateStr + "T12:00:00");
-  const jan4 = new Date(d.getFullYear(), 0, 4);
-  const startOfWeek1 = new Date(jan4);
-  startOfWeek1.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7));
-  const diff = (d.getTime() - startOfWeek1.getTime()) / (7 * 24 * 3600 * 1000);
-  const week = Math.floor(diff) + 1;
-  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
-}
-
-function lundiDeSemaine(semaine: string): string {
-  const [annee, w] = semaine.split("-W");
-  const jan4 = new Date(parseInt(annee, 10), 0, 4);
-  const lundi = new Date(jan4);
-  lundi.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7) + (parseInt(w, 10) - 1) * 7);
-  return dateLocale(lundi);
-}
-
 const labelStyle: React.CSSProperties = {
   fontSize: 11, fontWeight: 700, color: "var(--text-secondary)",
   textTransform: "uppercase", letterSpacing: "0.05em",
@@ -93,7 +76,7 @@ function BlocEditeur({
   const [titre, setTitre] = useState(bloc.titre);
   const [periodicite, setPeriodicite] = useState<"jour" | "semaine">(bloc.periodicite ?? "jour");
   const [dateAssignation, setDateAssignation] = useState(bloc.date_assignation);
-  const [semaineAssignation, setSemaineAssignation] = useState(getISOWeek(bloc.date_assignation));
+  const [semaineAssignation, setSemaineAssignation] = useState(semaineISO(bloc.date_assignation));
   const [dateLimite, setDateLimite] = useState(bloc.date_limite ?? "");
   const [sauvegarde, setSauvegarde] = useState(false);
   const [enregistrementBiblio, setEnregistrementBiblio] = useState(false);

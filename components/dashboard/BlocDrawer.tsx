@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import { TYPE_BLOC_CONFIG, STATUT_BLOC_CONFIG, StatutBloc } from "@/types";
 import { BlocGroupe } from "./BlocJourCard";
+import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface BlocDrawerProps {
   bloc: BlocGroupe | null;
@@ -11,28 +12,6 @@ interface BlocDrawerProps {
   onClickEleve: (eleveId: string, prenom: string) => void;
   onRefresh: () => void;
   inline?: boolean;
-}
-
-function getISOWeek(dateStr: string): string {
-  const d = new Date(dateStr + "T12:00:00");
-  const jan4 = new Date(d.getFullYear(), 0, 4);
-  const startOfWeek1 = new Date(jan4);
-  startOfWeek1.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7));
-  const diff = (d.getTime() - startOfWeek1.getTime()) / (7 * 24 * 3600 * 1000);
-  const week = Math.floor(diff) + 1;
-  return `${d.getFullYear()}-W${String(week).padStart(2, "0")}`;
-}
-
-function lundiDeSemaine(semaine: string): string {
-  const [annee, w] = semaine.split("-W");
-  const numSemaine = parseInt(w, 10);
-  const jan4 = new Date(parseInt(annee, 10), 0, 4);
-  const lundi = new Date(jan4);
-  lundi.setDate(jan4.getDate() - ((jan4.getDay() + 6) % 7) + (numSemaine - 1) * 7);
-  const y = lundi.getFullYear();
-  const m = String(lundi.getMonth() + 1).padStart(2, "0");
-  const day = String(lundi.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
 }
 
 function formatDate(dateStr: string): string {
@@ -80,7 +59,7 @@ export default function BlocDrawer({ bloc, onClose, onClickEleve, onRefresh, inl
       setTitre(bloc.titre);
       setPeriodicite(bloc.periodicite ?? "jour");
       setDateAssignation(bloc.dateAssignation);
-      setSemaineAssignation(getISOWeek(bloc.dateAssignation));
+      setSemaineAssignation(semaineISO(bloc.dateAssignation));
       setDateLimite(bloc.dateLimite ?? "");
     }
   }, [bloc]);

@@ -25,6 +25,7 @@ interface BlocPlanning {
   groupe_label: string | null;
   eleve_info: EleveInfo | null;
   contenu: Record<string, unknown>;
+  periodicite: "jour" | "semaine" | null;
 }
 
 interface GroupeFiltre {
@@ -42,6 +43,7 @@ interface GroupeBloc {
   chapitre_id: string | null;
   contenu: Record<string, unknown>;
   groupe_label: string | null;
+  periodicite: "jour" | "semaine" | null;
   blocs: BlocPlanning[];
 }
 
@@ -108,7 +110,7 @@ const DRAG_THRESHOLD = 6;
 function grouperBlocs(blocs: BlocPlanning[]): GroupeBloc[] {
   const map = new Map<string, GroupeBloc>();
   for (const b of blocs) {
-    const key = `${b.date_assignation}||${b.titre ?? ""}||${b.type}||${b.groupe_label ?? ""}`;
+    const key = `${b.date_assignation}||${b.titre ?? ""}||${b.type}||${b.groupe_label ?? ""}||${b.periodicite ?? "jour"}`;
     if (!map.has(key)) {
       map.set(key, {
         key,
@@ -119,6 +121,7 @@ function grouperBlocs(blocs: BlocPlanning[]): GroupeBloc[] {
         chapitre_id: b.chapitre_id,
         contenu: b.contenu,
         groupe_label: b.groupe_label,
+        periodicite: b.periodicite,
         blocs: [],
       });
     }
@@ -593,10 +596,17 @@ export default function PageAdminPlanning() {
       })
     : blocs;
 
+  // Les blocs en périodicité "semaine" sont visibles par les élèves du lundi au
+  // dimanche : ils vont en bandeau au-dessus de la grille, pas dans une colonne.
+  const blocsSemaine = blocsFiltres.filter((b) => b.periodicite === "semaine");
+  const groupesSemaine = grouperBlocs(blocsSemaine);
+
   const joursSemaine = JOURS_SEMAINE.map((nom, i) => {
     const date = addDays(lundi, i);
     const iso  = formatISO(date);
-    const blocsJour = blocsFiltres.filter((b) => b.date_assignation === iso);
+    const blocsJour = blocsFiltres.filter(
+      (b) => b.date_assignation === iso && b.periodicite !== "semaine",
+    );
     return { nom, date, iso, groupes: grouperBlocs(blocsJour), nbBlocs: blocsJour.length };
   });
 
@@ -683,6 +693,16 @@ export default function PageAdminPlanning() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 4, marginBottom: 2 }}>
           <span className="ms" style={{ fontSize: 11 }}>{ICONES_TYPE[g.type] ?? "push_pin"}</span>
+          {g.periodicite === "semaine" && (
+            <span
+              title="Bloc semaine : visible par les élèves du lundi au dimanche"
+              style={{
+                fontSize: 9, fontWeight: 800, letterSpacing: "0.04em", textTransform: "uppercase",
+                padding: "1px 5px", borderRadius: 4, background: conf.color, color: conf.bg,
+                lineHeight: 1.4, flexShrink: 0,
+              }}
+            >Semaine</span>
+          )}
           <span style={{
             display: "inline-block", width: 7, height: 7, borderRadius: "50%", marginLeft: "auto",
             background: nbFait === nbTotal ? "#10B981" : nbFait > 0 ? "#F59E0B" : "#EF4444",
@@ -817,6 +837,29 @@ export default function PageAdminPlanning() {
           {chargement ? (
             <div style={{ textAlign: "center", padding: 60, color: "var(--text-secondary)" }}>Chargement…</div>
           ) : (
+            <>
+            {/* ── Bandeau « toute la semaine » ──────────────────────────────── */}
+            {groupesSemaine.length > 0 && (
+              <div style={{
+                marginBottom: 14, padding: "12px 16px", background: "white",
+                border: "1px solid var(--border)", borderLeft: "4px solid #7C3AED", borderRadius: 12,
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <span className="ms" style={{ fontSize: 18, color: "#7C3AED" }}>date_range</span>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "var(--text)" }}>Toute la semaine</span>
+                  <span style={{ fontSize: 11, color: "var(--text-secondary)" }}>
+                    {blocsSemaine.length} activité{blocsSemaine.length > 1 ? "s" : ""} — visibles par les élèves du lundi au dimanche
+                  </span>
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                  {groupesSemaine.map((g) => (
+                    <div key={g.key} style={{ flex: "0 1 210px", minWidth: 170 }}>
+                      <GroupeCard g={g} />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             <div className="ens-planning-grid">
               {joursSemaine.map(({ nom, date, iso, groupes, nbBlocs }) => {
                 const isToday  = iso === todayISO;
@@ -860,6 +903,7 @@ export default function PageAdminPlanning() {
                 );
               })}
             </div>
+            </>
           )}
 
           {/* ── Chapitres & Règles de la semaine ──────────────────────────── */}
@@ -984,6 +1028,13 @@ export default function PageAdminPlanning() {
                                   }}
                                 >
                                   <span className="ms" style={{ fontSize: 9, flexShrink: 0 }}>{ICONES_TYPE[g.type] ?? "push_pin"}</span>
+                                  {g.periodicite === "semaine" && (
+                                    <span
+                                      className="ms"
+                                      title="Bloc semaine : visible toute la semaine"
+                                      style={{ fontSize: 9, flexShrink: 0, color: conf.color }}
+                                    >date_range</span>
+                                  )}
                                   <span style={{
                                     fontSize: 10, fontWeight: 600, color: conf.color,
                                     overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
@@ -1122,6 +1173,18 @@ export default function PageAdminPlanning() {
                       👤 {detail.blocs.length} élèves
                     </span>
                   ) : null}
+                  <span
+                    title={detail.periodicite === "semaine"
+                      ? "Visible par les élèves du lundi au dimanche"
+                      : "Visible par les élèves ce jour-là uniquement"}
+                    style={{
+                      fontSize: 12, fontWeight: 700, padding: "2px 8px", borderRadius: 6,
+                      background: detail.periodicite === "semaine" ? "#EDE9FE" : "#F3F4F6",
+                      color: detail.periodicite === "semaine" ? "#5B21B6" : "#4B5563",
+                    }}
+                  >
+                    {detail.periodicite === "semaine" ? "🗓️ Toute la semaine" : "📌 Ce jour"}
+                  </span>
                 </div>
               </div>
               <button className="btn-ghost" onClick={fermerDrawer} style={{ padding: "4px 10px", flexShrink: 0 }}>✕</button>
