@@ -172,9 +172,9 @@
       "titre": "Compter les axes de symétrie",
       "regle": "Un axe de symétrie est un pli qui partage la figure en deux moitiés qui se superposent exactement.",
       "procedure": [
-        "Cherche un pli qui rabat la figure exactement sur elle-même. Sur le quadrillage, commence par le pli vertical et le pli horizontal.",
-        "Essaie ensuite les plis en diagonale, et tout autre pli que la figure te suggère : un axe peut être penché.",
-        "Compte tous les plis qui marchent : c'est le nombre d'axes de symétrie."
+        "Cherche un pli qui rabat la figure exactement sur elle-même.",
+        "Essaie le pli vertical, le pli horizontal, puis les plis penchés : un axe peut aller dans n'importe quelle direction.",
+        "Compte les plis qui marchent : c'est le nombre d'axes."
       ],
       "exemples": [
         {
