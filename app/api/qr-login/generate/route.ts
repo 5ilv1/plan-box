@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * POST /api/qr-login/generate
@@ -9,6 +10,12 @@ import { createAdminClient } from "@/lib/supabase-admin";
  * Retourne { token: string } — le token est intégré dans l'URL du QR code.
  */
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : un token QR s'échange contre une session
+  // complète via /api/qr-login/verify. Le distribuer, c'est distribuer
+  // un accès au compte visé.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   const { eleveAuthId } = body ?? {};
 

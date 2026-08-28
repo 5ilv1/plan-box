@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/feedback
@@ -9,6 +10,11 @@ import { createAdminClient } from "@/lib/supabase-admin";
  * avec statut et score par élève.
  */
 export async function GET(req: Request) {
+  // Réservé à l'enseignant : la réponse contient toute la classe
+  // (identités, statuts, scores et réponses saisies par les élèves).
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const admin = createAdminClient();
   const { searchParams } = new URL(req.url);
   const periode = searchParams.get("periode") ?? "semaine";
