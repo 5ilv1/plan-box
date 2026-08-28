@@ -99,6 +99,10 @@ export async function GET(req: NextRequest) {
   for (const a of (assignations ?? []) as any[]) {
     if (!a.chapitres?.titre) continue;
 
+    // Les ceintures de compétences ont leur propre parcours (/eleve/ceintures) :
+    // sans ce filtre, les 9 couleurs × 7 domaines noieraient les chapitres de la semaine.
+    if ((a.chapitres.sous_matiere as string | null)?.startsWith("ceinture-")) continue;
+
     const isRegle = a.chapitres.sous_matiere === "rituel-orthographe";
     const dateDebut = a.chapitres.date_debut as string | null;
 
