@@ -93,8 +93,69 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Aucun élève trouvé" }, { status: 400 });
   }
 
-  const { error } = await admin.from("plan_travail").insert(lignes);
-  if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+  // Réaffecter le même contenu à la même date ne doit pas échouer : c'est le
+  // geste normal quand on régénère un QCM ou qu'on corrige une ressource. Les
+  // index d'unicité (`plan_travail_rb_unique` / `_pb_unique`) sont PARTIELS,
+  // et `upsert` ne sait pas viser un index partiel — on sépare donc à la main
+  // ce qui existe déjà de ce qui est nouveau.
+  const { data: existantes } = await admin
+    .from("plan_travail")
+    .select("id, eleve_id, repetibox_eleve_id")
+    .eq("titre", titre)
+    .eq("type", type)
+    .eq("date_assignation", dateAssignation);
 
-  return NextResponse.json({ ok: true, nb: lignes.length });
+  const cleEleve = (eleveId: unknown, rbId: unknown) =>
+    eleveId ? `pb_${eleveId}` : `rb_${rbId}`;
+
+  const dejaLa = new Map(
+    (existantes ?? []).map((r) => [cleEleve(r.eleve_id, r.repetibox_eleve_id), r.id as string]),
+  );
+
+  const aInserer: Record<string, unknown>[] = [];
+  const aMettreAJour: { id: string; ligne: Record<string, unknown> }[] = [];
+
+  for (const l of lignes) {
+    const id = dejaLa.get(cleEleve(l.eleve_id, l.repetibox_eleve_id));
+    if (id) aMettreAJour.push({ id, ligne: l });
+    else aInserer.push(l);
+  }
+
+  if (aInserer.length > 0) {
+    const { error } = await admin.from("plan_travail").insert(aInserer);
+    if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+  }
+
+  // Le statut n'est jamais réécrit : un élève qui a déjà fait l'activité ne la
+  // retrouve pas « à faire » parce que l'enseignant a réaffecté.
+  // Seul `groupe_label` varie d'une ligne à l'autre : on regroupe par lui pour
+  // faire une requête par groupe plutôt qu'une par élève.
+  const parGroupe = new Map<string, string[]>();
+  for (const { id, ligne } of aMettreAJour) {
+    const cle = String(ligne.groupe_label ?? "");
+    const liste = parGroupe.get(cle) ?? [];
+    liste.push(id);
+    parGroupe.set(cle, liste);
+  }
+
+  for (const [groupeLabel, ids] of parGroupe) {
+    const { error } = await admin
+      .from("plan_travail")
+      .update({
+        contenu,
+        chapitre_id: chapitreId ?? null,
+        date_limite: dateLimite ?? null,
+        periodicite: periodicite ?? "jour",
+        groupe_label: groupeLabel || null,
+      })
+      .in("id", ids);
+    if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({
+    ok: true,
+    nb: lignes.length,
+    nbCrees: aInserer.length,
+    nbMisAJour: aMettreAJour.length,
+  });
 }

@@ -366,14 +366,20 @@ export default function PodcastsEnseignant() {
     setAffEtape(null);
     setAffResultat(null);
 
-    // Si pas de QCM, en générer un
+    // Si pas de QCM, en générer un. Chaque échec est signalé : un podcast
+    // affecté sans questionnaire, sans un mot, se découvre trop tard.
     let contenu = { ...podcast.contenu };
+    let avertissement: string | null = null;
+
     if (!contenu.qcm) {
       const taches = (contenu.taches ?? []) as Array<{ sous_type?: string; transcription?: string }>;
       const tacheAvecTranscription = taches.find(
         (t) => t.sous_type === "podcast" && t.transcription && (t.transcription as string).trim().length >= 50
       );
-      if (tacheAvecTranscription?.transcription) {
+
+      if (!tacheAvecTranscription?.transcription) {
+        avertissement = "sans questionnaire (transcription absente ou trop courte — ajoute-la avec le crayon)";
+      } else {
         setAffEtape("qcm");
         try {
           const qcmRes = await fetch("/api/generer-qcm", {
@@ -384,8 +390,12 @@ export default function PodcastsEnseignant() {
           const qcmJson = await qcmRes.json();
           if (qcmRes.ok && qcmJson.questions) {
             contenu = { ...contenu, qcm: qcmJson.questions, qcm_id: qcmJson.qcm_id };
+          } else {
+            avertissement = `sans questionnaire (${qcmJson.erreur ?? "la génération a échoué"})`;
           }
-        } catch {}
+        } catch {
+          avertissement = "sans questionnaire (la génération n'a pas abouti)";
+        }
       }
     }
 
@@ -407,7 +417,12 @@ export default function PodcastsEnseignant() {
       });
       const json = await res.json();
       if (json.ok) {
-        setAffResultat(`Affecté à ${json.nb} élève${json.nb > 1 ? "s" : ""}`);
+        const nb = json.nb as number;
+        const maj = (json.nbMisAJour as number) ?? 0;
+        const base = maj > 0 && maj === nb
+          ? `Mis à jour pour ${nb} élève${nb > 1 ? "s" : ""}`
+          : `Affecté à ${nb} élève${nb > 1 ? "s" : ""}`;
+        setAffResultat(avertissement ? `${base} — ${avertissement}` : base);
         setTimeout(() => { setAffecterKey(null); setAffEtape(null); if (enseignantId) charger(enseignantId); }, 2000);
       } else {
         setAffResultat(`Erreur : ${json.erreur ?? "inconnue"}`);
@@ -1167,7 +1182,13 @@ function AffectationPanel({
           Annuler
         </button>
         {affResultat && (
-          <span style={{ fontSize: 13, fontWeight: 700, color: affResultat.startsWith("Erreur") ? "#DC2626" : "#16A34A" }}>
+          <span style={{
+            fontSize: 13, fontWeight: 700,
+            color: affResultat.startsWith("Erreur")
+              ? "#DC2626"
+              // Affecté, mais sans questionnaire : ni un succès franc, ni une erreur.
+              : affResultat.includes("sans questionnaire") ? "#B45309" : "#16A34A",
+          }}>
             {affResultat}
           </span>
         )}
