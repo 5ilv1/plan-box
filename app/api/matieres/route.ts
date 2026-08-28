@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 export async function GET() {
   const supabase = createAdminClient();
@@ -12,6 +13,10 @@ export async function GET() {
 }
 
 export async function POST(req: Request) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { nom, icone } = await req.json();
   if (!nom?.trim()) return NextResponse.json({ erreur: "Nom requis" }, { status: 400 });
 
@@ -33,6 +38,10 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id, nom, icone, ordre } = await req.json();
   if (!id) return NextResponse.json({ erreur: "id requis" }, { status: 400 });
 
@@ -53,6 +62,10 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id } = await req.json();
   if (!id) return NextResponse.json({ erreur: "id requis" }, { status: 400 });
 

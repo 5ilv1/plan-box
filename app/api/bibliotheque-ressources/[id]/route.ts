@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/bibliotheque-ressources/[id]
 export async function GET(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -17,6 +18,10 @@ export async function GET(_req: NextRequest, { params }: { params: Promise<{ id:
 
 // PATCH /api/bibliotheque-ressources/[id]
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id } = await params;
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
@@ -34,6 +39,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
 // DELETE /api/bibliotheque-ressources/[id]
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id } = await params;
   const admin = createAdminClient();
   const { error } = await admin

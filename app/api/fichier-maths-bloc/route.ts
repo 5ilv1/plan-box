@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // PATCH /api/fichier-maths-bloc
 // Déplacer un bloc fichier_maths d'une date à une autre
 // Body: { date: string, groupe: string, page: number, nouvelleDate: string }
 export async function PATCH(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
@@ -43,6 +48,10 @@ export async function PATCH(req: NextRequest) {
 // Supprimer tous les blocs fichier_maths d'un (date, groupe, page)
 // Body: { date: string, groupe: string }
 export async function DELETE(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 

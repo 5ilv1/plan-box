@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // POST /api/admin/groupes/[id]/membres
 // Ajoute un membre au groupe ET lui assigne les exercices futurs du groupe
@@ -7,6 +8,10 @@ export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id: groupeId } = await params;
   const body = await req.json().catch(() => null);
   const { eleveUid } = body ?? {};
@@ -127,6 +132,10 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id: groupeId } = await params;
   const eleveUid = new URL(req.url).searchParams.get("uid");
 

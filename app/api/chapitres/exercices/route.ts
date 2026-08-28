@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 import { servirVariante } from "@/lib/ceintures-competences";
 
 const TYPES_VALIDES = [
@@ -89,6 +90,10 @@ export async function GET(req: NextRequest) {
  * Crée un nouvel exercice. Body: { chapitre_id, titre, type, contenu, nb_questions }
  */
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json();
   const { chapitre_id, titre, type, contenu, nb_questions } = body;
 
@@ -131,6 +136,10 @@ export async function POST(req: NextRequest) {
  * Met à jour un exercice. Body: { id, ...champs }
  */
 export async function PATCH(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json();
   const { id, ...champs } = body;
 
@@ -175,6 +184,10 @@ export async function PATCH(req: NextRequest) {
  * Supprime un exercice.
  */
 export async function DELETE(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const id = req.nextUrl.searchParams.get("id");
   if (!id) {
     return NextResponse.json({ error: "id requis" }, { status: 400 });

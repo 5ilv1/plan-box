@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/banque-lecons
 export async function GET() {
@@ -37,6 +38,10 @@ export async function GET() {
 // POST /api/banque-lecons
 // Body : { titre, matiere, url }
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
@@ -59,6 +64,10 @@ export async function POST(req: NextRequest) {
 // PATCH /api/banque-lecons
 // Body : { id, titre?, matiere?, url? }
 export async function PATCH(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
@@ -91,6 +100,10 @@ export async function PATCH(req: NextRequest) {
 // Body : { id }
 // Supprime aussi les entrées plan_travail liées à cette leçon
 export async function DELETE(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body?.id) return NextResponse.json({ erreur: "id requis" }, { status: 400 });
 

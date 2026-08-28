@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/podcasts — liste tous les podcasts (QCM) avec scores et config podium
 // Inclut aussi les podcasts non-assignés de la bibliothèque
@@ -121,6 +122,10 @@ export async function GET(req: NextRequest) {
 // PATCH /api/podcasts — met à jour la config podium d'un podcast
 // Si renommer=true, met aussi à jour plan_travail.titre pour toutes les entrées liées
 export async function PATCH(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { qcm_id, dans_podium, titre, renommer, contenu } = await req.json();
   if (!qcm_id) return NextResponse.json({ erreur: "qcm_id requis" }, { status: 400 });
 
@@ -152,6 +157,10 @@ export async function PATCH(req: NextRequest) {
 
 // DELETE /api/podcasts?qcm_id=xxx — supprime tous les plan_travail liés à ce qcm_id
 export async function DELETE(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const qcm_id = new URL(req.url).searchParams.get("qcm_id");
   if (!qcm_id) return NextResponse.json({ erreur: "qcm_id requis" }, { status: 400 });
 

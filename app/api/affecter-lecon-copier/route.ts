@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/affecter-lecon-copier
 // Retourne l'historique des leçons à copier assignées
@@ -48,6 +49,10 @@ export async function GET() {
 //   groupes: Array<{ groupeId: string; groupeNom: string }>;
 // }
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
@@ -133,6 +138,10 @@ export async function POST(req: NextRequest) {
 //     leçons.
 //   - Sinon : ancien comportement (filtre par date + titre + groupe).
 export async function DELETE(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
@@ -176,6 +185,10 @@ export async function DELETE(req: NextRequest) {
 // à une assignation (date + groupe + ancien titre)
 // Body : { date, groupe, ancienTitre, titre, url }
 export async function PATCH(req: NextRequest) {
+  // Réservé à l'enseignant : cette méthode modifie ou supprime du contenu.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
