@@ -5,6 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import { resoudrePositionsTrous } from "@/lib/texte-a-trous";
 import LeconCeinture, { type Lecon } from "@/components/LeconCeinture";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
@@ -16,6 +18,8 @@ interface Question {
   enonce: string;
   reponse_attendue: string;
   indice?: string;
+  droite?: Droite;
+  figure?: Figure;
 }
 
 interface QCMQuestion {
@@ -23,12 +27,16 @@ interface QCMQuestion {
   options: string[];
   reponse_correcte: number;
   explication?: string;
+  droite?: Droite;
+  figure?: Figure;
 }
 
 interface Calcul {
   id: number;
   enonce: string;
   reponse: string;
+  droite?: Droite;
+  figure?: Figure;
 }
 
 interface Exercice {
@@ -58,7 +66,7 @@ export default function PageExerciceEleve() {
   const [dejaVue, setDejaVue] = useState(false);
 
   // Questions / réponses
-  const [questions, setQuestions] = useState<Array<{ enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number }>>([]);
+  const [questions, setQuestions] = useState<Array<{ enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number; droite?: Droite; figure?: Figure }>>([]);
   const [indexCourant, setIndexCourant] = useState(0);
   const [reponseEleve, setReponseEleve] = useState("");
   const [qcmChoisi, setQcmChoisi] = useState<number | null>(null);
@@ -141,7 +149,7 @@ export default function PageExerciceEleve() {
 
       if (ex.type === "exercice" && Array.isArray(contenu.questions)) {
         for (const q of contenu.questions as Question[]) {
-          qs.push({ enonce: q.enonce, reponse: q.reponse_attendue, indice: q.indice });
+          qs.push({ enonce: q.enonce, reponse: q.reponse_attendue, indice: q.indice, droite: q.droite, figure: q.figure });
         }
       } else if (ex.type === "qcm" && Array.isArray(contenu.questions)) {
         for (const q of contenu.questions as QCMQuestion[]) {
@@ -150,11 +158,13 @@ export default function PageExerciceEleve() {
             reponse: q.options[q.reponse_correcte],
             options: q.options,
             reponseIdx: q.reponse_correcte,
+            droite: q.droite,
+            figure: q.figure,
           });
         }
       } else if (ex.type === "calcul_mental" && Array.isArray(contenu.calculs)) {
         for (const c of contenu.calculs as Calcul[]) {
-          qs.push({ enonce: c.enonce, reponse: String(c.reponse) });
+          qs.push({ enonce: c.enonce, reponse: String(c.reponse), droite: c.droite, figure: c.figure });
         }
       } else if (ex.type === "texte_a_trous") {
         setEtat("en_cours");
@@ -970,6 +980,15 @@ export default function PageExerciceEleve() {
         }}>
           {q.enonce}
         </p>
+
+        {/* Le dessin dont parle l'énoncé : droite graduée ou figure.
+            Centré comme l'énoncé qui le précède, à qui il répond. */}
+        {(q.droite || q.figure) && (
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            {q.droite && <DroiteGraduee droite={q.droite} />}
+            {q.figure && <FigureGeo figure={q.figure} />}
+          </div>
+        )}
 
         {/* Champ réponse */}
         {isQCM ? (
