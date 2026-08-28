@@ -35,11 +35,17 @@ export async function POST(req: NextRequest) {
   const expiresAt = new Date();
   expiresAt.setFullYear(expiresAt.getFullYear() + 1);
 
-  const { data: existing } = await admin
+  // .single() échouait dès qu'un élève avait deux lignes : existing valait alors
+  // null et la route insérait un token de plus à chaque appel — jusqu'à 36 par
+  // élève. On prend le token valide dont l'expiration est la plus lointaine.
+  const { data: existants } = await admin
     .from("qr_tokens")
     .select("token")
     .eq("eleve_auth_id", eleveAuthId)
-    .single();
+    .gt("expires_at", new Date().toISOString())
+    .order("expires_at", { ascending: false })
+    .limit(1);
+  const existing = existants?.[0];
 
   if (existing) {
     // Renouveler l'expiration

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // GET /api/admin/chapitres/[id]/exercices
 // Retourne les exercices du chapitre avec stats élèves
@@ -8,6 +9,11 @@ export async function GET(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Réservé à l'enseignant : lecture des stats élèves, écriture sur l'ordre
+  // des exercices. Oubliée du lot du commit 8401b74.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id: chapitreId } = await params;
   const admin = createAdminClient();
 
@@ -98,6 +104,11 @@ export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  // Réservé à l'enseignant : lecture des stats élèves, écriture sur l'ordre
+  // des exercices. Oubliée du lot du commit 8401b74.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { id: chapitreId } = await params;
   const { ordre } = await req.json().catch(() => ({ ordre: [] }));
 
