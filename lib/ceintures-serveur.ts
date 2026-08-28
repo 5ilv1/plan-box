@@ -311,3 +311,185 @@ export async function appliquerRemediation(
 export function domainesActifs(): DomaineCeinture[] {
   return DOMAINES;
 }
+
+// ── Vue enseignant ──────────────────────────────────────────────────────────
+
+export interface ItemEleve {
+  code: string;
+  libelle: string;
+  valide: boolean;
+}
+
+export interface DomaineEleve {
+  /** Index de la ceinture en cours, ou NB_CEINTURES si le domaine est terminé. */
+  courante: number;
+  termine: boolean;
+  /** Indices des ceintures validées. */
+  validees: number[];
+  /** Indices des ceintures dont le test de départ a été passé. */
+  diagnostics: number[];
+  /** Avancement dans la ceinture en cours. */
+  nbValides: number;
+  nbItems: number;
+  /** Les compétences de la ceinture en cours, dans l'ordre, avec leur état. */
+  items: ItemEleve[];
+}
+
+export interface EleveCeintures {
+  /** `pb_<uuid>` ou `rb_<id>`, comme partout ailleurs dans PlanBox. */
+  uid: string;
+  eleveId: string | null;
+  rbEleveId: number | null;
+  prenom: string;
+  nom: string;
+  niveau: string | null;
+  source: "planbox" | "repetibox";
+  domaines: Record<string, DomaineEleve>;
+}
+
+/**
+ * L'état de toute la classe, en un nombre fixe de requêtes.
+ *
+ * Appeler `etatCeintures()` par élève ferait 5 requêtes × 19 élèves ; ici on
+ * charge tout en bloc et on agrège en mémoire. La règle de dérivation reste la
+ * même : une ceinture est acquise dès qu'une `evaluation_resultat` réussie
+ * existe sur son chapitre, et la courante est la première qui ne l'est pas.
+ */
+export async function etatClasse(eleves: {
+  uid: string; eleveId: string | null; rbEleveId: number | null;
+  prenom: string; nom: string; niveau: string | null; source: "planbox" | "repetibox";
+}[]): Promise<EleveCeintures[]> {
+  const admin = createAdminClient();
+
+  const { data: liens } = await admin
+    .from("ceinture_chapitre")
+    .select("domaine_code, ceinture_idx, chapitre_id");
+
+  const chapitres = (liens ?? []).map((l) => l.chapitre_id as string);
+  const infoChapitre = new Map(
+    (liens ?? []).map((l) => [
+      l.chapitre_id as string,
+      { domaine: l.domaine_code as string, idx: l.ceinture_idx as number },
+    ]),
+  );
+
+  const { data: items } = await admin
+    .from("ceinture_item")
+    .select("code, libelle, domaine_code, ceinture_idx, ordre")
+    .eq("actif", true)
+    .order("ordre");
+
+  // Les items de chaque ceinture, dans l'ordre du référentiel.
+  const itemsParCeinture = new Map<string, { code: string; libelle: string }[]>();
+  for (const it of items ?? []) {
+    const cle = `${it.domaine_code}-${it.ceinture_idx}`;
+    const liste = itemsParCeinture.get(cle) ?? [];
+    liste.push({ code: it.code as string, libelle: it.libelle as string });
+    itemsParCeinture.set(cle, liste);
+  }
+
+  const { data: exercices } = await admin
+    .from("exercice")
+    .select("id, chapitre_id, contenu")
+    .in("chapitre_id", chapitres);
+
+  const chapitreParExo = new Map(
+    (exercices ?? []).map((e) => [e.id as string, e.chapitre_id as string]),
+  );
+  const itemParExo = new Map(
+    (exercices ?? []).map((e) => [
+      e.id as string,
+      (e.contenu as Record<string, unknown>)?.item_code as string | undefined,
+    ]),
+  );
+
+  // Les trois tables d'où se dérive tout l'état, chargées d'un coup.
+  const [{ data: evals }, { data: diags }, { data: resultats }] = await Promise.all([
+    admin.from("evaluation_resultat")
+      .select("chapitre_id, eleve_id, rb_eleve_id")
+      .in("chapitre_id", chapitres).eq("reussi", true),
+    admin.from("ceinture_diagnostic")
+      .select("domaine_code, ceinture_idx, eleve_id, rb_eleve_id"),
+    admin.from("exercice_resultat")
+      .select("exercice_id, eleve_id, rb_eleve_id")
+      .in("exercice_id", [...chapitreParExo.keys()]).eq("valide", true),
+  ]);
+
+  /** Clé d'élève commune aux trois tables. */
+  const cleDe = (e: { eleve_id?: string | null; rb_eleve_id?: number | null }) =>
+    e.eleve_id ? `pb_${e.eleve_id}` : e.rb_eleve_id != null ? `rb_${e.rb_eleve_id}` : null;
+
+  const reussisPar = new Map<string, Set<string>>();
+  for (const e of evals ?? []) {
+    const cle = cleDe(e);
+    if (!cle) continue;
+    const s = reussisPar.get(cle) ?? new Set();
+    s.add(e.chapitre_id as string);
+    reussisPar.set(cle, s);
+  }
+
+  const diagsPar = new Map<string, Set<string>>();
+  for (const d of diags ?? []) {
+    const cle = cleDe(d);
+    if (!cle) continue;
+    const s = diagsPar.get(cle) ?? new Set();
+    s.add(`${d.domaine_code}-${d.ceinture_idx}`);
+    diagsPar.set(cle, s);
+  }
+
+  const validesPar = new Map<string, Map<string, number>>();
+  const itemsValidesPar = new Map<string, Set<string>>();
+  for (const r of resultats ?? []) {
+    const cle = cleDe(r);
+    const chId = chapitreParExo.get(r.exercice_id as string);
+    if (!cle || !chId) continue;
+    const parChapitre = validesPar.get(cle) ?? new Map<string, number>();
+    parChapitre.set(chId, (parChapitre.get(chId) ?? 0) + 1);
+    validesPar.set(cle, parChapitre);
+
+    const code = itemParExo.get(r.exercice_id as string);
+    if (code) {
+      const codes = itemsValidesPar.get(cle) ?? new Set<string>();
+      codes.add(code);
+      itemsValidesPar.set(cle, codes);
+    }
+  }
+
+  return eleves.map((eleve) => {
+    const reussis = reussisPar.get(eleve.uid) ?? new Set<string>();
+    const passes = diagsPar.get(eleve.uid) ?? new Set<string>();
+    const valides = validesPar.get(eleve.uid) ?? new Map<string, number>();
+    const codesValides = itemsValidesPar.get(eleve.uid) ?? new Set<string>();
+
+    const domaines: Record<string, DomaineEleve> = {};
+    for (const domaine of DOMAINES) {
+      const desChapitres = [...infoChapitre.entries()]
+        .filter(([, i]) => i.domaine === domaine.code);
+
+      const validees = desChapitres
+        .filter(([chId]) => reussis.has(chId))
+        .map(([, i]) => i.idx)
+        .sort((a, b) => a - b);
+
+      const courante = ceintureCourante(validees);
+      const chapitreCourant = desChapitres.find(([, i]) => i.idx === courante)?.[0];
+
+      const itemsCourants = itemsParCeinture.get(`${domaine.code}-${courante}`) ?? [];
+
+      domaines[domaine.code] = {
+        courante,
+        termine: courante >= NB_CEINTURES,
+        validees,
+        diagnostics: [...passes]
+          .filter((c) => c.startsWith(`${domaine.code}-`))
+          .map((c) => Number(c.split("-")[1]))
+          .sort((a, b) => a - b),
+        nbValides: chapitreCourant ? (valides.get(chapitreCourant) ?? 0) : 0,
+        nbItems: itemsCourants.length,
+        items: itemsCourants.map((i) => ({ ...i, valide: codesValides.has(i.code) })),
+      };
+    }
+
+    return { ...eleve, domaines };
+  });
+}
