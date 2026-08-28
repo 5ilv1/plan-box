@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { requireEnseignant } from "@/lib/server-auth";
 
 export const maxDuration = 120;
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   try {
     const body = await req.json();
     const {

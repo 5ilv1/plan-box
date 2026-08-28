@@ -2,11 +2,17 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { enonceePonctuation } from "@/lib/dictee-utils";
+import { requireEnseignantOrCron } from "@/lib/server-auth";
 
 // POST /api/tts/generer-dictee
 // Body: { dictee_id: string, niveau_etoiles: number, texte_complet: string, phrases: { id: number; texte: string }[] }
 // Génère audio complet + par phrase, stocke dans Supabase Storage, met à jour table dictees
 export async function POST(req: NextRequest) {
+  // Enseignant, ou script CLI signé par CRON_SECRET
+  // (scripts/regen-audio-dictees.ts). Route facturée : synthèse vocale OpenAI.
+  const { error: refus } = await requireEnseignantOrCron(req);
+  if (refus) return refus;
+
   try {
     const { dictee_id, niveau_etoiles, texte_complet, phrases } = await req.json();
     if (!dictee_id || !niveau_etoiles || !texte_complet || !phrases) {

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -11,6 +12,10 @@ const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
  * Body: { chapitre_id, titre, contexte? }
  */
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   try {
     const body = await req.json();
     const { chapitre_id, titre, contexte } = body;

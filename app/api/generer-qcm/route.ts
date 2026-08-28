@@ -1,12 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { requireEnseignant } from "@/lib/server-auth";
 
 export const maxDuration = 120; // 2 min max (Vercel Pro)
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const { transcript, titre, nbQuestions = 10 } = await req.json();
 
   if (!transcript || typeof transcript !== "string" || transcript.trim().length < 50) {

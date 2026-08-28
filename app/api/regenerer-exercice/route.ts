@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { requireEnseignant } from "@/lib/server-auth";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -10,6 +11,10 @@ export const maxDuration = 60;
 // POST { type, titre, consigne?, nbElements, matiere?, niveau? }
 // ou   { type, titre, contenu, prompt }  → regénération avec instructions personnalisées
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   const body = await req.json();
 
   // ── Mode regénération avec prompt personnalisé ──

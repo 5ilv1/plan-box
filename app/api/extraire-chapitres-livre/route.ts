@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -234,6 +235,10 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
 }
 
 export async function POST(req: Request) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   try {
     // Trois modes d'entrée :
     //  1. JSON avec `texteBrut` (préféré : extraction PDF faite côté client via pdfjs)

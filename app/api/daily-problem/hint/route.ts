@@ -1,9 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { getServerUser } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY! });
 
 export async function POST(req: NextRequest) {
+  // Appelée par les élèves : on exige une session, sans exiger l'enseignant.
+  // Sans ça, la clé Anthropic est utilisable par n'importe qui.
+  const utilisateur = await getServerUser();
+  if (!utilisateur) {
+    return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
+  }
+
   const { enonce, wrong_answer, categorie, attempt } = await req.json();
   if (!enonce || wrong_answer === undefined) {
     return NextResponse.json({ error: "Paramètres manquants" }, { status: 400 });

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
+import { getServerUser } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -33,6 +34,13 @@ async function niveauDepuisExercice(exerciceId: string | undefined): Promise<"CE
 }
 
 export async function POST(req: NextRequest) {
+  // Appelée par les élèves : on exige une session, sans exiger l'enseignant.
+  // Sans ça, la clé Anthropic est utilisable par n'importe qui.
+  const utilisateur = await getServerUser();
+  if (!utilisateur) {
+    return NextResponse.json({ erreur: "Non authentifié" }, { status: 401 });
+  }
+
   try {
     const { texte, consigne, contraintes, nb_phrases, tentative, exerciceId } = await req.json();
 

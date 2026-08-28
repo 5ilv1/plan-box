@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -143,6 +144,10 @@ function getRegles(type: ExerciceType): string {
 }
 
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   try {
     const body = await req.json();
     const { chapitre_id, type, contexte, nb_questions } = body;

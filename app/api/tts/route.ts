@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { enonceePonctuation } from "@/lib/dictee-utils";
+import { requireEnseignant } from "@/lib/server-auth";
 
 // POST /api/tts
 // Génère un fichier audio via OpenAI TTS et le stocke dans Supabase Storage
@@ -10,6 +11,10 @@ import { enonceePonctuation } from "@/lib/dictee-utils";
 //   dictee=false → comportement TTS standard (défaut)
 // Retourne: { url: string }
 export async function POST(req: NextRequest) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   try {
     const { texte, cheminStockage, dictee } = await req.json();
     const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

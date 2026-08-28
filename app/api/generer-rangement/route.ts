@@ -2,10 +2,15 @@ import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES, extraireJSON } from "@/lib/prompts-communs";
 import { CRITERES, ordonner } from "@/lib/rangement";
+import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 export async function POST(req: Request) {
+  // Réservé à l'enseignant : cette route consomme une clé API facturée.
+  const { error: refus } = await requireEnseignant();
+  if (refus) return refus;
+
   try {
     const body = await req.json();
     const { niveau, critere, nbSeries, nbElements, description } = body;

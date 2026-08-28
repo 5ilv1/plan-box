@@ -110,7 +110,12 @@ async function main() {
     try {
       const res = await fetch(`${base}/api/tts/generer-dictee`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // La route est réservée à l'enseignant ; un script CLI n'a pas de
+          // session, il se signe donc avec CRON_SECRET.
+          Authorization: `Bearer ${process.env.CRON_SECRET ?? ""}`,
+        },
         body: JSON.stringify({
           dictee_id: d.id,
           niveau_etoiles: d.niveau_etoiles,
