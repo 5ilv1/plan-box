@@ -135,27 +135,32 @@ export default function PageChapitreLectureDetail() {
   }, [chapitreId]);
 
   async function charger() {
-    setChargement(true);
-    const { createClient } = await import("@/lib/supabase");
-    const supa = createClient();
-    const [chapRes, exRes, nivRes] = await Promise.all([
-      fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
-      fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
-      supa.from("niveaux").select("*").order("nom"),
-    ]);
-    const ch = chapRes.chapitre ?? null;
-    setChapitre(ch);
-    setExercices((exRes.exercices ?? []) as Exercice[]);
-    setNiveaux((nivRes.data ?? []) as Niveau[]);
-    if (ch) {
-      setEditNiveauId(ch.niveau_id ?? "");
-      setEditResume(ch.resume ?? "");
-      setEditAuteur(ch.auteur ?? "");
-      setEditCouverture(ch.couverture_url ?? null);
-      setEditDispo(ch.disponible_bibliotheque === true);
-      setEditNiveauxCibles(Array.isArray(ch.niveaux_cibles) ? ch.niveaux_cibles : []);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      const { createClient } = await import("@/lib/supabase");
+      const supa = createClient();
+      const [chapRes, exRes, nivRes] = await Promise.all([
+        fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
+        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
+        supa.from("niveaux").select("*").order("nom"),
+      ]);
+      const ch = chapRes.chapitre ?? null;
+      setChapitre(ch);
+      setExercices((exRes.exercices ?? []) as Exercice[]);
+      setNiveaux((nivRes.data ?? []) as Niveau[]);
+      if (ch) {
+        setEditNiveauId(ch.niveau_id ?? "");
+        setEditResume(ch.resume ?? "");
+        setEditAuteur(ch.auteur ?? "");
+        setEditCouverture(ch.couverture_url ?? null);
+        setEditDispo(ch.disponible_bibliotheque === true);
+        setEditNiveauxCibles(Array.isArray(ch.niveaux_cibles) ? ch.niveaux_cibles : []);
+      }
+    } finally {
+      setChargement(false);
     }
-    setChargement(false);
   }
 
   async function recupererAutoInfos() {

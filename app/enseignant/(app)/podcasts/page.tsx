@@ -148,12 +148,17 @@ export default function PodcastsEnseignant() {
 
   useEffect(() => {
     (async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        setEnseignantId(user.id);
-        await charger(user.id);
+      // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+      // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          setEnseignantId(user.id);
+          await charger(user.id);
+        }
+      } finally {
+        setChargement(false);
       }
-      setChargement(false);
     })();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

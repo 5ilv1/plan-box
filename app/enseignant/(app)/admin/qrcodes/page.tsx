@@ -40,51 +40,55 @@ export default function PageQRCodes() {
   }, []);
 
   async function charger() {
-    setChargement(true);
-    setErreurGlobale("");
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      setErreurGlobale("");
 
-    // 1. Récupérer tous les élèves Repetibox ayant un auth_id
-    //    (avecIdentifiants=1 → identifiant + mot de passe en clair pour la carte)
-    const res = await fetch("/api/repetibox-eleves?avecIdentifiants=1");
-    if (!res.ok) {
-      setErreurGlobale("Impossible de charger les élèves.");
-      setChargement(false);
-      return;
-    }
+      // 1. Récupérer tous les élèves Repetibox ayant un auth_id
+      //    (avecIdentifiants=1 → identifiant + mot de passe en clair pour la carte)
+      const res = await fetch("/api/repetibox-eleves?avecIdentifiants=1");
+      if (!res.ok) {
+        setErreurGlobale("Impossible de charger les élèves.");
+        return;
+      }
 
-    const json = await res.json();
-    const eleves: EleveRB[] = (json.eleves ?? []).filter((e: EleveRB) => e.auth_id);
+      const json = await res.json();
+      const eleves: EleveRB[] = (json.eleves ?? []).filter((e: EleveRB) => e.auth_id);
 
-    // 2. Pour chaque élève, générer ou récupérer un token QR
-    const cartesInit: CarteQR[] = eleves.map((e) => ({ eleve: e, token: null, qrDataUrl: null }));
-    setCartes(cartesInit);
+      // 2. Pour chaque élève, générer ou récupérer un token QR
+      const cartesInit: CarteQR[] = eleves.map((e) => ({ eleve: e, token: null, qrDataUrl: null }));
+      setCartes(cartesInit);
 
-    const cartesFinales = await Promise.all(
-      eleves.map(async (eleve): Promise<CarteQR> => {
-        try {
-          const genRes = await fetch("/api/qr-login/generate", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ eleveAuthId: eleve.auth_id }),
-          });
-          const genJson = await genRes.json();
+      const cartesFinales = await Promise.all(
+        eleves.map(async (eleve): Promise<CarteQR> => {
+          try {
+            const genRes = await fetch("/api/qr-login/generate", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ eleveAuthId: eleve.auth_id }),
+            });
+            const genJson = await genRes.json();
 
-          if (!genRes.ok || !genJson.token) {
-            return { eleve, token: null, qrDataUrl: null, erreur: genJson.erreur ?? "Erreur token" };
+            if (!genRes.ok || !genJson.token) {
+              return { eleve, token: null, qrDataUrl: null, erreur: genJson.erreur ?? "Erreur token" };
+            }
+
+            const url = `${SITE_URL}/eleve/qr/${genJson.token}`;
+            const qrDataUrl = await QRCode.toDataURL(url, { width: 320, margin: 1 });
+
+            return { eleve, token: genJson.token, qrDataUrl };
+          } catch {
+            return { eleve, token: null, qrDataUrl: null, erreur: "Erreur réseau" };
           }
+        })
+      );
 
-          const url = `${SITE_URL}/eleve/qr/${genJson.token}`;
-          const qrDataUrl = await QRCode.toDataURL(url, { width: 320, margin: 1 });
-
-          return { eleve, token: genJson.token, qrDataUrl };
-        } catch {
-          return { eleve, token: null, qrDataUrl: null, erreur: "Erreur réseau" };
-        }
-      })
-    );
-
-    setCartes(cartesFinales);
-    setChargement(false);
+      setCartes(cartesFinales);
+    } finally {
+      setChargement(false);
+    }
   }
 
   if (chargement) {

@@ -162,21 +162,26 @@ export default function PageChapitreDetail() {
   }, [chapitreId]);
 
   async function charger() {
-    setChargement(true);
-    const [chapRes, exRes, grpRes] = await Promise.all([
-      fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
-      fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
-      fetch(`/api/chapitres/assignation?chapitre_id=${chapitreId}`).then((r) => r.json()),
-    ]);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      const [chapRes, exRes, grpRes] = await Promise.all([
+        fetch(`/api/admin/chapitres/${chapitreId}`).then((r) => r.json()),
+        fetch(`/api/chapitres/exercices?chapitre_id=${chapitreId}`).then((r) => r.json()),
+        fetch(`/api/chapitres/assignation?chapitre_id=${chapitreId}`).then((r) => r.json()),
+      ]);
 
-    if (chapRes.chapitre) {
-      setChapitre(chapRes.chapitre);
-      setSeuil(chapRes.chapitre.seuil_evaluation ?? 90);
-      setSeuilExo(chapRes.chapitre.seuil_exercice ?? 90);
+      if (chapRes.chapitre) {
+        setChapitre(chapRes.chapitre);
+        setSeuil(chapRes.chapitre.seuil_evaluation ?? 90);
+        setSeuilExo(chapRes.chapitre.seuil_exercice ?? 90);
+      }
+      setExercices(exRes.exercices ?? []);
+      setGroupes(grpRes.groupes ?? []);
+    } finally {
+      setChargement(false);
     }
-    setExercices(exRes.exercices ?? []);
-    setGroupes(grpRes.groupes ?? []);
-    setChargement(false);
   }
 
   // ── Actions ───────────────────────────────────────────────────────────────

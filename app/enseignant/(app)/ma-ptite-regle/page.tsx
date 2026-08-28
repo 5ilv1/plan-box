@@ -446,20 +446,25 @@ export default function MaPtiteRegle() {
   /* ── Chargement ─────────────────────────────────── */
 
   const charger = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
-    setEnseignantId(user.id);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      setEnseignantId(user.id);
 
-    const [reglesRes, groupesRes, niveauxRes] = await Promise.all([
-      fetch(`/api/ma-ptite-regle?enseignant_id=${user.id}`).then((r) => r.json()),
-      supabase.from("groupes").select("id, nom").order("nom"),
-      supabase.from("niveaux").select("id, nom").order("nom"),
-    ]);
+      const [reglesRes, groupesRes, niveauxRes] = await Promise.all([
+        fetch(`/api/ma-ptite-regle?enseignant_id=${user.id}`).then((r) => r.json()),
+        supabase.from("groupes").select("id, nom").order("nom"),
+        supabase.from("niveaux").select("id, nom").order("nom"),
+      ]);
 
-    setRegles(reglesRes.regles ?? []);
-    setGroupes(groupesRes.data ?? []);
-    setNiveaux(niveauxRes.data ?? []);
-    setChargement(false);
+      setRegles(reglesRes.regles ?? []);
+      setGroupes(groupesRes.data ?? []);
+      setNiveaux(niveauxRes.data ?? []);
+    } finally {
+      setChargement(false);
+    }
   }, [supabase]);
 
   useEffect(() => { charger(); }, [charger]);

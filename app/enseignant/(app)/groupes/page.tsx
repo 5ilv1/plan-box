@@ -61,68 +61,73 @@ export default function PageGroupes() {
 
   async function recharger() {
     setChargement(true);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
 
-    // Les 3 premières requêtes utilisent le client navigateur (RLS normal)
-    // La 4e passe par une API route serveur (admin, bypass RLS) pour lire la table eleve de Repetibox
-    const [
-      { data: grp },
-      { data: liaisons },
-      { data: pbEleves },
-      rbResponse,
-    ] = await Promise.all([
-      supabase.from("groupes").select("*").order("nom"),
-      supabase.from("eleve_groupe").select("groupe_id, planbox_eleve_id, repetibox_eleve_id"),
-      supabase.from("eleves").select("*, niveaux(*)").order("nom"),
-      fetch("/api/repetibox-eleves").then((r) => r.json()).catch((err) => ({ error: String(err), eleves: [] })),
-    ]);
+      // Les 3 premières requêtes utilisent le client navigateur (RLS normal)
+      // La 4e passe par une API route serveur (admin, bypass RLS) pour lire la table eleve de Repetibox
+      const [
+        { data: grp },
+        { data: liaisons },
+        { data: pbEleves },
+        rbResponse,
+      ] = await Promise.all([
+        supabase.from("groupes").select("*").order("nom"),
+        supabase.from("eleve_groupe").select("groupe_id, planbox_eleve_id, repetibox_eleve_id"),
+        supabase.from("eleves").select("*, niveaux(*)").order("nom"),
+        fetch("/api/repetibox-eleves").then((r) => r.json()).catch((err) => ({ error: String(err), eleves: [] })),
+      ]);
 
-    // Diagnostic si l'API échoue
-    const rbEleves: any[] = rbResponse?.eleves ?? [];
-    if (rbResponse?.error) {
-      console.error("[Plan Box] Erreur /api/repetibox-eleves:", rbResponse.error);
-      setRbErreur(rbResponse.error);
-    } else {
-      setRbErreur(null);
+      // Diagnostic si l'API échoue
+      const rbEleves: any[] = rbResponse?.eleves ?? [];
+      if (rbResponse?.error) {
+        console.error("[Plan Box] Erreur /api/repetibox-eleves:", rbResponse.error);
+        setRbErreur(rbResponse.error);
+      } else {
+        setRbErreur(null);
+      }
+
+      // Fusion des deux sources en liste unifiée triée par nom
+      const unified: EleveUnifie[] = [
+        ...(pbEleves ?? []).map((e: any) => ({
+          uid: `pb_${e.id}`,
+          prenom: e.prenom,
+          nom: e.nom,
+          source: "planbox" as const,
+          info: e.niveaux?.nom ?? "Plan Box",
+          raw_uuid: e.id,
+        })),
+        ...(rbEleves ?? []).map((e: any) => ({
+          uid: `rb_${e.id}`,
+          prenom: e.prenom,
+          nom: e.nom,
+          source: "repetibox" as const,
+          info: e.identifiant ?? "Repetibox",
+          raw_int: e.id,
+        })),
+      ].sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
+
+      setTousEleves(unified);
+
+      // Construction des groupes avec leurs membres unifiés
+      const liaisonsData = (liaisons ?? []) as LiaisonDB[];
+      const groupesData: GroupeAvecMembres[] = (grp ?? []).map((g: any) => {
+        const membresUid = liaisonsData
+          .filter((l) => l.groupe_id === g.id)
+          .map((l) =>
+            l.planbox_eleve_id
+              ? `pb_${l.planbox_eleve_id}`
+              : `rb_${l.repetibox_eleve_id}`
+          );
+        const membres = unified.filter((e) => membresUid.includes(e.uid));
+        return { ...g, membres };
+      });
+
+      setGroupes(groupesData);
+    } finally {
+      setChargement(false);
     }
-
-    // Fusion des deux sources en liste unifiée triée par nom
-    const unified: EleveUnifie[] = [
-      ...(pbEleves ?? []).map((e: any) => ({
-        uid: `pb_${e.id}`,
-        prenom: e.prenom,
-        nom: e.nom,
-        source: "planbox" as const,
-        info: e.niveaux?.nom ?? "Plan Box",
-        raw_uuid: e.id,
-      })),
-      ...(rbEleves ?? []).map((e: any) => ({
-        uid: `rb_${e.id}`,
-        prenom: e.prenom,
-        nom: e.nom,
-        source: "repetibox" as const,
-        info: e.identifiant ?? "Repetibox",
-        raw_int: e.id,
-      })),
-    ].sort((a, b) => a.nom.localeCompare(b.nom, "fr"));
-
-    setTousEleves(unified);
-
-    // Construction des groupes avec leurs membres unifiés
-    const liaisonsData = (liaisons ?? []) as LiaisonDB[];
-    const groupesData: GroupeAvecMembres[] = (grp ?? []).map((g: any) => {
-      const membresUid = liaisonsData
-        .filter((l) => l.groupe_id === g.id)
-        .map((l) =>
-          l.planbox_eleve_id
-            ? `pb_${l.planbox_eleve_id}`
-            : `rb_${l.repetibox_eleve_id}`
-        );
-      const membres = unified.filter((e) => membresUid.includes(e.uid));
-      return { ...g, membres };
-    });
-
-    setGroupes(groupesData);
-    setChargement(false);
   }
 
   async function creerGroupe(e: React.FormEvent) {

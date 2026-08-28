@@ -153,22 +153,27 @@ export default function PageAdminEleves() {
   }, [panelDate, panelEleve]);
 
   async function charger() {
-    setChargement(true);
-    const [eleveRes, niveauRes, groupeRes, configRes] = await Promise.all([
-      fetch("/api/admin/eleves").then((r) => r.json()),
-      supabase.from("niveaux").select("*").order("nom"),
-      fetch("/api/admin/groupes").then((r) => r.json()),
-      fetch("/api/admin/repetibox-config").then((r) => r.json()),
-    ]);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      const [eleveRes, niveauRes, groupeRes, configRes] = await Promise.all([
+        fetch("/api/admin/eleves").then((r) => r.json()),
+        supabase.from("niveaux").select("*").order("nom"),
+        fetch("/api/admin/groupes").then((r) => r.json()),
+        fetch("/api/admin/repetibox-config").then((r) => r.json()),
+      ]);
 
-    const pb: EleveUnifie[] = (eleveRes.planbox ?? []).map((e: any) => ({ ...e, uid: `pb_${e.id}` }));
-    const rb: EleveUnifie[] = (eleveRes.repetibox ?? []).map((e: any) => ({ ...e, uid: `rb_${e.id}` }));
-    setEleves([...pb, ...rb].sort((a, b) => a.nom.localeCompare(b.nom, "fr")));
-    setGroupes(eleveRes.groupes ?? []);
-    setGroupesComplets(groupeRes.groupes ?? []);
-    setNiveaux(niveauRes.data ?? []);
-    setRepetiboxConfigs(configRes.configs ?? []);
-    setChargement(false);
+      const pb: EleveUnifie[] = (eleveRes.planbox ?? []).map((e: any) => ({ ...e, uid: `pb_${e.id}` }));
+      const rb: EleveUnifie[] = (eleveRes.repetibox ?? []).map((e: any) => ({ ...e, uid: `rb_${e.id}` }));
+      setEleves([...pb, ...rb].sort((a, b) => a.nom.localeCompare(b.nom, "fr")));
+      setGroupes(eleveRes.groupes ?? []);
+      setGroupesComplets(groupeRes.groupes ?? []);
+      setNiveaux(niveauRes.data ?? []);
+      setRepetiboxConfigs(configRes.configs ?? []);
+    } finally {
+      setChargement(false);
+    }
   }
 
   async function chargerConfigs() {

@@ -137,19 +137,24 @@ export default function BanqueLecons() {
 
   /* ── Auth + chargement initial ── */
   const charger = useCallback(async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) { const r = typeof window !== "undefined" ? sessionStorage.getItem("pb_role") : null; if (r === "enseignant") return; router.push("/enseignant"); return; }
 
-    const [resLecons, resMatieres] = await Promise.all([
-      fetch("/api/banque-lecons"),
-      fetchMatieres(),
-    ]);
-    const json = resLecons.ok ? await resLecons.json() : { lecons: [], affectationsParUrl: {} };
-    setLecons(json.lecons ?? []);
-    setAffectationsParUrl(json.affectationsParUrl ?? {});
-    setMatieres(resMatieres);
-    if (resMatieres.length > 0) setLotDefautMatiere(resMatieres[0].nom);
-    setChargement(false);
+      const [resLecons, resMatieres] = await Promise.all([
+        fetch("/api/banque-lecons"),
+        fetchMatieres(),
+      ]);
+      const json = resLecons.ok ? await resLecons.json() : { lecons: [], affectationsParUrl: {} };
+      setLecons(json.lecons ?? []);
+      setAffectationsParUrl(json.affectationsParUrl ?? {});
+      setMatieres(resMatieres);
+      if (resMatieres.length > 0) setLotDefautMatiere(resMatieres[0].nom);
+    } finally {
+      setChargement(false);
+    }
   }, [router, supabase]);
 
   useEffect(() => { charger(); }, [charger]);

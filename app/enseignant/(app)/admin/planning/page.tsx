@@ -225,20 +225,25 @@ export default function PageAdminPlanning() {
   }, []);
 
   const charger = useCallback(async () => {
-    setChargement(true);
-    let url: string;
-    if (vueMode === "mois") {
-      const debut = formatISO(getPremierJourMois(mois));
-      const fin   = formatISO(getDernierJourMois(mois));
-      url = `/api/admin/planning?debut=${debut}&fin=${fin}`;
-    } else {
-      url = `/api/admin/planning?lundi=${formatISO(lundi)}`;
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      let url: string;
+      if (vueMode === "mois") {
+        const debut = formatISO(getPremierJourMois(mois));
+        const fin   = formatISO(getDernierJourMois(mois));
+        url = `/api/admin/planning?debut=${debut}&fin=${fin}`;
+      } else {
+        url = `/api/admin/planning?lundi=${formatISO(lundi)}`;
+      }
+      const res  = await fetch(url);
+      const json = await res.json();
+      setBlocs(json.blocs ?? []);
+      setChapitresActifs(json.chapitresActifs ?? []);
+    } finally {
+      setChargement(false);
     }
-    const res  = await fetch(url);
-    const json = await res.json();
-    setBlocs(json.blocs ?? []);
-    setChapitresActifs(json.chapitresActifs ?? []);
-    setChargement(false);
   }, [lundi, mois, vueMode]);
 
   useEffect(() => { charger(); }, [charger]);

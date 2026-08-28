@@ -133,26 +133,31 @@ export default function PageAdminChapitres() {
   }, []);
 
   async function charger() {
-    setChargement(true);
-    const [chap, niv] = await Promise.all([
-      fetch("/api/admin/chapitres").then((r) => r.json()),
-      supabase.from("niveaux").select("*").order("nom"),
-    ]);
-    const chapitresData: Chapitre[] = chap.chapitres ?? [];
-    setChapitres(chapitresData);
-    setNiveaux((niv.data ?? []) as Niveau[]);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      const [chap, niv] = await Promise.all([
+        fetch("/api/admin/chapitres").then((r) => r.json()),
+        supabase.from("niveaux").select("*").order("nom"),
+      ]);
+      const chapitresData: Chapitre[] = chap.chapitres ?? [];
+      setChapitres(chapitresData);
+      setNiveaux((niv.data ?? []) as Niveau[]);
 
-    // Construire la map chapitre_id → groupes assignés (depuis l'API)
-    const assignMap = (chap.assignations ?? {}) as Record<string, string[]>;
-    const map = new Map<string, string[]>();
-    for (const [chapId, groupes] of Object.entries(assignMap)) {
-      map.set(chapId, groupes);
+      // Construire la map chapitre_id → groupes assignés (depuis l'API)
+      const assignMap = (chap.assignations ?? {}) as Record<string, string[]>;
+      const map = new Map<string, string[]>();
+      for (const [chapId, groupes] of Object.entries(assignMap)) {
+        map.set(chapId, groupes);
+      }
+      setAssignationsParChapitre(map);
+
+      const matieres = Array.from(new Set(chapitresData.map(c => c.matiere)));
+      setAccordeonsOuverts(new Set(matieres));
+    } finally {
+      setChargement(false);
     }
-    setAssignationsParChapitre(map);
-
-    const matieres = Array.from(new Set(chapitresData.map(c => c.matiere)));
-    setAccordeonsOuverts(new Set(matieres));
-    setChargement(false);
 
     chargerChoixEleves();
   }

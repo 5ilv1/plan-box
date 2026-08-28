@@ -56,12 +56,17 @@ export default function VueJourPage() {
   const [pleinEcran, setPleinEcran] = useState(false);
 
   const charger = useCallback(async (d: string) => {
-    setChargement(true);
-    const res = await fetch(`/api/admin/vue-jour?date=${d}`);
-    if (!res.ok) { setChargement(false); return; }
-    const json = await res.json();
-    setNiveaux(json.niveaux ?? []);
-    setChargement(false);
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      const res = await fetch(`/api/admin/vue-jour?date=${d}`);
+      if (!res.ok) { setChargement(false); return; }
+      const json = await res.json();
+      setNiveaux(json.niveaux ?? []);
+    } finally {
+      setChargement(false);
+    }
   }, []);
 
   useEffect(() => { charger(dateSelectionnee); }, [dateSelectionnee, charger]);

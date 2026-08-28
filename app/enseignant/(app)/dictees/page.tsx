@@ -286,80 +286,83 @@ export default function PageDictees() {
   }, []);
 
   async function charger() {
-    setChargement(true);
-    setErreurChargement(""); // Réinitialiser l'erreur à chaque tentative
-    const { data, error } = await supabase
-      .from("dictees")
-      .select("*")
-      .order("created_at", { ascending: true });
+    // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+    // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+    try {
+      setChargement(true);
+      setErreurChargement(""); // Réinitialiser l'erreur à chaque tentative
+      const { data, error } = await supabase
+        .from("dictees")
+        .select("*")
+        .order("created_at", { ascending: true });
 
-    if (error) {
-      setErreurChargement(error.message);
-      setChargement(false);
-      return;
-    }
-
-    // ── Regroupement : batch_id → dictee_parent_id → DicteeRow[] ──────────
-    // Anciens enregistrements sans batch_id : chaque dictee_parent_id = son propre batch
-    const batchMap = new Map<string, Map<string, DicteeRow[]>>();
-    for (const row of (data ?? []) as DicteeRow[]) {
-      const pid = row.dictee_parent_id ?? row.id;
-      const bid = row.batch_id ?? pid;
-      if (!batchMap.has(bid)) batchMap.set(bid, new Map());
-      const jourMap = batchMap.get(bid)!;
-      if (!jourMap.has(pid)) jourMap.set(pid, []);
-      jourMap.get(pid)!.push(row);
-    }
-
-    const liste: Batch[] = [];
-    for (const [bid, jourMap] of batchMap.entries()) {
-      const jours: Jour[] = [];
-      for (const [pid, niveaux] of jourMap.entries()) {
-        niveaux.sort((a, b) => a.niveau_etoiles - b.niveau_etoiles);
-        jours.push({ parentId: pid, titre: niveaux[0].titre, niveaux });
+      if (error) {
+        setErreurChargement(error.message);
+        return;
       }
-      // Trier les jours par date de création (ordre d'insertion = ordre des jours)
-      jours.sort((a, b) =>
-        new Date(a.niveaux[0].created_at).getTime() - new Date(b.niveaux[0].created_at).getTime()
-      );
-      const ref = jours[0]?.niveaux[0];
-      liste.push({ batchId: bid, theme: ref?.theme ?? "", created_at: ref?.created_at ?? "", jours });
-    }
-    liste.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
-    setBatches(liste);
+      // ── Regroupement : batch_id → dictee_parent_id → DicteeRow[] ──────────
+      // Anciens enregistrements sans batch_id : chaque dictee_parent_id = son propre batch
+      const batchMap = new Map<string, Map<string, DicteeRow[]>>();
+      for (const row of (data ?? []) as DicteeRow[]) {
+        const pid = row.dictee_parent_id ?? row.id;
+        const bid = row.batch_id ?? pid;
+        if (!batchMap.has(bid)) batchMap.set(bid, new Map());
+        const jourMap = batchMap.get(bid)!;
+        if (!jourMap.has(pid)) jourMap.set(pid, []);
+        jourMap.get(pid)!.push(row);
+      }
 
-    // Initialiser onglets (défaut CM1 = 2)
-    const initOnglets: Record<string, 1 | 2 | 3 | 4> = {};
-    for (const b of liste) initOnglets[b.batchId] = 2;
-    setBatchOnglet(initOnglets);
+      const liste: Batch[] = [];
+      for (const [bid, jourMap] of batchMap.entries()) {
+        const jours: Jour[] = [];
+        for (const [pid, niveaux] of jourMap.entries()) {
+          niveaux.sort((a, b) => a.niveau_etoiles - b.niveau_etoiles);
+          jours.push({ parentId: pid, titre: niveaux[0].titre, niveaux });
+        }
+        // Trier les jours par date de création (ordre d'insertion = ordre des jours)
+        jours.sort((a, b) =>
+          new Date(a.niveaux[0].created_at).getTime() - new Date(b.niveaux[0].created_at).getTime()
+        );
+        const ref = jours[0]?.niveaux[0];
+        liste.push({ batchId: bid, theme: ref?.theme ?? "", created_at: ref?.created_at ?? "", jours });
+      }
+      liste.sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
 
-    // Récupérer les dates d'affectation réelles depuis plan_travail
-    // On cherche le lundi (date la plus ancienne par batch_id) pour chaque batch
-    const batchIds = liste.map((b) => b.batchId);
-    if (batchIds.length > 0) {
-      const { data: ptData } = await supabase
-        .from("plan_travail")
-        .select("contenu, date_assignation")
-        .in("type", ["dictee", "mots"])
-        .order("date_assignation", { ascending: true });
+      setBatches(liste);
 
-      if (ptData && ptData.length > 0) {
-        const datesMap: Record<string, string> = {};
-        for (const row of ptData as { contenu: { batch_id?: string } | null; date_assignation: string }[]) {
-          const bid = row.contenu?.batch_id;
-          if (bid && batchIds.includes(bid) && !datesMap[bid]) {
-            // Première date (la plus ancienne) = le lundi de la semaine
-            datesMap[bid] = getLundiDeSemaine(row.date_assignation);
+      // Initialiser onglets (défaut CM1 = 2)
+      const initOnglets: Record<string, 1 | 2 | 3 | 4> = {};
+      for (const b of liste) initOnglets[b.batchId] = 2;
+      setBatchOnglet(initOnglets);
+
+      // Récupérer les dates d'affectation réelles depuis plan_travail
+      // On cherche le lundi (date la plus ancienne par batch_id) pour chaque batch
+      const batchIds = liste.map((b) => b.batchId);
+      if (batchIds.length > 0) {
+        const { data: ptData } = await supabase
+          .from("plan_travail")
+          .select("contenu, date_assignation")
+          .in("type", ["dictee", "mots"])
+          .order("date_assignation", { ascending: true });
+
+        if (ptData && ptData.length > 0) {
+          const datesMap: Record<string, string> = {};
+          for (const row of ptData as { contenu: { batch_id?: string } | null; date_assignation: string }[]) {
+            const bid = row.contenu?.batch_id;
+            if (bid && batchIds.includes(bid) && !datesMap[bid]) {
+              // Première date (la plus ancienne) = le lundi de la semaine
+              datesMap[bid] = getLundiDeSemaine(row.date_assignation);
+            }
+          }
+          if (Object.keys(datesMap).length > 0) {
+            setSemaineAffectation((prev) => ({ ...prev, ...datesMap }));
           }
         }
-        if (Object.keys(datesMap).length > 0) {
-          setSemaineAffectation((prev) => ({ ...prev, ...datesMap }));
-        }
       }
+    } finally {
+      setChargement(false);
     }
-
-    setChargement(false);
   }
 
   const niveauInfo = NIVEAUX.find((n) => n.etoiles === niveauActif) ?? NIVEAUX[1];

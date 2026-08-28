@@ -31,26 +31,31 @@ export default function ParametresPage() {
 
   useEffect(() => {
     async function charger() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // Le sablier disparaît quoi qu'il arrive : sans ce `finally`, une
+      // requête qui échoue laisse la page sur « Chargement… » indéfiniment.
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
 
-      // Charger zone scolaire depuis la table enseignant (mono-enseignant)
-      const { data: ensData } = await supabase
-        .from("enseignant")
-        .select("zone_scolaire")
-        .limit(1)
-        .single();
+        // Charger zone scolaire depuis la table enseignant (mono-enseignant)
+        const { data: ensData } = await supabase
+          .from("enseignant")
+          .select("zone_scolaire")
+          .limit(1)
+          .single();
 
-      if (ensData?.zone_scolaire) setZone(ensData.zone_scolaire as "A" | "B" | "C");
+        if (ensData?.zone_scolaire) setZone(ensData.zone_scolaire as "A" | "B" | "C");
 
-      // Charger les jours sans école
-      const { data: joursData } = await (supabase as any)
-        .from("jours_sans_ecole")
-        .select("*")
-        .order("date_debut");
+        // Charger les jours sans école
+        const { data: joursData } = await (supabase as any)
+          .from("jours_sans_ecole")
+          .select("*")
+          .order("date_debut");
 
-      setJours(joursData ?? []);
-      setChargement(false);
+        setJours(joursData ?? []);
+      } finally {
+        setChargement(false);
+      }
     }
     charger();
   // eslint-disable-next-line react-hooks/exhaustive-deps

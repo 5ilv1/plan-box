@@ -20,10 +20,13 @@ export default function PageAdmin() {
   const [chargement, setChargement] = useState(true);
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (!user) router.push("/enseignant");
-      else setChargement(false);
-    });
+    supabase.auth.getUser()
+      .then(({ data: { user } }) => {
+        if (!user) router.push("/enseignant");
+        else setChargement(false);
+      })
+      // Sans ce `catch`, une erreur réseau laisse la page sur « Chargement… ».
+      .catch(() => setChargement(false));
   }, []);
 
   if (chargement) {
