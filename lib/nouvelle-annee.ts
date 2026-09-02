@@ -24,6 +24,7 @@ export const TABLES_TRAVAIL_ELEVE = [
   { table: "exercice_resultat",          label: "Résultats d'exercices" },
   { table: "evaluation_resultat",        label: "Résultats d'évaluations" },
   { table: "calcul_jour_resultat",       label: "Résultats du calcul du jour" },
+  { table: "motus_partie",               label: "Parties de Motus" },
   { table: "pb_progression",             label: "Progressions par chapitre" },
   { table: "notifications",              label: "Notifications" },
   { table: "eleve_bibliotheque_choix",   label: "Livres choisis en bibliothèque" },

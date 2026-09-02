@@ -1015,9 +1015,22 @@ input[type="number"] {
   align-items: center;
 }
 
-/* Carte stats visible à partir du paysage iPad */
+/* Paysage iPad : « Bonjour » + Motus du jour. La carte stats, moins urgente,
+   n'apparaît qu'au-delà — à 960 px, trois colonnes seraient illisibles. */
 @media (min-width: 960px) {
-  .eleve-hero-grid { grid-template-columns: 1fr 1fr; gap: 32px; }
+  .eleve-hero-grid {
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: stretch;
+  }
+}
+
+/* Grand écran : « Bonjour » | stats | Motus */
+@media (min-width: 1200px) {
+  .eleve-hero-grid {
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.85fr) minmax(0, 0.9fr);
+    gap: 32px;
+  }
 }
 
 .eleve-hero-card {
@@ -1028,11 +1041,11 @@ input[type="number"] {
   border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
-/* La carte stats n'apparaît que quand la hero-grid est en 2 colonnes */
+/* La carte stats n'apparaît que sur la hero-grid à trois colonnes */
 .eleve-hero-card-stats {
   display: none;
 }
-@media (min-width: 960px) {
+@media (min-width: 1200px) {
   .eleve-hero-card-stats { display: block; }
 }
 
@@ -2390,4 +2403,232 @@ input[type="number"] {
   /* Boutons dans les tables : icônes seules */
   .ens-content table .btn-ghost,
   .ens-content table .btn-secondary { padding: 4px 6px !important; font-size: 11px !important; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   Motus du jour
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── Le jeu (page /eleve/motus) ── */
+.motus-jeu {
+  /* Les élèves jouent surtout sur tablette : la grille et le clavier prennent
+     toute la largeur disponible, dans la limite de --motus-case-max par case.
+     Sur téléphone, les cases rétrécissent d'elles-mêmes (grille en 1fr). */
+  --motus-case-max: 54px;
+  width: 100%;
+  background: #4C5A3A;
+  border-radius: 16px;
+  padding: 20px 16px 24px;
+  color: #fff;
+  font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+}
+
+@media (min-width: 700px) {
+  .motus-jeu { --motus-case-max: 76px; padding: 28px 32px 32px; }
+}
+
+.motus-compteur {
+  font-size: 13px;
+  font-weight: 700;
+  color: #C9D0BC;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+/* La grille se cale sur la largeur disponible plutôt que sur celle de l'écran :
+   elle tient aussi bien dans la page que dans un bloc plus étroit, quel que
+   soit le nombre de lettres (--motus-lettres, posé par le composant). */
+.motus-grille {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: calc(var(--motus-lettres, 6) * var(--motus-case-max, 54px));
+  margin: 0 auto 16px;
+  background: #141414;
+  border: 3px solid #fff;
+  container-type: inline-size;
+}
+
+.motus-rangee {
+  display: grid;
+  grid-template-columns: repeat(var(--motus-lettres, 6), 1fr);
+}
+
+.motus-case {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #141414;
+  border: 1.5px solid #fff;
+}
+.motus-case.absente { background: #C0473C; }
+
+.motus-pastille {
+  position: absolute;
+  width: 76%;
+  height: 76%;
+  border-radius: 50%;
+}
+
+.motus-lettre {
+  position: relative;
+  z-index: 2;
+  font-weight: 800;
+  /* Repli pour les navigateurs sans requête de conteneur, puis taille
+     proportionnelle à la case réelle. */
+  font-size: 1.4rem;
+  font-size: calc(55cqw / var(--motus-lettres, 6));
+  text-transform: uppercase;
+  color: #fff;
+  line-height: 1;
+}
+
+.motus-message {
+  min-height: 22px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: #C9D0BC;
+  margin-bottom: 14px;
+}
+
+.motus-clavier {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+}
+.motus-rangee-clavier { display: flex; gap: 6px; }
+
+.motus-touche {
+  min-width: 30px;
+  height: 46px;
+  padding: 0 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1A1A1A;
+  border: none;
+  border-radius: 4px;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  color: #fff;
+  cursor: pointer;
+  user-select: none;
+  text-transform: uppercase;
+  transition: opacity 0.15s ease;
+}
+.motus-touche:hover:not(:disabled) { opacity: 0.8; }
+.motus-touche:disabled { opacity: 0.6; cursor: default; }
+.motus-touche.large { min-width: 48px; font-size: 17px; }
+
+.motus-vide {
+  padding: 28px 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--pb-on-surface-variant);
+}
+
+@media (max-width: 400px) {
+  .motus-touche { min-width: 26px; height: 40px; padding: 0 4px; font-size: 12px; }
+  .motus-touche.large { min-width: 40px; font-size: 15px; }
+  .motus-rangee-clavier { gap: 4px; }
+}
+
+/* Tablette : touches à la taille d'un doigt d'élève. */
+@media (min-width: 700px) {
+  .motus-compteur { font-size: 15px; margin-bottom: 20px; }
+  .motus-message  { font-size: 15px; min-height: 26px; }
+  .motus-touche { min-width: 52px; height: 62px; font-size: 18px; border-radius: 6px; }
+  .motus-touche.large { min-width: 82px; font-size: 22px; }
+  .motus-rangee-clavier { gap: 8px; }
+  .motus-clavier { gap: 10px; }
+}
+
+/* ── La carte d'aperçu (hero du tableau de bord + bento) ── */
+.motus-carte {
+  border-radius: 1.25rem;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+/* Dans le hero : même verre dépoli que la carte stats voisine. */
+.motus-carte-hero {
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: var(--pb-on-primary);
+  position: relative;
+  z-index: 1;
+}
+
+/* Dans le bento (petits écrans) : carte claire, comme les autres blocs. */
+.motus-carte-bento {
+  background: var(--pb-surface);
+  border: 1px solid var(--pb-outline-variant);
+  border-left: 4px solid #4C5A3A;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  color: var(--pb-on-surface);
+}
+
+.motus-carte-titre {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.motus-carte-hero .motus-carte-titre { opacity: 0.75; }
+.motus-carte-bento .motus-carte-titre { color: #4C5A3A; }
+
+.motus-mini { display: flex; gap: 3px; flex-wrap: wrap; }
+
+.motus-mini-case {
+  width: 20px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-weight: 800;
+  font-size: 12px;
+  text-transform: uppercase;
+  background: #141414;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+}
+.motus-mini-case.gagnee { background: #5EA45B; border-color: #5EA45B; }
+.motus-mini-case.perdue { background: #C0473C; border-color: #C0473C; }
+
+.motus-carte-statut { font-size: 14px; font-weight: 600; }
+.motus-carte-hero .motus-carte-statut { opacity: 0.9; }
+.motus-carte-bento .motus-carte-statut { color: var(--pb-on-surface-variant); }
+
+.motus-carte-btn {
+  margin-top: auto;
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  transition: opacity 0.15s ease;
+}
+.motus-carte-btn:hover { opacity: 0.85; }
+.motus-carte-hero .motus-carte-btn { background: #fff; color: var(--pb-primary); }
+.motus-carte-bento .motus-carte-btn { background: #4C5A3A; color: #fff; }
+
+/* La carte du hero et celle du bento ne s'affichent jamais ensemble : le hero
+   ne montre ses colonnes de droite qu'à partir de l'iPad paysage. */
+.motus-carte-hero { display: none; }
+@media (min-width: 960px) {
+  .motus-carte-hero  { display: flex; }
+  .motus-carte-bento { display: none; }
 }

@@ -233,6 +233,33 @@ son tableau de bord.
   refus `409` côté API, bouton masqué côté élève.
 - API : `app/api/ceintures/choix-semaine/route.ts` · Fenêtre : `components/CeinturesSemaineModal.tsx`
 
+## Motus du jour
+
+Un mot à deviner par jour, **commun à toute la classe**, servi tous les jours — week-ends
+et vacances compris : aucun contrôle de calendrier scolaire.
+
+| Table | Rôle |
+|-------|------|
+| `motus_mot` | la liste de mots de l'enseignant (`mot`, `mot_normalise` unique, `actif`) |
+| `motus_jour` | le mot tiré pour une date (PK = `date`), avec **copie du texte** |
+| `motus_partie` | la partie d'un élève ce jour-là (`essais` jsonb, `trouve`, `termine`) |
+
+- Logique partagée : `lib/motus.ts` (`assurerMotDuJour()`, `evaluerEssai()`, `etatPartie()`).
+- **Le mot secret ne quitte jamais le serveur** tant que la partie n'est pas finie : le
+  navigateur envoie une proposition, l'API renvoie les couleurs. Pas de triche par la console.
+- Tirage : parmi les mots actifs, les jamais sortis d'abord, puis les moins récemment sortis ;
+  le hachage de la date départage. Une liste de N mots ne se répète pas avant N jours.
+- `motus_jour` garde une copie du mot : supprimer un mot de la liste ne casse pas les
+  journées déjà jouées.
+- Pas d'`upsert` sur `motus_partie` : ses index d'unicité sont partiels (`eleve_id` /
+  `rb_eleve_id`), `onConflict` ne sait pas les viser.
+- Date calculée à Paris (`dateDuJour()`), pas en UTC : sinon le mot changerait à 2 h du matin.
+- Élève : carte d'aperçu à droite du bloc « Bonjour » (`MotusCarte variant="hero"`, ≥ 960 px)
+  ou dans le bento en dessous, et jeu complet sur `/eleve/motus`.
+- Enseignant : `/enseignant/motus` — liste de mots (ajout en lot, activer/désactiver,
+  supprimer), mot du jour (changer / imposer un mot) et résultats de la classe.
+  ⚠️ Changer le mot du jour **efface les parties déjà jouées** ce jour-là.
+
 ## Changer d'année (remise à zéro)
 
 Bouton **« Changer d'année »** en bas de `/enseignant/parametres`.

@@ -11,6 +11,7 @@ import CeinturesSemaineModal, { DomaineChoisissable } from "@/components/Ceintur
 import ActivityCard from "@/components/ActivityCard";
 import NotifCard from "@/components/NotifCard";
 import Avatar from "@/components/Avatar";
+import MotusCarte from "@/components/MotusCarte";
 
 // ─── Types locaux ────────────────────────────────────────────────────────────
 
@@ -1332,6 +1333,10 @@ export default function DashboardEleve() {
                 )}
               </div>
             </div>
+
+            {/* Motus du jour — 3e zone du hero, à droite du bonjour.
+                Sur petit écran, c'est la carte du bento qui prend le relais. */}
+            <MotusCarte variant="hero" />
           </div>
         </div>
 
@@ -1340,6 +1345,9 @@ export default function DashboardEleve() {
 
           {/* ── Colonne gauche ── */}
           <div className="eleve-bento-sidebar" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+
+            {/* Motus du jour (petits écrans : le hero ne l'affiche pas) */}
+            <MotusCarte variant="bento" />
 
             {/* Flashcard Repetibox */}
             {(totalCartesRB > 0 || rbEleveId || session?.source === "repetibox") && (
