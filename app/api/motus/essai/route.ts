@@ -7,6 +7,7 @@ import {
   dateDuJour,
   etatPartie,
   filtreEleve,
+  motExiste,
   normaliserMot,
   resoudreEleveCourant,
 } from "@/lib/motus";
@@ -62,6 +63,15 @@ export async function POST(req: NextRequest) {
   if (proposition[0] !== secret[0]) {
     return NextResponse.json(
       { erreur: `Le mot commence par ${secret[0]}.`, ...etatPartie(date, secret, essais) },
+      { status: 400 },
+    );
+  }
+  // Une suite de lettres au hasard ne coûte pas un essai : elle est refusée
+  // avant d'être enregistrée. Le mot du jour échappe au dictionnaire, sinon un
+  // mot choisi par l'enseignant et absent de la liste serait invalidable.
+  if (proposition !== secret && !(await motExiste(admin, proposition))) {
+    return NextResponse.json(
+      { erreur: `« ${proposition} » n'est pas un mot.`, ...etatPartie(date, secret, essais) },
       { status: 400 },
     );
   }

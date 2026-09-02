@@ -161,6 +161,30 @@ export async function assurerMotDuJour(
   return { date, mot: choisi.mot_normalise as string, motId: choisi.id as string };
 }
 
+/**
+ * Le mot est-il un mot français acceptable comme proposition ?
+ *
+ * `motus_lexique` contient ~182 000 formes de 4 à 10 lettres, normalisées et
+ * fléchies (pluriels et conjugaisons compris) : « chevaux » ou « mangeaient »
+ * passent. Le mot du jour, lui, est toujours accepté même s'il manque à cette
+ * liste — l'enseignant reste maître de ce qu'il fait deviner.
+ */
+export async function motExiste(
+  admin: SupabaseClient,
+  motNormalise: string,
+): Promise<boolean> {
+  const { data, error } = await admin
+    .from("motus_lexique")
+    .select("mot")
+    .eq("mot", motNormalise)
+    .maybeSingle();
+
+  // Dictionnaire injoignable : on accepte plutôt que de bloquer la partie.
+  // Un refus injuste est plus pénalisant qu'une proposition farfelue acceptée.
+  if (error) return true;
+  return data != null;
+}
+
 export interface EleveCourant {
   eleveId: string | null;
   rbEleveId: number | null;

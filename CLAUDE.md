@@ -243,6 +243,7 @@ et vacances compris : aucun contrôle de calendrier scolaire.
 | `motus_mot` | la liste de mots de l'enseignant (`mot`, `mot_normalise` unique, `actif`) |
 | `motus_jour` | le mot tiré pour une date (PK = `date`), avec **copie du texte** |
 | `motus_partie` | la partie d'un élève ce jour-là (`essais` jsonb, `trouve`, `termine`) |
+| `motus_lexique` | les ~182 000 mots **acceptés comme proposition** (≠ mots à deviner) |
 
 - Logique partagée : `lib/motus.ts` (`assurerMotDuJour()`, `evaluerEssai()`, `etatPartie()`).
 - **Le mot secret ne quitte jamais le serveur** tant que la partie n'est pas finie : le
@@ -254,6 +255,13 @@ et vacances compris : aucun contrôle de calendrier scolaire.
 - Pas d'`upsert` sur `motus_partie` : ses index d'unicité sont partiels (`eleve_id` /
   `rb_eleve_id`), `onConflict` ne sait pas les viser.
 - Date calculée à Paris (`dateDuJour()`), pas en UTC : sinon le mot changerait à 2 h du matin.
+- **Une proposition qui n'est pas un mot est refusée et ne coûte pas d'essai** (`motExiste()`).
+  Le lexique vient du paquet npm `an-array-of-french-words` (dépendance de dev, MIT),
+  normalisé et chargé en base par `scripts/seed-lexique-motus.ts` (idempotent) — la prod ne
+  lit que la table. Formes fléchies comprises : « chevaux », « mangeaient » passent.
+  Le mot du jour échappe au dictionnaire : l'enseignant peut faire deviner un mot absent
+  de la liste sans le rendre invalidable. Dictionnaire injoignable ⇒ on accepte, un refus
+  injuste étant plus pénalisant qu'une proposition farfelue.
 - Élève : carte d'aperçu à droite du bloc « Bonjour » (`MotusCarte variant="hero"`, ≥ 960 px)
   ou dans le bento en dessous, et jeu complet sur `/eleve/motus`.
 - Enseignant : `/enseignant/motus` — liste de mots (ajout en lot, activer/désactiver,

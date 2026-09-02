@@ -47,3 +47,12 @@ create index if not exists motus_jour_mot_id_idx on motus_jour (mot_id);
 alter table motus_mot    enable row level security;
 alter table motus_jour   enable row level security;
 alter table motus_partie enable row level security;
+
+-- Mots acceptés comme proposition (≠ motus_mot, qui sont les mots à deviner).
+-- Formes normalisées A-Z sans accents, 4 à 10 lettres — les seules longueurs
+-- qu'une grille peut demander. Rempli par scripts/seed-lexique-motus.ts.
+create table if not exists motus_lexique (
+  mot text primary key
+);
+
+alter table motus_lexique enable row level security;

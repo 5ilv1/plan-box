@@ -2523,7 +2523,36 @@ input[type="number"] {
 }
 .motus-touche:hover:not(:disabled) { opacity: 0.8; }
 .motus-touche:disabled { opacity: 0.6; cursor: default; }
-.motus-touche.large { min-width: 48px; font-size: 17px; }
+
+/* Effacer / Valider : en toutes lettres, sur leur propre rangée et dans des
+   couleurs qui ne peuvent pas se confondre avec le vert / jaune / rouge des
+   lettres. */
+.motus-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.motus-action {
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+  height: 50px;
+  border: none;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.motus-action:hover:not(:disabled) { opacity: 0.85; }
+.motus-action:disabled { opacity: 0.6; cursor: default; }
+.motus-action.effacer { background: #4B5563; }
+.motus-action.valider { background: #2563EB; }
 
 .motus-vide {
   padding: 28px 20px;
@@ -2534,8 +2563,8 @@ input[type="number"] {
 
 @media (max-width: 400px) {
   .motus-touche { min-width: 26px; height: 40px; padding: 0 4px; font-size: 12px; }
-  .motus-touche.large { min-width: 40px; font-size: 15px; }
   .motus-rangee-clavier { gap: 4px; }
+  .motus-action { height: 46px; font-size: 14px; min-width: 100px; }
 }
 
 /* Tablette : touches à la taille d'un doigt d'élève. */
@@ -2543,9 +2572,9 @@ input[type="number"] {
   .motus-compteur { font-size: 15px; margin-bottom: 20px; }
   .motus-message  { font-size: 15px; min-height: 26px; }
   .motus-touche { min-width: 52px; height: 62px; font-size: 18px; border-radius: 6px; }
-  .motus-touche.large { min-width: 82px; font-size: 22px; }
   .motus-rangee-clavier { gap: 8px; }
   .motus-clavier { gap: 10px; }
+  .motus-action { height: 62px; font-size: 18px; min-width: 160px; max-width: 240px; }
 }
 
 /* ── La carte d'aperçu (hero du tableau de bord + bento) ── */

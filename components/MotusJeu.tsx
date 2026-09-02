@@ -14,7 +14,7 @@ import type { EtatPartie, Marque } from "@/lib/motus";
 const AZERTY: string[][] = [
   ["A", "Z", "E", "R", "T", "Y", "U", "I", "O", "P"],
   ["Q", "S", "D", "F", "G", "H", "J", "K", "L", "M"],
-  ["ENTREE", "W", "X", "C", "V", "B", "N", "EFFACER"],
+  ["W", "X", "C", "V", "B", "N"],
 ];
 
 const COULEUR: Record<Marque, string> = {
@@ -92,8 +92,10 @@ export default function MotusJeu({ onEtat }: { onEtat?: (e: EtatPartie) => void 
         body: JSON.stringify({ mot: saisie }),
       });
       const json = await res.json();
-      if (json?.longueur) appliquer(json as EtatPartie);
+      // Proposition refusée (mot inconnu, mauvaise longueur…) : on garde les
+      // lettres à l'écran pour que l'élève corrige au lieu de tout retaper.
       if (json?.erreur) setMessage(json.erreur);
+      else if (json?.longueur) appliquer(json as EtatPartie);
     } catch {
       setMessage("Connexion perdue — réessaie.");
     } finally {
@@ -211,7 +213,6 @@ export default function MotusJeu({ onEtat }: { onEtat?: (e: EtatPartie) => void 
           {AZERTY.map((rangee, i) => (
             <div className="motus-rangee-clavier" key={i}>
               {rangee.map((t) => {
-                const large = t === "ENTREE" || t === "EFFACER";
                 const m = clavier[t];
                 return (
                   <button
@@ -219,16 +220,36 @@ export default function MotusJeu({ onEtat }: { onEtat?: (e: EtatPartie) => void 
                     key={t}
                     onClick={() => touche(t)}
                     disabled={envoi}
-                    className={`motus-touche${large ? " large" : ""}`}
+                    className="motus-touche"
                     style={m ? { background: COULEUR[m], color: m === "present" ? "#231A00" : "#fff" } : undefined}
-                    aria-label={t === "ENTREE" ? "Valider" : t === "EFFACER" ? "Effacer" : t}
                   >
-                    {t === "ENTREE" ? "↵" : t === "EFFACER" ? "⌫" : t}
+                    {t}
                   </button>
                 );
               })}
             </div>
           ))}
+
+          {/* Effacer et Valider écrits en toutes lettres et colorés : les
+              symboles ⌫ et ↵ ne parlent pas à un élève de CE2. */}
+          <div className="motus-actions">
+            <button
+              type="button"
+              onClick={() => touche("EFFACER")}
+              disabled={envoi}
+              className="motus-action effacer"
+            >
+              Effacer
+            </button>
+            <button
+              type="button"
+              onClick={() => touche("ENTREE")}
+              disabled={envoi}
+              className="motus-action valider"
+            >
+              Valider
+            </button>
+          </div>
         </div>
       )}
     </div>
