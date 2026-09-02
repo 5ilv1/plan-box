@@ -268,7 +268,17 @@ et vacances compris : aucun contrôle de calendrier scolaire.
 Chaque semaine a un thème, **affiché sous la grille** : c'est l'indice. Le mot du jour est
 tiré dans ce thème, ce qui rend l'indice honnête.
 
-- `lib/motus-themes.ts` : les 23 thèmes, les fenêtres de calendrier et le calcul de Pâques
+- **Un mot doit évoquer son thème sans explication** : c'est le premier critère de
+  `scripts/mots-motus-cycle3.ts`, avant le niveau de vocabulaire. La musique et les
+  vêtements ont leur propre thème pour cette raison — « trompette » sous l'indice
+  « L'école » égarait les élèves. Un mot n'est mis dans plusieurs thèmes que s'il est
+  évident dans chacun.
+- ⚠️ **PostgREST plafonne toute lecture à 1000 lignes** et la liste dépasse ce seuil :
+  filtrer le thème en mémoire après un `select` global peut ne jamais voir un thème
+  entier et servir un mot hors sujet. Le tirage filtre donc `.eq("theme", …)` dans la
+  requête, la liste enseignant pagine par `range()`, et le compte par thème passe par
+  la vue `motus_theme_compte`.
+- `lib/motus-themes.ts` : les 25 thèmes, les fenêtres de calendrier et le calcul de Pâques
   (mobile — d'où l'algorithme de Meeus). Aucun accès base : le module est aussi importé
   par les composants.
 - Priorité : choix de l'enseignant (`impose`) > calendrier (Noël, Halloween, carnaval,

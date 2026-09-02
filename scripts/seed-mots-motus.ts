@@ -12,6 +12,9 @@
  *
  *   export $(grep -v '^#' .env.local | xargs) && npx tsx scripts/seed-mots-motus.ts
  *   … --dry-run   pour ne rien écrire, juste voir le rapport
+ *   … --sync      pour SUPPRIMER de la base les couples (mot, thème) absents
+ *                 d'ici — sert quand un mot change de thème. ⚠️ efface aussi
+ *                 les mots ajoutés à la main depuis la page enseignant.
  */
 
 import { createClient } from "@supabase/supabase-js";
@@ -20,6 +23,7 @@ import { THEMES, libelleTheme, themeExiste } from "../lib/motus-themes";
 import { MOTS_PAR_THEME } from "./mots-motus-cycle3";
 
 const DRY_RUN = process.argv.includes("--dry-run");
+const SYNC = process.argv.includes("--sync");
 
 /**
  * Bornes des mots à deviner. Le jeu accepte 4 à 10 lettres ; on écarte les
@@ -111,19 +115,43 @@ async function main() {
     process.exit(1);
   }
 
+  console.log(`\n${data?.length ?? 0} ajoutés.`);
+
+  if (SYNC) {
+    // Un mot déplacé d'un thème à l'autre laisserait sinon sa ligne d'origine,
+    // et ressortirait sous l'ancien indice.
+    const attendus = new Set(lignes.map((l) => `${l.mot_normalise}|${l.theme}`));
+    const { data: enBase } = await admin.from("motus_mot").select("id, mot_normalise, theme");
+    const obsoletes = (enBase ?? []).filter(
+      (m) => !attendus.has(`${m.mot_normalise}|${m.theme ?? ""}`),
+    );
+    if (obsoletes.length) {
+      const { error: errSup } = await admin
+        .from("motus_mot")
+        .delete()
+        .in("id", obsoletes.map((m) => m.id as string));
+      if (errSup) {
+        console.error(`Suppression : ${errSup.message}`);
+        process.exit(1);
+      }
+      console.log(`${obsoletes.length} couples (mot, thème) obsolètes supprimés.`);
+    } else {
+      console.log("Rien à supprimer : la base correspond déjà au fichier.");
+    }
+  }
+
   const { count } = await admin
     .from("motus_mot")
     .select("id", { count: "exact", head: true })
     .eq("actif", true);
-  console.log(`\n${data?.length ?? 0} ajoutés — ${count} mots actifs dans motus_mot.`);
+  console.log(`${count} mots actifs dans motus_mot.`);
 
   // Un thème sans mot ne pourrait pas fournir la semaine : on le signale.
-  const { data: parTheme } = await admin.from("motus_mot").select("theme").eq("actif", true);
+  // Via la vue : compter en mémoire donnerait un résultat faux dès que la
+  // table dépasse les 1000 lignes que PostgREST accepte de renvoyer.
+  const { data: parTheme } = await admin.from("motus_theme_compte").select("theme, nb");
   const compte = new Map<string, number>();
-  for (const r of parTheme ?? []) {
-    const t = (r.theme as string) ?? "(sans thème)";
-    compte.set(t, (compte.get(t) ?? 0) + 1);
-  }
+  for (const r of parTheme ?? []) compte.set((r.theme as string) ?? "(sans thème)", Number(r.nb));
   const vides = THEMES.filter((t) => !compte.has(t.code));
   if (vides.length) {
     console.log(`\n⚠ Thèmes sans aucun mot : ${vides.map((t) => t.code).join(", ")}`);

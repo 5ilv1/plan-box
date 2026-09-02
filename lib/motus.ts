@@ -190,14 +190,28 @@ export async function assurerMotDuJour(
 
   const theme = await assurerThemeSemaine(admin, lundiDe(date));
 
-  const [{ data: tous }, { data: journal }] = await Promise.all([
-    admin.from("motus_mot").select("id, mot_normalise, theme").eq("actif", true),
-    admin.from("motus_jour").select("mot, date"),
+  // Filtrer sur le thème dans la requête, pas en mémoire : PostgREST plafonne
+  // une lecture à 1000 lignes, et la liste dépasse ce seuil — un filtre côté
+  // client pouvait donc ne jamais voir les mots d'un thème entier, et servir
+  // un mot hors sujet.
+  const [{ data: duTheme }, { data: journal }] = await Promise.all([
+    admin.from("motus_mot").select("id, mot_normalise, theme").eq("actif", true).eq("theme", theme),
+    admin.from("motus_jour").select("mot, date").order("date", { ascending: false }).limit(1000),
   ]);
 
-  const utilisables = (tous ?? []).filter((m) => motValide(m.mot_normalise as string));
-  const duTheme = utilisables.filter((m) => m.theme === theme);
-  const candidats = duTheme.length > 0 ? duTheme : utilisables;
+  let candidats = (duTheme ?? []).filter((m) => motValide(m.mot_normalise as string));
+
+  // Thème vide : plutôt que de priver la classe de son mot du jour, on prend
+  // n'importe quel mot actif. L'indice sera alors moins juste, mais le jeu
+  // reste jouable — et la page enseignant signale les thèmes sans mot.
+  if (candidats.length === 0) {
+    const { data: tous } = await admin
+      .from("motus_mot")
+      .select("id, mot_normalise, theme")
+      .eq("actif", true)
+      .limit(1000);
+    candidats = (tous ?? []).filter((m) => motValide(m.mot_normalise as string));
+  }
   if (candidats.length === 0) return null;
 
   // Dernier passage repéré par le mot lui-même, pas par son id : le même mot

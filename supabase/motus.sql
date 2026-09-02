@@ -77,3 +77,13 @@ create table if not exists motus_semaine (
 );
 
 alter table motus_semaine enable row level security;
+
+-- Compte des mots actifs par thème. Une vue plutôt qu'un comptage applicatif :
+-- lire motus_mot pour compter en mémoire est faux dès 1000 lignes, PostgREST
+-- s'arrêtant là. security_invoker : la vue ne contourne pas la RLS.
+create or replace view motus_theme_compte
+with (security_invoker = on) as
+  select theme, count(*)::int as nb
+  from motus_mot
+  where actif
+  group by theme;

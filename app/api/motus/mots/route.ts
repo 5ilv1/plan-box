@@ -10,15 +10,29 @@ export async function GET() {
   if (auth.error) return auth.error;
 
   const admin = createAdminClient();
-  const [{ data: mots, error }, { data: journal }] = await Promise.all([
-    admin
-      .from("motus_mot")
-      .select("id, mot, mot_normalise, actif, theme, cree_le")
-      .order("mot_normalise"),
-    admin.from("motus_jour").select("mot_id, date"),
-  ]);
 
-  if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+  // Pagination obligatoire : PostgREST renvoie au plus 1000 lignes par appel,
+  // et la liste en compte davantage.
+  const mots: {
+    id: string; mot: string; mot_normalise: string; actif: boolean; theme: string | null;
+  }[] = [];
+  for (let de = 0; ; de += 1000) {
+    const { data, error } = await admin
+      .from("motus_mot")
+      .select("id, mot, mot_normalise, actif, theme")
+      .order("mot_normalise")
+      .range(de, de + 999);
+    if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
+    if (!data || data.length === 0) break;
+    mots.push(...(data as typeof mots));
+    if (data.length < 1000) break;
+  }
+
+  const { data: journal } = await admin
+    .from("motus_jour")
+    .select("mot_id, date")
+    .order("date", { ascending: false })
+    .limit(1000);
 
   // Dernière fois que chaque mot est sorti : l'enseignant voit d'un coup d'œil
   // ce qui n'a jamais servi.
@@ -31,7 +45,7 @@ export async function GET() {
   }
 
   return NextResponse.json({
-    mots: (mots ?? []).map((m) => ({
+    mots: mots.map((m) => ({
       ...m,
       derniere_sortie: dernier.get(m.id as string) ?? null,
     })),

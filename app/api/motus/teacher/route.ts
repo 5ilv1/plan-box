@@ -81,14 +81,12 @@ export async function GET() {
 
   // Combien de mots actifs par thème : un thème vide ne pourrait pas tenir sa
   // semaine, l'enseignant doit le voir avant que la semaine n'arrive.
-  const { data: tousMots } = await admin
-    .from("motus_mot")
-    .select("theme")
-    .eq("actif", true);
+  // Compté par une vue : lire les lignes puis les compter ici serait faux,
+  // PostgREST s'arrêtant à 1000 lignes.
+  const { data: comptes } = await admin.from("motus_theme_compte").select("theme, nb");
   const parTheme = new Map<string, number>();
-  for (const m of tousMots ?? []) {
-    const t = (m.theme as string) ?? "";
-    parTheme.set(t, (parTheme.get(t) ?? 0) + 1);
+  for (const c of comptes ?? []) {
+    parTheme.set((c.theme as string) ?? "", Number(c.nb));
   }
 
   return NextResponse.json({
@@ -178,16 +176,16 @@ export async function POST(req: NextRequest) {
       .eq("date", date)
       .maybeSingle();
 
+    // Rester dans le thème : l'indice affiché aux élèves doit rester vrai.
+    // Le filtre est dans la requête (limite de 1000 lignes de PostgREST).
     const themeSemaine = await assurerThemeSemaine(admin, lundiDe(date));
     const { data: mots } = await admin
       .from("motus_mot")
       .select("id, mot_normalise, theme")
-      .eq("actif", true);
+      .eq("actif", true)
+      .eq("theme", themeSemaine);
 
-    // Rester dans le thème : l'indice affiché aux élèves doit rester vrai.
-    const duTheme = (mots ?? []).filter((m) => m.theme === themeSemaine);
-    const pool = duTheme.length > 0 ? duTheme : (mots ?? []);
-    const candidats = pool.filter((m) => m.id !== actuel?.mot_id);
+    const candidats = (mots ?? []).filter((m) => m.id !== actuel?.mot_id);
     if (candidats.length === 0) {
       return NextResponse.json({ erreur: "Aucun autre mot actif dans la liste" }, { status: 400 });
     }

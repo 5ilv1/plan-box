@@ -1,13 +1,23 @@
 /**
  * Mots à deviner du Motus, pour une classe de CE2-CM2, groupés par thème.
  *
- * Critères de choix :
- *  - 5 à 9 lettres. En dessous, la grille se devine trop vite ; au-delà, elle
- *    devient large et le mot souvent trop rare.
- *  - vocabulaire courant du cycle 3 : un élève doit pouvoir le reconnaître,
- *    mais pas le trouver du premier coup. D'où l'absence de « chat » ou
- *    « vélo », et celle des mots techniques ou littéraires.
- *  - noms communs, quelques verbes à l'infinitif.
+ * Le thème est affiché aux élèves sous la grille : c'est leur seul indice.
+ * **Un mot doit donc évoquer son thème sans explication.** C'est le critère le
+ * plus important de ce fichier, avant même le niveau de vocabulaire : une
+ * trompette sous l'indice « L'école » n'aide personne, elle égare. D'où les
+ * thèmes séparés pour la musique et les arts, et pour les vêtements.
+ *
+ * Un mot peut figurer dans plusieurs thèmes quand il est plausible dans
+ * chacun — « chocolat » pour la nourriture, Noël et Pâques ; « bonnet » pour
+ * les vêtements et l'hiver. Mais s'il n'est évident que dans un seul, il ne va
+ * que là.
+ *
+ * Autres critères :
+ *  - 5 à 10 lettres. En dessous, la grille se devine trop vite.
+ *  - vocabulaire courant du cycle 3 : reconnaissable, mais pas trouvable du
+ *    premier coup. D'où l'absence de « chat » ou « vélo », et celle des mots
+ *    techniques ou littéraires.
+ *  - noms communs, quelques verbes à l'infinitif et adjectifs.
  *  - pas de noms propres, pas de traits d'union : le jeu ne saisit que A-Z.
  *
  * Les accents sont conservés pour l'affichage côté enseignant ; le jeu les
@@ -15,8 +25,6 @@
  * scripts/seed-mots-motus.ts : une faute de frappe est refusée à l'import.
  *
  * Les codes de thème doivent exister dans THEMES (lib/motus-themes.ts).
- * Un mot peut appartenir à plusieurs thèmes : « chocolat » est de la nourriture,
- * de Noël et de Pâques.
  */
 
 export const MOTS_PAR_THEME: Record<string, string[]> = {
@@ -34,8 +42,8 @@ export const MOTS_PAR_THEME: Record<string, string[]> = {
     "biche", "chevreuil", "kangourou", "panda", "koala", "bison", "buffle",
     "antilope", "gorille", "perruche", "canari", "faucon", "vautour",
     "cigogne", "héron", "coucou", "pivert", "mésange", "cheval", "poisson",
-    "dinosaure", "hibou", "corneille", "écrevisse", "limace", "chenille",
-    "criquet", "bourdon", "guêpe", "moustique", "scarabée", "vipère",
+    "dinosaure", "corneille", "écrevisse", "limace", "chenille", "criquet",
+    "bourdon", "guêpe", "moustique", "scarabée",
   ],
 
   nature: [
@@ -73,15 +81,27 @@ export const MOTS_PAR_THEME: Record<string, string[]> = {
     "saucisse", "galette", "compote", "sirop", "tisane", "céréale", "semoule",
   ],
 
+  // Ce qu'un élève voit et fait en classe. La musique, le dessin et le théâtre
+  // sont partis dans « arts » : « trompette » sous l'indice « L'école »
+  // n'aidait pas à deviner.
   ecole: [
     "cartable", "trousse", "crayon", "gomme", "règle", "ciseaux", "colle",
     "feutre", "stylo", "cahier", "classeur", "agrafe", "tableau", "craie",
     "ardoise", "pupitre", "lecture", "dictée", "calcul", "problème", "leçon",
     "devoir", "cantine", "maîtresse", "directeur", "élève", "copain",
-    "camarade", "roman", "poésie", "histoire", "science", "musique", "dessin",
-    "peinture", "pinceau", "palette", "sculpture", "théâtre", "spectacle",
-    "chorale", "flûte", "guitare", "piano", "tambour", "trompette", "violon",
-    "partition", "mélodie", "rythme", "refrain", "carnet", "manuel", "atlas",
+    "camarade", "roman", "poésie", "histoire", "science", "carnet", "manuel",
+    "atlas", "récréation", "préau", "rentrée", "écolier", "sonnerie",
+    "bulletin", "exercice", "brouillon", "résumé", "exposé", "casier",
+    "effort", "progrès", "réussite", "erreur",
+  ],
+
+  arts: [
+    "musique", "dessin", "peinture", "pinceau", "palette", "sculpture",
+    "sculpteur", "théâtre", "spectacle", "chorale", "flûte", "guitare",
+    "piano", "tambour", "trompette", "violon", "partition", "mélodie",
+    "rythme", "refrain", "chanson", "orchestre", "concert", "danse",
+    "comédie", "scène", "décor", "musicien", "artiste", "aquarelle",
+    "statue", "harpe", "mosaïque", "portrait",
   ],
 
   maison: [
@@ -90,31 +110,43 @@ export const MOTS_PAR_THEME: Record<string, string[]> = {
     "fauteuil", "coussin", "couette", "oreiller", "lampe", "bougie", "miroir",
     "rideau", "tapis", "serrure", "poignée", "balcon", "terrasse", "jardin",
     "clôture", "barrière", "portail", "toiture", "cheminée", "gouttière",
-    "robinet", "éponge", "balai", "poubelle", "valise", "parapluie",
-    "chaussure", "écharpe", "manteau", "pantalon", "chemise", "pyjama",
-    "bonnet", "casquette", "lunettes", "ceinture", "bouton", "tissu", "laine",
-    "coton", "assiette", "cuillère", "fourchette", "casserole", "bouteille",
-    "théière", "cafetière", "saladier", "torchon", "serviette",
+    "robinet", "éponge", "balai", "poubelle", "parapluie", "assiette",
+    "cuillère", "fourchette", "casserole", "bouteille", "théière",
+    "cafetière", "saladier", "torchon", "serviette", "tabouret", "buffet",
+    "commode", "lavabo", "baignoire", "douche", "matelas", "traversin",
+    "cintre", "aspirateur",
+  ],
+
+  vetements: [
+    "chaussure", "chaussette", "écharpe", "manteau", "pantalon", "chemise",
+    "pyjama", "bonnet", "casquette", "lunettes", "ceinture", "bouton",
+    "tissu", "laine", "coton", "chapeau", "veste", "blouson", "anorak",
+    "gants", "mitaine", "tablier", "sandale", "botte", "pantoufle",
+    "chausson", "cravate", "foulard", "collant", "culotte", "tricot",
+    "velours", "dentelle", "poche", "manche", "doublure",
   ],
 
   ville: [
     "boulanger", "épicerie", "marché", "magasin", "boutique", "pharmacie",
     "quartier", "avenue", "ruelle", "trottoir", "carrefour", "immeuble",
-    "château", "clocher", "musée", "stade", "piscine", "gymnase", "mairie",
+    "clocher", "musée", "stade", "piscine", "gymnase", "mairie",
     "caserne", "hôpital", "aéroport", "tunnel", "viaduc", "autoroute",
     "chantier", "usine", "atelier", "fermier", "berger", "pêcheur", "marin",
     "pilote", "facteur", "pompier", "plombier", "menuisier", "maçon",
     "coiffeur", "libraire", "cuisinier", "infirmier", "jardinier", "policier",
     "docteur", "peintre", "boucher", "épicier", "horloger", "serrurier",
-    "éleveur", "vendeur", "danseur", "chanteur", "écrivain",
+    "éleveur", "vendeur", "danseur", "chanteur", "écrivain", "monnaie",
+    "billet", "caisse", "vitrine", "enseigne", "banque", "bureau", "parking",
+    "fontaine", "square", "kiosque",
   ],
 
   transports: [
     "voiture", "camion", "tracteur", "remorque", "scooter", "autobus",
     "tramway", "wagon", "bateau", "voilier", "barque", "radeau", "navire",
-    "paquebot", "avion", "planeur", "fusée", "navette", "ballon", "traîneau",
-    "patin", "métro", "péniche", "chariot", "carrosse", "calèche", "pédalo",
-    "camionnette", "ambulance", "téléphérique", "montgolfière",
+    "paquebot", "avion", "planeur", "fusée", "navette", "traîneau", "métro",
+    "péniche", "chariot", "calèche", "pédalo", "voyage", "départ", "arrivée",
+    "retour", "promenade", "balade", "valise", "escale", "croisière",
+    "itinéraire", "trajet", "bagage", "passager", "conducteur",
   ],
 
   corps: [
@@ -130,24 +162,30 @@ export const MOTS_PAR_THEME: Record<string, string[]> = {
     "karaté", "cyclisme", "course", "sprint", "relais", "record", "équipe",
     "arbitre", "maillot", "raquette", "filet", "panier", "victoire",
     "défaite", "champion", "médaille", "trophée", "tournoi", "puzzle",
-    "échecs", "toupie", "cerceau", "cabane", "masque", "carnaval", "kermesse",
-    "billes", "corde", "patinage", "aviron", "escrime", "tremplin", "podium",
+    "échecs", "toupie", "cerceau", "kermesse", "billes", "corde",
+    "patinage", "aviron", "escrime", "tremplin", "podium", "ballon",
+    "dossard", "vestiaire", "gymnaste", "supporter", "marathon", "rugby",
+    "volley", "pétanque",
   ],
 
   temps: [
     "journée", "semaine", "matinée", "soirée", "minute", "seconde", "horloge",
-    "vacances", "voyage", "départ", "arrivée", "retour", "sortie",
-    "promenade", "balade", "aventure", "veille", "lendemain",
-    "durée", "instant", "époque", "siècle", "année", "aube", "crépuscule",
-    "midi", "matin", "attente", "avenir", "passé", "présent",
+    "veille", "lendemain", "durée", "instant", "époque", "siècle", "année",
+    "matin", "attente", "avenir", "passé", "présent", "vacances",
+    "crépuscule", "calendrier", "horaire", "montre", "pendule", "réveil",
+    "minuit", "semestre", "trimestre", "quinzaine", "quotidien", "autrefois",
+    "toujours", "jadis", "bientôt", "demain",
   ],
 
   emotions: [
     "bonheur", "courage", "patience", "silence", "sourire", "amitié",
-    "colère", "tristesse", "mystère", "surprise", "secret", "cadeau",
-    "pensée", "mémoire", "espoir", "confiance", "fierté", "timide", "joyeux",
-    "curieux", "généreux", "tranquille", "inquiet", "étonné", "rassuré",
-    "peureux", "fâché", "content", "rêveur", "sérieux",
+    "colère", "tristesse", "surprise", "pensée", "mémoire", "espoir",
+    "confiance", "fierté", "timide", "joyeux", "curieux", "généreux",
+    "tranquille", "inquiet", "étonné", "rassuré", "peureux", "fâché",
+    "content", "rêveur", "sérieux", "gentil", "aimable", "heureux", "triste",
+    "jaloux", "honteux", "surpris", "ennui", "tendresse", "affection",
+    "émotion", "chagrin", "sanglot", "câlin", "calme", "douceur", "méchant",
+    "respect",
   ],
 
   langage: [
@@ -155,9 +193,12 @@ export const MOTS_PAR_THEME: Record<string, string[]> = {
     "consonne", "verbe", "sujet", "nombre", "chiffre", "addition", "division",
     "mesure", "longueur", "largeur", "hauteur", "distance", "vitesse",
     "balance", "triangle", "carré", "losange", "cercle", "sphère", "volume",
-    "surface", "symétrie", "question", "réponse", "exemple", "erreur",
-    "progrès", "effort", "réussite", "projet", "accent", "virgule",
-    "majuscule", "adjectif", "pluriel", "féminin", "conjugaison",
+    "surface", "symétrie", "question", "réponse", "exemple", "accent",
+    "virgule", "majuscule", "adjectif", "pluriel", "féminin", "synonyme",
+    "rectangle", "diagonale", "fraction", "moitié", "double", "somme",
+    "produit", "résultat", "décimal", "dizaine", "centaine", "millier",
+    "quotient", "diviseur", "multiple", "périmètre", "diamètre", "rayon",
+    "angle",
   ],
 
   actions: [
@@ -174,80 +215,84 @@ export const MOTS_PAR_THEME: Record<string, string[]> = {
   sciences: [
     "boussole", "lanterne", "torche", "échelle", "marteau", "tournevis",
     "pelle", "râteau", "arrosoir", "brouette", "tondeuse", "cadenas",
-    "monnaie", "billet", "trésor", "coffre", "maquette", "modèle", "machine",
-    "moteur", "engrenage", "aimant", "télescope", "loupe", "jumelles",
-    "appareil", "écran", "clavier", "souris", "console", "manette", "robot",
-    "antenne", "satellite", "batterie", "ampoule", "câble", "levier",
-    "ressort", "poulie", "hélice", "circuit", "énergie", "lumière",
-    "chaleur", "liquide", "matière", "ordinateur", "boulier", "compas",
-    "équerre", "microscope", "éprouvette", "expérience",
+    "machine", "moteur", "engrenage", "aimant", "télescope", "loupe",
+    "jumelles", "appareil", "écran", "clavier", "souris", "console",
+    "manette", "robot", "antenne", "satellite", "batterie", "ampoule",
+    "câble", "levier", "ressort", "poulie", "hélice", "circuit", "énergie",
+    "lumière", "chaleur", "liquide", "matière", "ordinateur", "boulier",
+    "compas", "équerre", "microscope", "éprouvette", "expérience",
+    "maquette", "pince", "tenaille", "perceuse", "baromètre",
   ],
 
   imaginaire: [
     "dragon", "sorcière", "licorne", "géant", "lutin", "potion", "sortilège",
-    "chevalier", "princesse", "royaume", "donjon", "armure", "épée",
-    "bouclier", "pirate", "trésor", "carte", "boussole", "naufrage",
-    "sirène", "ogre", "farfadet", "baguette", "grimoire", "légende",
-    "conte", "fable", "héros", "monstre", "fantôme", "citrouille", "magie",
-    "enchanteur", "palais", "carrosse", "sceptre", "couronne",
+    "chevalier", "princesse", "royaume", "donjon", "armure", "bouclier",
+    "pirate", "trésor", "coffre", "naufrage", "sirène", "farfadet",
+    "baguette", "grimoire", "légende", "conte", "fable", "héros", "monstre",
+    "fantôme", "magie", "palais", "château", "carrosse", "sceptre", "couronne",
+    "aventure", "sorcier", "gnome", "mystère",
   ],
 
   // ── Thèmes de saison ──
   halloween: [
-    "citrouille", "potiron", "fantôme", "sorcière", "squelette", "monstre",
-    "potion", "chaudron", "araignée", "toile", "vampire", "momie",
-    "épouvantail", "costume", "bonbons", "frisson", "cimetière", "hibou",
-    "corbeau", "chauve", "balai", "masque", "déguisement", "lanterne", "ténèbres", "hurlement", "sombre", "terreur", "grimace",
+    "citrouille", "fantôme", "sorcière", "squelette", "monstre", "potion",
+    "chaudron", "araignée", "vampire", "momie", "costume",
+    "bonbons", "frisson", "cimetière", "hibou", "corbeau", "balai",
+    "masque", "lanterne", "ténèbres", "hurlement", "sombre", "terreur",
+    "grimace", "sorcier", "effrayant", "macabre", "ombre", "panique",
+    "tombeau",
   ],
 
   noel: [
     "sapin", "guirlande", "cadeau", "traîneau", "renne", "cheminée",
-    "étoile", "bougie", "crèche", "santon", "berger", "flocon", "hiver",
-    "biscuit", "orange", "papillote", "décembre", "réveillon", "festin",
-    "lutin", "hotte", "ruban", "emballage", "boule", "houx", "gui",
-    "patinoire", "marché", "chocolat", "chorale", "cantique", "veillée",
-    "friandise", "clémentine", "manteau", "moufles", "carillon",
+    "étoile", "bougie", "crèche", "santon", "berger", "flocon", "biscuit",
+    "papillote", "décembre", "réveillon", "festin", "lutin", "hotte",
+    "ruban", "emballage", "boule", "patinoire", "chocolat", "cantique",
+    "veillée", "friandise", "clémentine", "carillon", "bûche", "paquet",
+    "étrenne",
   ],
 
   hiver: [
     "neige", "glace", "verglas", "givre", "glaçon", "banquise", "iceberg",
-    "flocon", "luge", "patinage", "traîneau", "bonnet", "écharpe", "moufles",
-    "manteau", "gants", "frimas", "froidure", "chalet", "cheminée", "galette",
-    "couronne", "janvier", "février", "brouillard", "congère", "tempête",
-    "hibernation", "marmotte", "renard", "chamois", "bouquetin",
+    "flocon", "patinage", "traîneau", "bonnet", "écharpe", "moufles",
+    "manteau", "gants", "frimas", "froidure", "chalet", "cheminée",
+    "galette", "couronne", "janvier", "février", "brouillard", "congère",
+    "tempête", "hibernation", "marmotte", "igloo", "frileux", "glacial",
+    "glissade",
   ],
 
   carnaval: [
-    "carnaval", "masque", "déguisement", "confetti", "serpentin", "costume",
-    "clown", "défilé", "parade", "fanfare", "crêpe", "beignet", "chandeleur",
-    "farine", "sucre", "perruque", "trompette", "tambour", "musique",
-    "cortège", "arlequin", "pierrot", "colombine", "farandole", "grimace",
-    "maquillage", "pirate", "princesse", "guirlande",
+    "carnaval", "masque", "confetti", "serpentin", "costume", "clown",
+    "défilé", "parade", "fanfare", "crêpe", "beignet", "chandeleur",
+    "perruque", "trompette", "tambour", "cortège", "arlequin", "pierrot",
+    "colombine", "farandole", "grimace", "maquillage", "pirate", "princesse",
+    "jongleur", "acrobate", "échasse", "samba", "costumé",
   ],
 
   printemps: [
     "printemps", "bourgeon", "jonquille", "tulipe", "muguet", "pâquerette",
     "hirondelle", "oisillon", "nichée", "abeille", "papillon", "pollen",
-    "verdure", "prairie", "rosée", "averse", "ondée", "parapluie",
-    "renouveau", "semis", "potager", "plantation", "germe", "pousse",
-    "floraison", "cerisier", "pommier", "lilas", "violette", "primevère",
+    "verdure", "prairie", "rosée", "averse", "ondée", "renouveau", "semis",
+    "potager", "plantation", "germe", "pousse", "floraison", "cerisier",
+    "pommier", "lilas", "violette", "primevère", "oiseau", "jardinage",
+    "arrosage",
   ],
 
   paques: [
     "cloche", "chocolat", "lapin", "poule", "poussin", "panier", "cachette",
-    "jardin", "friandise", "coquille", "printemps", "carillon", "cocotte",
-    "chasse", "surprise", "gourmand", "moulage", "praline", "noisette",
-    "agneau", "brioche", "colombe", "clochette", "dimanche", "grelot",
-    "cloches", "lapereau", "poulette", "confiserie", "nougat", "guimauve",
-    "corbeille", "pelouse", "tablette",
+    "friandise", "coquille", "carillon", "cocotte", "chasse",
+    "moulage", "praline", "agneau", "brioche", "colombe", "clochette",
+    "dimanche", "grelot", "cloches", "lapereau", "poulette", "confiserie",
+    "nougat", "guimauve", "corbeille", "chocolats",
   ],
 
   ete: [
     "vacances", "plage", "sable", "coquillage", "parasol", "maillot",
-    "serviette", "bouée", "piscine", "baignade", "château", "seau",
-    "pelle", "crème", "soleil", "chaleur", "glace", "sorbet", "citronnade",
-    "camping", "caravane", "tente", "randonnée", "montagne", "rivière",
-    "pique", "valise", "voyage", "juillet", "août", "canicule", "orage",
-    "cigale", "criquet", "lézard", "hamac", "cerf", "pastèque",
+    "serviette", "bouée", "piscine", "baignade", "crème", "soleil",
+    "chaleur", "glace", "sorbet", "citronnade", "camping", "caravane",
+    "tente", "randonnée", "valise", "juillet", "canicule", "cigale",
+    "hamac", "pastèque", "bronzage", "transat", "vagues", "estival",
+    "planche", "kayak", "bivouac", "colonie", "festival", "barbecue",
+    "limonade", "moustique",
   ],
 };
