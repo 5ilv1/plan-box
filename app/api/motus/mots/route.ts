@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireEnseignant } from "@/lib/server-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { LONGUEUR_MAX, LONGUEUR_MIN, motValide, normaliserMot } from "@/lib/motus";
+import { themeExiste } from "@/lib/motus-themes";
 
 /** GET → toute la liste de mots, la plus récente d'abord. */
 export async function GET() {
@@ -12,7 +13,7 @@ export async function GET() {
   const [{ data: mots, error }, { data: journal }] = await Promise.all([
     admin
       .from("motus_mot")
-      .select("id, mot, mot_normalise, actif, cree_le")
+      .select("id, mot, mot_normalise, actif, theme, cree_le")
       .order("mot_normalise"),
     admin.from("motus_jour").select("mot_id, date"),
   ]);
@@ -38,10 +39,12 @@ export async function GET() {
 }
 
 /**
- * POST { mots: "requin, montagne\njardin" } → ajoute des mots en lot.
+ * POST { mots: "requin, montagne\njardin", theme } → ajoute des mots en lot.
  *
  * Sépare sur les virgules, points-virgules, espaces et retours à la ligne :
- * l'enseignant peut coller une liste sans se soucier du format.
+ * l'enseignant peut coller une liste sans se soucier du format. Le thème est
+ * obligatoire : un mot sans thème ne sortirait jamais, puisque le mot du jour
+ * est tiré dans le thème de la semaine.
  */
 export async function POST(req: NextRequest) {
   const auth = await requireEnseignant();
@@ -49,9 +52,13 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}));
   const brut = String(body?.mots ?? "");
+  const theme = String(body?.theme ?? "");
+  if (!themeExiste(theme)) {
+    return NextResponse.json({ erreur: "Thème inconnu" }, { status: 400 });
+  }
   const morceaux = brut.split(/[\s,;]+/).filter(Boolean);
 
-  const ajoutes: { mot: string; mot_normalise: string }[] = [];
+  const ajoutes: { mot: string; mot_normalise: string; theme: string }[] = [];
   const refuses: { mot: string; raison: string }[] = [];
   const vus = new Set<string>();
 
@@ -67,7 +74,7 @@ export async function POST(req: NextRequest) {
     }
     if (vus.has(norm)) continue;
     vus.add(norm);
-    ajoutes.push({ mot: m.trim(), mot_normalise: norm });
+    ajoutes.push({ mot: m.trim(), mot_normalise: norm, theme });
   }
 
   if (ajoutes.length === 0) {
@@ -75,10 +82,11 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
-  // mot_normalise est unique : un mot déjà présent est simplement ignoré.
+  // L'unicité porte sur (mot, thème) : le même mot peut servir dans deux
+  // thèmes, mais pas deux fois dans le même.
   const { data, error } = await admin
     .from("motus_mot")
-    .upsert(ajoutes, { onConflict: "mot_normalise", ignoreDuplicates: true })
+    .upsert(ajoutes, { onConflict: "mot_normalise,theme", ignoreDuplicates: true })
     .select("id");
 
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
@@ -90,7 +98,7 @@ export async function POST(req: NextRequest) {
   });
 }
 
-/** PATCH { id, actif?, mot? } → active/désactive ou corrige un mot. */
+/** PATCH { id, actif?, mot?, theme? } → active/désactive, corrige, reclasse. */
 export async function PATCH(req: NextRequest) {
   const auth = await requireEnseignant();
   if (auth.error) return auth.error;
@@ -101,6 +109,13 @@ export async function PATCH(req: NextRequest) {
 
   const patch: Record<string, unknown> = {};
   if (typeof body?.actif === "boolean") patch.actif = body.actif;
+
+  if (typeof body?.theme === "string") {
+    if (!themeExiste(body.theme)) {
+      return NextResponse.json({ erreur: "Thème inconnu" }, { status: 400 });
+    }
+    patch.theme = body.theme;
+  }
 
   if (typeof body?.mot === "string") {
     const norm = normaliserMot(body.mot);

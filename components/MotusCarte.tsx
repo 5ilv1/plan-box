@@ -87,6 +87,9 @@ export default function MotusCarte({ variant }: { variant: "hero" | "bento" }) {
     <div className={`motus-carte motus-carte-${variant}`}>
       <div className="motus-carte-titre">Motus du jour</div>
       <Tuiles etat={etat} />
+      {etat.theme_libelle && (
+        <div className="motus-carte-theme">Thème : {etat.theme_libelle.toLowerCase()}</div>
+      )}
       <div className="motus-carte-statut">{statut}</div>
       <Link href="/eleve/motus" className="motus-carte-btn">
         {libelleBouton}

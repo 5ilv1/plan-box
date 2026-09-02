@@ -199,6 +199,13 @@ export default function MotusJeu({ onEtat }: { onEtat?: (e: EtatPartie) => void 
         })}
       </div>
 
+      {etat.theme_libelle && (
+        <div className="motus-theme">
+          <span className="motus-theme-label">Thème de la semaine</span>
+          <span className="motus-theme-nom">{etat.theme_libelle}</span>
+        </div>
+      )}
+
       <div className="motus-message">
         {message ||
           (etat.termine

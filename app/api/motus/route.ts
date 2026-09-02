@@ -41,5 +41,5 @@ export async function GET() {
     .maybeSingle();
 
   const essais = Array.isArray(partie?.essais) ? (partie!.essais as string[]) : [];
-  return NextResponse.json(etatPartie(date, motDuJour.mot, essais));
+  return NextResponse.json(etatPartie(date, motDuJour.mot, essais, motDuJour.theme));
 }

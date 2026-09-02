@@ -1,7 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireEnseignant } from "@/lib/server-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { ESSAIS_MAX, assurerMotDuJour, dateDuJour } from "@/lib/motus";
+import {
+  ESSAIS_MAX,
+  assurerMotDuJour,
+  assurerThemeSemaine,
+  dateDuJour,
+  lundiDe,
+} from "@/lib/motus";
+import { THEMES, libelleTheme, themeExiste, themeSaisonnier } from "@/lib/motus-themes";
 
 /**
  * GET /api/motus/teacher → le mot du jour, où en est chaque élève, et les
@@ -13,6 +20,8 @@ export async function GET() {
 
   const admin = createAdminClient();
   const date = dateDuJour();
+  const lundi = lundiDe(date);
+  const themeSemaine = await assurerThemeSemaine(admin, lundi);
   const motDuJour = await assurerMotDuJour(admin, date);
 
   const { data: parties } = await admin
@@ -70,8 +79,28 @@ export async function GET() {
     parJour.set(d, agg);
   }
 
+  // Combien de mots actifs par thème : un thème vide ne pourrait pas tenir sa
+  // semaine, l'enseignant doit le voir avant que la semaine n'arrive.
+  const { data: tousMots } = await admin
+    .from("motus_mot")
+    .select("theme")
+    .eq("actif", true);
+  const parTheme = new Map<string, number>();
+  for (const m of tousMots ?? []) {
+    const t = (m.theme as string) ?? "";
+    parTheme.set(t, (parTheme.get(t) ?? 0) + 1);
+  }
+
   return NextResponse.json({
     date,
+    lundi,
+    theme: themeSemaine,
+    theme_libelle: libelleTheme(themeSemaine),
+    theme_saisonnier: themeSaisonnier(lundi),
+    themes: THEMES.map((t) => ({
+      ...t,
+      nb_mots: parTheme.get(t.code) ?? 0,
+    })),
     essais_max: ESSAIS_MAX,
     mot: motDuJour?.mot ?? null,
     mot_id: motDuJour?.motId ?? null,
@@ -87,10 +116,13 @@ export async function GET() {
 
 /**
  * POST { mot_id? } → change le mot du jour.
+ * POST { theme } → change le thème de la semaine, et retire le mot du jour
+ *                  pour qu'il soit retiré dans le nouveau thème.
  *
- * Sans `mot_id`, un autre mot est tiré au sort parmi les mots actifs les moins
- * récemment sortis. Les parties du jour sont effacées : garder les essais
- * d'un mot qui n'est plus le bon afficherait des couleurs fausses.
+ * Sans rien, un autre mot est tiré au sort parmi les mots actifs du thème les
+ * moins récemment sortis. Dans tous les cas les parties du jour sont effacées :
+ * garder les essais d'un mot qui n'est plus le bon afficherait des couleurs
+ * fausses.
  */
 export async function POST(req: NextRequest) {
   const auth = await requireEnseignant();
@@ -98,9 +130,36 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json().catch(() => ({}));
   const motIdDemande = body?.mot_id ? String(body.mot_id) : null;
+  const themeDemande = body?.theme ? String(body.theme) : null;
 
   const admin = createAdminClient();
   const date = dateDuJour();
+
+  // Changement de thème : la semaine est marquée « imposée » pour que la
+  // rotation ne la reprenne pas, et le mot du jour est retiré dans le thème.
+  if (themeDemande) {
+    if (!themeExiste(themeDemande)) {
+      return NextResponse.json({ erreur: "Thème inconnu" }, { status: 400 });
+    }
+    const lundi = lundiDe(date);
+    const { error: errTheme } = await admin
+      .from("motus_semaine")
+      .upsert({ lundi, theme: themeDemande, impose: true }, { onConflict: "lundi" });
+    if (errTheme) {
+      return NextResponse.json({ erreur: errTheme.message }, { status: 500 });
+    }
+    await admin.from("motus_partie").delete().eq("date", date);
+    await admin.from("motus_jour").delete().eq("date", date);
+    const nouveau = await assurerMotDuJour(admin, date);
+    return NextResponse.json({
+      ok: true,
+      date,
+      theme: themeDemande,
+      theme_libelle: libelleTheme(themeDemande),
+      mot: nouveau?.mot ?? null,
+      mot_id: nouveau?.motId ?? null,
+    });
+  }
 
   let choisi: { id: string; mot_normalise: string } | null = null;
 
@@ -119,12 +178,16 @@ export async function POST(req: NextRequest) {
       .eq("date", date)
       .maybeSingle();
 
+    const themeSemaine = await assurerThemeSemaine(admin, lundiDe(date));
     const { data: mots } = await admin
       .from("motus_mot")
-      .select("id, mot_normalise")
+      .select("id, mot_normalise, theme")
       .eq("actif", true);
 
-    const candidats = (mots ?? []).filter((m) => m.id !== actuel?.mot_id);
+    // Rester dans le thème : l'indice affiché aux élèves doit rester vrai.
+    const duTheme = (mots ?? []).filter((m) => m.theme === themeSemaine);
+    const pool = duTheme.length > 0 ? duTheme : (mots ?? []);
+    const candidats = pool.filter((m) => m.id !== actuel?.mot_id);
     if (candidats.length === 0) {
       return NextResponse.json({ erreur: "Aucun autre mot actif dans la liste" }, { status: 400 });
     }
@@ -133,9 +196,18 @@ export async function POST(req: NextRequest) {
   }
 
   // `date` est la clé primaire de motus_jour : ici l'upsert est sûr.
+  const { data: motChoisi } = await admin
+    .from("motus_mot")
+    .select("theme")
+    .eq("id", choisi.id)
+    .maybeSingle();
+
   const { error } = await admin
     .from("motus_jour")
-    .upsert({ date, mot_id: choisi.id, mot: choisi.mot_normalise }, { onConflict: "date" });
+    .upsert(
+      { date, mot_id: choisi.id, mot: choisi.mot_normalise, theme: (motChoisi?.theme as string) ?? null },
+      { onConflict: "date" },
+    );
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
 
   await admin.from("motus_partie").delete().eq("date", date);

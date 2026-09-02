@@ -56,3 +56,24 @@ create table if not exists motus_lexique (
 );
 
 alter table motus_lexique enable row level security;
+
+-- ── Thèmes de la semaine ────────────────────────────────────────────────────
+alter table motus_mot  add column if not exists theme text;
+alter table motus_jour add column if not exists theme text;
+
+-- Un même mot peut servir dans plusieurs thèmes (« chocolat » est de la
+-- nourriture, de Noël et de Pâques) : l'unicité porte sur le couple.
+alter table motus_mot drop constraint if exists motus_mot_mot_normalise_key;
+create unique index if not exists motus_mot_normalise_theme_uniq
+  on motus_mot (mot_normalise, theme) nulls not distinct;
+create index if not exists motus_mot_theme_idx on motus_mot (theme) where actif;
+
+create table if not exists motus_semaine (
+  lundi   date primary key,
+  theme   text not null,
+  -- true quand l'enseignant l'a choisi : la rotation ne le remplace pas.
+  impose  boolean not null default false,
+  cree_le timestamptz not null default now()
+);
+
+alter table motus_semaine enable row level security;

@@ -1,12 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { libelleTheme } from "@/lib/motus-themes";
 
 interface Mot {
   id: string;
   mot: string;
   mot_normalise: string;
   actif: boolean;
+  theme: string | null;
   derniere_sortie: string | null;
 }
 
@@ -26,8 +28,20 @@ interface JourHistorique {
   trouves: number;
 }
 
+interface ThemeInfo {
+  code: string;
+  libelle: string;
+  nb_mots: number;
+}
+
 interface EtatJour {
   date: string;
+  lundi: string;
+  theme: string;
+  theme_libelle: string;
+  /** Non nul quand le calendrier impose le thème (Noël, Halloween…). */
+  theme_saisonnier: string | null;
+  themes: ThemeInfo[];
   essais_max: number;
   mot: string | null;
   mot_id: string | null;
@@ -57,6 +71,8 @@ export default function MotusEnseignantPage() {
   const [msg, setMsg] = useState("");
   const [occupe, setOccupe] = useState(false);
   const [filtre, setFiltre] = useState("");
+  const [filtreTheme, setFiltreTheme] = useState("");
+  const [themeAjout, setThemeAjout] = useState("animaux");
 
   const rechargerMots = useCallback(async () => {
     const json = await fetch("/api/motus/mots").then((r) => r.json());
@@ -80,7 +96,7 @@ export default function MotusEnseignantPage() {
       const json = await fetch("/api/motus/mots", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mots: ajout }),
+        body: JSON.stringify({ mots: ajout, theme: themeAjout }),
       }).then((r) => r.json());
 
       const parts: string[] = [];
@@ -139,9 +155,31 @@ export default function MotusEnseignantPage() {
     }
   }
 
-  const motsFiltres = filtre
-    ? mots.filter((m) => m.mot_normalise.includes(filtre.toUpperCase()))
-    : mots;
+  async function changerTheme(code: string) {
+    if (code === jour?.theme) return;
+    if (!confirm(
+      "Changer le thème de la semaine retire un nouveau mot du jour et efface " +
+      "les parties déjà jouées aujourd'hui. Continuer ?",
+    )) return;
+    setOccupe(true);
+    setMsg("");
+    try {
+      const json = await fetch("/api/motus/teacher", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ theme: code }),
+      }).then((r) => r.json());
+      if (json?.erreur) setMsg(json.erreur);
+      else setMsg(`Thème de la semaine : ${json.theme_libelle} — nouveau mot : ${json.mot}`);
+      await Promise.all([rechargerJour(), rechargerMots()]);
+    } finally {
+      setOccupe(false);
+    }
+  }
+
+  const motsFiltres = mots
+    .filter((m) => (filtre ? m.mot_normalise.includes(filtre.toUpperCase()) : true))
+    .filter((m) => (filtreTheme ? m.theme === filtreTheme : true));
   const nbActifs = mots.filter((m) => m.actif).length;
   const nbTrouve = jour?.resultats.filter((r) => r.trouve).length ?? 0;
 
@@ -158,9 +196,49 @@ export default function MotusEnseignantPage() {
             Mot du jour
           </h3>
           <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 20 }}>
-            Un mot est tiré chaque jour, week-ends et vacances compris, parmi les mots actifs
-            les moins récemment sortis.
+            Un mot est tiré chaque jour, week-ends et vacances compris, dans le thème de la
+            semaine et parmi les mots les moins récemment sortis.
           </p>
+
+          {jour && (
+            <div style={{
+              display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12,
+              padding: "14px 18px", borderRadius: "1rem", background: "var(--bg)",
+              border: "1px solid var(--border)", marginBottom: 20,
+            }}>
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: "var(--text-secondary)" }}>
+                  Thème de la semaine
+                </div>
+                <div style={{ fontSize: 18, fontWeight: 800, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+                  {jour.theme_libelle}
+                </div>
+              </div>
+              {jour.theme_saisonnier === jour.theme && (
+                <span style={{
+                  fontSize: 11, fontWeight: 700, padding: "4px 10px", borderRadius: 999,
+                  background: "rgba(76,90,58,0.12)", color: "#4C5A3A",
+                }}>
+                  imposé par le calendrier
+                </span>
+              )}
+              <select
+                value={jour.theme}
+                disabled={occupe}
+                onChange={(e) => changerTheme(e.target.value)}
+                style={{
+                  marginLeft: "auto", padding: "8px 12px", borderRadius: "0.75rem",
+                  border: "1px solid var(--border)", fontFamily: "inherit", fontSize: 13,
+                }}
+              >
+                {jour.themes.map((t) => (
+                  <option key={t.code} value={t.code} disabled={t.nb_mots === 0}>
+                    {t.libelle} ({t.nb_mots})
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           {chargement ? (
             <p style={{ color: "var(--text-secondary)", fontSize: 13 }}>Chargement&hellip;</p>
@@ -244,6 +322,22 @@ export default function MotusEnseignantPage() {
             de 4 à 10 lettres.
           </p>
 
+          <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10 }}>
+            <label style={{ fontSize: 13, fontWeight: 600 }}>Ajouter au thème</label>
+            <select
+              value={themeAjout}
+              onChange={(e) => setThemeAjout(e.target.value)}
+              style={{
+                padding: "8px 12px", borderRadius: "0.75rem", border: "1px solid var(--border)",
+                fontFamily: "inherit", fontSize: 13,
+              }}
+            >
+              {(jour?.themes ?? []).map((t) => (
+                <option key={t.code} value={t.code}>{t.libelle}</option>
+              ))}
+            </select>
+          </div>
+
           <div style={{ display: "flex", gap: 12, alignItems: "flex-start", flexWrap: "wrap", marginBottom: 8 }}>
             <textarea
               value={ajout}
@@ -263,15 +357,33 @@ export default function MotusEnseignantPage() {
             <p style={{ fontSize: 13, color: "var(--text-secondary)", marginBottom: 12 }}>{msg}</p>
           )}
 
-          <input
-            value={filtre}
-            onChange={(e) => setFiltre(e.target.value)}
-            placeholder="Filtrer…"
-            style={{
-              padding: "8px 14px", borderRadius: "0.75rem", border: "1px solid var(--border)",
-              fontFamily: "inherit", fontSize: 13, marginBottom: 12, maxWidth: 220,
-            }}
-          />
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 12 }}>
+            <input
+              value={filtre}
+              onChange={(e) => setFiltre(e.target.value)}
+              placeholder="Filtrer…"
+              style={{
+                padding: "8px 14px", borderRadius: "0.75rem", border: "1px solid var(--border)",
+                fontFamily: "inherit", fontSize: 13, maxWidth: 220,
+              }}
+            />
+            <select
+              value={filtreTheme}
+              onChange={(e) => setFiltreTheme(e.target.value)}
+              style={{
+                padding: "8px 12px", borderRadius: "0.75rem", border: "1px solid var(--border)",
+                fontFamily: "inherit", fontSize: 13,
+              }}
+            >
+              <option value="">Tous les thèmes</option>
+              {(jour?.themes ?? []).map((t) => (
+                <option key={t.code} value={t.code}>{t.libelle} ({t.nb_mots})</option>
+              ))}
+            </select>
+            <span style={{ fontSize: 13, color: "var(--text-secondary)", alignSelf: "center" }}>
+              {motsFiltres.length} mot{motsFiltres.length > 1 ? "s" : ""}
+            </span>
+          </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: 8 }}>
             {motsFiltres.map((m) => (
@@ -288,7 +400,7 @@ export default function MotusEnseignantPage() {
                 <div style={{ minWidth: 0 }}>
                   <div style={{ fontWeight: 700, fontSize: 14 }}>{m.mot_normalise}</div>
                   <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>
-                    {m.derniere_sortie ? `sorti le ${formatDate(m.derniere_sortie)}` : "jamais sorti"}
+                    {libelleTheme(m.theme)} · {m.derniere_sortie ? `sorti le ${formatDate(m.derniere_sortie)}` : "jamais sorti"}
                   </div>
                 </div>
                 <div style={{ display: "flex", gap: 4, flexShrink: 0 }}>

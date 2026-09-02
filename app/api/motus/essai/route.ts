@@ -39,6 +39,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ aucun_mot: true, date });
   }
   const secret = motDuJour.mot;
+  const theme = motDuJour.theme;
 
   const [col, val] = filtreEleve(eleve);
   const { data: partie } = await admin
@@ -51,18 +52,18 @@ export async function POST(req: NextRequest) {
   const essais = Array.isArray(partie?.essais) ? ([...(partie!.essais as string[])]) : [];
   const dejaTermine = essais.includes(secret) || essais.length >= ESSAIS_MAX;
   if (dejaTermine) {
-    return NextResponse.json(etatPartie(date, secret, essais));
+    return NextResponse.json(etatPartie(date, secret, essais, theme));
   }
 
   if (proposition.length !== secret.length) {
     return NextResponse.json(
-      { erreur: `Le mot doit faire ${secret.length} lettres.`, ...etatPartie(date, secret, essais) },
+      { erreur: `Le mot doit faire ${secret.length} lettres.`, ...etatPartie(date, secret, essais, theme) },
       { status: 400 },
     );
   }
   if (proposition[0] !== secret[0]) {
     return NextResponse.json(
-      { erreur: `Le mot commence par ${secret[0]}.`, ...etatPartie(date, secret, essais) },
+      { erreur: `Le mot commence par ${secret[0]}.`, ...etatPartie(date, secret, essais, theme) },
       { status: 400 },
     );
   }
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
   // mot choisi par l'enseignant et absent de la liste serait invalidable.
   if (proposition !== secret && !(await motExiste(admin, proposition))) {
     return NextResponse.json(
-      { erreur: `« ${proposition} » n'est pas un mot.`, ...etatPartie(date, secret, essais) },
+      { erreur: `« ${proposition} » n'est pas un mot.`, ...etatPartie(date, secret, essais, theme) },
       { status: 400 },
     );
   }
@@ -106,9 +107,9 @@ export async function POST(req: NextRequest) {
         .eq(col, val)
         .maybeSingle();
       const essaisRelus = Array.isArray(relu?.essais) ? (relu!.essais as string[]) : essais;
-      return NextResponse.json(etatPartie(date, secret, essaisRelus));
+      return NextResponse.json(etatPartie(date, secret, essaisRelus, theme));
     }
   }
 
-  return NextResponse.json(etatPartie(date, secret, essais));
+  return NextResponse.json(etatPartie(date, secret, essais, theme));
 }

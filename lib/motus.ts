@@ -8,6 +8,7 @@
 // l'API qui évalue chaque proposition et ne renvoie que des couleurs.
 
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { THEMES_ROTATION, libelleTheme, themeSaisonnier } from "@/lib/motus-themes";
 
 export const ESSAIS_MAX = 6;
 export const LONGUEUR_MIN = 4;
@@ -83,18 +84,88 @@ function hachage(cle: string): number {
   return h;
 }
 
+/** Lundi de la semaine contenant `date` (YYYY-MM-DD), calculé en UTC. */
+export function lundiDe(date: string): string {
+  const d = new Date(`${date}T00:00:00Z`);
+  const jour = (d.getUTCDay() + 6) % 7; // 0 = lundi
+  d.setUTCDate(d.getUTCDate() - jour);
+  return d.toISOString().split("T")[0];
+}
+
+/**
+ * Le thème de la semaine du `lundi` donné, fixé si besoin.
+ *
+ * Priorité : le choix de l'enseignant, puis le calendrier (Noël en décembre,
+ * Halloween fin octobre…), puis la rotation — les thèmes jamais sortis
+ * d'abord, ensuite les moins récents, le hachage du lundi départageant.
+ */
+export async function assurerThemeSemaine(
+  admin: SupabaseClient,
+  lundi: string,
+): Promise<string> {
+  const { data: existant } = await admin
+    .from("motus_semaine")
+    .select("theme")
+    .eq("lundi", lundi)
+    .maybeSingle();
+  if (existant) return existant.theme as string;
+
+  const saison = themeSaisonnier(lundi);
+  let theme = saison;
+
+  if (!theme) {
+    const { data: passees } = await admin
+      .from("motus_semaine")
+      .select("lundi, theme")
+      .order("lundi", { ascending: false })
+      .limit(60);
+
+    const vu = new Map<string, string>();
+    for (const s of passees ?? []) {
+      const t = s.theme as string;
+      const l = s.lundi as string;
+      if (!vu.has(t) || l > (vu.get(t) as string)) vu.set(t, l);
+    }
+
+    const classes = THEMES_ROTATION.map((code) => ({ code, vu: vu.get(code) ?? "" }))
+      .sort((a, b) => (a.vu < b.vu ? -1 : a.vu > b.vu ? 1 : 0));
+    const seuil = classes[0].vu;
+    const exAequo = classes.filter((c) => c.vu === seuil);
+    theme = exAequo[hachage(lundi) % exAequo.length].code;
+  }
+
+  const { error } = await admin
+    .from("motus_semaine")
+    .insert({ lundi, theme, impose: false });
+
+  // Course entre deux élèves : la clé primaire tranche, on relit le gagnant.
+  if (error) {
+    const { data: relu } = await admin
+      .from("motus_semaine")
+      .select("theme")
+      .eq("lundi", lundi)
+      .maybeSingle();
+    if (relu) return relu.theme as string;
+  }
+  return theme;
+}
+
 export interface MotDuJour {
   date: string;
   mot: string;
   motId: string | null;
+  /** Thème de la semaine — l'indice affiché sous la grille. */
+  theme: string | null;
 }
 
 /**
  * Le mot du jour pour `date`, tiré si besoin.
  *
- * Choix : parmi les mots actifs, ceux qui n'ont jamais servi passent d'abord,
- * puis les moins récemment servis ; le hachage de la date départage. Une liste
- * de 30 mots ne se répète donc pas avant 30 jours.
+ * Le mot est pris dans le thème de la semaine — c'est ce qui rend l'indice
+ * honnête. Parmi les mots actifs de ce thème, ceux qui n'ont jamais servi
+ * passent d'abord, puis les moins récemment servis ; le hachage de la date
+ * départage. Si le thème est vide (aucun mot actif), on se rabat sur toute la
+ * liste plutôt que de priver la classe de son mot du jour.
  *
  * Renvoie `null` si la liste ne contient aucun mot actif utilisable.
  */
@@ -104,35 +175,45 @@ export async function assurerMotDuJour(
 ): Promise<MotDuJour | null> {
   const { data: existant } = await admin
     .from("motus_jour")
-    .select("date, mot, mot_id")
+    .select("date, mot, mot_id, theme")
     .eq("date", date)
     .maybeSingle();
 
   if (existant) {
-    return { date, mot: existant.mot as string, motId: (existant.mot_id as string) ?? null };
+    return {
+      date,
+      mot: existant.mot as string,
+      motId: (existant.mot_id as string) ?? null,
+      theme: (existant.theme as string) ?? null,
+    };
   }
 
-  const [{ data: mots }, { data: journal }] = await Promise.all([
-    admin.from("motus_mot").select("id, mot_normalise").eq("actif", true),
-    admin.from("motus_jour").select("mot_id, date"),
+  const theme = await assurerThemeSemaine(admin, lundiDe(date));
+
+  const [{ data: tous }, { data: journal }] = await Promise.all([
+    admin.from("motus_mot").select("id, mot_normalise, theme").eq("actif", true),
+    admin.from("motus_jour").select("mot, date"),
   ]);
 
-  const candidats = (mots ?? []).filter((m) => motValide(m.mot_normalise as string));
+  const utilisables = (tous ?? []).filter((m) => motValide(m.mot_normalise as string));
+  const duTheme = utilisables.filter((m) => m.theme === theme);
+  const candidats = duTheme.length > 0 ? duTheme : utilisables;
   if (candidats.length === 0) return null;
 
+  // Dernier passage repéré par le mot lui-même, pas par son id : le même mot
+  // peut exister dans deux thèmes, il ne doit pas ressortir pour autant.
   const dernierUsage = new Map<string, string>();
   for (const j of journal ?? []) {
-    const id = j.mot_id as string | null;
-    if (!id) continue;
+    const mot = j.mot as string;
     const d = j.date as string;
-    if (!dernierUsage.has(id) || d > (dernierUsage.get(id) as string)) {
-      dernierUsage.set(id, d);
+    if (!dernierUsage.has(mot) || d > (dernierUsage.get(mot) as string)) {
+      dernierUsage.set(mot, d);
     }
   }
 
   // "" trie avant toute date ISO : les mots jamais servis passent en tête.
   const plusAncien = candidats
-    .map((m) => ({ m, vu: dernierUsage.get(m.id as string) ?? "" }))
+    .map((m) => ({ m, vu: dernierUsage.get(m.mot_normalise as string) ?? "" }))
     .sort((a, b) => (a.vu < b.vu ? -1 : a.vu > b.vu ? 1 : 0));
   const seuil = plusAncien[0].vu;
   const exAequo = plusAncien.filter((c) => c.vu === seuil);
@@ -142,6 +223,7 @@ export async function assurerMotDuJour(
     date,
     mot_id: choisi.id,
     mot: choisi.mot_normalise,
+    theme,
   });
 
   // Course entre deux élèves qui ouvrent la page à la même seconde : la
@@ -149,16 +231,26 @@ export async function assurerMotDuJour(
   if (error) {
     const { data: relu } = await admin
       .from("motus_jour")
-      .select("date, mot, mot_id")
+      .select("date, mot, mot_id, theme")
       .eq("date", date)
       .maybeSingle();
     if (relu) {
-      return { date, mot: relu.mot as string, motId: (relu.mot_id as string) ?? null };
+      return {
+        date,
+        mot: relu.mot as string,
+        motId: (relu.mot_id as string) ?? null,
+        theme: (relu.theme as string) ?? null,
+      };
     }
     return null;
   }
 
-  return { date, mot: choisi.mot_normalise as string, motId: choisi.id as string };
+  return {
+    date,
+    mot: choisi.mot_normalise as string,
+    motId: choisi.id as string,
+    theme,
+  };
 }
 
 /**
@@ -228,6 +320,9 @@ export function filtreEleve(e: EleveCourant): [string, string | number] {
 export interface EtatPartie {
   date: string;
   longueur: number;
+  /** Code du thème de la semaine, et son libellé prêt à afficher. */
+  theme: string | null;
+  theme_libelle: string;
   premiere_lettre: string;
   essais_max: number;
   essais: { mot: string; marques: Marque[] }[];
@@ -242,12 +337,15 @@ export function etatPartie(
   date: string,
   secret: string,
   essais: string[],
+  theme: string | null = null,
 ): EtatPartie {
   const trouve = essais.includes(secret);
   const termine = trouve || essais.length >= ESSAIS_MAX;
   return {
     date,
     longueur: secret.length,
+    theme,
+    theme_libelle: libelleTheme(theme),
     premiere_lettre: secret[0],
     essais_max: ESSAIS_MAX,
     essais: essais.map((mot) => ({ mot, marques: evaluerEssai(mot, secret) })),

@@ -244,6 +244,7 @@ et vacances compris : aucun contrôle de calendrier scolaire.
 | `motus_jour` | le mot tiré pour une date (PK = `date`), avec **copie du texte** |
 | `motus_partie` | la partie d'un élève ce jour-là (`essais` jsonb, `trouve`, `termine`) |
 | `motus_lexique` | les ~182 000 mots **acceptés comme proposition** (≠ mots à deviner) |
+| `motus_semaine` | le thème de la semaine (`lundi`, `theme`, `impose`) |
 
 - Logique partagée : `lib/motus.ts` (`assurerMotDuJour()`, `evaluerEssai()`, `etatPartie()`).
 - **Le mot secret ne quitte jamais le serveur** tant que la partie n'est pas finie : le
@@ -262,6 +263,28 @@ et vacances compris : aucun contrôle de calendrier scolaire.
   Le mot du jour échappe au dictionnaire : l'enseignant peut faire deviner un mot absent
   de la liste sans le rendre invalidable. Dictionnaire injoignable ⇒ on accepte, un refus
   injuste étant plus pénalisant qu'une proposition farfelue.
+### Thèmes
+
+Chaque semaine a un thème, **affiché sous la grille** : c'est l'indice. Le mot du jour est
+tiré dans ce thème, ce qui rend l'indice honnête.
+
+- `lib/motus-themes.ts` : les 23 thèmes, les fenêtres de calendrier et le calcul de Pâques
+  (mobile — d'où l'algorithme de Meeus). Aucun accès base : le module est aussi importé
+  par les composants.
+- Priorité : choix de l'enseignant (`impose`) > calendrier (Noël, Halloween, carnaval,
+  Pâques, printemps, été, rentrée) > rotation (thèmes jamais sortis d'abord).
+- Les fenêtres de saison sont **courtes exprès** (2 à 4 semaines) : une fenêtre longue
+  épuise son thème — 5 semaines de Noël demanderaient 35 mots de Noël — et mange les
+  semaines des thèmes ordinaires.
+- ~1 000 entrées pour 890 mots distincts (un mot peut servir dans plusieurs thèmes, d'où
+  l'unicité sur `(mot_normalise, theme)`). Source : `scripts/mots-motus-cycle3.ts`,
+  import par `scripts/seed-mots-motus.ts` (idempotent, `--dry-run`), qui **valide chaque
+  mot contre `motus_lexique`** : une faute de frappe est refusée à l'import.
+- Le dernier passage d'un mot se repère par son texte, pas par son id : le même mot
+  présent dans deux thèmes ne doit pas ressortir aussitôt.
+- Changer le thème de la semaine côté enseignant retire un nouveau mot du jour et
+  **efface les parties du jour** (les couleurs déjà affichées seraient fausses sinon).
+
 - Élève : carte d'aperçu à droite du bloc « Bonjour » (`MotusCarte variant="hero"`, ≥ 960 px)
   ou dans le bento en dessous, et jeu complet sur `/eleve/motus`.
 - Enseignant : `/enseignant/motus` — liste de mots (ajout en lot, activer/désactiver,
