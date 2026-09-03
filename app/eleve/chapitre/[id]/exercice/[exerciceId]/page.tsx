@@ -7,6 +7,8 @@ import { resoudrePositionsTrous } from "@/lib/texte-a-trous";
 import LeconCeinture, { type Lecon } from "@/components/LeconCeinture";
 import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 import FigureGeo, { type Figure } from "@/components/FigureGeo";
+import { useReprise } from "@/hooks/useReprise";
+import { cleExercice, empreinte } from "@/lib/reprise";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
@@ -67,7 +69,17 @@ export default function PageExerciceEleve() {
   const [dejaVue, setDejaVue] = useState(false);
 
   // Questions / réponses
-  const [questions, setQuestions] = useState<Array<{ enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number; droite?: Droite; figure?: Figure }>>([]);
+  type QuestionEleve = { enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number; droite?: Droite; figure?: Figure };
+  // `questionsBrutes` est la liste DANS L'ORDRE DU CONTENU : c'est elle qui
+  // porte l'empreinte, et c'est sur elle que `ordre` s'applique. `questions`
+  // est ce que l'élève voit, une fois l'ordre appliqué.
+  const [questionsBrutes, setQuestionsBrutes] = useState<QuestionEleve[] | null>(null);
+  const [empreinteExo, setEmpreinteExo] = useState<string | null>(null);
+  const [ordre, setOrdre] = useState<number[]>([]);
+  // Vrai quand l'exercice a été REPRIS : l'élève doit comprendre pourquoi il
+  // n'est pas à la question 1. Retiré dès sa première réponse.
+  const [repris, setRepris] = useState(false);
+  const [questions, setQuestions] = useState<QuestionEleve[]>([]);
   const [indexCourant, setIndexCourant] = useState(0);
   const [reponseEleve, setReponseEleve] = useState("");
   const [qcmChoisi, setQcmChoisi] = useState<number | null>(null);
@@ -81,6 +93,15 @@ export default function PageExerciceEleve() {
   const [enSauvegarde, setEnSauvegarde] = useState(false);
   const [seuilExo, setSeuilExo] = useState(0.9);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Reprise : l'élève coupé au milieu retrouve sa place. La clé ne vaut que
+  // pour les types dont CETTE page tient la boucle ; texte à trous, classement
+  // et lecture délèguent leur état à leur composant et n'en posent pas.
+  const { etatRepris, pret: reprisePrete, sauver, effacer } = useReprise({
+    cle: empreinteExo ? cleExercice(exerciceId) : null,
+    empreinte: empreinteExo,
+    session,
+  });
 
   useEffect(() => {
     if (chargementSession) return;
@@ -188,20 +209,51 @@ export default function PageExerciceEleve() {
         }
       }
 
-      // Mélanger les questions
-      for (let i = qs.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [qs[i], qs[j]] = [qs[j], qs[i]];
-      }
-
-      setQuestions(qs);
-      setEtat("en_cours");
+      // L'ordre n'est PAS tiré ici : il dépend d'une éventuelle reprise, qui
+      // n'est pas encore chargée. Un mélange maintenant serait jeté juste après.
+      // L'empreinte se calcule sur la liste non mélangée, seule forme stable.
+      setQuestionsBrutes(qs);
+      setEmpreinteExo(empreinte(exerciceId, qs.map((q) => q.enonce), qs.map((q) => q.reponse)));
     } catch (err) {
       if (signal.aborted) return;
       console.error("[chargerExercice]", err);
       router.push(`/eleve/chapitre/${chapitreId}`);
     }
   }
+
+  // L'ordre des questions se décide ICI, et pas au chargement : il faut savoir
+  // d'abord s'il y a une reprise, sinon l'élève verrait la question 1 avant de
+  // sauter à la question 5. `reprisePrete` est ce moment-là.
+  useEffect(() => {
+    if (!questionsBrutes || !reprisePrete) return;
+
+    const repris = etatRepris?.ordre as number[] | undefined;
+    const valide = Array.isArray(repris)
+      && repris.length === questionsBrutes.length
+      && repris.every((i) => Number.isInteger(i) && i >= 0 && i < questionsBrutes.length)
+      && new Set(repris).size === repris.length;
+
+    if (valide) {
+      const faits = (etatRepris?.resultats as boolean[] | undefined) ?? [];
+      setOrdre(repris);
+      setQuestions(repris.map((i) => questionsBrutes[i]));
+      // On ne reprend jamais au-delà de ce qui a été répondu : `resultats` fait
+      // foi, l'index enregistré ne sert qu'à s'en assurer.
+      setResultats(faits);
+      setIndexCourant(Math.min(faits.length, questionsBrutes.length - 1));
+      setRepris(faits.length > 0);
+    } else {
+      const melange = questionsBrutes.map((_, i) => i);
+      for (let i = melange.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [melange[i], melange[j]] = [melange[j], melange[i]];
+      }
+      setOrdre(melange);
+      setQuestions(melange.map((i) => questionsBrutes[i]));
+    }
+
+    setEtat("en_cours");
+  }, [questionsBrutes, reprisePrete, etatRepris]);
 
   // Ponctuation ignorée et espaces uniformisés : tolérance des réponses en toutes lettres.
   const normaliser = (s: string) => s.toLowerCase().trim().replace(/[.,;:!?'"()«»]/g, "").replace(/\s+/g, " ");
@@ -225,6 +277,7 @@ export default function PageExerciceEleve() {
 
     setResultats((prev) => [...prev, correct]);
     setAfficherCorrection(true);
+    setRepris(false);
   }, [indexCourant, questions, reponseEleve, qcmChoisi]);
 
   async function passerSuivant() {
@@ -243,6 +296,9 @@ export default function PageExerciceEleve() {
       setValide(estValide);
       setEtat("resultat");
 
+      // L'exercice est fini : il n'y a plus rien à reprendre.
+      void effacer();
+
       // Sauvegarder le résultat
       setEnSauvegarde(true);
       await fetch("/api/chapitres/exercices/resultat", {
@@ -258,6 +314,11 @@ export default function PageExerciceEleve() {
       });
       setEnSauvegarde(false);
     } else {
+      // Reprise : ce qui vient d'être répondu part avant la question suivante.
+      // `ordre` en fait partie — sans lui, un index ne désigne aucune question.
+      if (empreinteExo) {
+        sauver({ empreinte: empreinteExo, ordre, resultats, indexCourant: indexCourant + 1 });
+      }
       setIndexCourant((prev) => prev + 1);
     }
   }
@@ -965,6 +1026,21 @@ export default function PageExerciceEleve() {
       </div>
 
       {/* Consigne */}
+      {repris && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "10px 14px", borderRadius: 12, marginBottom: 12,
+          background: "rgba(34,197,94,0.10)", border: "1px solid rgba(34,197,94,0.28)",
+        }}>
+          <span className="ms" style={{ fontSize: 18, color: "#16A34A" }}>history</span>
+          <p style={{ fontSize: 14, color: "#166534", margin: 0, lineHeight: 1.5 }}>
+            Tu reprends là où tu t&apos;étais arrêté — {resultats.length === 1
+              ? "ta première réponse est gardée"
+              : `tes ${resultats.length} premières réponses sont gardées`}.
+          </p>
+        </div>
+      )}
+
       {consigneExo && (
         <div style={{
           padding: "14px 20px", borderRadius: 14, marginBottom: 20,

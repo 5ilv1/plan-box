@@ -69,6 +69,7 @@ Les deux coexistent dans les progressions, assignations et résultats.
 | `banque_exercices` | Banque d'exercices réutilisables |
 | `user_preferences` | Préférences UI (nav_order) |
 | `ceinture_choix_semaine` | Domaines de ceintures choisis par l'élève pour la semaine |
+| `exercice_reprise` | L'exercice en cours d'un élève, pour qu'il le reprenne |
 
 ### Relations FK critiques
 Avant de supprimer un chapitre, nettoyer dans cet ordre :
@@ -301,6 +302,36 @@ tiré dans ce thème, ce qui rend l'indice honnête.
   supprimer), mot du jour (changer / imposer un mot) et résultats de la classe.
   ⚠️ Changer le mot du jour **efface les parties déjà jouées** ce jour-là.
 
+## Reprendre un exercice interrompu
+
+Un élève coupé au milieu d'un exercice — batterie à plat, sonnerie, tablette qui change de
+mains — reprend là où il s'était arrêté. Les réponses sont enregistrées **en base**, pas dans
+le navigateur : la reprise suit l'élève d'une tablette à l'autre.
+
+| Pièce | Rôle |
+|-------|------|
+| `exercice_reprise` | une ligne par élève et par travail en cours (`cle` = `exercice:<id>`, `evaluation:<chapitre>`) |
+| `lib/reprise.ts` | la forme des clés et `empreinte()` |
+| `hooks/useReprise.ts` | chargement, sauvegarde groupée, effacement |
+| `app/api/reprise/route.ts` | GET / POST / DELETE, réservés au propriétaire |
+
+- **`etat.empreinte` est le garde-fou** : une reprise ne vaut que si les questions n'ont pas
+  changé depuis. Le risque est réel — un réimport de banque réécrit les 236 exercices d'un
+  coup. Empreinte différente ⇒ la reprise est jetée et l'élève recommence, c'est-à-dire le
+  comportement d'avant : jamais une régression, jamais une réponse attribuée à la mauvaise
+  question.
+- **L'ordre des questions fait partie de l'état.** Les deux pages tiraient leur ordre au
+  chargement ; elles le tirent maintenant *après* avoir su s'il y a une reprise, sinon un
+  index enregistré ne désignerait pas la même question au retour.
+- La sauvegarde est groupée (700 ms) et **forcée par `sendBeacon`** quand la page se cache —
+  c'est précisément le moment où l'on coupe un élève.
+- Une sauvegarde qui échoue n'interrompt jamais l'élève : il perd sa reprise, pas son exercice.
+- Ce qui est couvert : la page d'entraînement (question par question) et l'évaluation
+  (à la frontière du mini-exercice — les exercices notés gardent leur score, celui qui était
+  en cours recommence). **Pas encore couvert** : `/eleve/activite/[id]`, et les composants à
+  validation unique (texte à trous, classement), dont l'état vit dans le composant.
+- Pas d'`upsert` : index d'unicité partiels (`eleve_id` / `rb_eleve_id`).
+
 ## Changer d'année (remise à zéro)
 
 Bouton **« Changer d'année »** en bas de `/enseignant/parametres`.
@@ -310,6 +341,7 @@ Bouton **« Changer d'année »** en bas de `/enseignant/parametres`.
 - UI : `components/NouvelleAnneeSection.tsx` (saisie de « NOUVELLE ANNEE » obligatoire)
 
 **Efface** tout le travail élève : `plan_travail`, `exercice_resultat`, `evaluation_resultat`,
+`exercice_reprise`,
 `calcul_jour_resultat`, `qcm_reponse`, `pb_progression`, `notifications`,
 `eleve_bibliotheque_choix`, `chapitre_assignation`, `dictee_correction_feedback`.
 

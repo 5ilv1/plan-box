@@ -10,6 +10,8 @@ import ClassementEleve from "@/components/ClassementEleve";
 import ExerciceStack from "@/components/ExerciceStack";
 import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 import FigureGeo, { type Figure } from "@/components/FigureGeo";
+import { useReprise } from "@/hooks/useReprise";
+import { cleEvaluation, empreinte } from "@/lib/reprise";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import CalcMentalStack from "@/components/CalcMentalStack";
 import { FonctionGram, QCMQuestion } from "@/types";
@@ -240,7 +242,10 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
     }
   }
 
-  return melanger(minis);
+  // L'ordre n'est PAS tiré ici : il dépend d'une éventuelle reprise, qui n'est
+  // pas encore connue à ce stade. Le mélange se fait à l'appel, une fois que
+  // l'on sait si l'élève reprend une évaluation interrompue.
+  return minis;
 }
 
 // ── QCM interne (sans appels API plan de travail) ──────────────────────
@@ -405,9 +410,19 @@ export default function PageEvaluationFinale() {
   const [seuilEval, setSeuilEval] = useState(90);
   const [etat, setEtat] = useState<Etat>("chargement");
 
+  // `minisBruts` est la liste dans l'ordre des exercices du chapitre : c'est
+  // sur elle que porte `ordre`. `minis` est ce que l'élève enchaîne.
+  const [minisBruts, setMinisBruts] = useState<MiniExercice[] | null>(null);
+  const [empreinteEval, setEmpreinteEval] = useState<string | null>(null);
   const [minis, setMinis] = useState<MiniExercice[]>([]);
   const [indexCourant, setIndexCourant] = useState(0);
   const [scores, setScores] = useState<ScoreExo[]>([]);
+  // Vrai quand l'évaluation a été REPRISE : l'élève doit savoir pourquoi il ne
+  // commence pas au premier exercice.
+  const [repriseEval, setRepriseEval] = useState(false);
+  // L'ordre effectivement servi : il fait partie de la reprise, sinon un index
+  // enregistré ne désignerait aucun exercice au retour.
+  const [ordreEval, setOrdreEval] = useState<number[]>([]);
 
   const [reussi, setReussi] = useState(false);
   const [exercicesEchoues, setExercicesEchoues] = useState<string[]>([]);
@@ -415,6 +430,15 @@ export default function PageEvaluationFinale() {
   // couleur suivante. Voir /eleve/ceintures/reussite/[chapitreId].
   const [estCeinture, setEstCeinture] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
+
+  // Reprise : une évaluation de vingt questions perdue sur une batterie à plat
+  // coûte cher. Elle reprend à la frontière du mini-exercice — les exercices
+  // déjà notés gardent leur score, celui qui était en cours recommence.
+  const { etatRepris, pret: reprisePrete, sauver, effacer } = useReprise({
+    cle: empreinteEval ? cleEvaluation(chapitreId) : null,
+    empreinte: empreinteEval,
+    session,
+  });
 
   useEffect(() => {
     if (chargementSession) return;
@@ -472,8 +496,12 @@ export default function PageEvaluationFinale() {
         return;
       }
 
-      setMinis(miniExercices);
-      setEtat("en_cours");
+      // L'empreinte porte sur la STRUCTURE de l'évaluation — quels exercices,
+      // dans quel ordre — et non sur les questions tirées, qui changent à
+      // chaque passage par construction. Un exercice ajouté ou retiré par
+      // l'enseignant annule donc la reprise, à juste titre.
+      setMinisBruts(miniExercices);
+      setEmpreinteEval(empreinte(chapitreId, miniExercices.map((m) => `${m.id}:${m.type}`)));
     } catch (err) {
       if (signal.aborted) return;
       console.error("[charger evaluation]", err);
@@ -481,16 +509,55 @@ export default function PageEvaluationFinale() {
     }
   }
 
+  // L'ordre des mini-exercices se décide ICI, une fois la reprise connue :
+  // avant, un index ne désignerait pas le même exercice d'un passage à l'autre.
+  useEffect(() => {
+    if (!minisBruts || !reprisePrete) return;
+
+    const repris = etatRepris?.ordre as number[] | undefined;
+    const faits = (etatRepris?.scores as ScoreExo[] | undefined) ?? [];
+    const ordreValide = Array.isArray(repris)
+      && repris.length === minisBruts.length
+      && repris.every((i) => Number.isInteger(i) && i >= 0 && i < minisBruts.length)
+      && new Set(repris).size === repris.length;
+    // Une reprise ne vaut que si ses scores portent sur les exercices attendus.
+    const scoresValides = ordreValide
+      && faits.length < minisBruts.length
+      && faits.every((sc, i) => sc && sc.exerciceId === minisBruts[repris![i]].id);
+
+    const ordre = ordreValide && scoresValides
+      ? repris!
+      : melanger(minisBruts.map((_, i) => i));
+
+    setOrdreEval(ordre);
+    setMinis(ordre.map((i) => minisBruts[i]));
+
+    if (scoresValides && faits.length > 0) {
+      setScores(faits);
+      setIndexCourant(faits.length);
+      setRepriseEval(true);
+    }
+
+    setEtat("en_cours");
+  }, [minisBruts, reprisePrete, etatRepris]);
+
   // ── Callback quand un mini-exercice est terminé ──────────────────────
 
   function onMiniTermine(exerciceId: string, bon: number, total: number) {
     const newScores = [...scores, { exerciceId, bon, total }];
     setScores(newScores);
+    setRepriseEval(false);
 
     if (indexCourant + 1 >= minis.length) {
-      // Fin de l'évaluation
+      // Fin de l'évaluation — il n'y a plus rien à reprendre.
+      void effacer();
       terminerEvaluation(newScores);
     } else {
+      // Reprise : l'exercice qui vient d'être noté est acquis, on l'enregistre
+      // avant de passer au suivant.
+      if (empreinteEval) {
+        sauver({ empreinte: empreinteEval, ordre: ordreEval, scores: newScores });
+      }
       setIndexCourant((i) => i + 1);
     }
   }
@@ -688,6 +755,22 @@ export default function PageEvaluationFinale() {
           ))}
         </div>
       </div>
+
+      {repriseEval && (
+        <div style={{
+          display: "flex", alignItems: "center", gap: 8,
+          padding: "10px 14px", borderRadius: 12, marginBottom: 12,
+          background: "rgba(34,197,94,0.10)", border: "1px solid rgba(34,197,94,0.28)",
+        }}>
+          <span className="ms" style={{ fontSize: 18, color: "#16A34A" }}>history</span>
+          <p style={{ fontSize: 14, color: "#166534", margin: 0, lineHeight: 1.5 }}>
+            Tu reprends ton évaluation — {scores.length === 1
+              ? "le premier exercice est déjà compté"
+              : `les ${scores.length} premiers exercices sont déjà comptés`}, tu
+            continues à partir d&apos;ici.
+          </p>
+        </div>
+      )}
 
       {/* Titre du mini-exercice */}
       <p style={{

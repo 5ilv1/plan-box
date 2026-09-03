@@ -19,6 +19,7 @@ export const CONFIRMATION_ATTENDUE = "NOUVELLE ANNEE";
  * L'ordre respecte les clés étrangères : enfants d'abord.
  */
 export const TABLES_TRAVAIL_ELEVE = [
+  { table: "exercice_reprise",           label: "Exercices en cours (reprises)" },
   { table: "dictee_correction_feedback", label: "Retours de correction de dictée" },
   { table: "qcm_reponse",                label: "Réponses aux QCM (podcasts)" },
   { table: "exercice_resultat",          label: "Résultats d'exercices" },
