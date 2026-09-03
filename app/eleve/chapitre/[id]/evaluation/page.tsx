@@ -8,6 +8,8 @@ import TexteATrousEleve from "@/components/TexteATrousEleve";
 import { resoudrePositionsTrous } from "@/lib/texte-a-trous";
 import ClassementEleve from "@/components/ClassementEleve";
 import ExerciceStack from "@/components/ExerciceStack";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import CalcMentalStack from "@/components/CalcMentalStack";
 import { FonctionGram, QCMQuestion } from "@/types";
@@ -142,7 +144,7 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
 
       case "qcm": {
         // Prendre 3 questions du QCM
-        const questions = (c.questions as QCMQuestion[]) ?? [];
+        const questions = (c.questions as QuestionQCM[]) ?? [];
         if (questions.length === 0) break;
         const qChoisis = piocher(questions, Math.min(3, questions.length));
         // Retirer les explications en évaluation
@@ -243,8 +245,15 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
 
 // ── QCM interne (sans appels API plan de travail) ──────────────────────
 
+/**
+ * Une question de QCM de ceinture : le QCM des podcasts ne connaît pas les
+ * dessins, ceux des ceintures en posent. Même convention que QCMEleve et
+ * ExerciceStack — la droite au-dessus de l'énoncé, la figure en dessous.
+ */
+type QuestionQCM = QCMQuestion & { droite?: Droite; figure?: Figure };
+
 function MiniQCM({ questions, onTermine }: {
-  questions: QCMQuestion[];
+  questions: QuestionQCM[];
   onTermine: (score: { bon: number; total: number }) => void;
 }) {
   const [index, setIndex] = useState(0);
@@ -281,6 +290,13 @@ function MiniQCM({ questions, onTermine }: {
       display: "flex", flexDirection: "column", gap: "1.5rem",
       transition: "border-color 0.2s ease",
     }}>
+      {/* Droite graduée, quand la question en déclare une */}
+      {q.droite && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <DroiteGraduee droite={q.droite} />
+        </div>
+      )}
+
       {/* Question */}
       <div style={{
         textAlign: "center", padding: "1.25rem 1rem", borderRadius: "1rem",
@@ -294,6 +310,13 @@ function MiniQCM({ questions, onTermine }: {
           {q.question}
         </p>
       </div>
+
+      {/* Figure : l'énoncé y renvoie (« Quelle est cette figure ? ») */}
+      {q.figure && (
+        <div style={{ display: "flex", justifyContent: "center" }}>
+          <FigureGeo figure={q.figure} />
+        </div>
+      )}
 
       <div style={{ height: 1, background: "var(--border-light, #E2E8F0)" }} />
 
@@ -706,7 +729,7 @@ export default function PageEvaluationFinale() {
 
         {mini.type === "qcm" && (
           <MiniQCM
-            questions={(mini.contenu.questions as QCMQuestion[]) ?? []}
+            questions={(mini.contenu.questions as QuestionQCM[]) ?? []}
             onTermine={(score) => onMiniTermine(mini.id, score.bon, score.total)}
           />
         )}

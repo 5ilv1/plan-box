@@ -331,6 +331,7 @@ Repetibox. `badge_eleve.eleve_id` et `ceinture_resultat.repetibox_eleve_id` sont
 5. **Texte à trous -er/-é** : utiliser des `<select>` dropdown, pas des inputs texte (sinon impossible de répondre)
 6. **env vars** : dans les scripts CLI, charger avec `export $(grep -v '^#' .env.local | xargs)` avant d'exécuter
 7. **Dates en heure locale** : ne JAMAIS appeler `toISOString()` sur une `Date` construite en heure locale (`new Date(a, m, j)`, `setDate()`). En France (UTC+1/+2) le résultat recule d'un jour. Pour les conversions semaine ↔ date, utiliser `lib/semaine-iso.ts` (`lundiDeSemaine()`, `semaineISO()`), qui calcule tout en UTC ; sinon formater à la main avec `getFullYear()/getMonth()/getDate()`
+8. **`figure` et `droite` se perdent en chemin** : ce sont des clés facultatives d'une *question*, pas des types d'exercice. Toute page qui reconstruit sa propre liste de questions à partir de `contenu` doit les recopier, et son rendu doit appeler `FigureGeo` / `DroiteGraduee` — sinon l'élève lit « Quelle est cette figure ? » sans figure. Deux pages sont tombées dans le piège l'une après l'autre : l'entraînement (`chapitre/[id]/exercice/[exerciceId]`) et le `MiniQCM` de l'évaluation. La banque ne pose de dessin qu'à trois endroits — questions de `qcm` (156), questions d'`exercice` (276) et questions de diagnostic (3) : c'est là qu'il faut vérifier après toute modification d'un de ces rendus.
 
 ## Joseph — Agent de test et correction
 
