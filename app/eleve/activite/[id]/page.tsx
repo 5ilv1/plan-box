@@ -1453,20 +1453,40 @@ function AudioPlayerCustom({ url, title, sousTpe, onComplete, onPlay }: { url: s
   useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
+    const terminer = () => {
+      if (completedRef.current) return;
+      completedRef.current = true;
+      onComplete?.();
+    };
+
     const onTime = () => {
       setCurrent(a.currentTime);
-      // Considérer comme écouté si on atteint 95% ou la fin
-      if (!completedRef.current && a.duration > 0 && a.currentTime / a.duration >= 0.95) {
-        completedRef.current = true;
-        onComplete?.();
-      }
+      const d = a.duration;
+      // Durée inexploitable (flux sans longueur annoncée, NaN, Infinity) : le
+      // pourcentage ne veut rien dire. On débloque plutôt que d'enfermer
+      // l'élève devant un bouton grisé qu'aucune écoute ne peut ouvrir.
+      if (!Number.isFinite(d) || d <= 0) { terminer(); return; }
+      // Écouté : 95 % du podcast, ou les trois dernières secondes — un fichier
+      // long n'atteint pas toujours `ended`, l'onglet passant en arrière-plan.
+      if (a.currentTime / d >= 0.95 || a.currentTime >= d - 3) terminer();
     };
     const onMeta = () => setDuration(a.duration);
-    const onEnd = () => { setPlaying(false); if (!completedRef.current) { completedRef.current = true; onComplete?.(); } };
+    const onEnd = () => { setPlaying(false); terminer(); };
+    // Le fichier ne peut pas être lu : ce n'est pas à l'élève d'en payer le prix.
+    const onErreur = () => terminer();
+
     a.addEventListener("timeupdate", onTime);
     a.addEventListener("loadedmetadata", onMeta);
+    a.addEventListener("durationchange", onMeta);
     a.addEventListener("ended", onEnd);
-    return () => { a.removeEventListener("timeupdate", onTime); a.removeEventListener("loadedmetadata", onMeta); a.removeEventListener("ended", onEnd); };
+    a.addEventListener("error", onErreur);
+    return () => {
+      a.removeEventListener("timeupdate", onTime);
+      a.removeEventListener("loadedmetadata", onMeta);
+      a.removeEventListener("durationchange", onMeta);
+      a.removeEventListener("ended", onEnd);
+      a.removeEventListener("error", onErreur);
+    };
   }, []);
 
   function toggle() {
