@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { recalerPhrases, type PhraseAnalyse } from "@/lib/analyse-phrase";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -100,28 +101,16 @@ ${REGLE_NOMBRES_EN_LETTRES}`,
       return NextResponse.json({ erreur: "Format de réponse invalide." }, { status: 500 });
     }
 
-    // Vérifier et corriger les positions
-    for (const phrase of resultat.phrases) {
-      const mots = phrase.texte.split(/\s+/);
-      for (const g of phrase.groupes) {
-        // Vérifier que les index sont corrects
-        const motsDuGroupe = mots.slice(g.debut, g.fin + 1).join(" ");
-        // Retirer la ponctuation pour comparer
-        const clean = (s: string) => s.replace(/[.,;:!?'"()]/g, "").trim().toLowerCase();
-        if (clean(motsDuGroupe) !== clean(g.mots)) {
-          // Tenter de trouver la bonne position
-          const target = clean(g.mots);
-          for (let i = 0; i <= mots.length - 1; i++) {
-            for (let j = i; j < mots.length; j++) {
-              if (clean(mots.slice(i, j + 1).join(" ")) === target) {
-                g.debut = i;
-                g.fin = j;
-                break;
-              }
-            }
-          }
-        }
-      }
+    // Le texte des groupes fait foi, jamais les index annoncés : un groupe mal
+    // placé est introuvable à l'écran, et l'élève reste bloqué dessus. Ceux
+    // qu'on ne retrouve pas dans leur phrase sont écartés.
+    resultat.phrases = recalerPhrases(resultat.phrases as PhraseAnalyse[]);
+
+    if (resultat.phrases.length === 0) {
+      return NextResponse.json(
+        { erreur: "Les groupes générés ne correspondent pas aux phrases. Relance la génération." },
+        { status: 500 },
+      );
     }
 
     return NextResponse.json({ resultat });

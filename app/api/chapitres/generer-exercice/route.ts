@@ -4,6 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
 import { requireEnseignant } from "@/lib/server-auth";
+import { recalerPhrases, type PhraseAnalyse } from "@/lib/analyse-phrase";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -71,9 +72,9 @@ IMPORTANT: le tableau "trous" doit contenir exactement le nombre d'items demand�
     {
       "texte": "Le chat mange la souris.",
       "groupes": [
-        { "mots": "Le chat", "fonction": "sujet", "debut": 0, "fin": 7 },
-        { "mots": "mange", "fonction": "verbe", "debut": 8, "fin": 13 },
-        { "mots": "la souris", "fonction": "COD", "debut": 14, "fin": 23 }
+        { "mots": "Le chat", "fonction": "sujet", "debut": 0, "fin": 1 },
+        { "mots": "mange", "fonction": "verbe", "debut": 2, "fin": 2 },
+        { "mots": "la souris", "fonction": "COD", "debut": 3, "fin": 4 }
       ]
     }
   ]
@@ -128,7 +129,9 @@ function getRegles(type: ExerciceType): string {
     case "analyse_phrase":
       return `${base}
 - Phrases simples et claires
-- Les positions debut/fin correspondent aux index de caractères dans la phrase
+- "debut" et "fin" sont les index des MOTS (pas des caractères), obtenus par texte.split(" ") et comptés à partir de 0
+- "mots" doit être le copier-coller exact des mots de la phrase entre ces deux index
+- Les groupes ne se chevauchent pas
 - Fonctions grammaticales adaptées au niveau (sujet, verbe, COD, COI, CC...)`;
     case "ecriture_contrainte":
       return `${base}
@@ -262,6 +265,13 @@ ${regles}`;
         }
       }
       contenu.trous = trousFixed;
+    }
+
+    // ── Recalage des groupes pour analyse_phrase ────────────────────────────
+    // Le modèle se trompe régulièrement d'un mot sur "fin" : un groupe mal
+    // placé est impossible à trouver, et l'élève reste bloqué dessus.
+    if (type === "analyse_phrase" && Array.isArray(contenu.phrases)) {
+      contenu.phrases = recalerPhrases(contenu.phrases as PhraseAnalyse[]);
     }
 
     // Valider et corriger les réponses (orthographe, conjugaison)
