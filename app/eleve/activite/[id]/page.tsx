@@ -16,6 +16,9 @@ import QCMPlayer from "@/components/QCMPlayer";
 import AtelierEcriture from "@/components/AtelierEcriture";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
+import { type EtatExerciceStack } from "@/components/ExerciceStack";
+import { useReprise } from "@/hooks/useReprise";
+import { cleActivite, empreinte } from "@/lib/reprise";
 import ClassementEleve from "@/components/ClassementEleve";
 import ComparaisonEleve from "@/components/ComparaisonEleve";
 import RangementEleve from "@/components/RangementEleve";
@@ -178,6 +181,32 @@ export default function PageActivite() {
       setTimeout(() => premiereInputRef.current?.focus(), 100);
     }
   }, [etat, bloc?.type]);
+
+  // ── Reprendre un exercice interrompu ────────────────────────────────────
+  //
+  // Les blocs du plan sont ceux qui traînent le plus : un exercice en retard
+  // se fait à un moment volé, entre deux activités, et se coupe volontiers en
+  // route. L'empreinte porte sur les questions : si l'enseignant les a
+  // modifiées depuis, la reprise est jetée et l'élève recommence, plutôt que
+  // de voir ses réponses se reporter sur d'autres questions.
+  const questionsBloc =
+    (bloc?.type === "exercice" || bloc?.type === "eval")
+      ? (bloc.contenu as unknown as ExerciceIA)?.questions ?? null
+      : null;
+
+  const empreinteBloc = questionsBloc
+    ? empreinte(
+        String(id),
+        questionsBloc.map((q) => q.enonce),
+        questionsBloc.map((q) => q.reponse_attendue),
+      )
+    : null;
+
+  const reprise = useReprise({
+    cle: questionsBloc ? cleActivite(String(id)) : null,
+    empreinte: empreinteBloc,
+    session,
+  });
 
   // ── Mise à jour en temps quasi-réel pour les blocs écriture ──────────────
   // L'enseignant peut modifier le sujet/contrainte pendant que l'élève est sur la page.
@@ -904,11 +933,18 @@ export default function PageActivite() {
             )}
 
             {/* ── Exercice / Évaluation (cartes stackées) ── */}
-            {exercice && !soumis && (
+            {/* On attend de savoir s'il y a une reprise : sinon l'élève verrait
+                la question 1 avant de sauter à la question 5. */}
+            {exercice && !soumis && reprise.pret && (
               <ExerciceStack
                 consigne={exercice.consigne}
                 questions={exercice.questions}
+                etatInitial={(reprise.etatRepris as unknown as EtatExerciceStack) ?? null}
+                onProgres={(etatStack) => {
+                  if (empreinteBloc) reprise.sauver({ ...etatStack, empreinte: empreinteBloc });
+                }}
                 onComplete={(reponsesStack, scoreStack, totalStack) => {
+                  void reprise.effacer();
                   setReponses(reponsesStack);
                   setSoumis(true);
                   const pct = totalStack > 0 ? Math.round((scoreStack / totalStack) * 100) : 0;

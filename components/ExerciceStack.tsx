@@ -16,36 +16,77 @@ interface Question {
   figure?: Figure;
 }
 
+/** Une réponse déjà donnée, telle qu'elle est enregistrée et relue. */
+interface ReponseSauvee {
+  id: number;
+  reponse: string;
+  correcte: boolean | null;
+}
+
+/**
+ * L'exercice en cours, dans une forme qui survit à la fermeture de l'onglet.
+ *
+ * L'ORDRE fait partie de l'état : les questions sont mélangées au montage, et
+ * un index enregistré ne désignerait pas la même question au retour si le
+ * mélange était retiré à chaque fois.
+ */
+export interface EtatExerciceStack {
+  ordre: number[];
+  reponses: ReponseSauvee[];
+  score: number;
+}
+
 interface ExerciceStackProps {
   consigne?: string;
   questions: Question[];
   onComplete: (reponses: { id: number; reponse: string; correcte: boolean | null }[], score: number, total: number) => void;
+  /** Reprise : l'état laissé la dernière fois. Ignoré s'il ne colle plus aux questions. */
+  etatInitial?: EtatExerciceStack | null;
+  /** Appelé après chaque question validée, pour que la page l'enregistre. */
+  onProgres?: (etat: EtatExerciceStack) => void;
 }
 
 const SEUIL_REUSSITE = 70; // % de bonnes réponses pour considérer l'exercice réussi
 
-export default function ExerciceStack({ consigne, questions, onComplete }: ExerciceStackProps) {
-  const [index, setIndex] = useState(0);
-  const [reponse, setReponse] = useState("");
-  const [score, setScore] = useState(0);
-  const [termine, setTermine] = useState(false);
-  const [sortie, setSortie] = useState<"droite" | "gauche" | null>(null);
-  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
-  const [remarque, setRemarque] = useState<string | null>(null);
-  const [bonneReponse, setBonneReponse] = useState<string | null>(null);
-  const [showIndice, setShowIndice] = useState(false);
-  const [reponsesSauvees, setReponsesSauvees] = useState<{ id: number; reponse: string; correcte: boolean | null }[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
+export default function ExerciceStack({ consigne, questions, onComplete, etatInitial, onProgres }: ExerciceStackProps) {
+  // Une reprise ne vaut que si son ordre décrit encore CES questions : sinon
+  // les réponses déjà données se reporteraient sur les mauvaises.
+  const repriseValide =
+    !!etatInitial &&
+    Array.isArray(etatInitial.ordre) &&
+    etatInitial.ordre.length === questions.length &&
+    etatInitial.ordre.every((i) => Number.isInteger(i) && i >= 0 && i < questions.length) &&
+    new Set(etatInitial.ordre).size === questions.length &&
+    Array.isArray(etatInitial.reponses) &&
+    // Toutes les questions répondues : l'exercice était fini, il n'y a rien à reprendre.
+    etatInitial.reponses.length < questions.length;
 
-  // Mélanger les questions une seule fois au montage
-  const [questionsShuffled] = useState<Question[]>(() => {
-    const arr = [...questions];
+  const reprise = repriseValide ? etatInitial! : null;
+
+  // L'ordre est tiré une fois, au montage — ou repris tel quel.
+  const [ordre] = useState<number[]>(() => {
+    if (reprise) return reprise.ordre;
+    const arr = questions.map((_, i) => i);
     for (let i = arr.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;
   });
+
+  const [index, setIndex] = useState(reprise ? Math.min(reprise.reponses.length, questions.length - 1) : 0);
+  const [reponse, setReponse] = useState("");
+  const [score, setScore] = useState(reprise?.score ?? 0);
+  const [termine, setTermine] = useState(false);
+  const [sortie, setSortie] = useState<"droite" | "gauche" | null>(null);
+  const [feedback, setFeedback] = useState<"correct" | "incorrect" | null>(null);
+  const [remarque, setRemarque] = useState<string | null>(null);
+  const [bonneReponse, setBonneReponse] = useState<string | null>(null);
+  const [showIndice, setShowIndice] = useState(false);
+  const [reponsesSauvees, setReponsesSauvees] = useState<ReponseSauvee[]>(reprise?.reponses ?? []);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  const [questionsShuffled] = useState<Question[]>(() => ordre.map((i) => questions[i]));
 
   useEffect(() => {
     if (!termine && !feedback) inputRef.current?.focus();
@@ -68,7 +109,14 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
     if (!correct) setBonneReponse(q.reponse_attendue);
     if (correct) setScore(s => s + 1);
 
-    setReponsesSauvees(prev => [...prev, { id: q.id, reponse: reponse.trim(), correcte: correct }]);
+    const reponsesAJour = [...reponsesSauvees, { id: q.id, reponse: reponse.trim(), correcte: correct }];
+    setReponsesSauvees(reponsesAJour);
+
+    // Enregistré tout de suite : une coupure survient entre deux questions,
+    // pas au milieu d'une animation.
+    if (index + 1 < questionsShuffled.length) {
+      onProgres?.({ ordre, reponses: reponsesAJour, score: correct ? score + 1 : score });
+    }
 
     setTimeout(() => {
       setSortie(correct ? "droite" : "gauche");
@@ -82,8 +130,7 @@ export default function ExerciceStack({ consigne, questions, onComplete }: Exerc
         if (index + 1 >= questionsShuffled.length) {
           const finalScore = correct ? score + 1 : score;
           setTermine(true);
-          const allReponses = [...reponsesSauvees, { id: q.id, reponse: reponse.trim(), correcte: correct }];
-          onComplete(allReponses, finalScore, questions.length);
+          onComplete(reponsesAJour, finalScore, questions.length);
         } else {
           setIndex(i => i + 1);
         }

@@ -130,6 +130,12 @@ Repetibox, rafraîchissement 30 s) :
 - La fenêtre de chargement remonte **7 jours avant le lundi** : le travail non fait la
   semaine précédente ne disparaît pas au changement de semaine.
 - Dictées et mots sont exclus du rattrapage (activités de classe, `filtrerDicteesMotsJourStrict`).
+- **Problème du jour** : la carte est barrée dès que le problème est *terminé*, pas seulement
+  réussi — trois essais épuisés, la correction montrée, il n'y a plus rien à faire
+  (`lib/probleme-du-jour.ts`, `problemeTermine()`). La couleur du pied de carte distingue
+  « ✓ Résolu » de « ✓ Fait ». Le serveur fait foi (`serverAttempt.termine`) ; le
+  `localStorage` de la page du problème ne sert qu'en secours, et seulement s'il porte sur
+  le même `problemId`.
 
 ## Avatar élève
 
@@ -326,10 +332,14 @@ le navigateur : la reprise suit l'élève d'une tablette à l'autre.
 - La sauvegarde est groupée (700 ms) et **forcée par `sendBeacon`** quand la page se cache —
   c'est précisément le moment où l'on coupe un élève.
 - Une sauvegarde qui échoue n'interrompt jamais l'élève : il perd sa reprise, pas son exercice.
-- Ce qui est couvert : la page d'entraînement (question par question) et l'évaluation
+- Ce qui est couvert : la page d'entraînement (question par question), l'évaluation
   (à la frontière du mini-exercice — les exercices notés gardent leur score, celui qui était
-  en cours recommence). **Pas encore couvert** : `/eleve/activite/[id]`, et les composants à
-  validation unique (texte à trous, classement), dont l'état vit dans le composant.
+  en cours recommence) et **les blocs du plan de travail** (`/eleve/activite/[id]`, clé
+  `activite:<bloc>`) — ce sont eux qui traînent le plus, un exercice en retard se faisant à
+  un moment volé. L'ordre y vit dans `ExerciceStack` : il est tiré une fois et enregistré
+  avec les réponses, et la page attend `reprise.pret` avant de monter le composant.
+  **Pas encore couvert** : les composants à validation unique (texte à trous, classement,
+  analyse de phrase), dont l'état vit dans le composant.
 - Pas d'`upsert` : index d'unicité partiels (`eleve_id` / `rb_eleve_id`).
 
 ## Changer d'année (remise à zéro)
@@ -363,7 +373,8 @@ Repetibox. `badge_eleve.eleve_id` et `ceinture_resultat.repetibox_eleve_id` sont
 5. **Texte à trous -er/-é** : utiliser des `<select>` dropdown, pas des inputs texte (sinon impossible de répondre)
 6. **env vars** : dans les scripts CLI, charger avec `export $(grep -v '^#' .env.local | xargs)` avant d'exécuter
 7. **Dates en heure locale** : ne JAMAIS appeler `toISOString()` sur une `Date` construite en heure locale (`new Date(a, m, j)`, `setDate()`). En France (UTC+1/+2) le résultat recule d'un jour. Pour les conversions semaine ↔ date, utiliser `lib/semaine-iso.ts` (`lundiDeSemaine()`, `semaineISO()`), qui calcule tout en UTC ; sinon formater à la main avec `getFullYear()/getMonth()/getDate()`
-8. **`figure` et `droite` se perdent en chemin** : ce sont des clés facultatives d'une *question*, pas des types d'exercice. Toute page qui reconstruit sa propre liste de questions à partir de `contenu` doit les recopier, et son rendu doit appeler `FigureGeo` / `DroiteGraduee` — sinon l'élève lit « Quelle est cette figure ? » sans figure. Deux pages sont tombées dans le piège l'une après l'autre : l'entraînement (`chapitre/[id]/exercice/[exerciceId]`) et le `MiniQCM` de l'évaluation. La banque ne pose de dessin qu'à trois endroits — questions de `qcm` (156), questions d'`exercice` (276) et questions de diagnostic (3) : c'est là qu'il faut vérifier après toute modification d'un de ces rendus.
+8. **`debut`/`fin` d'une analyse de phrase sont des index de MOTS**, jamais de caractères, et l'IA se trompe régulièrement d'un mot. Un groupe mal placé n'est pas une petite faute : l'élève clique exactement dessus, la réponse est refusée, et **rien ne le fait avancer** — c'est arrivé en classe sur « Les élèves courent dans la cour de récréation chaque mardi. ». Le texte du groupe (`mots`) fait foi ; `lib/analyse-phrase.ts` (`recalerGroupes`) recalcule les positions et **écarte** un groupe introuvable, à la génération comme à l'affichage. Le composant élève donne en plus la réponse après trois essais : aucune étape ne doit pouvoir enfermer un élève. `scripts/reparer-analyse-phrase.ts` remet en état le contenu déjà en base (idempotent, `--dry-run`).
+9. **`figure` et `droite` se perdent en chemin** : ce sont des clés facultatives d'une *question*, pas des types d'exercice. Toute page qui reconstruit sa propre liste de questions à partir de `contenu` doit les recopier, et son rendu doit appeler `FigureGeo` / `DroiteGraduee` — sinon l'élève lit « Quelle est cette figure ? » sans figure. Deux pages sont tombées dans le piège l'une après l'autre : l'entraînement (`chapitre/[id]/exercice/[exerciceId]`) et le `MiniQCM` de l'évaluation. La banque ne pose de dessin qu'à trois endroits — questions de `qcm` (156), questions d'`exercice` (276) et questions de diagnostic (3) : c'est là qu'il faut vérifier après toute modification d'un de ces rendus.
 
 ## Joseph — Agent de test et correction
 
