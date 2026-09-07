@@ -189,9 +189,31 @@ function filtrerDicteesMotsJourStrict(blocs: PlanTravail[], aujourd_hui: string)
   });
 }
 
+/**
+ * Ce que le navigateur sait du problème du jour, quand le serveur n'a rien.
+ *
+ * La page du problème écrit son avancement ici ; on s'en sert en secours si
+ * l'enregistrement serveur n'est pas remonté. `state === "exhausted"` veut dire
+ * que les trois essais sont passés et que la correction a été montrée : le
+ * problème est fait, même s'il n'est pas réussi.
+ */
+function etatLocalProbleme(eleveId: string, problemeId: string): { fait: boolean; reussi: boolean } {
+  const rien = { fait: false, reussi: false };
+  try {
+    const brut = localStorage.getItem(`dpd_${eleveId}_${new Date().toISOString().split("T")[0]}`);
+    if (!brut) return rien;
+    const saved = JSON.parse(brut) as { solved?: boolean; state?: string; problemId?: string };
+    // Après une régénération, l'état local porte sur un autre problème.
+    if (saved.problemId && saved.problemId !== problemeId) return rien;
+    return { fait: saved.solved === true || saved.state === "exhausted", reussi: saved.solved === true };
+  } catch {
+    return rien;
+  }
+}
+
 // ─── Cache stale-while-revalidate (sessionStorage) ────────────────────────────
 // Bump la version à chaque changement de shape pour invalider les caches obsolètes.
-const CACHE_VERSION = "v3";
+const CACHE_VERSION = "v4";
 const cacheKey = (id: string) => `pb_dash_${CACHE_VERSION}_${id}`;
 
 interface DashCache {
@@ -210,7 +232,8 @@ interface DashCache {
   ceintureActive: boolean;
   ceintureInfo: { index: number; nom: string; couleur: string } | null;
   dailyProblem: { id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null;
-  dailyProblemSolved: boolean;
+  dailyProblemFait: boolean;
+  dailyProblemReussi: boolean;
   chapitresAssignes: ChapitreAssigne[];
   serieParcours: number;
   calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null;
@@ -268,7 +291,8 @@ export default function DashboardEleve() {
   const [ceintureActive, setCeintureActive]           = useState(false);
   const [ceintureInfo, setCeintureInfo]               = useState<{ index: number; nom: string; couleur: string } | null>(null);
   const [dailyProblem, setDailyProblem]               = useState<{ id: string; enonce: string; categorie: string; periode: string; semaine: string; niveau: string } | null>(null);
-  const [dailyProblemSolved, setDailyProblemSolved]    = useState(false);
+  const [dailyProblemFait, setDailyProblemFait]        = useState(false);
+  const [dailyProblemReussi, setDailyProblemReussi]    = useState(false);
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
   const [serieParcours, setSerieParcours]              = useState<number>(0);
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
@@ -364,7 +388,8 @@ export default function DashboardEleve() {
       setCeintureActive(cache.ceintureActive);
       setCeintureInfo(cache.ceintureInfo);
       setDailyProblem(cache.dailyProblem);
-      setDailyProblemSolved(cache.dailyProblemSolved);
+      setDailyProblemFait(cache.dailyProblemFait);
+      setDailyProblemReussi(cache.dailyProblemReussi);
       setChapitresAssignes(cache.chapitresAssignes);
       setSerieParcours(cache.serieParcours ?? 0);
       setCalculJour(cache.calculJour);
@@ -700,15 +725,13 @@ export default function DashboardEleve() {
           if (signal.aborted) return;
           if (json.id && !json.noSchool) {
             setDailyProblem(json);
-            if (json.serverAttempt?.solved) {
-              setDailyProblemSolved(true);
-            } else {
-              const saved = localStorage.getItem(`dpd_${eleveId}_${new Date().toISOString().split("T")[0]}`);
-              if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
-            }
+            const local = etatLocalProbleme(String(eleveId), json.id);
+            setDailyProblemReussi(json.serverAttempt?.solved === true || local.reussi);
+            setDailyProblemFait(json.serverAttempt?.termine === true || local.fait);
           } else {
             setDailyProblem(null);
-            setDailyProblemSolved(false);
+            setDailyProblemFait(false);
+            setDailyProblemReussi(false);
           }
         })
         .catch(() => {});
@@ -792,15 +815,13 @@ export default function DashboardEleve() {
           if (signal.aborted) return;
           if (json.id && !json.noSchool) {
             setDailyProblem(json);
-            if (json.serverAttempt?.solved) {
-              setDailyProblemSolved(true);
-            } else {
-              const saved = localStorage.getItem(`dpd_${rbId}_${new Date().toISOString().split("T")[0]}`);
-              if (saved) { try { setDailyProblemSolved(JSON.parse(saved).solved === true); } catch {} }
-            }
+            const local = etatLocalProbleme(String(rbId), json.id);
+            setDailyProblemReussi(json.serverAttempt?.solved === true || local.reussi);
+            setDailyProblemFait(json.serverAttempt?.termine === true || local.fait);
           } else {
             setDailyProblem(null);
-            setDailyProblemSolved(false);
+            setDailyProblemFait(false);
+            setDailyProblemReussi(false);
           }
         })
         .catch(() => {});
@@ -994,7 +1015,8 @@ export default function DashboardEleve() {
       ceintureActive,
       ceintureInfo,
       dailyProblem,
-      dailyProblemSolved,
+      dailyProblemFait,
+      dailyProblemReussi,
       chapitresAssignes,
       serieParcours,
       calculJour,
@@ -1003,7 +1025,7 @@ export default function DashboardEleve() {
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
     blocsAujourdhui, blocsSemaine, blocsEnRetard, notifications, chapitresRB, podcastsQcm,
     podcastsSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
-    dailyProblemSolved, chapitresAssignes, serieParcours, calculJour,
+    dailyProblemFait, dailyProblemReussi, chapitresAssignes, serieParcours, calculJour,
   ]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
@@ -1124,7 +1146,7 @@ export default function DashboardEleve() {
   const blocsDuJourStricts = blocsAujourdhui.filter((b) => b.date_assignation === dateAujourdhui);
   const totalTaches = blocsDuJourStricts.length + (hasDailyProblem ? 1 : 0) + (hasCalculJour ? 1 : 0);
   const nbFaitAujourd_hui = blocsDuJourStricts.filter((b) => b.statut === "fait").length
-    + (hasDailyProblem && dailyProblemSolved ? 1 : 0)
+    + (hasDailyProblem && dailyProblemFait ? 1 : 0)
     + (calculJour?.deja_fait ? 1 : 0);
   const pctJour = totalTaches > 0
     ? Math.round((nbFaitAujourd_hui / totalTaches) * 100)
@@ -2352,7 +2374,7 @@ export default function DashboardEleve() {
                               borderLeft: "4px solid #F59E0B",
                               display: "flex",
                               flexDirection: "column",
-                              opacity: dailyProblemSolved ? 0.65 : 1,
+                              opacity: dailyProblemFait ? 0.65 : 1,
                               minHeight: 160,
                               position: "relative",
                               overflow: "hidden",
@@ -2379,7 +2401,7 @@ export default function DashboardEleve() {
                                   fontSize: 17, fontWeight: 800,
                                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                                   color: "var(--pb-on-surface)", marginBottom: 8,
-                                  textDecoration: dailyProblemSolved ? "line-through" : "none",
+                                  textDecoration: dailyProblemFait ? "line-through" : "none",
                                 }}>
                                   {dailyProblem.enonce.length > 50 ? dailyProblem.enonce.substring(0, 50) + "…" : dailyProblem.enonce}
                                 </div>
@@ -2391,7 +2413,7 @@ export default function DashboardEleve() {
                                 calculate
                               </span>
                             </div>
-                            {!dailyProblemSolved ? (
+                            {!dailyProblemFait ? (
                               <div style={{ marginTop: "auto", paddingTop: 16 }}>
                                 <Link
                                   href="/eleve/probleme-du-jour"
@@ -2402,8 +2424,10 @@ export default function DashboardEleve() {
                                 </Link>
                               </div>
                             ) : (
-                              <div style={{ marginTop: "auto", paddingTop: 16, fontSize: 14, fontWeight: 700, color: "#16A34A" }}>
-                                ✓ Résolu
+                              /* Fait sans être réussi : la carte est barrée quand même — le
+                                 travail est derrière l'élève, seule la couleur le distingue. */
+                              <div style={{ marginTop: "auto", paddingTop: 16, fontSize: 14, fontWeight: 700, color: dailyProblemReussi ? "#16A34A" : "#D97706" }}>
+                                {dailyProblemReussi ? "✓ Résolu" : "✓ Fait — tu as vu la correction"}
                               </div>
                             )}
                           </div>

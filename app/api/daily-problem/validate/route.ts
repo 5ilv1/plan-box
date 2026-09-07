@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerUser } from "@/lib/server-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { MAX_TENTATIVES } from "@/lib/probleme-du-jour";
 
 export async function POST(req: NextRequest) {
   const user = await getServerUser();
@@ -26,7 +27,7 @@ export async function POST(req: NextRequest) {
   const studentNum = parseFloat(cleaned);
 
   if (isNaN(studentNum)) {
-    if ((attempts ?? 0) >= 3) return NextResponse.json({ correct: false, correctAnswer: problem.reponse });
+    if ((attempts ?? 0) >= MAX_TENTATIVES) return NextResponse.json({ correct: false, correctAnswer: problem.reponse });
     return NextResponse.json({ correct: false });
   }
 
@@ -37,6 +38,6 @@ export async function POST(req: NextRequest) {
     Math.round(studentNum * 10) === Math.round(correct * 10);
 
   if (isCorrect) return NextResponse.json({ correct: true });
-  if ((attempts ?? 0) >= 3) return NextResponse.json({ correct: false, correctAnswer: correct });
+  if ((attempts ?? 0) >= MAX_TENTATIVES) return NextResponse.json({ correct: false, correctAnswer: correct });
   return NextResponse.json({ correct: false });
 }

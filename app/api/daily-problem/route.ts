@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerUser } from "@/lib/server-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getCurrentSchoolWeek } from "@/lib/schoolWeek";
+import { problemeTermine } from "@/lib/probleme-du-jour";
 
 export async function GET() {
   const user = await getServerUser();
@@ -120,7 +121,18 @@ export async function GET() {
     return NextResponse.json({
       id: p.id, enonce: p.enonce, categorie: p.categorie,
       periode: p.periode, semaine: p.semaine, niveau: p.niveau,
-      ...(attemptData ? { serverAttempt: { solved: attemptData.solved, attempts: attemptData.attempts, hintsUsed: attemptData.hints_used } } : {}),
+      // `termine` vaut aussi pour un échec : trois essais épuisés, la réponse
+      // a été donnée, l'élève n'a plus rien à faire sur ce problème.
+      ...(attemptData
+        ? {
+            serverAttempt: {
+              solved: attemptData.solved,
+              attempts: attemptData.attempts,
+              hintsUsed: attemptData.hints_used,
+              termine: problemeTermine(attemptData),
+            },
+          }
+        : {}),
     });
   }
 
