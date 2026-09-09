@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -116,7 +117,7 @@ ${REGLE_NOMBRES_EN_LETTRES}`,
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
     let resultat: { titre?: string; texte?: string; questions: Array<{ reponse?: number; choix?: unknown[] }> };
     try {
-      resultat = JSON.parse(cleaned);
+      resultat = normaliserNombresEnLettres(JSON.parse(cleaned));
     } catch (parseErr) {
       console.error("[generer-lecture] JSON parse failed", {
         error: parseErr instanceof Error ? parseErr.message : parseErr,

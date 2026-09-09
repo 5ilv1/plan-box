@@ -5,6 +5,7 @@ import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { requireEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -706,7 +707,7 @@ ${format}`;
     .replace(/\s*```$/i, "")
     .trim();
 
-  let contenu = JSON.parse(json);
+  let contenu = normaliserNombresEnLettres(JSON.parse(json));
   if (Array.isArray(contenu)) contenu = contenu[0];
 
   // Correction des positions pour texte_a_trous

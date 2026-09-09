@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -164,7 +165,7 @@ ${REGLE_NOMBRES_EN_LETTRES}`,
 
     const text = (response.content[0] as { type: "text"; text: string }).text;
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    const parsed = JSON.parse(cleaned);
+    const parsed = normaliserNombresEnLettres(JSON.parse(cleaned));
 
     if (!Array.isArray(parsed.questions) || parsed.questions.length === 0) {
       return NextResponse.json({ erreur: "Aucune question générée." }, { status: 500 });

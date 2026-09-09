@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -51,7 +52,7 @@ Réponds UNIQUEMENT avec le JSON regénéré, sans explication.`;
 
       const texte = message.content[0].type === "text" ? message.content[0].text : "";
       const json = texte.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
-      const contenuRegen = JSON.parse(json);
+      const contenuRegen = normaliserNombresEnLettres(JSON.parse(json));
       return NextResponse.json({ contenu: contenuRegen });
     } catch (err) {
       console.error("[regenerer-exercice] regen:", err);
@@ -112,7 +113,7 @@ Règles :
 
     const texte = message.content[0].type === "text" ? message.content[0].text : "";
     const json = texte.replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/\s*```$/i, "").trim();
-    let resultat = JSON.parse(json);
+    let resultat = normaliserNombresEnLettres(JSON.parse(json));
     resultat = await validerReponsesExercice(resultat, type, client);
     return NextResponse.json({ resultat });
   } catch (err) {

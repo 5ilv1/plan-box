@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -55,7 +56,7 @@ Réponds UNIQUEMENT avec un objet JSON valide, sans explication, sans markdown :
       return NextResponse.json({ erreur: "La réponse de l'IA ne contient pas de JSON valide." }, { status: 500 });
     }
 
-    const json = JSON.parse(match[0]);
+    const json = normaliserNombresEnLettres(JSON.parse(match[0]));
 
     if (!Array.isArray(json.calculs) || json.calculs.length === 0) {
       return NextResponse.json({ erreur: "L'IA n'a pas retourné de calculs." }, { status: 500 });

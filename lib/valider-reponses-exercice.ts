@@ -1,4 +1,6 @@
 import Anthropic from "@anthropic-ai/sdk";
+import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 /**
  * Valide et corrige les réponses attendues d'un exercice généré par l'IA.
@@ -66,6 +68,10 @@ Réponds UNIQUEMENT en JSON valide (un tableau), sans markdown :
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 1024,
+      // Ce correcteur ne connaissait pas la règle des traits d'union : chargé de
+      // « vérifier l'orthographe », il ramenait « trois-cent-quarante-cinq » à
+      // la graphie traditionnelle — juste après que la génération l'eut posée.
+      system: REGLE_NOMBRES_EN_LETTRES,
       messages: [{ role: "user", content: prompt }],
     });
 
@@ -76,7 +82,8 @@ Réponds UNIQUEMENT en JSON valide (un tableau), sans markdown :
       .replace(/\s*```$/i, "")
       .trim();
 
-    const corrections: { id: number | string; reponse: string }[] = JSON.parse(json);
+    const corrections: { id: number | string; reponse: string }[] =
+      normaliserNombresEnLettres(JSON.parse(json));
 
     // ── Patcher les corrections ─────────────────────────────────────────────
     const corrMap = new Map(corrections.map((c) => [c.id, c.reponse]));

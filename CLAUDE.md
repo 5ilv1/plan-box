@@ -111,6 +111,19 @@ Avant de supprimer un chapitre, nettoyer dans cet ordre :
 - **`REGLE_NOMBRES_EN_LETTRES`** : un nombre écrit en toutes lettres prend un trait d'union
   entre TOUS ses éléments (`trois-cent-vingt-deux`). La règle n'impose pas d'écrire en
   lettres — les chiffres restent libres. Français de France uniquement.
+  ⚠️ **Le prompt ne fait pas foi** : le modèle l'appliquait un jour sur deux. Le contenu
+  généré repasse par `normaliserNombresEnLettres()` (`lib/nombres-en-lettres.ts`) aux 17
+  points de parsing des 16 routes, et **`lib/valider-reponses-exercice.ts` est le piège
+  principal** — ce second passage « corrige l'orthographe » des réponses et défaisait les
+  traits d'union que la génération venait de poser ; il connaît la règle depuis.
+  La soudure n'a lieu que si la série se réécrit à l'identique depuis sa valeur
+  (`nombreEnLettres()`) : sans cet aller-retour, « un zéro » devenait « un-zéro » et
+  « tous les trois une chanson » devenait « trois-une ». Contrat vérifié par
+  `npx tsx docs/tests/test-traits-union-nombres.mjs` (36 cas) — à relancer après toute
+  modification du module. Réparation du contenu déjà en base :
+  `scripts/reparer-traits-union.ts` (`--dry-run`, `--exemples`), volontairement limité aux
+  champs d'exercice : `exercice.contenu` héberge aussi des chapitres de romans importés,
+  dont l'orthographe ne nous regarde pas.
 - **`extraireJSON()`** : isole le premier objet JSON d'une réponse en suivant l'imbrication
   des accolades. Les modèles ajoutent souvent une phrase après l'objet, ce qui fait échouer
   un `JSON.parse` sur la réponse brute.

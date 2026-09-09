@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 export const maxDuration = 120; // 2 min max (Vercel Pro)
@@ -61,7 +62,7 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans texte avant o
       .replace(/^```(?:json)?\n?/, "")
       .replace(/\n?```$/, "");
 
-    const parsed = JSON.parse(raw);
+    const parsed = normaliserNombresEnLettres(JSON.parse(raw));
 
     if (!parsed.questions || !Array.isArray(parsed.questions)) {
       throw new Error("Format inattendu : pas de tableau 'questions'");

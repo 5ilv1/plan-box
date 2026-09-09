@@ -5,6 +5,7 @@ import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { requireEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -119,7 +120,7 @@ export async function POST(req: NextRequest) {
       .replace(/\s*```$/i, "")
       .trim();
 
-    let resultat = JSON.parse(json);
+    let resultat = normaliserNombresEnLettres(JSON.parse(json));
     resultat = await validerReponsesExercice(resultat, params.type, client);
     return NextResponse.json({ resultat });
   } catch (err) {

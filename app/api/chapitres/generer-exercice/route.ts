@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 import { recalerPhrases, type PhraseAnalyse } from "@/lib/analyse-phrase";
 
@@ -235,7 +236,7 @@ ${regles}`;
       .replace(/\s*```$/i, "")
       .trim();
 
-    let contenu = JSON.parse(json);
+    let contenu = normaliserNombresEnLettres(JSON.parse(json));
 
     // Si l'IA a retourné un tableau au lieu d'un objet (ex: ecriture_contrainte), prendre le premier
     if (Array.isArray(contenu)) {

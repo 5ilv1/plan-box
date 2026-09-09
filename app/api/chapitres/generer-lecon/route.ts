@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -116,7 +117,7 @@ Règles STRICTES :
       .replace(/\s*```$/i, "")
       .trim();
 
-    const contenu = JSON.parse(json);
+    const contenu = normaliserNombresEnLettres(JSON.parse(json));
     console.log("[GL] keys=" + Object.keys(contenu).join(","));
     console.log("[GL] grille=" + (contenu.grille ? contenu.grille.items?.length + " items" : "NONE"));
     console.log("[GL] exemples=" + (contenu.exemples ? contenu.exemples.length + " tables" : "NONE"));

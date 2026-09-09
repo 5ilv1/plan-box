@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES, extraireJSON } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { signeEntre } from "@/lib/comparaison-nombres";
 import { requireEnseignant } from "@/lib/server-auth";
 
@@ -72,7 +73,7 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
     });
 
     const text = response.content[0].type === "text" ? response.content[0].text : "";
-    const resultat = extraireJSON(text) as Record<string, unknown> & Record<string, any>;
+    const resultat = normaliserNombresEnLettres(extraireJSON(text)) as Record<string, unknown> & Record<string, any>;
 
     if (!Array.isArray(resultat.paires) || resultat.paires.length === 0) {
       return NextResponse.json({ erreur: "Format de réponse invalide." }, { status: 500 });

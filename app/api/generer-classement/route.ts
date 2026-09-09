@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -88,7 +89,7 @@ ${REGLE_NOMBRES_EN_LETTRES}`,
 
     const text = (response.content[0] as { type: "text"; text: string }).text;
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    const resultat = JSON.parse(cleaned);
+    const resultat = normaliserNombresEnLettres(JSON.parse(cleaned));
 
     if (!Array.isArray(resultat.items) || resultat.items.length === 0) {
       return NextResponse.json({ erreur: "Format de réponse invalide." }, { status: 500 });

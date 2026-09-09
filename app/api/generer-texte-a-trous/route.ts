@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -125,7 +126,7 @@ ${REGLE_NOMBRES_EN_LETTRES}`,
 
     // Nettoyer le JSON (retirer backticks éventuels)
     const cleaned = text.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    const resultat = JSON.parse(cleaned);
+    const resultat = normaliserNombresEnLettres(JSON.parse(cleaned));
 
     // Valider la structure
     if (!resultat.texte_complet || !Array.isArray(resultat.trous) || resultat.trous.length === 0) {
