@@ -12,13 +12,18 @@
  * appeler personne : c'est le même parti pris que `comparaison` et `rangement`,
  * où le signe et l'ordre sont recalculés côté serveur.
  *
+ * PORTÉE — on ne corrige que là où c'est l'objet de l'exercice, c'est-à-dire
+ * les champs qui SONT le nombre : la réponse attendue d'un « écris 345 en
+ * lettres », l'énoncé d'une dictée de nombres, l'étiquette d'un rangement.
+ * Une phrase qui contient un nombre au passage n'est pas corrigée — « Deux
+ * millions de francs » dans un quiz de lecture reste tel quel, et les chapitres
+ * de romans importés dans `exercice.contenu` avec.
+ *
  * Ce qui est délibérément laissé tranquille :
  *  • les chiffres — la règle ne dit pas d'écrire les nombres en lettres,
  *    seulement comment les écrire quand ils le sont ;
- *  • un mot-nombre isolé (« trois pommes ») : il n'y a rien à relier ;
- *  • tout ce qui n'est pas séparé par une simple espace ou un trait d'union —
- *    une virgule, un point ou un retour à la ligne coupent la série, sinon
- *    « Il en reste vingt. Trois sont partis. » deviendrait un seul nombre.
+ *  • un mot-nombre isolé (« trois ») : il n'y a rien à relier ;
+ *  • toute prose, même quand elle contient un nombre en toutes lettres.
  */
 
 import { evaluerNombreEnLettres } from "@/lib/comparaison-nombres";
@@ -45,8 +50,16 @@ const APRES_ET = new Set(["un", "une", "onze"]);
 const clef = (mot: string) => mot.toLowerCase();
 const estMotNombre = (mot: string) => MOTS_NOMBRES.has(clef(mot));
 
-/** Seules l'espace et le trait d'union relient les éléments d'un nombre. */
-const estLiant = (separateur: string) => /^(?:[   ]+|-)$/.test(separateur);
+/**
+ * Seules l'espace et le trait d'union relient les éléments d'un nombre.
+ *
+ * Un espace autour du tiret est toléré — « cinq -cent-cinquante-six » se lit
+ * en base, le modèle ayant laissé traîner une frappe. C'est sans danger : la
+ * série doit de toute façon se refermer sur elle-même (voir `estNombreEcrit`),
+ * ce qui écarte « dix - cinq », qui vaut quinze et ne s'écrit pas « dix-cinq ».
+ */
+const estLiant = (separateur: string) =>
+  separateur !== "" && /^[ \u00A0\u202F]*-?[ \u00A0\u202F]*$/.test(separateur);
 
 // ── Écrire un nombre en toutes lettres, graphie rectifiée ────────────────────
 
@@ -189,14 +202,36 @@ export function traitsUnionNombres(texte: string): string {
 }
 
 /**
+ * Relie le champ s'il est un nombre en toutes lettres, et le laisse sinon.
+ *
+ * C'est ce test qui donne sa portée à tout le module : un champ entièrement
+ * occupé par un nombre, c'est un exercice où l'on écrit le nombre en lettres —
+ * et c'est là, et là seulement, que le trait d'union se joue. Dès qu'il reste
+ * un mot autour, on est dans une phrase, et on n'y touche pas.
+ */
+export function traitsUnionSiNombre(champ: string): string {
+  if (typeof champ !== "string") return champ;
+
+  // Les espaces et le point final ne font pas partie du nombre. Un champ qui
+  // contient un retour à la ligne ne correspond pas : c'est de la prose.
+  const bornes = champ.match(/^(\s*)(.*?)([.\s]*)$/);
+  if (!bornes) return champ;
+
+  const [, avant, coeur, apres] = bornes;
+  if (!coeur || !estNombreEcrit(coeur)) return champ;
+
+  return avant + traitsUnionNombres(coeur) + apres;
+}
+
+/**
  * Applique la règle à toutes les chaînes d'un contenu généré, en profondeur.
  *
- * Énoncés, questions, options, réponses attendues, indices, corrections : la
- * règle vaut partout, et une réponse dont l'orthographe diffère de l'énoncé
- * serait le pire des deux mondes.
+ * Le tri se fait chaîne par chaîne : réponses attendues, énoncés de dictée de
+ * nombres et étiquettes sont corrigés parce qu'ils SONT des nombres ; tout le
+ * reste passe sans être touché.
  */
 export function normaliserNombresEnLettres<T>(valeur: T): T {
-  if (typeof valeur === "string") return traitsUnionNombres(valeur) as unknown as T;
+  if (typeof valeur === "string") return traitsUnionSiNombre(valeur) as unknown as T;
   if (Array.isArray(valeur)) return valeur.map(normaliserNombresEnLettres) as unknown as T;
   if (valeur && typeof valeur === "object") {
     const sortie: Record<string, unknown> = {};

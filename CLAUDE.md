@@ -116,14 +116,17 @@ Avant de supprimer un chapitre, nettoyer dans cet ordre :
   points de parsing des 16 routes, et **`lib/valider-reponses-exercice.ts` est le piège
   principal** — ce second passage « corrige l'orthographe » des réponses et défaisait les
   traits d'union que la génération venait de poser ; il connaît la règle depuis.
-  La soudure n'a lieu que si la série se réécrit à l'identique depuis sa valeur
-  (`nombreEnLettres()`) : sans cet aller-retour, « un zéro » devenait « un-zéro » et
-  « tous les trois une chanson » devenait « trois-une ». Contrat vérifié par
-  `npx tsx docs/tests/test-traits-union-nombres.mjs` (36 cas) — à relancer après toute
-  modification du module. Réparation du contenu déjà en base :
-  `scripts/reparer-traits-union.ts` (`--dry-run`, `--exemples`), volontairement limité aux
-  champs d'exercice : `exercice.contenu` héberge aussi des chapitres de romans importés,
-  dont l'orthographe ne nous regarde pas.
+  **Portée volontairement étroite** : seuls les champs ENTIÈREMENT occupés par un nombre
+  sont corrigés — la réponse d'un « écris 345 en lettres », l'énoncé d'une dictée de
+  nombres. Une phrase qui parle de millions au passage n'est pas touchée, et les chapitres
+  de romans importés dans `exercice.contenu` non plus. Deux garde-fous :
+  `traitsUnionSiNombre()` pour la portée, et un aller-retour par `nombreEnLettres()` —
+  sans lui, « un zéro » devenait « un-zéro » et « tous les trois une chanson »
+  devenait « trois-une ». Contrat vérifié par
+  `npx tsx docs/tests/test-traits-union-nombres.mjs` (55 cas) — à relancer après toute
+  modification du module. `scripts/reparer-traits-union.ts` (`--dry-run`, `--exemples`)
+  applique la même règle au contenu déjà en base ; passé le 09/09/2026 sur les fiches
+  « Écrire les nombres en lettres ».
 - **`extraireJSON()`** : isole le premier objet JSON d'une réponse en suivant l'imbrication
   des accolades. Les modèles ajoutent souvent une phrase après l'objet, ce qui fait échouer
   un `JSON.parse` sur la réponse brute.

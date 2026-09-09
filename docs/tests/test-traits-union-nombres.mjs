@@ -1,10 +1,16 @@
 #!/usr/bin/env npx tsx
 /**
- * Contrat de `traitsUnionNombres()` : ce qui doit être relié, et surtout ce
- * qui ne doit pas l'être. Lancer après toute modification du module :
+ * Contrat du module : ce qui doit être relié, et surtout ce qui ne doit pas.
+ *
+ * Deux niveaux. `traitsUnionNombres()` relie les nombres d'un texte ;
+ * `traitsUnionSiNombre()` est celui qui tourne en production, et il ne corrige
+ * QUE les champs entièrement occupés par un nombre — la réponse d'un « écris
+ * 345 en lettres », pas une phrase qui parle de millions au passage.
+ *
+ * Lancer après toute modification du module :
  *   npx tsx docs/tests/test-traits-union-nombres.mjs
  */
-import { traitsUnionNombres } from "../../lib/nombres-en-lettres.ts";
+import { traitsUnionNombres, traitsUnionSiNombre } from "../../lib/nombres-en-lettres.ts";
 
 const CAS = [
   // ── Ce qu'on vient corriger ────────────────────────────────────────────
@@ -61,13 +67,54 @@ const CAS = [
   ["quatre-vingts pages et deux cahiers", "quatre-vingts pages et deux cahiers"],
 ];
 
+// ── Portée : seuls les champs qui SONT un nombre sont corrigés ───────────────
+const CHAMPS = [
+  // La réponse attendue d'un exercice d'écriture des nombres : on relie.
+  ["trois cent quarante-cinq", "trois-cent-quarante-cinq"],
+  ["trois cent quarante-cinq.", "trois-cent-quarante-cinq."],
+  ["  quatre vingt onze  ", "  quatre-vingt-onze  "],
+  ["vingt et un", "vingt-et-un"],
+  ["trois cent quarante-deux mille six cents", "trois-cent-quarante-deux-mille-six-cents"],
+  ["quatre-vingt-douze mille cinq", "quatre-vingt-douze-mille-cinq"],
+
+  // Frappes traînantes relevées en base : un espace autour du tiret.
+  ["cinq -cent-cinquante-six", "cinq-cent-cinquante-six"],
+  ["neuf-mille-neuf-cent -quatre-vingt-dix-neuf", "neuf-mille-neuf-cent-quatre-vingt-dix-neuf"],
+  ["huit-mille-quatre-cent soixante-seize", "huit-mille-quatre-cent-soixante-seize"],
+  ["mille deux  cent", "mille-deux-cent"],
+
+  // Une soustraction espacée n'est pas un nombre : la série ne se referme pas.
+  ["dix - cinq", "dix - cinq"],
+
+  // Une phrase qui contient un nombre : on n'y touche pas.
+  ["Deux millions de francs", "Deux millions de francs"],
+  ["Ajoute un million à la borne du bas.", "Ajoute un million à la borne du bas."],
+  ["Il faut environ cent cinquante bouteilles.", "Il faut environ cent cinquante bouteilles."],
+  ["Comment écrit-on en chiffres « six milliards » ?", "Comment écrit-on en chiffres « six milliards » ?"],
+  ["à trois cents mètres de distance", "à trois cents mètres de distance"],
+  ["Un zéro occupe un rang.", "Un zéro occupe un rang."],
+  ["345", "345"],
+  ["", ""],
+];
+
 let echecs = 0;
+
 for (const [entree, attendu] of CAS) {
   const obtenu = traitsUnionNombres(entree);
   if (obtenu !== attendu) {
     echecs++;
-    console.log(`✗ « ${entree} »\n    attendu : « ${attendu} »\n    obtenu  : « ${obtenu} »`);
+    console.log(`✗ traitsUnionNombres « ${entree} »\n    attendu : « ${attendu} »\n    obtenu  : « ${obtenu} »`);
   }
 }
-console.log(echecs === 0 ? `✓ ${CAS.length} cas passent` : `\n${echecs} échec(s) sur ${CAS.length}`);
+
+for (const [entree, attendu] of CHAMPS) {
+  const obtenu = traitsUnionSiNombre(entree);
+  if (obtenu !== attendu) {
+    echecs++;
+    console.log(`✗ traitsUnionSiNombre « ${entree} »\n    attendu : « ${attendu} »\n    obtenu  : « ${obtenu} »`);
+  }
+}
+
+const total = CAS.length + CHAMPS.length;
+console.log(echecs === 0 ? `✓ ${total} cas passent` : `\n${echecs} échec(s) sur ${total}`);
 process.exit(echecs === 0 ? 0 : 1);
