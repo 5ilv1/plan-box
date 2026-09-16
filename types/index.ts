@@ -39,6 +39,8 @@ export interface AssignationSelecteur {
 export interface ParamsExercice {
   type: "exercice";
   matiere: string;
+  /** Domaine précis (Conjugaison, Numération…). Exigé à la création. */
+  sousMatiere?: string;
   niveauNom: string;
   chapitreId: string | null;
   chapitreTitre: string;
@@ -401,6 +403,10 @@ export interface PlanTravail {
   created_at: string;
   /** Timestamp de diffusion de la correction (dictée). Null tant que l'enseignant ne l'a pas diffusée. */
   correction_diffusee_le?: string | null;
+  /** Instant de passage à « fait ». Remis à null quand le bloc est remis à faire. */
+  termine_le?: string | null;
+  /** Temps actif passé sur le bloc, en secondes. Null pour les blocs non chronométrés. */
+  duree_secondes?: number | null;
   // Jointures optionnelles
   chapitres?: Chapitre;
   eleves?: Eleve;
@@ -425,12 +431,16 @@ export type TypeNotification =
   | "chapitre_valide"
   | "eval_echec"
   | "eleve_bloque"
-  | "eval_prete";
+  | "eval_prete"
+  | "rappel";
 
 export interface Notification {
   id: string;
   type: TypeNotification;
-  eleve_id: string;
+  /** Élève PlanBox. Exclusif avec `rb_eleve_id`. */
+  eleve_id: string | null;
+  /** Élève Repetibox. Exclusif avec `eleve_id`. */
+  rb_eleve_id?: number | null;
   chapitre_id: string | null;
   message: string | null;
   lu: boolean;

@@ -1,7 +1,6 @@
-"use client";
+import { redirect } from "next/navigation";
 
-import PortraitSuivi from "@/components/PortraitSuivi";
-
+/** L'ancien « Bilan de classe » est devenu `/enseignant/suivi`. */
 export default function PageBilanClasse() {
-  return <PortraitSuivi cible="classe" niveauInitial="tous" />;
+  redirect("/enseignant/suivi");
 }

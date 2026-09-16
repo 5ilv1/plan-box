@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { AssignationSelecteur } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
-import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
+import MatiereChapitreSelector, { MatiereChapitreValue, sousMatiereRenseignee } from "@/components/MatiereChapitreSelector";
 import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface Props {
@@ -65,6 +65,10 @@ export default function GenererClassementForm({ onGenerer, chargement, defaultVa
       ? customCategories.split(/[,;\n]/).map((c) => c.trim()).filter(Boolean)
       : categories;
 
+    if (!sousMatiereRenseignee(mcv)) {
+      alert("Choisis une sous-matière : sans elle, le suivi ne peut pas dire sur quoi revenir.");
+      return;
+    }
     if (cats.length < 2) { alert("Il faut au moins 2 catégories."); return; }
     if (mode === "manuel" && !texteManuel.trim()) { alert("Écris les éléments à classer."); return; }
 
@@ -93,7 +97,7 @@ export default function GenererClassementForm({ onGenerer, chargement, defaultVa
 
   return (
     <form onSubmit={handleSubmit}>
-      <MatiereChapitreSelector value={mcv} onChange={setMcv} matiereParDefaut="Français" />
+      <MatiereChapitreSelector value={mcv} onChange={setMcv} matiereParDefaut="Français" exigerSousMatiere />
 
       {/* Mode */}
       <div className="form-group">

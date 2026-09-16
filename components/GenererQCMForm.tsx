@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AssignationSelecteur } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
-import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
+import MatiereChapitreSelector, { MatiereChapitreValue, sousMatiereRenseignee } from "@/components/MatiereChapitreSelector";
 import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface Props {
@@ -35,8 +35,12 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!theme.trim() && !mcv.sousMatiere.trim() && !consigne.trim()) {
-      alert("Précise au moins un thème, une sous-matière ou une consigne.");
+    if (!sousMatiereRenseignee(mcv)) {
+      alert("Choisis une sous-matière : sans elle, le suivi ne peut pas dire sur quoi revenir.");
+      return;
+    }
+    if (!theme.trim() && !consigne.trim()) {
+      alert("Précise au moins un thème ou une consigne.");
       return;
     }
     const dateEff = periodicite === "semaine" ? lundiDeSemaine(semaineAssignation) : dateAssignation;
@@ -60,7 +64,7 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
 
   return (
     <form onSubmit={handleSubmit} style={{ padding: "16px 0" }}>
-      <MatiereChapitreSelector value={mcv} onChange={setMcv} />
+      <MatiereChapitreSelector value={mcv} onChange={setMcv} exigerSousMatiere />
 
       <div className="grid-2" style={{ marginBottom: 16 }}>
         <div className="form-group" style={{ marginBottom: 0 }}>

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { champsReprise } from "@/lib/suivi-metriques";
 import { requireEnseignant } from "@/lib/server-auth";
 
 /**
@@ -62,7 +63,7 @@ export async function POST(req: NextRequest) {
 
   const { error } = await admin
     .from("plan_travail")
-    .update({ statut: "a_faire", contenu: nouveau })
+    .update({ statut: "a_faire", contenu: nouveau, ...champsReprise() })
     .eq("id", blocId);
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
 

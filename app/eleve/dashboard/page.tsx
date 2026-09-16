@@ -4,6 +4,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase";
+import { champsTerminaison, champsReprise } from "@/lib/suivi-metriques";
 import { useEleveSession } from "@/hooks/useEleveSession";
 import { PlanTravail, Progression, Chapitre, Notification, TYPE_BLOC_CONFIG } from "@/types";
 import { CEINTURES } from "@/lib/ceintures";
@@ -743,6 +744,16 @@ export default function DashboardEleve() {
           setCalculJour(json.id ? json : null);
         })
         .catch(() => {});
+
+      // Les rappels de l'enseignant passent par une route serveur : un élève
+      // Repetibox n'a pas de session Supabase pour lire la table directement.
+      fetch(`/api/mes-notifications?rb=${rbId}`, { signal })
+        .then((r) => r.json())
+        .then((json) => {
+          if (signal.aborted) return;
+          setNotifications((json.notifications ?? []) as Notification[]);
+        })
+        .catch(() => {});
     } catch (err) {
       if (signal.aborted) return;
       console.error("[chargerPB]", err);
@@ -1037,7 +1048,7 @@ export default function DashboardEleve() {
         body: JSON.stringify({ blocId: id, statut: "fait", eleveRbId: parseInt(session.id, 10) }),
       });
     } else {
-      await supabase.from("plan_travail").update({ statut: "fait" }).eq("id", id);
+      await supabase.from("plan_travail").update({ statut: "fait", ...champsTerminaison() }).eq("id", id);
     }
     const marquer = (blocs: PlanTravail[]) =>
       blocs.map((b) => (b.id === id ? { ...b, statut: "fait" as const } : b));
@@ -1054,7 +1065,15 @@ export default function DashboardEleve() {
         body: JSON.stringify({ blocId: id, statut: nouveauStatut, eleveRbId: parseInt(session.id, 10) }),
       });
     } else {
-      await supabase.from("plan_travail").update({ statut: nouveauStatut }).eq("id", id);
+      await supabase
+        .from("plan_travail")
+        .update({
+          statut: nouveauStatut,
+          // Une case décochée redevient du travail à faire : la durée d'avant
+          // ne décrit plus rien.
+          ...(nouveauStatut === "fait" ? champsTerminaison() : champsReprise()),
+        })
+        .eq("id", id);
     }
     const toggle = (blocs: PlanTravail[]) =>
       blocs.map((b) => (b.id === id ? { ...b, statut: nouveauStatut as PlanTravail["statut"] } : b));
@@ -1063,7 +1082,15 @@ export default function DashboardEleve() {
   }
 
   async function marquerNotifLue(id: string) {
-    await supabase.from("notifications").update({ lu: true }).eq("id", id);
+    if (session?.source === "repetibox") {
+      await fetch("/api/mes-notifications", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id, rb: parseInt(session.id, 10) }),
+      });
+    } else {
+      await supabase.from("notifications").update({ lu: true }).eq("id", id);
+    }
     setNotifications((prev) => prev.filter((n) => n.id !== id));
   }
 

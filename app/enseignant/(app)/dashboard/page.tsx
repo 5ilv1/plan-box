@@ -8,12 +8,6 @@ import NotifCard from "@/components/NotifCard";
 import AujourdhuiSection from "@/components/dashboard/AujourdhuiSection";
 import AlertesJour from "@/components/dashboard/AlertesJour";
 import ProgrammeJourView from "@/components/dashboard/ProgrammeJourView";
-import ProgressionElevesView from "@/components/dashboard/ProgressionElevesView";
-import FeedbackView from "@/components/dashboard/FeedbackView";
-import CeinturesView from "@/components/dashboard/CeinturesView";
-import SuiviJourView from "@/components/dashboard/SuiviJourView";
-
-type TabSidebar = "blocs" | "suivi" | "eleves" | "feedback" | "ceintures";
 
 interface ThemeEcriture {
   id: string | null;
@@ -530,7 +524,6 @@ export default function DashboardEnseignant() {
 
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [chargement, setChargement] = useState(true);
-  const [activeTab, setActiveTab] = useState<TabSidebar>("blocs");
 
   useEffect(() => {
     async function charger() {
@@ -587,28 +580,7 @@ export default function DashboardEnseignant() {
         <AlertesJour />
       </section>
 
-      {/* ── Tabs ── */}
-      <div className="ens-view-tabs">
-        {([
-          { key: "blocs" as const, label: "Programme du jour" },
-          { key: "suivi" as const, label: "Suivi du jour" },
-          { key: "feedback" as const, label: "Feedback" },
-          { key: "eleves" as const, label: "Progression élèves" },
-          { key: "ceintures" as const, label: "Ceintures" },
-        ]).map(({ key, label }) => (
-          <button
-            key={key}
-            className={`ens-view-tab${activeTab === key ? " active" : ""}`}
-            onClick={() => setActiveTab(key)}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
-      {/* ── Vue active ── */}
-      {activeTab === "blocs" && (
-        <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           {/* Programme du jour — pleine largeur */}
           <div>
             <h3 className="ens-section-title">Programme du jour</h3>
@@ -650,13 +622,7 @@ export default function DashboardEnseignant() {
               <a href="/enseignant/admin/qrcodes">En savoir plus</a>
             </div>
           </div>
-        </div>
-      )}
-
-      {activeTab === "suivi" && <SuiviJourView />}
-      {activeTab === "feedback" && <FeedbackView />}
-      {activeTab === "eleves" && <ProgressionElevesView />}
-      {activeTab === "ceintures" && <CeinturesView />}
+      </div>
     </>
   );
 }

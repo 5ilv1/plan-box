@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { champsTerminaison, champsReprise } from "@/lib/suivi-metriques";
 
 // GET /api/mon-plan-travail?rb=<repetibox_eleve_id>
 // GET /api/mon-plan-travail?rb=<repetibox_eleve_id>&bloc=<blocId>   → un seul bloc
@@ -87,7 +88,7 @@ export async function GET(req: NextRequest) {
 // Vérifie que le bloc appartient bien à l'élève RB
 export async function PATCH(req: NextRequest) {
   const body = await req.json().catch(() => null);
-  const { blocId, statut, eleveRbId, contenu } = body ?? {};
+  const { blocId, statut, eleveRbId, contenu, dureeSecondes } = body ?? {};
 
   if (!blocId || !statut || !eleveRbId) {
     return NextResponse.json(
@@ -128,6 +129,14 @@ export async function PATCH(req: NextRequest) {
   if (contenu !== undefined) {
     champsMaj.contenu = contenu;
   }
+
+  // Horodatage de fin posé côté serveur : c'est le seul instant de confiance.
+  // Un bloc qui repasse à « à faire » doit perdre sa durée, sinon elle serait
+  // attribuée au travail suivant.
+  Object.assign(
+    champsMaj,
+    statut === "fait" ? champsTerminaison(dureeSecondes) : champsReprise()
+  );
 
   const { error } = await admin
     .from("plan_travail")

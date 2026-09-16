@@ -783,12 +783,28 @@ export default function NouvelleSemainePage() {
         contenuData = json.resultat;
       }
 
+      // Matière ET sous-matière suivent le bloc jusqu'au plan de travail :
+      // `chapitre_id` y est toujours nul, et `contenu` est le seul endroit où le
+      // suivi peut les retrouver. La sous-matière est ce qui rend le suivi
+      // utile : « Français » ne dit pas sur quoi revenir, « Conjugaison » si.
+      const sousMatiereParams = (params.sousMatiere ?? params.sous_matiere)?.trim();
+      if (contenuData && typeof contenuData === "object") {
+        if (params.matiere && !contenuData.matiere) contenuData.matiere = params.matiere;
+        if (sousMatiereParams && !contenuData.sous_matiere) contenuData.sous_matiere = sousMatiereParams;
+      }
+
       // ── Sauvegarde dans la banque ──
       const titre = params.titre || TYPE_BLOC_CONFIG[type as TypeBloc]?.libelle || type;
       const resB = await fetch("/api/admin/exercices", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type, matiere: params.matiere ?? null, titre: type === "exercice" ? titre : titre, contenu: contenuData }),
+        body: JSON.stringify({
+          type,
+          matiere: params.matiere ?? null,
+          sous_matiere: sousMatiereParams ?? null,
+          titre,
+          contenu: contenuData,
+        }),
       });
       const jsonB = await resB.json();
       if (!resB.ok || !jsonB.id) { setExoGenErreur("Exercice généré, mais erreur de sauvegarde."); setExoGenChargement(false); return; }

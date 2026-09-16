@@ -3,21 +3,10 @@
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import { Chapitre } from "@/types";
+import { MATIERES_CANONIQUES, MATIERES_ORDRE } from "@/lib/matieres-referentiel";
 
-/**
- * Matières et sous-matières canoniques toujours proposées dans les
- * formulaires. L'ordre des entrées (et des sous-matières dans chaque
- * matière) est celui affiché à l'enseignant.
- */
-export const MATIERES_CANONIQUES: Record<string, string[]> = {
-  "Mathématiques": ["Calcul", "Numération", "Grandeurs et mesures", "Géométrie"],
-  "Français": ["Lecture", "Écriture", "Conjugaison", "Grammaire", "Orthographe", "Vocabulaire"],
-  "Anglais": [],
-  "Histoire": [],
-  "Géographie": [],
-  "Sciences": [],
-};
-const MATIERES_ORDRE = Object.keys(MATIERES_CANONIQUES);
+// Réexport : plusieurs formulaires l'importent encore depuis ce composant.
+export { MATIERES_CANONIQUES };
 
 export interface MatiereChapitreValue {
   matiere: string;
@@ -37,6 +26,18 @@ interface Props {
   cacherSousMatiere?: boolean;
   /** Cache le sélecteur de chapitre (pour types thématiques sans chapitre). */
   cacherChapitre?: boolean;
+  /**
+   * Exige une sous-matière. À poser pour les types dont le type ne dit pas de
+   * quoi parle l'exercice (exercice, QCM, évaluation, classement) : sans elle,
+   * le suivi ne peut que les ranger sous « Exercices », un fourre-tout qui
+   * mélange conjugaison, grammaire et orthographe.
+   */
+  exigerSousMatiere?: boolean;
+}
+
+/** Une sous-matière a-t-elle été choisie ? À appeler avant de soumettre. */
+export function sousMatiereRenseignee(v: MatiereChapitreValue): boolean {
+  return v.sousMatiere.trim() !== "";
 }
 
 export default function MatiereChapitreSelector({
@@ -46,6 +47,7 @@ export default function MatiereChapitreSelector({
   defaultChapitreId,
   cacherSousMatiere = false,
   cacherChapitre = false,
+  exigerSousMatiere = false,
 }: Props) {
   const supabase = createClient();
 
@@ -95,14 +97,15 @@ export default function MatiereChapitreSelector({
             ? defaultChapitreId
             : "";
         const cible = liste.find(c => c.id === targetId);
+        // La sous-matière est conservée : elle décrit l'exercice, pas la liste
+        // de chapitres. La remettre à "" à chaque rechargement la rendait
+        // impossible à renseigner — d'où zéro bloc classé en base.
         onChange({
           matiere: value.matiere,
-          sousMatiere: "",
+          sousMatiere: value.sousMatiere,
           chapitreId: targetId,
           chapitreTitre: cible?.titre ?? "",
         });
-        setSousMatiereMode("liste");
-        setSousMatierePerso("");
       });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value.matiere, defaultChapitreId]);
@@ -142,6 +145,8 @@ export default function MatiereChapitreSelector({
   const extrasDB = sousMatieresDB.filter(sm => !sousMatieresCanoniques.includes(sm)).sort();
   const sousMatieresDispo = [...sousMatieresCanoniques, ...extrasDB];
 
+  const manqueSousMatiere = exigerSousMatiere && !cacherSousMatiere && value.sousMatiere.trim() === "";
+
   const chapitresFiltres = value.sousMatiere
     ? chapitres.filter(c => c.sous_matiere === value.sousMatiere)
     : chapitres;
@@ -167,10 +172,14 @@ export default function MatiereChapitreSelector({
       {!cacherSousMatiere && (
         <div className="form-group">
           <label className="form-label">
-            Sous-matière <span className="text-secondary">(optionnel)</span>
+            Sous-matière{" "}
+            {exigerSousMatiere
+              ? <span style={{ color: "var(--error)" }}>*</span>
+              : <span className="text-secondary">(optionnel)</span>}
           </label>
           <select
             className="form-input"
+            style={manqueSousMatiere ? { borderColor: "var(--error)" } : undefined}
             value={sousMatiereMode === "perso" ? "__perso__" : value.sousMatiere}
             onChange={(e) => {
               const v = e.target.value;
@@ -190,12 +199,20 @@ export default function MatiereChapitreSelector({
               });
             }}
           >
-            <option value="">Toutes les sous-matières</option>
+            <option value="">
+              {exigerSousMatiere ? "— Choisir une sous-matière —" : "Toutes les sous-matières"}
+            </option>
             {sousMatieresDispo.map((sm) => (
               <option key={sm} value={sm}>{sm}</option>
             ))}
             <option value="__perso__">➕ Personnalisé…</option>
           </select>
+          {manqueSousMatiere && (
+            <p style={{ margin: "6px 0 0", fontSize: 12, color: "var(--error)" }}>
+              Sans sous-matière, cet exercice sera rangé dans un « Exercices »
+              fourre-tout et le suivi ne pourra pas dire sur quoi revenir.
+            </p>
+          )}
           {sousMatiereMode === "perso" && (
             <input
               type="text"

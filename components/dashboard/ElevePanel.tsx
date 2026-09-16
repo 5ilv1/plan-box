@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
+import { champsReprise } from "@/lib/suivi-metriques";
 import { TYPE_BLOC_CONFIG, STATUT_BLOC_CONFIG, TypeBloc, StatutBloc } from "@/types";
 import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
@@ -109,7 +110,7 @@ function BlocEditeur({
   }
 
   async function remettreAFaire() {
-    await supabase.from("plan_travail").update({ statut: "a_faire" }).eq("id", bloc.id);
+    await supabase.from("plan_travail").update({ statut: "a_faire", ...champsReprise() }).eq("id", bloc.id);
     setMessageSucces("Bloc remis à faire");
     setTimeout(() => { setMessageSucces(""); onSaved(); }, 1200);
   }

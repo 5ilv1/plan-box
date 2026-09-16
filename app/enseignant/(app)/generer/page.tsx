@@ -741,6 +741,20 @@ function PageGenererInner() {
       };
     }
 
+
+    // Matière ET sous-matière suivent le bloc jusqu'au plan de travail :
+    // `chapitre_id` y est toujours nul, et `contenu` est le seul endroit où le
+    // suivi peut les retrouver.
+    //
+    // La sous-matière est ce qui rend le suivi utile : « Français » ne dit pas
+    // sur quoi revenir, « Conjugaison » si. Les formulaires la transmettaient
+    // déjà, mais personne ne l'écrivait — d'où zéro bloc classé en base.
+    const p = paramsEnCours as { matiere?: string; sousMatiere?: string; sous_matiere?: string };
+    const matiereParams = p.matiere;
+    const sousMatiereParams = (p.sousMatiere ?? p.sous_matiere)?.trim();
+    if (matiereParams && !contenuJsonb.matiere) contenuJsonb.matiere = matiereParams;
+    if (sousMatiereParams && !contenuJsonb.sous_matiere) contenuJsonb.sous_matiere = sousMatiereParams;
+
     const titre =
       contenuFinal.type === "ressource"
         ? (paramsEnCours as ParamsRessource).titre
@@ -854,10 +868,14 @@ function PageGenererInner() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         type: contenuFinal.type,
-        matiere: (paramsEnCours as { matiere?: string }).matiere ?? null,
+        matiere: matiereParams ?? null,
+        sous_matiere: sousMatiereParams ?? null,
         niveau_id: null,
         chapitre_id: chapitreId,
-        titre: (contenuFinal.type === "exercice" || contenuFinal.type === "qcm") ? titre : null,
+        // Toujours enregistrer le titre : c'est le seul lien entre un bloc du
+        // plan de travail et sa ligne de banque. Le réserver à `exercice` et
+        // `qcm` rendait les autres types irrattachables — et donc irréparables.
+        titre,
         contenu: contenuJsonb,
         nb_utilisations: elevesResolus.length,
       }),

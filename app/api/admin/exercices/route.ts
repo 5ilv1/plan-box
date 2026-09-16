@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body) return NextResponse.json({ erreur: "Corps JSON manquant" }, { status: 400 });
 
-  const { type, matiere, niveau_id, chapitre_id, titre, contenu, nb_utilisations } = body;
+  const { type, matiere, sous_matiere, niveau_id, chapitre_id, titre, contenu, nb_utilisations } = body;
 
   if (!type || !contenu) {
     return NextResponse.json({ erreur: "type et contenu requis" }, { status: 400 });
@@ -22,6 +22,7 @@ export async function POST(req: NextRequest) {
   const { data, error } = await admin.from("banque_exercices").insert({
     type,
     matiere:        matiere ?? null,
+    sous_matiere:   sous_matiere ?? null,
     niveau_id:      niveau_id ?? null,
     chapitre_id:    chapitre_id ?? null,
     titre:          titre ?? null,

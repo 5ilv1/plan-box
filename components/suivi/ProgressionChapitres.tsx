@@ -113,7 +113,15 @@ function grouperParSousMatiere(chapitres: Chapitre[]): SousMatiereGroupe[] {
 
 // ── Composant ────────────────────────────────────────────────────────────────
 
-export default function ProgressionElevesView() {
+/**
+ * Où en est chaque élève, chapitre par chapitre.
+ *
+ * Complémentaire des graphes : ceux-ci disent « combien » sur une période,
+ * celle-ci dit « quoi » sur le programme. Reprise de l'ancien onglet
+ * « Progression élèves » — son temps réel sur `pb_progression` et son bouton
+ * de rappel n'existent nulle part ailleurs.
+ */
+export default function ProgressionChapitres() {
   const [eleves, setEleves]           = useState<Eleve[]>([]);
   const [chapitres, setChapitres]     = useState<Chapitre[]>([]);
   const [progressions, setProgressions] = useState<ProgressionData[]>([]);

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { AssignationSelecteur, ParamsExercice } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
-import MatiereChapitreSelector, { MatiereChapitreValue } from "@/components/MatiereChapitreSelector";
+import MatiereChapitreSelector, { MatiereChapitreValue, sousMatiereRenseignee } from "@/components/MatiereChapitreSelector";
 import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface GenererExerciceFormProps {
@@ -53,11 +53,16 @@ export default function GenererExerciceForm({
       alert("Veuillez sélectionner au moins un groupe ou un élève.");
       return;
     }
+    if (!sousMatiereRenseignee(mcv)) {
+      alert("Choisis une sous-matière : sans elle, le suivi ne peut pas dire sur quoi revenir.");
+      return;
+    }
     const niveauNom = assignation.groupeNoms.join(", ") || "École primaire";
     const dateFinale = periodicite === "semaine" ? lundiDeSemaine(semaineAssignation) : dateAssignation;
     onGenerer({
       type: "exercice",
       matiere: mcv.matiere,
+      sousMatiere: mcv.sousMatiere,
       niveauNom,
       chapitreId: mcv.chapitreId || null,
       chapitreTitre: mcv.chapitreId ? (mcv.chapitreTitre || "Non spécifié") : "Sans chapitre",
@@ -82,6 +87,7 @@ export default function GenererExerciceForm({
         value={mcv}
         onChange={setMcv}
         defaultChapitreId={defaultChapitreId}
+        exigerSousMatiere
       />
 
       <div className="grid-2" style={{ marginBottom: 16 }}>

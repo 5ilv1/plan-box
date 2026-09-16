@@ -59,12 +59,12 @@ Les deux coexistent dans les progressions, assignations et résultats.
 | `groupes` | Groupes de classe |
 | `eleve_groupe` | Liaison élève-groupe (planbox_eleve_id OU repetibox_eleve_id) |
 | `chapitre_assignation` | Assignation chapitre → groupe (actif) |
-| `plan_travail` | Blocs de travail assignés (type, statut, contenu JSON) |
+| `plan_travail` | Blocs de travail assignés (type, statut, contenu JSON, `termine_le`, `duree_secondes`) |
 | `pb_progression` | Progression par élève et chapitre (pourcentage, statut) |
 | `niveaux` | CE2, CM1, CM2 |
 | `classe` | Classes enseignant (user_id) |
 | `dictees` | Dictées générées (titre, thème, niveaux 1-4 étoiles) |
-| `notifications` | Notifications |
+| `notifications` | Notifications (`eleve_id` PlanBox **ou** `rb_eleve_id` Repetibox) |
 | `evaluation_resultat` | Résultats d'évaluation |
 | `banque_exercices` | Banque d'exercices réutilisables |
 | `user_preferences` | Préférences UI (nav_order) |
@@ -357,6 +357,113 @@ le navigateur : la reprise suit l'élève d'une tablette à l'autre.
   **Pas encore couvert** : les composants à validation unique (texte à trous, classement,
   analyse de phrase), dont l'état vit dans le composant.
 - Pas d'`upsert` : index d'unicité partiels (`eleve_id` / `rb_eleve_id`).
+
+## Suivi enseignant
+
+Une seule page, **`/enseignant/suivi`** (« Suivi » dans la barre latérale). Elle a
+remplacé quatre onglets du tableau de bord (Suivi du jour, Feedback, Progression élèves,
+Ceintures) **et** la page « Bilan de classe » : cinq surfaces qui se recoupaient avec
+quatre définitions différentes du taux de complétion.
+
+| Pièce | Rôle |
+|-------|------|
+| `lib/suivi-metriques.ts` | le socle : périmètre, matière d'un bloc, scores, durée, périodes |
+| `app/api/enseignant/suivi-stats/route.ts` | **une seule** route, un seul chargement |
+| `components/suivi/` | les graphes (Recharts) et les listes |
+| `components/suivi/MatriceJour.tsx` | la matrice élèves × travaux du jour (ex-`SuiviJourView`) |
+| `components/suivi/ProgressionChapitres.tsx` | élèves × chapitres (ex-`ProgressionElevesView`) |
+
+- **`/enseignant/bilan` et `/enseignant/eleves/[id]/performance` sont des redirections** :
+  les liens existants continuent de fonctionner.
+- **Périmètre du taux de complétion** : `TYPES_COMPTES` dans `lib/suivi-metriques.ts`.
+  Podcasts (`ressource`), ceintures de multiplication et cartes Repetibox sont **exclus** —
+  ce sont des activités libres, les compter ferait chuter le taux d'un élève qui a
+  pourtant tout fait.
+- **La matière d'un bloc ne vient pas de `chapitre_id`**, qui est toujours nul sur
+  `plan_travail`. Elle se lit dans `contenu.matiere`, sinon se déduit du `type`
+  (`matiereDuBloc()`). Un bloc qu'on ne sait pas classer part dans **« Non classé »** et
+  y reste visible : jamais rangé au hasard dans une matière. Les pages de génération
+  (`generer`, `nouvelle-semaine`) posent `contenu.matiere` sur **tous** les types, pas
+  seulement `exercice`.
+- ⚠️ **PostgREST plafonne toute lecture à 1000 lignes** et un trimestre dépasse ce seuil.
+  Passer par `chargerBlocs()`, qui pagine par `range()` — un `select` simple perdrait
+  des semaines entières sans lever d'erreur.
+- L'agrégation par matière est **pondérée par le nombre de questions** : sinon un calcul
+  mental de 20 questions pèserait autant qu'un exercice de 3.
+
+- **Un seul vocabulaire** : `lib/matieres-referentiel.ts`. Le formulaire de
+  création et le suivi lisaient deux listes différentes — « Mathématiques /
+  Numération » d'un côté, « Maths / Nombres » de l'autre — donc des colonnes qui
+  ne se rejoignaient jamais. Le libellé du formulaire fait foi ;
+  `normaliserMatiere()` rattrape les variantes à la lecture.
+- **La sous-matière est exigée à la création** pour les types dont le type ne dit
+  pas de quoi parle l'exercice : `exercice`, `qcm`, `eval`, `classement`
+  (`TYPES_SOUS_MATIERE_REQUISE`). Ailleurs le type tranche — un calcul mental est
+  du calcul — et l'imposer serait de la friction sans information.
+  ⚠️ Le champ existait déjà mais était branché **comme un filtre de chapitres**,
+  pas comme une étiquette : `MatiereChapitreSelector` le remettait à `""` à
+  chaque rechargement, `GenererExerciceForm` ne le transmettait pas, et
+  `generer/page.tsx` ne l'écrivait nulle part. Trois ruptures en série, d'où
+  **zéro bloc classé sur 934**. Toute modification de cette chaîne doit vérifier
+  qu'elle arrive bien jusqu'à `plan_travail.contenu.sous_matiere`.
+- `banque_exercices` enregistre désormais le **titre de tous les types** : il
+  était réservé à `exercice` et `qcm`, ce qui rendait les autres irrattachables à
+  leur bloc — et donc irréparables.
+- **Matière ET sous-domaine.** Le graphe de réussite range par *sous-domaine*
+  (Conjugaison, Calcul…), pas par matière : c'est la distinction qui sert à
+  décider quoi reprendre. `Classement.precis` vaut `false` quand le sous-domaine
+  n'est qu'un repli sur le type d'activité (« Exercices », « QCM ») ou
+  « Non classé » — le bloc est compté, mais on ne sait pas de quoi il parle.
+  `SOUS_DOMAINES` est la liste fermée par matière.
+  `scripts/reparer-matiere-blocs.ts` fait préciser le contenu déjà en base
+  (`--dry-run` pour l'inventaire, `--repondre "1=f1,2=m2"`, `--tout` pour revoir
+  aussi ce que le type classait d'office).
+  ⚠️ Il **fait confirmer chaque exercice** et ne recopie pas `banque_exercices`.
+  Cette table est du texte libre et le montre : « Français »/« français »,
+  « Mathématiques »/« Maths »/« maths », 53 lignes vides, 2 sous-matières sur
+  165 — et « Révision : Le verbe être et avoir au présent » y est enregistré en
+  *Mathématiques*. Les types autres que `exercice` et `qcm` y sont stockés **sans
+  titre** (`generer/page.tsx:868`), donc impossibles à rattacher. Recopier la
+  banque changerait un trou visible en erreur invisible.
+
+### Travail bâclé
+
+`plan_travail.termine_le` (timestamptz) et `plan_travail.duree_secondes` (entier).
+
+- Mesure côté élève par `hooks/useDureeActivite.ts`, qui **ne compte que pendant que
+  l'onglet est visible** : une tablette laissée ouverte à la récréation fausserait tout.
+- Écriture par `marquerFait()` (`app/eleve/activite/[id]/page.tsx`), point de passage
+  unique des ~28 fins d'activité. `termine_le` est posé **côté serveur** dans
+  `PATCH /api/mon-plan-travail`, donc pour tous les élèves réels (tous Repetibox).
+- Un bloc remis à faire doit repasser par `champsReprise()` — sinon il garde la durée
+  d'avant. Concerné : `bloc-refaire`, `ElevePanel`, le bascule de `MatriceJour`, le
+  PATCH de `mon-plan-travail`.
+- **`signalBaclage()` exige DEUX signaux** : moins de 5 s par question **et** moins de
+  50 % au premier essai. Un élève rapide et juste n'est pas un élève qui bâcle ; accuser
+  sur la seule vitesse pénaliserait les bons. Même principe que le
+  `tempsMin < 5` du calcul du jour.
+- **Le score au premier essai est la note honnête** : après correction tout le monde
+  finit haut. `premier_score` / `premier_score_total` n'étaient écrits correctement que
+  par deux chemins sur trois — `ExerciceStack` ne transmettait pas `nb_tentatives` et
+  réécrivait le premier score à chaque passage.
+
+### Graphiques
+
+Recharts, paramètres communs dans `components/suivi/theme-charts.ts`.
+
+La palette n'est pas choisie à l'œil : elle passe le validateur du guide de
+visualisation (bande de clarté, chroma, séparation daltonisme, contraste) sur fond blanc,
+la surface des cartes. Trois teintes sont sous 3:1 — partout où elles servent, **la
+valeur est écrite à côté de la marque**. Une couleur suit toujours une entité (le niveau
+de l'élève), jamais son rang : filtrer ne doit pas repeindre les survivants.
+
+### Rappels aux élèves
+
+`notifications` ne savait désigner qu'un élève PlanBox (`eleve_id`, uuid). Comme tous les
+élèves sont Repetibox, le bouton « Envoyer un rappel » écrivait `rb_12` dans une colonne
+uuid et échouait en silence. La table a maintenant **`rb_eleve_id`**, le type `rappel` est
+accepté par la contrainte, et les élèves Repetibox lisent leurs notifications par
+`app/api/mes-notifications/route.ts` (ils n'ont pas de session Supabase côté navigateur).
 
 ## Changer d'année (remise à zéro)
 

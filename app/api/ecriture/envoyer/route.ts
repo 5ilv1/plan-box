@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { champsTerminaison } from "@/lib/suivi-metriques";
 import {
   normaliserContenuEcriture,
   majHistorique,
@@ -97,7 +98,7 @@ export async function POST(req: NextRequest) {
 
   await admin
     .from("plan_travail")
-    .update({ contenu, statut: "fait" })
+    .update({ contenu, statut: "fait", ...champsTerminaison() })
     .eq("id", blocId);
 
   return NextResponse.json({ ok: true });

@@ -1,12 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { CEINTURES } from "@/lib/ceintures";
+import { requireEnseignant } from "@/lib/server-auth";
 
 /**
  * GET /api/ceinture-stats?enseignant_id=UUID
  * Retourne les stats ceintures de tous les élèves des groupes activés
  */
 export async function GET(req: NextRequest) {
+  // La réponse contient les résultats nominatifs de toute la classe : sans ce
+  // contrôle, n'importe qui pouvait les lire en devinant un `enseignant_id`.
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const enseignantId = req.nextUrl.searchParams.get("enseignant_id");
   if (!enseignantId) {
     return NextResponse.json({ error: "enseignant_id requis" }, { status: 400 });

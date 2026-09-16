@@ -12,6 +12,7 @@ const NOTIF_CONFIG: Record<TypeNotification, { icone: string; couleur: string; l
   eval_echec:      { icone: "warning",        couleur: "var(--warning)", libelle: "Échec évaluation" },
   eleve_bloque:    { icone: "block",          couleur: "var(--error)",   libelle: "Élève bloqué" },
   eval_prete:      { icone: "target",         couleur: "var(--primary)", libelle: "Évaluation prête" },
+  rappel:          { icone: "campaign",       couleur: "var(--primary)", libelle: "Rappel du maître" },
 };
 
 export default function NotifCard({ notif, onMarquerLu }: NotifCardProps) {

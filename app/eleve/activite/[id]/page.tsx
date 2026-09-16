@@ -18,7 +18,9 @@ import TexteATrousEleve from "@/components/TexteATrousEleve";
 import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import { type EtatExerciceStack } from "@/components/ExerciceStack";
 import { useReprise } from "@/hooks/useReprise";
+import { useDureeActivite } from "@/hooks/useDureeActivite";
 import { cleActivite, empreinte } from "@/lib/reprise";
+import { champsTerminaison } from "@/lib/suivi-metriques";
 import ClassementEleve from "@/components/ClassementEleve";
 import ComparaisonEleve from "@/components/ComparaisonEleve";
 import RangementEleve from "@/components/RangementEleve";
@@ -208,6 +210,13 @@ export default function PageActivite() {
     session,
   });
 
+  // ── Temps passé sur l'activité ──────────────────────────────────────────
+  //
+  // Posé ici et pas dans `useReprise` : le hook de reprise ne couvre que les
+  // exercices et les évaluations, et sa ligne est effacée juste avant la fin du
+  // bloc. Le chronomètre, lui, doit valoir pour les 22 types d'activités.
+  const dureeSecondes = useDureeActivite(etat === "en_cours");
+
   // ── Mise à jour en temps quasi-réel pour les blocs écriture ──────────────
   // L'enseignant peut modifier le sujet/contrainte pendant que l'élève est sur la page.
   // Polling toutes les 20s — uniquement pour type "ecriture".
@@ -278,14 +287,28 @@ export default function PageActivite() {
       contenuMaj = { ...contenuMaj, reponses_eleve: reponsesEleve };
     }
 
+    // Le temps passé n'est enregistré qu'à la fin réelle du bloc : un bloc
+    // laissé « en cours » sera rouvert, et sa durée continuera de courir.
+    const duree = statut === "fait" ? dureeSecondes() : undefined;
+
     if (session?.source === "repetibox") {
       await fetch("/api/mon-plan-travail", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ blocId: bloc.id, statut, eleveRbId: parseInt(session.id, 10), contenu: contenuMaj }),
+        body: JSON.stringify({
+          blocId: bloc.id,
+          statut,
+          eleveRbId: parseInt(session.id, 10),
+          contenu: contenuMaj,
+          dureeSecondes: duree,
+        }),
       });
     } else {
-      await supabase.from("plan_travail").update({ statut, contenu: contenuMaj }).eq("id", bloc.id);
+      // Branche PlanBox : l'écriture part du navigateur (RLS), donc les mêmes
+      // champs sont posés ici via le helper partagé.
+      const champs: Record<string, unknown> = { statut, contenu: contenuMaj };
+      if (statut === "fait") Object.assign(champs, champsTerminaison(duree));
+      await supabase.from("plan_travail").update(champs).eq("id", bloc.id);
     }
   }
 
@@ -949,7 +972,11 @@ export default function PageActivite() {
                   setSoumis(true);
                   const pct = totalStack > 0 ? Math.round((scoreStack / totalStack) * 100) : 0;
                   const statut: StatutBloc = pct >= 80 ? "fait" : "en_cours";
-                  marquerFait({ bon: scoreStack, total: totalStack }, statut, reponsesStack);
+                  // `nbTentatives` doit être transmis, sinon le compteur retombe à 1
+                  // et `premier_score` est réécrit à chaque passage — ce qui rendait
+                  // la note du premier essai indiscernable de la note finale.
+                  marquerFait({ bon: scoreStack, total: totalStack }, statut, reponsesStack, nbTentatives);
+                  setNbTentatives(nbTentatives + 1);
                 }}
               />
             )}

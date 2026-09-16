@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { TYPE_BLOC_CONFIG } from "@/types";
+import { champsReprise, champsTerminaison } from "@/lib/suivi-metriques";
 
 interface EleveLigne {
   id: string;
@@ -50,8 +51,21 @@ function couleurStatut(type: string, statut: string, contenu: unknown): { bg: st
   return { bg: "#F3F4F6", fg: "#6B7280", label: "À faire", icone: "radio_button_unchecked" };
 }
 
-export default function SuiviJourView() {
-  const [date, setDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
+/**
+ * La matrice élèves × travaux d'une journée.
+ *
+ * Le seul endroit de l'application où l'on voit, cellule par cellule, ce que
+ * chaque élève a répondu — et le seul où l'on peut rouvrir un travail rendu
+ * trop vite. Les graphes disent où regarder ; cette table dit quoi faire.
+ *
+ * Reprise telle quelle de l'ancien onglet « Suivi du jour » : son rendu des
+ * réponses par type de bloc (`DetailContenu`) est le plus complet du projet, il
+ * n'avait aucune raison d'être réécrit.
+ */
+export default function MatriceJour({ dateInitiale }: { dateInitiale?: string } = {}) {
+  const [date, setDate] = useState<string>(
+    () => dateInitiale ?? new Date().toISOString().split("T")[0]
+  );
   const [eleves, setEleves] = useState<EleveLigne[]>([]);
   const [blocsCols, setBlocsCols] = useState<BlocCol[]>([]);
   const [chargement, setChargement] = useState(true);
@@ -82,7 +96,13 @@ export default function SuiviJourView() {
     } else {
       const { createClient } = await import("@/lib/supabase");
       const supa = createClient();
-      await supa.from("plan_travail").update({ statut: nouveauStatut }).eq("id", detail.bloc.id);
+      await supa
+        .from("plan_travail")
+        .update({
+          statut: nouveauStatut,
+          ...(nouveauStatut === "fait" ? champsTerminaison() : champsReprise()),
+        })
+        .eq("id", detail.bloc.id);
     }
     setDetail(null);
     await charger();
@@ -90,116 +110,24 @@ export default function SuiviJourView() {
 
   return (
     <div>
-      {/* En-tête avec sélecteur de date */}
-      <div style={{ display: "flex", alignItems: "center", gap: 16, marginBottom: 20, flexWrap: "wrap" }}>
-        <div>
-          <h3 className="ens-section-title" style={{ marginBottom: 4 }}>Suivi du jour</h3>
-          <p className="text-secondary text-sm" style={{ margin: 0 }}>
-            Avancement de chaque élève sur les blocs assignés pour cette journée.
-          </p>
-        </div>
-        <div style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 10 }}>
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="form-input"
-            style={{ padding: "8px 12px", fontSize: 14, marginBottom: 0 }}
-          />
-          <button
-            onClick={() => setDate(new Date().toISOString().split("T")[0])}
-            className="btn-ghost"
-            style={{ padding: "8px 14px", fontSize: 13 }}
-          >
-            Aujourd&apos;hui
-          </button>
-        </div>
+      {/* Sélecteur de date — le reste de la page parle d'aujourd'hui, la
+          matrice sait aussi remonter dans le temps. */}
+      <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 16, flexWrap: "wrap" }}>
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="form-input"
+          style={{ padding: "8px 12px", fontSize: 14, marginBottom: 0 }}
+        />
+        <button
+          onClick={() => setDate(new Date().toISOString().split("T")[0])}
+          className="btn-ghost"
+          style={{ padding: "8px 14px", fontSize: 13 }}
+        >
+          Aujourd&apos;hui
+        </button>
       </div>
-
-      {!chargement && eleves.length > 0 && (() => {
-        const totalAssignes = eleves.reduce((s, e) => s + e.blocs.length, 0);
-        const nbFaits = eleves.reduce((s, e) => s + e.blocs.filter((b) => b.statut === "fait").length, 0);
-        const nbEnCours = eleves.reduce((s, e) => s + e.blocs.filter((b) => b.statut === "en_cours").length, 0);
-        const nbAFaire = totalAssignes - nbFaits - nbEnCours;
-        const pct = totalAssignes > 0 ? (nbFaits / totalAssignes) * 100 : 0;
-        // Arc SVG : circonférence = 2πr avec r=42 → 263.89
-        const r = 42;
-        const circ = 2 * Math.PI * r;
-        const dashFait = (pct / 100) * circ;
-        return (
-          <div className="card" style={{
-            padding: 20, marginBottom: 20, display: "flex", alignItems: "center",
-            gap: 24, flexWrap: "wrap",
-          }}>
-            {/* Graphique circulaire */}
-            <div style={{ position: "relative", width: 120, height: 120, flexShrink: 0 }}>
-              <svg width="120" height="120" viewBox="0 0 120 120">
-                <circle cx="60" cy="60" r={r} fill="none" stroke="#F3F4F6" strokeWidth="14" />
-                <circle
-                  cx="60" cy="60" r={r} fill="none" stroke="#16A34A" strokeWidth="14"
-                  strokeLinecap="round"
-                  strokeDasharray={`${dashFait} ${circ}`}
-                  transform="rotate(-90 60 60)"
-                  style={{ transition: "stroke-dasharray 0.6s ease" }}
-                />
-              </svg>
-              <div style={{
-                position: "absolute", inset: 0,
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-              }}>
-                <div style={{ fontSize: 28, fontWeight: 800, color: "#15803D", lineHeight: 1 }}>
-                  {Math.round(pct)}%
-                </div>
-                <div style={{ fontSize: 10, color: "var(--text-secondary)", fontWeight: 600, marginTop: 2 }}>
-                  complétés
-                </div>
-              </div>
-            </div>
-
-            {/* Stats détaillées */}
-            <div style={{ flex: 1, minWidth: 240 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 10 }}>
-                Taux de complétion
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#16A34A", display: "inline-block" }} />
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 16 }}>{nbFaits}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Faits</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#1D4ED8", display: "inline-block" }} />
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 16 }}>{nbEnCours}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>En cours</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <span style={{ width: 10, height: 10, borderRadius: "50%", background: "#9CA3AF", display: "inline-block" }} />
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 16 }}>{nbAFaire}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>À faire</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8, paddingLeft: 12, borderLeft: "1px solid var(--border)" }}>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 16 }}>{eleves.length}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Élève{eleves.length > 1 ? "s" : ""}</div>
-                  </div>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <div>
-                    <div style={{ fontWeight: 800, fontSize: 16 }}>{blocsCols.length}</div>
-                    <div style={{ fontSize: 11, color: "var(--text-secondary)" }}>Bloc{blocsCols.length > 1 ? "s" : ""}</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-      })()}
 
       {chargement ? (
         <div style={{ padding: 60, textAlign: "center", color: "var(--text-secondary)" }}>Chargement…</div>

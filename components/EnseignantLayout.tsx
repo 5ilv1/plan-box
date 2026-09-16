@@ -22,7 +22,7 @@ const DEFAULT_NAV_ITEMS = [
   { href: "/enseignant/motus",           label: "Motus",            icon: "grid_view" },
   { href: "/enseignant/atelier-ecriture",label: "Atelier écriture", icon: "edit_note" },
   { href: "/enseignant/vue-jour",         label: "Vue du jour",      icon: "today" },
-  { href: "/enseignant/bilan",           label: "Bilan de classe",  icon: "bar_chart" },
+  { href: "/enseignant/suivi",           label: "Suivi",            icon: "insights" },
 ];
 
 function buildNavFromOrder(order: string[]): typeof DEFAULT_NAV_ITEMS {
