@@ -202,6 +202,8 @@ OPENAI_API_KEY                 # Clé OpenAI (TTS)
 CRON_SECRET                    # Secret pour les crons
 NEXT_PUBLIC_APP_URL            # URL de l'app
 NEXT_PUBLIC_REPETIBOX_URL      # URL Repetibox
+NOTION_TOKEN                   # Intégration Notion (programmation)
+NOTION_DB_SEANCES              # Base « Programmation année en cours »
 ```
 
 ## Déploiement
@@ -464,6 +466,77 @@ de l'élève), jamais son rang : filtrer ne doit pas repeindre les survivants.
 uuid et échouait en silence. La table a maintenant **`rb_eleve_id`**, le type `rappel` est
 accepté par la contrainte, et les élèves Repetibox lisent leurs notifications par
 `app/api/mes-notifications/route.ts` (ils n'ont pas de session Supabase côté navigateur).
+
+## Engendrer la semaine depuis la programmation Notion
+
+Sur `/enseignant/nouvelle-semaine`, le bouton **« Depuis ma programmation »**
+lit les séances de la semaine dans la base Notion « Programmation année en
+cours » — la même que lit le projet `vue-classe` — et engendre les exercices.
+L'enseignant n'a qu'à choisir le type d'activité, relire, et poser les blocs.
+
+**Maths et français uniquement.** Histoire, géographie, sciences, anglais et
+arts restent manuels : leurs séances ne se transforment pas en exercice
+auto-corrigé.
+
+| Pièce | Rôle |
+|-------|------|
+| `lib/seances-notion.ts` | lecture Notion (serveur), extraction du corpus et de la différenciation |
+| `lib/seances-traduction.ts` | **pur** : le pont entre les deux vocabulaires |
+| `lib/seances-generation.ts` | **pur** : séance + type → quelle route appeler, avec quoi |
+| `app/api/enseignant/seances-semaine/route.ts` | `GET ?lundi=`, éclaté par niveau |
+| `components/SeancesSemainePanel.tsx` | choisir → engendrer → relire |
+
+Variables d'environnement : `NOTION_TOKEN`, `NOTION_DB_SEANCES`.
+
+### Ce que la base Notion donne, et ce qu'elle ne donne pas
+
+- `Objectifs` est rempli à 100 % et fait la consigne de génération. Précis en
+  maths, **tautologique en français** (« Bilan de grammaire. ») — d'où le recours
+  au corps de la page.
+- Le **corps** des séances de français porte le **corpus de la semaine** (le texte
+  réellement lu en classe) et la **différenciation** (`★☆☆ tous · ★★☆ CM1 et CM2
+  · ★★★ CM2`, format constant). Le corpus part dans les prompts via
+  `blocCorpus()` (`lib/prompts-communs.ts`), les étoiles donnent la difficulté.
+- **Les maths sont déjà séparées par niveau** ; le français est tagué CE2 + CM,
+  donc **une séance de français donne trois lignes**, une par niveau.
+- Le sous-domaine des maths se lit dans le **code du titre** (`(N3 · fiche 16)`,
+  `ÉVALUATION G1`) : N → Numération, C → Calcul, G → Géométrie,
+  M → Grandeurs et mesures, D → Organisation et gestion de données.
+
+### Deux incertitudes assumées, signalées à l'écran
+
+⚠️ `Classement.sousMatiereIncertaine` marque ce qui est **déduit**, pour que
+l'enseignant confirme. Sans ça, l'erreur file droit dans le graphe de réussite
+sans laisser de trace :
+
+1. **Les maths CE2 n'ont pas de code de chapitre** (27 séances sur 81) : le
+   sous-domaine est un repli sur « Numération ».
+2. **`Discipline` n'offre pas d'Orthographe** — la base Notion la range dans
+   Grammaire. Ajouter la valeur côté Notion réglerait la cause ; en attendant,
+   toute séance de grammaire est à vérifier.
+
+### Ce qui n'est pas pilotable depuis une séance
+
+`classement` réclame des catégories qu'aucun champ ne fournit, et `ecriture`
+tire son sujet d'un générateur de thèmes indépendant. Les deux sont exclus des
+suggestions (`empechement()` dit pourquoi) et restent accessibles à la main.
+
+### Pièges des routes de génération
+
+Chacune a son contrat, et `lib/seances-generation.ts` les concentre :
+- `generer-calcul-mental-ia` renvoie `{ calculs }`, **pas** `{ resultat }` ;
+- `generer-analyse-phrase` échoue en **500** sans `fonctionsActives` (prendre
+  `FONCTIONS_DEFAUT[niveau]`) ;
+- `generer-lecture` est la seule à prendre un vrai texte (`texte`) ;
+- le niveau s'appelle `niveauNom` pour `exercice` et `calcul_mental`, `niveau`
+  partout ailleurs.
+
+La génération est **séquentielle** : `generer-exercice` limite à 20 appels par
+minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
+emporter le lot. Compter ~15 s par exercice.
+
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (95 cas) —
+à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)
 

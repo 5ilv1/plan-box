@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, blocCorpus } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { recalerPhrases, type PhraseAnalyse } from "@/lib/analyse-phrase";
 import { requireEnseignant } from "@/lib/server-auth";
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { niveau, nbPhrases, description, fonctionsActives, pdfBase64 } = body;
+    const { niveau, nbPhrases, description, fonctionsActives, pdfBase64, corpus } = body;
 
     const fonctionsStr = (fonctionsActives as string[]).join(", ");
 
@@ -88,7 +88,7 @@ Vérifie ABSOLUMENT que :
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
-      system: `${systemPrompt}
+      system: `${systemPrompt}${blocCorpus(corpus)}
 
 ${REGLE_NOMBRES_EN_LETTRES}`,
       messages,

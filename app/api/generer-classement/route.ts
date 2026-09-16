@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, blocCorpus } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 
@@ -13,7 +13,7 @@ export async function POST(req: Request) {
 
   try {
     const body = await req.json();
-    const { niveau, categories, nbItems, description, pdfBase64 } = body;
+    const { niveau, categories, nbItems, description, pdfBase64, corpus } = body;
 
     if (!categories || categories.length < 2) {
       return NextResponse.json({ erreur: "Il faut au moins 2 catégories." }, { status: 400 });
@@ -81,7 +81,7 @@ VÉRIFIE une dernière fois que :
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
-      system: `${systemPrompt}
+      system: `${systemPrompt}${blocCorpus(corpus)}
 
 ${REGLE_NOMBRES_EN_LETTRES}`,
       messages,

@@ -41,6 +41,8 @@ export interface ParamsExercice {
   matiere: string;
   /** Domaine précis (Conjugaison, Numération…). Exigé à la création. */
   sousMatiere?: string;
+  /** Texte étudié en classe, quand l'exercice vient de la programmation. */
+  corpus?: string;
   niveauNom: string;
   chapitreId: string | null;
   chapitreTitre: string;

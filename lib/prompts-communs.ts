@@ -58,3 +58,32 @@ export function extraireJSON(texte: string): unknown {
 
   throw new Error("Objet JSON incomplet dans la réponse du modèle.");
 }
+
+/**
+ * Le texte étudié dans la semaine, à donner au modèle comme matière première.
+ *
+ * Quand l'exercice est engendré depuis la programmation de l'enseignant
+ * (`lib/seances-notion.ts`), la séance de français porte un « corpus de la
+ * semaine » — le texte que la classe a réellement lu. Un exercice bâti dessus
+ * vaut mieux qu'un exercice bâti sur un texte inventé : les élèves y
+ * retrouvent leurs mots, et l'enseignant n'a pas à vérifier un contenu qu'il
+ * ne connaît pas.
+ *
+ * La consigne est volontairement ferme (« n'en invente pas d'autre ») : sans
+ * elle, le modèle s'inspire du corpus au lieu de s'y tenir.
+ *
+ * Renvoie une chaîne vide quand il n'y a pas de corpus, pour s'interpoler sans
+ * laisser de trou dans le prompt.
+ */
+export function blocCorpus(corpus?: string | null): string {
+  const texte = corpus?.trim();
+  if (!texte) return "";
+  return `
+
+TEXTE ÉTUDIÉ CETTE SEMAINE EN CLASSE — appuie-toi dessus :
+"""
+${texte}
+"""
+Construis l'exercice à partir de ce texte : reprends-en les phrases, les mots et
+les personnages. N'invente pas un autre texte, et ne t'en éloigne pas.`;
+}

@@ -4,7 +4,7 @@ import { ParamsGeneration } from "@/types";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { requireEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
-import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, blocCorpus } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -17,7 +17,7 @@ Difficulté : ${p.difficulte}.
 Nombre de questions : ${p.nbQuestions}.
 ${p.contexte ? `Thème souhaité : ${p.contexte}` : ""}
 ${(p as any).consigneDetaillee ? `\nConsigne de l'enseignant (à suivre impérativement) :\n${(p as any).consigneDetaillee}` : ""}
-${p.modele ? `Génère dans le style de cet exercice modèle :\n${p.modele}` : ""}
+${p.modele ? `Génère dans le style de cet exercice modèle :\n${p.modele}` : ""}${blocCorpus((p as any).corpus)}
 
 Réponds UNIQUEMENT en JSON valide, sans markdown, sans texte autour.
 Format attendu :

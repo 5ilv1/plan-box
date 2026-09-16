@@ -18,7 +18,7 @@
  * sélecteur) : mieux vaut une valeur écrite à la main qu'un champ vide.
  */
 export const MATIERES_CANONIQUES: Record<string, string[]> = {
-  "Mathématiques": ["Calcul", "Numération", "Problèmes", "Grandeurs et mesures", "Géométrie"],
+  "Mathématiques": ["Calcul", "Numération", "Problèmes", "Grandeurs et mesures", "Géométrie", "Organisation et gestion de données"],
   "Français": ["Lecture", "Écriture", "Conjugaison", "Grammaire", "Orthographe", "Vocabulaire"],
   "Anglais": [],
   "Histoire": [],

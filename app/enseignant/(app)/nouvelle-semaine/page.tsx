@@ -11,6 +11,7 @@ import GenererTexteATrousForm from "@/components/GenererTexteATrousForm";
 import GenererClassementForm from "@/components/GenererClassementForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
+import SeancesSemainePanel from "@/components/SeancesSemainePanel";
 
 // ── Types ──
 
@@ -109,6 +110,7 @@ export default function NouvelleSemainePage() {
   const [editTitre, setEditTitre] = useState("");
   const [assignationGlobale] = useState<AssignationSelecteur>(ASSIGNATION_VIDE);
   const [groupesPB, setGroupesPB] = useState<{ id: string; nom: string }[]>([]);
+  const [showSeances, setShowSeances] = useState(false);
   const [modalBloc, setModalBloc] = useState<BlocSemaine | null>(null);
   const [modalAssignation, setModalAssignation] = useState<"classe" | string[]>("classe"); // "classe" ou tableau d'IDs de groupes
   const [modalTitre, setModalTitre] = useState("");
@@ -1009,6 +1011,20 @@ export default function NouvelleSemainePage() {
               <div style={{ display: "flex", gap: 16 }}>
                 {/* ── Bibliothèque (gauche) ── */}
                 <div style={{ width: 200, flexShrink: 0 }}>
+                  {/* Raccourci : reprendre la programmation de la semaine plutôt
+                      que de resaisir matière, domaine et objectif bloc par bloc. */}
+                  <button
+                    onClick={() => setShowSeances(true)}
+                    className="pb-btn primary"
+                    style={{
+                      width: "100%", marginBottom: 16, padding: "10px 12px", borderRadius: 10,
+                      fontSize: 13, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,
+                    }}
+                  >
+                    <span className="ms" style={{ fontSize: 17 }}>auto_awesome</span>
+                    Depuis ma programmation
+                  </button>
+
                   <p style={{ fontSize: 12, fontWeight: 700, color: "var(--pb-on-surface-variant)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
                     Bibliothèque
                   </p>
@@ -1821,7 +1837,20 @@ export default function NouvelleSemainePage() {
         })()}
 
         {/* ── Sous-modale : banque d'exercices ── */}
-        {showExoBanquePicker && (() => {
+        {showSeances && (
+        <SeancesSemainePanel
+          lundi={lundiProchain}
+          groupes={groupesPB}
+          onFermer={() => setShowSeances(false)}
+          onBlocsPrets={(prets) => {
+            // Les blocs arrivent relus : on les pose sur la grille, où ils se
+            // modifient comme n'importe quel autre avant la planification.
+            setBlocs((prev) => [...prev, ...prets.map((b) => ({ ...b, id: uid() }))]);
+          }}
+        />
+      )}
+
+      {showExoBanquePicker && (() => {
           const typeBloc = modalBloc?.type ?? "";
           const exosFiltres = banqueExos.filter((e) => {
             const typeOk = e.type === typeBloc;
