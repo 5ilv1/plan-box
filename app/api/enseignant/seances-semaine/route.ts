@@ -30,6 +30,7 @@ export async function GET(req: NextRequest) {
     lignes.sort((a, b) =>
       a.jour - b.jour ||
       a.matiere.localeCompare(b.matiere, "fr") ||
+      a.sousMatiere.localeCompare(b.sousMatiere, "fr") ||
       a.niveau.localeCompare(b.niveau, "fr")
     );
 

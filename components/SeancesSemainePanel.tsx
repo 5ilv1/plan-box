@@ -78,7 +78,7 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
         setLignes(
           (j.lignes as SeanceTraduite[]).map((s) => ({
             ...s,
-            cle: `${s.seanceId}_${s.niveau}`,
+            cle: `${s.seanceId}_${s.volet}_${s.niveau}`,
             // Une séance de bilan n'est pas un devoir du soir : décochée d'office.
             choisie: !s.estEvaluation,
             type: s.typesSuggeres[0] ?? "exercice",

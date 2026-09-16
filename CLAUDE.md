@@ -526,17 +526,42 @@ Variables d'environnement : `NOTION_TOKEN`, `NOTION_DB_SEANCES`.
   `ÉVALUATION G1`) : N → Numération, C → Calcul, G → Géométrie,
   M → Grandeurs et mesures, D → Organisation et gestion de données.
 
-### Deux incertitudes assumées, signalées à l'écran
+### Une séance de grammaire porte deux notions
 
-⚠️ `Classement.sousMatiereIncertaine` marque ce qui est **déduit**, pour que
-l'enseignant confirme. Sans ça, l'erreur file droit dans le graphe de réussite
-sans laisser de trace :
+Les séances du mardi travaillent **la grammaire et l'orthographe**, et
+l'enseignant l'écrit dans le titre, séparé par « · » :
 
-1. **Les maths CE2 n'ont pas de code de chapitre** (27 séances sur 81) : le
-   sous-domaine est un repli sur « Numération ».
-2. **`Discipline` n'offre pas d'Orthographe** — la base Notion la range dans
-   Grammaire. Ajouter la valeur côté Notion réglerait la cause ; en attendant,
-   toute séance de grammaire est à vérifier.
+```
+Grammaire - Les types de phrases · a / à
+Grammaire - La forme négative · son/sont · on/ont · -ent
+```
+
+`Discipline` ne peut pas le dire : elle ne porte qu'une valeur par séance, et
+n'offre pas d'Orthographe. `decouperVolets()` lit donc le titre — **le premier
+segment est la grammaire, tout ce qui suit est de l'orthographe** — et rend
+**deux lignes**, chacune avec son titre, son objectif et ses types suggérés.
+Une séance du mardi taguée CE2 + CM donne ainsi six lignes.
+
+Les objectifs sont répartis de la même main : une proposition qui cite une
+notion d'orthographe lui revient, les autres restent à la grammaire. Quand
+l'objectif recopie le titre (« Le sujet et le verbe · et / est. »), le « · » y
+est lu comme au titre.
+
+⚠️ Sans ce découpage, on n'engendrait **qu'un exercice sur les deux notions
+travaillées**, et l'orthographe disparaissait du suivi par sous-domaine — une
+matière entière absente du graphe de réussite, sans rien qui le signale.
+
+Les homophones visés (`a/à`, `et/est`, `son/sont`, `on/ont`) sont précisément
+ceux que `TexteATrousEleve` sert en `<select>` : d'où `texte_a_trous` en tête
+des suggestions pour l'orthographe. Un `<input>` texte y serait impraticable
+(piège nº 5).
+
+### L'incertitude qui reste, signalée à l'écran
+
+⚠️ `sousMatiereIncertaine` marque ce qui est **déduit**, pour que l'enseignant
+confirme. Sans ça, l'erreur file droit dans le graphe de réussite sans laisser
+de trace. Un seul cas subsiste : **les maths CE2 n'ont pas de code de
+chapitre** (27 séances sur 81), le sous-domaine est un repli sur « Numération ».
 
 ### Ce qui n'est pas pilotable depuis une séance
 
@@ -576,7 +601,7 @@ La génération est **séquentielle** : `generer-exercice` limite à 20 appels p
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
 
-Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (95 cas) —
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (123 cas) —
 à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)

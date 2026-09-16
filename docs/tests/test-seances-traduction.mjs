@@ -20,6 +20,7 @@ import {
   typesSuggeres,
   jourDepuisLundi,
   traduireSeance,
+  decouperVolets,
   sousDomaineConnu,
 } from "../../lib/seances-traduction.ts";
 import {
@@ -83,10 +84,12 @@ verifier("sous-domaine : Vocabulaire",
   sd("Français", ["Vocabulaire"], "Les mots du portrait"),
   { sousMatiere: "Vocabulaire", incertaine: false });
 
-// LE piège : Notion n'offre pas « Orthographe », elle la range en Grammaire.
-// On accepte la valeur mais on la signale, pour que l'écran fasse confirmer.
-verifier("sous-domaine : Grammaire marquée incertaine (l'ortho s'y cache)",
+verifier("sous-domaine : Grammaire, Discipline explicite donc sûre",
   sd("Français", ["Grammaire"], "Grammaire - Bilan de grammaire"),
+  { sousMatiere: "Grammaire", incertaine: false });
+// Sans Discipline ni indice au titre, le repli sur Grammaire est une déduction.
+verifier("sous-domaine : français sans Discipline, incertain",
+  sd("Français", [], "Séance de français"),
   { sousMatiere: "Grammaire", incertaine: true });
 
 verifier("sous-domaine : maths avec code, sûr",
@@ -157,6 +160,71 @@ verifier("étoiles : absente → CE2 facile", difficultePourNiveau(null, "CE2"),
 verifier("étoiles : absente → CM2 difficile", difficultePourNiveau(null, "CM2"), "difficile");
 verifier("étoiles : ligne sans étoile → repli", difficultePourNiveau("Différenciation : aucune", "CM1"), "moyen");
 
+/* ── 6 bis. Les deux notions d'une séance de grammaire ──────────────────── */
+
+// Cas réels du mardi : l'enseignant travaille grammaire ET orthographe, et
+// l'écrit dans le titre avec « · ». Notion n'a pas de Discipline pour le dire.
+const dv = (titre, objectifs) => decouperVolets("Français", ["Grammaire"], titre, objectifs);
+
+const v1 = dv("Grammaire - Les types de phrases · a / à",
+  "Identifier et produire les types de phrases (déclarative, interrogative, exclamative). Distinguer les homophones a / à.");
+verifier("volets : deux lignes", v1.length, 2);
+verifier("volets : sous-domaines", v1.map((v) => v.sousMatiere), ["Grammaire", "Orthographe"]);
+verifier("volets : titre de grammaire", v1[0].titre, "Grammaire - Les types de phrases");
+verifier("volets : titre d'orthographe", v1[1].titre, "Orthographe - a / à");
+verifier("volets : objectif de grammaire, sans l'ortho",
+  v1[0].objectifs, "Identifier et produire les types de phrases (déclarative, interrogative, exclamative).");
+verifier("volets : objectif d'orthographe, sans la grammaire",
+  v1[1].objectifs, "Distinguer les homophones a / à.");
+verifier("volets : aucune incertitude, l'enseignant l'a écrit",
+  v1.map((v) => v.incertaine), [false, false]);
+
+// Trois notions d'orthographe d'un coup, ponctuées par « ; ».
+const v2 = dv("Grammaire - La forme négative · son/sont · on/ont · -ent",
+  "La forme négative ; les homophones son/sont et on/ont ; la marque -ent du verbe.");
+verifier("volets : ortho multiple, titre", v2[1].titre, "Orthographe - son/sont · on/ont · -ent");
+verifier("volets : ortho multiple, objectif de grammaire", v2[0].objectifs, "La forme négative.");
+verifier("volets : ortho multiple, objectif d'ortho",
+  v2[1].objectifs, "les homophones son/sont et on/ont. la marque -ent du verbe.");
+
+// L'objectif recopie parfois le titre : le partage ne donne rien, on retombe
+// sur les segments plutôt que de rendre une ligne vide.
+const v3 = dv("Grammaire - Le sujet et le verbe · et / est", "Le sujet et le verbe · et / est.");
+verifier("volets : objectif = titre, « · » lu comme au titre",
+  [v3[0].objectifs, v3[1].objectifs], ["Le sujet et le verbe.", "et / est."]);
+
+// Une séance de grammaire sans « · » reste une seule ligne.
+const v4 = dv("Grammaire - L'accord sujet-verbe", "L'accord sujet-verbe.");
+verifier("volets : pas de « · » → une ligne", v4.length, 1);
+verifier("volets : pas de « · » → titre intact", v4[0].titre, "Grammaire - L'accord sujet-verbe");
+
+// Le découpage ne touche que la grammaire : une conjugaison reste entière.
+verifier("volets : conjugaison non découpée",
+  decouperVolets("Français", ["Conjugaison"], "Conjugaison - Le présent · être et avoir", "Le présent.").length, 1);
+verifier("volets : maths non découpées",
+  decouperVolets("Mathématiques", [], "Maths CM2 - Décomposer (N1 · fiche 3)", "Décomposer.").length, 1);
+
+verifier("référentiel : Orthographe est une sous-matière de Français",
+  sousDomaineConnu("Français", "Orthographe"), true);
+verifier("types : orthographe → texte à trous d'abord",
+  typesSuggeres("Orthographe", false)[0], "texte_a_trous");
+
+// Bout en bout : une séance du mardi donne six lignes, deux notions × trois niveaux.
+const mardi = traduireSeance({
+  id: "mar", date: "2026-09-08", titre: "Grammaire - Les types de phrases · a / à",
+  objectifs: "Identifier et produire les types de phrases. Distinguer les homophones a / à.",
+  matieresNotion: ["EDL"], disciplines: ["Grammaire"], niveaux: ["CE2", "CM"],
+  corpus: null, differenciationBrute: null,
+}, "2026-09-07");
+verifier("mardi : six lignes", mardi.length, 6);
+verifier("mardi : sous-domaines",
+  [...new Set(mardi.map((x) => x.sousMatiere))], ["Grammaire", "Orthographe"]);
+verifier("mardi : volets distingués", [...new Set(mardi.map((x) => x.volet))], [0, 1]);
+verifier("mardi : clés uniques",
+  new Set(mardi.map((x) => `${x.seanceId}_${x.volet}_${x.niveau}`)).size, 6);
+verifier("mardi : titre du bloc d'orthographe allégé",
+  titreDuBloc(mardi[3]), "a / à");
+
 /* ── 7. Dates ───────────────────────────────────────────────────────────── */
 
 verifier("jour : lundi", jourDepuisLundi("2026-09-14", "2026-09-14"), 0);
@@ -179,7 +247,9 @@ verifier("traduction : trois niveaux", fr.map((x) => x.niveau), ["CE2", "CM1", "
 verifier("traduction : difficultés différentes", fr.map((x) => x.difficulte), ["facile", "moyen", "difficile"]);
 verifier("traduction : le corpus suit chaque ligne", fr.every((x) => x.corpus?.includes("Griotte")), true);
 verifier("traduction : jour de la semaine", fr[0].jour, 1);
-verifier("traduction : incertitude propagée", fr[0].sousMatiereIncertaine, true);
+verifier("traduction : Discipline explicite, aucune incertitude", fr[0].sousMatiereIncertaine, false);
+verifier("traduction : un seul volet sans « · »", fr.length, 3);
+verifier("traduction : volet 0 partout", fr.map((x) => x.volet), [0, 0, 0]);
 
 const seanceMaths = {
   id: "def", date: "2026-09-17", titre: "Maths CM2 - S3 Jeudi - Reproduire des figures (G1 · fiche 91)",

@@ -210,7 +210,7 @@ export function appelPourSeance(s: SeanceTraduite, type: string): AppelGeneratio
  */
 export function titreDuBloc(s: SeanceTraduite): string {
   let t = s.titre;
-  t = t.replace(/^\s*(Maths|Français|Lecture|Grammaire|Conjugaison|Vocabulaire|Production d['’]écrits)\s+\w*\s*-\s*/i, "");
+  t = t.replace(/^\s*(Maths|Français|Lecture|Grammaire|Orthographe|Conjugaison|Vocabulaire|Production d['’]écrits)\s+\w*\s*-\s*/i, "");
   t = t.replace(/^\s*S\d+\s+\w+\s*-\s*/i, "");          // « S3 Jeudi - »
   t = t.replace(/\s*\([A-Z]\d+[^)]*\)\s*$/, "");         // « (G1 · fiche 91) »
   return t.trim() || s.titre;
