@@ -165,7 +165,11 @@ export async function POST(request: Request) {
   }
 
   if (correct) {
-    return NextResponse.json({ correct: true, tentative: tentativeNum });
+    // La réponse est renvoyée avec le verdict : l'élève vient de la trouver,
+    // elle n'a plus à être cachée, et l'écran de félicitations l'affiche.
+    // Sans elle, il montrait le 0 posé au chargement — quand le serveur tait
+    // encore le résultat. La branche « déjà réussi » la renvoyait déjà.
+    return NextResponse.json({ correct: true, tentative: tentativeNum, reponse: calcul.reponse });
   }
 
   if (tentativeNum === 1) {

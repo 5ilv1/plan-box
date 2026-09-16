@@ -983,6 +983,13 @@ export default function CalculDuJourPage() {
       const data = await res.json();
 
       if (data.correct) {
+        // On garde la réponse du serveur ; à défaut, celle de l'élève fait
+        // l'affaire — elle vient d'être jugée juste. Deux sources valent mieux
+        // qu'un écran qui affiche 0.
+        const juste = typeof data.reponse === "number"
+          ? data.reponse
+          : parseFloat(reponse.replace(",", "."));
+        setCalcul((prev) => prev ? { ...prev, reponse: juste } : prev);
         setState("bravo");
       } else if (data.correction) {
         setCalcul((prev) => prev ? { ...prev, reponse: data.correction.reponse } : prev);
@@ -1054,7 +1061,7 @@ export default function CalculDuJourPage() {
             color: THEME_COLOR, marginTop: 20, display: "inline-block",
             fontSize: 15, fontWeight: 600, textDecoration: "none",
           }}>
-            \u2190 Retour au tableau de bord
+            ← Retour au tableau de bord
           </Link>
         </main>
       </div>
@@ -1089,8 +1096,8 @@ export default function CalculDuJourPage() {
         </nav>
 
         <main style={{ maxWidth: 640, margin: "0 auto", padding: "3rem 1.5rem", textAlign: "center" }}>
-          <div style={{ fontSize: 72, marginBottom: 16 }}>
-            \ud83c\udf89
+          <div style={{ fontSize: 72, marginBottom: 16 }} aria-hidden>
+            🎉
           </div>
           <h1 style={{
             fontFamily: "'Plus Jakarta Sans', sans-serif",
