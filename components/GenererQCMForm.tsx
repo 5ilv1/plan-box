@@ -5,7 +5,7 @@ import { AssignationSelecteur } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
 import MatiereChapitreSelector, { MatiereChapitreValue, sousMatiereRenseignee } from "@/components/MatiereChapitreSelector";
 import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
-import type { FormeFraction } from "@/lib/fractions-aires";
+import type { FormeFraction, SensFraction } from "@/lib/fractions-aires";
 
 interface Props {
   onGenerer: (params: any) => void;
@@ -37,6 +37,7 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
   const [source, setSource] = useState<SourceQCM>(dv?.source ?? "theme");
   const [formes, setFormes] = useState<FormeFraction[]>(dv?.formes ?? ["cercle", "rectangle"]);
   const [dispersees, setDispersees] = useState<boolean>(dv?.dispersees ?? false);
+  const [sens, setSens] = useState<SensFraction | "les_deux">(dv?.sens ?? "lire");
   const [theme, setTheme] = useState(dv?.theme ?? "");
   const [consigne, setConsigne] = useState(dv?.consigne ?? "");
   const [titre, setTitre] = useState(dv?.titre ?? "");
@@ -66,6 +67,7 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
       source,
       formes,
       dispersees,
+      sens,
       niveau,
       matiere: mcv.matiere,
       sous_matiere: mcv.sousMatiere,
@@ -164,6 +166,23 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
         </>
       ) : (
         <>
+          <div className="form-group">
+            <label className="form-label">Sens de la question</label>
+            <select
+              className="form-input"
+              value={sens}
+              onChange={(e) => setSens(e.target.value as SensFraction | "les_deux")}
+            >
+              <option value="lire">Un dessin → écrire la fraction</option>
+              <option value="reconnaitre">Une fraction → choisir le dessin</option>
+              <option value="les_deux">Les deux, une question sur deux</option>
+            </select>
+            <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: "6px 0 0" }}>
+              Le second sens est plus difficile : il débusque l&apos;élève qui compte des parts
+              coloriées sans se figurer le tout.
+            </p>
+          </div>
+
           <div className="form-group">
             <label className="form-label">Formes</label>
             <div style={{ display: "flex", gap: 16 }}>

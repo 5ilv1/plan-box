@@ -90,6 +90,8 @@ interface QCMData {
     explication?: string;
     /** Dessin sous l'énoncé — fraction en images. Voir SPEC-FIGURES.md. */
     figure?: Figure;
+    /** Sens inverse : une fraction dans l'énoncé, un dessin par option. */
+    options_figures?: Figure[];
   }[];
 }
 
@@ -2096,19 +2098,25 @@ function PageGenererInner() {
                                 <span style={{ color: correct ? "#16A34A" : "var(--text-secondary)", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, width: 18 }}>
                                   {String.fromCharCode(65 + j)}.
                                 </span>
-                                <input
-                                  value={opt}
-                                  onChange={(e) => updateOption(i, j, e.target.value)}
-                                  disabled={!enEdition}
-                                  style={{
-                                    ...inputBase,
-                                    fontSize: "0.8125rem",
-                                    color: correct ? "#16A34A" : "var(--text)",
-                                    fontWeight: correct ? 700 : 400,
-                                  }}
-                                  onFocus={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
-                                  onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
-                                />
+                                {q.options_figures?.[j] ? (
+                                  // L'option EST le dessin : son libellé n'est
+                                  // qu'une étiquette de position, rien à corriger.
+                                  <FigureGeo figure={q.options_figures[j]} compact />
+                                ) : (
+                                  <input
+                                    value={opt}
+                                    onChange={(e) => updateOption(i, j, e.target.value)}
+                                    disabled={!enEdition}
+                                    style={{
+                                      ...inputBase,
+                                      fontSize: "0.8125rem",
+                                      color: correct ? "#16A34A" : "var(--text)",
+                                      fontWeight: correct ? 700 : 400,
+                                    }}
+                                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
+                                    onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
+                                  />
+                                )}
                               </li>
                             );
                           })}

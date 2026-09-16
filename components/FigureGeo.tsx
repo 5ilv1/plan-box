@@ -404,7 +404,7 @@ function Polygone({ figure }: { figure: FigurePolygone }) {
  *    sur 8 sont coloriées » donnerait la réponse à qui lit la page autrement
  *    qu'avec les yeux.
  */
-function FractionAireVue({ figure }: { figure: FractionAire }) {
+function FractionAireVue({ figure, compact }: { figure: FractionAire; compact?: boolean }) {
   const parts = Math.max(1, Math.round(Number(figure.parts) || 1));
   const coloriee = new Set(partsColoriees(figure));
   const description = "Figure partagée en parts égales, dont certaines sont coloriées";
@@ -422,7 +422,14 @@ function FractionAireVue({ figure }: { figure: FractionAire }) {
     };
 
     return (
-      <svg viewBox="0 0 210 210" width="190" height="190" role="img" aria-label={description} style={{ display: "block" }}>
+      <svg
+        viewBox="0 0 210 210"
+        width={compact ? "100%" : 190}
+        height={compact ? undefined : 190}
+        role="img"
+        aria-label={description}
+        style={{ display: "block", ...(compact ? { maxWidth: 118 } : {}) }}
+      >
         {parts === 1 ? (
           <circle cx={cx} cy={cy} r={R} fill={CODAGE} fillOpacity={coloriee.has(0) ? 0.55 : 0} stroke="currentColor" strokeWidth="3" />
         ) : (
@@ -458,7 +465,7 @@ function FractionAireVue({ figure }: { figure: FractionAire }) {
       width="100%"
       role="img"
       aria-label={description}
-      style={{ display: "block", maxWidth: Math.min(W * 1.6, 360) }}
+      style={{ display: "block", maxWidth: compact ? 150 : Math.min(W * 1.6, 360) }}
     >
       {Array.from({ length: parts }, (_, i) => (
         <rect
@@ -480,17 +487,31 @@ function FractionAireVue({ figure }: { figure: FractionAire }) {
 
 // ── Point d'entrée ──────────────────────────────────────────────────────────
 
-export default function FigureGeo({ figure }: { figure: Figure }) {
+/**
+ * `compact` réduit le dessin pour qu'il tienne dans une option de QCM — c'est
+ * une affaire de rendu, pas de contenu : elle ne voyage pas dans le JSON.
+ */
+export default function FigureGeo({ figure, compact }: { figure: Figure; compact?: boolean }) {
   if (!figure?.type) return null;
 
   const corps =
     figure.type === "cadran" ? <Cadran figure={figure} />
     : figure.type === "angle" ? <Angle figure={figure} />
     : figure.type === "polygone" ? <Polygone figure={figure} />
-    : figure.type === "fraction_aire" ? <FractionAireVue figure={figure} />
+    : figure.type === "fraction_aire" ? <FractionAireVue figure={figure} compact={compact} />
     : null;
 
   if (!corps) return null;
 
-  return <div style={{ margin: "14px 0 16px" }}>{corps}</div>;
+  return (
+    <div
+      style={
+        compact
+          ? { margin: 0, width: "100%", minWidth: 0, display: "flex", justifyContent: "center" }
+          : { margin: "14px 0 16px" }
+      }
+    >
+      {corps}
+    </div>
+  );
 }

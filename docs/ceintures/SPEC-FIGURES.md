@@ -102,6 +102,104 @@ Règles de dessin :
 - Une case fait 34 px, la figure est bornée à 420 px de large : au-delà, elle
   déborde sur téléphone.
 
+## `fraction_aire`
+
+Un disque ou un rectangle partagé en parts égales, certaines coloriées : l'élève
+lit la fraction. Ajoutée après les trois autres, pour la séance « Représenter
+des fractions par des aires » (N3 · fiche 16).
+
+| Champ | Obligatoire | Rôle |
+|---|---|---|
+| `type` | oui | `"fraction_aire"` |
+| `forme` | oui | `"cercle"` ou `"rectangle"` |
+| `parts` | oui | le nombre de parts égales : le dénominateur du dessin |
+| `coloriees` | oui | les indices des parts coloriées, ou un nombre `n` pour « les `n` premières » |
+| `colonnes` | non | rectangle : les colonnes du quadrillage. Doit diviser `parts` |
+
+```jsonc
+{
+  "question": "Quelle fraction de la figure est coloriée ?",
+  "options": ["8/3", "3/8", "5/8", "3/5"],
+  "reponse_correcte": 1,
+  "figure": { "type": "fraction_aire", "forme": "cercle", "parts": 8, "coloriees": 3 }
+}
+```
+
+Règles de dessin :
+
+- **Les traits de partage vont jusqu'au bord et sont en `currentColor`.** C'est
+  en les comptant que l'élève trouve le dénominateur : un dessin qui ne montre
+  que la zone coloriée n'a plus d'objet.
+- La première part est **en haut** pour le disque, **en haut à gauche** pour le
+  rectangle, et le tracé tourne dans le sens des aiguilles.
+- **Le quadrillage divise le nombre de parts.** Jusqu'à six parts, une seule
+  ligne — la bande de chocolat. Au-delà, le quadrillage le plus carré possible
+  parmi les diviseurs (8 → 4 × 2, 9 → 3 × 3, 12 → 4 × 3). 7 et 11 restent en
+  ligne : mieux vaut une bande longue que des parts inégales.
+- **Le texte de rechange reste vague**, comme pour l'angle : écrire « 3 parts
+  sur 8 sont coloriées » donnerait la réponse.
+
+Les parts coloriées peuvent être **dispersées** — c'est le vrai levier de
+difficulté, bien plus que la taille du dénominateur : il faut compter au lieu de
+regarder.
+
+### Les questions ne sont pas écrites par l'IA
+
+`lib/fractions-aires.ts` les calcule, comme `comparaison` et `rangement`. La
+bonne réponse se déduit du dessin ; les trois mauvaises sont des erreurs d'élève
+identifiées, dans cet ordre :
+
+| Option, pour un disque en 8 parts dont 3 sont coloriées | Erreur |
+|---|---|
+| **3/8** | ✔ |
+| 8/3 | numérateur et dénominateur inversés |
+| 5/8 | a compté les parts blanches |
+| 3/5 | rapporte les coloriées aux blanches au lieu du tout |
+
+Puis, si l'une n'est pas disponible : une part de trop ou de moins, au
+numérateur ou au dénominateur.
+
+⚠️ **Aucune option ne doit valoir la bonne réponse.** Un disque partagé en 4
+dont 2 parts sont coloriées se lit `2/4` ; proposer `1/2` à côté et le compter
+faux serait injuste — l'élève aurait raison. Toute fraction égale en valeur est
+écartée, pas seulement la forme simplifiée.
+
+### Le sens inverse : une fraction, quatre dessins
+
+L'énoncé porte la fraction, les options sont des figures — clé
+`options_figures`, un dessin par option, `options` ne portant plus que des
+étiquettes de position (`"Figure A"`…). Un libellé qui décrirait le dessin
+donnerait la réponse sans qu'on ait à le regarder.
+
+```jsonc
+{
+  "question": "Quelle figure représente la fraction 3/5 ?",
+  "options": ["Figure A", "Figure B", "Figure C", "Figure D"],
+  "reponse_correcte": 1,
+  "options_figures": [ /* 4 fraction_aire */ ]
+}
+```
+
+- **Les quatre dessins ont la même forme.** Mélanger disque et rectangle
+  ajouterait une comparaison qui n'est pas celle qu'on évalue.
+- Les distracteurs écrits ne se dessinent pas : `8/3` n'est pas une part de
+  disque. Ceux-ci sont donc des fractions propres — le complément `(d-n)/d`
+  d'abord, puis un partage visiblement différent, puis deux parts d'écart.
+- ⚠️ **Deux dessins doivent se distinguer d'au moins un dixième de l'aire.**
+  C'est la leçon du premier rendu : `10/12` et `11/12` côte à côte sont le même
+  disque presque plein, et l'élève ne choisit plus une figure — il compte douze
+  secteurs fins sans droit à l'erreur. Le seuil couvre aussi le même
+  dénominateur : à 12 parts il impose deux parts d'écart, à 4 parts une seule
+  suffit et elle se voit.
+- Le rendu compact (`<FigureGeo figure={…} compact />`) rétrécit avec sa case :
+  dans une option de QCM le dessin est un élément de flex, et une largeur en
+  dur débordait à largeur de téléphone.
+
+**Quatre rendus** dessinent les options, et une modification de l'un doit être
+vérifiée sur les quatre : `QCMEleve` (bloc du plan de travail, en grille 2 × 2
+quand les options sont des dessins), `MiniQCM` (évaluation), la page
+d'entraînement, et **l'aperçu enseignant** de `/enseignant/generer`.
+
 ## Ce qui ne sera pas dessiné : les solides
 
 Un cube en perspective cavalière est un mauvais dessin SVG, et surtout un mauvais
@@ -125,7 +223,13 @@ en mots sans rien perdre.
 
 ## Vérification
 
-Le banc d'essai implémente les trois (`svgCadran()`, `svgAngle()`,
+`app/enseignant/(app)/admin/figures` rend tous les cas de contrôle, y compris les
+six fractions (disque 3/8, disque 2/3, disque 5/6 dispersés, rectangle 3/4,
+rectangle 5/12 en 4 × 3, rectangle 4/7 en ligne). Le contrat du générateur est
+vérifié par `npx tsx docs/tests/test-fractions-aires.mjs` (31 cas) — à relancer
+après toute modification de `lib/fractions-aires.ts`.
+
+Le banc d'essai implémente les trois premières (`svgCadran()`, `svgAngle()`,
 `svgPolygone()`). Six cas de contrôle sont rendus dans `figures.html` : 3 h 25,
 8 h 45 sans chiffres, 12 h 10, angle droit, angle aigu à 40°, angle obtus à
 130°. Six autres dans `figures-geometrie.html` : carré codé sur quadrillage,

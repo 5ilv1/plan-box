@@ -95,6 +95,29 @@ Avant de supprimer un chapitre, nettoyer dans cet ordre :
 | `comparaison` | `paires[{gauche, droite, signe}]`, `avec_egalite` | Placer < ou > entre deux nombres |
 | `rangement` | `critere`, `series[{elements[]}]` | Ranger des étiquettes de gauche à droite |
 
+### Fractions représentées par des aires
+
+Un disque ou un rectangle partagé en parts égales, certaines coloriées ; l'élève
+donne la fraction. **Ce n'est pas un type d'exercice** : c'est une clé
+facultative `figure` sur une question de `qcm` (ou d'`exercice`), comme le cadran
+ou la droite graduée — voir `docs/ceintures/SPEC-FIGURES.md`.
+
+- Les questions sont **calculées**, pas écrites par l'IA (`lib/fractions-aires.ts`,
+  route `app/api/generer-fractions-aires`, mode « Fractions en images » du
+  formulaire QCM).
+- Les trois mauvaises réponses sont des erreurs d'élève identifiées : fraction
+  inversée, parts blanches comptées, coloriées rapportées aux blanches.
+- ⚠️ **Aucune option ne vaut la bonne réponse** : un dessin qui montre `2/4` ne
+  propose jamais `1/2`, qui serait juste. Toute fraction égale en valeur est
+  écartée.
+- **Les deux sens sont disponibles** : un dessin → écrire la fraction, ou une
+  fraction → choisir le dessin (`options_figures`, un dessin par option). Dans
+  le second, ⚠️ **deux dessins se distinguent d'au moins un dixième de l'aire** :
+  `10/12` et `11/12` côte à côte sont le même disque presque plein.
+- Contrat vérifié par `npx tsx docs/tests/test-fractions-aires.mjs` (47 cas) —
+  à relancer après toute modification du module. Rendu à l'œil sur
+  `/enseignant/admin/figures`.
+
 ### Vérification des types numériques
 `comparaison` et `rangement` ne font **jamais** confiance à l'IA sur le résultat :
 - Le signe et l'ordre sont recalculés côté serveur (`lib/comparaison-nombres.ts`, `lib/rangement.ts`).
@@ -588,7 +611,7 @@ Repetibox. `badge_eleve.eleve_id` et `ceinture_resultat.repetibox_eleve_id` sont
 6. **env vars** : dans les scripts CLI, charger avec `export $(grep -v '^#' .env.local | xargs)` avant d'exécuter
 7. **Dates en heure locale** : ne JAMAIS appeler `toISOString()` sur une `Date` construite en heure locale (`new Date(a, m, j)`, `setDate()`). En France (UTC+1/+2) le résultat recule d'un jour. Pour les conversions semaine ↔ date, utiliser `lib/semaine-iso.ts` (`lundiDeSemaine()`, `semaineISO()`), qui calcule tout en UTC ; sinon formater à la main avec `getFullYear()/getMonth()/getDate()`
 8. **`debut`/`fin` d'une analyse de phrase sont des index de MOTS**, jamais de caractères, et l'IA se trompe régulièrement d'un mot. Un groupe mal placé n'est pas une petite faute : l'élève clique exactement dessus, la réponse est refusée, et **rien ne le fait avancer** — c'est arrivé en classe sur « Les élèves courent dans la cour de récréation chaque mardi. ». Le texte du groupe (`mots`) fait foi ; `lib/analyse-phrase.ts` (`recalerGroupes`) recalcule les positions et **écarte** un groupe introuvable, à la génération comme à l'affichage. Le composant élève donne en plus la réponse après trois essais : aucune étape ne doit pouvoir enfermer un élève. `scripts/reparer-analyse-phrase.ts` remet en état le contenu déjà en base (idempotent, `--dry-run`).
-9. **`figure` et `droite` se perdent en chemin** : ce sont des clés facultatives d'une *question*, pas des types d'exercice. Toute page qui reconstruit sa propre liste de questions à partir de `contenu` doit les recopier, et son rendu doit appeler `FigureGeo` / `DroiteGraduee` — sinon l'élève lit « Quelle est cette figure ? » sans figure. Deux pages sont tombées dans le piège l'une après l'autre : l'entraînement (`chapitre/[id]/exercice/[exerciceId]`) et le `MiniQCM` de l'évaluation. La banque ne pose de dessin qu'à trois endroits — questions de `qcm` (156), questions d'`exercice` (276) et questions de diagnostic (3) : c'est là qu'il faut vérifier après toute modification d'un de ces rendus.
+9. **`figure` et `droite` se perdent en chemin** : ce sont des clés facultatives d'une *question*, pas des types d'exercice. Toute page qui reconstruit sa propre liste de questions à partir de `contenu` doit les recopier, et son rendu doit appeler `FigureGeo` / `DroiteGraduee` — sinon l'élève lit « Quelle est cette figure ? » sans figure. Deux pages sont tombées dans le piège l'une après l'autre : l'entraînement (`chapitre/[id]/exercice/[exerciceId]`) et le `MiniQCM` de l'évaluation. La banque ne pose de dessin qu'à trois endroits — questions de `qcm` (156), questions d'`exercice` (276) et questions de diagnostic (3) : c'est là qu'il faut vérifier après toute modification d'un de ces rendus. Un QCM de fractions en images passe par les mêmes rendus, **plus l'aperçu enseignant** de `/enseignant/generer` : sans le dessin, on valide une question qu'on n'a pas pu relire.
 
 ## Joseph — Agent de test et correction
 

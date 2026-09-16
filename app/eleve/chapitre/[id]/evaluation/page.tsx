@@ -255,7 +255,12 @@ function creerMiniExercices(exercices: Exercice[]): MiniExercice[] {
  * dessins, ceux des ceintures en posent. Même convention que QCMEleve et
  * ExerciceStack — la droite au-dessus de l'énoncé, la figure en dessous.
  */
-type QuestionQCM = QCMQuestion & { droite?: Droite; figure?: Figure };
+type QuestionQCM = QCMQuestion & {
+  droite?: Droite;
+  figure?: Figure;
+  /** Sens inverse : une fraction dans l'énoncé, un dessin par option. */
+  options_figures?: Figure[];
+};
 
 function MiniQCM({ questions, onTermine }: {
   questions: QuestionQCM[];
@@ -355,7 +360,7 @@ function MiniQCM({ questions, onTermine }: {
                 transition: "all 0.15s ease", fontFamily: "inherit",
               }}
             >
-              {opt}
+              {q.options_figures?.[i] ? <FigureGeo figure={q.options_figures[i]} compact /> : opt}
               {feedback && i === q.reponse_correcte && <span style={{ marginLeft: "0.5rem" }}>✓</span>}
               {feedback && i === choisi && i !== q.reponse_correcte && <span style={{ marginLeft: "0.5rem" }}>✗</span>}
             </button>

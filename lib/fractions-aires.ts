@@ -111,11 +111,29 @@ export interface QuestionFraction {
   options: string[];
   reponse_correcte: number;
   explication: string;
-  figure: FractionAire;
+  /** Le dessin de l'énoncé — sens « lire » seulement. */
+  figure?: FractionAire;
+  /**
+   * Un dessin par option — sens « reconnaître ». Même longueur qu'`options`,
+   * qui ne porte alors que des étiquettes neutres (« Figure A »…) : un libellé
+   * qui décrirait le dessin donnerait la réponse sans le regarder.
+   */
+  options_figures?: FractionAire[];
 }
+
+/**
+ * Les deux sens de lecture, qui ne travaillent pas la même chose :
+ *  • `lire` — un dessin, quatre fractions : lire ce qu'on voit ;
+ *  • `reconnaitre` — une fraction, quatre dessins : se représenter ce qu'on lit.
+ * Le second est plus dur, et c'est celui qui débusque l'élève qui « lit » en
+ * comptant machinalement des parts coloriées sans se figurer le tout.
+ */
+export type SensFraction = "lire" | "reconnaitre";
 
 export interface OptionsFractions {
   nb?: number;
+  /** `les_deux` alterne une question sur deux. */
+  sens?: SensFraction | "les_deux";
   formes?: FormeFraction[];
   denominateurs?: number[];
   /** Parts coloriées non contiguës — nettement plus difficile à lire. */
@@ -135,6 +153,84 @@ export const DENOMINATEURS_PAR_NIVEAU: Record<string, number[]> = {
 };
 
 export const ENONCE = "Quelle fraction de la figure est coloriée ?";
+export const ENONCE_INVERSE = (f: string) => `Quelle figure représente la fraction ${f} ?`;
+
+/** Les étiquettes des options quand ce sont des dessins. */
+export const LETTRES = ["Figure A", "Figure B", "Figure C", "Figure D"];
+
+/** Au-delà, les parts deviennent trop fines pour être comptées. */
+const PARTS_MAX = 12;
+
+/**
+ * Deux dessins doivent se distinguer d'un coup d'œil : au moins un dixième de
+ * l'aire d'écart.
+ *
+ * C'est la leçon du premier rendu : `10/12` et `11/12` dessinés côte à côte
+ * sont le même disque presque plein. L'élève ne choisit plus une figure, il
+ * compte douze secteurs fins sans droit à l'erreur — ce n'est pas la
+ * compétence visée, et c'est perdu d'avance sur une tablette.
+ *
+ * Le seuil couvre aussi le cas du même dénominateur : à 12 parts, il impose
+ * deux parts d'écart ; à 4 parts, une seule suffit, et elle se voit.
+ */
+const ECART_MIN = 0.1;
+
+/**
+ * Les trois fractions à DESSINER à côté de `n/d`, pour le sens inverse.
+ *
+ * Elles ne peuvent pas être les mêmes que les distracteurs écrits : `8/3` ne se
+ * dessine pas. Ce sont donc des fractions propres, dans cet ordre :
+ *  • le complément `(d-n)/d` — a colorié les parts qu'il ne fallait pas ;
+ *  • le bon numérateur sur un partage visiblement différent ;
+ *  • deux parts coloriées de trop ou de moins.
+ *
+ * Les mêmes interdits que pour les options écrites : jamais un dessin qui vaut
+ * la bonne réponse, et jamais deux dessins de même valeur dans une question.
+ */
+export function fractionsDistractrices(n: number, d: number): [number, number][] {
+  const candidats: [number, number][] = [
+    [d - n, d],
+    [n, d + 2],
+    [n, d - 2],
+    [n + 2, d],
+    [n - 2, d],
+    [n + 2, d + 2],
+    [n, d + 3],
+    [n + 3, d],
+  ];
+
+  const sortie: [number, number][] = [];
+  const retenir = ([a, b]: [number, number]): boolean => {
+    if (sortie.length >= 3) return false;
+    if (b < 2 || b > PARTS_MAX) return false;        // dessinable
+    if (a < 1 || a >= b) return false;               // propre : au moins une part blanche
+    if (Math.abs(a / b - n / d) < ECART_MIN) return false;  // indiscernable de la bonne
+    if (sortie.some(([x, y]) => Math.abs(x / y - a / b) < ECART_MIN)) return false; // indiscernables entre eux
+    sortie.push([a, b]);
+    return true;
+  };
+
+  for (const c of candidats) retenir(c);
+
+  // Filet : près des bords — 10/12, 1/12 — les candidats ci-dessus tombent
+  // presque tous sous le seuil. On balaie alors toutes les fractions
+  // dessinables, en préférant le même dénominateur (il faut compter les parts
+  // coloriées, pas seulement jauger l'aire), puis les plus proches en valeur —
+  // une option trop lointaine ne se choisit jamais et ne fait pas un vrai
+  // distracteur.
+  if (sortie.length < 3) {
+    const reste: [number, number][] = [];
+    for (let b = 2; b <= PARTS_MAX; b++) for (let a = 1; a < b; a++) reste.push([a, b]);
+    reste.sort((u, v) => {
+      const rang = ([, b]: [number, number]) => (b === d ? 0 : 1);
+      if (rang(u) !== rang(v)) return rang(u) - rang(v);
+      return Math.abs(u[0] / u[1] - n / d) - Math.abs(v[0] / v[1] - n / d);
+    });
+    for (const c of reste) retenir(c);
+  }
+
+  return sortie;
+}
 
 function melanger<T>(t: T[], alea: () => number): T[] {
   const a = [...t];
@@ -153,9 +249,68 @@ function choisirParts(n: number, d: number, dispersees: boolean, alea: () => num
     .sort((a, b) => a - b);
 }
 
+/** Le dessin d'une fraction, prêt à être servi. */
+function dessiner(
+  n: number, d: number, forme: FormeFraction, dispersees: boolean, alea: () => number,
+): FractionAire {
+  return {
+    type: "fraction_aire",
+    forme,
+    parts: d,
+    coloriees: choisirParts(n, d, dispersees, alea),
+    ...(forme === "rectangle" ? { colonnes: colonnesPour(d) } : {}),
+  };
+}
+
+/** Un dessin, quatre fractions écrites. */
+function questionLire(
+  n: number, d: number, forme: FormeFraction, dispersees: boolean, alea: () => number,
+): QuestionFraction {
+  const bonne = `${n}/${d}`;
+  const options = melanger([bonne, ...distracteurs(n, d).slice(0, 3)], alea);
+  return {
+    question: ENONCE,
+    options,
+    reponse_correcte: options.indexOf(bonne),
+    explication:
+      `La figure est partagée en ${d} parts égales — c'est le dénominateur. ` +
+      `${n} ${n > 1 ? "sont coloriées" : "est coloriée"} — c'est le numérateur. On lit ${bonne}.`,
+    figure: dessiner(n, d, forme, dispersees, alea),
+  };
+}
+
 /**
- * Le QCM complet. Chaque question porte son dessin ; la bonne réponse et les
- * trois mauvaises sont calculées, puis leur position est mélangée.
+ * Une fraction écrite, quatre dessins.
+ *
+ * Les quatre dessins ont la MÊME forme : mélanger disque et rectangle
+ * ajouterait une comparaison qui n'est pas celle qu'on évalue.
+ */
+function questionReconnaitre(
+  n: number, d: number, forme: FormeFraction, dispersees: boolean, alea: () => number,
+): QuestionFraction {
+  const bonne = dessiner(n, d, forme, dispersees, alea);
+  const dessins = melanger(
+    [bonne, ...fractionsDistractrices(n, d).map(([a, b]) => dessiner(a, b, forme, dispersees, alea))],
+    alea,
+  );
+  const idx = dessins.indexOf(bonne);
+
+  return {
+    question: ENONCE_INVERSE(`${n}/${d}`),
+    // Étiquettes neutres : « un disque en 4 parts dont 3 coloriées » donnerait
+    // la réponse en toutes lettres, sans avoir à regarder les dessins.
+    options: LETTRES.slice(0, dessins.length),
+    reponse_correcte: idx,
+    explication:
+      `${n}/${d}, c'est ${n} ${n > 1 ? "parts coloriées" : "part coloriée"} sur ${d} parts égales : ` +
+      `la ${LETTRES[idx].toLowerCase()}.`,
+    options_figures: dessins,
+  };
+}
+
+/**
+ * Le QCM complet. La bonne réponse et les trois mauvaises sont calculées, puis
+ * leur position est mélangée.
  */
 export function genererQuestionsFractions(o: OptionsFractions = {}): QuestionFraction[] {
   const alea = o.alea ?? Math.random;
@@ -176,27 +331,16 @@ export function genererQuestionsFractions(o: OptionsFractions = {}): QuestionFra
   }
   const tirage = melanger(pool, alea);
 
+  const sens = o.sens ?? "lire";
+  const dispersees = !!o.dispersees;
+
   return Array.from({ length: nb }, (_, i) => {
     const { forme, d, n } = tirage[i % tirage.length];
-    const bonne = `${n}/${d}`;
-    const options = melanger([bonne, ...distracteurs(n, d).slice(0, 3)], alea);
-
-    const figure: FractionAire = {
-      type: "fraction_aire",
-      forme,
-      parts: d,
-      coloriees: choisirParts(n, d, !!o.dispersees, alea),
-      ...(forme === "rectangle" ? { colonnes: colonnesPour(d) } : {}),
-    };
-
-    return {
-      question: ENONCE,
-      options,
-      reponse_correcte: options.indexOf(bonne),
-      explication:
-        `La figure est partagée en ${d} parts égales — c'est le dénominateur. ` +
-        `${n} ${n > 1 ? "sont coloriées" : "est coloriée"} — c'est le numérateur. On lit ${bonne}.`,
-      figure,
-    };
+    // `les_deux` alterne, plutôt que de tirer au sort : sur dix questions, un
+    // tirage laisse passer des lots de huit dans le même sens.
+    const s = sens === "les_deux" ? (i % 2 === 0 ? "lire" : "reconnaitre") : sens;
+    return s === "reconnaitre"
+      ? questionReconnaitre(n, d, forme, dispersees, alea)
+      : questionLire(n, d, forme, dispersees, alea);
   });
 }

@@ -13,6 +13,8 @@ interface QCMQuestion {
   droite?: Droite;
   /** Figure dessinée sous l'énoncé. Voir SPEC-FIGURES.md. */
   figure?: Figure;
+  /** Un dessin par option — sens inverse : une fraction, quatre figures. */
+  options_figures?: Figure[];
 }
 
 interface Props {
@@ -78,7 +80,16 @@ export default function QCMEleve({ titre, questions, onTermine }: Props) {
               {q.question}
             </p>
             {q.figure && <FigureGeo figure={q.figure} />}
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            {/* Quatre dessins empilés font une colonne d'un demi-écran : quand
+                les options sont des figures, on passe en grille 2 × 2 — la même
+                disposition que l'évaluation et l'entraînement. */}
+            <div
+              style={
+                q.options_figures
+                  ? { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }
+                  : { display: "flex", flexDirection: "column", gap: 8 }
+              }
+            >
               {q.options.map((opt, j) => {
                 const isChoisi = choisi === j;
                 const isBonne = j === q.reponse_correcte;
@@ -107,7 +118,7 @@ export default function QCMEleve({ titre, questions, onTermine }: Props) {
                     disabled={valide}
                     onClick={() => setReponses((r) => ({ ...r, [i]: j }))}
                     style={{
-                      textAlign: "left",
+                      textAlign: q.options_figures ? "center" : "left",
                       padding: "10px 14px",
                       borderRadius: 10,
                       border,
@@ -118,6 +129,7 @@ export default function QCMEleve({ titre, questions, onTermine }: Props) {
                       fontWeight: 600,
                       display: "flex",
                       alignItems: "center",
+                      justifyContent: q.options_figures ? "center" : "flex-start",
                       gap: 10,
                       fontFamily: "inherit",
                       transition: "all 0.15s",
@@ -140,7 +152,11 @@ export default function QCMEleve({ titre, questions, onTermine }: Props) {
                     >
                       {String.fromCharCode(65 + j)}
                     </span>
-                    <span>{opt}</span>
+                    {q.options_figures?.[j] ? (
+                      <FigureGeo figure={q.options_figures[j]} compact />
+                    ) : (
+                      <span>{opt}</span>
+                    )}
                   </button>
                 );
               })}

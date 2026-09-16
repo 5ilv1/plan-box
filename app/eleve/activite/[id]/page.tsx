@@ -26,6 +26,7 @@ import ComparaisonEleve from "@/components/ComparaisonEleve";
 import RangementEleve from "@/components/RangementEleve";
 import LectureEleve from "@/components/LectureEleve";
 import QCMEleve from "@/components/QCMEleve";
+import type { Figure } from "@/components/FigureGeo";
 import ProblemeMathsEleve from "@/components/ProblemeMathsEleve";
 // DicteeCorrection (OCR + correction auto) — conservé mais débranché du flux élève
 // en attendant d'être fiabilisé. Cf. commit désactivation dictée.
@@ -506,7 +507,10 @@ export default function PageActivite() {
   const comparaisonData = bloc.type === "comparaison" ? (bloc.contenu as unknown as { titre: string; consigne: string; avec_egalite?: boolean; paires: { gauche: string; droite: string; signe: string }[] }) : null;
   const rangementData = bloc.type === "rangement" ? (bloc.contenu as unknown as { titre: string; consigne: string; critere: string; series: { elements: string[] }[] }) : null;
   const lectureData = bloc.type === "lecture" ? (bloc.contenu as unknown as { titre: string; texte: string; questions: { id: number; question: string; choix: string[]; reponse: number }[] }) : null;
-  const qcmData = bloc.type === "qcm" ? (bloc.contenu as unknown as { titre?: string; questions: { question: string; options: string[]; reponse_correcte: number; explication?: string }[] }) : null;
+  // `figure` fait partie de la question : un QCM de fractions n'a plus d'objet
+  // sans son dessin. Les questions sont passées telles quelles à QCMEleve —
+  // les reconstruire champ par champ perdrait la figure (piège n°9).
+  const qcmData = bloc.type === "qcm" ? (bloc.contenu as unknown as { titre?: string; questions: { question: string; options: string[]; reponse_correcte: number; explication?: string; figure?: Figure; options_figures?: Figure[] }[] }) : null;
   const problemeMaths = bloc.type === "probleme_maths" ? (bloc.contenu as unknown as { titre: string; theme: string; consigne: string; problemes: { id: number; enonce: string; resultat_attendu: string; phrase_reponse_attendue: string; mots_cles: string[]; indice: string }[] }) : null;
   const ressource  = bloc.type === "ressource" ? (bloc.contenu as unknown as RessourceIA) : null;
   const dictee     = bloc.type === "dictee" ? (bloc.contenu as unknown as DicteeContenu) : null;

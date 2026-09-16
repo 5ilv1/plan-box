@@ -32,6 +32,8 @@ interface QCMQuestion {
   explication?: string;
   droite?: Droite;
   figure?: Figure;
+  /** Sens inverse : une fraction dans l'énoncé, un dessin par option. */
+  options_figures?: Figure[];
 }
 
 interface Calcul {
@@ -69,7 +71,7 @@ export default function PageExerciceEleve() {
   const [dejaVue, setDejaVue] = useState(false);
 
   // Questions / réponses
-  type QuestionEleve = { enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number; droite?: Droite; figure?: Figure };
+  type QuestionEleve = { enonce: string; reponse: string; indice?: string; options?: string[]; reponseIdx?: number; droite?: Droite; figure?: Figure; options_figures?: Figure[] };
   // `questionsBrutes` est la liste DANS L'ORDRE DU CONTENU : c'est elle qui
   // porte l'empreinte, et c'est sur elle que `ordre` s'applique. `questions`
   // est ce que l'élève voit, une fois l'ordre appliqué.
@@ -183,6 +185,7 @@ export default function PageExerciceEleve() {
             reponseIdx: q.reponse_correcte,
             droite: q.droite,
             figure: q.figure,
+            options_figures: q.options_figures,
           });
         }
       } else if (ex.type === "calcul_mental" && Array.isArray(contenu.calculs)) {
@@ -1102,7 +1105,7 @@ export default function PageExerciceEleve() {
                   textAlign: "center", display: "flex", alignItems: "center", justifyContent: "center",
                   fontFamily: "inherit", transition: "all 0.15s ease",
                 }}>
-                  {opt}
+                  {q.options_figures?.[oi] ? <FigureGeo figure={q.options_figures[oi]} compact /> : opt}
                   {afficherCorrection && oi === q.reponseIdx && <span style={{ marginLeft: "0.5rem" }}>✓</span>}
                   {afficherCorrection && oi === qcmChoisi && oi !== q.reponseIdx && <span style={{ marginLeft: "0.5rem" }}>✗</span>}
                 </button>

@@ -15,6 +15,7 @@
  */
 import {
   distracteurs,
+  fractionsDistractrices,
   colonnesPour,
   partsColoriees,
   genererQuestionsFractions,
@@ -151,6 +152,92 @@ verifier("dénominateurs du CE2 respectés",
 // Plus de questions que de fractions possibles : on repose, on ne casse pas.
 verifier("plus de questions que de fractions disponibles",
   genererQuestionsFractions({ nb: 20, formes: ["cercle"], denominateurs: [2, 3], alea: aleaFixe(5) }).length, 20);
+
+/* ── 5. Sens inverse : une fraction, quatre dessins ──────────────────────── */
+
+// Les distracteurs écrits ne se dessinent pas : 8/3 n'est pas une part de
+// disque. Ceux du sens inverse sont donc des fractions propres.
+let indessinables = 0, egales = 0, courts = 0;
+for (let d = 2; d <= 12; d++) {
+  for (let n = 1; n < d; n++) {
+    const trois = fractionsDistractrices(n, d);
+    if (trois.length < 3) courts++;
+    for (const [a, b] of trois) {
+      if (b < 2 || b > 12 || a < 1 || a >= b) indessinables++;
+      if (a * d === n * b) egales++;
+    }
+    // Deux dessins de même valeur dans la même question : on n'en garde qu'un.
+    for (let i = 0; i < trois.length; i++)
+      for (let j = i + 1; j < trois.length; j++)
+        if (trois[i][0] * trois[j][1] === trois[j][0] * trois[i][1]) egales++;
+  }
+}
+verifier("trois dessins distracteurs pour chaque fraction (66 cas)", courts, 0);
+verifier("tous dessinables : fraction propre, 2 à 12 parts", indessinables, 0);
+verifier("aucun dessin ne vaut la bonne réponse ni un autre dessin", egales, 0);
+
+// Le seuil qui manquait au premier jet : 10/12 et 11/12 dessinés côte à côte
+// sont le même disque presque plein. Un dixième de l'aire d'écart, au moins.
+let serres = 0;
+for (let d = 2; d <= 12; d++) {
+  for (let n = 1; n < d; n++) {
+    const trois = fractionsDistractrices(n, d);
+    const valeurs = [n / d, ...trois.map(([a, b]) => a / b)];
+    for (let i = 0; i < valeurs.length; i++)
+      for (let j = i + 1; j < valeurs.length; j++)
+        if (Math.abs(valeurs[i] - valeurs[j]) < 0.1 - 1e-9) serres++;
+  }
+}
+verifier("deux dessins se distinguent d'au moins un dixième de l'aire", serres, 0);
+
+verifier("10/12 : pas de 11/12 ni de 9/12 à côté",
+  fractionsDistractrices(10, 12).map((f) => f.join("/")), ["2/12", "8/12", "6/12"]);
+
+verifier("3/4 : le complément d'abord", fractionsDistractrices(3, 4)[0], [1, 4]);
+verifier("1/2 : le complément vaudrait la bonne réponse, il est écarté",
+  fractionsDistractrices(1, 2).some(([a, b]) => a === 1 && b === 2), false);
+
+const inverse = genererQuestionsFractions({
+  nb: 16, sens: "reconnaitre", denominateurs: DENOMINATEURS_PAR_NIVEAU.CM2, alea: aleaFixe(11),
+});
+
+verifier("l'énoncé porte la fraction, pas le dessin",
+  inverse.every((q) => q.figure === undefined && q.options_figures.length === 4), true);
+
+verifier("les options sont des étiquettes neutres",
+  inverse.every((q) => q.options.join("|") === "Figure A|Figure B|Figure C|Figure D"), true);
+
+verifier("le bon dessin est celui de la fraction demandée",
+  inverse.every((q) => {
+    const [n, d] = q.question.match(/(\d+)\/(\d+)/).slice(1).map(Number);
+    const f = q.options_figures[q.reponse_correcte];
+    return f.parts === d && partsColoriees(f).length === n;
+  }), true);
+
+verifier("aucun autre dessin ne vaut la fraction demandée",
+  inverse.every((q) => {
+    const [n, d] = q.question.match(/(\d+)\/(\d+)/).slice(1).map(Number);
+    return q.options_figures.filter((f) => partsColoriees(f).length * d === n * f.parts).length === 1;
+  }), true);
+
+verifier("les dessins d'une question se distinguent à l'œil",
+  inverse.every((q) => {
+    const v = q.options_figures.map((f) => partsColoriees(f).length / f.parts);
+    return v.every((a, i) => v.every((b, j) => i === j || Math.abs(a - b) >= 0.1 - 1e-9));
+  }), true);
+
+verifier("les quatre dessins ont la même forme",
+  inverse.every((q) => new Set(q.options_figures.map((f) => f.forme)).size === 1), true);
+
+verifier("l'explication désigne la bonne figure",
+  inverse.every((q) => q.explication.includes(`figure ${String.fromCharCode(97 + q.reponse_correcte)}`)), true);
+
+verifier("la position de la bonne réponse varie",
+  new Set(inverse.map((q) => q.reponse_correcte)).size > 1, true);
+
+const melange = genererQuestionsFractions({ nb: 10, sens: "les_deux", alea: aleaFixe(13) });
+verifier("« les deux » alterne une question sur deux",
+  melange.map((q) => (q.options_figures ? "R" : "L")).join(""), "LRLRLRLRLR");
 
 console.log(echecs === 0 ? `✓ ${total} cas passent` : `\n${echecs} échec(s) sur ${total}`);
 process.exit(echecs === 0 ? 0 : 1);

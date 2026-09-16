@@ -23,6 +23,7 @@ export async function POST(req: NextRequest) {
       niveau = "CM1",
       formes = ["cercle", "rectangle"],
       dispersees = false,
+      sens = "lire",
       nbQuestions = 10,
       titre = "",
     } = body;
@@ -42,11 +43,16 @@ export async function POST(req: NextRequest) {
       formes: formesValides,
       denominateurs: DENOMINATEURS_PAR_NIVEAU[niveau] ?? DENOMINATEURS_PAR_NIVEAU.CM1,
       dispersees: !!dispersees,
+      sens: sens === "reconnaitre" || sens === "les_deux" ? sens : "lire",
     });
 
     return NextResponse.json({
       resultat: {
-        titre: titre?.trim() || "Lire une fraction sur un dessin",
+        titre:
+          titre?.trim() ||
+          (sens === "reconnaitre"
+            ? "Reconnaître une fraction sur un dessin"
+            : "Lire une fraction sur un dessin"),
         questions,
       },
     });
