@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { repriseRangement, type EtatRangement } from "@/lib/reprise-composants";
 
 export interface SerieRangement {
   elements: string[]; // dans le bon ordre
@@ -14,6 +15,10 @@ interface Props {
     score: { bon: number; total: number },
     reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[],
   ) => void;
+  /** Reprise : les séries laissées en cours. Ignorées si les étiquettes ont changé. */
+  etatInitial?: unknown;
+  /** Appelé à chaque étiquette posée, pour que la page enregistre le travail. */
+  onProgres?: (etat: EtatRangement) => void;
 }
 
 const VERT = "#16A34A";
@@ -42,14 +47,29 @@ interface EtatSerie {
   statut: "saisie" | "faux" | "juste";
 }
 
-export default function RangementEleve({ titre, consigne, series, onTermine }: Props) {
+export default function RangementEleve({ titre, consigne, series, onTermine, etatInitial, onProgres }: Props) {
+  // L'ordre de la réserve fait partie du travail : il est tiré au sort au
+  // montage, et le retirer ferait sauter les étiquettes d'une place à l'autre
+  // au retour de l'élève.
+  const [reprise] = useState(() => repriseRangement(etatInitial, series.map((s) => s.elements.length)));
+
   const [etats, setEtats] = useState<EtatSerie[]>(() =>
+    reprise?.etats ??
     series.map((s) => ({ reserve: melanger(s.elements), places: [], statut: "saisie" as const })),
   );
   const [premiereTentative, setPremiereTentative] = useState<(boolean | null)[]>(
-    () => series.map(() => null),
+    () => reprise?.premiereTentative ?? series.map(() => null),
   );
   const [dragIdx, setDragIdx] = useState<{ serie: number; pos: number } | null>(null);
+
+  const progresRef = useRef(onProgres);
+  progresRef.current = onProgres;
+
+  useEffect(() => {
+    if (etats.every((e) => e.statut === "juste")) return;
+    if (etats.every((e) => e.places.length === 0)) return;
+    progresRef.current?.({ etats, premiereTentative });
+  }, [etats, premiereTentative]);
 
   const toutesJustes = etats.every((e) => e.statut === "juste");
 

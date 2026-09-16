@@ -8,7 +8,7 @@ import LeconCeinture, { type Lecon } from "@/components/LeconCeinture";
 import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 import FigureGeo, { type Figure } from "@/components/FigureGeo";
 import { useReprise } from "@/hooks/useReprise";
-import { cleExercice, empreinte } from "@/lib/reprise";
+import { cleExercice, empreinte, empreinteContenu } from "@/lib/reprise";
 import ClassementEleve from "@/components/ClassementEleve";
 import TexteATrousEleve from "@/components/TexteATrousEleve";
 import LectureEleve from "@/components/LectureEleve";
@@ -192,10 +192,11 @@ export default function PageExerciceEleve() {
         for (const c of contenu.calculs as Calcul[]) {
           qs.push({ enonce: c.enonce, reponse: String(c.reponse), droite: c.droite, figure: c.figure });
         }
-      } else if (ex.type === "texte_a_trous") {
-        setEtat("en_cours");
-        return;
-      } else if (ex.type === "classement") {
+      } else if (ex.type === "texte_a_trous" || ex.type === "classement") {
+        // Ces deux-là ne passent pas par la pile de questions : ils ont leur
+        // propre rendu, plus bas. Leur empreinte se calcule donc ici, sans quoi
+        // la reprise ne s'armerait jamais pour eux.
+        setEmpreinteExo(empreinteContenu(ex.type, exerciceId, contenu));
         setEtat("en_cours");
         return;
       } else if (ex.type === "lecture") {
@@ -445,6 +446,18 @@ export default function PageExerciceEleve() {
     );
   }
 
+  // Le texte à trous et le classement ont leur propre rendu, plus bas. Tant
+  // qu'on ne SAIT pas s'il y a un travail à reprendre, on ne les monte pas :
+  // l'élève verrait son exercice vide avant que ses réponses réapparaissent.
+  if ((exercice?.type === "texte_a_trous" || exercice?.type === "classement")
+      && etat === "en_cours" && !reprisePrete) {
+    return (
+      <div style={{ maxWidth: 800, margin: "60px auto", padding: "0 20px", textAlign: "center" }}>
+        <div className="skeleton" style={{ height: 200, borderRadius: 20 }} />
+      </div>
+    );
+  }
+
   // ── Problème de maths : rendu via ProblemeMathsEleve ──
   // Seul le résultat entre dans la note, jamais la phrase réponse — c'est le
   // composant qui l'applique, et les 33 items de Calcul ont été écrits avec
@@ -497,7 +510,7 @@ export default function PageExerciceEleve() {
 
   // ── Classement : rendu spécial via ClassementEleve ──
   // ── Texte à trous : rendu spécial via TexteATrousEleve ──
-  if (exercice?.type === "texte_a_trous" && etat === "en_cours") {
+  if (exercice?.type === "texte_a_trous" && etat === "en_cours" && reprisePrete) {
     const contenu = exercice.contenu as Record<string, unknown>;
     const texteComplet = (contenu.texte_complet as string) ?? (contenu.texte as string) ?? "";
     const trousBruts = (contenu.trous as Array<{ position: number; mot: string; indice?: string }>) ?? [];
@@ -527,7 +540,10 @@ export default function PageExerciceEleve() {
           consigne={String(contenu.consigne ?? "Complète le texte en trouvant les mots manquants.")}
           texteComplet={texteComplet}
           trous={trousAvecPositions}
+          etatInitial={etatRepris}
+          onProgres={(e) => { if (empreinteExo) sauver({ ...e, empreinte: empreinteExo }); }}
           onTermine={async (scoreResult) => {
+            void effacer();
             const total = trousAvecPositions.length;
             const bon = scoreResult.bon;
 
@@ -553,7 +569,7 @@ export default function PageExerciceEleve() {
   }
 
   // ── Classement : rendu spécial via ClassementEleve ──
-  if (exercice?.type === "classement" && etat === "en_cours") {
+  if (exercice?.type === "classement" && etat === "en_cours" && reprisePrete) {
     const contenu = exercice.contenu as Record<string, unknown>;
     const categories = (contenu.categories as string[]) ?? [];
     const items = (contenu.items as Array<{ texte: string; categorie: string }>) ?? [];
@@ -578,7 +594,10 @@ export default function PageExerciceEleve() {
           consigne={String(contenu.consigne ?? "Classe chaque élément dans la bonne catégorie.")}
           categories={categories}
           items={items}
+          etatInitial={etatRepris}
+          onProgres={(e) => { if (empreinteExo) sauver({ ...e, empreinte: empreinteExo }); }}
           onTermine={async (scoreResult) => {
+            void effacer();
             const total = items.length;
             const bon = scoreResult.bon;
             const isValide = bon / total >= seuilExo;

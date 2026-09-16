@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
@@ -19,7 +19,7 @@ import AnalysePhraseEleve from "@/components/AnalysePhraseEleve";
 import { type EtatExerciceStack } from "@/components/ExerciceStack";
 import { useReprise } from "@/hooks/useReprise";
 import { useDureeActivite } from "@/hooks/useDureeActivite";
-import { cleActivite, empreinte } from "@/lib/reprise";
+import { cleActivite, empreinteContenu } from "@/lib/reprise";
 import { champsTerminaison } from "@/lib/suivi-metriques";
 import ClassementEleve from "@/components/ClassementEleve";
 import ComparaisonEleve from "@/components/ComparaisonEleve";
@@ -192,24 +192,26 @@ export default function PageActivite() {
   // route. L'empreinte porte sur les questions : si l'enseignant les a
   // modifiées depuis, la reprise est jetée et l'élève recommence, plutôt que
   // de voir ses réponses se reporter sur d'autres questions.
-  const questionsBloc =
-    (bloc?.type === "exercice" || bloc?.type === "eval")
-      ? (bloc.contenu as unknown as ExerciceIA)?.questions ?? null
-      : null;
-
-  const empreinteBloc = questionsBloc
-    ? empreinte(
-        String(id),
-        questionsBloc.map((q) => q.enonce),
-        questionsBloc.map((q) => q.reponse_attendue),
-      )
+  // `empreinteContenu()` couvre les sept types repris — les exercices question
+  // par question comme les activités qui ne se valident qu'à la fin. Un type
+  // qu'elle ne connaît pas rend `null`, et la reprise ne s'arme pas.
+  const empreinteBloc = bloc
+    ? empreinteContenu(bloc.type, String(id), bloc.contenu as Record<string, unknown> | null)
     : null;
 
   const reprise = useReprise({
-    cle: questionsBloc ? cleActivite(String(id)) : null,
+    cle: empreinteBloc ? cleActivite(String(id)) : null,
     empreinte: empreinteBloc,
     session,
   });
+
+  /** Enregistre le travail en cours d'une activité à validation unique. */
+  const sauverProgres = useCallback(
+    (etat: object) => {
+      if (empreinteBloc) reprise.sauver({ ...(etat as Record<string, unknown>), empreinte: empreinteBloc });
+    },
+    [empreinteBloc, reprise],
+  );
 
   // ── Temps passé sur l'activité ──────────────────────────────────────────
   //
@@ -997,15 +999,19 @@ export default function PageActivite() {
             )}
 
             {/* ── Texte à trous ── */}
-            {texteATrous && (etat as string) === "en_cours" && (
+            {texteATrous && (etat as string) === "en_cours" && reprise.pret && (
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
                 <TexteATrousEleve
                   titre={texteATrous.titre}
                   consigne={texteATrous.consigne}
                   texteComplet={texteATrous.texte_complet}
                   trous={texteATrous.trous}
+                  etatInitial={reprise.etatRepris}
+                  onProgres={sauverProgres}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
+                    void reprise.effacer();
                   }}
                 />
               </div>
@@ -1020,15 +1026,19 @@ export default function PageActivite() {
             )}
 
             {/* ── Analyse de phrase ── */}
-            {analysePhrase && (etat as string) === "en_cours" && (
+            {analysePhrase && (etat as string) === "en_cours" && reprise.pret && (
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
                 <AnalysePhraseEleve
                   titre={analysePhrase.titre}
                   consigne={analysePhrase.consigne}
                   phrases={analysePhrase.phrases}
                   fonctionsActives={analysePhrase.fonctionsActives ?? ["Sujet", "Verbe", "COD", "COI", "CC Lieu", "CC Temps", "CC Manière"]}
+                  etatInitial={reprise.etatRepris}
+                  onProgres={sauverProgres}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.7 ? "fait" : "en_cours", repEleve);
+                    marquerFait(score, score.bon / score.total >= 0.7 ? "fait" : "en_cours", repEleve, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
+                    void reprise.effacer();
                   }}
                 />
               </div>
@@ -1043,15 +1053,19 @@ export default function PageActivite() {
             )}
 
             {/* ── Classement ── */}
-            {classementData && (etat as string) === "en_cours" && (
+            {classementData && (etat as string) === "en_cours" && reprise.pret && (
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
                 <ClassementEleve
                   titre={classementData.titre}
                   consigne={classementData.consigne}
                   categories={classementData.categories}
                   items={classementData.items}
+                  etatInitial={reprise.etatRepris}
+                  onProgres={sauverProgres}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
+                    void reprise.effacer();
                   }}
                 />
               </div>
@@ -1066,15 +1080,19 @@ export default function PageActivite() {
             )}
 
             {/* ── Comparaison de nombres ── */}
-            {comparaisonData && (etat as string) === "en_cours" && (
+            {comparaisonData && (etat as string) === "en_cours" && reprise.pret && (
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
                 <ComparaisonEleve
                   titre={comparaisonData.titre}
                   consigne={comparaisonData.consigne}
                   paires={comparaisonData.paires}
                   avecEgalite={comparaisonData.avec_egalite}
+                  etatInitial={reprise.etatRepris}
+                  onProgres={sauverProgres}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
+                    void reprise.effacer();
                   }}
                 />
               </div>
@@ -1089,14 +1107,18 @@ export default function PageActivite() {
             )}
 
             {/* ── Rangement ── */}
-            {rangementData && (etat as string) === "en_cours" && (
+            {rangementData && (etat as string) === "en_cours" && reprise.pret && (
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
                 <RangementEleve
                   titre={rangementData.titre}
                   consigne={rangementData.consigne}
                   series={rangementData.series}
+                  etatInitial={reprise.etatRepris}
+                  onProgres={sauverProgres}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
+                    void reprise.effacer();
                   }}
                 />
               </div>

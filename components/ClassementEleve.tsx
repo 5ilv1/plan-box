@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useCallback, useEffect } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import { repriseClassement, type EtatClassement } from "@/lib/reprise-composants";
 
 interface Item {
   texte: string;
@@ -13,6 +14,10 @@ interface Props {
   categories: string[];
   items: Item[];
   onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
+  /** Reprise : les étiquettes déjà glissées. Ignorées si les items ont changé. */
+  etatInitial?: unknown;
+  /** Appelé à chaque glissement, pour que la page enregistre le travail. */
+  onProgres?: (etat: EtatClassement) => void;
 }
 
 const COULEURS_CATEGORIES = [
@@ -35,13 +40,25 @@ function shuffleArray<T>(arr: T[]): T[] {
 
 type ItemWithId = Item & { id: number };
 
-export default function ClassementEleve({ titre, consigne, categories, items, onTermine }: Props) {
+export default function ClassementEleve({ titre, consigne, categories, items, onTermine, etatInitial, onProgres }: Props) {
+  const avecId = useMemo(() => items.map((item, i) => ({ ...item, id: i })), [items]);
+
+  // Vingt étiquettes replacées une à une, c'est ce qu'un élève perdait en
+  // posant sa tablette. L'ordre de la réserve est repris tel quel : mélangé à
+  // nouveau, les étiquettes sauteraient de place sous ses yeux.
+  const [reprise] = useState(() => repriseClassement(etatInitial, items.length, categories));
+
   const [itemsRestants, setItemsRestants] = useState<ItemWithId[]>(
-    () => shuffleArray(items.map((item, i) => ({ ...item, id: i })))
+    () => (reprise ? reprise.pool.map((i) => avecId[i]) : shuffleArray(avecId))
   );
   const [classement, setClassement] = useState<Record<string, ItemWithId[]>>(
-    () => Object.fromEntries(categories.map((c) => [c, []]))
+    () => Object.fromEntries(
+      categories.map((c) => [c, reprise ? reprise.classement[c].map((i) => avecId[i]) : []])
+    )
   );
+
+  const progresRef = useRef(onProgres);
+  progresRef.current = onProgres;
   const [draggedItem, setDraggedItem] = useState<ItemWithId | null>(null);
   const [dragSource, setDragSource] = useState<string | null>(null);
   const [dragOverCat, setDragOverCat] = useState<string | null>(null);
@@ -49,6 +66,19 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
   const [etat, setEtat] = useState<"classement" | "resultat" | "termine">("classement");
   const [erreurs, setErreurs] = useState<Set<number>>(new Set());
   const [score, setScore] = useState({ bon: 0, total: 0 });
+
+  // On enregistre les identifiants, pas les objets : le contenu peut être
+  // rechargé, les index restent les mêmes tant que l'empreinte tient.
+  useEffect(() => {
+    if (etat !== "classement") return;
+    if (itemsRestants.length === items.length) return;
+    progresRef.current?.({
+      pool: itemsRestants.map((i) => i.id),
+      classement: Object.fromEntries(
+        Object.entries(classement).map(([c, arr]) => [c, arr.map((i) => i.id)])
+      ),
+    });
+  }, [itemsRestants, classement, etat, items.length]);
 
   // Touch drag state
   const touchDragRef = useRef<{

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
+import { repriseTexteATrous, type EtatTexteATrous } from "@/lib/reprise-composants";
 
 interface Trou {
   position: number;
@@ -99,24 +100,57 @@ interface Props {
   texteComplet: string;
   trous: Trou[];
   onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
+  /** Reprise : le travail laissé la dernière fois. Ignoré s'il ne colle plus au texte. */
+  etatInitial?: unknown;
+  /** Appelé à chaque frappe, pour que la page enregistre le travail en cours. */
+  onProgres?: (etat: EtatTexteATrous) => void;
 }
 
-export default function TexteATrousEleve({ titre, consigne, texteComplet, trous, onTermine }: Props) {
+export default function TexteATrousEleve({ titre, consigne, texteComplet, trous, onTermine, etatInitial, onProgres }: Props) {
   const mots = texteComplet.split(/\s+/);
-  const [reponses, setReponses] = useState<Record<number, string>>({});
+
+  // Un élève coupé au milieu retrouve ses trous remplis — mais en SAISIE, pas
+  // sur l'écran de correction : ce qu'on lui rend est son travail, pas un
+  // verdict. Il revalide, et la correction se refait sur ce qu'il a sous les yeux.
+  const [reprise] = useState(() => repriseTexteATrous(etatInitial, trous.map((t) => t.position)));
+
+  const [reponses, setReponses] = useState<Record<number, string>>(() =>
+    reprise
+      ? Object.fromEntries(Object.entries(reprise.reponses).map(([k, v]) => [Number(k), v]))
+      : {}
+  );
   const [resultats, setResultats] = useState<Record<number, boolean | null>>({});
   const [verifie, setVerifie] = useState(false);
   const [termine, setTermine] = useState(false);
-  const [tentative, setTentative] = useState(0);
+  const [tentative, setTentative] = useState(reprise?.tentative ?? 0);
   const inputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
-  // Focus sur le premier trou au montage
+  // Le rappel de progrès passe par une référence : la page le recrée à chaque
+  // rendu, et le mettre en dépendance relancerait l'effet en boucle.
+  const progresRef = useRef(onProgres);
+  progresRef.current = onProgres;
+
+  // Focus sur le premier trou ENCORE VIDE : après une reprise, c'est là que
+  // l'élève s'était arrêté, pas au début du texte.
   useEffect(() => {
-    const premierTrou = trous[0];
-    if (premierTrou) {
-      setTimeout(() => inputRefs.current[premierTrou.position]?.focus(), 100);
-    }
+    const cible = trous.find((t) => !(reponses[t.position] ?? "").trim()) ?? trous[0];
+    if (cible) setTimeout(() => inputRefs.current[cible.position]?.focus(), 100);
+    // Au montage seulement : autrement le curseur sauterait à chaque frappe.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trous]);
+
+  // Enregistrement au fil de la frappe. `sauver()` groupe les appels côté page,
+  // il n'y a donc pas à retenir la main ici.
+  useEffect(() => {
+    if (termine) return;
+    // Rien de saisi : il n'y a pas de travail à reprendre, seulement un
+    // exercice ouvert. La garde refuserait cet état, autant ne pas l'écrire.
+    if (!Object.values(reponses).some((v) => v.trim())) return;
+    progresRef.current?.({
+      reponses: Object.fromEntries(Object.entries(reponses).map(([k, v]) => [String(k), v])),
+      tentative,
+    });
+  }, [reponses, tentative, termine]);
 
   function normaliser(s: string): string {
     return s.toLowerCase().trim()

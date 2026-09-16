@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { repriseAnalysePhrase, type EtatAnalysePhrase } from "@/lib/reprise-composants";
 import { FonctionGram, FONCTIONS_COULEURS } from "@/types";
 import { recalerGroupes } from "@/lib/analyse-phrase";
 
@@ -22,6 +23,10 @@ interface Props {
   phrases: Phrase[];
   fonctionsActives: FonctionGram[];
   onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
+  /** Reprise : l'analyse laissée en cours. Ignorée si les phrases ont changé. */
+  etatInitial?: unknown;
+  /** Appelé à chaque étape franchie, pour que la page enregistre le travail. */
+  onProgres?: (etat: EtatAnalysePhrase) => void;
 }
 
 /** Ce qu'on sait d'un groupe après le passage de l'élève. */
@@ -61,20 +66,13 @@ function getEtapeLabel(f: FonctionGram): string {
   }
 }
 
-export default function AnalysePhraseEleve({ titre, consigne, phrases, fonctionsActives, onTermine }: Props) {
-  const [phraseIdx, setPhraseIdx] = useState(0);
-  const [etapeIdx, setEtapeIdx] = useState(0);
-  const [selection, setSelection] = useState<Set<number>>(new Set());
-  const [reponses, setReponses] = useState<Record<number, Record<string, Trouvaille>>>({});
-  const [essais, setEssais] = useState(0);
-  const [feedback, setFeedback] = useState<string | null>(null);
-  const [feedbackType, setFeedbackType] = useState<"correct" | "incorrect" | null>(null);
-  const [termine, setTermine] = useState(false);
-  const [scoreTotal, setScoreTotal] = useState({ bon: 0, total: 0 });
-
+export default function AnalysePhraseEleve({ titre, consigne, phrases, fonctionsActives, onTermine, etatInitial, onProgres }: Props) {
   // Les positions annoncées par le contenu ne sont pas fiables : elles sont
   // recalculées à partir du texte des groupes, et un groupe qu'on ne retrouve
   // pas dans la phrase est retiré plutôt que rendu impossible à trouver.
+  //
+  // ⚠️ Ce calcul passe AVANT les états : la reprise se repère dans les phrases
+  // **saines**, et une phrase écartée ici décale tous les index.
   const phrasesSaines = useMemo(
     () => (Array.isArray(phrases) ? phrases : [])
       .filter((p) => p && typeof p.texte === "string" && Array.isArray(p.groupes))
@@ -82,6 +80,39 @@ export default function AnalysePhraseEleve({ titre, consigne, phrases, fonctions
       .filter((p) => p.groupes.length > 0),
     [phrases],
   );
+
+  // Cinq phrases, une vingtaine de groupes à trouver : c'est la plus longue
+  // des activités à validation unique, et celle qu'un élève perdait en entier.
+  const [reprise] = useState(() => repriseAnalysePhrase(etatInitial, phrasesSaines.length));
+
+  const [phraseIdx, setPhraseIdx] = useState(reprise?.phraseIdx ?? 0);
+  const [etapeIdx, setEtapeIdx] = useState(reprise?.etapeIdx ?? 0);
+  const [selection, setSelection] = useState<Set<number>>(new Set());
+  const [reponses, setReponses] = useState<Record<number, Record<string, Trouvaille>>>(
+    () => (reprise?.reponses as unknown as Record<number, Record<string, Trouvaille>>) ?? {},
+  );
+  const [essais, setEssais] = useState(0);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedbackType, setFeedbackType] = useState<"correct" | "incorrect" | null>(null);
+  const [termine, setTermine] = useState(false);
+  const [scoreTotal, setScoreTotal] = useState(reprise?.score ?? { bon: 0, total: 0 });
+
+  const progresRef = useRef(onProgres);
+  progresRef.current = onProgres;
+
+  // Les essais ratés de l'étape en cours ne sont pas enregistrés : l'élève
+  // revient avec ses trois essais entiers sur le groupe qu'il cherchait. On
+  // préfère cette indulgence-là à l'inverse, qui l'enfermerait.
+  useEffect(() => {
+    if (termine) return;
+    if (phraseIdx === 0 && scoreTotal.total === 0) return;
+    progresRef.current?.({
+      phraseIdx,
+      etapeIdx,
+      reponses: reponses as unknown as EtatAnalysePhrase["reponses"],
+      score: scoreTotal,
+    });
+  }, [phraseIdx, etapeIdx, reponses, scoreTotal, termine]);
 
   const phrase = phrasesSaines[phraseIdx];
 

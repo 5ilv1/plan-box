@@ -379,9 +379,53 @@ le navigateur : la reprise suit l'élève d'une tablette à l'autre.
   `activite:<bloc>`) — ce sont eux qui traînent le plus, un exercice en retard se faisant à
   un moment volé. L'ordre y vit dans `ExerciceStack` : il est tiré une fois et enregistré
   avec les réponses, et la page attend `reprise.pret` avant de monter le composant.
-  **Pas encore couvert** : les composants à validation unique (texte à trous, classement,
-  analyse de phrase), dont l'état vit dans le composant.
+  Les **activités à validation unique** le sont aussi — voir ci-dessous.
+- **Pas couvert, et volontairement** : le mini-exercice en cours d'une évaluation. Une
+  évaluation se passe en classe, sous surveillance, pas à un moment volé ; sa frontière
+  de reprise reste le mini-exercice.
 - Pas d'`upsert` : index d'unicité partiels (`eleve_id` / `rb_eleve_id`).
+
+### Les activités à validation unique
+
+`ExerciceStack` avance question par question : son état tient dans un index. Cinq
+activités n'ont pas d'index — l'élève remplit un texte, glisse des étiquettes, range une
+série, et ne valide qu'au bout. Coupé en route, il perdait **tout**, et c'est justement
+le travail le plus long à refaire : vingt étiquettes replacées une à une.
+
+| Activité | Ce qui est enregistré |
+|---|---|
+| `texte_a_trous` | les mots saisis, et le nombre de vérifications |
+| `classement` | la réserve **dans son ordre mélangé** et le contenu de chaque catégorie |
+| `analyse_phrase` | phrase et étape en cours, groupes trouvés, score |
+| `comparaison` | les signes posés, les lignes verrouillées, **le premier essai** |
+| `rangement` | réserve et étiquettes posées par série, **le premier essai** |
+
+- `lib/reprise-composants.ts` ne contient que les **gardes** : « cet état décrit-il encore
+  ce contenu-là ? ». Elles sont pures et testées
+  (`npx tsx docs/tests/test-reprise-composants.mjs`, 51 cas) parce qu'une garde trop
+  permissive **ne plante pas** : elle rend un travail qui se rapporte à d'autres
+  questions. Dans le doute elles rendent `null`, et l'élève recommence — le comportement
+  d'avant, jamais une régression.
+- **L'ordre mélangé fait partie du travail**, comme l'ordre des questions dans
+  `ExerciceStack` : remélanger au retour ferait sauter les étiquettes sous les yeux de
+  l'élève. Réserve et éléments posés doivent couvrir **exactement** les items, une fois
+  chacun : une étiquette perdue rendrait la série invalidable, et l'élève ne pourrait
+  plus terminer.
+- ⚠️ **Le premier essai doit survivre à l'interruption.** Sans lui, un élève coupé après
+  un premier essai raté revient corriger ses erreurs et ressort avec un sans-faute. C'est
+  le même principe que `premier_score` : la note honnête est celle du premier jet.
+- ⚠️ **L'analyse de phrase se repère dans les phrases SAINES**, après `recalerGroupes()`
+  qui écarte un groupe introuvable. Une phrase écartée décale tous les index : la garde
+  doit voir la liste assainie, jamais la liste brute du contenu. D'où le `useMemo` placé
+  **avant** les `useState` dans le composant.
+- Le texte à trous revient toujours **en saisie**, jamais sur l'écran de correction : ce
+  qu'on rend à l'élève est son travail, pas un verdict.
+- `empreinteContenu()` (`lib/reprise.ts`) calcule l'empreinte des sept types repris en un
+  seul endroit. Elle ne retient que ce qui invaliderait le travail — énoncés, réponses,
+  groupes, signes attendus : un titre retouché ne doit pas jeter le travail d'un élève.
+- Ces cinq activités ne transmettaient pas `nbTentatives` à `marquerFait()` : leur
+  `premier_score` était réécrit à chaque passage, exactement comme `ExerciceStack` avant
+  correction. Toute nouvelle activité doit le transmettre.
 
 ## Suivi enseignant
 

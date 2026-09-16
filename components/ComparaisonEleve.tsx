@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { repriseComparaison, type EtatComparaison } from "@/lib/reprise-composants";
 
 export interface PaireComparaison {
   gauche: string;
@@ -17,23 +18,45 @@ interface Props {
     score: { bon: number; total: number },
     reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[],
   ) => void;
+  /** Reprise : les signes déjà placés. Ignorés s'ils ne collent plus aux paires. */
+  etatInitial?: unknown;
+  /** Appelé à chaque signe posé, pour que la page enregistre le travail. */
+  onProgres?: (etat: EtatComparaison) => void;
 }
 
 const VERT = "#16A34A";
 const ROUGE = "#DC2626";
 const BLEU = "#2563EB";
 
-export default function ComparaisonEleve({ titre, consigne, paires, avecEgalite, onTermine }: Props) {
+export default function ComparaisonEleve({ titre, consigne, paires, avecEgalite, onTermine, etatInitial, onProgres }: Props) {
   const signesProposes = avecEgalite || paires.some((p) => p.signe === "=")
     ? ["<", ">", "="]
     : ["<", ">"];
 
-  const [reponses, setReponses] = useState<(string | null)[]>(() => paires.map(() => null));
+  // Le travail laissé en route, s'il décrit encore ces paires-là.
+  const [reprise] = useState(() => repriseComparaison(etatInitial, paires.length));
+
+  const [reponses, setReponses] = useState<(string | null)[]>(
+    () => reprise?.reponses ?? paires.map(() => null),
+  );
   const [erreurs, setErreurs] = useState<Set<number>>(new Set());
-  const [justes, setJustes] = useState<Set<number>>(new Set());
+  const [justes, setJustes] = useState<Set<number>>(() => new Set(reprise?.justes ?? []));
   const [etat, setEtat] = useState<"saisie" | "termine">("saisie");
   // Score de la première tentative : c'est lui qui dit ce que l'élève savait faire.
-  const [premiereTentative, setPremiereTentative] = useState<boolean[] | null>(null);
+  // Il DOIT survivre à une interruption, sinon un élève coupé après un premier
+  // essai raté revient corriger ses erreurs et ressort avec un sans-faute.
+  const [premiereTentative, setPremiereTentative] = useState<boolean[] | null>(
+    reprise?.premiereTentative ?? null,
+  );
+
+  const progresRef = useRef(onProgres);
+  progresRef.current = onProgres;
+
+  useEffect(() => {
+    if (etat === "termine") return;
+    if (reponses.every((r) => r === null)) return;
+    progresRef.current?.({ reponses, justes: [...justes], premiereTentative });
+  }, [reponses, justes, premiereTentative, etat]);
 
   const toutRepondu = reponses.every((r) => r !== null);
   const nbRepondu = reponses.filter((r) => r !== null).length;
