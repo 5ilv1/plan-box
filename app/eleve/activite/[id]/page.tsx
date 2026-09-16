@@ -20,6 +20,7 @@ import { type EtatExerciceStack } from "@/components/ExerciceStack";
 import { useReprise } from "@/hooks/useReprise";
 import { useDureeActivite } from "@/hooks/useDureeActivite";
 import { cleActivite, empreinteContenu } from "@/lib/reprise";
+import type { ScoreActivite } from "@/lib/score-activite";
 import { champsTerminaison } from "@/lib/suivi-metriques";
 import ClassementEleve from "@/components/ClassementEleve";
 import ComparaisonEleve from "@/components/ComparaisonEleve";
@@ -264,7 +265,7 @@ export default function PageActivite() {
   const leconUrl = bloc?.type === "lecon_copier" ? (bloc.contenu as any)?.url as string : null;
 
   async function marquerFait(
-    score?: { bon: number; total: number },
+    score?: ScoreActivite,
     statut: StatutBloc = "fait",
     reponsesEleve?: { id: number; reponse: string; correcte: boolean | null }[],
     tentativesCourantes?: number,
@@ -280,9 +281,15 @@ export default function PageActivite() {
 
     if (score) {
       contenuMaj = { ...contenuMaj, score_eleve: score.bon, score_total: score.total };
-      // Premier score — enregistré une seule fois
+      // Premier score — enregistré une seule fois.
+      //
+      // ⚠️ Quatre activités ne se terminent qu'une fois tout juste : leur
+      // `score.bon` vaut toujours le total, et l'enregistrer ici donnait 100 %
+      // à tout le monde, y compris à l'élève qui s'y était repris quatre fois.
+      // `score.premier` porte le nombre de réponses justes au premier essai —
+      // la seule note qui dise ce que l'élève savait faire.
       if (tentatives === 1) {
-        contenuMaj.premier_score = score.bon;
+        contenuMaj.premier_score = score.premier ?? score.bon;
         contenuMaj.premier_score_total = score.total;
       }
     }

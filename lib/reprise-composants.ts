@@ -52,6 +52,12 @@ export interface EtatTexteATrous {
   reponses: Record<string, string>;
   /** Nombre de vérifications déjà demandées, pour ne pas fausser le premier score. */
   tentative: number;
+  /**
+   * Position du trou → juste au **premier** essai. C'est la note honnête, et
+   * elle doit traverser l'interruption : sans elle, un élève coupé après un
+   * premier jet raté revient corriger et ressort avec un sans-faute.
+   */
+  premierResultat?: Record<string, boolean> | null;
 }
 
 /**
@@ -83,7 +89,29 @@ export function repriseTexteATrous(
   if (saisi === 0) return null;
 
   const tentative = Number.isInteger(etat.tentative) ? (etat.tentative as number) : 0;
-  return { reponses, tentative: Math.max(0, tentative) };
+  return {
+    reponses,
+    tentative: Math.max(0, tentative),
+    premierResultat: releveBooleens(etat.premierResultat, connues),
+  };
+}
+
+/**
+ * Un relevé « clé → juste ou faux », vérifié.
+ *
+ * Rendu `null` au moindre doute : perdre la note du premier essai fait
+ * réenregistrer un sans-faute, ce qui est faux, mais moins grave que de
+ * rattacher des résultats à d'autres questions.
+ */
+function releveBooleens(brut: unknown, clesConnues?: Set<number>): Record<string, boolean> | null {
+  if (!estObjet(brut)) return null;
+  const releve: Record<string, boolean> = {};
+  for (const [cle, valeur] of Object.entries(brut)) {
+    if (typeof valeur !== "boolean") return null;
+    if (clesConnues && !clesConnues.has(Number(cle))) return null;
+    releve[cle] = valeur;
+  }
+  return Object.keys(releve).length > 0 ? releve : null;
 }
 
 /* ── Classement ─────────────────────────────────────────────────────────── */
@@ -93,6 +121,8 @@ export interface EtatClassement {
   pool: number[];
   /** Catégorie → indices des items qu'on y a glissés. */
   classement: Record<string, number[]>;
+  /** Index de l'item → bien classé au **premier** essai. La note honnête. */
+  premierResultat?: Record<string, boolean> | null;
 }
 
 /**
@@ -129,7 +159,12 @@ export function repriseClassement(
   if (!permutationComplete(tous, nbItems)) return null;
   if (places === 0) return null;
 
-  return { pool: etat.pool as number[], classement };
+  const connues = new Set(Array.from({ length: nbItems }, (_, i) => i));
+  return {
+    pool: etat.pool as number[],
+    classement,
+    premierResultat: releveBooleens(etat.premierResultat, connues),
+  };
 }
 
 /* ── Analyse de phrase ──────────────────────────────────────────────────── */

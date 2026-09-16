@@ -34,7 +34,22 @@ const POS = [3, 7, 11];
 
 verifier("trous : réponses partielles conservées",
   repriseTexteATrous({ reponses: { 3: "est", 7: "" }, tentative: 1 }, POS),
-  { reponses: { 3: "est", 7: "" }, tentative: 1 });
+  { reponses: { 3: "est", 7: "" }, tentative: 1, premierResultat: null });
+
+// La note du premier essai doit traverser l'interruption, sinon un élève
+// coupé après un premier jet raté revient corriger et ressort à 100 %.
+verifier("trous : la note du premier essai survit",
+  repriseTexteATrous({ reponses: { 3: "est" }, tentative: 1,
+    premierResultat: { 3: true, 7: false } }, POS).premierResultat,
+  { 3: true, 7: false });
+refuse("trous : relevé portant un trou inconnu",
+  repriseTexteATrous({ reponses: { 3: "est" }, tentative: 1,
+    premierResultat: { 3: true, 99: false } }, POS).premierResultat);
+refuse("trous : relevé non booléen",
+  repriseTexteATrous({ reponses: { 3: "est" }, tentative: 1,
+    premierResultat: { 3: "oui" } }, POS).premierResultat);
+verifier("trous : pas de relevé → null (on repart de la note finale)",
+  repriseTexteATrous({ reponses: { 3: "est" }, tentative: 0 }, POS).premierResultat, null);
 
 verifier("trous : tentative absente → 0",
   repriseTexteATrous({ reponses: { 3: "est" } }, POS).tentative, 0);
@@ -55,7 +70,7 @@ const CATS = ["Apparence", "Caractère"];
 
 verifier("classement : réserve et catégories complètes",
   repriseClassement({ pool: [2, 0], classement: { Apparence: [1], Caractère: [3] } }, 4, CATS),
-  { pool: [2, 0], classement: { Apparence: [1], Caractère: [3] } });
+  { pool: [2, 0], classement: { Apparence: [1], Caractère: [3] }, premierResultat: null });
 
 verifier("classement : tout placé, rien en réserve",
   repriseClassement({ pool: [], classement: { Apparence: [0, 1], Caractère: [2] } }, 3, CATS).pool, []);
@@ -69,6 +84,14 @@ refuse("classement : catégorie renommée",
   repriseClassement({ pool: [0], classement: { Apparence: [1], Nature: [] } }, 2, CATS));
 refuse("classement : catégorie ajoutée",
   repriseClassement({ pool: [], classement: { Apparence: [0], Caractère: [1] } }, 2, [...CATS, "Métier"]));
+verifier("classement : la note du premier essai survit",
+  repriseClassement({ pool: [2, 0], classement: { Apparence: [1], Caractère: [3] },
+    premierResultat: { 1: true, 3: false } }, 4, CATS).premierResultat,
+  { 1: true, 3: false });
+refuse("classement : relevé portant un item inconnu",
+  repriseClassement({ pool: [2, 0], classement: { Apparence: [1], Caractère: [3] },
+    premierResultat: { 9: true } }, 4, CATS).premierResultat);
+
 refuse("classement : rien de classé",
   repriseClassement({ pool: [0, 1], classement: { Apparence: [], Caractère: [] } }, 2, CATS));
 
@@ -195,7 +218,8 @@ const allerRetour = (v) => JSON.parse(JSON.stringify(v));
 
 // Ce que chaque composant écrit réellement dans son `onProgres`.
 const ecrits = {
-  trous: { reponses: Object.fromEntries([[3, "est"], [7, "et"]].map(([k, v]) => [String(k), v])), tentative: 1 },
+  trous: { reponses: Object.fromEntries([[3, "est"], [7, "et"]].map(([k, v]) => [String(k), v])),
+    tentative: 1, premierResultat: { 3: true, 7: false } },
   classement: { pool: [2], classement: Object.fromEntries([["Apparence", [0]], ["Caractère", [1]]]) },
   analyse: { phraseIdx: 1, etapeIdx: 0, reponses: { 0: { Verbe: { debut: 1, fin: 1, correct: true } } }, score: { bon: 1, total: 1 } },
   // `justes` est un Set dans le composant : il est étalé en tableau AVANT
@@ -206,9 +230,11 @@ const ecrits = {
 };
 
 verifier("aller-retour : trous",
-  repriseTexteATrous(allerRetour(ecrits.trous), POS), { reponses: { 3: "est", 7: "et" }, tentative: 1 });
+  repriseTexteATrous(allerRetour(ecrits.trous), POS),
+  { reponses: { 3: "est", 7: "et" }, tentative: 1, premierResultat: { 3: true, 7: false } });
 verifier("aller-retour : classement",
-  repriseClassement(allerRetour(ecrits.classement), 3, CATS), ecrits.classement);
+  repriseClassement(allerRetour(ecrits.classement), 3, CATS),
+  { ...ecrits.classement, premierResultat: null });
 verifier("aller-retour : analyse",
   repriseAnalysePhrase(allerRetour(ecrits.analyse), 3).phraseIdx, 1);
 verifier("aller-retour : comparaison, les lignes justes survivent",

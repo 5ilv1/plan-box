@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { repriseComparaison, type EtatComparaison } from "@/lib/reprise-composants";
+import type { ScoreActivite } from "@/lib/score-activite";
 
 export interface PaireComparaison {
   gauche: string;
@@ -15,7 +16,7 @@ interface Props {
   paires: PaireComparaison[];
   avecEgalite?: boolean;
   onTermine: (
-    score: { bon: number; total: number },
+    score: ScoreActivite,
     reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[],
   ) => void;
   /** Reprise : les signes déjà placés. Ignorés s'ils ne collent plus aux paires. */
@@ -100,7 +101,14 @@ export default function ComparaisonEleve({ titre, consigne, paires, avecEgalite,
         reponse: `${p.gauche} ${reponses[i]} ${p.droite}`,
         correcte: refs[i],
       }));
-      onTermine({ bon: paires.length, total: paires.length }, log);
+      // L'activité ne se termine que tout juste : `bon` vaut le total, et
+      // c'est ce qui décide du statut. Mais la note qui compte pour le suivi
+      // est celle du premier essai — elle était calculée pour l'affichage,
+      // puis jetée, et la base enregistrait un sans-faute pour tout le monde.
+      onTermine(
+        { bon: paires.length, total: paires.length, premier: refs.filter(Boolean).length },
+        log,
+      );
       return;
     }
 

@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import { repriseTexteATrous, type EtatTexteATrous } from "@/lib/reprise-composants";
+import type { ScoreActivite } from "@/lib/score-activite";
 
 interface Trou {
   position: number;
@@ -99,7 +100,7 @@ interface Props {
   consigne: string;
   texteComplet: string;
   trous: Trou[];
-  onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
+  onTermine: (score: ScoreActivite, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
   /** Reprise : le travail laissé la dernière fois. Ignoré s'il ne colle plus au texte. */
   etatInitial?: unknown;
   /** Appelé à chaque frappe, pour que la page enregistre le travail en cours. */
@@ -123,6 +124,11 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
   const [verifie, setVerifie] = useState(false);
   const [termine, setTermine] = useState(false);
   const [tentative, setTentative] = useState(reprise?.tentative ?? 0);
+  // Ce que l'élève savait faire AVANT de corriger. Sans cette mémoire, un
+  // texte terminé au troisième essai s'enregistrait en sans-faute.
+  const [premierResultat, setPremierResultat] = useState<Record<string, boolean> | null>(
+    reprise?.premierResultat ?? null,
+  );
   const inputRefs = useRef<Record<number, HTMLInputElement | null>>({});
 
   // Le rappel de progrès passe par une référence : la page le recrée à chaque
@@ -149,8 +155,9 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
     progresRef.current?.({
       reponses: Object.fromEntries(Object.entries(reponses).map(([k, v]) => [String(k), v])),
       tentative,
+      premierResultat,
     });
-  }, [reponses, tentative, termine]);
+  }, [reponses, tentative, premierResultat, termine]);
 
   function normaliser(s: string): string {
     return s.toLowerCase().trim()
@@ -179,10 +186,23 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
     setVerifie(true);
     setTentative((t) => t + 1);
 
+    const premier = premierResultat ?? Object.fromEntries(
+      Object.entries(res).map(([k, v]) => [String(k), v]),
+    );
+    if (premierResultat === null) setPremierResultat(premier);
+
     if (bonnes === trous.length) {
       setTermine(true);
-      onTermine({ bon: trous.length, total: trous.length }, buildReponsesEleve());
+      onTermine(
+        { bon: trous.length, total: trous.length, premier: nbJustes(premier) },
+        buildReponsesEleve(),
+      );
     }
+  }
+
+  /** Le nombre de trous justes dans un relevé de correction. */
+  function nbJustes(releve: Record<string, boolean> | null): number {
+    return releve ? Object.values(releve).filter(Boolean).length : 0;
   }
 
   function reessayer() {
@@ -430,7 +450,10 @@ export default function TexteATrousEleve({ titre, consigne, texteComplet, trous,
             onClick={tentative >= 3 ? () => {
               // Forcer terminer après 3 tentatives
               setTermine(true);
-              onTermine({ bon: bonnesReponses, total: trous.length }, buildReponsesEleve());
+              onTermine(
+                { bon: bonnesReponses, total: trous.length, premier: nbJustes(premierResultat) },
+                buildReponsesEleve(),
+              );
             } : reessayer}
             style={{
               padding: "0.5rem 1rem", borderRadius: 999, border: "none",

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { repriseRangement, type EtatRangement } from "@/lib/reprise-composants";
+import type { ScoreActivite } from "@/lib/score-activite";
 
 export interface SerieRangement {
   elements: string[]; // dans le bon ordre
@@ -12,7 +13,7 @@ interface Props {
   consigne: string;
   series: SerieRangement[];
   onTermine: (
-    score: { bon: number; total: number },
+    score: ScoreActivite,
     reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[],
   ) => void;
   /** Reprise : les séries laissées en cours. Ignorées si les étiquettes ont changé. */
@@ -132,7 +133,12 @@ export default function RangementEleve({ titre, consigne, series, onTermine, eta
           reponse: s.elements.join(" → "),
           correcte: refs[k] ?? true,
         }));
-        onTermine({ bon: series.length, total: series.length }, log);
+        // Comme pour la comparaison : `bon` dit que c'est fini, `premier`
+        // dit ce que l'élève savait faire avant de corriger.
+        onTermine(
+          { bon: series.length, total: series.length, premier: refs.filter(Boolean).length },
+          log,
+        );
       }
       return;
     }

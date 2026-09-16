@@ -402,7 +402,7 @@ le travail le plus long à refaire : vingt étiquettes replacées une à une.
 
 - `lib/reprise-composants.ts` ne contient que les **gardes** : « cet état décrit-il encore
   ce contenu-là ? ». Elles sont pures et testées
-  (`npx tsx docs/tests/test-reprise-composants.mjs`, 51 cas) parce qu'une garde trop
+  (`npx tsx docs/tests/test-reprise-composants.mjs`, 57 cas) parce qu'une garde trop
   permissive **ne plante pas** : elle rend un travail qui se rapporte à d'autres
   questions. Dans le doute elles rendent `null`, et l'élève recommence — le comportement
   d'avant, jamais une régression.
@@ -426,6 +426,34 @@ le travail le plus long à refaire : vingt étiquettes replacées une à une.
 - Ces cinq activités ne transmettaient pas `nbTentatives` à `marquerFait()` : leur
   `premier_score` était réécrit à chaque passage, exactement comme `ExerciceStack` avant
   correction. Toute nouvelle activité doit le transmettre.
+
+### ⚠️ La note honnête d'une activité qui se refait jusqu'au sans-faute
+
+Quatre des cinq ne se terminent **que** lorsque tout est juste : l'élève corrige jusqu'au
+bout. Leur score final vaut donc toujours le total — et c'est cette valeur qui partait en
+base. `premier_score` valait **100 % pour tout le monde**, y compris pour l'élève qui s'y
+était repris quatre fois. Le graphe de réussite par sous-domaine, fait précisément pour
+repérer le travail bâclé, ne voyait que des notes parfaites. Seule l'analyse de phrase y
+échappait, son score étant déjà celui du premier jet.
+
+`ScoreActivite` (`lib/score-activite.ts`) porte donc **deux nombres** :
+
+| Champ | Ce qu'il dit | Qui s'en sert |
+|---|---|---|
+| `bon` / `total` | ce qui est juste à la fin | le statut du bloc (`fait` / `en cours`) |
+| `premier` | ce qui était juste au **premier essai** | `premier_score`, donc le suivi |
+
+- Le statut ne change pas de calcul : un élève qui finit a fini, quel que soit le nombre
+  d'essais. Seule la note enregistrée devient honnête.
+- `premier` est **facultatif** : une activité à essai unique n'en a pas besoin,
+  `marquerFait()` retombe sur `score.bon`.
+- La comparaison et le rangement calculaient déjà cette note pour l'afficher
+  (« 9/10 du premier coup ») avant de la jeter. Le texte à trous et le classement ont
+  gagné un relevé `premierResultat`, qui **traverse l'interruption** comme les réponses —
+  sans quoi un élève coupé après un premier jet raté reviendrait corriger et ressortirait
+  à 100 %.
+- ⚠️ La page d'entraînement d'un chapitre (`exercice_resultat`) garde son score final :
+  elle pilote la progression dans le chapitre, pas le suivi par sous-domaine.
 
 ## Suivi enseignant
 

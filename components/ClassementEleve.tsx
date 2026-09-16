@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { repriseClassement, type EtatClassement } from "@/lib/reprise-composants";
+import type { ScoreActivite } from "@/lib/score-activite";
 
 interface Item {
   texte: string;
@@ -13,7 +14,7 @@ interface Props {
   consigne: string;
   categories: string[];
   items: Item[];
-  onTermine: (score: { bon: number; total: number }, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
+  onTermine: (score: ScoreActivite, reponsesEleve: { id: number; reponse: string; correcte: boolean | null }[]) => void;
   /** Reprise : les étiquettes déjà glissées. Ignorées si les items ont changé. */
   etatInitial?: unknown;
   /** Appelé à chaque glissement, pour que la page enregistre le travail. */
@@ -66,6 +67,11 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
   const [etat, setEtat] = useState<"classement" | "resultat" | "termine">("classement");
   const [erreurs, setErreurs] = useState<Set<number>>(new Set());
   const [score, setScore] = useState({ bon: 0, total: 0 });
+  // Le classement se refait jusqu'au sans-faute : sans mémoire du premier
+  // essai, tout le monde finissait à 100 % dans le suivi.
+  const [premierResultat, setPremierResultat] = useState<Record<string, boolean> | null>(
+    () => reprise?.premierResultat ?? null,
+  );
 
   // On enregistre les identifiants, pas les objets : le contenu peut être
   // rechargé, les index restent les mêmes tant que l'empreinte tient.
@@ -77,8 +83,9 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
       classement: Object.fromEntries(
         Object.entries(classement).map(([c, arr]) => [c, arr.map((i) => i.id)])
       ),
+      premierResultat,
     });
-  }, [itemsRestants, classement, etat, items.length]);
+  }, [itemsRestants, classement, premierResultat, etat, items.length]);
 
   // Touch drag state
   const touchDragRef = useRef<{
@@ -309,9 +316,17 @@ export default function ClassementEleve({ titre, consigne, categories, items, on
 
     setScore({ bon, total: items.length });
 
+    const premier = premierResultat ?? Object.fromEntries(
+      log.map((l) => [String(l.id - 1), l.correcte]),
+    );
+    if (premierResultat === null) setPremierResultat(premier);
+
     if (errs.size === 0) {
       setEtat("termine");
-      onTermine({ bon, total: items.length }, log);
+      onTermine(
+        { bon, total: items.length, premier: Object.values(premier).filter(Boolean).length },
+        log,
+      );
     } else {
       setErreurs(errs);
       setEtat("resultat");
