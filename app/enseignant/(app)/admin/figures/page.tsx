@@ -124,6 +124,37 @@ const CAS: { titre: string; note: string; figure: Figure }[] = [
       segments: [{ de: [2.5, 0], a: [2.5, 6], pointille: true, nom: "a" }],
     },
   },
+  // ── Fractions par des aires ───────────────────────────────────────────
+  {
+    titre: "Disque, 3 huitièmes",
+    note: "les huit traits de partage vont jusqu'au bord : c'est en les comptant qu'on trouve le dénominateur",
+    figure: { type: "fraction_aire", forme: "cercle", parts: 8, coloriees: 3 },
+  },
+  {
+    titre: "Disque, 2 tiers",
+    note: "la première part commence en haut, le tracé tourne dans le sens des aiguilles",
+    figure: { type: "fraction_aire", forme: "cercle", parts: 3, coloriees: 2 },
+  },
+  {
+    titre: "Disque, 5 sixièmes dispersés",
+    note: "parts non contiguës : il faut compter, pas regarder",
+    figure: { type: "fraction_aire", forme: "cercle", parts: 6, coloriees: [0, 1, 3, 4, 5] },
+  },
+  {
+    titre: "Rectangle, 3 quarts",
+    note: "jusqu'à six parts, une seule ligne — la bande de chocolat",
+    figure: { type: "fraction_aire", forme: "rectangle", parts: 4, coloriees: 3 },
+  },
+  {
+    titre: "Rectangle, 5 douzièmes",
+    note: "quadrillage 4 × 3 : le nombre de colonnes divise le nombre de parts",
+    figure: { type: "fraction_aire", forme: "rectangle", parts: 12, coloriees: 5, colonnes: 4 },
+  },
+  {
+    titre: "Rectangle, 4 septièmes",
+    note: "7 ne se quadrille pas : on reste en ligne plutôt que de dessiner des parts inégales",
+    figure: { type: "fraction_aire", forme: "rectangle", parts: 7, coloriees: 4 },
+  },
 ];
 
 export default function BancFiguresPage() {
@@ -136,7 +167,7 @@ export default function BancFiguresPage() {
         Figures — banc d&apos;essai
       </h1>
       <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", margin: "0 0 8px" }}>
-        Les douze cas de contrôle de <code>SPEC-FIGURES.md</code>. Réduis la
+        Les cas de contrôle de <code>SPEC-FIGURES.md</code>. Réduis la
         fenêtre pour vérifier le rendu sur mobile.
       </p>
       <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", margin: "0 0 28px" }}>

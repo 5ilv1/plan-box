@@ -531,6 +531,24 @@ Chacune a son contrat, et `lib/seances-generation.ts` les concentre :
 - le niveau s'appelle `niveauNom` pour `exercice` et `calcul_mental`, `niveau`
   partout ailleurs.
 
+### Relecture
+
+L'exercice s'affiche **en entier** et se corrige sur place : titre, consigne,
+énoncés et réponses attendues. Un aperçu tronqué n'est pas une relecture — on ne
+décide pas d'envoyer un exercice à des élèves sans l'avoir lu jusqu'au bout.
+
+⚠️ Deux choses restent en lecture seule, et ce n'est pas un oubli : le **texte
+d'un texte à trous** et les **groupes d'une analyse de phrase**. Leurs positions
+sont des index calculés sur le texte (`trous.position`, `groupes.debut/fin`) ;
+les retoucher à la main désynchroniserait l'exercice et l'élève se retrouverait
+devant une réponse impossible — le piège nº 8 des pièges connus. Pour ces
+cas-là, le bouton **Régénérer** refait la ligne seule, sans relancer le lot.
+
+Le sélecteur de type propose les types **adaptés d'abord, puis tous les autres** :
+ne montrer que les deux ou trois « justes » rendait le reste inatteignable — on
+ne pouvait pas demander du calcul mental sur une séance de numération. Changer
+le sous-domaine recalcule les suggestions.
+
 La génération est **séquentielle** : `generer-exercice` limite à 20 appels par
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.

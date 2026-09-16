@@ -19,6 +19,10 @@
  * voir que la marque n'est pas un trait de la figure.
  */
 
+import { partsColoriees, colonnesPour, type FractionAire } from "@/lib/fractions-aires";
+
+export type { FractionAire } from "@/lib/fractions-aires";
+
 export interface FigureCadran {
   type: "cadran";
   heures: number;
@@ -77,7 +81,7 @@ export interface FigurePolygone {
   cercles?: CercleFigure[];
 }
 
-export type Figure = FigureCadran | FigureAngle | FigurePolygone;
+export type Figure = FigureCadran | FigureAngle | FigurePolygone | FractionAire;
 
 /** Couleur du codage. `--belt` suit la ceinture, avec un repli lisible. */
 const CODAGE = "var(--belt, #c0392b)";
@@ -387,6 +391,93 @@ function Polygone({ figure }: { figure: FigurePolygone }) {
   );
 }
 
+// ── Fraction représentée par une aire ───────────────────────────────────────
+
+/**
+ * Disque ou rectangle partagé en parts égales, certaines coloriées.
+ * Contrat : `lib/fractions-aires.ts`.
+ *
+ * Deux choses à ne pas changer sans y penser :
+ *  • les traits de partage sont en `currentColor` et vont jusqu'au bord — c'est
+ *    en les comptant que l'élève trouve le dénominateur ;
+ *  • le texte de rechange reste vague, comme pour l'angle : écrire « 3 parts
+ *    sur 8 sont coloriées » donnerait la réponse à qui lit la page autrement
+ *    qu'avec les yeux.
+ */
+function FractionAireVue({ figure }: { figure: FractionAire }) {
+  const parts = Math.max(1, Math.round(Number(figure.parts) || 1));
+  const coloriee = new Set(partsColoriees(figure));
+  const description = "Figure partagée en parts égales, dont certaines sont coloriées";
+
+  if (figure.forme === "cercle") {
+    const R = 92, cx = 105, cy = 105;
+    const pt = (a: number): [number, number] => [cx + R * Math.sin(a), cy - R * Math.cos(a)];
+    const secteur = (i: number) => {
+      const a0 = (i * 2 * Math.PI) / parts;
+      const a1 = ((i + 1) * 2 * Math.PI) / parts;
+      const [x0, y0] = pt(a0);
+      const [x1, y1] = pt(a1);
+      const grand = a1 - a0 > Math.PI ? 1 : 0;
+      return `M${cx} ${cy} L${x0.toFixed(1)} ${y0.toFixed(1)} A ${R} ${R} 0 ${grand} 1 ${x1.toFixed(1)} ${y1.toFixed(1)} Z`;
+    };
+
+    return (
+      <svg viewBox="0 0 210 210" width="190" height="190" role="img" aria-label={description} style={{ display: "block" }}>
+        {parts === 1 ? (
+          <circle cx={cx} cy={cy} r={R} fill={CODAGE} fillOpacity={coloriee.has(0) ? 0.55 : 0} stroke="currentColor" strokeWidth="3" />
+        ) : (
+          Array.from({ length: parts }, (_, i) => (
+            <path
+              key={i}
+              d={secteur(i)}
+              fill={CODAGE}
+              fillOpacity={coloriee.has(i) ? 0.55 : 0}
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinejoin="round"
+            />
+          ))
+        )}
+        <circle cx={cx} cy={cy} r={R} fill="none" stroke="currentColor" strokeWidth="3" />
+      </svg>
+    );
+  }
+
+  // Rectangle : le quadrillage doit diviser le nombre de parts, sans quoi la
+  // dernière ligne serait incomplète et le dessin mentirait.
+  const demande = Math.round(Number(figure.colonnes) || 0);
+  const cols = demande > 0 && parts % demande === 0 ? demande : colonnesPour(parts);
+  const lignes = Math.ceil(parts / cols);
+  const U = 46, M = 4;
+  const W = cols * U + 2 * M;
+  const H = lignes * U + 2 * M;
+
+  return (
+    <svg
+      viewBox={`0 0 ${W} ${H}`}
+      width="100%"
+      role="img"
+      aria-label={description}
+      style={{ display: "block", maxWidth: Math.min(W * 1.6, 360) }}
+    >
+      {Array.from({ length: parts }, (_, i) => (
+        <rect
+          key={i}
+          x={M + (i % cols) * U}
+          y={M + Math.floor(i / cols) * U}
+          width={U}
+          height={U}
+          fill={CODAGE}
+          fillOpacity={coloriee.has(i) ? 0.55 : 0}
+          stroke="currentColor"
+          strokeWidth="2"
+        />
+      ))}
+      <rect x={M} y={M} width={cols * U} height={lignes * U} fill="none" stroke="currentColor" strokeWidth="3" />
+    </svg>
+  );
+}
+
 // ── Point d'entrée ──────────────────────────────────────────────────────────
 
 export default function FigureGeo({ figure }: { figure: Figure }) {
@@ -396,6 +487,7 @@ export default function FigureGeo({ figure }: { figure: Figure }) {
     figure.type === "cadran" ? <Cadran figure={figure} />
     : figure.type === "angle" ? <Angle figure={figure} />
     : figure.type === "polygone" ? <Polygone figure={figure} />
+    : figure.type === "fraction_aire" ? <FractionAireVue figure={figure} />
     : null;
 
   if (!corps) return null;

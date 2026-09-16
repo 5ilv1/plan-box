@@ -32,6 +32,7 @@ import GenererRangementForm from "@/components/GenererRangementForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
 import GenererQCMForm from "@/components/GenererQCMForm";
 import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
 import ExercicePreview from "@/components/ExercicePreview";
 import DicteePreview from "@/components/DicteePreview";
 import BanqueExercices from "@/components/BanqueExercices";
@@ -82,7 +83,14 @@ interface LectureData {
 
 interface QCMData {
   titre?: string;
-  questions: { question: string; options: string[]; reponse_correcte: number; explication?: string }[];
+  questions: {
+    question: string;
+    options: string[];
+    reponse_correcte: number;
+    explication?: string;
+    /** Dessin sous l'énoncé — fraction en images. Voir SPEC-FIGURES.md. */
+    figure?: Figure;
+  }[];
 }
 
 interface ProblemeMathsData {
@@ -468,7 +476,10 @@ function PageGenererInner() {
     // ── QCM ───────────────────────────────────────────────────────────
     if (params.type === "qcm") {
       const p = params as any;
-      const res = await fetch("/api/generer-qcm-theme", {
+      // Les fractions en images ne passent pas par l'IA : la bonne réponse et
+      // les trois mauvaises se calculent à partir du dessin.
+      const route = p.source === "fractions" ? "/api/generer-fractions-aires" : "/api/generer-qcm-theme";
+      const res = await fetch(route, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(p),
@@ -712,10 +723,13 @@ function PageGenererInner() {
         genere_par_ia: true,
       };
     } else if (contenuFinal.type === "qcm") {
+      // Un QCM de fractions est calculé, pas écrit par un modèle : le dire
+      // faussement tromperait la relecture comme le suivi.
+      const parIA = (paramsEnCours as any)?.source !== "fractions";
       contenuJsonb = {
         ...contenuFinal.data,
-        genere_par_ia: true,
-        modele_utilise: "claude-sonnet-4-6",
+        genere_par_ia: parIA,
+        ...(parIA ? { modele_utilise: "claude-sonnet-4-6" } : {}),
       };
     } else if (contenuFinal.type === "probleme_maths") {
       contenuJsonb = {
@@ -2049,6 +2063,13 @@ function PageGenererInner() {
                             onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
                           />
                         </div>
+                        {/* Le dessin dont parle l'énoncé : sans lui, on valide
+                            une question qu'on n'a pas pu relire. */}
+                        {q.figure && (
+                          <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
+                            <FigureGeo figure={q.figure} />
+                          </div>
+                        )}
                         <ul style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4, listStyle: "none" }}>
                           {q.options.map((opt, j) => {
                             const correct = j === q.reponse_correcte;

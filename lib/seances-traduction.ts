@@ -273,11 +273,29 @@ const TYPES_PAR_SOUS_DOMAINE: Record<string, string[]> = {
   "Organisation et gestion de données": ["probleme_maths", "exercice"],
 };
 
+/**
+ * Tous les types pilotables depuis une séance, dans l'ordre de la liste.
+ * Ce qui n'est pas suggéré reste atteignable : voir plus bas pourquoi.
+ */
+const TYPES_PILOTABLES = [
+  "exercice", "qcm", "texte_a_trous", "analyse_phrase", "lecture",
+  "calcul_mental", "probleme_maths", "comparaison", "rangement", "eval",
+];
+
+/**
+ * Les types proposés pour un sous-domaine : les plus adaptés d'abord, **puis
+ * tous les autres**.
+ *
+ * Ne proposer que les deux ou trois types « justes » rendait le reste
+ * inatteignable : un enseignant qui voulait du calcul mental sur une séance de
+ * numération n'avait aucun moyen de le demander. La suggestion guide, elle ne
+ * doit pas enfermer.
+ */
 export function typesSuggeres(sousMatiere: string, evaluation: boolean): string[] {
-  const types = TYPES_PAR_SOUS_DOMAINE[sousMatiere] ?? ["exercice", "qcm"];
-  // Une séance de bilan s'envoie en évaluation, mais on garde les autres types
-  // à portée : l'enseignant peut préférer un entraînement de révision.
-  return evaluation ? ["eval", ...types] : types;
+  const adaptes = TYPES_PAR_SOUS_DOMAINE[sousMatiere] ?? ["exercice", "qcm"];
+  const tete = evaluation ? ["eval", ...adaptes] : adaptes;
+  const reste = TYPES_PILOTABLES.filter((t) => !tete.includes(t));
+  return [...tete, ...reste];
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

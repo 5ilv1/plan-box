@@ -115,15 +115,27 @@ verifier("éval : sans accent", estEvaluation("EVALUATION G1"), true);
 verifier("éval : « Bilan »", estEvaluation("Grammaire - Bilan de grammaire"), true);
 verifier("éval : séance ordinaire", estEvaluation("Maths CE2 - Additionner jusqu'à 9 999"), false);
 verifier("éval : le type eval passe en tête", typesSuggeres("Numération", true)[0], "eval");
+verifier("types : aucun doublon", (() => {
+  const t = typesSuggeres("Numération", true);
+  return t.length === new Set(t).size;
+})(), true);
 verifier("types : conjugaison → texte à trous d'abord", typesSuggeres("Conjugaison", false)[0], "texte_a_trous");
 verifier("types : grammaire → analyse de phrase d'abord", typesSuggeres("Grammaire", false)[0], "analyse_phrase");
 // `classement` et `ecriture` sont volontairement absents : une séance ne donne
 // ni les catégories du premier, ni le sujet du second.
-verifier("types : vocabulaire sans classement", typesSuggeres("Vocabulaire", false), ["qcm", "exercice"]);
+verifier("types : vocabulaire, les plus adaptés d'abord",
+  typesSuggeres("Vocabulaire", false).slice(0, 2), ["qcm", "exercice"]);
+// La suggestion guide, elle n'enferme pas : tout type pilotable reste
+// atteignable, sinon on ne peut pas demander du calcul mental sur une séance
+// de numération.
+verifier("types : le calcul mental reste atteignable partout",
+  typesSuggeres("Numération", false).includes("calcul_mental"), true);
+verifier("types : le classement reste absent (non pilotable)",
+  typesSuggeres("Vocabulaire", false).includes("classement"), false);
 verifier("types : écriture sans le type ecriture",
   typesSuggeres("Écriture", false).includes("ecriture"), false);
 verifier("types : sous-domaine inconnu → repli raisonnable",
-  typesSuggeres("Zorglub", false), ["exercice", "qcm"]);
+  typesSuggeres("Zorglub", false).slice(0, 2), ["exercice", "qcm"]);
 
 /* ── 5. Niveaux : « CM » vaut CM1 + CM2 ─────────────────────────────────── */
 

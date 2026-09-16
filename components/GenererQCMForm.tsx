@@ -5,6 +5,7 @@ import { AssignationSelecteur } from "@/types";
 import AssignationSelector from "@/components/AssignationSelector";
 import MatiereChapitreSelector, { MatiereChapitreValue, sousMatiereRenseignee } from "@/components/MatiereChapitreSelector";
 import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
+import type { FormeFraction } from "@/lib/fractions-aires";
 
 interface Props {
   onGenerer: (params: any) => void;
@@ -13,6 +14,15 @@ interface Props {
 }
 
 const ASSIGNATION_VIDE: AssignationSelecteur = { groupeIds: [], eleveUids: [], groupeNoms: [] };
+
+/**
+ * Deux façons de fabriquer un QCM :
+ *  • `theme` — l'IA écrit les questions à partir d'un sujet ;
+ *  • `fractions` — les questions sont CALCULÉES à partir d'un dessin
+ *    (`lib/fractions-aires.ts`). Pas d'IA : sur du numérique, la bonne réponse
+ *    se déduit de la figure, elle ne se demande pas à un modèle.
+ */
+type SourceQCM = "theme" | "fractions";
 
 export default function GenererQCMForm({ onGenerer, chargement, defaultValues }: Props) {
   const dv = defaultValues;
@@ -24,6 +34,9 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
     chapitreId: dv?.chapitreId ?? "",
     chapitreTitre: dv?.chapitreTitre ?? "",
   });
+  const [source, setSource] = useState<SourceQCM>(dv?.source ?? "theme");
+  const [formes, setFormes] = useState<FormeFraction[]>(dv?.formes ?? ["cercle", "rectangle"]);
+  const [dispersees, setDispersees] = useState<boolean>(dv?.dispersees ?? false);
   const [theme, setTheme] = useState(dv?.theme ?? "");
   const [consigne, setConsigne] = useState(dv?.consigne ?? "");
   const [titre, setTitre] = useState(dv?.titre ?? "");
@@ -39,13 +52,20 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
       alert("Choisis une sous-matière : sans elle, le suivi ne peut pas dire sur quoi revenir.");
       return;
     }
-    if (!theme.trim() && !consigne.trim()) {
+    if (source === "theme" && !theme.trim() && !consigne.trim()) {
       alert("Précise au moins un thème ou une consigne.");
+      return;
+    }
+    if (source === "fractions" && formes.length === 0) {
+      alert("Choisis au moins une forme : le disque ou le rectangle.");
       return;
     }
     const dateEff = periodicite === "semaine" ? lundiDeSemaine(semaineAssignation) : dateAssignation;
     onGenerer({
       type: "qcm" as const,
+      source,
+      formes,
+      dispersees,
       niveau,
       matiere: mcv.matiere,
       sous_matiere: mcv.sousMatiere,
@@ -64,6 +84,36 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
 
   return (
     <form onSubmit={handleSubmit} style={{ padding: "16px 0" }}>
+      <div className="form-group">
+        <label className="form-label">Type de QCM</label>
+        <div style={{ display: "flex", gap: 8 }}>
+          {([
+            { v: "theme", libelle: "À partir d'un thème", note: "écrit par l'IA" },
+            { v: "fractions", libelle: "Fractions en images", note: "disques et rectangles, calculé" },
+          ] as const).map((o) => (
+            <button
+              key={o.v}
+              type="button"
+              onClick={() => setSource(o.v)}
+              style={{
+                flex: 1,
+                textAlign: "left",
+                padding: "10px 12px",
+                borderRadius: 10,
+                cursor: "pointer",
+                border: source === o.v ? "2px solid #92400E" : "1px solid var(--border)",
+                background: source === o.v ? "rgba(146,64,14,0.06)" : "white",
+              }}
+            >
+              <span style={{ display: "block", fontWeight: 700, fontSize: "0.875rem", color: source === o.v ? "#92400E" : "var(--text)" }}>
+                {o.libelle}
+              </span>
+              <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)" }}>{o.note}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
       <MatiereChapitreSelector value={mcv} onChange={setMcv} exigerSousMatiere />
 
       <div className="grid-2" style={{ marginBottom: 16 }}>
@@ -88,27 +138,79 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
         </div>
       </div>
 
-      <div className="form-group">
-        <label className="form-label">Thème / sujet du QCM</label>
-        <input
-          className="form-input"
-          value={theme}
-          onChange={(e) => setTheme(e.target.value)}
-          placeholder="Ex : Le système solaire, la Préhistoire, les fractions simples…"
-        />
-      </div>
+      {source === "theme" ? (
+        <>
+          <div className="form-group">
+            <label className="form-label">Thème / sujet du QCM</label>
+            <input
+              className="form-input"
+              value={theme}
+              onChange={(e) => setTheme(e.target.value)}
+              placeholder="Ex : Le système solaire, la Préhistoire, les fractions simples…"
+            />
+          </div>
 
-      <div className="form-group">
-        <label className="form-label">Consignes pour l&apos;IA (optionnel)</label>
-        <textarea
-          className="form-input"
-          value={consigne}
-          onChange={(e) => setConsigne(e.target.value)}
-          rows={2}
-          placeholder='Ex : "Insiste sur le vocabulaire" ou "Questions plutôt faciles"'
-          style={{ resize: "vertical" }}
-        />
-      </div>
+          <div className="form-group">
+            <label className="form-label">Consignes pour l&apos;IA (optionnel)</label>
+            <textarea
+              className="form-input"
+              value={consigne}
+              onChange={(e) => setConsigne(e.target.value)}
+              rows={2}
+              placeholder='Ex : "Insiste sur le vocabulaire" ou "Questions plutôt faciles"'
+              style={{ resize: "vertical" }}
+            />
+          </div>
+        </>
+      ) : (
+        <>
+          <div className="form-group">
+            <label className="form-label">Formes</label>
+            <div style={{ display: "flex", gap: 16 }}>
+              {([
+                { v: "cercle", libelle: "Disque" },
+                { v: "rectangle", libelle: "Rectangle" },
+              ] as const).map((f) => (
+                <label key={f.v} style={{ display: "flex", alignItems: "center", gap: 6, fontSize: "0.875rem", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={formes.includes(f.v)}
+                    onChange={(e) =>
+                      setFormes((prev) =>
+                        e.target.checked ? [...prev, f.v] : prev.filter((x) => x !== f.v),
+                      )
+                    }
+                  />
+                  {f.libelle}
+                </label>
+              ))}
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 8, fontSize: "0.875rem", cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={dispersees}
+                onChange={(e) => setDispersees(e.target.checked)}
+                style={{ marginTop: 3 }}
+              />
+              <span>
+                Parts coloriées dispersées
+                <span style={{ display: "block", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                  Elles ne se suivent plus : il faut compter, pas regarder. C&apos;est le vrai levier
+                  de difficulté, bien plus que la taille du dénominateur.
+                </span>
+              </span>
+            </label>
+          </div>
+
+          <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", marginTop: -4, marginBottom: 16 }}>
+            Les dénominateurs suivent le niveau choisi, et les mauvaises réponses sont les erreurs
+            classiques : fraction inversée, parts blanches comptées, coloriées rapportées aux blanches.
+          </p>
+        </>
+      )}
 
       <div className="form-group">
         <label className="form-label">Titre (optionnel)</label>
@@ -156,7 +258,11 @@ export default function GenererQCMForm({ onGenerer, chargement, defaultValues }:
 
       <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
         <button type="submit" className="btn-primary" disabled={chargement} style={{ flex: 1 }}>
-          {chargement ? "Génération du QCM…" : "✨ Générer le QCM"}
+          {chargement
+            ? "Génération du QCM…"
+            : source === "fractions"
+            ? "Générer le QCM de fractions"
+            : "✨ Générer le QCM"}
         </button>
       </div>
     </form>

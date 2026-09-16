@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { TYPE_BLOC_CONFIG, type TypeBloc } from "@/types";
 import { MATIERES_CANONIQUES } from "@/lib/matieres-referentiel";
-import type { SeanceTraduite } from "@/lib/seances-traduction";
+import { typesSuggeres, type SeanceTraduite } from "@/lib/seances-traduction";
 import { appelPourSeance, empechement, titreDuBloc } from "@/lib/seances-generation";
 
 /**
@@ -131,6 +131,28 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
     setEtape("relecture");
   }, [lignes, majLigne]);
 
+  /** Refaire une ligne seule, sans relancer tout le lot. */
+  const regenerer = useCallback(async (cle: string) => {
+    const ligne = lignes.find((l) => l.cle === cle);
+    if (!ligne) return;
+    majLigne(cle, { statut: "encours", erreur: undefined });
+    try {
+      const appel = appelPourSeance(ligne, ligne.type);
+      const res = await fetch(appel.endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(appel.body),
+      });
+      const json = await res.json();
+      if (!res.ok || json.erreur) throw new Error(json.erreur ?? `Erreur ${res.status}`);
+      const contenu = appel.enveloppe === "resultat" ? json.resultat : json;
+      if (!contenu) throw new Error("Réponse vide du générateur");
+      majLigne(cle, { statut: "ok", contenu });
+    } catch (e) {
+      majLigne(cle, { statut: "echec", erreur: (e as Error).message });
+    }
+  }, [lignes, majLigne]);
+
   /* ── Pose sur la grille ───────────────────────────────────────────────── */
 
   const [pose, setPose] = useState(false);
@@ -245,7 +267,7 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
                   </button>
                 </div>
               )}
-              <ListeLignes lignes={lignes} etape={etape} onMaj={majLigne} />
+              <ListeLignes lignes={lignes} etape={etape} onMaj={majLigne} onRegenerer={regenerer} />
             </>
           )}
         </div>
@@ -309,11 +331,12 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
 /* ── La liste, groupée par jour ───────────────────────────────────────────── */
 
 function ListeLignes({
-  lignes, etape, onMaj,
+  lignes, etape, onMaj, onRegenerer,
 }: {
   lignes: Ligne[];
   etape: Etape;
   onMaj: (cle: string, champs: Partial<Ligne>) => void;
+  onRegenerer: (cle: string) => void;
 }) {
   const parJour = new Map<number, Ligne[]>();
   for (const l of lignes) {
@@ -328,7 +351,7 @@ function ListeLignes({
           <p style={titreJour}>{JOURS[jour] ?? `Jour ${jour + 1}`}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {duJour.map((l) => (
-              <LigneSeance key={l.cle} ligne={l} etape={etape} onMaj={onMaj} />
+              <LigneSeance key={l.cle} ligne={l} etape={etape} onMaj={onMaj} onRegenerer={onRegenerer} />
             ))}
           </div>
         </section>
@@ -338,11 +361,12 @@ function ListeLignes({
 }
 
 function LigneSeance({
-  ligne: l, etape, onMaj,
+  ligne: l, etape, onMaj, onRegenerer,
 }: {
   ligne: Ligne;
   etape: Etape;
   onMaj: (cle: string, champs: Partial<Ligne>) => void;
+  onRegenerer: (cle: string) => void;
 }) {
   const [deplie, setDeplie] = useState(false);
   const bloquant = empechement(l, l.type);
@@ -390,7 +414,18 @@ function LigneSeance({
                 sous-domaine de maths CE2 déduit faute de code de chapitre. */}
             <select
               value={l.sousMatiere}
-              onChange={(e) => onMaj(l.cle, { sousMatiere: e.target.value, sousMatiereIncertaine: false })}
+              onChange={(e) => {
+                // Les types proposés dépendent du sous-domaine : les recalculer,
+                // sinon corriger « Numération » en « Calcul » laisserait la
+                // liste des types figée sur l'ancienne suggestion.
+                const types = typesSuggeres(e.target.value, l.estEvaluation);
+                onMaj(l.cle, {
+                  sousMatiere: e.target.value,
+                  sousMatiereIncertaine: false,
+                  typesSuggeres: types,
+                  type: types.includes(l.type) ? l.type : types[0],
+                });
+              }}
               className="form-input"
               style={{
                 ...petitChamp,
@@ -416,7 +451,14 @@ function LigneSeance({
           </div>
         )}
 
-        {etape !== "choix" && <Etat ligne={l} onDeplier={() => setDeplie(!deplie)} deplie={deplie} />}
+        {etape !== "choix" && (
+          <Etat
+            ligne={l}
+            deplie={deplie}
+            onDeplier={() => setDeplie(!deplie)}
+            onRegenerer={() => onRegenerer(l.cle)}
+          />
+        )}
       </div>
 
       {l.sousMatiereIncertaine && etape === "choix" && (
@@ -433,77 +475,226 @@ function LigneSeance({
         <p style={{ margin: "6px 0 0", fontSize: 11, color: "var(--error)" }}>{l.erreur}</p>
       )}
 
-      {deplie && l.contenu && <ApercuContenu contenu={l.contenu} />}
+      {deplie && l.contenu && (
+        <ApercuContenu
+          contenu={l.contenu}
+          onChange={(c) => onMaj(l.cle, { contenu: c })}
+        />
+      )}
     </div>
   );
 }
 
-function Etat({ ligne: l, onDeplier, deplie }: { ligne: Ligne; onDeplier: () => void; deplie: boolean }) {
+function Etat({
+  ligne: l, onDeplier, deplie, onRegenerer,
+}: {
+  ligne: Ligne;
+  onDeplier: () => void;
+  deplie: boolean;
+  onRegenerer: () => void;
+}) {
   if (l.statut === "encours") {
     return <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>en cours…</span>;
   }
-  if (l.statut === "ok") {
+  if (l.statut === "ok" || l.statut === "echec") {
     return (
-      <button onClick={onDeplier} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
-        {deplie ? "Replier" : "Relire"}
-      </button>
+      <div style={{ display: "flex", gap: 6 }}>
+        {l.statut === "ok" && (
+          <button onClick={onDeplier} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
+            {deplie ? "Replier" : "Relire"}
+          </button>
+        )}
+        {/* La sortie de secours quand le contenu ne va pas et que les positions
+            calculées interdisent de le corriger à la main. */}
+        <button onClick={onRegenerer} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
+          Régénérer
+        </button>
+      </div>
     );
-  }
-  if (l.statut === "echec") {
-    return <span style={{ fontSize: 12, color: "var(--error)", fontWeight: 700 }}>échec</span>;
   }
   return <span style={{ fontSize: 12, color: "var(--pb-outline)" }}>—</span>;
 }
 
 /**
- * Aperçu compact du contenu engendré.
+ * L'exercice en entier, et modifiable.
  *
- * Volontairement resserré : sur une semaine complète, une douzaine d'aperçus
- * complets seraient illisibles. On montre la consigne et les premières
- * questions — de quoi juger si l'exercice porte bien sur la notion.
+ * Volontairement complet : l'enseignant ne peut décider d'envoyer un exercice à
+ * ses élèves qu'en le lisant en entier. Un aperçu tronqué n'est pas une
+ * relecture.
+ *
+ * Ce qui est modifiable et ce qui ne l'est pas n'est pas arbitraire :
+ *   - titre, consigne, énoncés et réponses attendues : oui ;
+ *   - la position des trous d'un texte à trous et les bornes des groupes d'une
+ *     analyse de phrase : **non**. Ce sont des index calculés sur le texte ;
+ *     les toucher à la main désynchroniserait l'exercice et l'élève se
+ *     retrouverait devant une réponse impossible. Pour ces cas-là, régénérer.
  */
-function ApercuContenu({ contenu }: { contenu: Record<string, unknown> }) {
-  const consigne = typeof contenu.consigne === "string" ? contenu.consigne : null;
-  const items =
-    (contenu.questions as unknown[]) ??
-    (contenu.calculs as unknown[]) ??
-    (contenu.trous as unknown[]) ??
-    (contenu.paires as unknown[]) ??
-    (contenu.phrases as unknown[]) ??
-    (contenu.problemes as unknown[]) ??
-    (contenu.series as unknown[]) ??
-    [];
+function ApercuContenu({
+  contenu,
+  onChange,
+}: {
+  contenu: Record<string, unknown>;
+  onChange: (c: Record<string, unknown>) => void;
+}) {
+  const maj = (champ: string, valeur: unknown) => onChange({ ...contenu, [champ]: valeur });
 
-  const enonce = (o: unknown): string => {
-    const q = o as Record<string, unknown>;
-    return String(q.enonce ?? q.question ?? q.texte ?? q.mot ?? q.gauche ?? JSON.stringify(o)).slice(0, 120);
+  /** Le tableau d'items, et sous quelle clé il vit. */
+  const cle = ["questions", "calculs", "trous", "paires", "items", "series", "phrases", "problemes"]
+    .find((k) => Array.isArray(contenu[k]));
+  const items = (cle ? (contenu[cle] as Record<string, unknown>[]) : []) ?? [];
+
+  const majItem = (i: number, champ: string, valeur: string) => {
+    if (!cle) return;
+    const copie = [...items];
+    copie[i] = { ...copie[i], [champ]: valeur };
+    maj(cle, copie);
   };
 
+  // Les index calculés ne se retouchent pas à la main.
+  const figé = cle === "trous" || cle === "phrases";
+
   return (
-    <div style={{ marginTop: 10, padding: "10px 12px", background: "var(--pb-surface-low)", borderRadius: 10 }}>
-      {consigne && (
-        <p style={{ margin: "0 0 8px", fontSize: 12, fontWeight: 600, color: "var(--pb-on-surface)" }}>
-          {consigne}
-        </p>
+    <div style={{ marginTop: 10, padding: "12px 14px", background: "var(--pb-surface-low)", borderRadius: 10 }}>
+      {typeof contenu.titre === "string" && (
+        <Champ libelle="Titre" valeur={contenu.titre} onChange={(v) => maj("titre", v)} />
       )}
-      <ol style={{ margin: 0, paddingLeft: 18, display: "flex", flexDirection: "column", gap: 4 }}>
-        {items.slice(0, 4).map((o, i) => (
-          <li key={i} style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>{enonce(o)}</li>
-        ))}
-      </ol>
-      {items.length > 4 && (
-        <p style={{ margin: "6px 0 0", fontSize: 11, color: "var(--pb-outline)" }}>
-          … et {items.length - 4} de plus
-        </p>
+      {typeof contenu.consigne === "string" && (
+        <Champ libelle="Consigne" valeur={contenu.consigne} onChange={(v) => maj("consigne", v)} lignes={2} />
       )}
+
+      {/* Le texte support : lecture seule quand des positions en dépendent. */}
       {typeof contenu.texte_complet === "string" && (
-        <p style={{ margin: "8px 0 0", fontSize: 12, color: "var(--pb-on-surface-variant)", lineHeight: 1.4 }}>
-          {(contenu.texte_complet as string).slice(0, 220)}…
+        <Champ libelle="Texte" valeur={contenu.texte_complet} lignes={5} lectureSeule
+               aide="La position des trous est calculée sur ce texte : le modifier ici casserait l'exercice. Régénérez plutôt." />
+      )}
+      {typeof contenu.texte === "string" && (
+        <Champ libelle="Texte" valeur={contenu.texte} onChange={(v) => maj("texte", v)} lignes={5} />
+      )}
+
+      {items.length > 0 && (
+        <>
+          <p style={etiquetteChamp}>
+            {items.length} élément{items.length > 1 ? "s" : ""}
+            {figé && " — lecture seule"}
+          </p>
+          <ol style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
+            {items.map((o, i) => (
+              <li key={i}>
+                <ItemEditable item={o} figé={figé}
+                  onChange={(champ, v) => majItem(i, champ, v)} />
+              </li>
+            ))}
+          </ol>
+          {figé && (
+            <p style={{ margin: "8px 0 0", fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
+              Les positions sont calculées sur le texte : pour corriger, régénérez l&apos;exercice.
+            </p>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+/** Une ligne d'item : son énoncé et, quand elle existe, sa réponse attendue. */
+function ItemEditable({
+  item, figé, onChange,
+}: {
+  item: Record<string, unknown>;
+  figé: boolean;
+  onChange: (champ: string, valeur: string) => void;
+}) {
+  // Chaque type nomme ses champs autrement : on prend le premier qui existe.
+  const champEnonce = ["enonce", "question", "texte", "mot", "gauche"].find((c) => typeof item[c] === "string");
+  const champReponse = ["reponse_attendue", "reponse", "categorie", "signe", "resultat_attendu"]
+    .find((c) => typeof item[c] === "string" || typeof item[c] === "number");
+
+  const options = Array.isArray(item.options) ? item.options as string[]
+    : Array.isArray(item.choix) ? item.choix as string[] : null;
+  const bonne = typeof item.reponse_correcte === "number" ? item.reponse_correcte
+    : typeof item.reponse === "number" ? item.reponse : null;
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+      {champEnonce && (
+        <textarea
+          value={String(item[champEnonce])}
+          onChange={(e) => onChange(champEnonce, e.target.value)}
+          readOnly={figé}
+          rows={1}
+          style={{ ...champTexte, background: figé ? "transparent" : "var(--pb-surface-lowest)" }}
+        />
+      )}
+
+      {options ? (
+        <ul style={{ margin: "2px 0 0", paddingLeft: 16, listStyle: "none" }}>
+          {options.map((o, k) => (
+            <li key={k} style={{ fontSize: 11, color: k === bonne ? "var(--success)" : "var(--pb-on-surface-variant)", fontWeight: k === bonne ? 700 : 400 }}>
+              {k === bonne ? "● " : "○ "}{o}
+            </li>
+          ))}
+        </ul>
+      ) : champReponse ? (
+        <input
+          value={String(item[champReponse])}
+          onChange={(e) => onChange(champReponse, e.target.value)}
+          readOnly={figé}
+          style={{ ...champTexte, maxWidth: 260, background: figé ? "transparent" : "var(--pb-surface-lowest)" }}
+          placeholder="Réponse attendue"
+        />
+      ) : null}
+
+      {/* Les groupes d'une analyse de phrase : montrés, jamais retouchés. */}
+      {Array.isArray(item.groupes) && (
+        <p style={{ margin: 0, fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
+          {(item.groupes as Record<string, unknown>[])
+            .map((g) => `${g.mots} → ${g.fonction}`).join(" · ")}
+        </p>
+      )}
+      {Array.isArray(item.elements) && (
+        <p style={{ margin: 0, fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
+          {(item.elements as string[]).join(" · ")}
         </p>
       )}
     </div>
   );
 }
+
+function Champ({
+  libelle, valeur, onChange, lignes = 1, lectureSeule, aide,
+}: {
+  libelle: string;
+  valeur: string;
+  onChange?: (v: string) => void;
+  lignes?: number;
+  lectureSeule?: boolean;
+  aide?: string;
+}) {
+  return (
+    <div style={{ marginBottom: 10 }}>
+      <p style={etiquetteChamp}>{libelle}</p>
+      <textarea
+        value={valeur}
+        onChange={(e) => onChange?.(e.target.value)}
+        readOnly={lectureSeule || !onChange}
+        rows={lignes}
+        style={{ ...champTexte, background: lectureSeule ? "transparent" : "var(--pb-surface-lowest)" }}
+      />
+      {aide && <p style={{ margin: "3px 0 0", fontSize: 10, color: "var(--pb-on-surface-variant)" }}>{aide}</p>}
+    </div>
+  );
+}
+
+const etiquetteChamp: React.CSSProperties = {
+  margin: "0 0 3px", fontSize: 10, fontWeight: 700, letterSpacing: "0.05em",
+  textTransform: "uppercase", color: "var(--pb-on-surface-variant)",
+};
+
+const champTexte: React.CSSProperties = {
+  width: "100%", fontSize: 12, lineHeight: 1.45, padding: "6px 8px",
+  border: "1px solid var(--pb-outline-variant)", borderRadius: 8,
+  fontFamily: "inherit", color: "var(--pb-on-surface)", resize: "vertical",
+};
 
 /* ── Styles ───────────────────────────────────────────────────────────────── */
 
