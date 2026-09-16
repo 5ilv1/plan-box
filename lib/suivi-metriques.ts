@@ -184,15 +184,29 @@ function pourcentage(score: unknown, total: unknown): number | null {
   return Math.round((score / total) * 100);
 }
 
-/** Compte les questions d'un bloc, quelle que soit la forme de son contenu. */
+/**
+ * Nombre d'items **notés** d'un bloc — l'unité du rythme.
+ *
+ * Le total du score fait foi, parce que c'est exactement ce sur quoi l'élève a
+ * été évalué. Les tableaux du contenu ne servent que de repli, pour les blocs
+ * sans note.
+ *
+ * L'ordre compte : une analyse de phrase porte 5 phrases mais 24 groupes à
+ * identifier, et c'est sur 24 qu'elle est notée. Compter les phrases donnait
+ * « 23 s par question » là où l'élève passait 4,8 s par item — et surtout, le
+ * seuil de bâclage (5 s) aurait voulu dire une chose pour une phrase et une
+ * autre pour un trou de texte. L'unité doit être la même partout pour qu'un
+ * seuil unique ait un sens.
+ */
 export function nbQuestionsBloc(contenu: Record<string, unknown> | null | undefined): number | null {
   if (!contenu) return null;
+  const total = contenu.premier_score_total ?? contenu.score_total;
+  if (typeof total === "number" && total > 0) return total;
   for (const cle of ["questions", "calculs", "trous", "paires", "items", "series", "phrases", "qcm"]) {
     const v = contenu[cle];
     if (Array.isArray(v) && v.length > 0) return v.length;
   }
-  const total = contenu.score_total ?? contenu.premier_score_total;
-  return typeof total === "number" && total > 0 ? total : null;
+  return null;
 }
 
 export function scoreBloc(contenu: Record<string, unknown> | null | undefined): ScoreBloc {

@@ -146,11 +146,26 @@ verifier("score : contenu vide",
 verifier("score : tentatives par défaut à 1",
   scoreBloc({ score_eleve: 1, score_total: 2 }).tentatives, 1);
 
-verifier("questions : compte les questions", nbQuestionsBloc({ questions: [1, 2, 3] }), 3);
+// L'unité du rythme est l'item NOTÉ : le total du score passe avant les
+// tableaux du contenu. Une analyse de phrase porte 5 phrases mais 24 groupes
+// notés — compter les phrases rendait le seuil de bâclage incomparable d'un
+// type à l'autre.
+verifier("questions : le total noté fait foi",
+  nbQuestionsBloc({ phrases: [1, 2, 3, 4, 5], premier_score_total: 24, score_total: 24 }), 24);
+verifier("questions : repli sur les tableaux sans note",
+  nbQuestionsBloc({ questions: [1, 2, 3] }), 3);
 verifier("questions : compte les calculs", nbQuestionsBloc({ calculs: [1, 2] }), 2);
 verifier("questions : compte les trous", nbQuestionsBloc({ trous: [1, 2, 3, 4] }), 4);
-verifier("questions : repli sur score_total", nbQuestionsBloc({ score_total: 7 }), 7);
+verifier("questions : score_total seul", nbQuestionsBloc({ score_total: 7 }), 7);
+verifier("questions : un total nul ne compte pas",
+  nbQuestionsBloc({ score_total: 0, questions: [1, 2] }), 2);
 verifier("questions : rien à compter", nbQuestionsBloc({}), null);
+
+// Le cas réel qui a révélé le défaut : 115 s sur 24 groupes = 4,8 s par item.
+verifier("rythme : analyse de phrase notée sur ses groupes",
+  rythme(115, nbQuestionsBloc({ phrases: [1,2,3,4,5], premier_score_total: 24 })), 4.8);
+// …mais 100 % au premier essai : rapide et juste n'est pas bâclé.
+verifier("bâclage : rapide mais parfait", signalBaclage(115, 24, 100), false);
 
 /* ── 4. Durée ───────────────────────────────────────────────────────────── */
 
