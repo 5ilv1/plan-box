@@ -11,6 +11,11 @@ import { decouperUid } from "@/lib/suivi-metriques";
  * `eleveId` est un identifiant préfixé (`pb_<uuid>` ou `rb_<id>`) : les deux
  * sources d'élèves cohabitent, et la table a une colonne pour chacune. Passer
  * le préfixe brut à la colonne uuid faisait échouer l'insertion sans bruit.
+ *
+ * `chapitreId` est **facultatif**. Il était exigé parce que le seul appelant
+ * était la grille des chapitres ; or tous les rappels ne portent pas sur un
+ * chapitre — « pense à ton plan de travail » n'en vise aucun. La carte élève
+ * n'affiche de toute façon que le type et le message.
  */
 export async function POST(req: NextRequest) {
   const auth = await requireEnseignant();
@@ -19,9 +24,9 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { eleveId, chapitreId, message } = body;
 
-  if (!eleveId || !chapitreId || !message) {
+  if (!eleveId || !message) {
     return NextResponse.json(
-      { erreur: "eleveId, chapitreId et message sont requis" },
+      { erreur: "eleveId et message sont requis" },
       { status: 400 }
     );
   }
@@ -40,7 +45,7 @@ export async function POST(req: NextRequest) {
     type: "rappel",
     eleve_id: cible.source === "planbox" ? cible.id : null,
     rb_eleve_id: cible.source === "repetibox" ? Number(cible.id) : null,
-    chapitre_id: chapitreId,
+    chapitre_id: chapitreId ?? null,
     message,
     lu: false,
   });
