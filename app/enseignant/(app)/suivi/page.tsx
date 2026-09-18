@@ -388,6 +388,7 @@ function VueEleve({
 
 function ListeBlocs({ blocs, onChangement }: { blocs: BlocResume[]; onChangement: () => void }) {
   const [enCours, setEnCours] = useState<string | null>(null);
+  const [aValider, setAValider] = useState<BlocResume | null>(null);
 
   async function refaire(b: BlocResume) {
     if (!confirm(`Remettre « ${b.titre} » à refaire ?`)) return;
@@ -407,6 +408,14 @@ function ListeBlocs({ blocs, onChangement }: { blocs: BlocResume[]; onChangement
   if (blocs.length === 0) return <EtatVide message="Aucun travail sur cette période." />;
 
   return (
+    <>
+    {aValider && (
+      <FenetreValidation
+        bloc={aValider}
+        onFerme={() => setAValider(null)}
+        onValide={() => { setAValider(null); onChangement(); }}
+      />
+    )}
     <ul style={{ listStyle: "none", margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 8 }}>
       {blocs.map((b) => {
         const rythme = b.dureeSecondes && b.nbQuestions
@@ -444,7 +453,7 @@ function ListeBlocs({ blocs, onChangement }: { blocs: BlocResume[]; onChangement
               {b.statut === "fait" ? pct(b.pctPremier) : b.statut === "en_cours" ? "En cours" : "À faire"}
             </span>
 
-            {b.statut === "fait" && (
+            {b.statut === "fait" ? (
               <button
                 className="btn-ghost"
                 style={{ padding: "5px 10px", fontSize: 12 }}
@@ -453,11 +462,162 @@ function ListeBlocs({ blocs, onChangement }: { blocs: BlocResume[]; onChangement
               >
                 {enCours === b.id ? "…" : "Refaire"}
               </button>
+            ) : (
+              <button
+                className="btn-ghost"
+                style={{ padding: "5px 10px", fontSize: 12 }}
+                onClick={() => setAValider(b)}
+                title="Clore ce travail en gardant ce que l'élève a fait"
+              >
+                Valider
+              </button>
             )}
           </li>
         );
       })}
     </ul>
+    </>
+  );
+}
+
+/* ── Clore un travail qu'un élève ne peut pas terminer ─────────────────────── */
+
+interface Progres { bon: number; total: number; source: "bloc" | "reprise" }
+
+/**
+ * Un exercice peut être **infaisable** : un groupe mal placé, une réponse
+ * attendue fautive. L'élève a fait neuf questions sur dix et bute sur la
+ * dernière. On clôt le travail sans le pénaliser : sa note est rapportée à ce
+ * qu'il a fait — 9/9, pas 9/10.
+ *
+ * Les deux nombres sont **affichés et modifiables** : ils deviennent une note,
+ * et l'enseignant sait parfois mieux que la machine ce qui s'est passé.
+ */
+function FenetreValidation({
+  bloc, onFerme, onValide,
+}: { bloc: BlocResume; onFerme: () => void; onValide: () => void }) {
+  const [progres, setProgres] = useState<Progres | null | undefined>(undefined);
+  const [bon, setBon] = useState("");
+  const [total, setTotal] = useState("");
+  const [envoi, setEnvoi] = useState(false);
+  const [erreur, setErreur] = useState<string | null>(null);
+
+  useEffect(() => {
+    let vivant = true;
+    fetch(`/api/enseignant/bloc-valider?id=${encodeURIComponent(bloc.id)}`)
+      .then((r) => r.json())
+      .then((d) => {
+        if (!vivant) return;
+        const p = (d?.progres ?? null) as Progres | null;
+        setProgres(p);
+        if (p) { setBon(String(p.bon)); setTotal(String(p.total)); }
+      })
+      .catch(() => { if (vivant) setProgres(null); });
+    return () => { vivant = false; };
+  }, [bloc.id]);
+
+  async function valider() {
+    setEnvoi(true);
+    setErreur(null);
+    try {
+      const r = await fetch("/api/enseignant/bloc-valider", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: bloc.id, bon: Number(bon), total: Number(total) }),
+      });
+      const d = await r.json();
+      if (!r.ok) { setErreur(d?.erreur ?? "L'enregistrement a échoué."); return; }
+      onValide();
+    } catch {
+      setErreur("L'enregistrement a échoué.");
+    } finally {
+      setEnvoi(false);
+    }
+  }
+
+  const nb = Number(bon), nt = Number(total);
+  const valide = Number.isInteger(nb) && Number.isInteger(nt) && nt > 0 && nb >= 0 && nb <= nt;
+
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Valider ${bloc.titre}`}
+      onClick={onFerme}
+      style={{
+        position: "fixed", inset: 0, zIndex: 60, background: "rgba(15,18,32,0.45)",
+        display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+      }}
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          background: "var(--pb-surface-lowest)", borderRadius: 20, padding: "20px 22px",
+          width: "min(420px, 100%)", boxShadow: "0 18px 50px rgba(15,18,32,0.25)",
+        }}
+      >
+        <h3 style={{ margin: 0, fontSize: 16, fontWeight: 800, color: ENCRE, fontFamily: "'Plus Jakarta Sans', sans-serif" }}>
+          Valider ce travail
+        </h3>
+        <p style={{ margin: "6px 0 0", fontSize: 13, color: ENCRE, fontWeight: 600 }}>{bloc.titre}</p>
+        <p style={{ margin: "10px 0 0", fontSize: 12, color: ENCRE_DOUCE, lineHeight: 1.5 }}>
+          Le travail sera marqué comme fait. La note est rapportée à ce que l&apos;élève a
+          réellement fait : neuf réponses justes sur neuf données valent 9/9, et non 9/10 —
+          une question qu&apos;il n&apos;a pas pu faire ne doit pas compter contre lui.
+        </p>
+
+        <p style={{ margin: "12px 0 0", fontSize: 12, color: ENCRE_DOUCE }}>
+          {progres === undefined
+            ? "Lecture du travail en cours…"
+            : progres
+              ? `${progres.bon} juste${progres.bon > 1 ? "s" : ""} sur ${progres.total} réponse${progres.total > 1 ? "s" : ""} donnée${progres.total > 1 ? "s" : ""}${progres.source === "reprise" ? ", d'après le travail enregistré." : ", d'après la note déjà portée."}`
+              : "Rien d'exploitable n'a été enregistré : saisissez la note vous-même."}
+        </p>
+
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 10, marginTop: 14 }}>
+          <label style={{ fontSize: 11, color: ENCRE_DOUCE, fontWeight: 600 }}>
+            Réussies
+            <input
+              type="number" min={0} inputMode="numeric" value={bon}
+              onChange={(e) => setBon(e.target.value)}
+              className="form-input"
+              style={{ marginTop: 4, marginBottom: 0, width: 88, padding: "7px 10px", fontSize: 14 }}
+            />
+          </label>
+          <span style={{ fontSize: 16, color: ENCRE_DOUCE, paddingBottom: 8 }}>/</span>
+          <label style={{ fontSize: 11, color: ENCRE_DOUCE, fontWeight: 600 }}>
+            Faites
+            <input
+              type="number" min={1} inputMode="numeric" value={total}
+              onChange={(e) => setTotal(e.target.value)}
+              className="form-input"
+              style={{ marginTop: 4, marginBottom: 0, width: 88, padding: "7px 10px", fontSize: 14 }}
+            />
+          </label>
+          <span style={{ fontSize: 12, color: ENCRE_DOUCE, paddingBottom: 9 }}>
+            {valide ? pct(Math.round((nb / nt) * 100)) : "—"}
+          </span>
+        </div>
+
+        {erreur && (
+          <p style={{ margin: "10px 0 0", fontSize: 12, color: ETAT.critique }}>{erreur}</p>
+        )}
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, marginTop: 18 }}>
+          <button className="btn-ghost" style={{ padding: "7px 14px", fontSize: 13 }} onClick={onFerme}>
+            Annuler
+          </button>
+          <button
+            className="btn-primary"
+            style={{ padding: "7px 14px", fontSize: 13 }}
+            disabled={!valide || envoi}
+            onClick={valider}
+          >
+            {envoi ? "…" : "Valider"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

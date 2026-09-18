@@ -523,6 +523,44 @@ quatre définitions différentes du taux de complétion.
   titre** (`generer/page.tsx:868`), donc impossibles à rattacher. Recopier la
   banque changerait un trou visible en erreur invisible.
 
+### Clore un travail infaisable
+
+Un exercice peut être **cassé** : un groupe mal placé dans une analyse de phrase, une
+réponse attendue fautive, un énoncé qui se contredit. L'élève a fait neuf questions sur
+dix et bute sur la dernière ; ses seules issues étaient de laisser le travail en retard,
+ou de le refaire depuis le début pour se heurter au même mur.
+
+Le bouton **« Valider »** de la fiche élève (à côté de « Refaire », sur tout travail non
+terminé) clôt le bloc **sans pénaliser l'élève**.
+
+| Pièce | Rôle |
+|---|---|
+| `lib/progres-partiel.ts` | **pur** : ce qu'on sait déjà du travail, sans rien décider |
+| `app/api/enseignant/bloc-valider/route.ts` | `GET ?id=` relève · `POST {id, bon, total}` enregistre |
+| `FenetreValidation` (page `suivi`) | montre le relevé et le rend modifiable |
+
+- ⚠️ **La note est rapportée à ce qui a été fait** : neuf justes sur neuf tentées font
+  **9/9**, pas 9/10. Compter la dixième contre l'élève reviendrait à lui faire payer un
+  exercice cassé.
+- Le relevé vient, dans l'ordre : de la **note déjà portée** sur le bloc (un travail « en
+  cours » peut en avoir une — l'élève avait fini, mais sous le seuil), puis de la
+  **reprise** (`exercice_reprise`), qui est la seule trace du travail d'un élève bloqué.
+- **Les deux nombres sont affichés et modifiables** avant l'enregistrement : ils
+  deviennent une note, et l'enseignant sait parfois mieux que la machine ce qui s'est
+  passé. Ce qu'on ne sait pas établir vaut `null` et laisse les cases vides — mieux vaut
+  une saisie qu'un chiffre inventé.
+- **Un refus volontaire** : un texte à trous rempli mais jamais vérifié. On sait ce que
+  l'élève a tapé, pas si c'est juste — la comparaison tient compte des élisions et vit
+  dans le composant. La refaire côté serveur risquerait de contredire son écran.
+  Le classement, la comparaison et le rangement se recalculent, eux, sans ambiguïté
+  (catégorie attendue, signe attendu, ordre attendu).
+- `contenu.valide_par_enseignant` garde la trace de la décision : sans elle, un 9/9
+  ressemblerait plus tard à un sans-faute ordinaire et personne ne saurait que l'exercice
+  était cassé.
+- La **durée n'est pas remise à zéro** : le signal « travail expédié » deviendrait faux.
+  La reprise, elle, est supprimée — la laisser rouvrirait l'exercice cassé.
+- Contrat vérifié par `npx tsx docs/tests/test-progres-partiel.mjs` (30 cas).
+
 ### Travail bâclé
 
 `plan_travail.termine_le` (timestamptz) et `plan_travail.duree_secondes` (entier).
