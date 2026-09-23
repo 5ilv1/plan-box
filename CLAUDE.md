@@ -644,6 +644,17 @@ le seul contrôle qui vaille.
   réellement lu en classe) et la **différenciation** (`★☆☆ tous · ★★☆ CM1 et CM2
   · ★★★ CM2`, format constant). Le corpus part dans les prompts via
   `blocCorpus()` (`lib/prompts-communs.ts`), les étoiles donnent la difficulté.
+- ⚠️ **Deux gabarits de corpus coexistent.** Les séances de langue annoncent
+  « Corpus de la semaine » et donnent le texte en **un bloc**, suivi aussitôt
+  de « Discipline : … » et « Différenciation : … ». Les séances de **lecture**
+  titrent « Texte de lecture - « … » » et étalent le texte sur **cinq ou six
+  paragraphes**, précédés d'une note « Prolongement du corpus … feuille
+  imprimable dans Documents ».
+  `extraireDuCorps()` reconnaît les deux annonces, recolle les paragraphes,
+  **s'arrête** à un titre ou à une ligne d'intendance, et **écarte** la note de
+  renvoi — laissée dans le corpus, elle ferait fabriquer des questions sur la
+  feuille imprimable. Sans cela, les séances de lecture n'avaient jamais de
+  texte : les seules pour lesquelles le type `lecture` en exige un.
 - **Les maths sont déjà séparées par niveau** ; le français est tagué CE2 + CM,
   donc **une séance de français donne trois lignes**, une par niveau.
 - Le sous-domaine des maths se lit dans le **code du titre** (`(N3 · fiche 16)`,
@@ -725,7 +736,7 @@ La génération est **séquentielle** : `generer-exercice` limite à 20 appels p
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
 
-Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (132 cas) —
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (142 cas) —
 à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)

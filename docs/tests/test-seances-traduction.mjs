@@ -26,7 +26,7 @@ import {
 import {
   appelPourSeance, empechement, consigneDepuisSeance, titreDuBloc,
 } from "../../lib/seances-generation.ts";
-import { ErreurNotion, messageErreurNotion } from "../../lib/seances-notion.ts";
+import { ErreurNotion, messageErreurNotion, extraireDuCorps } from "../../lib/seances-notion.ts";
 
 let echecs = 0, total = 0;
 function verifier(nom, obtenu, attendu) {
@@ -322,6 +322,65 @@ verifier("titre : préfixe de discipline retiré",
   titreDuBloc({ ...ligneMa, titre: "Grammaire - Le groupe nominal" }), "Le groupe nominal");
 verifier("titre : jamais vide",
   titreDuBloc({ ...ligneMa, titre: "Maths CM2 - S3 Jeudi -" }).length > 0, true);
+
+/* ── 9 bis. Le corpus, dans les deux gabarits de la base ────────────────── */
+//
+// Deux mises en page coexistent, et l'écart n'était pas anodin : les séances de
+// LECTURE — les seules pour lesquelles le type `lecture` exige un texte —
+// étaient les seules dont on ne trouvait jamais le texte.
+
+const bloc = (type, texte) => ({ type, [type]: { rich_text: [{ plain_text: texte }] } });
+
+// Gabarit 1 : séance de langue. Le corpus tient en un bloc, suivi aussitôt des
+// lignes d'intendance — qu'il ne faut surtout pas avaler.
+const pageLangue = [
+  bloc("quote", "Corpus de la semaine - « Portrait de Rosalie »"),
+  bloc("quote", "Sous le chapiteau, Rosalie finit son numéro sans trembler. Elle ne tombe pas."),
+  bloc("paragraph", "Discipline : Conjugaison (lundi) · Niveaux : CE2 / CM1 / CM2 · Durée : 45 min"),
+  bloc("paragraph", "Différenciation : ★☆☆ tous · ★★☆ CM1 et CM2 · ★★★ CM2"),
+  bloc("heading_2", "1. Rituel - transposition du corpus (5 min)"),
+];
+verifier("corpus : séance de langue, un seul bloc",
+  extraireDuCorps(pageLangue).corpus,
+  "Sous le chapiteau, Rosalie finit son numéro sans trembler. Elle ne tombe pas.");
+verifier("corpus : l'intendance n'est pas avalée",
+  extraireDuCorps(pageLangue).corpus.includes("Discipline"), false);
+verifier("corpus : la différenciation est lue au passage",
+  extraireDuCorps(pageLangue).differenciation.startsWith("Différenciation :"), true);
+
+// Gabarit 2 : séance de lecture. Autre titre, texte étalé, note de renvoi en tête.
+const pageLecture = [
+  bloc("paragraph", "Discipline : Lecture / compréhension (jeudi) · Niveaux : CE2 / CM1 / CM2"),
+  bloc("paragraph", "Différenciation : ★☆☆ tous · ★★☆ CM1 et CM2 · ★★★ CM2"),
+  bloc("heading_2", "Texte de lecture - « Rosalie, l'écuyère »"),
+  bloc("paragraph", "Prolongement du corpus « Portrait de Rosalie » - feuille imprimable dans Documents."),
+  bloc("paragraph", "Sous le grand chapiteau, Rosalie est la reine de la piste."),
+  bloc("paragraph", "Ses longs cheveux blonds volent derrière elle comme un ruban d'or."),
+  bloc("heading_2", "Dictée flash du jour (5 min)"),
+  bloc("quote", "Son sourire ne faiblit jamais."),
+];
+const lu = extraireDuCorps(pageLecture);
+verifier("corpus : séance de lecture, les paragraphes sont recollés",
+  lu.corpus,
+  "Sous le grand chapiteau, Rosalie est la reine de la piste.\n\n" +
+  "Ses longs cheveux blonds volent derrière elle comme un ruban d'or.");
+// LA note : laissée dans le corpus, l'IA fabriquerait des questions sur la feuille.
+verifier("corpus : la note de renvoi est écartée", lu.corpus.includes("imprimable"), false);
+verifier("corpus : on s'arrête au titre suivant", lu.corpus.includes("sourire"), false);
+verifier("corpus : la différenciation est lue avant le texte",
+  lu.differenciation.includes("★★★ CM2"), true);
+
+// Sans annonce, pas de corpus : on ne prend pas le premier paragraphe venu.
+verifier("corpus : aucune annonce → rien",
+  extraireDuCorps([bloc("paragraph", "Un paragraphe ordinaire, assez long pour passer le seuil des quarante.")]).corpus,
+  null);
+// Une annonce suivie d'un titre seul ne fait pas un corpus.
+verifier("corpus : annonce sans texte → rien",
+  extraireDuCorps([bloc("quote", "Corpus de la semaine - « Portrait »"), bloc("heading_2", "Suite")]).corpus,
+  null);
+verifier("corpus : texte trop court → rien",
+  extraireDuCorps([bloc("quote", "Corpus de la semaine"), bloc("quote", "Trop court.")]).corpus,
+  null);
 
 /* ── 10. Ce qu'une panne Notion montre à l'enseignant ───────────────────── */
 //

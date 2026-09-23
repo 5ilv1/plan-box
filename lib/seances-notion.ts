@@ -132,19 +132,50 @@ function texteDuBloc(b: BlocNotion): string {
   return (contenu?.rich_text ?? []).map((t) => t.plain_text).join("").trim();
 }
 
+/** L'annonce qui précède le texte étudié. Deux graphies dans la base. */
+const ANNONCE_CORPUS = /^(corpus de la semaine|texte de lecture)/i;
+
+/** Les lignes d'intendance de la page : elles ne font pas partie du texte. */
+const LIGNE_METADONNEE = /^(discipline|niveaux?|durée|différenciation)\s*:/i;
+
+/**
+ * Une note de renvoi vers un document, pas de la prose.
+ *
+ * Les séances de lecture ouvrent par « Prolongement du corpus « … » - feuille
+ * imprimable dans Documents ». Laissée dans le corpus, elle partirait dans le
+ * prompt et l'IA fabriquerait des questions sur la feuille imprimable.
+ */
+const NOTE_DE_RENVOI = /^prolongement\b|feuille imprimable/i;
+
 /**
  * Extrait du corps d'une séance de français les deux choses qui comptent.
  *
- * Le gabarit est constant sur les pages sondées :
+ * Deux gabarits coexistent, et c'est **toute la difficulté**.
+ *
+ * Les séances de langue annoncent le corpus et le donnent en un bloc :
  *
  *   > Corpus de la semaine - « Portrait de Griotte »
  *   > Griotte est la plus jeune sorcière de la forêt. …      ← le texte
  *   Discipline : Grammaire (mardi) · Niveaux : … · Durée : 45 min
  *   Différenciation : ★☆☆ tous · ★★☆ CM1 et CM2 · ★★★ CM2    ← les étoiles
  *
- * Le corpus est le bloc qui **suit** l'annonce « Corpus de la semaine » : c'est
- * l'annonce qui porte le titre du texte, et le bloc suivant qui porte le texte.
- * Prendre le bloc d'annonce donnerait un titre en guise de corpus.
+ * Les séances de **lecture** portent un autre titre et étalent le texte sur
+ * cinq ou six paragraphes, précédés d'une note de renvoi :
+ *
+ *   ## Texte de lecture - « Rosalie, l'écuyère »
+ *   Prolongement du corpus « … » - feuille imprimable dans Documents  ← à jeter
+ *   Sous le grand chapiteau, Rosalie est la reine de la piste. …      ← le texte
+ *   … (quatre paragraphes de plus)
+ *   ## Dictée flash du jour (5 min)                                   ← on s'arrête
+ *
+ * ⚠️ Ne chercher que « Corpus de la semaine » revenait à ne **jamais** trouver
+ * de texte sur les séances de lecture — les seules pour lesquelles le type
+ * `lecture` est refusé sans texte. La fonction qui en avait le plus besoin
+ * était la seule à repartir les mains vides.
+ *
+ * On s'arrête à un titre ou à une ligne d'intendance : sans cette borne, le
+ * corpus d'une séance de langue avalerait « Discipline : … » et
+ * « Différenciation : … », qui la suivent immédiatement.
  */
 export function extraireDuCorps(blocs: BlocNotion[]): {
   corpus: string | null;
@@ -157,10 +188,19 @@ export function extraireDuCorps(blocs: BlocNotion[]): {
     const t = texteDuBloc(blocs[i]);
     if (!t) continue;
 
-    if (corpus === null && /^corpus de la semaine/i.test(t)) {
-      const suivant = texteDuBloc(blocs[i + 1] ?? { type: "paragraph" });
+    if (corpus === null && ANNONCE_CORPUS.test(t)) {
+      const morceaux: string[] = [];
+      for (let j = i + 1; j < blocs.length; j++) {
+        if (blocs[j].type.startsWith("heading_")) break;
+        const suite = texteDuBloc(blocs[j]);
+        if (!suite) continue;
+        if (LIGNE_METADONNEE.test(suite)) break;
+        if (NOTE_DE_RENVOI.test(suite)) continue;
+        morceaux.push(suite);
+      }
+      const texte = morceaux.join("\n\n");
       // Un corpus fait une phrase au moins : en deçà, c'est encore du titre.
-      if (suivant.length > 40) corpus = suivant;
+      if (texte.length > 40) corpus = texte;
     }
     if (differenciation === null && /^différenciation\s*:/i.test(t)) {
       differenciation = t;
