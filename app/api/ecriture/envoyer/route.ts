@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireProprietaireOuEnseignant } from "@/lib/server-auth";
 import { champsTerminaison } from "@/lib/suivi-metriques";
 import {
   normaliserContenuEcriture,
@@ -22,10 +23,10 @@ import { genererSuggestionsIA } from "@/lib/ecriture-ia-suggestions";
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { blocId, texte, eleveRbId } = body as {
+  // `eleveRbId` peut encore arriver des anciens clients : il est ignoré.
+  const { blocId, texte } = body as {
     blocId?: string;
     texte?: string;
-    eleveRbId?: number;
   };
   const estFinal = body?.final === true;
 
@@ -45,9 +46,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Bloc introuvable" }, { status: 404 });
   }
 
-  if (eleveRbId && bloc.repetibox_eleve_id !== eleveRbId) {
-    return NextResponse.json({ erreur: "Accès refusé" }, { status: 403 });
-  }
+  // Le propriétaire se lit dans le bloc, jamais dans la requête : un
+  // `eleveRbId` envoyé par le navigateur se falsifie, et l'omettre suffisait à
+  // écrire dans le bloc de n'importe qui.
+  const garde = await requireProprietaireOuEnseignant(bloc.eleve_id, bloc.repetibox_eleve_id);
+  if (garde.error) return garde.error;
 
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
 

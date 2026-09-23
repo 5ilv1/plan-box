@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireEnseignant } from "@/lib/server-auth";
 import { normaliserContenuEcriture } from "@/lib/ecriture-normaliser";
 
 /**
@@ -12,6 +13,11 @@ import { normaliserContenuEcriture } from "@/lib/ecriture-normaliser";
  * utilise la semaine courante.
  */
 export async function GET(req: NextRequest) {
+  // Le texte de chaque élève, avec son prénom, son nom et sa classe : réservé à
+  // l'enseignant. Cette route répondait à n'importe qui.
+  const auth = await requireEnseignant();
+  if (auth.error) return auth.error;
+
   const admin = createAdminClient();
 
   // Bornes de la semaine demandée (param) ou courante

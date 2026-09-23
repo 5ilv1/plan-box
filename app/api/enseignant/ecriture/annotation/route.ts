@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { requireEnseignant } from "@/lib/server-auth";
+import { requireEnseignant, requireProprietaireOuEnseignant } from "@/lib/server-auth";
 import {
   normaliserContenuEcriture,
   dateStr,
@@ -107,7 +107,7 @@ export async function PATCH(req: NextRequest) {
   const admin = createAdminClient();
   const { data: bloc, error } = await admin
     .from("plan_travail")
-    .select("id, contenu, repetibox_eleve_id")
+    .select("id, contenu, repetibox_eleve_id, eleve_id")
     .eq("id", blocId)
     .single();
 
@@ -115,12 +115,13 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ erreur: "Bloc introuvable" }, { status: 404 });
   }
 
-  // Si le caller est un élève Repetibox, seules les modifs de statut sont permises
+  // Si le caller est un élève, seules les modifs de statut sont permises.
+  // Il prouve qu'il est l'élève par sa SESSION : l'`eleveRbId` du corps se
+  // falsifiait, et suffisait à modifier les annotations de n'importe qui.
   const caller = eleveRbId !== undefined ? "eleve" : "enseignant";
   if (caller === "eleve") {
-    if (bloc.repetibox_eleve_id !== eleveRbId) {
-      return NextResponse.json({ erreur: "Accès refusé" }, { status: 403 });
-    }
+    const garde = await requireProprietaireOuEnseignant(bloc.eleve_id, bloc.repetibox_eleve_id);
+    if (garde.error) return garde.error;
     if (suggestion !== undefined || commentaire !== undefined) {
       return NextResponse.json(
         { erreur: "L'élève ne peut modifier que le statut" },
