@@ -19,7 +19,11 @@
 // juste apprend la faute : une erreur ratée coûte moins cher qu'une erreur
 // inventée.
 
-export type TypeErreur = "orthographe" | "grammaire" | "syntaxe";
+import {
+  memeFamille, paireDe, memeForme, trancher, variantesDuTest,
+} from "./homophones";
+
+export type TypeErreur = "orthographe" | "grammaire" | "syntaxe" | "homophone";
 
 export interface ErreurCorrection {
   mot: string;
@@ -28,9 +32,16 @@ export interface ErreurCorrection {
   position: number;
   indice?: string;
   correction?: string;
+  /**
+   * Interne — jamais envoyé à l'élève (`publier()`). Le mot que le modèle croit
+   * juste : il sert à vérifier une faute d'homophone, pas à la corriger.
+   */
+  attendu?: string;
+  /** Interne — la faute attend le verdict du test de substitution. */
+  aTester?: boolean;
 }
 
-const TYPES: ReadonlySet<string> = new Set(["orthographe", "grammaire", "syntaxe"]);
+const TYPES: ReadonlySet<string> = new Set(["orthographe", "grammaire", "syntaxe", "homophone"]);
 
 /** Plafond d'erreurs rendues : au-delà, un élève ne corrige plus, il abandonne. */
 export const MAX_ERREURS = 15;
@@ -172,15 +183,46 @@ export function verifierErreurs(
       Math.abs(b - annoncee) < Math.abs(a - annoncee) ? b : a,
     );
 
-    // 3. Un mot attesté n'est pas une faute d'orthographe, et un nom propre ne
+    const ecrit = texte.slice(position, position + mot.length);
+
+    // 3. Homophones : le mot existe, ce n'est pas le bon. On ne croit le modèle
+    //    que si le mot qu'il attend est de la MÊME FAMILLE (`lib/homophones.ts`).
+    //    ⚠️ C'est l'attendu qui décide, pas l'étiquette : le modèle range
+    //    « a » pour « à » tantôt en grammaire, tantôt en orthographe — et le
+    //    dictionnaire effaçait la seconde, la première passait sans contrôle.
+    const attendu = [err.attendu, err.correction]
+      .find((v): v is string => typeof v === "string" && v.trim().length > 0)?.trim() ?? "";
+    if (attendu && memeFamille(ecrit, attendu)) {
+      const paire = paireDe(ecrit);
+      // Le test ne tranche qu'entre les deux formes de SA paire : « est » pour
+      // « sont » (un accord) n'est pas une confusion et/est.
+      const testable = !!paire && [paire.forme, paire.autre].some((f) => memeForme(attendu, f));
+      const indice = testable
+        ? paire!.indice
+        : typeof err.indice === "string" && err.indice.trim() ? err.indice.trim() : undefined;
+      prises.add(position);
+      retenues.push({
+        mot: ecrit,
+        type: "homophone",
+        position,
+        attendu,
+        ...(testable ? { aTester: true } : {}),
+        ...(indice ? { indice } : {}),
+      });
+      continue;
+    }
+    // Une confusion annoncée sans attendu vérifiable : on se tait.
+    if (type === "homophone") continue;
+
+    // 4. Un mot attesté n'est pas une faute d'orthographe, et un nom propre ne
     //    se vérifie pas. Les autres types (accord, conjugaison, majuscule)
     //    portent sur des mots qui existent : le dictionnaire n'a rien à en dire.
     if (type === "orthographe") {
       if (motAtteste(mot, connu)) continue;
-      if (estNomPropre(texte, position, texte.slice(position, position + mot.length))) continue;
+      if (estNomPropre(texte, position, ecrit)) continue;
     }
 
-    // 4. Une correction qui n'est pas un mot français n'est pas une correction.
+    // 5. Une correction qui n'est pas un mot français n'est pas une correction.
     let correction = typeof err.correction === "string" ? err.correction.trim() : "";
     if (correction) {
       const identique = correction.toLowerCase() === mot.toLowerCase();
@@ -189,7 +231,7 @@ export function verifierErreurs(
 
     prises.add(position);
     retenues.push({
-      mot: texte.slice(position, position + mot.length),
+      mot: ecrit,
       type: type as TypeErreur,
       position,
       ...(typeof err.indice === "string" && err.indice.trim() ? { indice: err.indice.trim() } : {}),
@@ -198,6 +240,81 @@ export function verifierErreurs(
   }
 
   return retenues.sort((a, b) => a.position - b.position).slice(0, MAX_ERREURS);
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Test de substitution des homophones grammaticaux
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface QuestionTest {
+  /** Index de l'erreur dans la liste passée à `questionsDeTest()`. */
+  index: number;
+  A: string;
+  B: string;
+  /** Laquelle des deux porte le substitut (« avait ») : l'ordre alterne. */
+  substitutEn: "A" | "B";
+  /** Le mot qui distingue chaque phrase : le vérificateur répond par lui. */
+  motA: string;
+  motB: string;
+}
+
+/**
+ * Les questions à poser au vérificateur : pour chaque faute à tester, deux
+ * phrases qui ne diffèrent que par le mot. L'ordre alterne d'une question à
+ * l'autre — un modèle a une légère préférence pour la première réponse, et
+ * elle ne doit pas décider à sa place.
+ */
+export function questionsDeTest(texte: string, erreurs: ErreurCorrection[]): QuestionTest[] {
+  const questions: QuestionTest[] = [];
+  erreurs.forEach((e, index) => {
+    if (!e.aTester) return;
+    const paire = paireDe(e.mot);
+    if (!paire) return;
+    const { avecSubstitut, avecAutre } = variantesDuTest(texte, e.position, e.mot, paire);
+    const substitutEn = questions.length % 2 === 0 ? "A" : "B";
+    questions.push(
+      substitutEn === "A"
+        ? { index, A: avecSubstitut, B: avecAutre, substitutEn, motA: paire.substitut, motB: paire.autre }
+        : { index, A: avecAutre, B: avecSubstitut, substitutEn, motA: paire.autre, motB: paire.substitut },
+    );
+  });
+  return questions;
+}
+
+/**
+ * Applique les verdicts. `choix[i]` répond à `questions[i]` : « A », « B », ou
+ * `null` si la réponse n'a pas pu être lue.
+ *
+ * Une faute confirmée garde son attendu — celui du TEST, pas celui du modèle.
+ * Une faute démentie disparaît. Un verdict illisible la fait disparaître aussi :
+ * une faute non confirmée n'est pas montrée.
+ */
+export function appliquerTests(
+  erreurs: ErreurCorrection[],
+  questions: QuestionTest[],
+  choix: Array<"A" | "B" | null>,
+): ErreurCorrection[] {
+  const verdict = new Map<number, "A" | "B" | null>();
+  questions.forEach((q, i) => verdict.set(q.index, choix[i] ?? null));
+
+  const gardees: ErreurCorrection[] = [];
+  erreurs.forEach((e, index) => {
+    if (!e.aTester) { gardees.push(e); return; }
+    const paire = paireDe(e.mot);
+    const q = questions.find((x) => x.index === index);
+    const c = verdict.get(index) ?? null;
+    if (!paire || !q || c === null) return;
+    const resultat = trancher(e.mot, paire, c === q.substitutEn);
+    if (resultat.faute !== true) return;
+    gardees.push({ ...e, attendu: resultat.attendu, aTester: false });
+  });
+  return gardees;
+}
+
+/** Ce que reçoit l'élève : sans les champs internes de la vérification. */
+export function publier(erreurs: ErreurCorrection[]): ErreurCorrection[] {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  return erreurs.map(({ attendu, aTester, ...visible }) => visible);
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

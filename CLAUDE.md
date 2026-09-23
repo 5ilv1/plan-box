@@ -396,6 +396,56 @@ la faute — une erreur ratée coûte moins cher qu'une erreur inventée.
   surlignage — puis « Corriger » — sautait sur un mot juste.
 - Contrat : `npx tsx docs/tests/test-ecriture-correction.mjs` (47 cas).
 
+### Homophones : « a » pour « à », « vert » pour « verre »
+
+Le mot écrit **existe** : le dictionnaire le confirme, et c'est ce qui le rend aveugle.
+Deux garde-fous (`lib/homophones.ts`), puis un script de mesure :
+
+1. **Une famille fermée.** Une faute d'homophone n'est montrée que si le mot écrit et
+   le mot attendu sont de la même famille (`PAIRES` + `FAMILLES_LEXICALES`). Le modèle
+   rend désormais un champ `attendu` pour **toute** erreur — interne, jamais envoyé à
+   l'élève (`publier()`). ⚠️ **C'est l'attendu qui décide, pas l'étiquette** : le
+   modèle rangeait « a » pour « à » tantôt en grammaire (passait sans contrôle), tantôt
+   en orthographe (effacé par le dictionnaire).
+2. **Le test de substitution appris en classe** pour 7 paires grammaticales : `a`→avait,
+   `est`→était, `sont`→étaient, `ont`→avaient, `ou`→ou bien, `ça`→cela, `mais`→pourtant.
+   Une seconde question au modèle, fermée, dont la réponse décide seule (`trancher()`).
+   L'indice montré à l'élève **est** le test, pas la réponse.
+
+Ce qui rend le test fiable, appris en le mesurant :
+
+- **Deux phrases, pas une** (`variantesDuTest()`). La phrase d'un élève contient
+  souvent d'AUTRES fautes : « cette phrase est-elle correcte ? » ferait répondre non à
+  cause d'elles. Deux variantes qui ne diffèrent que par le mot testé portent les mêmes
+  autres fautes. L'ordre A/B alterne contre la préférence du modèle pour la première.
+- **Une réponse structurée par outil imposé**, pas « réponds en JSON » : le modèle a
+  rendu de la prose (« → **B** ») au deuxième essai, et tous les verdicts devenaient
+  illisibles.
+- **Il nomme le mot choisi**, avec le numéro de la paire (`lireVerdict()`) : sur 24
+  paires, il a répondu « B » pour « Mon frère avait / à un vélo ». Un mot hors de la
+  paire, une paire absente ou deux réponses contradictoires ⇒ illisible.
+- **« ? » si les deux phrases se disent** : « au ballon *où* ils se sont baignés » est
+  une vraie relative. Illisible ou « ? » ⇒ la faute n'est pas montrée.
+- ⚠️ **Deux paires n'ont PAS de test**, parce qu'il ne tranche pas : `ces`/`ses` (« mes
+  enfants » reste correct) et `se`/`ce` (« ils se sont baignés » → « ils **me** sont
+  baignés » est faux alors que `se` est juste — en classe on change aussi le sujet).
+  Elles gardent le contrôle de famille.
+- Les homophones **de sens** (`vert`/`verre`, `mer`/`mère`) n'ont que la famille : seul
+  le sens tranche. Une seconde lecture indépendante (étape 3) attend un corpus de vrais
+  textes pour être mesurée.
+
+**Mesure** : `scripts/mesurer-homophones.ts` (vrai modèle, quelques centimes, ne touche
+pas la base). 36 cas dont 12 phrases d'élèves réalistes (sans majuscule ni point,
+plusieurs fautes). Le 23/09 : **14/14 fausses alertes écartées** — aucune faute
+inventée — et 21/22 vraies fautes trouvées, identique sur trois passages. Le script
+échoue s'il invente une faute : c'est le chiffre qui compte. À relancer après toute
+modification de ces modules. Contrat pur : `npx tsx docs/tests/test-homophones.mjs`
+(39 cas).
+
+Le pipeline vit dans `lib/ecriture-analyse.ts` (`analyserTexte()`), sorti de la route
+pour pouvoir être exécuté sans session : une route Next.js n'exporte que ses méthodes.
+Compter ~10 s par correction, un appel de plus seulement s'il y a un homophone à tester.
+
 ### Trois pièges qui effaçaient le travail
 
 1. **`marquerFait()` réécrit le contenu depuis la copie chargée à l'ouverture de la
