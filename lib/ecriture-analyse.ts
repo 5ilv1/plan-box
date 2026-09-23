@@ -18,7 +18,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { REFERENCE_CYCLE3 } from "./ecriture-reference-cycle3";
 import {
   motsAVerifier, verifierErreurs, questionsDeTest, questionsDeLecture, questionsDAccord,
-  appliquerVerdicts, publier,
+  appliquerVerdicts, fusionnerTypographie, publier,
   type ErreurCorrection, type QuestionTest, type QuestionLecture, type QuestionAccord,
 } from "./ecriture-correction";
 
@@ -134,9 +134,14 @@ Retourne UNIQUEMENT un JSON array, rien d'autre.`;
       lectures.length > 0 ? poserLectures(anthropic, lectures) : Promise.resolve([]),
       accords.length > 0 ? poserAccords(anthropic, accords) : Promise.resolve([]),
     ]);
-    const erreurs = publier(
+    // Enfin les majuscules et les élisions, détectées par programme et non plus
+    // devinées (`lib/typographie.ts`). Après les verdicts : ceux-ci décident par
+    // index sur la liste d'origine, qu'il ne faut pas bouger avant eux.
+    const erreurs = publier(fusionnerTypographie(
+      texte,
       appliquerVerdicts(verifiees, questions, choix, lectures, lus, accords, acceptables),
-    );
+      (cle) => connus.has(cle),
+    ));
 
     const ecartees = Array.isArray(brutes) ? brutes.length - erreurs.length : 0;
     if (ecartees > 0) {

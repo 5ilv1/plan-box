@@ -489,8 +489,34 @@ vraies phrases d'élèves. Contrats purs : `npx tsx docs/tests/test-homophones.m
   phrases gardent `tache` au singulier, et `blanche` s'accorde avec lui. Une fois
   `taches` corrigé, le passage suivant trouve `blanches`. Rien de faux n'est affiché.
 
-**Ce qui reste le jugement du modèle** : les erreurs `syntaxe` (majuscule, point,
-élision « que on » → « qu'on ») ne sont vérifiées que sur leur position.
+### Majuscules et élisions : détectées, pas devinées
+
+Une règle se programme : `lib/typographie.ts` **détecte** ces fautes, sans modèle, et
+remplace ce que le modèle en dit (`fusionnerTypographie()`, appelée après les verdicts).
+
+- Majuscule : le premier mot du texte et chaque mot après `.` `!` `?`. On se tait après
+  des points de suspension, après `?`/`!` suivi d'un guillemet fermant (« « Quoi ? »
+  dit-il »), après une abréviation, et sur un retour à la ligne sans point.
+- Élision : `que on`, `le arbre`, `je ai`, `si il`, `ce est`, `lorsque il`, `jusque à`,
+  et l'apostrophe oubliée (`l école`, `s appel`, `qu il`).
+- ⚠️ **Les exceptions sont le vrai travail** : h aspiré (`le héros`, `la hache` — un h
+  n'élide que s'il est dans `H_MUETS`), impératif et inversion (`prends-le`, `ai-je`),
+  `si elle`, `onze`, `oui`, `yaourt`. `ce arbre` se corrige en « cet », pas en « c' » :
+  il n'est pas signalé ici.
+- **Les prénoms** ne se devinent pas : l'avis du modèle est gardé pour un mot hors début
+  de phrase et **absent du dictionnaire** (`léo`) — `paris` existe (des paris), ce n'est
+  pas un prénom pour nous.
+- ⚠️ Une remarque de **syntaxe** du modèle qui tombe sur une faute détectée s'efface
+  devant elle, même sans attendu : il avait signalé « prends-le » sans dire quoi en
+  faire, et sa remarque l'emportait sur la majuscule détectée.
+- Sous le plafond de 15, la typographie passe **après** les autres fautes : un texte
+  sans aucune majuscule ne doit pas noyer ses accords.
+- Contrat : `npx tsx docs/tests/test-typographie.mjs` (41 cas, dont 23 pièges). Pour un
+  détecteur par programme, les tests sont la mesure.
+
+**Ce qui reste le jugement du modèle** : les autres remarques de syntaxe — un point
+manquant au milieu d'un texte, une virgule — ne sont vérifiées que sur leur position.
+Savoir où finit une phrase non ponctuée, c'est justement ce qu'un programme ne sait pas.
 
 Le pipeline vit dans `lib/ecriture-analyse.ts` (`analyserTexte()`), sorti de la route
 pour pouvoir être exécuté sans session : une route Next.js n'exporte que ses méthodes.

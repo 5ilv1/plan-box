@@ -24,6 +24,7 @@ import {
   optionsDeLecture, phraseATrou, trancherLecture, phraseAvec, phrasePrecedente,
 } from "./homophones";
 import { memeMot, trancherAccord } from "./accords";
+import { fautesTypographiques, estAnnonceMajuscule, estAnnonceElision } from "./typographie";
 
 export type TypeErreur = "orthographe" | "grammaire" | "syntaxe" | "homophone";
 
@@ -487,6 +488,70 @@ export function appliquerVerdicts(
     ...decisionsLectures(erreurs, lectures, choixLectures),
     ...decisionsAccords(erreurs, accords, choixAccords),
   ]));
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Majuscules et élisions — détectées, pas devinées
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/**
+ * Remplace ce que le modèle dit des majuscules et des élisions par ce que
+ * `lib/typographie.ts` détecte — une règle se programme, elle ne se devine pas.
+ *
+ *  • Ses annonces d'élision sont retirées : le détecteur les retrouve, lui,
+ *    avec les exceptions (h aspiré, impératif, « si elle »…).
+ *  • Ses annonces de majuscule aussi — SAUF un prénom : un mot hors début de
+ *    phrase, absent du dictionnaire (« léo »), que le modèle veut capitaliser.
+ *    Un programme ne devine pas un prénom ; « paris », qui existe (des paris),
+ *    n'en est pas un pour nous.
+ *  • Une faute détectée qui chevauche une faute déjà retenue s'efface : un
+ *    endroit, un signalement.
+ *  • Sous le plafond, les fautes de typographie passent en dernier : un texte
+ *    sans aucune majuscule ne doit pas noyer ses accords sous dix majuscules.
+ */
+export function fusionnerTypographie(
+  texte: string,
+  erreurs: ErreurCorrection[],
+  connu: (cle: string) => boolean,
+): ErreurCorrection[] {
+  const detectees = fautesTypographiques(texte);
+  const debutsDePhrase = new Set(
+    detectees.filter((f) => f.nature === "majuscule").map((f) => f.position),
+  );
+
+  const surUneDetection = (e: ErreurCorrection) =>
+    detectees.some((f) => f.position < e.position + e.mot.length && e.position < f.position + f.mot.length);
+
+  const gardees = erreurs.filter((e) => {
+    const attendu = e.attendu ?? e.correction ?? "";
+    if (estAnnonceElision(e.mot, attendu)) return false;
+    if (estAnnonceMajuscule(e.mot, attendu)) {
+      const prenom = !debutsDePhrase.has(e.position) && !connu(e.mot.toLowerCase());
+      return prenom;
+    }
+    // ⚠️ Une remarque de SYNTAXE qui tombe sur une faute détectée s'efface
+    // devant elle, même sans attendu reconnaissable : le modèle a signalé
+    // « prends-le » sans dire quoi en faire, et sa remarque l'emportait sur la
+    // majuscule détectée. Le détecteur, lui, est vérifié. Les fautes vérifiées
+    // par leurs propres étapes (orthographe, accords, homophones) gardent la
+    // main.
+    if (e.type === "syntaxe" && surUneDetection(e)) return false;
+    return true;
+  });
+
+  const chevauche = (position: number, longueur: number) =>
+    gardees.some((g) => position < g.position + g.mot.length && g.position < position + longueur);
+
+  const typos: ErreurCorrection[] = detectees
+    .filter((f) => !chevauche(f.position, f.mot.length))
+    .map((f) => ({ mot: f.mot, type: "syntaxe" as const, position: f.position, indice: f.indice }));
+  // Les élisions d'abord : une majuscule se voit d'elle-même, une apostrophe non.
+  const elisions = typos.filter((t) => /\s/.test(t.mot));
+  const majuscules = typos.filter((t) => !/\s/.test(t.mot));
+
+  return [...gardees, ...elisions, ...majuscules]
+    .slice(0, MAX_ERREURS)
+    .sort((a, b) => a.position - b.position);
 }
 
 /** Ce que reçoit l'élève : sans les champs internes de la vérification. */
