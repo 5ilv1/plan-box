@@ -26,7 +26,7 @@ import {
 import {
   appelPourSeance, empechement, consigneDepuisSeance, titreDuBloc,
 } from "../../lib/seances-generation.ts";
-import { ErreurNotion, messageErreurNotion, extraireDuCorps } from "../../lib/seances-notion.ts";
+import { ErreurNotion, messageErreurNotion, extraireDuCorps, extraireCalculMental, tableauCalculMental } from "../../lib/seances-notion.ts";
 
 let echecs = 0, total = 0;
 function verifier(nom, obtenu, attendu) {
@@ -381,6 +381,72 @@ verifier("corpus : annonce sans texte → rien",
 verifier("corpus : texte trop court → rien",
   extraireDuCorps([bloc("quote", "Corpus de la semaine"), bloc("quote", "Trop court.")]).corpus,
   null);
+
+/* ── 9 ter. Le calcul mental des séances de maths ──────────────────────── */
+
+const bl = (type, texte) => ({ type, [type]: { rich_text: [{ plain_text: texte }] } });
+
+// Forme CM : procédure, ligne de calculs à « · », conseil.
+const pageCM = [
+  bl("heading_2", "1. Calcul mental — 5 min"),
+  bl("paragraph", "Ajouter 9, 19, 29 (procédure N7, fiche 49) :"),
+  bl("paragraph", "45 + 9 · 67 + 19 · 134 + 29 · 256 + 9 · 78 + 19"),
+  bl("paragraph", "Faire verbaliser : j'ajoute 10, 20 ou 30, puis je retire 1."),
+  { type: "divider", divider: {} },
+  bl("heading_2", "2. Rappel oral — 5 min"),
+  bl("paragraph", "Rien à voir · avec · le calcul"),
+];
+const cmCM = extraireCalculMental(pageCM);
+verifier("calcul mental CM : procédure", cmCM.procedure, "Ajouter 9, 19, 29 (procédure N7, fiche 49)");
+verifier("calcul mental CM : intitulé sans la référence", cmCM.intitule, "Ajouter 9, 19, 29");
+verifier("calcul mental CM : les cinq modèles", cmCM.modeles, ["45 + 9", "67 + 19", "134 + 29", "256 + 9", "78 + 19"]);
+verifier("calcul mental CM : le conseil", cmCM.conseil, "Faire verbaliser : j'ajoute 10, 20 ou 30, puis je retire 1.");
+verifier("calcul mental CM : on s'arrête à la rubrique suivante", cmCM.modeles.includes("avec"), false);
+
+// Forme CE2 : procédure dans le titre, calculs dans un tableau livré à part.
+const pageCE2 = [
+  bl("heading_2", "1️⃣ Calcul mental (5 min) — Le nombre qui suit (> 100)"),
+  { type: "table", id: "tab-1", table: { has_column_header: true } },
+  { type: "divider", divider: {} },
+];
+verifier("calcul mental CE2 : le tableau est repéré", tableauCalculMental(pageCE2), { id: "tab-1", entete: true });
+const cmCE2 = extraireCalculMental(pageCE2, [["199", "200"], ["349", "350"]]);
+verifier("calcul mental CE2 : procédure lue dans le titre", cmCE2.procedure, "Le nombre qui suit (> 100)");
+verifier("calcul mental CE2 : modèles avec leur réponse", cmCE2.modeles, ["199 → 200", "349 → 350"]);
+verifier("calcul mental CE2 : sans les rangées, pas de modèles mais une procédure",
+  extraireCalculMental(pageCE2).modeles, []);
+
+verifier("calcul mental : pas de rubrique → rien",
+  extraireCalculMental([bl("heading_2", "1. Rappel oral"), bl("paragraph", "Du texte.")]), null);
+verifier("calcul mental : rubrique vide et titre nu → rien",
+  extraireCalculMental([bl("heading_2", "1. Calcul mental"), bl("heading_2", "2. Suite")]), null);
+verifier("calcul mental : pas de tableau sous une rubrique CM", tableauCalculMental(pageCM), null);
+
+// La traduction en fait une ligne à part, de calcul, jamais une évaluation.
+const seanceCM = {
+  id: "cm1", date: "2026-10-01", titre: "Maths CM2 - S5 Jeudi - ÉVALUATION N1 : Les nombres",
+  objectifs: "Évaluer.", matieresNotion: ["Maths CM"], disciplines: [], niveaux: ["CM2"],
+  corpus: null, differenciationBrute: null, calculMental: cmCM,
+};
+const tr = traduireSeance(seanceCM, "2026-09-28");
+const ligneCM = tr.find((l) => l.titre.startsWith("Calcul mental"));
+verifier("traduction : une ligne de calcul mental en plus", tr.length, 2);
+verifier("traduction : titre lisible", ligneCM.titre, "Calcul mental — Ajouter 9, 19, 29");
+verifier("traduction : sous-domaine Calcul", ligneCM.sousMatiere, "Calcul");
+verifier("traduction : calcul mental proposé d'abord", ligneCM.typesSuggeres[0], "calcul_mental");
+// Un jour de bilan commence aussi par cinq minutes de calcul mental : ce
+// n'est pas une évaluation, et il ne doit pas être décoché d'office.
+verifier("traduction : jamais une évaluation", ligneCM.estEvaluation, false);
+verifier("traduction : volet distinct de la séance", [tr[0].volet, ligneCM.volet], [0, 1]);
+verifier("traduction : les modèles voyagent", ligneCM.calculsModeles.length, 5);
+verifier("traduction : pas de calcul mental hors des maths",
+  traduireSeance({ ...seanceCM, matieresNotion: ["EDL"], disciplines: ["Grammaire"], niveaux: ["CM2"],
+    titre: "Grammaire - X" }, "2026-09-28").some((l) => l.titre.startsWith("Calcul mental")), false);
+
+const appelCM = appelPourSeance(ligneCM, "calcul_mental");
+verifier("génération : les modèles sont dans la consigne", appelCM.body.consignes.includes("45 + 9"), true);
+verifier("génération : interdiction de recopier", /n'en recopie aucun/.test(appelCM.body.consignes), true);
+verifier("génération : bon niveau", appelCM.body.niveauNom, "CM2");
 
 /* ── 10. Ce qu'une panne Notion montre à l'enseignant ───────────────────── */
 //

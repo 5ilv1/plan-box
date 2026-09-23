@@ -691,6 +691,32 @@ ceux que `TexteATrousEleve` sert en `<select>` : d'où `texte_a_trous` en tête
 des suggestions pour l'orthographe. Un `<input>` texte y serait impraticable
 (piège nº 5).
 
+### Le calcul mental des séances de maths
+
+Chaque séance de maths commence par cinq minutes de calcul mental, et la page
+Notion le dit — **23 séances sur 24** sur deux semaines sondées. Il devient une
+ligne à part, un volet de plus (comme l'orthographe d'une séance de grammaire),
+de sous-domaine « Calcul » et de type `calcul_mental`.
+
+Deux formes, une par niveau — `extraireCalculMental()` lit les deux :
+
+| | CM1 / CM2 | CE2 |
+|---|---|---|
+| Procédure | 1re ligne : « Ajouter 9, 19, 29 (procédure N7) : » | dans le **titre**, après le tiret |
+| Calculs faits en classe | une ligne à « · » | un **tableau** « Je dis / Réponse » |
+
+- ⚠️ Notion ne livre les rangées d'un tableau **qu'à part** : `tableauCalculMental()`
+  repère le tableau, `lireRangees()` fait l'appel de plus.
+- Les calculs de la classe partent au générateur comme **gabarit**, avec
+  l'interdiction de les recopier : un élève qui les a faits le matin les
+  retrouverait tels quels.
+- Le calcul mental n'est **jamais une évaluation** : un jour de bilan commence
+  aussi par cinq minutes de calcul mental, qui restent un entraînement. Sa ligne
+  n'est donc pas décochée d'office, et ne propose pas `eval` en premier.
+- Le corps des pages de maths est lu désormais — une trentaine d'appels à Notion
+  par semaine, **par paquets de trois**, le rythme toléré. Ouverture du panneau :
+  4 à 6 s au lieu de 1 à 2.
+
 ### L'incertitude qui reste, signalée à l'écran
 
 ⚠️ `sousMatiereIncertaine` marque ce qui est **déduit**, pour que l'enseignant
@@ -758,7 +784,7 @@ La génération est **séquentielle** : `generer-exercice` limite à 20 appels p
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
 
-Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (142 cas) —
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (165 cas) —
 à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)

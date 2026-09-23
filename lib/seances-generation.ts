@@ -161,7 +161,15 @@ export function appelPourSeance(s: SeanceTraduite, type: string): AppelGeneratio
       return {
         endpoint: "/api/generer-calcul-mental-ia",
         enveloppe: "racine", // renvoie { calculs }, sans enveloppe
-        body: { niveauNom: s.niveau, consignes: consigne, nbCalculs: 10 },
+        body: {
+          niveauNom: s.niveau,
+          // Les calculs de la classe servent de gabarit, pas de réponse : un
+          // élève qui les a faits le matin les retrouverait tels quels.
+          consignes: s.calculsModeles?.length
+            ? `${consigne}\nProduis des calculs NOUVEAUX, de même procédure et de même difficulté que ceux faits en classe ; n'en recopie aucun.`
+            : consigne,
+          nbCalculs: 10,
+        },
       };
 
     case "probleme_maths":

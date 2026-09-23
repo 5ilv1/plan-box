@@ -12,7 +12,7 @@
  * Serveur uniquement : `NOTION_TOKEN` ne doit jamais atteindre le navigateur.
  */
 
-import type { SeanceNotion } from "./seances-traduction";
+import type { CalculMentalSeance, SeanceNotion } from "./seances-traduction";
 
 const NOTION_VERSION = "2022-06-28";
 const BASE = "https://api.notion.com/v1";
@@ -211,6 +211,96 @@ export function extraireDuCorps(blocs: BlocNotion[]): {
   return { corpus, differenciation };
 }
 
+/**
+ * La rubrique de calcul mental d'une séance de maths.
+ *
+ * Deux formes coexistent, une par niveau :
+ *
+ *   CM1 / CM2                                   CE2
+ *   ## 1. Calcul mental — 5 min                 ## 1️⃣ Calcul mental (5 min) — Le nombre qui suit
+ *   Ajouter 9, 19, 29 (procédure N7) :          | Je dis                 | Réponse |
+ *   45 + 9 · 67 + 19 · 134 + 29 …               | 4 dizaines et 3 unités | 43      |
+ *   Faire verbaliser : …                        | …                      | …       |
+ *
+ * La procédure est dans la première ligne (CM) ou dans le titre, après le
+ * tiret (CE2). Les calculs faits en classe sont la ligne à « · » (CM) ou les
+ * rangées du tableau (CE2) — Notion ne livre ces rangées qu'à part, d'où le
+ * paramètre `rangees`, lu par l'appelant.
+ *
+ * Sans procédure, rien : un calcul mental sans consigne serait inventé de
+ * toutes pièces, et c'est ce qu'on cherche à éviter.
+ */
+export function extraireCalculMental(
+  blocs: BlocNotion[],
+  rangees: string[][] | null = null,
+): CalculMentalSeance | null {
+  const i = indexCalculMental(blocs);
+  if (i === -1) return null;
+
+  const lignes: string[] = [];
+  for (let j = i + 1; j < blocs.length; j++) {
+    if (blocs[j].type.startsWith("heading_") || blocs[j].type === "divider") break;
+    const t = texteDuBloc(blocs[j]);
+    if (t) lignes.push(t);
+  }
+
+  // Procédure : la ligne qui précède les calculs (CM), sinon le titre (CE2).
+  const iModeles = lignes.findIndex((l) => l.split("·").length >= 3);
+  const dansLesLignes = (iModeles > 0 ? lignes[iModeles - 1] : iModeles === -1 ? lignes[0] : "") ?? "";
+  const dansLeTitre = texteDuBloc(blocs[i]).split(/\s[—–-]\s/).slice(1).join(" — ");
+  const procedure = (dansLesLignes || dansLeTitre).replace(/\s*:\s*$/, "").trim();
+  if (!procedure || procedure.split("·").length >= 3) return null;
+
+  let modeles: string[] = [];
+  if (iModeles >= 0) {
+    modeles = lignes[iModeles].split("·").map((m) => m.trim()).filter(Boolean);
+  } else if (rangees?.length) {
+    modeles = rangees
+      .filter((r) => r.some((c) => c.trim()))
+      .map((r) => (r.length >= 2 && r[1].trim() ? `${r[0].trim()} → ${r[1].trim()}` : r[0].trim()));
+  }
+
+  return {
+    procedure,
+    // Pour un titre lisible : « Ajouter 9, 19, 29 », sans la référence au fichier.
+    intitule: procedure.replace(/\s*\([^)]*\)\s*$/, "").trim() || procedure,
+    modeles,
+    conseil: iModeles >= 0 ? (lignes.slice(iModeles + 1).join(" ") || null) : null,
+  };
+}
+
+function indexCalculMental(blocs: BlocNotion[]): number {
+  return blocs.findIndex(
+    (b) => b.type.startsWith("heading_") && /calcul mental/i.test(texteDuBloc(b))
+  );
+}
+
+/**
+ * Le tableau de calculs qui suit la rubrique, s'il y en a un (forme CE2).
+ * Renvoie son identifiant et s'il a une ligne d'en-tête, à sauter.
+ */
+export function tableauCalculMental(blocs: BlocNotion[]): { id: string; entete: boolean } | null {
+  const i = indexCalculMental(blocs);
+  if (i === -1) return null;
+  for (let j = i + 1; j < blocs.length; j++) {
+    if (blocs[j].type.startsWith("heading_") || blocs[j].type === "divider") return null;
+    if (blocs[j].type === "table") {
+      const t = blocs[j].table as { has_column_header?: boolean } | undefined;
+      return { id: String(blocs[j].id), entete: !!t?.has_column_header };
+    }
+  }
+  return null;
+}
+
+async function lireRangees(tableId: string, entete: boolean): Promise<string[][]> {
+  const data = await notionFetch(`/blocks/${tableId}/children?page_size=50`);
+  const rangees = ((data.results ?? []) as BlocNotion[]).map((r) =>
+    ((r.table_row as { cells?: Array<Array<{ plain_text: string }>> } | undefined)?.cells ?? [])
+      .map((cellule) => cellule.map((t) => t.plain_text).join(""))
+  );
+  return entete ? rangees.slice(1) : rangees;
+}
+
 async function lireCorpsDePage(pageId: string): Promise<BlocNotion[]> {
   const data = await notionFetch(`/blocks/${pageId}/children?page_size=40`);
   return (data.results ?? []) as BlocNotion[];
@@ -234,6 +324,55 @@ function decalerJours(date: string, n: number): string {
  * des trois requêtes par seconde que tolère Notion. Les corps sont lus en
  * série pour ne pas s'en approcher.
  */
+/** Une ligne de la base → une séance, corps de page compris quand il sert. */
+async function lireSeance(ligne: { id: string; properties: Record<string, unknown> }): Promise<SeanceNotion> {
+  const p = ligne.properties as Props;
+  const matieresNotion = lireMulti(p["Matière"]);
+  const estFrancais = matieresNotion.some((m) => /^(edl|lecture)/i.test(m.trim()));
+  const estMaths = matieresNotion.some((m) => /^(maths|probl)/i.test(m.trim()));
+
+  let corpus: string | null = null;
+  let differenciationBrute: string | null = null;
+  let calculMental: CalculMentalSeance | null = null;
+
+  if (estFrancais || estMaths) {
+    // Le français y porte son corpus et sa différenciation, les maths leur
+    // rubrique de calcul mental. Un échec de lecture ne doit pas emporter la
+    // séance : elle reste exploitable sans, l'écran le signalera.
+    try {
+      const blocs = await lireCorpsDePage(ligne.id);
+      if (estFrancais) {
+        const extrait = extraireDuCorps(blocs);
+        corpus = extrait.corpus;
+        differenciationBrute = extrait.differenciation;
+      }
+      if (estMaths) {
+        // Forme CE2 : les calculs sont dans un tableau, livré à part.
+        const tableau = tableauCalculMental(blocs);
+        const rangees = tableau ? await lireRangees(tableau.id, tableau.entete) : null;
+        calculMental = extraireCalculMental(blocs, rangees);
+      }
+    } catch (e) {
+      console.warn(`[seances-notion] corps illisible pour ${ligne.id} :`, e);
+    }
+  }
+
+  return {
+    id: ligne.id,
+    date: lireDate(p["Date"]),
+    titre: lireTitre(p["Nom de la séance"]) || "Sans titre",
+    // La propriété existe en deux graphies dans la base — l'une avec une
+    // espace finale, séquelle d'un renommage.
+    objectifs: lireTexte(p["Objectifs"]) || lireTexte(p["Objectifs "]),
+    matieresNotion,
+    disciplines: lireMulti(p["Discipline"]),
+    niveaux: lireMulti(p["Niveau"]),
+    corpus,
+    differenciationBrute,
+    calculMental,
+  };
+}
+
 export async function chargerSeancesSemaine(lundi: string): Promise<SeanceNotion[]> {
   const { db } = config();
   const vendredi = decalerJours(lundi, 4);
@@ -257,42 +396,13 @@ export async function chargerSeancesSemaine(lundi: string): Promise<SeanceNotion
   });
 
   const lignes = (data.results ?? []) as Array<{ id: string; properties: Props }>;
+  // Les corps de page se lisent par paquets de trois : c'est le rythme que
+  // Notion tolère, et une semaine en demande une trentaine depuis que les
+  // maths sont lues aussi — une à une, l'ouverture du panneau traînait.
   const seances: SeanceNotion[] = [];
-
-  for (const ligne of lignes) {
-    const p = ligne.properties;
-    const matieresNotion = lireMulti(p["Matière"]);
-    const estFrancais = matieresNotion.some((m) => /^(edl|lecture)/i.test(m.trim()));
-
-    let corpus: string | null = null;
-    let differenciationBrute: string | null = null;
-
-    if (estFrancais) {
-      // Le corps ne porte rien d'utile pour les maths : on s'épargne l'appel.
-      // Un échec de lecture ne doit pas emporter la séance — elle reste
-      // exploitable sans corpus, l'écran le signalera.
-      try {
-        const extrait = extraireDuCorps(await lireCorpsDePage(ligne.id));
-        corpus = extrait.corpus;
-        differenciationBrute = extrait.differenciation;
-      } catch (e) {
-        console.warn(`[seances-notion] corps illisible pour ${ligne.id} :`, e);
-      }
-    }
-
-    seances.push({
-      id: ligne.id,
-      date: lireDate(p["Date"]),
-      titre: lireTitre(p["Nom de la séance"]) || "Sans titre",
-      // La propriété existe en deux graphies dans la base — l'une avec une
-      // espace finale, séquelle d'un renommage.
-      objectifs: lireTexte(p["Objectifs"]) || lireTexte(p["Objectifs "]),
-      matieresNotion,
-      disciplines: lireMulti(p["Discipline"]),
-      niveaux: lireMulti(p["Niveau"]),
-      corpus,
-      differenciationBrute,
-    });
+  for (let i = 0; i < lignes.length; i += 3) {
+    const paquet = await Promise.all(lignes.slice(i, i + 3).map(lireSeance));
+    seances.push(...paquet);
   }
 
   return seances;

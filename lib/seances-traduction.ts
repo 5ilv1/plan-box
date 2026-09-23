@@ -42,6 +42,20 @@ export interface SeanceNotion {
   corpus: string | null;
   /** Ligne « Différenciation : ★☆☆ tous · ★★☆ CM1 et CM2 · ★★★ CM2 ». */
   differenciationBrute: string | null;
+  /** La rubrique « Calcul mental » d'une séance de maths, si elle existe. */
+  calculMental?: CalculMentalSeance | null;
+}
+
+/** Ce que dit la rubrique « 1. Calcul mental — 5 min » d'une séance de maths. */
+export interface CalculMentalSeance {
+  /** « Ajouter 9, 19, 29 (procédure N7, fiche 49) » */
+  procedure: string;
+  /** « Ajouter 9, 19, 29 » — la même, sans la référence, pour le titre. */
+  intitule: string;
+  /** Les calculs donnés en classe : des modèles, jamais à recopier tels quels. */
+  modeles: string[];
+  /** « Faire verbaliser : … » — pour l'enseignant, et pour cadrer le modèle. */
+  conseil: string | null;
 }
 
 /** Une séance traduite, éclatée par niveau : ce que l'écran manipule. */
@@ -65,6 +79,11 @@ export interface SeanceTraduite {
   difficulte: Difficulte;
   estEvaluation: boolean;
   typesSuggeres: string[];
+  /**
+   * Les calculs faits en classe, quand la ligne est le calcul mental de la
+   * séance : ils cadrent la génération, qui doit en produire de nouveaux.
+   */
+  calculsModeles?: string[];
 }
 
 export type Difficulte = "facile" | "moyen" | "difficile";
@@ -447,7 +466,7 @@ export function traduireSeance(s: SeanceNotion, lundi: string): SeanceTraduite[]
   const volets = decouperVolets(matiere, s.disciplines, s.titre, s.objectifs);
   const niveaux = niveauxReels(s.niveaux);
 
-  return volets.flatMap((v, volet) =>
+  const lignes: SeanceTraduite[] = volets.flatMap((v, volet) =>
     niveaux.map((niveau) => ({
       seanceId: s.id,
       volet,
@@ -465,6 +484,40 @@ export function traduireSeance(s: SeanceNotion, lundi: string): SeanceTraduite[]
       typesSuggeres: typesSuggeres(v.sousMatiere, evaluation),
     }))
   );
+
+  // Le calcul mental de la séance devient une ligne à part — un volet de plus,
+  // comme l'orthographe d'une séance de grammaire. Il est toujours du calcul,
+  // et jamais une évaluation : un jour de bilan commence aussi par cinq
+  // minutes de calcul mental, qui restent un entraînement.
+  const cm = matiere === "Mathématiques" ? s.calculMental : null;
+  if (cm) {
+    const objectifs = [
+      `${cm.procedure}.`,
+      cm.modeles.length ? `Calculs faits en classe : ${cm.modeles.join(" · ")}.` : "",
+      cm.conseil ?? "",
+    ].filter(Boolean).join(" ");
+    for (const niveau of niveaux) {
+      lignes.push({
+        seanceId: s.id,
+        volet: volets.length,
+        date: s.date,
+        jour,
+        titre: `Calcul mental — ${cm.intitule}`,
+        objectifs,
+        corpus: null,
+        matiere,
+        sousMatiere: "Calcul",
+        sousMatiereIncertaine: false,
+        niveau,
+        difficulte: difficultePourNiveau(s.differenciationBrute, niveau),
+        estEvaluation: false,
+        typesSuggeres: typesSuggeres("Calcul", false),
+        calculsModeles: cm.modeles,
+      });
+    }
+  }
+
+  return lignes;
 }
 
 /** Garde-fou : le sous-domaine proposé existe-t-il dans le référentiel ? */
