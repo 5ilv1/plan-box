@@ -269,10 +269,17 @@ export default function PageActivite() {
     statut: StatutBloc = "fait",
     reponsesEleve?: { id: number; reponse: string; correcte: boolean | null }[],
     tentativesCourantes?: number,
+    /**
+     * Le contenu tel qu'il est en base, quand l'activité l'a enregistré elle-même
+     * en cours de route (l'écriture sauvegarde le texte au fil de la frappe).
+     * ⚠️ Sans lui, on réécrirait la copie chargée à l'ouverture de la page — qui
+     * ne contient pas le texte — et on l'effacerait au moment où l'élève le rend.
+     */
+    contenuAJour?: Record<string, unknown>,
   ) {
     if (!bloc) return;
     const tentatives = (tentativesCourantes ?? 0) + 1;
-    const contenuActuel = (bloc.contenu ?? {}) as Record<string, unknown>;
+    const contenuActuel = (contenuAJour ?? bloc.contenu ?? {}) as Record<string, unknown>;
 
     let contenuMaj: Record<string, unknown> = {
       ...contenuActuel,
@@ -1307,45 +1314,35 @@ export default function PageActivite() {
                 />
               </div>
             ) : ecriture ? (
-              <div className="pb-card" style={{ padding: "32px 28px" }}>
-                <div style={{
-                  fontSize: 11, fontWeight: 700, textTransform: "uppercase",
-                  letterSpacing: "0.06em", color: "#7C3AED", marginBottom: 12,
-                }}>
-                  Écriture créative
-                </div>
+              // Écriture du jour : le même atelier, en mode jour — éditeur,
+              // correction vérifiée, puis « J'ai terminé ». Il n'y avait ici
+              // qu'un sujet et un bouton : l'élève écrivait sur papier, et la
+              // correction automatique n'était jamais proposée.
+              <div className="pb-card" style={{ padding: "24px 20px" }}>
                 <h2 style={{
                   fontFamily: "'Plus Jakarta Sans', sans-serif",
                   fontSize: 22, fontWeight: 800, color: "var(--pb-on-surface)",
-                  marginBottom: 20, lineHeight: 1.35,
+                  margin: "0 0 12px", lineHeight: 1.35,
                 }}>
                   {ecriture.sujet}
                 </h2>
-                {ecriture.contrainte && ecriture.afficher_contrainte !== false && (
-                  <div style={{
-                    display: "flex", alignItems: "flex-start", gap: 10,
-                    background: "rgba(124,58,237,0.07)", border: "1.5px solid rgba(124,58,237,0.18)",
-                    borderRadius: 12, padding: "14px 16px", marginBottom: 20,
-                  }}>
-                    <span className="ms" style={{ fontSize: 18, color: "#7C3AED", flexShrink: 0, marginTop: 1 }}>push_pin</span>
-                    <p style={{ fontSize: 14, fontWeight: 600, color: "#5B21B6", margin: 0, lineHeight: 1.5 }}>
-                      {ecriture.contrainte}
-                    </p>
-                  </div>
-                )}
                 {ecriture.instructions && (
-                  <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", fontStyle: "italic", marginBottom: 28, lineHeight: 1.6 }}>
+                  <p style={{ fontSize: 14, color: "var(--pb-on-surface-variant)", fontStyle: "italic", margin: "0 0 16px", lineHeight: 1.6 }}>
                     {ecriture.instructions}
                   </p>
                 )}
-                <button
-                  className="pb-btn primary"
-                  onClick={() => marquerFait().then(() => setEtat("termine"))}
-                  style={{ fontSize: 15, padding: "14px 32px", borderRadius: 14, width: "100%" }}
-                >
-                  <span className="ms" style={{ fontSize: 20 }}>check_circle</span>
-                  J&apos;ai terminé
-                </button>
+                <AtelierEcriture
+                  mode="jour"
+                  blocId={bloc.id}
+                  sujet={ecriture.sujet}
+                  contrainte={ecriture.contrainte}
+                  afficherContrainte={ecriture.afficher_contrainte !== false}
+                  contenu={bloc.contenu as Record<string, unknown>}
+                  onTermine={(contenuAJour) =>
+                    marquerFait(undefined, "fait", undefined, undefined, contenuAJour)
+                      .then(() => setEtat("termine"))
+                  }
+                />
               </div>
             ) : null}
 

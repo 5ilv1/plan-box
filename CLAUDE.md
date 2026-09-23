@@ -354,6 +354,73 @@ tiré dans ce thème, ce qui rend l'indice honnête.
   supprimer), mot du jour (changer / imposer un mot) et résultats de la classe.
   ⚠️ Changer le mot du jour **efface les parties déjà jouées** ce jour-là.
 
+## Écriture et correction automatique
+
+Deux modes, un seul composant (`components/AtelierEcriture.tsx`), une seule route de
+correction (`app/api/ecriture/analyser`) :
+
+| Mode | Ce que fait l'élève | Où l'enseignant le choisit |
+|---|---|---|
+| `jour` | écrit, clique « Corriger mon texte », puis « J'ai terminé » | par défaut |
+| `semaine` | retravaille son texte toute la semaine, reçoit tes annotations, envoie sa version finale le vendredi | bascule « jour / semaine » de la carte du thème d'écriture (tableau de bord) |
+
+⚠️ Jusqu'au 23/09, le mode jour n'avait **ni éditeur ni correction** : un sujet et un
+bouton « J'ai terminé ». Les 100 blocs d'écriture en base étaient tous en mode jour —
+l'atelier n'avait jamais servi. Et le tableau de bord rangeait l'écriture parmi les
+activités « papier », dont la carte ne mène nulle part.
+
+### La correction ne croit pas le modèle
+
+`lib/ecriture-correction.ts` (`verifierErreurs()`) filtre ce que renvoie le modèle.
+**En cas de doute, on se tait** : un élève de CE2 qui « corrige » un mot juste apprend
+la faute — une erreur ratée coûte moins cher qu'une erreur inventée.
+
+- **Le mot doit être dans le texte**, en mot entier. La position est **recalculée**,
+  jamais celle du modèle. Un mot introuvable est écarté.
+- **Un mot attesté n'est pas une faute d'orthographe.** Dictionnaire `lexique_francais`
+  (336 524 formes **accentuées**, `scripts/seed-lexique-francais.ts`, idempotent).
+  ⚠️ Pas `motus_lexique` : il est sans accents, donc aveugle à « trés » / « très ».
+  Le dictionnaire ne connaît aucune forme apostrophée : les élisions (`qu'`, `l'`,
+  `aujourd'`…) sont une liste fermée dans le module.
+- **Un nom propre ne se vérifie pas** (majuscule hors début de phrase) : on ne signale
+  jamais « Timéo » comme une faute.
+- **Une correction proposée doit être un mot attesté**, sinon elle est retirée.
+- Accords, conjugaisons, majuscules (types `grammaire`, `syntaxe`) portent sur des mots
+  qui existent : le dictionnaire n'en dit rien, ils passent s'ils sont localisés.
+- ⚠️ **Une panne n'est jamais un sans-faute.** La route renvoyait `200 { erreurs: [] }`
+  quand le modèle échouait, et l'élève lisait « Bravo ! Je n'ai trouvé aucune erreur ».
+  Elle répond désormais `502`.
+- Pendant que l'élève écrit, `reporterErreurs()` **suit** les erreurs : décalées si la
+  retouche est ailleurs, retirées si elle touche le mot. Jamais d'`indexOf` : l'ancien
+  affichage cherchait la première occurrence du mot dans tout le texte, et le
+  surlignage — puis « Corriger » — sautait sur un mot juste.
+- Contrat : `npx tsx docs/tests/test-ecriture-correction.mjs` (47 cas).
+
+### Trois pièges qui effaçaient le travail
+
+1. **`marquerFait()` réécrit le contenu depuis la copie chargée à l'ouverture de la
+   page.** Le texte, sauvegardé entre-temps, disparaissait au moment où l'élève le
+   rendait. D'où son paramètre `contenuAJour` : « J'ai terminé » enregistre d'abord,
+   puis clôt avec le contenu que renvoie `/api/ecriture/sauvegarder`. Si
+   l'enregistrement échoue, l'activité **ne se clôt pas**.
+2. **`normaliserContenuEcriture()` forçait `mode = "semaine"`** (les deux branches du
+   ternaire valaient « semaine ») : la première sauvegarde d'un texte du jour en
+   faisait un atelier de la semaine.
+3. **Il rendait une liste FERMÉE de champs** : chaque sauvegarde effaçait `matiere` et
+   `sous_matiere`, et le bloc repartait en « Non classé » dans le suivi. Le contenu
+   d'origine passe maintenant en premier (`...c`).
+
+### Routes authentifiées
+
+Les routes de l'écriture n'authentifiaient personne : `sauvegarder` et `envoyer`
+croyaient un `eleveRbId` envoyé par le navigateur (l'omettre suffisait à écrire dans le
+bloc de n'importe qui), `annotations` rendait les remarques à qui connaissait l'id du
+bloc, et **`textes-finaux` renvoyait le texte de chaque élève avec son nom à
+n'importe qui**. Désormais :
+`requireProprietaireOuEnseignant(bloc.eleve_id, bloc.repetibox_eleve_id)` — le
+propriétaire **lu dans le bloc**, jamais dans la requête — et `requireEnseignant()` pour
+`textes-finaux`. Même règle pour le PATCH élève de `/api/enseignant/ecriture/annotation`.
+
 ## Reprendre un exercice interrompu
 
 Un élève coupé au milieu d'un exercice — batterie à plat, sonnerie, tablette qui change de

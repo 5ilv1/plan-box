@@ -1,12 +1,14 @@
 "use client";
 
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { reporterErreurs } from "@/lib/ecriture-correction";
 
 type ErreurIA = {
   mot: string;
   type: string;
   position: number;
-  indice: string;
+  /** Absent quand le modèle n'en donne pas : la route n'invente rien. */
+  indice?: string;
   correction?: string;
 };
 
@@ -28,9 +30,18 @@ interface Props {
   afficherContrainte: boolean;
   contenu: Record<string, unknown>;
   eleveRbId?: number;
-  onTermine: () => void;
+  /**
+   * Fin de l'activité. En mode jour, reçoit le contenu tel qu'il vient d'être
+   * enregistré : c'est lui que la page doit écrire, pas sa copie d'ouverture.
+   */
+  onTermine: (contenu?: Record<string, unknown>) => void;
   /** Mode aperçu enseignant : désactive sauvegarde, polling, envoi et PATCH statut. */
   apercu?: boolean;
+  /**
+   * `semaine` : l'atelier — envoi au maître, annotations, version finale le
+   * vendredi. `jour` : on écrit, on se fait corriger, on a terminé.
+   */
+  mode?: "semaine" | "jour";
 }
 
 function getTexteCourantInitial(c: Record<string, unknown>): string {
@@ -71,7 +82,9 @@ export default function AtelierEcriture({
   eleveRbId,
   onTermine,
   apercu = false,
+  mode = "semaine",
 }: Props) {
+  const modeJour = mode === "jour";
   const [texte, setTexte] = useState(() => getTexteCourantInitial(contenu));
   const [annotations, setAnnotations] = useState<Annotation[]>(() =>
     getAnnotationsInitiales(contenu)
@@ -89,8 +102,9 @@ export default function AtelierEcriture({
   const statutsLocauxRef = useRef<Map<string, Annotation["statut"]>>(new Map());
 
   const vendredi = estVendredi();
-  // Édition bloquée si finalisé OU si on est vendredi et déjà envoyé
-  const verrouille = finalise || (vendredi && envoye);
+  // Édition bloquée si finalisé OU si on est vendredi et déjà envoyé — règle
+  // de l'atelier de la semaine, sans objet pour un texte du jour.
+  const verrouille = finalise || (!modeJour && vendredi && envoye);
 
   // ── Auto-save 2s après dernière frappe ──
   useEffect(() => {
@@ -104,7 +118,7 @@ export default function AtelierEcriture({
         const res = await fetch("/api/ecriture/sauvegarder", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ blocId, texte, eleveRbId }),
+          body: JSON.stringify({ blocId, texte }),
         });
         if (res.ok) {
           lastSavedTexte.current = texte;
@@ -125,6 +139,8 @@ export default function AtelierEcriture({
   // ── Polling annotations toutes les 20s ──
   useEffect(() => {
     if (apercu) return;
+    // Un texte du jour n'est pas annoté par le maître : rien à interroger.
+    if (modeJour) return;
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/ecriture/annotations?blocId=${blocId}`);
@@ -148,21 +164,37 @@ export default function AtelierEcriture({
   const [analyseEnCours, setAnalyseEnCours] = useState(false);
   const [analyseMessage, setAnalyseMessage] = useState<string>("");
   const [erreursIA, setErreursIA] = useState<ErreurIA[]>([]);
+
+  // Les erreurs suivent le texte pendant que l'élève écrit (`reporterErreurs`) :
+  // décalées si la retouche est ailleurs, retirées si elle touche le mot. On ne
+  // cherche JAMAIS le mot ailleurs dans le texte — c'était ce qui faisait sauter
+  // un surlignage sur une autre occurrence, juste celle-là.
+  const texteSuiviRef = useRef(texte);
+  useEffect(() => {
+    const ancien = texteSuiviRef.current;
+    texteSuiviRef.current = texte;
+    if (ancien !== texte) setErreursIA((prev) => reporterErreurs(ancien, texte, prev));
+  }, [texte]);
+
   const analyser = useCallback(async () => {
     if (!texte.trim()) return;
+    const texteEnvoye = texte;
     setAnalyseEnCours(true);
     setAnalyseMessage("");
     try {
       const res = await fetch("/api/ecriture/analyser", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ texte, sujet, blocId }),
+        body: JSON.stringify({ texte: texteEnvoye, sujet, blocId }),
       });
       if (!res.ok) {
-        setAnalyseMessage("Erreur lors de l'analyse, réessaie.");
+        // Une panne n'est jamais un sans-faute : la route répond 502, on le dit.
+        setAnalyseMessage("La correction n'a pas pu se faire. Réessaie dans un instant.");
       } else {
         const data = await res.json();
-        const erreurs = data.erreurs ?? [];
+        // Les positions portent sur le texte envoyé : s'il a changé pendant
+        // l'analyse, on les reporte sur le texte d'aujourd'hui.
+        const erreurs = reporterErreurs<ErreurIA>(texteEnvoye, texteSuiviRef.current, data.erreurs ?? []);
         setErreursIA(erreurs);
         if (erreurs.length === 0) {
           setAnalyseMessage("Bravo ! Je n'ai trouvé aucune erreur dans ton texte.");
@@ -175,6 +207,33 @@ export default function AtelierEcriture({
     }
     setAnalyseEnCours(false);
   }, [texte, sujet]);
+
+  // ── Terminer un texte du jour ──
+  // On enregistre d'abord — la sauvegarde automatique peut avoir 1,5 s de
+  // retard — puis on rend à la page le contenu tel qu'il est en base. Si
+  // l'enregistrement échoue, on ne termine PAS : l'élève perdrait son texte.
+  const [terminaisonEnCours, setTerminaisonEnCours] = useState(false);
+  const [erreurTerminaison, setErreurTerminaison] = useState("");
+  async function terminerJour() {
+    if (apercu || !texte.trim()) return;
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+    setTerminaisonEnCours(true);
+    setErreurTerminaison("");
+    try {
+      const res = await fetch("/api/ecriture/sauvegarder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId, texte }),
+      });
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      lastSavedTexte.current = texte;
+      onTermine(data.contenu as Record<string, unknown>);
+    } catch {
+      setErreurTerminaison("Ton texte n'a pas pu être enregistré. Vérifie la connexion et réessaie — rien n'est perdu à l'écran.");
+    }
+    setTerminaisonEnCours(false);
+  }
 
   // ── Envoyer le texte (premier envoi ou version finale) ──
   async function envoyer(estFinal: boolean = false) {
@@ -301,29 +360,18 @@ export default function AtelierEcriture({
     [annotationsAffichees]
   );
 
-  // Erreurs IA encore valides :
-  //  - retrouve le mot à la position stockée, sinon via indexOf dans le texte
-  //  - si le mot n'est nulle part, l'erreur a été corrigée → on la jette
-  //  - la position ne doit pas chevaucher une annotation du maître
+  // Erreurs IA encore valides : le mot est à sa position, exactement — sinon on
+  // ne l'affiche pas. `reporterErreurs` tient les positions à jour ; ce test
+  // n'est qu'un filet, jamais une recherche ailleurs dans le texte. Une erreur
+  // qui chevauche une annotation du maître s'efface devant elle.
   const erreursIAVisibles = useMemo(() => {
-    return erreursIA
-      .map((e): ErreurIA | null => {
-        if (!e.mot) return null;
-        const motLower = e.mot.toLowerCase();
-        let pos = e.position;
-        const valid =
-          pos >= 0 &&
-          pos + e.mot.length <= texte.length &&
-          texte.substring(pos, pos + e.mot.length).toLowerCase() === motLower;
-        if (!valid) {
-          pos = texte.toLowerCase().indexOf(motLower);
-          if (pos < 0) return null;
-        }
-        const fin = pos + e.mot.length;
-        if (teacherRanges.some((t) => pos < t.fin && fin > t.debut)) return null;
-        return { ...e, position: pos };
-      })
-      .filter((e): e is ErreurIA => e !== null);
+    return erreursIA.filter((e) => {
+      if (!e.mot) return false;
+      const debut = e.position;
+      const fin = debut + e.mot.length;
+      if (debut < 0 || fin > texte.length || texte.slice(debut, fin) !== e.mot) return false;
+      return !teacherRanges.some((t) => debut < t.fin && fin > t.debut);
+    });
   }, [erreursIA, teacherRanges, texte]);
 
   // HTML surligné pour le contentEditable : rouge = IA, bleu = maître
@@ -405,16 +453,10 @@ export default function AtelierEcriture({
   // Appliquer une correction d'erreur IA : remplacer le mot par la correction
   function appliquerCorrection(erreur: ErreurIA) {
     if (!erreur.correction) return;
-    // Localiser le mot : position stockée si elle correspond, sinon recherche insensible à la casse
-    let pos = erreur.position;
-    if (
-      pos < 0 ||
-      pos + erreur.mot.length > texte.length ||
-      texte.substring(pos, pos + erreur.mot.length).toLowerCase() !== erreur.mot.toLowerCase()
-    ) {
-      pos = texte.toLowerCase().indexOf(erreur.mot.toLowerCase());
-    }
-    if (pos < 0) return;
+    // Le mot à sa position, ou rien : remplacer « la première occurrence »
+    // corrigeait parfois un mot juste à la place du mot fautif.
+    const pos = erreur.position;
+    if (pos < 0 || texte.slice(pos, pos + erreur.mot.length) !== erreur.mot) return;
     const avant = texte.slice(0, pos);
     const apres = texte.slice(pos + erreur.mot.length);
     setTexte(avant + erreur.correction + apres);
@@ -438,7 +480,9 @@ export default function AtelierEcriture({
           </span>
           <div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, color: verrouille ? "#059669" : "#7C3AED" }}>
-              {finalise
+              {modeJour
+                ? "Écriture du jour"
+                : finalise
                 ? "Version finale envoyée"
                 : envoye
                   ? vendredi
@@ -447,7 +491,9 @@ export default function AtelierEcriture({
                   : "Atelier d'écriture — Écris et envoie quand tu es prêt"}
             </div>
             <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-              {finalise
+              {modeJour
+                ? "Écris ton texte, clique sur « Corriger mon texte », puis sur « J'ai terminé »."
+                : finalise
                 ? "Ton texte est définitivement rendu."
                 : envoye
                   ? vendredi
@@ -733,7 +779,27 @@ export default function AtelierEcriture({
           </button>
         )}
 
-        {!finalise && !envoye && (
+        {modeJour && (
+          <button
+            onClick={terminerJour}
+            // Visible dans l'aperçu enseignant, pour qu'il montre ce que voit
+            // l'élève — mais inerte : un aperçu ne termine rien.
+            disabled={apercu || terminaisonEnCours || !texte.trim()}
+            style={{
+              background: "#059669", color: "white", border: "none",
+              borderRadius: 12, padding: "10px 24px", fontSize: 14,
+              fontWeight: 700, cursor: (terminaisonEnCours || !texte.trim()) ? "not-allowed" : "pointer",
+              fontFamily: "'Plus Jakarta Sans', sans-serif",
+              opacity: (terminaisonEnCours || !texte.trim()) ? 0.5 : 1,
+              display: "flex", alignItems: "center", gap: 6,
+            }}
+          >
+            <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
+            {terminaisonEnCours ? "Enregistrement..." : "J'ai terminé"}
+          </button>
+        )}
+
+        {!modeJour && !finalise && !envoye && (
           <button
             onClick={() => envoyer(false)}
             disabled={envoiEnCours || !texte.trim()}
@@ -751,7 +817,7 @@ export default function AtelierEcriture({
           </button>
         )}
 
-        {!finalise && envoye && vendredi && (
+        {!modeJour && !finalise && envoye && vendredi && (
           <button
             onClick={() => envoyer(true)}
             disabled={envoiEnCours || !texte.trim()}
@@ -769,6 +835,15 @@ export default function AtelierEcriture({
           </button>
         )}
       </div>
+
+      {erreurTerminaison && (
+        <div role="alert" style={{
+          background: "#FEF2F2", border: "1.5px solid #FECACA", borderRadius: 12,
+          padding: "12px 16px", fontSize: 13, fontWeight: 600, color: "#991B1B",
+        }}>
+          {erreurTerminaison}
+        </div>
+      )}
 
       {/* Hint contrainte (si affichée) */}
       {afficherContrainte && contrainte && (

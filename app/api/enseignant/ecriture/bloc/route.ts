@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ erreur: "Bloc introuvable" }, { status: 404 });
   }
 
+  // Le mode est conservé (jour ou semaine) : l'aperçu élève en dépend.
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
 
   // Infos élève

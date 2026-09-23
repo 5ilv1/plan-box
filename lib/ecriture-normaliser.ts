@@ -31,7 +31,8 @@ export interface HistoriqueEntry {
 }
 
 export interface ContenuEcritureSemaine {
-  mode: "semaine";
+  /** Le mode du bloc tel qu'il a été posé — jamais réécrit (voir plus bas). */
+  mode: "semaine" | "jour";
   sujet: string;
   contrainte: string;
   afficher_contrainte?: boolean;
@@ -51,6 +52,8 @@ export interface ContenuEcritureSemaine {
   erreurs_jour2?: unknown[];
   erreurs_jour3?: unknown[];
   erreurs_jour4?: unknown[];
+  /** Tout le reste — matière, sous-matière, scores — traverse intact. */
+  [cle: string]: unknown;
 }
 
 export function dateStr(d: Date = new Date()): string {
@@ -67,7 +70,9 @@ export function normaliserContenuEcriture(
 ): ContenuEcritureSemaine {
   const c = (contenu ?? {}) as Record<string, unknown>;
 
-  const mode = (c.mode as string) === "semaine" ? "semaine" : "semaine";
+  // ⚠️ Cette ligne valait « semaine » dans les deux branches : la première
+  // sauvegarde d'un bloc du jour le transformait en atelier de la semaine.
+  const mode: "semaine" | "jour" = c.mode === "jour" ? "jour" : "semaine";
   const sujet = (c.sujet as string) ?? "";
   const contrainte = (c.contrainte as string) ?? "";
   const afficher_contrainte = c.afficher_contrainte !== false;
@@ -121,7 +126,12 @@ export function normaliserContenuEcriture(
   const date_version_finale = (c.date_version_finale as string | null | undefined) ?? null;
 
   return {
-    mode: "semaine",
+    // ⚠️ Le contenu d'origine d'abord. Cette fonction rendait une liste FERMÉE
+    // de champs : chaque sauvegarde effaçait `matiere` et `sous_matiere` — ce
+    // que le suivi lit pour ranger le bloc — et le texte repartait en « Non
+    // classé ». Les champs normalisés passent par-dessus, le reste traverse.
+    ...c,
+    mode,
     sujet,
     contrainte,
     afficher_contrainte,

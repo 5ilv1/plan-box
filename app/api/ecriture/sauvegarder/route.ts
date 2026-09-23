@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
+import { requireProprietaireOuEnseignant } from "@/lib/server-auth";
 import {
   normaliserContenuEcriture,
   majHistorique,
@@ -21,10 +22,10 @@ import {
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { blocId, texte, eleveRbId } = body as {
+  // `eleveRbId` peut encore arriver des anciens clients : il est ignoré.
+  const { blocId, texte } = body as {
     blocId?: string;
     texte?: string;
-    eleveRbId?: number;
   };
 
   if (!blocId || texte === undefined) {
@@ -43,10 +44,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ erreur: "Bloc introuvable" }, { status: 404 });
   }
 
-  // Sécurité : l'élève Repetibox ne peut toucher qu'à ses propres blocs
-  if (eleveRbId && bloc.repetibox_eleve_id !== eleveRbId) {
-    return NextResponse.json({ erreur: "Accès refusé" }, { status: 403 });
-  }
+  // Le propriétaire se lit dans le bloc, jamais dans la requête : un
+  // `eleveRbId` envoyé par le navigateur se falsifie, et l'omettre suffisait à
+  // écrire dans le bloc de n'importe qui.
+  const garde = await requireProprietaireOuEnseignant(bloc.eleve_id, bloc.repetibox_eleve_id);
+  if (garde.error) return garde.error;
 
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
   const dejaEnvoye = !!contenu.date_envoi && contenu.texte_final.trim().length > 0;
@@ -72,10 +74,18 @@ export async function POST(req: NextRequest) {
   let statut = bloc.statut;
   if (texte.trim().length > 0 && statut === "a_faire") statut = "en_cours";
 
-  await admin
+  const { error: errMaj } = await admin
     .from("plan_travail")
     .update({ contenu, statut })
     .eq("id", blocId);
+  if (errMaj) {
+    // L'élève doit savoir que son texte n'est pas enregistré : un `ok` ici lui
+    // ferait croire le contraire.
+    return NextResponse.json({ erreur: "Sauvegarde impossible" }, { status: 500 });
+  }
 
-  return NextResponse.json({ ok: true });
+  // Le contenu tel qu'il est désormais en base : la page s'en sert pour clore
+  // l'activité, au lieu de réécrire la copie chargée à l'ouverture — qui ne
+  // contient pas le texte, et l'effacerait.
+  return NextResponse.json({ ok: true, contenu });
 }

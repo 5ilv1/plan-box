@@ -1883,10 +1883,11 @@ export default function DashboardEleve() {
             {/* Section "Aujourd'hui" */}
             <section id="aujourd-hui">
               {(() => {
-                const isPapier = (b: PlanTravail) => {
-                  if (b.type === "ecriture" && (b.contenu as any)?.mode === "semaine") return false; // en ligne
-                  return ["dictee", "mots", "correction_dictee", "fichier_maths", "lecon_copier", "ecriture"].includes(b.type);
-                };
+                // L'écriture se fait en ligne dans les deux modes : le mode jour a
+                // désormais son éditeur et sa correction. Rangée ici, sa carte ne
+                // menait nulle part — un clic ne faisait que cocher le bloc.
+                const isPapier = (b: PlanTravail) =>
+                  ["dictee", "mots", "correction_dictee", "fichier_maths", "lecon_copier"].includes(b.type);
                 const blocsPapier = blocsAujourdhui.filter(isPapier);
                 const blocsEnLigneLibres = blocsLibres.filter((b) => !isPapier(b));
                 const groupesEnLigne = groupesChapitres

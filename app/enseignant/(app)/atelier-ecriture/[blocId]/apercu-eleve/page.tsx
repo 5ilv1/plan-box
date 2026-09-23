@@ -126,6 +126,9 @@ export default function ApercuElevePage({
         contenu={contenu as unknown as Record<string, unknown>}
         onTermine={() => {}}
         apercu
+        // L'aperçu montre ce que voit l'élève : un texte du jour n'a ni envoi
+        // au maître ni version finale.
+        mode={(contenu as unknown as { mode?: string }).mode === "jour" ? "jour" : "semaine"}
       />
     </>
   );

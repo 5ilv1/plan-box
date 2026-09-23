@@ -5,6 +5,7 @@ import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
 import { niveauEleveDepuisBloc } from "@/lib/ecriture-niveau-eleve";
 import { getServerUser } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
+import { motsAVerifier, verifierErreurs } from "@/lib/ecriture-correction";
 
 /**
  * POST /api/ecriture/analyser
@@ -122,15 +123,77 @@ Retourne UNIQUEMENT un JSON array, rien d'autre.`;
     });
 
     const rawText = (response.content[0] as { type: string; text: string }).text;
-    const jsonMatch = rawText.match(/\[[\s\S]*\]/);
-    if (!jsonMatch) {
-      return NextResponse.json({ erreurs: [] });
+    const brutes = lireTableauJSON(rawText);
+    if (brutes === null) {
+      // ⚠️ Jamais `{ erreurs: [] }` ici : le composant l'afficherait comme
+      // « Bravo ! Je n'ai trouvé aucune erreur ». Une panne ne doit pas se
+      // déguiser en sans-faute.
+      console.error("[ecriture/analyser] réponse illisible :", rawText.slice(0, 300));
+      return NextResponse.json({ erreur: "Analyse illisible" }, { status: 502 });
     }
 
-    const erreurs = JSON.parse(jsonMatch[0]);
+    // Le modèle propose, le dictionnaire dispose (`lib/ecriture-correction.ts`).
+    const connus = await chargerMotsConnus(motsAVerifier(brutes));
+    const erreurs = verifierErreurs(texte, brutes, (cle) => connus.has(cle));
+
+    const ecartees = Array.isArray(brutes) ? brutes.length - erreurs.length : 0;
+    if (ecartees > 0) {
+      console.info(`[ecriture/analyser] ${ecartees} signalement(s) écarté(s) sur ${brutes.length}`);
+    }
     return NextResponse.json({ erreurs, niveau });
   } catch (err) {
     console.error("[ecriture/analyser]", err);
-    return NextResponse.json({ erreurs: [] });
+    return NextResponse.json({ erreur: "Analyse indisponible" }, { status: 502 });
   }
+}
+
+/**
+ * Le premier tableau JSON de la réponse, en suivant l'imbrication des
+ * crochets — les modèles ajoutent souvent une phrase après, qui peut elle-même
+ * contenir un crochet. `null` si rien de lisible.
+ */
+function lireTableauJSON(brut: string): unknown[] | null {
+  const debut = brut.indexOf("[");
+  if (debut === -1) return null;
+  let profondeur = 0;
+  let dansChaine = false;
+  for (let i = debut; i < brut.length; i++) {
+    const c = brut[i];
+    if (dansChaine) {
+      if (c === "\\") i++;
+      else if (c === '"') dansChaine = false;
+      continue;
+    }
+    if (c === '"') dansChaine = true;
+    else if (c === "[") profondeur++;
+    else if (c === "]" && --profondeur === 0) {
+      try {
+        const v = JSON.parse(brut.slice(debut, i + 1));
+        return Array.isArray(v) ? v : null;
+      } catch {
+        return null;
+      }
+    }
+  }
+  return null;
+}
+
+/**
+ * Les mots attestés parmi `cles`, en une requête.
+ *
+ * Dictionnaire injoignable ⇒ ensemble vide : `verifierErreurs()` laisse alors
+ * passer les erreurs comme avant. Mieux vaut une correction non filtrée qu'une
+ * correction qui disparaît sans prévenir.
+ */
+async function chargerMotsConnus(cles: string[]): Promise<Set<string>> {
+  if (cles.length === 0) return new Set();
+  const { data, error } = await createAdminClient()
+    .from("lexique_francais")
+    .select("mot")
+    .in("mot", cles);
+  if (error) {
+    console.error("[ecriture/analyser] lexique_francais :", error.message);
+    return new Set();
+  }
+  return new Set((data ?? []).map((r: { mot: string }) => r.mot));
 }
