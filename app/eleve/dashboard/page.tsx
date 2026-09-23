@@ -13,6 +13,11 @@ import ActivityCard from "@/components/ActivityCard";
 import NotifCard from "@/components/NotifCard";
 import Avatar from "@/components/Avatar";
 import MotusCarte from "@/components/MotusCarte";
+// La barre du haut compte EXACTEMENT ce que compte le panneau enseignant : même
+// module, pas une seconde définition. C'est la raison d'être de
+// `lib/suivi-metriques.ts` — trois pages avaient chacune la leur, et elles ne
+// tombaient pas d'accord.
+import { completion, estComptePourCompletion, dateDuJour } from "@/lib/suivi-metriques";
 
 // ─── Types locaux ────────────────────────────────────────────────────────────
 
@@ -1169,15 +1174,26 @@ export default function DashboardEleve() {
   // Compteur de tâches du JOUR uniquement (exclut les blocs hebdomadaires
   // et les podcasts reportés qui ne sont pas spécifiquement à faire
   // aujourd'hui).
-  const dateAujourdhui = new Date().toISOString().split("T")[0];
+  //
+  // ⚠️ Paris, pas UTC : `toISOString()` sur l'instant courant recule d'un jour
+  // entre minuit et 2 h du matin en France (piège nº 7).
+  const dateAujourdhui = dateDuJour();
   const blocsDuJourStricts = blocsAujourdhui.filter((b) => b.date_assignation === dateAujourdhui);
-  const totalTaches = blocsDuJourStricts.length + (hasDailyProblem ? 1 : 0) + (hasCalculJour ? 1 : 0);
-  const nbFaitAujourd_hui = blocsDuJourStricts.filter((b) => b.statut === "fait").length
-    + (hasDailyProblem && dailyProblemFait ? 1 : 0)
-    + (calculJour?.deja_fait ? 1 : 0);
-  const pctJour = totalTaches > 0
-    ? Math.round((nbFaitAujourd_hui / totalTaches) * 100)
-    : 0;
+
+  // Le périmètre du panneau enseignant, à la lettre : `TYPES_COMPTES`. Podcasts,
+  // ceintures de multiplication et cartes Repetibox n'entrent donc pas dans la
+  // barre — ce sont des activités libres. Le problème du jour et le calcul du
+  // jour non plus : ils ne sont pas des blocs de plan de travail, et le suivi
+  // ne les a jamais comptés.
+  const blocsComptes = blocsDuJourStricts.filter((b) => estComptePourCompletion(b.type));
+  const { faits: nbFaitAujourd_hui, total: totalTaches, pct } = completion(blocsComptes);
+  const pctJour = pct ?? 0;
+
+  // Ce qui ne compte pas dans la barre existe quand même : sans ça, un jour
+  // fait d'un seul podcast afficherait « Rien à faire aujourd'hui » au-dessus
+  // des cartes à faire.
+  const aDesActivitesLibres =
+    blocsDuJourStricts.length > blocsComptes.length || hasDailyProblem || hasCalculJour;
 
   // Map statut PB par chapitre_id
   const statutPBMap = new Map(progressionsPB.map((p) => [p.chapitre_id, p]));
@@ -1337,7 +1353,9 @@ export default function DashboardEleve() {
               <p className="eleve-hero-sub">
                 {totalTaches > 0
                   ? `${nbFaitAujourd_hui} sur ${totalTaches} tâches complétées aujourd'hui`
-                  : "Rien à faire aujourd'hui — bravo !"}
+                  : aDesActivitesLibres
+                    ? "Rien d'obligatoire aujourd'hui — il te reste des activités libres"
+                    : "Rien à faire aujourd'hui — bravo !"}
               </p>
 
               {/* Barre de progression jour */}
