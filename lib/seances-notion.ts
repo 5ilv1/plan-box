@@ -56,9 +56,54 @@ async function notionFetch(chemin: string, init?: RequestInit) {
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
-    throw new Error(`Notion ${res.status} : ${err.message ?? res.statusText}`);
+    throw new ErreurNotion(res.status, err.message ?? res.statusText);
   }
   return res.json();
+}
+
+/**
+ * Une panne côté Notion, avec son code.
+ *
+ * Le `detail` vient de Notion et **ne doit pas atteindre l'écran** : son
+ * message de 404 cite l'identifiant de base interrogé. Un identifiant mal
+ * saisi peut être un jeton — c'est arrivé, et la configuration s'est affichée
+ * en clair dans le panneau de planification. Le détail va aux journaux,
+ * `messageErreurNotion()` dit à l'enseignant quoi faire.
+ */
+export class ErreurNotion extends Error {
+  constructor(readonly statut: number, readonly detail: string) {
+    super(`Notion ${statut}`);
+    this.name = "ErreurNotion";
+  }
+}
+
+/**
+ * Ce qu'on montre à l'enseignant : utile, et sans rien répéter de Notion.
+ *
+ * Chaque code dit une cause différente et appelle un geste différent — un 404
+ * se répare dans la configuration, un 401 dans le partage de la base.
+ */
+export function messageErreurNotion(e: unknown): string {
+  if (!(e instanceof ErreurNotion)) {
+    // Erreur de configuration : le message est écrit ici, il ne cite rien.
+    return e instanceof Error && e.message
+      ? e.message
+      : "La programmation n'a pas pu être lue.";
+  }
+  switch (e.statut) {
+    case 400:
+    case 404:
+      return "La base « Programmation année en cours » est introuvable. " +
+        "Vérifiez NOTION_DB_SEANCES, et que la base est bien partagée avec l'intégration.";
+    case 401:
+    case 403:
+      return "Notion refuse l'accès. Vérifiez NOTION_TOKEN, et que la base est partagée " +
+        "avec cette intégration.";
+    case 429:
+      return "Notion limite les appels en ce moment. Réessayez dans un instant.";
+    default:
+      return `Notion n'a pas répondu (erreur ${e.statut}). Réessayez dans un instant.`;
+  }
 }
 
 /* ── Lecteurs de propriétés ─────────────────────────────────────────────── */

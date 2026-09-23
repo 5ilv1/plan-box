@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireEnseignant } from "@/lib/server-auth";
-import { chargerSeancesSemaine } from "@/lib/seances-notion";
+import { chargerSeancesSemaine, ErreurNotion, messageErreurNotion } from "@/lib/seances-notion";
 import { traduireSeance, type SeanceTraduite } from "@/lib/seances-traduction";
 
 /**
@@ -42,10 +42,15 @@ export async function GET(req: NextRequest) {
       nbSeancesLues: brutes.length,
     });
   } catch (e) {
-    const message = (e as Error).message;
-    console.error("[GET /api/enseignant/seances-semaine]", message);
+    // ⚠️ Le détail va aux journaux, **jamais** à l'écran : le message de Notion
+    // cite l'identifiant de base interrogé, et un identifiant mal saisi peut
+    // être un jeton. Une erreur ne doit pas afficher la configuration.
+    console.error(
+      "[GET /api/enseignant/seances-semaine]",
+      e instanceof ErreurNotion ? `${e.statut} — ${e.detail}` : (e as Error).message
+    );
     // 503 plutôt que 500 : la panne est chez Notion ou dans la configuration,
     // pas dans PlanBox. L'écran invite à planifier à la main.
-    return NextResponse.json({ erreur: message }, { status: 503 });
+    return NextResponse.json({ erreur: messageErreurNotion(e) }, { status: 503 });
   }
 }

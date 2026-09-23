@@ -621,6 +621,20 @@ auto-corrigé.
 
 Variables d'environnement : `NOTION_TOKEN`, `NOTION_DB_SEANCES`.
 
+⚠️ **Une erreur Notion ne doit jamais atteindre l'écran telle quelle.** Son message de
+404 cite l'identifiant de base interrogé — et si l'identifiant a été mal saisi, ce peut
+être un jeton. C'est arrivé : `NOTION_DB_SEANCES` contenait un `ntn_…` en production, et
+le panneau de planification l'a affiché en clair. `ErreurNotion` porte le code, le détail
+part aux journaux, et `messageErreurNotion()` dit à l'enseignant quoi vérifier (404 → la
+base et son partage, 401 → le jeton). Contrat vérifié dans
+`docs/tests/test-seances-traduction.mjs`.
+
+⚠️ **Les deux variables se vérifient en production, pas seulement au build.** Le
+déploiement du 16/09 avait été contrôlé par la présence de la route dans la sortie de
+build ; la valeur, elle, était fausse, et la fonction n'a jamais marché en ligne jusqu'au
+23/09. Un `GET /api/enseignant/seances-semaine?lundi=…` avec une session enseignante est
+le seul contrôle qui vaille.
+
 ### Ce que la base Notion donne, et ce qu'elle ne donne pas
 
 - `Objectifs` est rempli à 100 % et fait la consigne de génération. Précis en
@@ -711,7 +725,7 @@ La génération est **séquentielle** : `generer-exercice` limite à 20 appels p
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
 
-Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (123 cas) —
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (132 cas) —
 à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)

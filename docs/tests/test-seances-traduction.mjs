@@ -26,6 +26,7 @@ import {
 import {
   appelPourSeance, empechement, consigneDepuisSeance, titreDuBloc,
 } from "../../lib/seances-generation.ts";
+import { ErreurNotion, messageErreurNotion } from "../../lib/seances-notion.ts";
 
 let echecs = 0, total = 0;
 function verifier(nom, obtenu, attendu) {
@@ -321,6 +322,36 @@ verifier("titre : préfixe de discipline retiré",
   titreDuBloc({ ...ligneMa, titre: "Grammaire - Le groupe nominal" }), "Le groupe nominal");
 verifier("titre : jamais vide",
   titreDuBloc({ ...ligneMa, titre: "Maths CM2 - S3 Jeudi -" }).length > 0, true);
+
+/* ── 10. Ce qu'une panne Notion montre à l'enseignant ───────────────────── */
+//
+// Le message de Notion cite l'identifiant de base interrogé. Un identifiant mal
+// saisi peut être un jeton — c'est arrivé, et la configuration s'est affichée
+// en clair dans le panneau. Rien de ce que dit Notion ne doit atteindre l'écran.
+
+const SECRET = "ntn_5249-0745-5385-C1RT-negSITwbaa5C";
+const err404 = new ErreurNotion(404, `Could not find database with ID: ${SECRET}.`);
+
+verifier("panne : le message de Notion n'est jamais répété",
+  messageErreurNotion(err404).includes(SECRET), false);
+verifier("panne : 404 renvoie à la bonne variable",
+  messageErreurNotion(err404).includes("NOTION_DB_SEANCES"), true);
+verifier("panne : 401 renvoie au jeton",
+  messageErreurNotion(new ErreurNotion(401, "API token is invalid.")).includes("NOTION_TOKEN"), true);
+verifier("panne : 401 ne répète pas Notion",
+  messageErreurNotion(new ErreurNotion(401, "API token is invalid.")).includes("invalid"), false);
+verifier("panne : 429 invite à réessayer",
+  messageErreurNotion(new ErreurNotion(429, "rate limited")).includes("Réessayez"), true);
+verifier("panne : code inconnu reste lisible",
+  messageErreurNotion(new ErreurNotion(500, "boom")).includes("500"), true);
+verifier("panne : code inconnu ne répète pas Notion",
+  messageErreurNotion(new ErreurNotion(500, "boom")).includes("boom"), false);
+// L'erreur de configuration, elle, est écrite par nous : elle ne cite rien.
+verifier("panne : configuration manquante, message conservé",
+  messageErreurNotion(new Error("Programmation Notion non configurée : NOTION_TOKEN et NOTION_DB_SEANCES manquants."))
+    .includes("non configurée"), true);
+verifier("panne : erreur sans message",
+  messageErreurNotion(null), "La programmation n'a pas pu être lue.");
 
 console.log(echecs === 0 ? `✓ ${total} cas passent` : `\n${echecs} échec(s) sur ${total}`);
 process.exit(echecs === 0 ? 0 : 1);
