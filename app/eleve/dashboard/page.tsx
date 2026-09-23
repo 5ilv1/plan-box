@@ -1182,11 +1182,24 @@ export default function DashboardEleve() {
 
   // Le périmètre du panneau enseignant, à la lettre : `TYPES_COMPTES`. Podcasts,
   // ceintures de multiplication et cartes Repetibox n'entrent donc pas dans la
-  // barre — ce sont des activités libres. Le problème du jour et le calcul du
-  // jour non plus : ils ne sont pas des blocs de plan de travail, et le suivi
-  // ne les a jamais comptés.
+  // barre — ce sont des activités libres.
   const blocsComptes = blocsDuJourStricts.filter((b) => estComptePourCompletion(b.type));
-  const { faits: nbFaitAujourd_hui, total: totalTaches, pct } = completion(blocsComptes);
+
+  // Les rituels du jour comptent aussi, des deux côtés — mais seulement un jour
+  // où il y a du travail assigné : c'est la règle de `lib/rituels-du-jour.ts`,
+  // que la route de suivi applique à l'identique. Sans elle, un samedi où un
+  // élève ouvre son tableau de bord deviendrait un jour de classe à 0 %.
+  const rituelsDuJour: boolean[] = blocsComptes.length > 0
+    ? [
+        ...(hasDailyProblem ? [dailyProblemFait] : []),
+        ...(hasCalculJour ? [calculJour?.deja_fait === true] : []),
+      ]
+    : [];
+
+  const { faits: nbFaitAujourd_hui, total: totalTaches, pct } = completion([
+    ...blocsComptes.map((b) => ({ statut: b.statut })),
+    ...rituelsDuJour.map((fait) => ({ statut: fait ? "fait" : "a_faire" })),
+  ]);
   const pctJour = pct ?? 0;
 
   // Ce qui ne compte pas dans la barre existe quand même : sans ça, un jour

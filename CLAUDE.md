@@ -481,6 +481,25 @@ quatre définitions différentes du taux de complétion.
   Podcasts (`ressource`), ceintures de multiplication et cartes Repetibox sont **exclus** —
   ce sont des activités libres, les compter ferait chuter le taux d'un élève qui a
   pourtant tout fait.
+- **Le problème du jour et le calcul du jour en font partie** (`lib/rituels-du-jour.ts`),
+  alors qu'ils ne sont pas des blocs de `plan_travail` : ils vivent dans `daily_problems` /
+  `problem_attempts` et `calcul_jour` / `calcul_jour_resultat`. Ils sont fabriqués en
+  pseudo-blocs et **n'entrent que dans la complétion** : pas de score, pas de durée, et
+  jamais dans les retards — la journée passée, un rituel non fait ne se rattrape pas.
+  - ⚠️ **Un rituel ne compte qu'un jour où l'élève a du travail assigné.** Les lignes de
+    `daily_problems` et `calcul_jour` sont créées à la volée dès qu'un élève ouvre son
+    tableau de bord : sans cette règle, un samedi où un seul élève se connecte ajouterait
+    deux tâches non faites à toute la classe et ferait chuter la semaine.
+  - ⚠️ `problem_attempts.student_id` est l'**uuid d'authentification**, pas `rb_eleve_id` —
+    d'où le détour par `eleve.auth_id`. Même piège que les notifications.
+  - Compter les rituels fait **baisser** le taux affiché (semaine du 21/09 : 70 % → 68 %,
+    jusqu'à −15 points certains jours) : la moitié de la classe ne les fait pas. C'est le
+    chiffre honnête, et c'est celui que l'élève voit déjà sur sa barre.
+  - Contrat : `npx tsx docs/tests/test-rituels-du-jour.mjs` (13 cas).
+- **La barre « Progression du jour » de l'élève applique exactement la même règle**
+  (`app/eleve/dashboard/page.tsx`) : même `completion()`, même `TYPES_COMPTES`, mêmes
+  rituels. Deux définitions du même chiffre, c'est exactement ce que cette page a été
+  faite pour supprimer.
 - **La matière d'un bloc ne vient pas de `chapitre_id`**, qui est toujours nul sur
   `plan_travail`. Elle se lit dans `contenu.matiere`, sinon se déduit du `type`
   (`matiereDuBloc()`). Un bloc qu'on ne sait pas classer part dans **« Non classé »** et

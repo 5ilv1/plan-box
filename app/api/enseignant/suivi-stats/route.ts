@@ -20,6 +20,7 @@ import {
   signalBaclage,
   uidDuBloc,
 } from "@/lib/suivi-metriques";
+import { chargerRituels } from "@/lib/rituels-du-jour";
 
 /**
  * GET /api/enseignant/suivi-stats
@@ -35,6 +36,13 @@ import {
  * Les podcasts, les ceintures et les cartes à réviser sont hors du taux de
  * complétion (voir TYPES_COMPTES) : ce sont des activités libres, les compter
  * ferait chuter le taux d'un élève qui a pourtant tout fait.
+ *
+ * Le problème du jour et le calcul du jour, eux, EN SONT — c'est du travail que
+ * l'élève voit sur son tableau de bord, et la barre qu'il y lit compte les
+ * mêmes choses que ce panneau (`lib/rituels-du-jour.ts`). Ils ne comptent que
+ * dans la complétion : un rituel n'a ni score ni durée, et un rituel non fait
+ * n'est pas un travail en retard — la journée est passée, il n'y a plus rien à
+ * rattraper.
  */
 
 const NB_SEMAINES_EVOLUTION = 8;
@@ -91,6 +99,20 @@ export async function GET(req: NextRequest) {
     return uid !== null && uidsRetenus.has(uid);
   });
 
+  let rituels: BlocSuivi[] = [];
+  try {
+    rituels = await chargerRituels(admin, {
+      debut: debutCharge, fin: finCharge, eleves: elevesRetenus, blocs,
+    });
+  } catch (e) {
+    // Un rituel illisible ne doit pas emporter tout le suivi : on l'annonce et
+    // on rend le reste, comme avant qu'ils ne soient comptés.
+    console.error("[GET /api/enseignant/suivi-stats] rituels", e);
+  }
+
+  /** Travail assigné + rituels : ce que compte la complétion, et elle seule. */
+  const blocsPlus = [...blocs, ...rituels];
+
   const dans = (b: BlocSuivi, debut: string, fin: string) =>
     b.date_assignation >= debut && b.date_assignation <= fin;
 
@@ -109,9 +131,14 @@ export async function GET(req: NextRequest) {
   ) + 1);
   const finPrecedente = decalerJours(precedentes.debut, joursEcoules - 1);
   const blocsPrecedents = blocs.filter((b) => dans(b, precedentes.debut, finPrecedente));
-  const blocsJour = blocs.filter((b) => b.date_assignation === aujourdhui);
   const semaine = bornesPeriode("semaine", aujourdhui);
-  const blocsSemaine = blocs.filter((b) => dans(b, semaine.debut, aujourdhui));
+
+  // Les tranches qui servent à la complétion portent les rituels ; celles qui
+  // servent à la réussite, aux matières et aux retards n'en veulent pas.
+  const periodePlus = blocsPlus.filter((b) => dans(b, bornes.debut, finDue));
+  const precedentsPlus = blocsPlus.filter((b) => dans(b, precedentes.debut, finPrecedente));
+  const blocsJour = blocsPlus.filter((b) => b.date_assignation === aujourdhui);
+  const blocsSemaine = blocsPlus.filter((b) => dans(b, semaine.debut, aujourdhui));
 
   // ── Complétion ────────────────────────────────────────────────────────────
   const parNiveau = [...new Set(elevesRetenus.map((e) => e.niveau))]
@@ -119,7 +146,7 @@ export async function GET(req: NextRequest) {
     .sort()
     .map((niveau) => {
       const uids = new Set(elevesRetenus.filter((e) => e.niveau === niveau).map((e) => e.uid));
-      return { niveau, ...completion(blocsPeriode.filter((b) => uids.has(uidDuBloc(b)!))) };
+      return { niveau, ...completion(periodePlus.filter((b) => uids.has(uidDuBloc(b)!))) };
     });
 
   // La courbe journalière, elle, montre toute la période, y compris les jours
@@ -127,13 +154,14 @@ export async function GET(req: NextRequest) {
   // pas avec un 0 % de travail non fait.
   const parJour: Array<{ date: string; faits: number; total: number; pct: number | null; aVenir: boolean }> = [];
   for (let d = bornes.debut; d <= bornes.fin; d = decalerJours(d, 1)) {
-    const duJour = blocs.filter((b) => b.date_assignation === d);
+    const duJour = blocsPlus.filter((b) => b.date_assignation === d);
     parJour.push({ date: d, ...completion(duJour), aVenir: d > aujourdhui });
   }
 
   const parEleve = elevesRetenus.map((e) => {
     const siens = (src: BlocSuivi[]) => src.filter((b) => uidDuBloc(b) === e.uid);
-    const periodeEleve = siens(blocsPeriode);
+    const periodeEleve = siens(blocsPeriode);       // réussite, bâclage : sans rituels
+    const periodeElevePlus = siens(periodePlus);    // complétion : avec
     return {
       uid: e.uid,
       prenom: e.prenom,
@@ -141,7 +169,7 @@ export async function GET(req: NextRequest) {
       niveau: e.niveau,
       jour: completion(siens(blocsJour)),
       semaine: completion(siens(blocsSemaine)),
-      periode: completion(periodeEleve),
+      periode: completion(periodeElevePlus),
       retards: siens(blocs).filter((b) => estEnRetard(b, aujourdhui)).length,
       reussite: reussiteMoyenne(periodeEleve),
       baclages: periodeEleve.filter((b) => {
@@ -159,7 +187,7 @@ export async function GET(req: NextRequest) {
     const lot = blocs.filter((b) => dans(b, lundi, dimanche));
     evolution.push({
       lundi,
-      completionPct: completion(lot).pct,
+      completionPct: completion(blocsPlus.filter((b) => dans(b, lundi, dimanche))).pct,
       reussitePct: reussiteMoyenne(lot),
     });
   }
@@ -224,8 +252,8 @@ export async function GET(req: NextRequest) {
     niveaux: [...new Set(eleves.map((e) => e.niveau))].filter((n) => n !== "—").sort(),
     eleves: eleves.map(({ uid, prenom, nom, niveau }) => ({ uid, prenom, nom, niveau })),
     completion: {
-      global: completion(blocsPeriode),
-      precedente: completion(blocsPrecedents),
+      global: completion(periodePlus),
+      precedente: completion(precedentsPlus),
       jour: completion(blocsJour),
       semaine: completion(blocsSemaine),
       retards: blocs.filter((b) => estEnRetard(b, aujourdhui)).length,
