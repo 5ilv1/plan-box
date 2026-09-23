@@ -21,6 +21,7 @@
 
 import {
   memeFamille, paireDe, memeForme, trancher, variantesDuTest,
+  optionsDeLecture, phraseATrou, trancherLecture,
 } from "./homophones";
 
 export type TypeErreur = "orthographe" | "grammaire" | "syntaxe" | "homophone";
@@ -39,6 +40,8 @@ export interface ErreurCorrection {
   attendu?: string;
   /** Interne — la faute attend le verdict du test de substitution. */
   aTester?: boolean;
+  /** Interne — la faute attend la seconde lecture, sur la phrase à trou. */
+  aLire?: boolean;
 }
 
 const TYPES: ReadonlySet<string> = new Set(["orthographe", "grammaire", "syntaxe", "homophone"]);
@@ -206,7 +209,9 @@ export function verifierErreurs(
         type: "homophone",
         position,
         attendu,
-        ...(testable ? { aTester: true } : {}),
+        // Grammaticale et testable ⇒ test de substitution (étape 2). Sinon —
+        // vert/verre, ces/ses, se/ce — la phrase à trou (étape 3).
+        ...(testable ? { aTester: true } : { aLire: true }),
         ...(indice ? { indice } : {}),
       });
       continue;
@@ -294,27 +299,113 @@ export function appliquerTests(
   questions: QuestionTest[],
   choix: Array<"A" | "B" | null>,
 ): ErreurCorrection[] {
-  const verdict = new Map<number, "A" | "B" | null>();
-  questions.forEach((q, i) => verdict.set(q.index, choix[i] ?? null));
+  return composer(erreurs, decisionsTests(erreurs, questions, choix));
+}
 
-  const gardees: ErreurCorrection[] = [];
+/**
+ * Chaque étape DÉCIDE sur la liste d'origine, par index ; on compose à la fin.
+ * Appliquer une étape puis l'autre décalerait les index : la seconde lirait le
+ * verdict d'une autre faute.
+ */
+type Decisions = Map<number, ErreurCorrection | null>;
+
+function decisionsTests(
+  erreurs: ErreurCorrection[],
+  questions: QuestionTest[],
+  choix: Array<"A" | "B" | null>,
+): Decisions {
+  const decisions: Decisions = new Map();
   erreurs.forEach((e, index) => {
-    if (!e.aTester) { gardees.push(e); return; }
+    if (!e.aTester) return;
     const paire = paireDe(e.mot);
-    const q = questions.find((x) => x.index === index);
-    const c = verdict.get(index) ?? null;
-    if (!paire || !q || c === null) return;
-    const resultat = trancher(e.mot, paire, c === q.substitutEn);
-    if (resultat.faute !== true) return;
-    gardees.push({ ...e, attendu: resultat.attendu, aTester: false });
+    const i = questions.findIndex((x) => x.index === index);
+    const c = i >= 0 ? choix[i] ?? null : null;
+    if (!paire || i < 0 || c === null) { decisions.set(index, null); return; }
+    const resultat = trancher(e.mot, paire, c === questions[i].substitutEn);
+    decisions.set(index, resultat.faute === true
+      ? { ...e, attendu: resultat.attendu, aTester: false }
+      : null);
   });
-  return gardees;
+  return decisions;
+}
+
+function composer(erreurs: ErreurCorrection[], decisions: Decisions): ErreurCorrection[] {
+  return erreurs.flatMap((e, i) => {
+    if (!decisions.has(i)) return [e];
+    const d = decisions.get(i);
+    return d ? [d] : [];
+  });
+}
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Étape 3 — la seconde lecture, sur la phrase à trou
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface QuestionLecture {
+  /** Index de l'erreur dans la liste passée à `questionsDeLecture()`. */
+  index: number;
+  /** La phrase de l'élève, le mot remplacé par « ___ ». */
+  phrase: string;
+  /** Toute la famille, triée : le lecteur ne sait pas lequel était écrit. */
+  options: string[];
+}
+
+export function questionsDeLecture(texte: string, erreurs: ErreurCorrection[]): QuestionLecture[] {
+  const questions: QuestionLecture[] = [];
+  erreurs.forEach((e, index) => {
+    if (!e.aLire || !e.attendu) return;
+    const options = optionsDeLecture(e.mot, e.attendu);
+    if (options.length < 2) return;
+    questions.push({ index, phrase: phraseATrou(texte, e.position, e.mot.length), options });
+  });
+  return questions;
+}
+
+function decisionsLectures(
+  erreurs: ErreurCorrection[],
+  questions: QuestionLecture[],
+  choix: Array<string[] | null>,
+): Decisions {
+  const decisions: Decisions = new Map();
+  erreurs.forEach((e, index) => {
+    if (!e.aLire) return;
+    const i = questions.findIndex((x) => x.index === index);
+    const c = i >= 0 ? choix[i] ?? null : null;
+    if (i < 0 || !e.attendu) { decisions.set(index, null); return; }
+    const resultat = trancherLecture(e.mot, e.attendu, c);
+    decisions.set(index, resultat.faute === true
+      ? { ...e, attendu: resultat.attendu, aLire: false }
+      : null);
+  });
+  return decisions;
+}
+
+export function appliquerLectures(
+  erreurs: ErreurCorrection[],
+  questions: QuestionLecture[],
+  choix: Array<string[] | null>,
+): ErreurCorrection[] {
+  return composer(erreurs, decisionsLectures(erreurs, questions, choix));
+}
+
+/** Les deux étapes à la fois, décidées sur la même liste d'origine. */
+export function appliquerVerdicts(
+  erreurs: ErreurCorrection[],
+  tests: QuestionTest[],
+  choixTests: Array<"A" | "B" | null>,
+  lectures: QuestionLecture[],
+  choixLectures: Array<string[] | null>,
+): ErreurCorrection[] {
+  return composer(erreurs, new Map([
+    ...decisionsTests(erreurs, tests, choixTests),
+    ...decisionsLectures(erreurs, lectures, choixLectures),
+  ]));
 }
 
 /** Ce que reçoit l'élève : sans les champs internes de la vérification. */
 export function publier(erreurs: ErreurCorrection[]): ErreurCorrection[] {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return erreurs.map(({ attendu, aTester, ...visible }) => visible);
+  return erreurs.map(({ attendu, aTester, aLire, ...visible }) => visible);
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

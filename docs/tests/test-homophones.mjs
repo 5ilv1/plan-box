@@ -13,12 +13,13 @@
  */
 import {
   paireDe, memeFamille, estHomophone, phraseAutour, variantesDuTest,
-  memeForme, trancher, PAIRES,
+  memeForme, trancher, PAIRES, optionsDeLecture, phraseATrou, trancherLecture,
 } from "../../lib/homophones.ts";
 import {
   verifierErreurs, questionsDeTest, appliquerTests, publier,
+  questionsDeLecture, appliquerVerdicts,
 } from "../../lib/ecriture-correction.ts";
-import { lireVerdict } from "../../lib/ecriture-analyse.ts";
+import { lireVerdict, lireLecture } from "../../lib/ecriture-analyse.ts";
 
 let echecs = 0, total = 0;
 function verifier(nom, obtenu, attendu) {
@@ -141,6 +142,62 @@ verifier("la même réponse répétée ⇒ lisible",
   lireVerdict([{ paire: 1, mot: "avait" }, { paire: 1, mot: "avait" }], 1, q), "A");
 verifier("chaque question porte les deux mots, dans l'ordre des phrases",
   questions.map((x) => [x.substitutEn, x.motA, x.motB]), [["A", "avait", "à"], ["B", "à", "avait"]]);
+
+/* ── 6. Étape 3 : la phrase à trou ───────────────────────────────────────── */
+
+verifier("les options : toute la famille, triée",
+  optionsDeLecture("vert", "verre"), ["ver", "verre", "vers", "vert"]);
+verifier("ces/ses et se/ce passent par la lecture",
+  [optionsDeLecture("ces", "ses"), optionsDeLecture("se", "ce")], [["ces", "ses"], ["ce", "se"]]);
+
+const bois = "Hier il pleuvait. Je bois dans un vert d'eau. Il fait beau.";
+verifier("le trou remplace le mot, dans sa phrase seulement",
+  phraseATrou(bois, bois.indexOf("vert"), 4), "Je bois dans un ___ d'eau.");
+
+verifier("le mot de l'élève a un sens ⇒ pas de faute",
+  trancherLecture("vert", "verre", ["vert"]), { faute: false });
+verifier("seul le premier avis a un sens ⇒ faute confirmée",
+  trancherLecture("vert", "verre", ["verre"]), { faute: true, attendu: "verre" });
+verifier("LES DEUX ont un sens ⇒ l'élève a peut-être raison, pas de faute",
+  trancherLecture("pin", "pain", ["pain", "pin"]), { faute: false });
+verifier("seul un troisième mot a un sens ⇒ on se tait",
+  trancherLecture("vert", "verre", ["vers"]), { faute: null });
+verifier("aucun mot n'a de sens ⇒ on se tait", trancherLecture("vert", "verre", []), { faute: null });
+verifier("réponse illisible ⇒ on se tait", trancherLecture("vert", "verre", null), { faute: null });
+
+verifier("lecture : les mots doivent tous être des options",
+  [lireLecture([{ phrase: 1, mots: ["verre"] }], 1, ["ver", "verre"]),
+   lireLecture([{ phrase: 1, mots: ["« Verre »", "ver"] }], 1, ["ver", "verre"]),
+   lireLecture([{ phrase: 1, mots: [] }], 1, ["ver", "verre"]),
+   lireLecture([{ phrase: 1, mots: ["verre", "bol"] }], 1, ["ver", "verre"]),
+   lireLecture([{ phrase: 2, mots: ["verre"] }], 1, ["ver", "verre"]),
+   lireLecture([{ phrase: 1, mots: ["ver"] }, { phrase: 1, mots: ["verre"] }], 1, ["ver", "verre"])],
+  [["verre"], ["verre", "ver"], [], null, null, null]);
+
+// Le texte mêle une faute testée (étape 2) et deux relues (étape 3) : chaque
+// verdict doit revenir à SA faute, quel que soit l'ordre des étapes.
+const mixte = "Je bois dans un vert. Léo va a la mer. Il range ces affaires.";
+const vm = verifierErreurs(mixte, [
+  { mot: "vert", type: "homophone", position: mixte.indexOf("vert"), attendu: "verre" },
+  { mot: "a", type: "homophone", position: mixte.indexOf("a la"), attendu: "à" },
+  { mot: "ces", type: "homophone", position: mixte.indexOf("ces"), attendu: "ses" },
+], connu);
+verifier("répartition : relue, testée, relue",
+  vm.map((e) => [e.mot, !!e.aTester, !!e.aLire]),
+  [["vert", false, true], ["a", true, false], ["ces", false, true]]);
+
+const tq = questionsDeTest(mixte, vm);
+const lq = questionsDeLecture(mixte, vm);
+// « vert » confirmé, « a » confirmé (« va avait la mer » est faux), « ces » démenti.
+const finalesMixte = appliquerVerdicts(vm, tq, [tq[0].substitutEn === "A" ? "B" : "A"], lq, [["verre"], ["ces"]]);
+verifier("chaque verdict revient à sa faute",
+  finalesMixte.map((e) => [e.mot, e.attendu]), [["vert", "verre"], ["a", "à"]]);
+
+verifier("une relecture manquante efface la faute (on se tait)",
+  appliquerVerdicts(vm, tq, [null], lq, [null, null]), []);
+
+verifier("publier retire aussi le drapeau de lecture",
+  publier(finalesMixte).some((e) => "aLire" in e || "aTester" in e || "attendu" in e), false);
 
 console.log(echecs === 0 ? `✓ ${total} cas passent` : `\n${echecs} échec(s) sur ${total}`);
 process.exit(echecs === 0 ? 0 : 1);

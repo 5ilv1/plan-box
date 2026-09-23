@@ -236,3 +236,66 @@ export function trancher(
   const juste = substitutionCorrecte ? paire.forme : paire.autre;
   return memeForme(ecrit, juste) ? { faute: false } : { faute: true, attendu: juste };
 }
+
+/* ────────────────────────────────────────────────────────────────────────────
+   Étape 3 — la phrase à trou, pour les homophones de sens
+   ──────────────────────────────────────────────────────────────────────────── */
+//
+// « vert » ou « verre » : aucune règle ne tranche, seul le sens le fait. On
+// demande donc une seconde lecture INDÉPENDANTE : le lecteur reçoit la phrase
+// avec un trou et toute la famille en options. Il ne voit ni le mot de l'élève
+// — qui l'influencerait — ni l'avis du premier modèle. La faute n'est montrée
+// que si les deux lectures, faites séparément, tombent sur le même mot.
+//
+// La même phrase à trou tranche aussi `ces`/`ses` et `se`/`ce`, que le test de
+// substitution ne savait pas départager.
+
+/**
+ * Les options de la phrase à trou : toutes les familles qui contiennent à la
+ * fois le mot écrit et le mot attendu, réunies. Triées, pour que l'ordre ne
+ * suggère rien.
+ */
+export function optionsDeLecture(ecrit: string, attendu: string): string[] {
+  const x = bas(ecrit), y = bas(attendu);
+  const options = new Set<string>();
+  for (const f of FAMILLES_LEXICALES) {
+    if (f.includes(x) && f.includes(y)) f.forEach((m) => options.add(m));
+  }
+  return [...options].sort((a, b) => a.localeCompare(b, "fr"));
+}
+
+/** La phrase de l'élève, le mot remplacé par un trou. */
+export function phraseATrou(texte: string, position: number, longueur: number): string {
+  const { debut, fin } = phraseAutour(texte, position);
+  const phrase = texte.slice(debut, fin);
+  const local = position - debut;
+  return (phrase.slice(0, local) + "___" + phrase.slice(local + longueur)).trim();
+}
+
+/**
+ * Ce que dit la seconde lecture.
+ *
+ * `possibles` : TOUS les mots de la famille qui donnent une phrase qui a du
+ * sens — `null` si la réponse est illisible.
+ *
+ * ⚠️ Pas « le mot qui convient le mieux ». Sur « Il a coupé du pin », les deux
+ * lectures étaient d'accord pour « pain » — couper du pain est plus courant —
+ * et l'élève, qui parlait du bois, aurait été corrigé à tort. Deux avis qui
+ * partagent le même réflexe tombent d'accord sur le sens le plus PROBABLE, pas
+ * sur le seul POSSIBLE. La bonne question est : le mot de l'élève a-t-il un
+ * sens ici ? Si oui, il a peut-être raison, et on se tait.
+ *
+ *  • le mot de l'élève est possible ⇒ pas de faute ;
+ *  • il ne l'est pas, et le mot du premier avis l'est ⇒ faute confirmée ;
+ *  • ni l'un ni l'autre, ou réponse illisible ⇒ on se tait.
+ */
+export function trancherLecture(
+  ecrit: string,
+  attendu: string,
+  possibles: string[] | null,
+): { faute: false } | { faute: true; attendu: string } | { faute: null } {
+  if (possibles === null || possibles.length === 0) return { faute: null };
+  if (possibles.some((m) => memeForme(ecrit, m))) return { faute: false };
+  const juste = possibles.find((m) => memeForme(attendu, m));
+  return juste ? { faute: true, attendu: juste } : { faute: null };
+}

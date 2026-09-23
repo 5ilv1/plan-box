@@ -430,21 +430,43 @@ Ce qui rend le test fiable, appris en le mesurant :
   enfants » reste correct) et `se`/`ce` (« ils se sont baignés » → « ils **me** sont
   baignés » est faux alors que `se` est juste — en classe on change aussi le sujet).
   Elles gardent le contrôle de famille.
-- Les homophones **de sens** (`vert`/`verre`, `mer`/`mère`) n'ont que la famille : seul
-  le sens tranche. Une seconde lecture indépendante (étape 3) attend un corpus de vrais
-  textes pour être mesurée.
+3. **La seconde lecture, sur une phrase à trou**, pour les homophones de sens
+   (`vert`/`verre`, `mer`/`mère`) et pour `ces`/`ses`, `se`/`ce`. Le lecteur reçoit
+   « Je bois dans un ___ d'eau. » et toute la famille : il ne voit **ni le mot de
+   l'élève ni le premier avis**. Il rend TOUS les mots qui ont un sens réel ; si le mot
+   de l'élève en fait partie, l'élève a peut-être raison, et on se tait
+   (`trancherLecture()`). Les deux étapes partent en parallèle (`Promise.all`).
+   - ⚠️ **Demander le mot « le plus probable » inventait des fautes.** Sur « Il a coupé
+     du pin », les deux lectures, indépendantes, tombaient d'accord sur « pain » :
+     couper du pain est plus courant. Deux avis qui partagent le même réflexe
+     s'accordent sur le sens le plus PROBABLE, pas sur le seul POSSIBLE.
+   - ⚠️ **À l'inverse, « tout mot qui a un sens » acceptait « un vert d'eau »** et ne
+     trouvait plus que 6 fautes sur 22. Le critère retenu : « un adulte comprendrait-il
+     sans hésiter, dans un sens réel du mot ? », avec des exemples pris **hors** du
+     corpus de mesure.
 
 **Mesure** : `scripts/mesurer-homophones.ts` (vrai modèle, quelques centimes, ne touche
-pas la base). 36 cas dont 12 phrases d'élèves réalistes (sans majuscule ni point,
-plusieurs fautes). Le 23/09 : **14/14 fausses alertes écartées** — aucune faute
-inventée — et 21/22 vraies fautes trouvées, identique sur trois passages. Le script
-échoue s'il invente une faute : c'est le chiffre qui compte. À relancer après toute
-modification de ces modules. Contrat pur : `npx tsx docs/tests/test-homophones.mjs`
-(39 cas).
+pas la base), avec des phrases d'élèves réalistes (sans majuscule ni point, plusieurs
+fautes) et des phrases **ambiguës** qui ne doivent jamais être corrigées. Le 23/09,
+fausses alertes écartées · vraies fautes trouvées :
+
+| | |
+|---|---|
+| étape 2 | 14/14 · 21/22 |
+| étape 3, corpus de réglage | 18/18 · 21/22 |
+| étape 3, **témoin** (écrit après le réglage, jamais utilisé pour régler) | 9/9 · 13/15 |
+
+Aucune faute inventée, sur trois passages. Le script échoue s'il en invente une : c'est
+le chiffre qui compte. ⚠️ Les corpus sont écrits à la main — les compléter avec de
+vraies phrases d'élèves. Contrat pur : `npx tsx docs/tests/test-homophones.mjs` (53 cas).
+
+**Ce qui reste le jugement du modèle** : les erreurs `grammaire` et `syntaxe` (accords,
+conjugaisons, concordance des temps) ne sont vérifiées que sur leur position. Le mot
+existe, il est à sa place dans le texte ; que l'accord soit faux, rien ne le recalcule.
 
 Le pipeline vit dans `lib/ecriture-analyse.ts` (`analyserTexte()`), sorti de la route
 pour pouvoir être exécuté sans session : une route Next.js n'exporte que ses méthodes.
-Compter ~10 s par correction, un appel de plus seulement s'il y a un homophone à tester.
+Compter ~10 s par correction, ~15 s quand il y a des homophones à vérifier.
 
 ### Trois pièges qui effaçaient le travail
 

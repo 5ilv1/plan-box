@@ -17,8 +17,9 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { REFERENCE_CYCLE3 } from "./ecriture-reference-cycle3";
 import {
-  motsAVerifier, verifierErreurs, questionsDeTest, appliquerTests, publier,
-  type ErreurCorrection, type QuestionTest,
+  motsAVerifier, verifierErreurs, questionsDeTest, questionsDeLecture,
+  appliquerVerdicts, publier,
+  type ErreurCorrection, type QuestionTest, type QuestionLecture,
 } from "./ecriture-correction";
 
 export type Niveau = "CE2" | "CM1" | "CM2";
@@ -118,18 +119,26 @@ Retourne UNIQUEMENT un JSON array, rien d'autre.`;
     const connus = await chargerMotsConnus(admin, motsAVerifier(brutes));
     const verifiees = verifierErreurs(texte, brutes, (cle) => connus.has(cle));
 
-    // Les homophones grammaticaux passent le test de substitution appris en
-    // classe (`lib/homophones.ts`) : une seconde question, fermée, dont la
-    // réponse décide seule. Une faute non confirmée n'est pas montrée.
+    // Les homophones sont vérifiés à part (`lib/homophones.ts`), et une faute
+    // non confirmée n'est pas montrée :
+    //  • les grammaticaux par le test de substitution appris en classe ;
+    //  • les autres — vert/verre, ces/ses — par une seconde lecture de la
+    //    phrase à trou, qui ne voit ni le mot de l'élève ni le premier avis.
+    // Les deux appels sont indépendants : ils partent ensemble.
     const questions = questionsDeTest(texte, verifiees);
-    const choix = questions.length > 0 ? await poserTests(anthropic, questions) : [];
-    const erreurs = publier(appliquerTests(verifiees, questions, choix));
+    const lectures = questionsDeLecture(texte, verifiees);
+    const [choix, lus] = await Promise.all([
+      questions.length > 0 ? poserTests(anthropic, questions) : Promise.resolve([]),
+      lectures.length > 0 ? poserLectures(anthropic, lectures) : Promise.resolve([]),
+    ]);
+    const erreurs = publier(appliquerVerdicts(verifiees, questions, choix, lectures, lus));
 
     const ecartees = Array.isArray(brutes) ? brutes.length - erreurs.length : 0;
     if (ecartees > 0) {
       console.info(
         `[ecriture/analyser] ${ecartees} signalement(s) écarté(s) sur ${brutes.length}` +
-        (questions.length ? ` — ${questions.length} homophone(s) testé(s)` : ""),
+        (questions.length ? ` — ${questions.length} homophone(s) testé(s)` : "") +
+        (lectures.length ? ` — ${lectures.length} relu(s)` : ""),
       );
     }
     return { erreurs, niveau };
@@ -220,6 +229,114 @@ export async function poserTests(
     console.error("[ecriture/analyser] tests de substitution", err);
     return rien;
   }
+}
+
+/**
+ * La seconde lecture des homophones de sens : pour chaque phrase à trou, le
+ * mot qui convient parmi la famille.
+ *
+ * Le lecteur ne voit ni le mot de l'élève ni l'avis du premier modèle : c'est
+ * ce qui en fait un second avis, et non une confirmation. Mêmes précautions
+ * qu'aux tests de substitution — sortie imposée, numéro de phrase, mot
+ * recopié — et tout ce qui n'est pas l'une des options vaut `null`.
+ */
+export async function poserLectures(
+  anthropic: Anthropic,
+  questions: QuestionLecture[],
+): Promise<Array<string[] | null>> {
+  const rien = questions.map(() => null);
+  try {
+    const reponse = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 500,
+      temperature: 0,
+      // ⚠️ Le critère a été calibré sur le corpus de mesure, dans les deux sens :
+      // « le mot qui convient le mieux » inventait des fautes sur les phrases
+      // ambiguës (« Il a coupé du pin ») ; « tout mot qui a un sens, même peu
+      // courant » acceptait « Je bois dans un vert d'eau » et ne trouvait plus
+      // que 6 fautes sur 22. Le juste milieu : un adulte comprendrait-il sans
+      // hésiter, dans un sens réel du mot ? Les exemples ne sont PAS tirés du
+      // corpus, sinon la mesure ne vaudrait rien.
+      system:
+        "Tu lis des phrases écrites par un élève de primaire. Dans chacune, un mot a été remplacé " +
+        "par « ___ ». Pour chaque mot proposé, demande-toi : si l'élève avait écrit ce mot, un adulte " +
+        "comprendrait-il la phrase sans hésiter, dans un sens réel et normal de ce mot ? Donne TOUS " +
+        "les mots pour lesquels la réponse est oui. N'inclus pas un mot seulement parce que la phrase " +
+        "reste grammaticale : il faut qu'elle ait un sens réel.\n\n" +
+        "Exemples :\n" +
+        "- « Elle a trouvé un ___ dans le jardin » (ver, verre, vers, vert) → ver, verre : un ver de " +
+        "terre, ou un verre oublié. « vers » et « vert » n'y ont pas de sens.\n" +
+        "- « Je mets du ___ sur mes frites » (celle, sel, selle) → sel seulement.\n" +
+        "- « Il pose la ___ sur le dos du cheval » (celle, sel, selle) → selle seulement.\n\n" +
+        "Ignore les autres fautes de la phrase (orthographe, accords, ponctuation) : elles ne te " +
+        "concernent pas. Si aucun mot n'a de sens, donne une liste vide.",
+      tools: [{
+        name: "rendre_lectures",
+        description: "Rend, pour chaque phrase, tous les mots qui ont un sens dans le trou.",
+        input_schema: {
+          type: "object",
+          properties: {
+            lectures: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  phrase: { type: "integer", description: "Le numéro de la phrase." },
+                  mots: {
+                    type: "array",
+                    items: { type: "string" },
+                    description: "Tous les mots proposés qui donnent une phrase qui a du sens, recopiés.",
+                  },
+                },
+                required: ["phrase", "mots"],
+              },
+            },
+          },
+          required: ["lectures"],
+        },
+      }],
+      tool_choice: { type: "tool", name: "rendre_lectures" },
+      messages: [{
+        role: "user",
+        content: questions
+          .map((q, i) =>
+            `Phrase ${i + 1} — ${q.options.map((o) => `« ${o} »`).join(", ")} ?\n« ${q.phrase} »`)
+          .join("\n\n"),
+      }],
+    });
+    const appel = reponse.content.find((c) => c.type === "tool_use");
+    const lectures = appel?.type === "tool_use"
+      ? (appel.input as { lectures?: unknown }).lectures
+      : undefined;
+    if (!Array.isArray(lectures)) {
+      console.error("[ecriture/analyser] lectures illisibles :", JSON.stringify(lectures)?.slice(0, 200));
+      return rien;
+    }
+    return questions.map((q, i) => lireLecture(lectures, i + 1, q.options));
+  } catch (err) {
+    console.error("[ecriture/analyser] seconde lecture", err);
+    return rien;
+  }
+}
+
+/**
+ * Les mots possibles pour la phrase `numero`, restreints aux options — `null`
+ * si la phrase manque, reçoit deux réponses, ou cite un mot hors des options
+ * (le lecteur a alors mal lu la question : on ne se fie pas au reste).
+ */
+export function lireLecture(lectures: unknown[], numero: number, options: string[]): string[] | null {
+  const net = (m: unknown) => String(m ?? "").toLowerCase().replace(/[«»"“”]/g, "").trim();
+  const pour = lectures.filter((l) => (l as { phrase?: unknown })?.phrase === numero);
+  if (pour.length !== 1) return null;
+  const mots = (pour[0] as { mots?: unknown }).mots;
+  if (!Array.isArray(mots)) return null;
+  const possibles: string[] = [];
+  for (const m of mots) {
+    const o = options.find((x) => net(x) === net(m));
+    if (!o) return null;
+    if (!possibles.includes(o)) possibles.push(o);
+  }
+  return possibles;
 }
 
 /**
