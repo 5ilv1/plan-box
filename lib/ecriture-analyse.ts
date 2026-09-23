@@ -17,9 +17,9 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { REFERENCE_CYCLE3 } from "./ecriture-reference-cycle3";
 import {
-  motsAVerifier, verifierErreurs, questionsDeTest, questionsDeLecture,
+  motsAVerifier, verifierErreurs, questionsDeTest, questionsDeLecture, questionsDAccord,
   appliquerVerdicts, publier,
-  type ErreurCorrection, type QuestionTest, type QuestionLecture,
+  type ErreurCorrection, type QuestionTest, type QuestionLecture, type QuestionAccord,
 } from "./ecriture-correction";
 
 export type Niveau = "CE2" | "CM1" | "CM2";
@@ -125,20 +125,26 @@ Retourne UNIQUEMENT un JSON array, rien d'autre.`;
     //  • les autres — vert/verre, ces/ses — par une seconde lecture de la
     //    phrase à trou, qui ne voit ni le mot de l'élève ni le premier avis.
     // Les deux appels sont indépendants : ils partent ensemble.
+    //  • les accords et les temps par le test des deux phrases (`lib/accords.ts`).
     const questions = questionsDeTest(texte, verifiees);
     const lectures = questionsDeLecture(texte, verifiees);
-    const [choix, lus] = await Promise.all([
+    const accords = questionsDAccord(texte, verifiees);
+    const [choix, lus, acceptables] = await Promise.all([
       questions.length > 0 ? poserTests(anthropic, questions) : Promise.resolve([]),
       lectures.length > 0 ? poserLectures(anthropic, lectures) : Promise.resolve([]),
+      accords.length > 0 ? poserAccords(anthropic, accords) : Promise.resolve([]),
     ]);
-    const erreurs = publier(appliquerVerdicts(verifiees, questions, choix, lectures, lus));
+    const erreurs = publier(
+      appliquerVerdicts(verifiees, questions, choix, lectures, lus, accords, acceptables),
+    );
 
     const ecartees = Array.isArray(brutes) ? brutes.length - erreurs.length : 0;
     if (ecartees > 0) {
       console.info(
         `[ecriture/analyser] ${ecartees} signalement(s) écarté(s) sur ${brutes.length}` +
         (questions.length ? ` — ${questions.length} homophone(s) testé(s)` : "") +
-        (lectures.length ? ` — ${lectures.length} relu(s)` : ""),
+        (lectures.length ? ` — ${lectures.length} relu(s)` : "") +
+        (accords.length ? ` — ${accords.length} accord(s) testé(s)` : ""),
       );
     }
     return { erreurs, niveau };
@@ -337,6 +343,105 @@ export function lireLecture(lectures: unknown[], numero: number, options: string
     if (!possibles.includes(o)) possibles.push(o);
   }
   return possibles;
+}
+
+/**
+ * Le test des deux phrases, pour les accords et les temps : la phrase de
+ * l'élève et la corrigée, qui ne diffèrent que par la forme d'un mot. Le
+ * vérificateur dit LESQUELLES un adulte écrirait. Si celle de l'élève en fait
+ * partie, il a peut-être raison, et on se tait (`trancherAccord()`).
+ *
+ * La phrase d'avant est donnée en contexte : un temps se juge dans le récit.
+ */
+export async function poserAccords(
+  anthropic: Anthropic,
+  questions: QuestionAccord[],
+): Promise<Array<Array<"A" | "B"> | null>> {
+  const rien = questions.map(() => null);
+  try {
+    const reponse = await anthropic.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 500,
+      temperature: 0,
+      system:
+        "Tu relis des phrases écrites par un élève de primaire. Dans chaque paire, les deux phrases " +
+        "ne diffèrent que par la forme d'UN mot : l'accord ou le temps d'un verbe, l'accord d'un nom " +
+        "ou d'un adjectif. Pour chaque paire, dis LESQUELLES un adulte écrirait ainsi en français " +
+        "correct : A, B, les deux, ou aucune.\n\n" +
+        "- Juge seulement le mot qui diffère. Ignore les autres fautes de la phrase (orthographe, " +
+        "ponctuation, majuscules, autres accords) : elles sont les mêmes dans les deux phrases.\n" +
+        "- Le contexte, quand il est donné, est la phrase d'avant. Il ne change pas : sers-t'en pour " +
+        "juger le temps dans le récit.\n" +
+        "- Réponds « les deux » quand les deux formes sont correctes : un récit entièrement au " +
+        "présent, un mot qui peut être au singulier comme au pluriel.\n" +
+        "- Une phrase n'est pas correcte parce qu'on la comprend : « les enfants joue » se comprend, " +
+        "mais un adulte ne l'écrirait pas.",
+      tools: [{
+        name: "rendre_accords",
+        description: "Rend, pour chaque paire, les phrases qu'un adulte écrirait.",
+        input_schema: {
+          type: "object",
+          properties: {
+            verdicts: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  paire: { type: "integer", description: "Le numéro de la paire." },
+                  correctes: {
+                    type: "array",
+                    items: { type: "string", enum: ["A", "B"] },
+                    description: "Les phrases correctes : [], [\"A\"], [\"B\"] ou [\"A\", \"B\"].",
+                  },
+                },
+                required: ["paire", "correctes"],
+              },
+            },
+          },
+          required: ["verdicts"],
+        },
+      }],
+      tool_choice: { type: "tool", name: "rendre_accords" },
+      messages: [{
+        role: "user",
+        content: questions
+          .map((q, i) =>
+            `Paire ${i + 1}` +
+            (q.contexte ? `\nContexte : « ${q.contexte} »` : "") +
+            `\nA : « ${q.A} »\nB : « ${q.B} »`)
+          .join("\n\n"),
+      }],
+    });
+    const appel = reponse.content.find((c) => c.type === "tool_use");
+    const verdicts = appel?.type === "tool_use"
+      ? (appel.input as { verdicts?: unknown }).verdicts
+      : undefined;
+    if (!Array.isArray(verdicts)) {
+      console.error("[ecriture/analyser] accords illisibles :", JSON.stringify(verdicts)?.slice(0, 200));
+      return rien;
+    }
+    return questions.map((_, i) => lireAccord(verdicts, i + 1));
+  } catch (err) {
+    console.error("[ecriture/analyser] test des accords", err);
+    return rien;
+  }
+}
+
+/**
+ * Les phrases jugées correctes pour la paire `numero` — `null` si la paire
+ * manque, reçoit deux réponses, ou cite autre chose que A et B.
+ */
+export function lireAccord(verdicts: unknown[], numero: number): Array<"A" | "B"> | null {
+  const pour = verdicts.filter((v) => (v as { paire?: unknown })?.paire === numero);
+  if (pour.length !== 1) return null;
+  const correctes = (pour[0] as { correctes?: unknown }).correctes;
+  if (!Array.isArray(correctes)) return null;
+  const lettres: Array<"A" | "B"> = [];
+  for (const c of correctes) {
+    if (c !== "A" && c !== "B") return null;
+    if (!lettres.includes(c)) lettres.push(c);
+  }
+  return lettres;
 }
 
 /**

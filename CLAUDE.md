@@ -445,7 +445,7 @@ Ce qui rend le test fiable, appris en le mesurant :
      sans hésiter, dans un sens réel du mot ? », avec des exemples pris **hors** du
      corpus de mesure.
 
-**Mesure** : `scripts/mesurer-homophones.ts` (vrai modèle, quelques centimes, ne touche
+**Mesure** : `scripts/mesurer-correction.ts` (vrai modèle, quelques centimes, ne touche
 pas la base), avec des phrases d'élèves réalistes (sans majuscule ni point, plusieurs
 fautes) et des phrases **ambiguës** qui ne doivent jamais être corrigées. Le 23/09,
 fausses alertes écartées · vraies fautes trouvées :
@@ -455,18 +455,47 @@ fausses alertes écartées · vraies fautes trouvées :
 | étape 2 | 14/14 · 21/22 |
 | étape 3, corpus de réglage | 18/18 · 21/22 |
 | étape 3, **témoin** (écrit après le réglage, jamais utilisé pour régler) | 9/9 · 13/15 |
+| accords et temps | 14/14 · 23/23 |
+| accords et temps, **témoin** | 10/10 · 12/12 |
 
 Aucune faute inventée, sur trois passages. Le script échoue s'il en invente une : c'est
 le chiffre qui compte. ⚠️ Les corpus sont écrits à la main — les compléter avec de
-vraies phrases d'élèves. Contrat pur : `npx tsx docs/tests/test-homophones.mjs` (53 cas).
+vraies phrases d'élèves. Contrats purs : `npx tsx docs/tests/test-homophones.mjs` (53 cas) et
+`npx tsx docs/tests/test-accords.mjs` (20 cas).
 
-**Ce qui reste le jugement du modèle** : les erreurs `grammaire` et `syntaxe` (accords,
-conjugaisons, concordance des temps) ne sont vérifiées que sur leur position. Le mot
-existe, il est à sa place dans le texte ; que l'accord soit faux, rien ne le recalcule.
+### Accords et temps : « jouait » → « jouaient », « hier je bois » → « buvais »
+
+`lib/accords.ts`. Deux vérifications, dans l'esprit des homophones :
+
+1. **Le même mot** (`memeMot()`) : la correction doit être une autre forme du MÊME
+   mot — même radical (3 lettres au moins) suivi de terminaisons courtes faites de
+   lettres de terminaison, ou deux formes de la table `IRREGULIERS` (`est`/`sont`,
+   `bois`/`buvais`, 16 verbes). Sinon le modèle ne corrige pas un accord, il propose un
+   autre mot : on se tait. ⚠️ Chaque forme de la table est vérifiée contre le
+   dictionnaire par le contrat — une coquille y ferait accepter un non-mot.
+2. **Le test des deux phrases** (`poserAccords()`) : celle de l'élève et la corrigée,
+   qui ne diffèrent que par ce mot. Le vérificateur dit **lesquelles** un adulte
+   écrirait ; si celle de l'élève en fait partie, on se tait (`trancherAccord()`). Il
+   reçoit la **phrase d'avant** en contexte : un temps se juge dans le récit — « Hier ma
+   mère m'a emmené. Je bois… ».
+
+- ⚠️ **Une remarque de grammaire sans mot attendu d'UN mot n'est plus montrée.**
+  Avant, elle passait dès que le mot était dans le texte. Conséquence assumée : un
+  temps composé (« je bois » → « j'ai bu ») n'est pas proposé.
+- ⚠️ **Encore l'étiquette** : le modèle range l'oubli du « s » du pluriel (« des
+  tache ») en orthographe, et le dictionnaire l'effaçait. Un mot qui existe, corrigé
+  en une autre forme de lui-même, part au test des accords quelle que soit l'étiquette.
+- **Limite sûre** : dans « des tache blanche », `blanche` n'est pas signalé — les deux
+  phrases gardent `tache` au singulier, et `blanche` s'accorde avec lui. Une fois
+  `taches` corrigé, le passage suivant trouve `blanches`. Rien de faux n'est affiché.
+
+**Ce qui reste le jugement du modèle** : les erreurs `syntaxe` (majuscule, point,
+élision « que on » → « qu'on ») ne sont vérifiées que sur leur position.
 
 Le pipeline vit dans `lib/ecriture-analyse.ts` (`analyserTexte()`), sorti de la route
 pour pouvoir être exécuté sans session : une route Next.js n'exporte que ses méthodes.
-Compter ~10 s par correction, ~15 s quand il y a des homophones à vérifier.
+Compter 10 à 20 s par correction : les vérifications (homophones, lecture, accords)
+partent en parallèle, mais après la première lecture du modèle.
 
 ### Trois pièges qui effaçaient le travail
 

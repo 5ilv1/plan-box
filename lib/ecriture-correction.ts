@@ -21,8 +21,9 @@
 
 import {
   memeFamille, paireDe, memeForme, trancher, variantesDuTest,
-  optionsDeLecture, phraseATrou, trancherLecture,
+  optionsDeLecture, phraseATrou, trancherLecture, phraseAvec, phrasePrecedente,
 } from "./homophones";
+import { memeMot, trancherAccord } from "./accords";
 
 export type TypeErreur = "orthographe" | "grammaire" | "syntaxe" | "homophone";
 
@@ -42,6 +43,8 @@ export interface ErreurCorrection {
   aTester?: boolean;
   /** Interne — la faute attend la seconde lecture, sur la phrase à trou. */
   aLire?: boolean;
+  /** Interne — l'accord ou le temps attend le test des deux phrases. */
+  aAccorder?: boolean;
 }
 
 const TYPES: ReadonlySet<string> = new Set(["orthographe", "grammaire", "syntaxe", "homophone"]);
@@ -117,6 +120,7 @@ export function motsAVerifier(erreurs: unknown): string[] {
     const err = e as Partial<ErreurCorrection>;
     for (const s of segments(String(err?.mot ?? ""))) cles.add(s);
     for (const s of segments(String(err?.correction ?? ""))) cles.add(s);
+    for (const s of segments(String(err?.attendu ?? ""))) cles.add(s);
   }
   return [...cles];
 }
@@ -219,7 +223,36 @@ export function verifierErreurs(
     // Une confusion annoncée sans attendu vérifiable : on se tait.
     if (type === "homophone") continue;
 
-    // 4. Un mot attesté n'est pas une faute d'orthographe, et un nom propre ne
+    // 4. Accords et temps (`lib/accords.ts`) : « jouait » → « jouaient ». On ne
+    //    montre que ce qui passera le test des deux phrases, et on n'y envoie
+    //    que ce qui peut le passer : un attendu d'UN mot, qui existe, et qui
+    //    est une autre forme du MÊME mot. Sinon le modèle ne corrige pas un
+    //    accord — il propose un autre mot, ou rien — et on se tait.
+    //    ⚠️ Là encore, c'est l'attendu qui décide, pas l'étiquette : le modèle
+    //    range l'oubli du « s » du pluriel (« des tache ») en ORTHOGRAPHE, et le
+    //    dictionnaire l'effaçait — « tache » existe. Un mot qui existe, corrigé
+    //    en une autre forme de lui-même, est un accord, quelle que soit
+    //    l'étiquette.
+    const accord = !!attendu && memeMot(ecrit, attendu) && motAtteste(attendu, connu) &&
+      (type === "grammaire" || motAtteste(ecrit, connu));
+    if (type === "grammaire" || accord) {
+      if (!accord) continue;
+      const correctionDonnee = typeof err.correction === "string" &&
+        err.correction.trim().toLowerCase() === attendu.toLowerCase();
+      prises.add(position);
+      retenues.push({
+        mot: ecrit,
+        type: "grammaire",
+        position,
+        attendu,
+        aAccorder: true,
+        ...(typeof err.indice === "string" && err.indice.trim() ? { indice: err.indice.trim() } : {}),
+        ...(correctionDonnee ? { correction: attendu } : {}),
+      });
+      continue;
+    }
+
+    // 5. Un mot attesté n'est pas une faute d'orthographe, et un nom propre ne
     //    se vérifie pas. Les autres types (accord, conjugaison, majuscule)
     //    portent sur des mots qui existent : le dictionnaire n'a rien à en dire.
     if (type === "orthographe") {
@@ -227,7 +260,7 @@ export function verifierErreurs(
       if (estNomPropre(texte, position, ecrit)) continue;
     }
 
-    // 5. Une correction qui n'est pas un mot français n'est pas une correction.
+    // 6. Une correction qui n'est pas un mot français n'est pas une correction.
     let correction = typeof err.correction === "string" ? err.correction.trim() : "";
     if (correction) {
       const identique = correction.toLowerCase() === mot.toLowerCase();
@@ -388,24 +421,78 @@ export function appliquerLectures(
   return composer(erreurs, decisionsLectures(erreurs, questions, choix));
 }
 
-/** Les deux étapes à la fois, décidées sur la même liste d'origine. */
+/* ────────────────────────────────────────────────────────────────────────────
+   Accords et temps — le test des deux phrases
+   ──────────────────────────────────────────────────────────────────────────── */
+
+export interface QuestionAccord {
+  index: number;
+  A: string;
+  B: string;
+  /** Laquelle est la phrase de l'élève : l'ordre alterne. */
+  ecritEn: "A" | "B";
+  /** La phrase d'avant, inchangée : les temps se jugent dans le récit. */
+  contexte: string;
+}
+
+export function questionsDAccord(texte: string, erreurs: ErreurCorrection[]): QuestionAccord[] {
+  const questions: QuestionAccord[] = [];
+  erreurs.forEach((e, index) => {
+    if (!e.aAccorder || !e.attendu) return;
+    const ecrite = phraseAvec(texte, e.position, e.mot.length, e.mot);
+    const corrigee = phraseAvec(texte, e.position, e.mot.length, e.attendu);
+    const ecritEn = questions.length % 2 === 0 ? "A" : "B";
+    const contexte = phrasePrecedente(texte, e.position);
+    questions.push(ecritEn === "A"
+      ? { index, A: ecrite, B: corrigee, ecritEn, contexte }
+      : { index, A: corrigee, B: ecrite, ecritEn, contexte });
+  });
+  return questions;
+}
+
+function decisionsAccords(
+  erreurs: ErreurCorrection[],
+  questions: QuestionAccord[],
+  choix: Array<Array<"A" | "B"> | null>,
+): Decisions {
+  const decisions: Decisions = new Map();
+  erreurs.forEach((e, index) => {
+    if (!e.aAccorder) return;
+    const i = questions.findIndex((x) => x.index === index);
+    const c = i >= 0 ? choix[i] ?? null : null;
+    if (i < 0 || c === null) { decisions.set(index, null); return; }
+    const q = questions[i];
+    const acceptables = c.map((lettre) => (lettre === q.ecritEn ? "ecrit" : "attendu") as "ecrit" | "attendu");
+    const { faute } = trancherAccord(acceptables);
+    decisions.set(index, faute === true ? { ...e, aAccorder: false } : null);
+  });
+  return decisions;
+}
+
+/**
+ * Toutes les étapes à la fois, décidées sur la même liste d'origine. Une faute
+ * qui attendait un verdict et n'en a pas reçu disparaît : on se tait.
+ */
 export function appliquerVerdicts(
   erreurs: ErreurCorrection[],
   tests: QuestionTest[],
   choixTests: Array<"A" | "B" | null>,
   lectures: QuestionLecture[],
   choixLectures: Array<string[] | null>,
+  accords: QuestionAccord[] = [],
+  choixAccords: Array<Array<"A" | "B"> | null> = [],
 ): ErreurCorrection[] {
   return composer(erreurs, new Map([
     ...decisionsTests(erreurs, tests, choixTests),
     ...decisionsLectures(erreurs, lectures, choixLectures),
+    ...decisionsAccords(erreurs, accords, choixAccords),
   ]));
 }
 
 /** Ce que reçoit l'élève : sans les champs internes de la vérification. */
 export function publier(erreurs: ErreurCorrection[]): ErreurCorrection[] {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  return erreurs.map(({ attendu, aTester, aLire, ...visible }) => visible);
+  return erreurs.map(({ attendu, aTester, aLire, aAccorder, ...visible }) => visible);
 }
 
 /* ────────────────────────────────────────────────────────────────────────────

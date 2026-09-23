@@ -165,6 +165,30 @@ function remplacer(texte: string, position: number, longueur: number, par: strin
 }
 
 /**
+ * La phrase qui précède celle de `position`, ou "" au début du texte. Sert de
+ * contexte aux temps : dans « Hier ma mère m'a emmené. Je bois… », c'est la
+ * phrase d'avant qui montre que le présent détonne.
+ */
+export function phrasePrecedente(texte: string, position: number): string {
+  const { debut } = phraseAutour(texte, position);
+  if (debut <= 0) return "";
+  let i = debut - 1;
+  while (i >= 0 && /\s/.test(texte[i])) i--;
+  if (i < 0) return "";
+  const avant = phraseAutour(texte, i);
+  return texte.slice(avant.debut, avant.fin).trim();
+}
+
+/**
+ * La phrase de l'élève qui contient `position`, le mot remplacé par `par` (la
+ * majuscule est gardée). Sert aussi aux accords.
+ */
+export function phraseAvec(texte: string, position: number, longueur: number, par: string): string {
+  const { debut, fin } = phraseAutour(texte, position);
+  return remplacer(texte.slice(debut, fin), position - debut, longueur, par).trim();
+}
+
+/**
  * La phrase soumise au vérificateur : celle de l'élève, le mot remplacé par le
  * substitut. Si elle est correcte, la forme juste est `paire.forme` ; sinon,
  * c'est `paire.autre`.

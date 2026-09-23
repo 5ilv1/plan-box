@@ -1,31 +1,33 @@
 /**
- * Mesure la vérification des homophones sur des corpus connus.
+ * Mesure la correction automatique vérifiée sur des corpus connus.
  *
- *  • Étape 2 — test de substitution (a/à, et/est, son/sont…) : une faute dans
- *    chaque sens et un emploi juste par paire, plus des phrases d'élèves
- *    réalistes (pas de majuscule, pas de point, d'autres fautes).
- *  • Étape 3 — phrase à trou (vert/verre, mer/mère, ces/ses, se/ce…) : même
- *    principe, plus des phrases AMBIGUËS, où les deux sens se disent et où
- *    l'élève a peut-être raison — elles ne doivent jamais être corrigées.
- *  • Étape 3, TÉMOIN : écrit après le réglage de la consigne de lecture, jamais
- *    utilisé pour la régler. C'est lui qui dit si le réglage généralise.
+ *  • Homophones grammaticaux — test de substitution (a/à, et/est, son/sont…).
+ *  • Homophones de sens — phrase à trou (vert/verre, mer/mère, ces/ses, se/ce),
+ *    avec des phrases AMBIGUËS qui ne doivent jamais être corrigées.
+ *  • Accords et temps — test des deux phrases, avec des pièges justes
+ *    (« Chaque enfant a », « C'est moi qui ai », « les pommes que j'ai
+ *    mangées ») et des cas où les deux formes se disent (présent de narration).
+ *  • Deux corpus TÉMOINS, écrits sans servir à régler quoi que ce soit : ils
+ *    disent si le réglage généralise ou s'il a seulement appris son corpus.
  *
  * Chaque phrase est analysée comme un texte à part : un élève écrit un texte
- * et y met peu d'homophones.
+ * et y met peu de fautes de chaque sorte.
  *
  * Ce script appelle le VRAI modèle (quelques centimes). Il ne lit ni n'écrit
- * rien en base. À relancer après toute modification de `lib/homophones.ts`, de
- * la partie homophones de `lib/ecriture-correction.ts`, ou de `poserTests()` /
- * `poserLectures()` :
+ * rien en base. À relancer après toute modification de `lib/homophones.ts`,
+ * `lib/accords.ts`, `lib/ecriture-correction.ts` ou des appels de
+ * `lib/ecriture-analyse.ts` :
  *
- *   export $(grep -v '^#' .env.local | xargs) && npx tsx scripts/mesurer-homophones.ts
+ *   export $(grep -v '^#' .env.local | xargs) && npx tsx scripts/mesurer-correction.ts
  *
  * Mesuré le 23/09/2026 (fausses alertes écartées · vraies fautes trouvées) :
- *   étape 2           14/14 · 21/22
- *   étape 3 (réglage) 18/18 · 21/22
- *   étape 3 (témoin)   9/9  · 13/15
- * Aucune faute inventée, sur trois passages. Les manquées sont des phrases
- * très abîmées ou des cas où le lecteur est indulgent — il se tait.
+ *   homophones grammaticaux       14/14 · 21/22
+ *   homophones de sens (réglage)  18/18 · 21/22
+ *   homophones de sens (témoin)    9/9  · 13/15
+ *   accords et temps              14/14 · 23/23
+ *   accords et temps (témoin)     10/10 · 12/12
+ * Aucune faute inventée. Les manquées sont des phrases très abîmées ou des cas
+ * où le vérificateur est indulgent — il se tait.
  *
  * Le chiffre qui compte est le premier : une faute inventée apprend la faute à
  * l'élève. Une faute manquée ne lui apprend rien de faux. Le script échoue si
@@ -36,9 +38,10 @@
  */
 import Anthropic from "@anthropic-ai/sdk";
 import {
-  verifierErreurs, questionsDeTest, questionsDeLecture, appliquerVerdicts, occurrences,
+  verifierErreurs, questionsDeTest, questionsDeLecture, questionsDAccord, appliquerVerdicts,
+  occurrences,
 } from "../lib/ecriture-correction";
-import { poserTests, poserLectures } from "../lib/ecriture-analyse";
+import { poserTests, poserLectures, poserAccords } from "../lib/ecriture-analyse";
 
 // [phrase, mot écrit, mot supposé attendu, le mot écrit est-il JUSTE ?]
 // Le 5e élément, facultatif : quelle occurrence du mot (0 = la première).
@@ -160,20 +163,106 @@ const CAS_TEMOIN: Array<[string, string, string, boolean, number?]> = [
   ["mamie ma lu un compte avant de dormir", "compte", "conte", false],
 ];
 
+// Accords et temps. Le texte peut compter deux phrases : la première sert de
+// contexte au temps de la seconde.
+const CAS_ACCORDS: Array<[string, string, string, boolean, number?]> = [
+  // Accord sujet-verbe
+  ["Les enfants jouait dans la cour.", "jouait", "jouaient", false],
+  ["Ils mange à la cantine.", "mange", "mangent", false],
+  ["Tu sera content de venir.", "sera", "seras", false],
+  ["Nous va au cinéma ce soir.", "va", "allons", false],
+  ["Les chiens aboie très fort.", "aboie", "aboient", false],
+  ["Ils est partis tôt ce matin.", "est", "sont", false],
+  ["Mes amis a gagné le match.", "a", "ont", false],
+  ["Je finis mes devoirs et je vas jouer.", "vas", "vais", false],
+  ["Les oiseaux chante le matin.", "chante", "chantent", false],
+  // Accord dans le groupe nominal
+  ["J'ai vu des petit chats.", "petit", "petits", false],
+  ["Les fleurs sont belle.", "belle", "belles", false],
+  ["Il a deux grand frères.", "grand", "grands", false],
+  ["Ma sœur est content.", "content", "contente", false],
+  ["Il y a trois cheval dans le pré.", "cheval", "chevaux", false],
+  // -er / -é
+  ["Il a manger une pomme.", "manger", "mangé", false],
+  ["Je vais mangé une pomme.", "mangé", "manger", false],
+  // Temps, avec le contexte
+  ["Hier, nous sommes allés à la plage. Je nage dans la mer.", "nage", "nageais", false],
+  ["Demain, je partais en vacances.", "partais", "partirai", false],
+  ["L'année dernière, il habite à Paris.", "habite", "habitait", false],
+  ["Quand j'étais petit, je joue avec mon chien.", "joue", "jouais", false],
+  // Justes — dont des pièges classiques
+  ["Les enfants jouaient dans la cour.", "jouaient", "jouait", true],
+  ["Il mange à la cantine.", "mange", "mangent", true],
+  ["Nous allons au cinéma ce soir.", "allons", "va", true],
+  ["Ils sont partis tôt ce matin.", "sont", "est", true],
+  ["La fleur est belle.", "belle", "belles", true],
+  ["Il a mangé une pomme.", "mangé", "manger", true],
+  ["Je vais manger une pomme.", "manger", "mangé", true],
+  ["Aujourd'hui, je joue avec mon chien.", "joue", "jouais", true],
+  ["Le chat et le chien dorment ensemble.", "dorment", "dort", true],
+  ["Chaque enfant a un cahier.", "a", "ont", true],
+  ["La plupart des élèves sont venus.", "sont", "est", true],
+  ["C'est moi qui ai gagné la course.", "ai", "a", true],
+  // Ambigus : les deux formes se disent — on ne doit PAS corriger
+  ["Le groupe d'enfants joue dans le parc.", "joue", "jouent", true],
+  ["Hier, je vais au marché et je rencontre Paul.", "vais", "allais", true],
+  // Textes d'élèves réalistes
+  ["les enfant mange a la cantine", "mange", "mangent", false],
+  ["hier je joue au foot avec mes copain", "joue", "jouais", false],
+  ["il ont mangé des bonbon", "ont", "a", false],
+];
+
+// TÉMOIN des accords — écrit avant de relancer la mesure, jamais utilisé pour
+// régler quoi que ce soit.
+const CAS_ACCORDS_TEMOIN: Array<[string, string, string, boolean, number?]> = [
+  ["Les élèves écoute la maîtresse.", "écoute", "écoutent", false],
+  ["Vous chantez et nous danse.", "danse", "dansons", false],
+  ["Tu as fini ? Oui, j'ai finit.", "finit", "fini", false],
+  ["Elles sont parti hier.", "parti", "parties", false],
+  ["Le chat noir et blanc dorment.", "dorment", "dort", false],
+  ["J'ai acheté des pommes vertes et des poire.", "poire", "poires", false],
+  ["La semaine prochaine, nous visitions le musée.", "visitions", "visiterons", false],
+  ["Autrefois, les gens marcheront beaucoup.", "marcheront", "marchaient", false],
+  ["Ils peut venir demain.", "peut", "peuvent", false],
+  ["Ma grand-mère et mon grand-père vient dimanche.", "vient", "viennent", false],
+  ["mes copine sont gentille", "gentille", "gentilles", false],
+  ["hier on a vu un film et on mange du pop-corn", "mange", "mangeait", false],
+  ["Les élèves écoutent la maîtresse.", "écoutent", "écoute", true],
+  ["Elle est partie hier.", "partie", "parti", true],
+  ["Le chat noir dort.", "dort", "dorment", true],
+  ["Toi et moi, nous dansons.", "dansons", "danse", true],
+  ["Personne ne vient.", "vient", "viennent", true],
+  ["L'équipe a gagné.", "a", "ont", true],
+  ["Il faut que tu viennes.", "viennes", "viens", true],
+  ["Les pommes que j'ai mangées étaient bonnes.", "mangées", "mangé", true],
+  ["Une foule de gens attendait.", "attendait", "attendaient", true],
+  ["Tout à coup, le loup sort du bois.", "sort", "sortit", true],
+];
+
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
 // Une phrase = un texte, comme en vrai : un élève, un texte, peu d'homophones.
+let TYPE_EN_COURS: "homophone" | "grammaire" = "homophone";
+
 async function juger([phrase, mot, attendu, , occ]: [string, string, string, boolean, number?]) {
   const position = occurrences(phrase, mot)[occ ?? 0];
-  const verifiees = verifierErreurs(phrase, [{ mot, attendu, position, type: "homophone" }], () => true);
+  const verifiees = verifierErreurs(phrase, [{ mot, attendu, position, type: TYPE_EN_COURS }], () => true);
   const tests = questionsDeTest(phrase, verifiees);
   const lectures = questionsDeLecture(phrase, verifiees);
-  const [choix, lus] = await Promise.all([
+  const accords = questionsDAccord(phrase, verifiees);
+  const [choix, lus, acc] = await Promise.all([
     tests.length ? poserTests(anthropic, tests) : Promise.resolve([]),
     lectures.length ? poserLectures(anthropic, lectures) : Promise.resolve([]),
+    accords.length ? poserAccords(anthropic, accords) : Promise.resolve([]),
   ]);
-  const gardee = appliquerVerdicts(verifiees, tests, choix, lectures, lus)[0];
-  return { montree: !!gardee, attenduTest: gardee?.attendu ?? null, choix: choix[0] ?? lus[0] ?? null };
+  const gardee = appliquerVerdicts(verifiees, tests, choix, lectures, lus, accords, acc)[0];
+  const q = accords[0];
+  const lu = acc[0]?.map((l) => (q && l === q.ecritEn ? "élève" : "corrigée")).join("+");
+  return {
+    montree: !!gardee,
+    attenduTest: gardee?.attendu ?? null,
+    choix: choix[0] ?? lus[0] ?? (acc.length ? (lu || "aucune") : null) ?? null,
+  };
 }
 
 async function mesurer(nom: string, cas: typeof CAS) {
@@ -203,7 +292,9 @@ async function mesurer(nom: string, cas: typeof CAS) {
   const inventees =
     (await mesurer("Étape 2 — test de substitution (a/à, et/est…)", CAS)) +
     (await mesurer("Étape 3 — phrase à trou (vert/verre, ces/ses…)", CAS_SENS)) +
-    (await mesurer("Étape 3 — TÉMOIN, jamais vu pendant le réglage", CAS_TEMOIN));
+    (await mesurer("Étape 3 — TÉMOIN, jamais vu pendant le réglage", CAS_TEMOIN)) +
+    (await (async () => { TYPE_EN_COURS = "grammaire"; return mesurer("Accords et temps — test des deux phrases", CAS_ACCORDS); })()) +
+    (await mesurer("Accords et temps — TÉMOIN", CAS_ACCORDS_TEMOIN));
   // Une faute inventée est un échec ; une faute manquée, non.
   process.exit(inventees > 0 ? 1 : 0);
 })();

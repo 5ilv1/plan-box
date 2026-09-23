@@ -55,17 +55,19 @@ verifier("occurrences : l'accent compte",
 /* ── 2. Deux occurrences du même mot ─────────────────────────────────────── */
 
 const deux = "Il mange. Elle mange aussi.";
+// (Depuis la vérification des accords, une remarque de grammaire doit porter un
+// `attendu` : c'est lui qu'on vérifie.)
 verifier("deux signalements du même mot visent deux endroits",
   verifierErreurs(deux, [
-    { mot: "mange", type: "grammaire", position: 3 },
-    { mot: "mange", type: "grammaire", position: 15 },
+    { mot: "mange", type: "grammaire", position: 3, attendu: "mangent" },
+    { mot: "mange", type: "grammaire", position: 15, attendu: "mangent" },
   ], connu).map((e) => e.position), [3, 15]);
 
 verifier("un troisième signalement, sans occurrence libre, est écarté",
   verifierErreurs(deux, [
-    { mot: "mange", type: "grammaire", position: 3 },
-    { mot: "mange", type: "grammaire", position: 15 },
-    { mot: "mange", type: "grammaire", position: 3 },
+    { mot: "mange", type: "grammaire", position: 3, attendu: "mangent" },
+    { mot: "mange", type: "grammaire", position: 15, attendu: "mangent" },
+    { mot: "mange", type: "grammaire", position: 3, attendu: "mangent" },
   ], connu).length, 2);
 
 /* ── 3. Le dictionnaire écarte les faux positifs ─────────────────────────── */
@@ -79,8 +81,14 @@ verifier("« mangeaient » existe : forme fléchie acceptée",
 verifier("« trés » n'existe pas : la faute passe",
   verifierErreurs(texte, [{ mot: "trés", type: "orthographe", position: 57 }], connu).length, 1);
 
-verifier("le dictionnaire ne dit rien d'un accord : « petit » reste signalé",
-  verifierErreurs(texte, [{ mot: "petit", type: "grammaire", position: 62 }], connu).length, 1);
+// Un accord ne se vérifie pas au dictionnaire — « petit » existe — mais par le
+// test des deux phrases (lib/accords.ts). Sans mot attendu, il n'y a rien à
+// tester : on se tait. C'était l'ancienne règle, inverse : il passait tel quel.
+verifier("un accord sans mot attendu n'est plus montré",
+  verifierErreurs(texte, [{ mot: "petit", type: "grammaire", position: 62 }], connu).length, 0);
+verifier("un accord avec son mot attendu part au test des deux phrases",
+  verifierErreurs(texte, [{ mot: "petit", type: "grammaire", position: 62, attendu: "petits" }], connu)
+    .map((e) => [e.mot, e.aAccorder]), [["petit", true]]);
 
 verifier("mot composé : tous les segments connus ⇒ écarté",
   verifierErreurs("Aujourd'hui il pleut.", [{ mot: "Aujourd'hui", type: "orthographe", position: 0 }], connu), []);
