@@ -874,6 +874,23 @@ export default function NouvelleSemainePage() {
     }]);
   }
 
+  // ── Travail non planifié ──
+  //
+  // Les blocs posés sur la grille ne sont en base qu'après « Planifier la
+  // semaine ». Un rechargement de page les effaçait sans prévenir — un
+  // déploiement suffit à en provoquer un. Le navigateur demande désormais
+  // confirmation tant qu'il reste des blocs qui n'existent qu'ici.
+  const nonPlanifies = blocs.filter(
+    (b) => !(b as any)._existant && !(b.contenu as any)?._visual_only
+  ).length;
+
+  useEffect(() => {
+    if (nonPlanifies === 0 || etape === "confirmation") return;
+    const retenir = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", retenir);
+    return () => window.removeEventListener("beforeunload", retenir);
+  }, [nonPlanifies, etape]);
+
   // ── Sauvegarde ──
 
   const sauvegarder = useCallback(async () => {

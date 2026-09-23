@@ -1,5 +1,5 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, extraireJSON } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 /**
@@ -76,14 +76,11 @@ Réponds UNIQUEMENT en JSON valide (un tableau), sans markdown :
     });
 
     const text = message.content[0].type === "text" ? message.content[0].text : "";
-    const json = text
-      .replace(/^```json\s*/i, "")
-      .replace(/^```\s*/i, "")
-      .replace(/\s*```$/i, "")
-      .trim();
 
+    // Le modèle commence parfois par « Je vérifie… » : un JSON.parse sur la
+    // réponse brute échouait, et la validation était sautée en silence.
     const corrections: { id: number | string; reponse: string }[] =
-      normaliserNombresEnLettres(JSON.parse(json));
+      normaliserNombresEnLettres(extraireJSON(text, "[")) as { id: number | string; reponse: string }[];
 
     // ── Patcher les corrections ─────────────────────────────────────────────
     const corrMap = new Map(corrections.map((c) => [c.id, c.reponse]));

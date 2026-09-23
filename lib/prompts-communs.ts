@@ -22,18 +22,46 @@ FRANÇAIS DE FRANCE UNIQUEMENT : soixante-dix, quatre-vingts, quatre-vingt-dix. 
 Cette règle s'applique PARTOUT : énoncés, questions, options, réponses attendues, corrections, indices, titres et consignes.`;
 
 /**
- * Extrait le premier objet JSON d'une réponse de modèle.
+ * Extrait le premier objet (ou tableau) JSON d'une réponse de modèle.
  *
  * Les modèles ajoutent régulièrement des backticks, une phrase d'introduction
- * ou un commentaire de vérification après l'objet : un `JSON.parse` sur la
+ * ou un commentaire de vérification autour du JSON : un `JSON.parse` sur la
  * réponse brute échoue alors sur « Unexpected non-whitespace character ».
- * On isole donc l'objet en suivant l'imbrication des accolades, en ignorant
- * celles qui se trouvent à l'intérieur d'une chaîne.
+ * On isole donc le JSON en suivant l'imbrication, en ignorant les accolades
+ * et crochets qui se trouvent à l'intérieur d'une chaîne.
+ *
+ * `ouvrant` vaut `"{"` par défaut ; `"["` pour une réponse attendue en
+ * tableau — le correcteur de réponses en renvoie un, et le parsait à la main :
+ * un « Je vérifie… » en tête suffisait à sauter toute la validation.
+ *
+ * Si le premier candidat ne se lit pas (une accolade dans la phrase
+ * d'introduction), on essaie le suivant. Un texte qui se lisait avant se lit
+ * donc à l'identique : le premier candidat n'a pas changé.
  */
-export function extraireJSON(texte: string): unknown {
-  const debut = texte.indexOf("{");
-  if (debut === -1) throw new Error("Aucun objet JSON dans la réponse du modèle.");
+export function extraireJSON(texte: string, ouvrant: "{" | "[" = "{"): unknown {
+  const fermant = ouvrant === "{" ? "}" : "]";
+  let debut = texte.indexOf(ouvrant);
+  if (debut === -1) {
+    throw new Error(`Aucun ${ouvrant === "{" ? "objet" : "tableau"} JSON dans la réponse du modèle.`);
+  }
 
+  let derniereErreur: unknown = null;
+  while (debut !== -1) {
+    const fin = finDuBloc(texte, debut, ouvrant, fermant);
+    if (fin === -1) break;
+    try {
+      return JSON.parse(texte.slice(debut, fin + 1));
+    } catch (e) {
+      derniereErreur = e;
+      debut = texte.indexOf(ouvrant, debut + 1);
+    }
+  }
+
+  throw derniereErreur ?? new Error("JSON incomplet dans la réponse du modèle.");
+}
+
+/** Position du caractère qui ferme le bloc ouvert en `debut`, ou -1. */
+function finDuBloc(texte: string, debut: number, ouvrant: string, fermant: string): number {
   let profondeur = 0;
   let dansChaine = false;
   let echappe = false;
@@ -49,14 +77,13 @@ export function extraireJSON(texte: string): unknown {
     }
 
     if (c === '"') dansChaine = true;
-    else if (c === "{") profondeur++;
-    else if (c === "}") {
+    else if (c === ouvrant) profondeur++;
+    else if (c === fermant) {
       profondeur--;
-      if (profondeur === 0) return JSON.parse(texte.slice(debut, i + 1));
+      if (profondeur === 0) return i;
     }
   }
-
-  throw new Error("Objet JSON incomplet dans la réponse du modèle.");
+  return -1;
 }
 
 /**

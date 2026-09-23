@@ -1,10 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TYPE_BLOC_CONFIG, type TypeBloc } from "@/types";
 import { MATIERES_CANONIQUES } from "@/lib/matieres-referentiel";
 import { typesSuggeres, type SeanceTraduite } from "@/lib/seances-traduction";
 import { appelPourSeance, empechement, titreDuBloc } from "@/lib/seances-generation";
+import { effacerBrouillon, fusionnerBrouillon, lireBrouillon, sauverBrouillon } from "@/lib/brouillon-seances";
 
 /**
  * « Depuis ma programmation » — engendrer la semaine à partir des séances Notion.
@@ -60,6 +61,13 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
   const [avancement, setAvancement] = useState({ fait: 0, total: 0 });
+  /** Exercices retrouvés dans le brouillon après une fermeture inattendue. */
+  const [retrouves, setRetrouves] = useState(0);
+
+  // Le brouillon ne s'écrit qu'une fois RELU : au montage la liste est vide,
+  // et l'enregistrer aussitôt effacerait précisément ce qu'on veut retrouver.
+  const brouillonActif = useRef(false);
+  const minuterieBrouillon = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /* ── Chargement ───────────────────────────────────────────────────────── */
 
@@ -75,21 +83,51 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
       })
       .then((j) => {
         if (!vivant) return;
-        setLignes(
-          (j.lignes as SeanceTraduite[]).map((s) => ({
-            ...s,
-            cle: `${s.seanceId}_${s.volet}_${s.niveau}`,
-            // Une séance de bilan n'est pas un devoir du soir : décochée d'office.
-            choisie: !s.estEvaluation,
-            type: s.typesSuggeres[0] ?? "exercice",
-            statut: "attente" as const,
-          }))
-        );
+        const fraiches: Ligne[] = (j.lignes as SeanceTraduite[]).map((s) => ({
+          ...s,
+          cle: `${s.seanceId}_${s.volet}_${s.niveau}`,
+          // Une séance de bilan n'est pas un devoir du soir : décochée d'office.
+          choisie: !s.estEvaluation,
+          type: s.typesSuggeres[0] ?? "exercice",
+          statut: "attente" as const,
+        }));
+        // Un travail engendré puis perdu dans un rechargement revient ici,
+        // sur les mêmes séances, en relecture.
+        const { lignes: fusionnees, retrouves: n } = fusionnerBrouillon(fraiches, lireBrouillon(lundi));
+        setLignes(fusionnees);
+        if (n > 0) {
+          setRetrouves(n);
+          setEtape("relecture");
+        }
+        brouillonActif.current = true;
       })
       .catch((e) => vivant && setErreur((e as Error).message))
       .finally(() => vivant && setChargement(false));
     return () => { vivant = false; };
   }, [lundi]);
+
+  // Groupé : la relecture modifie le contenu à chaque frappe.
+  useEffect(() => {
+    if (!brouillonActif.current) return;
+    if (minuterieBrouillon.current) clearTimeout(minuterieBrouillon.current);
+    minuterieBrouillon.current = setTimeout(() => {
+      if (brouillonActif.current) sauverBrouillon(lundi, lignes);
+    }, 400);
+  }, [lignes, lundi]);
+
+  useEffect(() => () => {
+    if (minuterieBrouillon.current) clearTimeout(minuterieBrouillon.current);
+  }, []);
+
+  // Un rechargement pendant la génération couperait la boucle en plein vol :
+  // les exercices déjà faits reviendraient par le brouillon, mais les suivants
+  // ne seraient jamais demandés. Le navigateur demande donc confirmation.
+  useEffect(() => {
+    if (etape !== "generation") return;
+    const retenir = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = ""; };
+    window.addEventListener("beforeunload", retenir);
+    return () => window.removeEventListener("beforeunload", retenir);
+  }, [etape]);
 
   const majLigne = useCallback((cle: string, champs: Partial<Ligne>) => {
     setLignes((prev) => prev.map((l) => (l.cle === cle ? { ...l, ...champs } : l)));
@@ -205,6 +243,11 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
     }
 
     onBlocsPrets(blocs);
+    // Les blocs sont sur la grille : le brouillon n'a plus d'objet, et le
+    // garder ferait réapparaître des exercices déjà posés.
+    brouillonActif.current = false;
+    if (minuterieBrouillon.current) clearTimeout(minuterieBrouillon.current);
+    effacerBrouillon(lundi);
     onFermer();
   }
 
@@ -248,6 +291,14 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
 
           {!chargement && !erreur && lignes.length > 0 && (
             <>
+              {retrouves > 0 && etape === "relecture" && (
+                <div style={encartRetrouve}>
+                  <strong>{retrouves} exercice{retrouves > 1 ? "s" : ""} retrouvé{retrouves > 1 ? "s" : ""}.</strong>{" "}
+                  La page s&apos;était fermée avant que vous ne les posiez sur la semaine.
+                  {lignes.some((l) => l.choisie && l.statut === "attente") &&
+                    " Certaines séances n'avaient pas encore été engendrées : « Revenir au choix » pour les reprendre."}
+                </div>
+              )}
               {etape === "choix" && (
                 // Une semaine entière fait une vingtaine de lignes et quelques
                 // minutes de génération : commencer par tout décocher est le
@@ -281,11 +332,16 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
               </span>
               <button
                 onClick={engendrer}
-                disabled={choisies.length === 0}
+                disabled={choisies.filter((l) => l.statut !== "ok").length === 0}
                 className="pb-btn primary"
                 style={{ padding: "10px 24px", borderRadius: 10 }}
               >
-                Engendrer les {choisies.length} exercices
+                {(() => {
+                  const restants = choisies.filter((l) => l.statut !== "ok").length;
+                  return restants < choisies.length
+                    ? `Engendrer les ${restants} restant${restants > 1 ? "s" : ""}`
+                    : `Engendrer les ${choisies.length} exercices`;
+                })()}
               </button>
             </>
           )}
@@ -738,4 +794,10 @@ const etiquetteEval: React.CSSProperties = {
 const encartErreur: React.CSSProperties = {
   padding: "14px 16px", borderRadius: 12,
   border: "1px solid #f0b8b8", background: "#fff5f5", color: "var(--error)",
+};
+
+const encartRetrouve: React.CSSProperties = {
+  padding: "12px 16px", borderRadius: 12, marginBottom: 14, fontSize: 13, lineHeight: 1.5,
+  border: "1px solid var(--pb-outline-variant)", background: "var(--pb-surface-container)",
+  color: "var(--pb-on-surface)",
 };

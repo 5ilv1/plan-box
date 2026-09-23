@@ -732,6 +732,28 @@ ne montrer que les deux ou trois « justes » rendait le reste inatteignable —
 ne pouvait pas demander du calcul mental sur une séance de numération. Changer
 le sous-domaine recalcule les suggestions.
 
+### Un rechargement ne doit rien effacer
+
+Le 23/09, un déploiement est passé en ligne **pendant** une génération : Next.js
+a rechargé la page pour servir la nouvelle version, et quinze exercices
+engendrés — trois minutes et demie, quinze appels au modèle — ont disparu. Ils
+n'existaient qu'en mémoire jusqu'au clic sur « Poser » ; les routes de
+génération n'écrivent rien.
+
+- **Brouillon par semaine** (`lib/brouillon-seances.ts`, `localStorage`) : choix,
+  types, sous-domaines corrigés et contenus engendrés. Rouvrir le panneau les
+  rend **en relecture** avec un bandeau « N exercices retrouvés ». Même poste,
+  quelques minutes d'écart : le navigateur suffit, pas besoin de base.
+- ⚠️ **Le brouillon ne s'écrit qu'une fois relu** (`brouillonActif`) : au montage
+  la liste est vide, et l'enregistrer aussitôt effacerait justement ce qu'on veut
+  retrouver.
+- La fusion se fait **par clé** (séance × volet × niveau), jamais par position ;
+  une génération coupée (`encours`) redevient `attente`, et « Engendrer les N
+  restants » la reprend. Effacé à la pose, périmé au bout de 7 jours.
+- Pendant la génération, et sur la grille tant que des blocs ne sont pas
+  planifiés, le navigateur **demande confirmation** avant de quitter la page.
+- Contrat vérifié par `npx tsx docs/tests/test-brouillon-seances.mjs` (28 cas).
+
 La génération est **séquentielle** : `generer-exercice` limite à 20 appels par
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
