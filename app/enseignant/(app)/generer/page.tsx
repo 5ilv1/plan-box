@@ -153,6 +153,14 @@ function PageGenererInner() {
 
   const TYPES_VALIDES: TypeBloc[] = ["exercice", "calcul_mental", "ressource", "dictee", "texte_a_trous", "analyse_phrase", "classement", "comparaison", "rangement", "lecture", "qcm", "probleme_maths"];
   const [typeBloc, setTypeBloc] = useState<TypeBloc>("exercice");
+  // Le QCM a deux tuiles dans la grille : « QCM » et « Fractions ». Les deux
+  // engendrent un bloc `qcm` — c'est ce qui lui fait traverser l'évaluation, la
+  // reprise et le suivi sans code de plus — mais une tuile est l'endroit où on
+  // cherche un exercice, et le sous-mode caché dans le formulaire était
+  // introuvable.
+  const [sourceQCM, setSourceQCM] = useState<"theme" | "fractions">("theme");
+  const qcmTheme = typeBloc === "qcm" && sourceQCM === "theme";
+  const qcmFractions = typeBloc === "qcm" && sourceQCM === "fractions";
 
   // Synchronise le type avec le paramètre URL ?type=... au montage et à chaque changement d'URL
   useEffect(() => {
@@ -1115,20 +1123,37 @@ function PageGenererInner() {
                     </p>
                   </button>
                   <button
-                    onClick={() => setTypeBloc("qcm")}
+                    onClick={() => { setTypeBloc("qcm"); setSourceQCM("theme"); }}
                     style={{
                       flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
-                      border: typeBloc === "qcm" ? "2px solid #92400E" : "1px solid var(--border)",
-                      background: typeBloc === "qcm" ? "rgba(146,64,14,0.06)" : "white",
+                      border: qcmTheme ? "2px solid #92400E" : "1px solid var(--border)",
+                      background: qcmTheme ? "rgba(146,64,14,0.06)" : "white",
                       cursor: "pointer", textAlign: "left", transition: "all 0.15s",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
-                      <span className="ms" style={{ fontSize: 22, color: typeBloc === "qcm" ? "#92400E" : "var(--text-secondary)" }}>quiz</span>
-                      <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: typeBloc === "qcm" ? "#92400E" : "var(--text)" }}>QCM</span>
+                      <span className="ms" style={{ fontSize: 22, color: qcmTheme ? "#92400E" : "var(--text-secondary)" }}>quiz</span>
+                      <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: qcmTheme ? "#92400E" : "var(--text)" }}>QCM</span>
                     </div>
                     <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
                       Questions à choix multiple sur un thème
+                    </p>
+                  </button>
+                  <button
+                    onClick={() => { setTypeBloc("qcm"); setSourceQCM("fractions"); }}
+                    style={{
+                      flex: "1 1 140px", padding: "14px 16px", borderRadius: 14,
+                      border: qcmFractions ? "2px solid #BE185D" : "1px solid var(--border)",
+                      background: qcmFractions ? "rgba(190,24,93,0.06)" : "white",
+                      cursor: "pointer", textAlign: "left", transition: "all 0.15s",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                      <span className="ms" style={{ fontSize: 22, color: qcmFractions ? "#BE185D" : "var(--text-secondary)" }}>pie_chart</span>
+                      <span style={{ fontWeight: 700, fontSize: "0.9375rem", color: qcmFractions ? "#BE185D" : "var(--text)" }}>Fractions</span>
+                    </div>
+                    <p style={{ fontSize: "0.75rem", color: "var(--text-secondary)", margin: 0, lineHeight: 1.4 }}>
+                      Disques et rectangles à lire ou à reconnaître
                     </p>
                   </button>
                   <button
@@ -1379,13 +1404,22 @@ function PageGenererInner() {
             )}
 
             {/* Formulaire QCM */}
-            {etape === "formulaire" && typeBloc === "qcm" && (
-              <GenererQCMForm
-                onGenerer={generer}
-                chargement={chargementEnCours}
-                defaultValues={paramsEnCours?.type === "qcm" ? paramsEnCours as any : undefined}
-              />
-            )}
+            {etape === "formulaire" && typeBloc === "qcm" && (() => {
+              const dv = paramsEnCours?.type === "qcm" ? (paramsEnCours as any) : undefined;
+              // Un exercice repris garde SON mode ; sinon c'est la tuile qui
+              // décide. La `key` force le remontage : l'état du formulaire est
+              // fixé à son montage, sans elle changer de tuile ne changerait
+              // rien à l'écran.
+              const source = dv?.source ?? sourceQCM;
+              return (
+                <GenererQCMForm
+                  key={`qcm-${source}`}
+                  onGenerer={generer}
+                  chargement={chargementEnCours}
+                  defaultValues={{ ...(dv ?? {}), source }}
+                />
+              );
+            })()}
 
             {/* Formulaire Problèmes de maths */}
             {etape === "formulaire" && typeBloc === "probleme_maths" && (

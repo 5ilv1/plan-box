@@ -103,8 +103,13 @@ facultative `figure` sur une question de `qcm` (ou d'`exercice`), comme le cadra
 ou la droite graduée — voir `docs/ceintures/SPEC-FIGURES.md`.
 
 - Les questions sont **calculées**, pas écrites par l'IA (`lib/fractions-aires.ts`,
-  route `app/api/generer-fractions-aires`, mode « Fractions en images » du
-  formulaire QCM).
+  route `app/api/generer-fractions-aires`).
+- **Tuile « Fractions »** dans la grille de `/enseignant/generer`, à côté de
+  « QCM ». Les deux tuiles engendrent un bloc `qcm` et ouvrent le même
+  formulaire, sur un sous-mode différent (`source`). ⚠️ Le sous-mode n'a
+  d'abord existé que dans le formulaire, et il était **introuvable** : on
+  cherche un exercice dans la grille des types, pas dans un champ du
+  formulaire.
 - Les trois mauvaises réponses sont des erreurs d'élève identifiées : fraction
   inversée, parts blanches comptées, coloriées rapportées aux blanches.
 - ⚠️ **Aucune option ne vaut la bonne réponse** : un dessin qui montre `2/4` ne
