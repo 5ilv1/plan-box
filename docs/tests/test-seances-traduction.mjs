@@ -24,7 +24,7 @@ import {
   sousDomaineConnu,
 } from "../../lib/seances-traduction.ts";
 import {
-  appelPourSeance, empechement, consigneDepuisSeance, titreDuBloc,
+  appelPourSeance, empechement, consigneDepuisSeance, titreDuBloc, valeursFormulaire, TYPES_FORMULAIRE,
 } from "../../lib/seances-generation.ts";
 import { ErreurNotion, messageErreurNotion, extraireDuCorps, extraireCalculMental, tableauCalculMental } from "../../lib/seances-notion.ts";
 
@@ -447,6 +447,43 @@ const appelCM = appelPourSeance(ligneCM, "calcul_mental");
 verifier("génération : les modèles sont dans la consigne", appelCM.body.consignes.includes("45 + 9"), true);
 verifier("génération : interdiction de recopier", /n'en recopie aucun/.test(appelCM.body.consignes), true);
 verifier("génération : bon niveau", appelCM.body.niveauNom, "CM2");
+
+/* ── 9 quater. Reprendre une ligne dans le formulaire complet ───────────── */
+//
+// Les noms de champs sont ceux que chaque formulaire lit dans `defaultValues`.
+// Un nom faux ne plante pas : le champ reste vide et l'enseignant ressaisit.
+
+const G = { id: "g-cm2", nom: "CM2" };
+const vf = (type, ligne = ligneFr) => valeursFormulaire(ligne, type, G);
+
+verifier("formulaire : le groupe du niveau est pré-choisi",
+  vf("exercice").assignation, { groupeIds: ["g-cm2"], eleveUids: [], groupeNoms: ["CM2"] });
+verifier("formulaire : la date de la séance", vf("exercice").dateAssignation, ligneFr.date);
+verifier("formulaire : matière et sous-matière suivent",
+  [vf("exercice").matiere, vf("exercice").sousMatiere], [ligneFr.matiere, ligneFr.sousMatiere]);
+verifier("formulaire exercice : la consigne de la séance",
+  vf("exercice").consigneDetaillee, consigneDepuisSeance(ligneFr));
+verifier("formulaire exercice : la difficulté de la ligne", vf("exercice").difficulte, ligneFr.difficulte);
+verifier("formulaire éval : passe par le formulaire d'exercice", vf("eval").type, "exercice");
+verifier("formulaire QCM : sous_matiere, le nom que lit ce formulaire",
+  vf("qcm").sous_matiere, ligneFr.sousMatiere);
+verifier("formulaire lecture : le corpus devient le texte", vf("lecture").texte, ligneFr.corpus);
+verifier("formulaire lecture : mode texte", vf("lecture").mode, "texte");
+verifier("formulaire lecture sans corpus : texte vide à saisir, pas de refus",
+  vf("lecture", { ...ligneFr, corpus: null }).texte, "");
+verifier("formulaire classement : possible ici, les catégories se saisissent",
+  vf("classement").mode, "ia");
+verifier("formulaire texte à trous : mode IA", vf("texte_a_trous").mode, "ia");
+verifier("formulaire analyse : les fonctions du niveau",
+  Array.isArray(vf("analyse_phrase").fonctionsActives), true);
+verifier("formulaire calcul mental : consigne dans consignesSpeciales",
+  vf("calcul_mental", ligneCM).consignesSpeciales.includes("45 + 9"), true);
+verifier("formulaire calcul mental : interdiction de recopier",
+  /n'en recopie aucun/.test(vf("calcul_mental", ligneCM).consignesSpeciales), true);
+verifier("formulaire : sans groupe, assignation vide (le formulaire le signalera)",
+  valeursFormulaire(ligneFr, "exercice", null).assignation.groupeIds, []);
+verifier("formulaire : les dix types ont chacun leurs valeurs",
+  TYPES_FORMULAIRE.every((t) => vf(t).type === t), true);
 
 /* ── 10. Ce qu'une panne Notion montre à l'enseignant ───────────────────── */
 //

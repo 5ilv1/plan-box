@@ -758,6 +758,32 @@ ne montrer que les deux ou trois « justes » rendait le reste inatteignable —
 ne pouvait pas demander du calcul mental sur une séance de numération. Changer
 le sous-domaine recalcule les suggestions.
 
+### Reprendre un exercice à l'unité
+
+Après la génération, le bouton **« Modifier »** d'une ligne ouvre **le formulaire
+de la page « Nouvel exercice »**, pré-rempli pour la séance : type d'activité au
+choix, consigne, sous-matière, niveau, groupe, date. Le résultat remplace le
+contenu de la ligne ; le jour et le groupe restent ceux de la séance.
+
+- **Un seul répartiteur** : `lib/generation-contenu.ts` (`executerGeneration()`)
+  est sorti de `generer/page.tsx`, qui l'utilise désormais. Dix types, avec leurs
+  chemins propres — modes manuels, fractions en images, calcul mental local ou
+  par IA. Un second formulaire aurait divergé du premier.
+- `valeursFormulaire()` (`lib/seances-generation.ts`, pur, testé) traduit une
+  séance en `defaultValues` — **les noms de champs que lit chaque formulaire**
+  (`consigneDetaillee`, `consignesSpeciales`, `sous_matiere` pour le QCM…). Un
+  nom faux ne plante pas : le champ reste vide.
+- ⚠️ Le **groupe** est pré-choisi d'après le niveau de la ligne : le formulaire
+  d'exercice en déduit le `niveauNom` donné au modèle, sans lui il écrirait
+  « École primaire ».
+- Le **corpus** ne figure dans aucun formulaire : il est ajouté aux paramètres
+  au moment de l'appel.
+- `classement` et `lecture` sans corpus, refusés au panneau, deviennent possibles
+  ici : le formulaire permet de saisir catégories ou texte.
+- Deux formulaires ont été complétés : `GenererCalcMentalForm` accepte
+  `defaultValues`, `GenererExerciceForm` garde la sous-matière reçue. Leur bouton
+  « Banque » n'apparaît que si `onPiocherBanque` est fourni.
+
 ### Un rechargement ne doit rien effacer
 
 Le 23/09, un déploiement est passé en ligne **pendant** une génération : Next.js
@@ -784,7 +810,7 @@ La génération est **séquentielle** : `generer-exercice` limite à 20 appels p
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
 
-Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (165 cas) —
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (182 cas) —
 à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)

@@ -4,7 +4,18 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TYPE_BLOC_CONFIG, type TypeBloc } from "@/types";
 import { MATIERES_CANONIQUES } from "@/lib/matieres-referentiel";
 import { typesSuggeres, type SeanceTraduite } from "@/lib/seances-traduction";
-import { appelPourSeance, empechement, titreDuBloc } from "@/lib/seances-generation";
+import { appelPourSeance, empechement, titreDuBloc, valeursFormulaire, TYPES_FORMULAIRE } from "@/lib/seances-generation";
+import { executerGeneration, type ContenuGenere } from "@/lib/generation-contenu";
+import GenererExerciceForm from "@/components/GenererExerciceForm";
+import GenererCalcMentalForm from "@/components/GenererCalcMentalForm";
+import GenererTexteATrousForm from "@/components/GenererTexteATrousForm";
+import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
+import GenererClassementForm from "@/components/GenererClassementForm";
+import GenererComparaisonForm from "@/components/GenererComparaisonForm";
+import GenererRangementForm from "@/components/GenererRangementForm";
+import GenererLectureForm from "@/components/GenererLectureForm";
+import GenererQCMForm from "@/components/GenererQCMForm";
+import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
 import { effacerBrouillon, fusionnerBrouillon, lireBrouillon, sauverBrouillon } from "@/lib/brouillon-seances";
 
 /**
@@ -61,6 +72,8 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
   const [chargement, setChargement] = useState(true);
   const [erreur, setErreur] = useState<string | null>(null);
   const [avancement, setAvancement] = useState({ fait: 0, total: 0 });
+  /** La ligne reprise dans le formulaire complet, s'il y en a une. */
+  const [aReprendre, setAReprendre] = useState<string | null>(null);
   /** Exercices retrouvés dans le brouillon après une fermeture inattendue. */
   const [retrouves, setRetrouves] = useState(0);
 
@@ -255,6 +268,34 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
 
   return (
     <div style={fondModale} onClick={onFermer}>
+      {aReprendre && (() => {
+        const l = lignes.find((x) => x.cle === aReprendre);
+        if (!l) return null;
+        const groupe = groupes.find((g) => g.nom.toUpperCase() === l.niveau.toUpperCase()) ?? null;
+        return (
+          <FenetreReprise
+            ligne={l}
+            groupe={groupe}
+            onFerme={() => setAReprendre(null)}
+            onResultat={(c, params) => {
+              majLigne(l.cle, {
+                type: c.type,
+                contenu: c.data,
+                statut: "ok",
+                erreur: undefined,
+                // Le formulaire a pu corriger la matière ou la sous-matière :
+                // c'est elles que le suivi lira.
+                matiere: typeof params.matiere === "string" && params.matiere ? params.matiere : l.matiere,
+                sousMatiere:
+                  (typeof params.sousMatiere === "string" && params.sousMatiere) ||
+                  (typeof params.sous_matiere === "string" && params.sous_matiere) ||
+                  l.sousMatiere,
+              });
+              setAReprendre(null);
+            }}
+          />
+        );
+      })()}
       <div style={cadreModale} onClick={(e) => e.stopPropagation()}>
         <header style={enTete}>
           <div>
@@ -318,7 +359,7 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
                   </button>
                 </div>
               )}
-              <ListeLignes lignes={lignes} etape={etape} onMaj={majLigne} onRegenerer={regenerer} />
+              <ListeLignes lignes={lignes} etape={etape} onMaj={majLigne} onRegenerer={regenerer} onReprendre={setAReprendre} />
             </>
           )}
         </div>
@@ -387,12 +428,13 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
 /* ── La liste, groupée par jour ───────────────────────────────────────────── */
 
 function ListeLignes({
-  lignes, etape, onMaj, onRegenerer,
+  lignes, etape, onMaj, onRegenerer, onReprendre,
 }: {
   lignes: Ligne[];
   etape: Etape;
   onMaj: (cle: string, champs: Partial<Ligne>) => void;
   onRegenerer: (cle: string) => void;
+  onReprendre: (cle: string) => void;
 }) {
   const parJour = new Map<number, Ligne[]>();
   for (const l of lignes) {
@@ -407,7 +449,7 @@ function ListeLignes({
           <p style={titreJour}>{JOURS[jour] ?? `Jour ${jour + 1}`}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {duJour.map((l) => (
-              <LigneSeance key={l.cle} ligne={l} etape={etape} onMaj={onMaj} onRegenerer={onRegenerer} />
+              <LigneSeance key={l.cle} ligne={l} etape={etape} onMaj={onMaj} onRegenerer={onRegenerer} onReprendre={onReprendre} />
             ))}
           </div>
         </section>
@@ -417,12 +459,13 @@ function ListeLignes({
 }
 
 function LigneSeance({
-  ligne: l, etape, onMaj, onRegenerer,
+  ligne: l, etape, onMaj, onRegenerer, onReprendre,
 }: {
   ligne: Ligne;
   etape: Etape;
   onMaj: (cle: string, champs: Partial<Ligne>) => void;
   onRegenerer: (cle: string) => void;
+  onReprendre: (cle: string) => void;
 }) {
   const [deplie, setDeplie] = useState(false);
   const bloquant = empechement(l, l.type);
@@ -498,7 +541,7 @@ function LigneSeance({
               className="form-input"
               style={petitChamp}
             >
-              {l.typesSuggeres.map((t) => (
+              {(l.typesSuggeres.includes(l.type) ? l.typesSuggeres : [l.type, ...l.typesSuggeres]).map((t) => (
                 <option key={t} value={t}>
                   {TYPE_BLOC_CONFIG[t as TypeBloc]?.libelle ?? t}
                 </option>
@@ -513,6 +556,7 @@ function LigneSeance({
             deplie={deplie}
             onDeplier={() => setDeplie(!deplie)}
             onRegenerer={() => onRegenerer(l.cle)}
+            onReprendre={() => onReprendre(l.cle)}
           />
         )}
       </div>
@@ -542,12 +586,13 @@ function LigneSeance({
 }
 
 function Etat({
-  ligne: l, onDeplier, deplie, onRegenerer,
+  ligne: l, onDeplier, deplie, onRegenerer, onReprendre,
 }: {
   ligne: Ligne;
   onDeplier: () => void;
   deplie: boolean;
   onRegenerer: () => void;
+  onReprendre: () => void;
 }) {
   if (l.statut === "encours") {
     return <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>en cours…</span>;
@@ -564,6 +609,11 @@ function Etat({
             calculées interdisent de le corriger à la main. */}
         <button onClick={onRegenerer} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
           Régénérer
+        </button>
+        {/* Le formulaire complet de « Nouvel exercice », pré-rempli pour la
+            notion : changer de type, préciser la consigne, fixer des catégories. */}
+        <button onClick={onReprendre} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
+          Modifier
         </button>
       </div>
     );
@@ -801,3 +851,112 @@ const encartRetrouve: React.CSSProperties = {
   border: "1px solid var(--pb-outline-variant)", background: "var(--pb-surface-container)",
   color: "var(--pb-on-surface)",
 };
+
+/* ── Reprendre un exercice dans le formulaire complet ─────────────────────── */
+
+/**
+ * Le formulaire de la page « Nouvel exercice », pré-rempli pour la séance.
+ *
+ * Même composant, même répartiteur (`executerGeneration`) que la page : pas de
+ * second formulaire qui divergerait du premier. Changer de type remonte le
+ * formulaire (`key`), qui repart des valeurs de la séance pour ce type.
+ *
+ * Seul le contenu est remplacé : le jour et le groupe restent ceux de la
+ * séance, posés au moment de « Poser sur la semaine ».
+ */
+function FenetreReprise({
+  ligne, groupe, onFerme, onResultat,
+}: {
+  ligne: Ligne;
+  groupe: Groupe | null;
+  onFerme: () => void;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  onResultat: (c: ContenuGenere, params: Record<string, any>) => void;
+}) {
+  // Une évaluation s'engendre par le formulaire d'exercice.
+  const typeInitial = (TYPES_FORMULAIRE as readonly string[]).includes(ligne.type) ? ligne.type : "exercice";
+  const [type, setType] = useState(typeInitial);
+  const [chargement, setChargement] = useState(false);
+  const [erreur, setErreur] = useState<string | null>(null);
+
+  const dv = useMemo(() => valeursFormulaire(ligne, type, groupe), [ligne, type, groupe]);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function generer(params: Record<string, any>) {
+    setChargement(true);
+    setErreur(null);
+    try {
+      // Le texte étudié en classe ne figure dans aucun formulaire : il suit
+      // la séance, et les routes françaises le prennent comme matière.
+      const c = await executerGeneration({ ...params, corpus: ligne.corpus ?? undefined });
+      onResultat(c, params);
+    } catch (e) {
+      setErreur((e as Error).message);
+    } finally {
+      setChargement(false);
+    }
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const props = { onGenerer: generer, chargement, defaultValues: dv as any };
+
+  return (
+    <div
+      style={{ ...fondModale, zIndex: 1100 }}
+      onClick={(e) => { e.stopPropagation(); onFerme(); }}
+    >
+      <div
+        style={{ ...cadreModale, maxWidth: 760 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <header style={enTete}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "var(--pb-on-surface)" }}>
+              Modifier l&apos;exercice
+            </h3>
+            <p style={{ margin: "3px 0 0", fontSize: 13, color: "var(--pb-on-surface-variant)" }}>
+              {ligne.titre} · {ligne.niveau}
+            </p>
+          </div>
+          <button onClick={onFerme} className="btn-ghost" style={{ padding: "6px 12px" }}>Fermer</button>
+        </header>
+
+        <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
+          <label style={{ display: "block", fontSize: 12, fontWeight: 700, color: "var(--pb-on-surface-variant)", marginBottom: 6 }}>
+            Type d&apos;activité
+          </label>
+          <select
+            value={type}
+            onChange={(e) => { setType(e.target.value); setErreur(null); }}
+            className="form-input"
+            style={{ maxWidth: 320, marginBottom: 6 }}
+            disabled={chargement}
+          >
+            {TYPES_FORMULAIRE.map((t) => (
+              <option key={t} value={t}>{TYPE_BLOC_CONFIG[t as TypeBloc]?.libelle ?? t}</option>
+            ))}
+          </select>
+          <p style={{ margin: "0 0 16px", fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+            Le formulaire est pré-rempli pour cette séance. Le jour et le groupe restent ceux
+            de la séance : seul le contenu de l&apos;exercice sera remplacé.
+          </p>
+
+          {erreur && <div style={{ ...encartErreur, marginBottom: 14 }}>{erreur}</div>}
+
+          <div key={type}>
+            {(type === "exercice") && <GenererExerciceForm {...props} />}
+            {type === "calcul_mental" && <GenererCalcMentalForm {...props} />}
+            {type === "texte_a_trous" && <GenererTexteATrousForm {...props} />}
+            {type === "analyse_phrase" && <GenererAnalysePhraseForm {...props} />}
+            {type === "classement" && <GenererClassementForm {...props} />}
+            {type === "comparaison" && <GenererComparaisonForm {...props} />}
+            {type === "rangement" && <GenererRangementForm {...props} />}
+            {type === "lecture" && <GenererLectureForm {...props} />}
+            {type === "qcm" && <GenererQCMForm {...props} />}
+            {type === "probleme_maths" && <GenererProblemeMathsForm {...props} />}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

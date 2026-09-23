@@ -223,3 +223,89 @@ export function titreDuBloc(s: SeanceTraduite): string {
   t = t.replace(/\s*\([A-Z]\d+[^)]*\)\s*$/, "");         // « (G1 · fiche 91) »
   return t.trim() || s.titre;
 }
+
+/* ── Reprendre un exercice à l'unité, dans le formulaire complet ────────── */
+
+/** Les types proposés quand on reprend une ligne dans un formulaire. */
+export const TYPES_FORMULAIRE = [
+  "exercice", "qcm", "texte_a_trous", "analyse_phrase", "lecture",
+  "calcul_mental", "probleme_maths", "comparaison", "rangement", "classement",
+] as const;
+
+/**
+ * Les valeurs de départ d'un formulaire de « Nouvel exercice », tirées de la
+ * séance.
+ *
+ * Le panneau engendre d'un seul geste ; parfois l'enseignant veut reprendre un
+ * exercice : changer son type, préciser la consigne, fixer des catégories. On
+ * lui ouvre alors **le même formulaire que la page « Nouvel exercice »**, déjà
+ * rempli pour la notion — pas un second formulaire qui divergerait du premier.
+ *
+ * Les noms de champs sont ceux que chaque formulaire lit dans `defaultValues`.
+ * Le **groupe** est celui du niveau de la ligne : le formulaire d'exercice en
+ * déduit le niveau donné au modèle (`niveauNom`), sans lui il écrirait
+ * « École primaire ».
+ *
+ * `classement` et `lecture` sans corpus, refusés au panneau faute de
+ * catégories ou de texte, deviennent possibles ici : le formulaire permet de
+ * les saisir.
+ */
+export function valeursFormulaire(
+  s: SeanceTraduite,
+  type: string,
+  groupe: { id: string; nom: string } | null,
+): Record<string, unknown> {
+  const consigne = consigneDepuisSeance(s);
+  const commun = {
+    type,
+    matiere: s.matiere,
+    sousMatiere: s.sousMatiere,
+    niveau: s.niveau,
+    chapitreId: "",
+    chapitreTitre: "",
+    assignation: groupe
+      ? { groupeIds: [groupe.id], eleveUids: [], groupeNoms: [groupe.nom] }
+      : { groupeIds: [], eleveUids: [], groupeNoms: [] },
+    dateAssignation: s.date,
+    periodicite: "jour",
+  };
+
+  switch (type) {
+    case "exercice":
+    case "eval":
+      return { ...commun, type: "exercice", consigneDetaillee: consigne, difficulte: s.difficulte, nbQuestions: NB_QUESTIONS, contexte: "" };
+    case "qcm":
+      return { ...commun, sous_matiere: s.sousMatiere, theme: s.titre, consigne, titre: titreDuBloc(s), nbQuestions: 10 };
+    case "texte_a_trous":
+      return { ...commun, mode: "ia", objectif: s.objectifs || s.titre, description: consigne, theme: s.titre };
+    case "analyse_phrase":
+      return {
+        ...commun, mode: "ia", description: consigne, nbPhrases: 5,
+        fonctionsActives: FONCTIONS_DEFAUT[s.niveau] ?? FONCTIONS_DEFAUT.CM1,
+      };
+    case "lecture":
+      return { ...commun, mode: "texte", texte: s.corpus ?? "", titre: s.titre, description: consigne };
+    case "calcul_mental":
+      return {
+        ...commun,
+        consignesSpeciales: s.calculsModeles?.length
+          ? `${consigne}\nProduis des calculs NOUVEAUX, de même procédure et de même difficulté que ceux faits en classe ; n'en recopie aucun.`
+          : consigne,
+        nbCalculs: 10,
+        titrePersonnalise: titreDuBloc(s),
+      };
+    case "probleme_maths":
+      return { ...commun, theme: s.titre, description: consigne };
+    case "comparaison":
+      return { ...commun, nbPaires: 10, typeNombres: "entiers", avecEgalite: false, description: consigne };
+    case "rangement":
+      return {
+        ...commun, critere: s.matiere === "Mathématiques" ? "croissant" : "alphabetique",
+        nbSeries: 4, nbElements: 5, description: consigne,
+      };
+    case "classement":
+      return { ...commun, mode: "ia", theme: s.titre, description: consigne };
+    default:
+      return commun;
+  }
+}

@@ -8,7 +8,7 @@ import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface GenererExerciceFormProps {
   onGenerer: (params: ParamsExercice) => void;
-  onPiocherBanque: () => void;
+  onPiocherBanque?: () => void;
   chargement: boolean;
   defaultChapitreId?: string; // pré-sélectionne un chapitre (depuis la page détail)
   defaultValues?: ParamsExercice; // pré-remplit le formulaire (retour depuis l'aperçu)
@@ -31,7 +31,9 @@ export default function GenererExerciceForm({
 
   const [mcv, setMcv] = useState<MatiereChapitreValue>({
     matiere: dv?.matiere ?? "",
-    sousMatiere: "",
+    // Pré-remplie quand l'exercice vient d'une séance : la ressaisir serait
+    // une friction, et l'oublier bloquerait la génération.
+    sousMatiere: dv?.sousMatiere ?? "",
     chapitreId: dv?.chapitreId ?? "",
     chapitreTitre: dv?.chapitreTitre ?? "",
   });
@@ -291,14 +293,17 @@ export default function GenererExerciceForm({
         >
           {chargement ? "Génération en cours…" : "✨ Générer l'exercice"}
         </button>
-        <button
-          type="button"
-          className="btn-ghost"
-          onClick={onPiocherBanque}
-          disabled={chargement}
-        >
-          <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>folder_open</span> Banque
-        </button>
+        {/* Absent quand le formulaire sert à reprendre un exercice d'une séance. */}
+        {onPiocherBanque && (
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={onPiocherBanque}
+            disabled={chargement}
+          >
+            <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>folder_open</span> Banque
+          </button>
+        )}
       </div>
     </form>
   );

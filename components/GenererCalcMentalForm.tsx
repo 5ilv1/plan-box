@@ -14,8 +14,10 @@ const OPERATIONS = [
 
 interface GenererCalcMentalFormProps {
   onGenerer: (params: ParamsCalcMental) => void;
-  onPiocherBanque: () => void;
+  onPiocherBanque?: () => void;
   chargement: boolean;
+  /** Valeurs de départ — par exemple le calcul mental d'une séance à reprendre. */
+  defaultValues?: Partial<ParamsCalcMental>;
 }
 
 const ASSIGNATION_VIDE: AssignationSelecteur = {
@@ -28,16 +30,17 @@ export default function GenererCalcMentalForm({
   onGenerer,
   onPiocherBanque,
   chargement,
+  defaultValues: dv,
 }: GenererCalcMentalFormProps) {
-  const [operations, setOperations] = useState<string[]>(["+"]);
-  const [table, setTable] = useState("");
-  const [nbCalculs, setNbCalculs] = useState(10);
-  const [difficulte, setDifficulte] = useState<"facile" | "moyen" | "difficile">("moyen");
-  const [consignesSpeciales, setConsignesSpeciales] = useState("");
-  const [titrePersonnalise, setTitrePersonnalise] = useState("");
-  const [assignation, setAssignation] = useState<AssignationSelecteur>(ASSIGNATION_VIDE);
-  const [periodicite, setPeriodicite] = useState<"jour" | "semaine">("jour");
-  const [dateAssignation, setDateAssignation] = useState(new Date().toISOString().split("T")[0]);
+  const [operations, setOperations] = useState<string[]>(dv?.operations ?? ["+"]);
+  const [table, setTable] = useState(dv?.table ?? "");
+  const [nbCalculs, setNbCalculs] = useState(dv?.nbCalculs ?? 10);
+  const [difficulte, setDifficulte] = useState<"facile" | "moyen" | "difficile">(dv?.difficulte ?? "moyen");
+  const [consignesSpeciales, setConsignesSpeciales] = useState(dv?.consignesSpeciales ?? "");
+  const [titrePersonnalise, setTitrePersonnalise] = useState(dv?.titrePersonnalise ?? "");
+  const [assignation, setAssignation] = useState<AssignationSelecteur>(dv?.assignation ?? ASSIGNATION_VIDE);
+  const [periodicite, setPeriodicite] = useState<"jour" | "semaine">(dv?.periodicite ?? "jour");
+  const [dateAssignation, setDateAssignation] = useState(dv?.dateAssignation ?? new Date().toISOString().split("T")[0]);
   const [semaineAssignation, setSemaineAssignation] = useState(semaineISO());
   const [dateLimite, setDateLimite] = useState("");
 
@@ -270,14 +273,17 @@ export default function GenererCalcMentalForm({
         >
           {chargement ? "Génération en cours…" : <><span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>pin</span> Générer le calcul mental</>}
         </button>
-        <button
-          type="button"
-          className="btn-ghost"
-          onClick={onPiocherBanque}
-          disabled={chargement}
-        >
-          <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>folder_open</span> Banque
-        </button>
+        {/* Absent quand le formulaire sert à reprendre un exercice d'une séance. */}
+        {onPiocherBanque && (
+          <button
+            type="button"
+            className="btn-ghost"
+            onClick={onPiocherBanque}
+            disabled={chargement}
+          >
+            <span className="ms" style={{ fontSize: 16, verticalAlign: "middle" }}>folder_open</span> Banque
+          </button>
+        )}
       </div>
     </form>
   );
