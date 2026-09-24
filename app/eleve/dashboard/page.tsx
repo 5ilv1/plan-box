@@ -2294,7 +2294,13 @@ export default function DashboardEleve() {
                       probleme_maths: "Lis, calcule, puis écris ta phrase réponse.",
                       ceinture_multiplication: "Entraîne-toi sur les tables de multiplication.",
                     };
-                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "comparaison", "rangement", "lecture", "probleme_maths", "ceinture_multiplication"];
+                    // Les types qui s'OUVRENT. Tout autre bloc en ligne reçoit un bouton
+                    // « ✓ Marquer fait », qui le coche sans rien ouvrir.
+                    // ⚠️ `qcm` et `ecriture` en manquaient : 43 des 59 QCM « faits »
+                    // depuis le 08/09 l'étaient sans score ni réponse — l'élève avait
+                    // coché sans jamais les ouvrir — et l'écriture du jour, sortie des
+                    // activités papier le 23/09, se cochait sans passer par l'éditeur.
+                    const TYPES_INTERACTIFS = ["exercice", "calcul_mental", "mots", "eval", "ressource", "media", "texte_a_trous", "analyse_phrase", "classement", "comparaison", "rangement", "lecture", "probleme_maths", "ceinture_multiplication", "qcm", "ecriture"];
                     const tousBlocs = [
                       ...groupesEnLigne.flatMap(([, { blocs }]) => blocs),
                       ...blocsEnLigneLibres,
@@ -2312,7 +2318,7 @@ export default function DashboardEleve() {
                           const ecritureSemaineFinalisee = isEcritureSemaine && !!(b.contenu as any)?.date_version_finale;
                           // L'écriture semaine n'est vraiment terminée qu'après la version finale
                           const visuellementFait = estFait && (!isEcritureSemaine || ecritureSemaineFinalisee);
-                          const peutCommencer = (TYPES_INTERACTIFS.includes(b.type) || isEcritureSemaine) && b.contenu;
+                          const peutCommencer = TYPES_INTERACTIFS.includes(b.type) && b.contenu;
                           // Score précédent et badge 2e chance
                           const contenuBloc = (b.contenu as Record<string, unknown>) ?? {};
                           const scorePrecedent = contenuBloc.score_eleve as number | undefined;
