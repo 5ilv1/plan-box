@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import BilanEcriture from "@/components/suivi/BilanEcriture";
 import { TYPE_BLOC_CONFIG } from "@/types";
 import { champsReprise, champsTerminaison } from "@/lib/suivi-metriques";
 
@@ -532,6 +533,10 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
           <div style={{ fontSize: 13, color: "var(--text-secondary)", padding: 12, background: "#F9FAFB", borderRadius: 8, textAlign: "center" }}>
             L&apos;élève n&apos;a encore rien écrit.
           </div>
+        ) : !estSemaine ? (
+          // Écriture du jour : le texte rendu, avec ce que la correction
+          // automatique en a fait — premier jet, fautes corrigées ou laissées.
+          <BilanEcriture blocId={bloc.id} texteFinal={textes[0].texte} />
         ) : (
           textes.map((t, i) => {
             const nbMots = t.texte.split(/\s+/).filter(Boolean).length;

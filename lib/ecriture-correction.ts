@@ -544,7 +544,10 @@ export function fusionnerTypographie(
 
   const typos: ErreurCorrection[] = detectees
     .filter((f) => !chevauche(f.position, f.mot.length))
-    .map((f) => ({ mot: f.mot, type: "syntaxe" as const, position: f.position, indice: f.indice }));
+    .map((f) => ({
+      mot: f.mot, type: "syntaxe" as const, position: f.position, indice: f.indice,
+      attendu: f.attendu, // interne : pour le retour enseignant, retiré par publier()
+    }));
   // Les élisions d'abord : une majuscule se voit d'elle-même, une apostrophe non.
   const elisions = typos.filter((t) => /\s/.test(t.mot));
   const majuscules = typos.filter((t) => !/\s/.test(t.mot));

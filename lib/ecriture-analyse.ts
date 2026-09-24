@@ -31,7 +31,15 @@ export async function analyserTexte(args: {
   erreursPrecedentes?: Array<{ mot: string; type: string; indice?: string; correction?: string }>;
   anthropic: Anthropic;
   admin: SupabaseClient;
-}): Promise<{ erreurs: ErreurCorrection[]; niveau: Niveau } | { echec: string }> {
+}): Promise<
+  | {
+      erreurs: ErreurCorrection[];
+      niveau: Niveau;
+      /** Les mêmes, AVEC le mot attendu : pour le retour enseignant, jamais pour l'élève. */
+      completes: ErreurCorrection[];
+    }
+  | { echec: string }
+> {
   const { texte, sujet, niveau, erreursPrecedentes, anthropic, admin } = args;
 
   let contextePrecedent = "";
@@ -137,11 +145,12 @@ Retourne UNIQUEMENT un JSON array, rien d'autre.`;
     // Enfin les majuscules et les élisions, détectées par programme et non plus
     // devinées (`lib/typographie.ts`). Après les verdicts : ceux-ci décident par
     // index sur la liste d'origine, qu'il ne faut pas bouger avant eux.
-    const erreurs = publier(fusionnerTypographie(
+    const completes = fusionnerTypographie(
       texte,
       appliquerVerdicts(verifiees, questions, choix, lectures, lus, accords, acceptables),
       (cle) => connus.has(cle),
-    ));
+    );
+    const erreurs = publier(completes);
 
     const ecartees = Array.isArray(brutes) ? brutes.length - erreurs.length : 0;
     if (ecartees > 0) {
@@ -152,7 +161,7 @@ Retourne UNIQUEMENT un JSON array, rien d'autre.`;
         (accords.length ? ` — ${accords.length} accord(s) testé(s)` : ""),
       );
     }
-    return { erreurs, niveau };
+    return { erreurs, niveau, completes };
   } catch (err) {
     console.error("[ecriture/analyser]", err);
     return { echec: "Analyse indisponible" };

@@ -554,6 +554,28 @@ pour pouvoir être exécuté sans session : une route Next.js n'exporte que ses 
 Compter 10 à 20 s par correction : les vérifications (homophones, lecture, accords)
 partent en parallèle, mais après la première lecture du modèle.
 
+### Le retour enseignant : le texte, avec ses corrections
+
+Suivi → matrice du jour → case « Écriture » d'un élève (`components/suivi/BilanEcriture.tsx`) :
+le texte rendu comparé à son **premier jet** — barré ce que l'élève a retiré, en vert ce
+qu'il a ajouté — et chaque faute signalée avec son sort : corrigée, modifiée (et ce qu'il a
+mis à la place), laissée. Avec le **mot attendu**, que l'élève ne voit jamais.
+
+- Chaque « Corriger mon texte » d'un élève écrit une ligne dans **`ecriture_analyse`**
+  (texte analysé, fautes avec attendu). Seulement quand c'est **l'élève propriétaire** qui
+  corrige : l'aperçu enseignant analyse aussi, et ne doit pas écrire dans son bilan.
+- ⚠️ **Table à part, pas `plan_travail.contenu`** : la sauvegarde automatique réécrit le
+  contenu en entier toutes les 1,5 s pendant la frappe, et effacerait une trace posée au
+  même moment.
+- `lib/ecriture-bilan.ts` (pur, `npx tsx docs/tests/test-ecriture-bilan.mjs`, 15 cas) :
+  - ⚠️ **les espaces ne sont pas des jetons** : identiques partout, ils servaient de repères
+    au diff, qui alignait des mots sans rapport. Chaque espace est collé au mot qui suit ;
+  - ⚠️ **corrigée = le mot attendu figure DANS ce que l'élève a mis**, pas « est égal à » :
+    deux fautes voisines (« la court » → « La cour ») forment un seul bloc de retouche. La
+    ponctuation voisine ne compte pas (« récréation, »).
+- Les textes écrits avant le 24/09 à midi n'ont pas de trace : « aucune correction
+  enregistrée », pas « demandée ».
+
 ### Trois pièges qui effaçaient le travail
 
 1. **`marquerFait()` réécrit le contenu depuis la copie chargée à l'ouverture de la

@@ -65,5 +65,51 @@ export async function POST(req: NextRequest) {
   if ("echec" in resultat) {
     return NextResponse.json({ erreur: resultat.echec }, { status: 502 });
   }
-  return NextResponse.json(resultat);
+
+  // La trace pour l'enseignant : le texte analysé et les fautes montrées, avec
+  // le mot attendu. Seulement quand c'est l'ÉLÈVE qui corrige son propre bloc —
+  // l'aperçu enseignant analyse aussi, et ne doit pas écrire dans son bilan.
+  // Une trace qui ne s'écrit pas ne prive jamais l'élève de sa correction.
+  if (blocId) {
+    await enregistrerAnalyse(user.id, blocId, texte, resultat.completes);
+  }
+
+  return NextResponse.json({ erreurs: resultat.erreurs, niveau: resultat.niveau });
+}
+
+async function enregistrerAnalyse(
+  userId: string,
+  blocId: string,
+  texte: string,
+  erreurs: Array<{ mot: string; position: number; type: string; attendu?: string }>,
+): Promise<void> {
+  try {
+    const admin = createAdminClient();
+    const { data: bloc } = await admin
+      .from("plan_travail")
+      .select("eleve_id, repetibox_eleve_id")
+      .eq("id", blocId)
+      .maybeSingle();
+    if (!bloc) return;
+
+    let proprietaire = bloc.eleve_id === userId;
+    if (!proprietaire && bloc.repetibox_eleve_id != null) {
+      const { data: eleve } = await admin
+        .from("eleve")
+        .select("auth_id")
+        .eq("id", bloc.repetibox_eleve_id)
+        .maybeSingle();
+      proprietaire = eleve?.auth_id === userId;
+    }
+    if (!proprietaire) return;
+
+    const { error } = await admin.from("ecriture_analyse").insert({
+      bloc_id: blocId,
+      texte,
+      erreurs: erreurs.map(({ mot, position, type, attendu }) => ({ mot, position, type, attendu })),
+    });
+    if (error) throw error;
+  } catch (err) {
+    console.error("[ecriture/analyser] trace enseignant", err);
+  }
 }
