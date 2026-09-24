@@ -99,3 +99,14 @@ Génère UN sujet d'écriture avec :
 Réponds UNIQUEMENT en JSON sans backticks :
 {"sujet": "...", "contrainte": "..."}`;
 }
+
+/**
+ * La consigne affichée au-dessus de l'éditeur, par mode. Un seul endroit : elle
+ * était recopiée en quatre, et le mode jour disait encore « Écris ton texte sur
+ * ton cahier d'écrivain » au-dessus d'un éditeur en ligne — deux consignes
+ * contradictoires pour un élève de CE2.
+ */
+export const CONSIGNES_ECRITURE = {
+  jour: "Écris ton texte ici, puis clique sur « Corriger mon texte » avant de terminer.",
+  semaine: "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi.",
+} as const;

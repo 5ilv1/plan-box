@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { requireEnseignantOrCron } from "@/lib/server-auth";
 import { affecterTheme, ErreurTheme } from "@/lib/theme-ecriture";
+import { CONSIGNES_ECRITURE } from "@/lib/ecriture-types";
 
 export async function POST(req: Request) {
   const auth = await requireEnseignantOrCron(req);
@@ -107,9 +108,7 @@ export async function PATCH(req: Request) {
             const contenu: Record<string, unknown> = {
               sujet: theme.sujet,
               contrainte: contraintefinale,
-              instructions: theme.mode === "semaine"
-                ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
-                : "Écris ton texte sur ton cahier d'écrivain.",
+              instructions: CONSIGNES_ECRITURE[theme.mode === "semaine" ? "semaine" : "jour"],
               afficher_contrainte: theme.afficher_contrainte ?? true,
               mode: theme.mode,
             };

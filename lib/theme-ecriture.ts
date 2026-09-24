@@ -9,7 +9,7 @@
 
 import type Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt } from "./ecriture-types";
+import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt, CONSIGNES_ECRITURE } from "./ecriture-types";
 
 export interface ThemeEcriture {
   id: string | null;
@@ -275,9 +275,7 @@ export async function affecterTheme(supabase: SupabaseClient, theme_id: string):
     const contenu: Record<string, unknown> = {
       sujet: theme.sujet,
       contrainte: contraintefinale,
-      instructions: themeMode === "semaine"
-        ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
-        : "Écris ton texte sur ton cahier d'écrivain.",
+      instructions: CONSIGNES_ECRITURE[themeMode === "semaine" ? "semaine" : "jour"],
       afficher_contrainte: theme.afficher_contrainte ?? true,
       mode: themeMode,
     };

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt } from "@/lib/ecriture-types";
+import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt, CONSIGNES_ECRITURE } from "@/lib/ecriture-types";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -159,9 +159,7 @@ export async function POST(req: Request) {
       const contenu: Record<string, unknown> = {
         sujet: theme.sujet,
         contrainte,
-        instructions: mode === "semaine"
-          ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
-          : "Écris ton texte sur ton cahier d'écrivain.",
+        instructions: CONSIGNES_ECRITURE[mode === "semaine" ? "semaine" : "jour"],
         afficher_contrainte: true,
         mode,
       };

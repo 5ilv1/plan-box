@@ -12,6 +12,7 @@ import GenererClassementForm from "@/components/GenererClassementForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
 import SeancesSemainePanel from "@/components/SeancesSemainePanel";
+import { CONSIGNES_ECRITURE } from "@/lib/ecriture-types";
 
 // ── Types ──
 
@@ -749,9 +750,7 @@ export default function NouvelleSemainePage() {
           contrainte: json.contrainte,
           mode,
           afficher_contrainte: true,
-          instructions: mode === "semaine"
-            ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
-            : "Écris ton texte sur ton cahier d'écrivain.",
+          instructions: CONSIGNES_ECRITURE[mode === "semaine" ? "semaine" : "jour"],
         };
         if (mode === "semaine") {
           contenuData.texte_courant = "";
