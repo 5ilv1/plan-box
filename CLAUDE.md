@@ -377,10 +377,23 @@ activités « papier », dont la carte ne mène nulle part.
 - **Le filet** : ouvrir le tableau de bord enseignant appelle `GET
   /api/generer-theme-ecriture`, qui **génère le thème du jour** s'il n'existe pas ;
   l'enseignant n'a plus qu'à cliquer « Affecter ».
-- ⚠️ **Le cron échoue un jour de classe sur deux environ** (4 réussites sur 12 en
-  septembre), sans laisser de trace : il ne vérifie pas les réponses des deux routes
-  qu'il appelle et répond `ok` quoi qu'il arrive, et les journaux Hobby ne gardent
-  qu'**une heure**. Cause non établie.
+- ⚠️ **Le cron échouait un jour de classe sur deux environ** (4 réussites sur 12 en
+  septembre), sans laisser de trace : il s'appelait lui-même par HTTP
+  (`${NEXT_PUBLIC_APP_URL}/api/…`), ne vérifiait aucune réponse et répondait `ok` quoi
+  qu'il arrive — et les journaux Hobby ne gardent qu'**une heure**. Cause exacte non
+  établie. Depuis le 24/09 :
+  - génération et affectation sont des **appels de fonction** (`lib/theme-ecriture.ts`),
+    partagés avec les routes ;
+  - chaque étape est **reprise** deux fois (2 s, puis 5 s) ;
+  - le résultat est **vérifié** : des blocs existent-ils pour aujourd'hui ?
+  - un échec rend **500**, et chaque passage écrit sa ligne dans **`cron_journal`**
+    (`lib/cron-journal.ts`). Pour savoir ce qui s'est passé un matin :
+    `select * from cron_journal order by id desc limit 10;`
+  - l'orchestration reçoit ses dépendances (`lib/cron-theme-ecriture.ts`) : contrat
+    `npx tsx docs/tests/test-cron-theme-ecriture.mjs` (15 cas, un par panne).
+  - ⚠️ Le `CRON_SECRET` de `.env.local` n'est pas celui de la production : pour agir sur
+    la base depuis un poste, appeler les routes du serveur local, qui écrit dans la même
+    base.
 - ⚠️ **Le filet était désarmé** : son repli sur « des blocs planifiés cette semaine »
   prenait n'importe quel bloc d'écriture de la semaine. Le jeudi, il renvoyait le thème
   du mardi comme « planifié » — vieux sujet affiché, interrupteur jour/semaine et bouton

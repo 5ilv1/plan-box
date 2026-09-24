@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { requireEnseignantOrCron } from "@/lib/server-auth";
+import { affecterTheme, ErreurTheme } from "@/lib/theme-ecriture";
 
 export async function POST(req: Request) {
   const auth = await requireEnseignantOrCron(req);
@@ -10,162 +11,13 @@ export async function POST(req: Request) {
     if (!theme_id) {
       return NextResponse.json({ erreur: "theme_id requis" }, { status: 400 });
     }
-
-    const supabase = createAdminClient();
-    const today = new Date().toISOString().split("T")[0];
-
-    // 1. Récupérer le thème
-    const { data: theme, error: errTheme } = await supabase
-      .from("themes_ecriture")
-      .select("id, sujet, contrainte, affecte, afficher_contrainte, mode")
-      .eq("id", theme_id)
-      .single();
-
-    if (errTheme || !theme) {
-      return NextResponse.json({ erreur: "Thème introuvable" }, { status: 404 });
-    }
-
-    // 2. Vérifier s'il n'est pas déjà affecté
-    if (theme.affecte) {
-      return NextResponse.json({ ok: true, nb_eleves: 0, deja_affecte: true });
-    }
-
-    // 2b. Vérifier s'il existe déjà des blocs écriture (planifiés à l'avance)
-    const modeCheck = (theme as any).mode ?? "jour";
-    if (modeCheck === "semaine") {
-      const now = new Date();
-      const day = now.getDay();
-      const diffToMonday = day === 0 ? -6 : 1 - day;
-      const monday = new Date(now);
-      monday.setDate(now.getDate() + diffToMonday);
-      const sunday = new Date(monday);
-      sunday.setDate(monday.getDate() + 6);
-      const { count } = await supabase
-        .from("plan_travail")
-        .select("id", { count: "exact", head: true })
-        .eq("type", "ecriture")
-        .gte("date_assignation", monday.toISOString().split("T")[0])
-        .lte("date_assignation", sunday.toISOString().split("T")[0]);
-      if ((count ?? 0) > 0) {
-        return NextResponse.json({ ok: true, nb_eleves: 0, deja_planifie: true });
-      }
-    } else {
-      const { count } = await supabase
-        .from("plan_travail")
-        .select("id", { count: "exact", head: true })
-        .eq("type", "ecriture")
-        .eq("date_assignation", today);
-      if ((count ?? 0) > 0) {
-        return NextResponse.json({ ok: true, nb_eleves: 0, deja_planifie: true });
-      }
-    }
-
-    // 3a. Tous les membres de tous les groupes
-    const { data: liaisons, error: errLiaisons } = await supabase
-      .from("eleve_groupe")
-      .select("planbox_eleve_id, repetibox_eleve_id, groupe_id");
-
-    if (errLiaisons) {
-      return NextResponse.json({ erreur: errLiaisons.message }, { status: 500 });
-    }
-    if (!liaisons || liaisons.length === 0) {
-      return NextResponse.json({ ok: true, nb_eleves: 0 });
-    }
-
-    // 3b. Noms des groupes pour adapter la contrainte (CE2/CM1/CM2)
-    const groupeIds = [...new Set(liaisons.map((l: any) => l.groupe_id))];
-    const { data: groupes } = await supabase
-      .from("groupes")
-      .select("id, nom")
-      .in("id", groupeIds);
-    const nomGroupe = new Map<string, string>(
-      (groupes ?? []).map((g: { id: string; nom: string }) => [g.id, g.nom])
-    );
-
-    // 4. Construire les blocs — dédoublonner par élève
-    const vusRB = new Set<number>();
-    const vusPB = new Set<string>();
-    const blocsAPlanTravail = [];
-    const themeMode = (theme as any).mode ?? "jour";
-    const titreBloc = themeMode === "semaine"
-      ? "Atelier écriture — Thème de la semaine"
-      : "Atelier écriture — Thème du jour";
-
-    for (const liaison of liaisons as { planbox_eleve_id: string | null; repetibox_eleve_id: number | null; groupe_id: string }[]) {
-      const niveauNom = nomGroupe.get(liaison.groupe_id) ?? "";
-      let contraintefinale = theme.contrainte;
-      if (niveauNom === "CE2") {
-        contraintefinale = theme.contrainte + " · Au moins 3 lignes";
-      } else if (niveauNom === "CM1" || niveauNom === "CM2") {
-        contraintefinale = theme.contrainte + " · Au moins 5 lignes";
-      }
-      const themeMode = (theme as any).mode ?? "jour";
-      const contenu: Record<string, unknown> = {
-        sujet: theme.sujet,
-        contrainte: contraintefinale,
-        instructions: themeMode === "semaine"
-          ? "Écris ton texte, reviens le retravailler chaque jour, et envoie-le le vendredi."
-          : "Écris ton texte sur ton cahier d'écrivain.",
-        afficher_contrainte: theme.afficher_contrainte ?? true,
-        mode: themeMode,
-      };
-      if (themeMode === "semaine") {
-        contenu.texte_courant = "";
-        contenu.historique = [];
-        contenu.annotations = [];
-        contenu.texte_final = "";
-        contenu.date_envoi = null;
-      }
-
-      const blocBase = {
-        type: "ecriture",
-        titre: titreBloc,
-        contenu,
-        date_assignation: today,
-        statut: "a_faire" as const,
-        chapitre_id: null,
-        periodicite: themeMode === "semaine" ? "semaine" : "jour",
-      };
-
-      if (liaison.repetibox_eleve_id && !vusRB.has(liaison.repetibox_eleve_id)) {
-        vusRB.add(liaison.repetibox_eleve_id);
-        blocsAPlanTravail.push({ ...blocBase, eleve_id: null, repetibox_eleve_id: liaison.repetibox_eleve_id });
-      } else if (liaison.planbox_eleve_id && !vusPB.has(liaison.planbox_eleve_id)) {
-        vusPB.add(liaison.planbox_eleve_id);
-        blocsAPlanTravail.push({ ...blocBase, eleve_id: liaison.planbox_eleve_id, repetibox_eleve_id: null });
-      }
-    }
-
-    // 5. Insérer dans plan_travail
-    const { error: errInsert } = await supabase
-      .from("plan_travail")
-      .insert(blocsAPlanTravail);
-
-    if (errInsert) {
-      return NextResponse.json({ erreur: errInsert.message }, { status: 500 });
-    }
-
-    // 6. Insérer dans banque_ressources
-    await supabase.from("banque_ressources").insert({
-      titre: theme.sujet,
-      sous_type: "ecriture",
-      contenu: {
-        sujet: theme.sujet,
-        contrainte: theme.contrainte,
-        date: today,
-      },
-    });
-
-    // 7. Marquer le thème comme affecté
-    await supabase
-      .from("themes_ecriture")
-      .update({ affecte: true })
-      .eq("id", theme_id);
-
-    return NextResponse.json({ ok: true, nb_eleves: blocsAPlanTravail.length });
+    return NextResponse.json(await affecterTheme(createAdminClient(), theme_id));
   } catch (err) {
+    if (err instanceof ErreurTheme) {
+      return NextResponse.json({ erreur: err.message }, { status: err.status });
+    }
     console.error("[affecter-theme-ecriture POST]", err);
-    return NextResponse.json({ erreur: "Erreur serveur" }, { status: 500 });
+    return NextResponse.json({ erreur: (err as Error).message ?? "Erreur serveur" }, { status: 500 });
   }
 }
 
