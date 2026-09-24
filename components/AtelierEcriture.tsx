@@ -17,7 +17,9 @@ interface Annotation {
   date: string;
   debut: number;
   fin: number;
+  /** Vide : remarque du maître sur tout le texte, pas sur un passage. */
   extrait: string;
+  /** Vide : un commentaire seul, que l'élève traite en réécrivant lui-même. */
   suggestion: string;
   commentaire?: string;
   statut: "nouvelle" | "lue" | "acceptee" | "ignoree";
@@ -139,8 +141,8 @@ export default function AtelierEcriture({
   // ── Polling annotations toutes les 20s ──
   useEffect(() => {
     if (apercu) return;
-    // Un texte du jour n'est pas annoté par le maître : rien à interroger.
-    if (modeJour) return;
+    // Un texte du jour s'annote aussi : le maître peut le relire pendant que
+    // l'élève l'a ouvert.
     const interval = setInterval(async () => {
       try {
         const res = await fetch(`/api/ecriture/annotations?blocId=${blocId}`);
@@ -334,6 +336,7 @@ export default function AtelierEcriture({
   const teacherRanges = useMemo(() => {
     const ranges: Array<{ debut: number; fin: number; id: string }> = [];
     for (const a of annotationsActives) {
+      if (!a.extrait) continue; // remarque générale : aucun passage à marquer
       let debut = a.debut;
       let fin = a.fin;
       if (texte.slice(debut, fin) !== a.extrait) {
@@ -355,9 +358,29 @@ export default function AtelierEcriture({
     return annotationsActives.filter((a) => idsApplicables.has(a.id));
   }, [annotationsActives, teacherRanges]);
 
+  // Remarques sur tout le texte : pas de passage, donc toujours affichées.
+  const remarquesGenerales = useMemo(
+    () => annotationsActives.filter((a) => !a.extrait),
+    [annotationsActives]
+  );
+  const relu = annotationsAffichees.length + remarquesGenerales.length > 0;
+
+  function marquerLue(a: Annotation) {
+    if (a.statut !== "nouvelle" || apercu) return;
+    statutsLocauxRef.current.set(a.id, "lue");
+    setAnnotations((prev) =>
+      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
+    );
+    fetch("/api/enseignant/ecriture/annotation", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ blocId, id: a.id, statut: "lue", eleveRbId }),
+    }).catch(() => {});
+  }
+
   const nbNouvelles = useMemo(
-    () => annotationsAffichees.filter((a) => a.statut === "nouvelle").length,
-    [annotationsAffichees]
+    () => [...annotationsAffichees, ...remarquesGenerales].filter((a) => a.statut === "nouvelle").length,
+    [annotationsAffichees, remarquesGenerales]
   );
 
   // Erreurs IA encore valides : le mot est à sa position, exactement — sinon on
@@ -481,7 +504,7 @@ export default function AtelierEcriture({
           <div>
             <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 15, color: verrouille ? "#059669" : "#7C3AED" }}>
               {modeJour
-                ? "Écriture du jour"
+                ? relu ? "Le maître a relu ton texte" : "Écriture du jour"
                 : finalise
                 ? "Version finale envoyée"
                 : envoye
@@ -492,7 +515,9 @@ export default function AtelierEcriture({
             </div>
             <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
               {modeJour
-                ? "Écris ton texte, clique sur « Corriger mon texte », puis sur « J'ai terminé »."
+                ? relu
+                  ? "Lis ses remarques, reprends ton texte, puis clique sur « J'ai terminé »."
+                  : "Écris ton texte, clique sur « Corriger mon texte », puis sur « J'ai terminé »."
                 : finalise
                 ? "Ton texte est définitivement rendu."
                 : envoye
@@ -513,10 +538,34 @@ export default function AtelierEcriture({
             border: "1.5px solid #C7D2FE",
           }}>
             <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
-            {nbNouvelles} correction{nbNouvelles > 1 ? "s" : ""} du maître
+            {nbNouvelles} remarque{nbNouvelles > 1 ? "s" : ""} du maître
           </div>
         )}
       </div>
+
+      {/* ── Remarques du maître sur tout le texte ── */}
+      {remarquesGenerales.length > 0 && (
+        <div style={{
+          background: "#EFF6FF", border: "1.5px solid #BFDBFE",
+          borderRadius: 14, padding: "14px 18px",
+          display: "flex", flexDirection: "column", gap: 8,
+        }}>
+          <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#1D4ED8", display: "flex", alignItems: "center", gap: 6 }}>
+            <span className="ms" style={{ fontSize: 18 }}>chat</span>
+            Le maître t&apos;a écrit
+          </div>
+          {remarquesGenerales.map((a) => (
+            <p
+              key={a.id}
+              onMouseEnter={() => marquerLue(a)}
+              onClick={() => marquerLue(a)}
+              style={{ margin: 0, fontSize: 15, lineHeight: 1.6, color: "#1E3A8A", fontFamily: "Manrope, sans-serif", whiteSpace: "pre-wrap" }}
+            >
+              {a.commentaire}
+            </p>
+          ))}
+        </div>
+      )}
 
       {/* ── Zone d'édition (contentEditable avec surlignage inline) ── */}
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -636,7 +685,7 @@ export default function AtelierEcriture({
         }}>
           <div style={{ fontFamily: "'Plus Jakarta Sans', sans-serif", fontWeight: 700, fontSize: 13, color: "#1D4ED8", marginBottom: 10, display: "flex", alignItems: "center", gap: 6 }}>
             <span className="ms" style={{ fontSize: 18 }}>auto_awesome</span>
-            {annotationsAffichees.length} correction{annotationsAffichees.length > 1 ? "s" : ""} du maître
+            {annotationsAffichees.length} remarque{annotationsAffichees.length > 1 ? "s" : ""} du maître
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {annotationsAffichees.map((a) => (
@@ -648,33 +697,27 @@ export default function AtelierEcriture({
                   display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap",
                   fontFamily: "Manrope, sans-serif",
                 }}
-                onMouseEnter={() => {
-                  if (a.statut === "nouvelle" && !apercu) {
-                    statutsLocauxRef.current.set(a.id, "lue");
-                    setAnnotations((prev) =>
-                      prev.map((x) => (x.id === a.id ? { ...x, statut: "lue" as const } : x))
-                    );
-                    fetch("/api/enseignant/ecriture/annotation", {
-                      method: "PATCH",
-                      headers: { "Content-Type": "application/json" },
-                      body: JSON.stringify({ blocId, id: a.id, statut: "lue", eleveRbId }),
-                    }).catch(() => {});
-                  }
-                }}
+                onMouseEnter={() => marquerLue(a)}
               >
                 <span style={{ fontSize: 15, fontWeight: 800, color: "#1D4ED8" }}>
                   {a.extrait}
                 </span>
-                <span className="ms" style={{ fontSize: 18, color: "#9CA3AF" }}>arrow_forward</span>
-                <span style={{ fontSize: 15, fontWeight: 800, color: "#059669" }}>
-                  {a.suggestion}
-                </span>
+                {a.suggestion && (
+                  <>
+                    <span className="ms" style={{ fontSize: 18, color: "#9CA3AF" }}>arrow_forward</span>
+                    <span style={{ fontSize: 15, fontWeight: 800, color: "#059669" }}>
+                      {a.suggestion}
+                    </span>
+                  </>
+                )}
                 {a.commentaire && (
                   <span style={{ fontSize: 12, color: "#1E40AF", fontStyle: "italic", flex: 1, minWidth: 120 }}>
                     {a.commentaire}
                   </span>
                 )}
-                {!verrouille && (
+                {/* Un commentaire seul n'a rien à appliquer : l'élève réécrit le
+                    passage lui-même, et la remarque s'efface quand il a changé. */}
+                {!verrouille && a.suggestion && (
                   <div style={{ display: "flex", gap: 6 }}>
                     <button
                       type="button"

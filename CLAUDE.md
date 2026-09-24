@@ -832,6 +832,22 @@ terminé) clôt le bloc **sans pénaliser l'élève**.
   La reprise, elle, est supprimée — la laisser rouvrirait l'exercice cassé.
 - Contrat vérifié par `npx tsx docs/tests/test-progres-partiel.mjs` (30 cas).
 
+### Relire un texte d'écriture du jour
+
+Depuis la matrice du jour, **« Commenter · suggérer une correction »** ouvre
+`/enseignant/atelier-ecriture/[blocId]`, la page d'annotation de l'atelier de la
+semaine, qui sert aussi aux textes du jour.
+
+- Trois formes : une **correction** sur un passage, un **commentaire** sur un
+  passage (sans correction : l'élève réécrit lui-même, la remarque s'efface
+  quand le passage a changé), une **remarque sur tout le texte** (`extrait` vide).
+- ⚠️ **Annoter un texte du jour terminé le remet à faire** (`statut`,
+  `champsReprise()`) et dépose un rappel à l'élève — sans ce mot, il ne saurait
+  pas pourquoi un travail fini réapparaît. L'atelier de la semaine n'est pas
+  concerné : l'annoter est son cours normal.
+- `ecriture_corrections_enseignant` ne reçoit que les vraies corrections : un
+  commentaire seul n'est pas un exemple pour les suggestions IA.
+
 ### Travail bâclé
 
 `plan_travail.termine_le` (timestamptz) et `plan_travail.duree_secondes` (entier).

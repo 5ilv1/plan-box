@@ -20,6 +20,7 @@ interface HistoriqueEntry {
 }
 
 interface Contenu {
+  mode: "semaine" | "jour";
   sujet: string;
   contrainte: string;
   afficher_contrainte: boolean;
@@ -67,6 +68,10 @@ export default function EnseignantAtelierBloc({
 
   const [vueTexte, setVueTexte] = useState<"courant" | string>("courant");
   const [selection, setSelection] = useState<{ debut: number; fin: number; extrait: string } | null>(null);
+
+  // Remarque sur tout le texte (sans passage sélectionné)
+  const [formRemarque, setFormRemarque] = useState("");
+  const [remisAFaire, setRemisAFaire] = useState(false);
 
   // Form nouvelle annotation
   const [formSuggestion, setFormSuggestion] = useState("");
@@ -180,8 +185,39 @@ export default function EnseignantAtelierBloc({
     setIaEditIndex(null);
   }
 
+  /** Retient ce que la route a fait du bloc : un texte du jour terminé repart à faire. */
+  function suivreStatut(data: { statut?: string; remisAFaire?: boolean }) {
+    if (data.statut) setStatut(data.statut);
+    if (data.remisAFaire) setRemisAFaire(true);
+  }
+
+  async function enregistrerRemarque() {
+    if (!formRemarque.trim()) return;
+    setEnregistrement(true);
+    try {
+      const res = await fetch("/api/enseignant/ecriture/annotation", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          blocId,
+          annotations: [{ debut: 0, fin: 0, extrait: "", suggestion: "", commentaire: formRemarque.trim() }],
+        }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const nouvelles: Annotation[] = data.annotations ?? [];
+        setContenu((prev) => (prev ? { ...prev, annotations: [...prev.annotations, ...nouvelles] } : prev));
+        setFormRemarque("");
+        suivreStatut(data);
+      }
+    } catch {}
+    setEnregistrement(false);
+  }
+
   async function enregistrerAnnotation() {
-    if (!selection || !formSuggestion.trim()) return;
+    // Une correction, un commentaire, ou les deux : un commentaire seul laisse
+    // l'élève trouver lui-même comment réécrire le passage.
+    if (!selection || (!formSuggestion.trim() && !formCommentaire.trim())) return;
     setEnregistrement(true);
     try {
       const res = await fetch("/api/enseignant/ecriture/annotation", {
@@ -208,6 +244,7 @@ export default function EnseignantAtelierBloc({
           setSuggestionsIA((prev) => prev.filter((_, i) => i !== idx));
         }
         setContenu((prev) => (prev ? { ...prev, annotations: [...prev.annotations, ...nouvelles] } : prev));
+        suivreStatut(data);
         setSelection(null);
         setFormSuggestion("");
         setFormCommentaire("");
@@ -381,6 +418,7 @@ export default function EnseignantAtelierBloc({
       const nouvelles: Annotation[] = data.annotations ?? [];
       setSuggestionsIA([]);
       setContenu((prev) => (prev ? { ...prev, annotations: [...prev.annotations, ...nouvelles] } : prev));
+      suivreStatut(data);
     }
   }
 
@@ -399,6 +437,7 @@ export default function EnseignantAtelierBloc({
       | { debut: number; fin: number; kind: "ia"; sug: SuggestionIA };
     const marks: Mark[] = [];
     for (const a of contenu.annotations) {
+      if (!a.extrait) continue; // remarque sur tout le texte
       if (texteAffiche.slice(a.debut, a.fin) === a.extrait) {
         marks.push({ debut: a.debut, fin: a.fin, kind: "annotation", ann: a });
       } else {
@@ -462,7 +501,7 @@ export default function EnseignantAtelierBloc({
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
         <Link
-          href="/enseignant/atelier-ecriture"
+          href={contenu.mode === "jour" ? "/enseignant/suivi" : "/enseignant/atelier-ecriture"}
           style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             fontSize: 13, color: "var(--pb-on-surface-variant)",
@@ -481,6 +520,8 @@ export default function EnseignantAtelierBloc({
               {eleve.classe} · {nbMots} mot{nbMots > 1 ? "s" : ""} ·{" "}
               {envoye ? (
                 <span style={{ color: "#059669", fontWeight: 700 }}>Envoyé le {contenu.date_envoi}</span>
+              ) : statut === "fait" ? (
+                <span style={{ color: "#059669", fontWeight: 700 }}>Terminé</span>
               ) : statut === "en_cours" ? (
                 <span style={{ color: "#1D4ED8", fontWeight: 700 }}>En cours</span>
               ) : (
@@ -562,10 +603,14 @@ export default function EnseignantAtelierBloc({
           {vueTexte === "courant" && (
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, marginBottom: 8, flexWrap: "wrap" }}>
               <p style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", margin: 0, fontStyle: "italic", flex: 1, minWidth: 200 }}>
-                Sélectionne un passage pour proposer une correction.
-                {envoye
-                  ? " Le texte a été envoyé : tes annotations resteront visibles pour l'élève."
-                  : " L\u2019élève la verra en temps réel."}
+                Sélectionne un passage pour proposer une correction ou le commenter.
+                {contenu.mode === "jour"
+                  ? statut === "fait"
+                    ? " Le texte est terminé : ta remarque le remettra à faire, et l\u2019élève sera prévenu."
+                    : " L\u2019élève verra ta remarque dans son texte."
+                  : envoye
+                    ? " Le texte a été envoyé : tes annotations resteront visibles pour l'élève."
+                    : " L\u2019élève la verra en temps réel."}
               </p>
               {!editionTexte && (
                 <button
@@ -759,7 +804,7 @@ export default function EnseignantAtelierBloc({
                 type="text"
                 value={formSuggestion}
                 onChange={(e) => setFormSuggestion(e.target.value)}
-                placeholder="Proposition de correction"
+                placeholder="Proposition de correction (facultative)"
                 style={{
                   width: "100%", padding: "8px 12px", fontSize: 13,
                   border: "1px solid var(--pb-outline-variant, #ccc)", borderRadius: 8,
@@ -769,7 +814,7 @@ export default function EnseignantAtelierBloc({
               <textarea
                 value={formCommentaire}
                 onChange={(e) => setFormCommentaire(e.target.value)}
-                placeholder="Commentaire pédagogique (optionnel)"
+                placeholder="Commentaire pour l'élève (facultatif)"
                 rows={Math.max(3, Math.ceil((formCommentaire.length || 0) / 60))}
                 style={{
                   width: "100%", padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
@@ -790,12 +835,12 @@ export default function EnseignantAtelierBloc({
                 </button>
                 <button
                   onClick={enregistrerAnnotation}
-                  disabled={!formSuggestion.trim() || enregistrement}
+                  disabled={(!formSuggestion.trim() && !formCommentaire.trim()) || enregistrement}
                   style={{
                     background: "#4338CA", color: "white", border: "none",
                     borderRadius: 8, padding: "6px 14px", fontSize: 12,
-                    fontWeight: 700, cursor: (!formSuggestion.trim() || enregistrement) ? "not-allowed" : "pointer",
-                    opacity: (!formSuggestion.trim() || enregistrement) ? 0.5 : 1,
+                    fontWeight: 700, cursor: ((!formSuggestion.trim() && !formCommentaire.trim()) || enregistrement) ? "not-allowed" : "pointer",
+                    opacity: ((!formSuggestion.trim() && !formCommentaire.trim()) || enregistrement) ? 0.5 : 1,
                   }}
                 >
                   {enregistrement ? "Envoi…" : "Poser"}
@@ -902,6 +947,54 @@ export default function EnseignantAtelierBloc({
             </div>
           )}
 
+          {remisAFaire && (
+            <div style={{
+              background: "#ECFDF5", border: "1.5px solid #A7F3D0", borderRadius: 12,
+              padding: "10px 14px", fontSize: 13, color: "#065F46",
+              display: "flex", alignItems: "center", gap: 8,
+            }}>
+              <span className="ms" style={{ fontSize: 18 }}>replay</span>
+              Le texte est remis à faire : l&apos;élève a été prévenu et le retrouve sur son tableau de bord.
+            </div>
+          )}
+
+          {/* Remarque sur tout le texte */}
+          {vueTexte === "courant" && !selection && (
+            <div style={{
+              background: "#F5F3FF", border: "1.5px solid #C4B5FD",
+              borderRadius: 14, padding: "14px 16px",
+            }}>
+              <div style={{ fontSize: 12, fontWeight: 700, color: "#4338CA", marginBottom: 8, textTransform: "uppercase", letterSpacing: "0.06em" }}>
+                Remarque sur tout le texte
+              </div>
+              <textarea
+                value={formRemarque}
+                onChange={(e) => setFormRemarque(e.target.value)}
+                placeholder="Ex. : Ton histoire s'arrête brusquement, écris une fin."
+                rows={Math.max(2, Math.ceil((formRemarque.length || 0) / 60))}
+                style={{
+                  width: "100%", padding: "8px 12px", fontSize: 13, lineHeight: 1.5,
+                  border: "1px solid var(--pb-outline-variant, #ccc)", borderRadius: 8,
+                  marginBottom: 8, fontFamily: "inherit", resize: "vertical",
+                }}
+              />
+              <div style={{ display: "flex", justifyContent: "flex-end" }}>
+                <button
+                  onClick={enregistrerRemarque}
+                  disabled={!formRemarque.trim() || enregistrement}
+                  style={{
+                    background: "#4338CA", color: "white", border: "none",
+                    borderRadius: 8, padding: "6px 14px", fontSize: 12, fontWeight: 700,
+                    cursor: (!formRemarque.trim() || enregistrement) ? "not-allowed" : "pointer",
+                    opacity: (!formRemarque.trim() || enregistrement) ? 0.5 : 1,
+                  }}
+                >
+                  {enregistrement ? "Envoi…" : "Envoyer à l'élève"}
+                </button>
+              </div>
+            </div>
+          )}
+
           <div>
             <div style={{ fontSize: 12, fontWeight: 700, color: "var(--pb-on-surface-variant)", textTransform: "uppercase", letterSpacing: "0.06em", marginBottom: 10 }}>
               Annotations ({contenu.annotations.length})
@@ -944,11 +1037,13 @@ export default function EnseignantAtelierBloc({
                         </button>
                       </div>
                       <div style={{ fontSize: 12, color: "#991B1B", fontStyle: "italic", marginBottom: 4 }}>
-                        « {a.extrait} »
+                        {a.extrait ? `« ${a.extrait} »` : "Sur tout le texte"}
                       </div>
-                      <div style={{ fontSize: 13, color: "#166534", fontWeight: 600, marginBottom: 4 }}>
-                        → {a.suggestion}
-                      </div>
+                      {a.suggestion && (
+                        <div style={{ fontSize: 13, color: "#166534", fontWeight: 600, marginBottom: 4 }}>
+                          → {a.suggestion}
+                        </div>
+                      )}
                       {a.commentaire && (
                         <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", fontStyle: "italic" }}>
                           {a.commentaire}

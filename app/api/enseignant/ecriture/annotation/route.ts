@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { requireEnseignant, requireProprietaireOuEnseignant } from "@/lib/server-auth";
+import { champsReprise } from "@/lib/suivi-metriques";
 import {
   normaliserContenuEcriture,
   dateStr,
@@ -8,11 +9,19 @@ import {
 } from "@/lib/ecriture-normaliser";
 
 /**
- * CRUD des annotations enseignant sur un bloc écriture mode semaine.
+ * CRUD des annotations enseignant sur un bloc d'écriture.
  *
  * POST   : créer une ou plusieurs annotations
  *          Body : { blocId, annotations: AnnotationEnseignantCreate[] }
- *          → { ok, annotations }
+ *          → { ok, annotations, statut, remisAFaire }
+ *
+ *          Une annotation porte une correction, un commentaire, ou les deux.
+ *          Sans passage (`extrait` vide), c'est une remarque sur tout le texte.
+ *
+ *          ⚠️ Sur un texte du JOUR déjà terminé, annoter le remet à faire : la
+ *          remarque n'a de sens que si l'élève y revient. L'atelier de la
+ *          semaine n'est pas concerné — l'annoter est son cours normal, et sa
+ *          version finale est définitive.
  *
  * PATCH  : modifier une annotation existante
  *          Body : { blocId, id, suggestion?, commentaire?, statut? }
@@ -29,7 +38,7 @@ async function chargerBloc(blocId: string) {
   const admin = createAdminClient();
   const { data: bloc, error } = await admin
     .from("plan_travail")
-    .select("id, contenu")
+    .select("id, contenu, statut, eleve_id, repetibox_eleve_id")
     .eq("id", blocId)
     .single();
   if (error || !bloc) return { erreur: "Bloc introuvable", status: 404 as const };
@@ -60,31 +69,71 @@ export async function POST(req: NextRequest) {
   const contenu = normaliserContenuEcriture(bloc.contenu as Record<string, unknown>);
 
   const aujourdhui = dateStr();
-  const nouvelles: AnnotationEnseignant[] = annotations.map((a) => ({
-    id: genererId(),
-    date: aujourdhui,
-    debut: a.debut,
-    fin: a.fin,
-    extrait: a.extrait,
-    suggestion: a.suggestion,
-    commentaire: a.commentaire,
-    statut: a.statut ?? "nouvelle",
-  }));
+  const nouvelles: AnnotationEnseignant[] = [];
+  for (const a of annotations) {
+    const extrait = typeof a.extrait === "string" ? a.extrait : "";
+    const suggestion = typeof a.suggestion === "string" ? a.suggestion.trim() : "";
+    const commentaire = typeof a.commentaire === "string" ? a.commentaire.trim() : "";
+    // Une annotation vide ne dit rien à l'élève ; une correction sans passage
+    // ne saurait pas quoi remplacer.
+    if (!suggestion && !commentaire) continue;
+    if (suggestion && !extrait) continue;
+    nouvelles.push({
+      id: genererId(),
+      date: aujourdhui,
+      debut: extrait ? a.debut : 0,
+      fin: extrait ? a.fin : 0,
+      extrait,
+      suggestion,
+      commentaire: commentaire || undefined,
+      statut: a.statut ?? "nouvelle",
+    });
+  }
+  if (nouvelles.length === 0) {
+    return NextResponse.json({ erreur: "Une correction ou un commentaire est requis" }, { status: 400 });
+  }
 
   contenu.annotations = [...contenu.annotations, ...nouvelles];
 
-  await admin.from("plan_travail").update({ contenu }).eq("id", blocId);
+  const remisAFaire = contenu.mode === "jour" && bloc.statut === "fait";
+  const champs: Record<string, unknown> = { contenu };
+  if (remisAFaire) Object.assign(champs, { statut: "a_faire" }, champsReprise());
 
-  // Enrichit le référentiel enseignant pour les prochaines suggestions IA
-  await admin.from("ecriture_corrections_enseignant").insert(
-    nouvelles.map((a) => ({
-      extrait: a.extrait,
-      suggestion: a.suggestion,
-      commentaire: a.commentaire ?? null,
-    }))
-  );
+  const { error: errMaj } = await admin.from("plan_travail").update(champs).eq("id", blocId);
+  if (errMaj) {
+    return NextResponse.json({ erreur: errMaj.message }, { status: 500 });
+  }
 
-  return NextResponse.json({ ok: true, annotations: nouvelles });
+  if (remisAFaire) {
+    // Sans ce mot, l'élève ne saurait pas pourquoi un travail fini réapparaît.
+    await admin.from("notifications").insert({
+      type: "rappel",
+      eleve_id: bloc.repetibox_eleve_id ? null : bloc.eleve_id,
+      rb_eleve_id: bloc.repetibox_eleve_id ?? null,
+      message: "Le maître a relu ton texte d'écriture : lis ses remarques et reprends-le.",
+      lu: false,
+    });
+  }
+
+  // Enrichit le référentiel enseignant pour les prochaines suggestions IA —
+  // seulement les vraies corrections : un commentaire seul n'en est pas une.
+  const corrections = nouvelles.filter((a) => a.suggestion);
+  if (corrections.length > 0) {
+    await admin.from("ecriture_corrections_enseignant").insert(
+      corrections.map((a) => ({
+        extrait: a.extrait,
+        suggestion: a.suggestion,
+        commentaire: a.commentaire ?? null,
+      }))
+    );
+  }
+
+  return NextResponse.json({
+    ok: true,
+    annotations: nouvelles,
+    statut: remisAFaire ? "a_faire" : bloc.statut,
+    remisAFaire,
+  });
 }
 
 export async function PATCH(req: NextRequest) {

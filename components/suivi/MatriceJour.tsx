@@ -510,7 +510,9 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
           </div>
         )}
 
-        {estSemaine && (
+        {/* Le texte du jour s'annote aussi : un commentaire ou une correction
+            proposée le remet à faire (route d'annotation). */}
+        {(estSemaine || textes.length > 0) && (
           <a
             href={`/enseignant/atelier-ecriture/${bloc.id}`}
             style={{
@@ -522,7 +524,11 @@ function DetailContenu({ bloc }: { bloc: DetailCellule["bloc"] }) {
           >
             <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
               <span className="ms" style={{ fontSize: 18 }}>edit_note</span>
-              Annoter le texte · proposer des corrections
+              {estSemaine
+                ? "Annoter le texte · proposer des corrections"
+                : bloc.statut === "fait"
+                  ? "Commenter · suggérer une correction (remet à faire)"
+                  : "Commenter · suggérer une correction"}
               {nbAnnot > 0 && <span style={{ opacity: 0.85, fontWeight: 500 }}>({nbAnnot})</span>}
             </span>
             <span className="ms" style={{ fontSize: 18 }}>arrow_forward</span>
