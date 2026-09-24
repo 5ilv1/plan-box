@@ -369,6 +369,24 @@ bouton « J'ai terminé ». Les 100 blocs d'écriture en base étaient tous en m
 l'atelier n'avait jamais servi. Et le tableau de bord rangeait l'écriture parmi les
 activités « papier », dont la carte ne mène nulle part.
 
+### Le thème d'écriture du jour : deux chemins, dont un filet
+
+- **Automatique** : `/api/cron/theme-ecriture-jour` (`vercel.json`, lun, mar, jeu, ven à
+  6 h UTC). Sur le plan Hobby, il part à une minute quelconque de l'heure, soit entre
+  8 h et 9 h à Paris.
+- **Le filet** : ouvrir le tableau de bord enseignant appelle `GET
+  /api/generer-theme-ecriture`, qui **génère le thème du jour** s'il n'existe pas ;
+  l'enseignant n'a plus qu'à cliquer « Affecter ».
+- ⚠️ **Le cron échoue un jour de classe sur deux environ** (4 réussites sur 12 en
+  septembre), sans laisser de trace : il ne vérifie pas les réponses des deux routes
+  qu'il appelle et répond `ok` quoi qu'il arrive, et les journaux Hobby ne gardent
+  qu'**une heure**. Cause non établie.
+- ⚠️ **Le filet était désarmé** : son repli sur « des blocs planifiés cette semaine »
+  prenait n'importe quel bloc d'écriture de la semaine. Le jeudi, il renvoyait le thème
+  du mardi comme « planifié » — vieux sujet affiché, interrupteur jour/semaine et bouton
+  « Affecter » masqués, aucun thème généré. Il ne retient plus qu'un bloc daté
+  d'aujourd'hui ou un atelier de la semaine.
+
 ### La correction ne croit pas le modèle
 
 `lib/ecriture-correction.ts` (`verifierErreurs()`) filtre ce que renvoie le modèle.

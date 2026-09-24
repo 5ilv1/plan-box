@@ -66,14 +66,23 @@ async function genererOuRecupererTheme(force: boolean, modeForce?: "jour" | "sem
       return NextResponse.json(existant);
     }
 
-    // Fallback : vérifier si des blocs écriture ont été planifiés (via Nouvelle semaine)
-    // D'abord chercher des blocs semaine cette semaine
+    // Fallback : des blocs écriture posés d'avance (via Nouvelle semaine) qui
+    // valent pour AUJOURD'HUI — un bloc daté d'aujourd'hui, ou un atelier de la
+    // semaine.
+    //
+    // ⚠️ Cette requête prenait N'IMPORTE QUEL bloc d'écriture de la semaine. Le
+    // jeudi, elle trouvait le thème du mardi, déjà fait, et le renvoyait comme
+    // « planifié » : la carte affichait un vieux thème, masquait l'interrupteur
+    // jour/semaine et le bouton « Affecter », et ne générait pas le thème du
+    // jour. Le filet de l'enseignant sautait précisément les jours où le cron
+    // avait échoué.
     const { data: blocPlanifie } = await supabase
       .from("plan_travail")
       .select("id, contenu, periodicite")
       .eq("type", "ecriture")
       .gte("date_assignation", mondayStr)
       .lte("date_assignation", sundayStr)
+      .or(`date_assignation.eq.${today},periodicite.eq.semaine,contenu->>mode.eq.semaine`)
       .limit(1)
       .maybeSingle();
 
