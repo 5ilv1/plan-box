@@ -988,6 +988,27 @@ export default function DashboardEleve() {
     } catch { /* silencieux — inclut AbortError */ }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Le compteur de cartes Repetibox. La révision s'ouvre dans un autre onglet :
+  // sans ce rafraîchissement, l'élève qui revient sur Plan Box après avoir tout
+  // révisé retrouvait le nombre de cartes d'avant, jusqu'au rechargement.
+  // Pas dans le polling de 30 s : chaque appel crée un jeton de connexion.
+  const rbEleveIdRef = useRef(rbEleveId);
+  useEffect(() => { rbEleveIdRef.current = rbEleveId; }, [rbEleveId]);
+  const rafraichirCartesRB = useCallback(async (signal?: AbortSignal) => {
+    const s = sessionRef.current;
+    if (!s) return;
+    const rbId = s.source === "repetibox" ? parseInt(s.id, 10) : rbEleveIdRef.current;
+    if (!rbId) return;
+    const params = new URLSearchParams({ rb_eleve_id: String(rbId) });
+    if (s.source !== "repetibox") params.set("pb_eleve_id", s.id);
+    try {
+      const res = await fetch(`/api/revisions-repetibox-jour?${params}`, signal ? { signal } : undefined);
+      if (!res.ok || signal?.aborted) return;
+      const json = await res.json();
+      if (!signal?.aborted) setChapitresRB(json.chapitres ?? []);
+    } catch { /* silencieux — inclut AbortError */ }
+  }, []);
+
   // Polling 30s + rafraîchissement au retour sur la page
   useEffect(() => {
     if (chargementDonnees) return;
@@ -999,6 +1020,7 @@ export default function DashboardEleve() {
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
         rafraichirBlocs(ctrl.signal);
+        rafraichirCartesRB(ctrl.signal);
       }
     }
     document.addEventListener("visibilitychange", handleVisibilityChange);
@@ -1008,7 +1030,7 @@ export default function DashboardEleve() {
       clearInterval(interval);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [chargementDonnees, rafraichirBlocs]);
+  }, [chargementDonnees, rafraichirBlocs, rafraichirCartesRB]);
 
   // ── Sauvegarde automatique du cache (synchrone) ─────────────────────────────
   // À chaque changement d'état significatif, on met à jour le snapshot
