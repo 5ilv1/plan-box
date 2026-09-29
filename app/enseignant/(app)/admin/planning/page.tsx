@@ -376,20 +376,25 @@ export default function PageAdminPlanning() {
   async function supprimerBanque() {
     if (!detail) return;
     setEnSuppressionBanque(true);
-    const idsSupprimes = detail.blocs.map((b) => b.id);
+    const idsSupprimes = detail.blocs.filter((b) => b.statut !== "fait").map((b) => b.id);
     try {
       const params = new URLSearchParams();
       if (detail.chapitre_id) params.set("chapitre_id", detail.chapitre_id);
       const res = await fetch(`/api/admin/exercices?${params.toString()}`);
       const { exercices } = await res.json();
-      const banque = (exercices ?? []).find((e: { titre: string | null }) => e.titre === detail.titre);
+      // La version affichée, pas la première de même titre : une séance en
+      // donne une par niveau, toutes sous le même titre.
+      const contenuBloc = (detail.contenu ?? {}) as Record<string, unknown>;
+      const banque = (exercices ?? []).find((e: { titre: string | null; contenu?: Record<string, unknown> }) =>
+        e.titre === detail.titre && !!e.contenu &&
+        Object.entries(e.contenu).every(([k, v]) => JSON.stringify(contenuBloc[k]) === JSON.stringify(v)));
       if (banque) {
         await fetch(`/api/admin/exercices?id=${banque.id}`, { method: "DELETE" });
-      } else {
-        await Promise.all(detail.blocs.map((b) =>
-          fetch(`/api/admin/planning?id=${b.id}`, { method: "DELETE" })
-        ));
       }
+      // Les blocs affichés et non faits, dans tous les cas : rien d'autre.
+      await Promise.all(detail.blocs.filter((b) => b.statut !== "fait").map((b) =>
+        fetch(`/api/admin/planning?id=${b.id}`, { method: "DELETE" })
+      ));
       const set = new Set(idsSupprimes);
       setBlocs((prev) => prev.filter((b) => !set.has(b.id)));
     } finally {

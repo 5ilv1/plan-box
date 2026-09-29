@@ -99,7 +99,13 @@ export async function PATCH(req: NextRequest) {
 }
 
 // DELETE /api/admin/exercices?id=<uuid>
-// Supprime l'exercice de la banque ET tous les plan_travail non-fait associés (par titre + type)
+// Supprime l'exercice de la banque ET les plan_travail non faits tirés de CETTE version.
+//
+// ⚠️ Pas par titre seul : une séance donne trois versions de même titre (CE2,
+// CM1, CM2). Le 29/09, supprimer la version CM2 de « L'accord sujet-verbe » a
+// effacé les blocs des trois niveaux, en pleine séance. Un bloc est de cette
+// version si chaque champ du contenu de la banque s'y retrouve à l'identique ;
+// le bloc n'a en plus que l'état de l'élève (réponses, scores).
 export async function DELETE(req: NextRequest) {
   const auth = await requireEnseignant();
   if (auth.error) return auth.error;
@@ -111,22 +117,30 @@ export async function DELETE(req: NextRequest) {
 
   const admin = createAdminClient();
 
-  // 1. Récupérer l'exercice pour connaître son titre et son type
+  // 1. Récupérer l'exercice pour connaître son titre, son type et son contenu
   const { data: ex } = await admin
     .from("banque_exercices")
-    .select("titre, type")
+    .select("titre, type, contenu")
     .eq("id", id)
     .single();
 
-  // 2. Supprimer les plan_travail non-fait correspondants (titre + type)
+  // 2. Supprimer les plan_travail non faits de cette version
   if (ex?.titre) {
-    const { error: ePT } = await admin
+    const { data: candidats, error: eLect } = await admin
       .from("plan_travail")
-      .delete()
+      .select("id, contenu")
       .eq("titre", ex.titre)
       .eq("type", ex.type)
       .neq("statut", "fait");
-    if (ePT) console.error("[banque_exercices DELETE] plan_travail:", ePT.message);
+    if (eLect) console.error("[banque_exercices DELETE] plan_travail:", eLect.message);
+
+    const ids = (candidats ?? [])
+      .filter((b) => memeVersion(ex.contenu, b.contenu))
+      .map((b) => b.id);
+    if (ids.length > 0) {
+      const { error: ePT } = await admin.from("plan_travail").delete().in("id", ids);
+      if (ePT) console.error("[banque_exercices DELETE] plan_travail:", ePT.message);
+    }
   }
 
   // 3. Supprimer l'exercice de la banque
@@ -135,4 +149,12 @@ export async function DELETE(req: NextRequest) {
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
 
   return NextResponse.json({ ok: true });
+}
+
+/** Le contenu du bloc reprend-il chaque champ du contenu de la banque ? */
+function memeVersion(banque: unknown, bloc: unknown): boolean {
+  if (!banque || typeof banque !== "object" || !bloc || typeof bloc !== "object") return false;
+  const b = bloc as Record<string, unknown>;
+  const entrees = Object.entries(banque as Record<string, unknown>);
+  return entrees.length > 0 && entrees.every(([k, v]) => JSON.stringify(b[k]) === JSON.stringify(v));
 }
