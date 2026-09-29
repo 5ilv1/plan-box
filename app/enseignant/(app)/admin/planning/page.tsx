@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import QuestionEditable from "@/components/planning/QuestionEditable";
 
 interface EleveInfo {
   prenom: string;
@@ -441,6 +442,46 @@ export default function PageAdminPlanning() {
     setBlocs((prev) => prev.map((b) => updatedBlocs.find((ub) => ub.id === b.id) ?? b));
     setEnSauvegarde(false);
     setEditMode(false);
+  }
+
+  // ── Retouche d'une question depuis l'aperçu ──────────────────────────────────
+  // Un groupe réunit un bloc par élève : la question est retrouvée dans CHAQUE
+  // bloc par son contenu, pas par sa position, et chaque bloc garde le reste
+  // de son propre contenu.
+  async function retoucherQuestion(
+    cle: "questions" | "calculs",
+    ancienne: unknown,
+    remplacement: unknown | null, // null = supprimer
+  ) {
+    if (!detail) return;
+    const cible = JSON.stringify(ancienne);
+    const retouches = detail.blocs.map((b) => {
+      const c = (b.contenu ?? {}) as Record<string, unknown>;
+      const liste = Array.isArray(c[cle]) ? [...(c[cle] as unknown[])] : [];
+      const idx = liste.findIndex((q) => JSON.stringify(q) === cible);
+      if (idx === -1) return null;
+      if (remplacement === null) liste.splice(idx, 1);
+      else liste[idx] = remplacement;
+      return { ...b, contenu: { ...c, [cle]: liste } };
+    });
+    const aEnvoyer = retouches.filter((b): b is NonNullable<typeof b> => b !== null);
+    if (aEnvoyer.length === 0) {
+      alert("Question introuvable : recharge la page et réessaie.");
+      return;
+    }
+    const reponses = await Promise.all(aEnvoyer.map((b) =>
+      fetch("/api/admin/planning", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ blocId: b.id, contenu: b.contenu }),
+      })
+    ));
+    const echecs = reponses.filter((r) => !r.ok).length;
+    const enregistres = aEnvoyer.filter((_, i) => reponses[i].ok);
+    const blocsAJour = detail.blocs.map((b) => enregistres.find((e) => e.id === b.id) ?? b);
+    setDetail({ ...detail, contenu: blocsAJour[0]?.contenu ?? detail.contenu, blocs: blocsAJour });
+    setBlocs((prev) => prev.map((b) => enregistres.find((e) => e.id === b.id) ?? b));
+    if (echecs > 0) alert(`${echecs} bloc${echecs > 1 ? "s" : ""} sur ${aEnvoyer.length} n'ont pas pu être modifiés.`);
   }
 
   function ajouterQuestion() {
@@ -1311,7 +1352,11 @@ export default function PageAdminPlanning() {
                         <p style={{ fontWeight: 600, fontSize: 14, marginBottom: 16, color: "var(--text)" }}>{exContenu.consigne}</p>
                       )}
                       {(exContenu.questions ?? []).map((q, i) => (
-                        <div key={q.id} style={{ marginBottom: 16, padding: "14px 16px", background: "var(--primary-pale)", borderRadius: 10, border: "1px solid var(--primary-mid)" }}>
+                        <QuestionEditable key={`${q.id}-${i}`} genre="exercice" question={q}
+                          peutSupprimer={(exContenu.questions ?? []).length > 1}
+                          onSupprimer={() => retoucherQuestion("questions", q, null)}
+                          onEnregistrer={(nq) => retoucherQuestion("questions", q, nq)}>
+                        <div style={{ marginBottom: 16, padding: "14px 16px", paddingRight: 70, background: "var(--primary-pale)", borderRadius: 10, border: "1px solid var(--primary-mid)" }}>
                           <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 8 }}>
                             {i + 1}. {q.enonce}
                           </div>
@@ -1328,6 +1373,7 @@ export default function PageAdminPlanning() {
                             <span style={{ fontSize: 12, color: "var(--primary)", fontWeight: 700, whiteSpace: "nowrap" }}>✓ {q.reponse_attendue}</span>
                           </div>
                         </div>
+                        </QuestionEditable>
                       ))}
                       <button disabled style={{ width: "100%", padding: "10px", background: "var(--primary)", color: "white", border: "none", borderRadius: 10, fontWeight: 600, fontSize: 14, opacity: 0.5, cursor: "not-allowed" }}>
                         ✅ Valider mes réponses
@@ -1344,7 +1390,11 @@ export default function PageAdminPlanning() {
                     </div>
                     <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
                       {(qcmContenu.questions ?? []).map((q, i) => (
-                        <div key={i} style={{ marginBottom: 16, padding: "14px 16px", background: "white", borderRadius: 10, border: "1px solid var(--border)" }}>
+                        <QuestionEditable key={`${i}-${q.question}`} genre="qcm" question={q}
+                          peutSupprimer={(qcmContenu.questions ?? []).length > 1}
+                          onSupprimer={() => retoucherQuestion("questions", q, null)}
+                          onEnregistrer={(nq) => retoucherQuestion("questions", q, nq)}>
+                        <div style={{ marginBottom: 16, padding: "14px 16px", paddingRight: 70, background: "white", borderRadius: 10, border: "1px solid var(--border)" }}>
                           <div style={{ fontWeight: 600, fontSize: 14, marginBottom: 10 }}>
                             {i + 1}. {q.question}
                           </div>
@@ -1373,6 +1423,7 @@ export default function PageAdminPlanning() {
                             </p>
                           )}
                         </div>
+                        </QuestionEditable>
                       ))}
                     </div>
                   </div>
@@ -1762,7 +1813,11 @@ export default function PageAdminPlanning() {
                     </div>
                     <div style={{ background: "var(--bg)", borderRadius: 12, padding: "16px 18px", border: "1px solid var(--border)" }}>
                       {(cmContenu.calculs ?? []).map((c, i) => (
-                        <div key={c.id} style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "10px 14px", background: "var(--primary-pale)", borderRadius: 8, border: "1px solid var(--primary-mid)" }}>
+                        <QuestionEditable key={`${c.id}-${i}`} genre="calcul" question={c}
+                          peutSupprimer={(cmContenu.calculs ?? []).length > 1}
+                          onSupprimer={() => retoucherQuestion("calculs", c, null)}
+                          onEnregistrer={(nc) => retoucherQuestion("calculs", c, nc)}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 10, padding: "10px 14px", paddingRight: 70, background: "var(--primary-pale)", borderRadius: 8, border: "1px solid var(--primary-mid)" }}>
                           <span style={{ fontSize: 14, fontWeight: 600, flex: 1 }}>{i + 1}. {c.enonce} =</span>
                           <input
                             type="text"
@@ -1772,6 +1827,7 @@ export default function PageAdminPlanning() {
                           />
                           <span style={{ fontSize: 13, color: "var(--success)", fontWeight: 700, minWidth: 30 }}>{c.reponse}</span>
                         </div>
+                        </QuestionEditable>
                       ))}
                     </div>
                   </div>
