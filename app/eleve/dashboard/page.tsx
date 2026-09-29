@@ -792,11 +792,27 @@ export default function DashboardEleve() {
         .then((json) => { if (!signal.aborted && json) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
         .catch(() => {});
 
-      fetch("/api/daily-problem", { signal })
-        .then((r) => r.json())
+      const aujourd_hui = new Date().toISOString().split("T")[0];
+      const { debut, fin, debutRetard } = getBornesSemaine();
+
+      // Problème du jour, calcul du jour et les 3 lectures du plan de travail :
+      // un seul appel (/api/eleve/chargement), qui rend exactement les réponses
+      // des routes d'origine. S'il échoue — ou n'existe pas encore pendant un
+      // déploiement —, on retombe sur les cinq appels séparés d'avant.
+      type Morceau = { status: number; corps: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
+      let groupe: Record<"probleme" | "calcul" | "semaine" | "exos" | "podcasts", Morceau> | null = null;
+      try {
+        const r = await fetch(`/api/eleve/chargement?rb=${rbId}&debut=${debutRetard}&fin=${fin}`, { signal });
+        if (r.ok) groupe = await r.json();
+      } catch { if (signal.aborted) return; }
+      if (signal.aborted) return;
+      const corps = (cle: keyof NonNullable<typeof groupe>, url: string) =>
+        groupe?.[cle] ? Promise.resolve(groupe[cle].corps) : fetch(url, { signal }).then((r) => r.json());
+
+      corps("probleme", "/api/daily-problem")
         .then((json) => {
           if (signal.aborted) return;
-          if (json.id && !json.noSchool) {
+          if (json?.id && !json.noSchool) {
             setDailyProblem(json);
             const local = etatLocalProbleme(String(rbId), json.id);
             setDailyProblemReussi(json.serverAttempt?.solved === true || local.reussi);
@@ -809,30 +825,19 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
 
-      fetch("/api/calcul-du-jour", { signal })
-        .then((r) => r.json())
+      corps("calcul", "/api/calcul-du-jour")
         .then((json) => {
           if (signal.aborted) return;
-          setCalculJour(json.id ? json : null);
+          setCalculJour(json?.id ? json : null);
         })
         .catch(() => {});
 
-      const aujourd_hui = new Date().toISOString().split("T")[0];
-      const { debut, fin, debutRetard } = getBornesSemaine();
-
-      // 3 requêtes ciblées en parallèle au lieu d'une grosse qui charge tout
-      const [resSemaine, resExos, resPodcasts] = await Promise.all([
-        fetch(`/api/mon-plan-travail?rb=${rbId}&debut=${debutRetard}&fin=${fin}`, { signal }),
-        fetch(`/api/mon-plan-travail?rb=${rbId}&types=exercice,calcul_mental,eval`, { signal }),
-        fetch(`/api/mon-plan-travail?rb=${rbId}&types=ressource`, { signal }),
+      const [jsonSemaine, jsonExos, jsonPodcasts] = await Promise.all([
+        corps("semaine", `/api/mon-plan-travail?rb=${rbId}&debut=${debutRetard}&fin=${fin}`),
+        corps("exos", `/api/mon-plan-travail?rb=${rbId}&types=exercice,calcul_mental,eval`),
+        corps("podcasts", `/api/mon-plan-travail?rb=${rbId}&types=ressource`),
       ]);
       if (signal.aborted) return;
-
-      const [jsonSemaine, jsonExos, jsonPodcasts] = await Promise.all([
-        resSemaine.json(),
-        resExos.json(),
-        resPodcasts.json(),
-      ]);
 
       const blocsSemaine: PlanTravail[] = jsonSemaine.blocs ?? [];
       const blocsExos: PlanTravail[] = (jsonExos.blocs ?? []).filter((b: PlanTravail) => b.chapitre_id);
