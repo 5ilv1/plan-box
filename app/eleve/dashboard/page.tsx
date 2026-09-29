@@ -1,5 +1,6 @@
 "use client";
 
+import { pollingVisible } from "@/lib/polling";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -1009,13 +1010,13 @@ export default function DashboardEleve() {
     } catch { /* silencieux — inclut AbortError */ }
   }, []);
 
-  // Polling 30s + rafraîchissement au retour sur la page
+  // Polling 60 s, onglet visible seulement, + rafraîchissement au retour sur la page
   useEffect(() => {
     if (chargementDonnees) return;
 
     const ctrl = new AbortController();
 
-    const interval = setInterval(() => rafraichirBlocs(ctrl.signal), 30_000);
+    const arreterPolling = pollingVisible(() => rafraichirBlocs(ctrl.signal), 60_000);
 
     function handleVisibilityChange() {
       if (document.visibilityState === "visible") {
@@ -1027,7 +1028,7 @@ export default function DashboardEleve() {
 
     return () => {
       ctrl.abort();
-      clearInterval(interval);
+      arreterPolling();
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [chargementDonnees, rafraichirBlocs, rafraichirCartesRB]);

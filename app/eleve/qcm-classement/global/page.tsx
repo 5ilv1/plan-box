@@ -1,5 +1,6 @@
 "use client";
 
+import { pollingVisible } from "@/lib/polling";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -52,8 +53,7 @@ export default function PageClassementGlobal() {
   useEffect(() => { charger(); }, []);
 
   useEffect(() => {
-    const t = setInterval(charger, 30_000);
-    return () => clearInterval(t);
+    return pollingVisible(charger, 30_000);
   }, []);
 
   // Ordre podium : 2 - 1 - 3

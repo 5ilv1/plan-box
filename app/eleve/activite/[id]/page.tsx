@@ -1,5 +1,6 @@
 "use client";
 
+import { pollingVisible } from "@/lib/polling";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -227,7 +228,7 @@ export default function PageActivite() {
   useEffect(() => {
     if (etat !== "en_cours" || bloc?.type !== "ecriture" || !session) return;
 
-    const interval = setInterval(async () => {
+    return pollingVisible(async () => {
       try {
         let contenuFrais: Record<string, unknown> | null = null;
 
@@ -257,8 +258,6 @@ export default function PageActivite() {
         });
       } catch { /* silencieux */ }
     }, 20_000);
-
-    return () => clearInterval(interval);
   }, [etat, bloc?.type, session, id]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── URL PDF pour leçon à copier (PDF.js le charge directement) ──────────────

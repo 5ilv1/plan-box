@@ -1,5 +1,6 @@
 "use client";
 
+import { pollingVisible } from "@/lib/polling";
 import { useState, useCallback, useEffect, useRef } from "react";
 import { createClient } from "@/lib/supabase";
 
@@ -156,11 +157,8 @@ export default function ProgressionChapitres() {
 
   useEffect(() => { charger(); }, [charger]);
 
-  // Polling 30s
-  useEffect(() => {
-    const id = setInterval(charger, 30_000);
-    return () => clearInterval(id);
-  }, [charger]);
+  // Polling 30s, onglet visible seulement
+  useEffect(() => pollingVisible(charger, 30_000), [charger]);
 
   // Realtime pb_progression
   useEffect(() => {

@@ -1,5 +1,6 @@
 "use client";
 
+import { pollingVisible } from "@/lib/polling";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { reporterErreurs } from "@/lib/ecriture-correction";
 
@@ -143,7 +144,7 @@ export default function AtelierEcriture({
     if (apercu) return;
     // Un texte du jour s'annote aussi : le maître peut le relire pendant que
     // l'élève l'a ouvert.
-    const interval = setInterval(async () => {
+    return pollingVisible(async () => {
       try {
         const res = await fetch(`/api/ecriture/annotations?blocId=${blocId}`);
         if (!res.ok) return;
@@ -159,7 +160,6 @@ export default function AtelierEcriture({
         }
       } catch {}
     }, 20000);
-    return () => clearInterval(interval);
   }, [blocId, verrouille]);
 
   // ── Analyser le texte (bouton "Corrige-moi") ──

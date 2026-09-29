@@ -1,5 +1,6 @@
 "use client";
 
+import { pollingVisible } from "@/lib/polling";
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
@@ -33,15 +34,14 @@ export default function PageQCMClassement() {
       .finally(() => setChargement(false));
   }, [qcm_id]);
 
-  // Rafraîchir toutes les 30 secondes
+  // Rafraîchir toutes les 30 secondes, onglet visible seulement
   useEffect(() => {
-    const interval = setInterval(() => {
+    return pollingVisible(() => {
       fetch(`/api/qcm-reponse?qcm_id=${qcm_id}`)
         .then((r) => r.json())
         .then((json) => { if (!json.erreur) setClassement(json.classement ?? []); })
         .catch(() => null);
     }, 30_000);
-    return () => clearInterval(interval);
   }, [qcm_id]);
 
   return (
