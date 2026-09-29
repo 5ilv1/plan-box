@@ -381,8 +381,12 @@ export default function PageExerciceEleve() {
       } else if (tentative === 1) {
         setTentative(2);
       } else {
-        // 2e tentative échouée — sauvegarder l'échec
-        const total = (contenu.contraintes as string[])?.length ?? 1;
+        // 2e tentative échouée — sauvegarder l'échec. Le score porte sur les
+        // contraintes de langue seules : son total, quand le modèle le donne,
+        // fait foi plutôt que le nombre de toutes les contraintes.
+        const total = typeof analyse.score_total === "number"
+          ? analyse.score_total
+          : (contenu.contraintes as string[])?.length ?? 1;
         await fetch("/api/chapitres/exercices/resultat", {
           method: "POST",
           headers: { "Content-Type": "application/json" },

@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { REFERENCE_CYCLE3 } from "@/lib/ecriture-reference-cycle3";
 import { getServerUser } from "@/lib/server-auth";
+import { lireScore } from "@/lib/lire-score";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
@@ -159,6 +160,12 @@ Réponds UNIQUEMENT en JSON valide, sans markdown.`;
       .trim();
 
     const analyse = JSON.parse(json);
+
+    // Le modèle rend le score tantôt 3, tantôt "3/6" : on renvoie toujours
+    // un nombre, et le total qu'il a compté quand il le donne.
+    const lu = lireScore(analyse.score);
+    analyse.score = lu ? lu.bon : 0;
+    if (lu?.total != null) analyse.score_total = lu.total;
 
     return NextResponse.json({ ...analyse, niveau });
   } catch (err) {

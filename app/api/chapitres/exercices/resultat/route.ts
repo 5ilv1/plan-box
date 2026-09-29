@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getServerUser } from "@/lib/server-auth";
+import { lireScore } from "@/lib/lire-score";
 
 /**
  * POST /api/chapitres/exercices/resultat
@@ -9,9 +10,16 @@ import { getServerUser } from "@/lib/server-auth";
  */
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { exercice_id, eleve_id, rb_eleve_id, score, total } = body;
+  const { exercice_id, eleve_id, rb_eleve_id } = body;
 
-  if (!exercice_id || score === undefined || total === undefined) {
+  // Des entiers, quoi qu'envoie la page : un score « 3/6 » en texte faisait
+  // refuser l'insertion par la base, et le résultat de l'élève était perdu.
+  const lu = lireScore(body.score);
+  const luTotal = lireScore(body.total);
+  const total = Math.round(luTotal?.bon ?? lu?.total ?? NaN);
+  const score = lu ? Math.min(Math.round(lu.bon), total) : NaN;
+
+  if (!exercice_id || !Number.isFinite(score) || !Number.isFinite(total)) {
     return NextResponse.json({ error: "exercice_id, score et total requis" }, { status: 400 });
   }
 
