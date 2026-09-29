@@ -22,6 +22,29 @@ FRANÇAIS DE FRANCE UNIQUEMENT : soixante-dix, quatre-vingts, quatre-vingt-dix. 
 Cette règle s'applique PARTOUT : énoncés, questions, options, réponses attendues, corrections, indices, titres et consignes.`;
 
 /**
+ * La réponse de l'élève est comparée à UNE réponse attendue. Une question qui
+ * en appelle plusieurs (« cite deux verbes ») ou qui en admet plusieurs justes
+ * (« donne un mot de la famille de mer ») est infaisable : l'élève répond
+ * juste et se voit refuser sa réponse.
+ *
+ * Ne concerne que les questions à réponse libre — un QCM a déjà une seule
+ * option juste. Injectée à côté de `REGLE_NOMBRES_EN_LETTRES` par les routes
+ * qui produisent des `questions[{enonce, reponse_attendue}]`.
+ */
+export const REGLE_REPONSE_UNIQUE = `RÈGLE OBLIGATOIRE — UNE SEULE RÉPONSE POSSIBLE PAR QUESTION
+La réponse de l'élève est comparée automatiquement à la « reponse_attendue ». Chaque question doit donc appeler UNE réponse simple, et une seule réponse doit être juste.
+INTERDIT :
+- demander plusieurs éléments : « Cite deux verbes du 1er groupe », « Trouve les adjectifs de la phrase », « Donne le sujet et le verbe »
+- une question ouverte qui admet plusieurs réponses justes : « Donne un mot de la famille de mer », « Écris un synonyme de content », « Cite un verbe du 2e groupe », « Invente une phrase au passé composé ». Demander « UN » élément ne suffit pas : si l'élève peut en donner un autre tout aussi juste, la question est interdite.
+- une réponse attendue qui contient une liste, « et », « ou », une virgule entre plusieurs réponses, ou une explication
+À LA PLACE, ferme la question pour qu'elle désigne une réponse unique :
+- « Quel est le sujet du verbe dans : Le chat dort. ? » → « Le chat »
+- « Complète avec le verbe manger au présent : Nous ___ une pomme. » → « mangeons »
+- « Quel est l'adjectif dans : une grande maison ? » → « grande »
+- s'il faut trouver plusieurs éléments, fais PLUSIEURS questions, une par élément.
+La réponse attendue est courte : un mot, un groupe de mots ou un nombre, jamais une phrase entière sauf si la question demande de recopier ou transformer UNE phrase précise.`;
+
+/**
  * Extrait le premier objet (ou tableau) JSON d'une réponse de modèle.
  *
  * Les modèles ajoutent régulièrement des backticks, une phrase d'introduction

@@ -4,7 +4,7 @@ import { ParamsGeneration } from "@/types";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { requireEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
-import { REGLE_NOMBRES_EN_LETTRES, blocCorpus } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, REGLE_REPONSE_UNIQUE, blocCorpus } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -106,7 +106,7 @@ export async function POST(req: NextRequest) {
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 2048,
-      system: REGLE_NOMBRES_EN_LETTRES,
+      system: `${REGLE_NOMBRES_EN_LETTRES}\n\n${REGLE_REPONSE_UNIQUE}`,
       messages: [{ role: "user", content: contentParts }],
     });
 

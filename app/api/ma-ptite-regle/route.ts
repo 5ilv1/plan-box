@@ -4,7 +4,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
 import { requireEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
-import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, REGLE_REPONSE_UNIQUE } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -696,7 +696,7 @@ ${format}`;
   const message = await anthropic.messages.create({
     model,
     max_tokens: 4096,
-    system: REGLE_NOMBRES_EN_LETTRES,
+    system: `${REGLE_NOMBRES_EN_LETTRES}\n\n${REGLE_REPONSE_UNIQUE}`,
     messages: [{ role: "user", content: prompt }],
   });
 

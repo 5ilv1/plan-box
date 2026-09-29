@@ -155,6 +155,16 @@ ou la droite graduée — voir `docs/ceintures/SPEC-FIGURES.md`.
   modification du module. `scripts/reparer-traits-union.ts` (`--dry-run`, `--exemples`)
   applique la même règle au contenu déjà en base ; passé le 09/09/2026 sur les fiches
   « Écrire les nombres en lettres ».
+- **`REGLE_REPONSE_UNIQUE`** : une question à réponse libre n'appelle qu'UNE réponse, et une
+  seule est juste — la réponse de l'élève est comparée à `reponse_attendue`. Interdits :
+  « cite deux… », « trouve les… », et aussi « donne un mot de la famille de… » (plusieurs
+  réponses justes). Injectée seulement là où l'élève répond librement : `generer-exercice`,
+  `chapitres/generer-exercice`, `regenerer-exercice`, `generer-eval`, `ma-ptite-regle`.
+  ⚠️ **Le prompt ne fait pas foi** ici non plus : `validerReponsesExercice()` (type
+  `exercice`) referme une question qui en appelle encore plusieurs, en renvoyant un
+  `enonce` reformulé avec la réponse. Mesuré le 29/09 : remplacer « deux » par « un » ne
+  suffisait pas (« Cite un verbe du 1er groupe »), d'où la question « un élève pourrait-il
+  donner une AUTRE réponse juste ? » dans son prompt.
 - **`extraireJSON()`** : isole le premier objet JSON d'une réponse en suivant l'imbrication
   des accolades. Les modèles ajoutent souvent une phrase après l'objet, ce qui fait échouer
   un `JSON.parse` sur la réponse brute.

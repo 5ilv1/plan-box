@@ -56,14 +56,22 @@ ${isCalcul
 2. Si un "enonce" est fourni avec un trou (___), vérifie que la réponse est SÉMANTIQUEMENT CORRECTE dans le contexte de la phrase.
 3. Si la réponse ne correspond pas au sens de la phrase, corrige-la.
 4. IMPORTANT : si l'énoncé contient un verbe entre parenthèses (ex: "(manger)"), la réponse DOIT être une forme de CE verbe (ex: "mangé", "manger"), JAMAIS un autre verbe. Si la réponse est un verbe différent, remplace-la par la forme correcte du verbe indiqué.
-5. Ne reformule PAS, ne change PAS le sens global, ne modifie PAS la ponctuation.
-6. Si une réponse est déjà correcte, renvoie-la à l'identique.`}
+5. Ne reformule PAS${type === "exercice" ? " (sauf au point 7)" : ""}, ne change PAS le sens global, ne modifie PAS la ponctuation.
+6. Si une réponse est déjà correcte, renvoie-la à l'identique.${type === "exercice" ? `
+7. La réponse de l'élève sera comparée à UNE réponse attendue : une question n'est faisable que si UNE SEULE réponse est juste. Demande-toi : « un élève pourrait-il donner une AUTRE réponse juste ? ». Si oui — plusieurs éléments demandés (« cite deux… », « trouve les… »), ou un choix libre parmi plusieurs réponses justes (« cite un verbe… », « trouve un adjectif » quand la phrase en a deux, « donne un mot de la famille de… », « un synonyme de… ») — reformule l'énoncé pour qu'il désigne PRÉCISÉMENT la réponse attendue, et renvoie le champ "enonce" reformulé. Remplacer « deux » par « un » ne suffit PAS. Exemples :
+   - « Cite un verbe du 1er groupe. » → « Écris l'infinitif du verbe conjugué dans : Nous chantons. » (chanter)
+   - « Trouve un adjectif dans : Le petit chat noir dort. » → « Quel adjectif indique la couleur du chat dans : Le petit chat noir dort. ? » (noir)
+   - « Donne un mot de la famille de mer. » → « Complète avec un mot de la famille de mer : Le ___ navigue sur son bateau. » (marin)
+   - « Cite les deux déterminants de : Un oiseau chante sur la branche. » (réponse « Un, la ») → « Quel est le déterminant du nom branche dans : Un oiseau chante sur la branche. ? » (la)
+   Une réponse attendue n'est JAMAIS une liste : si elle contient plusieurs éléments, n'en garde QU'UN et reformule l'énoncé pour qu'il ne désigne que lui. L'énoncé reformulé ne doit jamais contenir la réponse.
+   Sinon, ne renvoie PAS de champ "enonce".` : ""}`}
 
 Entrée :
 ${JSON.stringify(itemsAvecEnonce)}
 
 Réponds UNIQUEMENT en JSON valide (un tableau), sans markdown :
-[{"id": 1, "reponse": "la réponse corrigée"}]`;
+[{"id": 1, "reponse": "la réponse corrigée"}]${type === "exercice" ? `
+(avec "enonce" uniquement pour une question reformulée : {"id": 2, "enonce": "…", "reponse": "…"})` : ""}`;
 
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
@@ -79,16 +87,29 @@ Réponds UNIQUEMENT en JSON valide (un tableau), sans markdown :
 
     // Le modèle commence parfois par « Je vérifie… » : un JSON.parse sur la
     // réponse brute échouait, et la validation était sautée en silence.
-    const corrections: { id: number | string; reponse: string }[] =
-      normaliserNombresEnLettres(extraireJSON(text, "[")) as { id: number | string; reponse: string }[];
+    const corrections: { id: number | string; reponse: string; enonce?: string }[] =
+      normaliserNombresEnLettres(extraireJSON(text, "[")) as { id: number | string; reponse: string; enonce?: string }[];
 
     // ── Patcher les corrections ─────────────────────────────────────────────
     const corrMap = new Map(corrections.map((c) => [c.id, c.reponse]));
+    // Une question qui appelait plusieurs réponses, refermée sur une seule :
+    // l'énoncé et la réponse changent ensemble, jamais l'un sans l'autre.
+    const enonceMap = new Map(
+      corrections
+        .filter((c) => typeof c.enonce === "string" && c.enonce.trim() && c.reponse?.trim())
+        .map((c) => [c.id, c.enonce!.trim()]),
+    );
     let nbCorrections = 0;
 
     if (type === "exercice") {
-      const questions = contenu.questions as { id: number; reponse_attendue: string }[];
+      const questions = contenu.questions as { id: number; enonce?: string; reponse_attendue: string }[];
       for (const q of questions) {
+        const enonce = enonceMap.get(q.id);
+        if (enonce && enonce !== q.enonce) {
+          console.log(`[valider-reponses] exercice q${q.id} reformulée (réponse unique): "${q.enonce}" → "${enonce}"`);
+          q.enonce = enonce;
+          nbCorrections++;
+        }
         const corr = corrMap.get(q.id);
         if (corr && corr !== q.reponse_attendue) {
           console.log(`[valider-reponses] exercice q${q.id}: "${q.reponse_attendue}" → "${corr}"`);

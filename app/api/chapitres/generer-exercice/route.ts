@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase-admin";
 import Anthropic from "@anthropic-ai/sdk";
 import { validerReponsesExercice } from "@/lib/valider-reponses-exercice";
-import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
+import { REGLE_NOMBRES_EN_LETTRES, REGLE_REPONSE_UNIQUE } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
 import { recalerPhrases, type PhraseAnalyse } from "@/lib/analyse-phrase";
@@ -223,7 +223,7 @@ ${regles}`;
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
       max_tokens: 4096,
-      system: REGLE_NOMBRES_EN_LETTRES,
+      system: `${REGLE_NOMBRES_EN_LETTRES}\n\n${REGLE_REPONSE_UNIQUE}`,
       messages: [{ role: "user", content: prompt }],
     });
 
