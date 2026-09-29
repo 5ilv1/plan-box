@@ -771,11 +771,8 @@ export default function DashboardEleve() {
   // ── Chargement Repetibox ────────────────────────────────────────────────────
   async function chargerRB(rbId: number, signal: AbortSignal) {
     try {
-      // .then() obligatoire : le builder Supabase ne s'exécute que s'il est attendu
-      supabase.from("eleves_planbox_meta").upsert(
-        { repetibox_eleve_id: rbId, derniere_connexion: new Date().toISOString() },
-        { onConflict: "repetibox_eleve_id" }
-      ).then(() => {});
+      // La dernière connexion est enregistrée par /api/revisions-repetibox-jour,
+      // appelée juste en dessous : écrite d'ici, la RLS la refusait toujours.
 
       // Requêtes indépendantes (ceinture, calcul, problème, parcours) lancées
       // TOUT EN HAUT, en parallèle du chargement des plans de travail/podcasts.

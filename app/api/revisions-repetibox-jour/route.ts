@@ -23,13 +23,35 @@ export async function GET(req: NextRequest) {
   // Réservé à l'élève concerné (ou à l'enseignant) : plus bas, cette route
   // crée un qr_tokens valable 8 h et le renvoie dans token_url. Ce token
   // s'échange contre une session complète via /api/qr-login/verify.
-  const { error: refus } = await requireProprietaireOuEnseignant(
+  const { error: refus, user } = await requireProprietaireOuEnseignant(
     pbEleveId,
     Number.isFinite(rbId) ? rbId : null,
   )
   if (refus) return refus
 
   const admin = createAdminClient()
+
+  const { data: eleveInfo } = await admin
+    .from("eleve")
+    .select("id, classe_id, auth_id")
+    .eq("id", rbId)
+    .single()
+
+  // Dernière connexion de l'élève, pour « connectés aujourd'hui » côté
+  // enseignant. Le tableau de bord l'écrivait lui-même, depuis le navigateur :
+  // un élève Repetibox n'y a pas de session Supabase, la RLS refusait à chaque
+  // fois, et la colonne est restée vide pour toute la classe. Ici, à chaque
+  // ouverture du tableau de bord et à chaque retour sur l'onglet — seulement
+  // quand c'est l'élève lui-même, pas l'enseignant qui regarde.
+  if (eleveInfo?.auth_id && eleveInfo.auth_id === user.id) {
+    const { error: eMeta } = await admin
+      .from("eleves_planbox_meta")
+      .upsert(
+        { repetibox_eleve_id: rbId, derniere_connexion: new Date().toISOString() },
+        { onConflict: "repetibox_eleve_id" },
+      )
+    if (eMeta) console.error("[revisions-repetibox-jour] derniere_connexion:", eMeta.message)
+  }
 
   // ── Vérification d'activation ────────────────────────────────────────────
   if (pbEleveId) {
@@ -89,12 +111,6 @@ export async function GET(req: NextRequest) {
 
   // ── Récupérer les infos de l'élève (classe_id) ───────────────────────────
   const aujourd_hui = new Date().toISOString().split("T")[0]
-
-  const { data: eleveInfo } = await admin
-    .from("eleve")
-    .select("id, classe_id, auth_id")
-    .eq("id", rbId)
-    .single()
 
   const classeId = eleveInfo?.classe_id
 
