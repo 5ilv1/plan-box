@@ -834,8 +834,8 @@ export default function DashboardEleve() {
 
       const [jsonSemaine, jsonExos, jsonPodcasts] = await Promise.all([
         corps("semaine", `/api/mon-plan-travail?rb=${rbId}&debut=${debutRetard}&fin=${fin}`),
-        corps("exos", `/api/mon-plan-travail?rb=${rbId}&types=exercice,calcul_mental,eval`),
-        corps("podcasts", `/api/mon-plan-travail?rb=${rbId}&types=ressource`),
+        corps("exos", `/api/mon-plan-travail?rb=${rbId}&types=exercice,calcul_mental,eval&avecChapitre=1`),
+        corps("podcasts", `/api/mon-plan-travail?rb=${rbId}&types=ressource&avecQcm=1&limite=4&leger=1`),
       ]);
       if (signal.aborted) return;
 
@@ -1538,6 +1538,7 @@ export default function DashboardEleve() {
             {/* Ceintures de multiplications */}
             {ceintureActive && (
               <Link
+                prefetch={false}
                 href="/eleve/activite/ceinture"
                 className="pb-card"
                 style={{
@@ -1588,6 +1589,7 @@ export default function DashboardEleve() {
             {/* Bibliothèque — livre en cours ou invitation à choisir */}
             {bibliothequeEnCours ? (
               <Link
+                prefetch={false}
                 href={`/eleve/chapitre/${bibliothequeEnCours.chapitre_id}`}
                 className="pb-card"
                 style={{
@@ -1714,6 +1716,7 @@ export default function DashboardEleve() {
                   </div>
                 </div>
                 <Link
+                  prefetch={false}
                   href={p.fait ? `/eleve/qcm-classement/${p.qcm_id}` : `/eleve/activite/${p.id}`}
                   style={{
                     display: "inline-flex", alignItems: "center", gap: 6,
@@ -1729,6 +1732,7 @@ export default function DashboardEleve() {
                 {/* Liens podiums */}
                 <div style={{ display: "flex", gap: 10, marginTop: 12, paddingTop: 12, borderTop: `1px solid ${p.fait ? "rgba(22,163,74,0.15)" : p.reporte ? "rgba(234,88,12,0.18)" : "rgba(59,130,246,0.15)"}` }}>
                   <Link
+                    prefetch={false}
                     href={`/eleve/qcm-classement/${p.qcm_id}`}
                     style={{ display: "flex", alignItems: "center", gap: 4, fontSize: 12, fontWeight: 700, color: p.fait ? "#166534" : p.reporte ? "#9A3412" : "#1E40AF", textDecoration: "none" }}
                   >
@@ -1966,6 +1970,7 @@ export default function DashboardEleve() {
                       return (
                         <Link
                           key={d.code}
+                          prefetch={false}
                           href={d.slug ? `/eleve/ceintures/${d.slug}` : "/eleve/ceintures"}
                           style={{
                             display: "flex", alignItems: "center", gap: 12,
@@ -2005,6 +2010,7 @@ export default function DashboardEleve() {
                 const journeeFinie = totalTaches > 0 && nbFaitAujourd_hui === totalTaches;
                 return (
                   <Link
+                    prefetch={false}
                     href={`/eleve/chapitre/${parcoursALaUne.id}`}
                     className="pb-card"
                     style={{
@@ -2121,6 +2127,7 @@ export default function DashboardEleve() {
                           </div>
                           {b.contenu && (
                             <Link
+                              prefetch={false}
                               href={`/eleve/activite/${b.id}`}
                               className="pb-btn"
                               style={{
@@ -2220,6 +2227,7 @@ export default function DashboardEleve() {
                               {/* Bouton accès activité — dictée, correction, mots, leçon à copier et écriture */}
                               {(b.type === "dictee" || b.type === "correction_dictee" || b.type === "mots" || b.type === "lecon_copier" || b.type === "ecriture") && b.contenu && !estFait && (
                                 <Link
+                                  prefetch={false}
                                   href={`/eleve/activite/${b.id}`}
                                   className="pb-btn primary"
                                   style={{ padding: "8px 20px", fontSize: 13, borderRadius: 999, flexShrink: 0, whiteSpace: "nowrap" }}
@@ -2403,6 +2411,7 @@ export default function DashboardEleve() {
                                 peutCommencer ? (
                                   <div style={{ marginTop: "auto", paddingTop: 16 }}>
                                     <Link
+                                      prefetch={false}
                                       href={`/eleve/activite/${b.id}`}
                                       className="pb-btn primary"
                                       style={{ padding: "10px 20px", fontSize: 14, borderRadius: 999, whiteSpace: "nowrap", flexShrink: 0 }}
@@ -2563,6 +2572,7 @@ export default function DashboardEleve() {
                     .filter((ch) => !parcoursALaUne || ch.id !== parcoursALaUne.id)
                     .map((ch) => (
                     <Link
+                      prefetch={false}
                       key={`chap-${ch.id}`}
                       href={`/eleve/chapitre/${ch.id}`}
                       className="pb-card"

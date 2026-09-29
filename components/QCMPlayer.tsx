@@ -178,6 +178,7 @@ export default function QCMPlayer({
 
         <div style={{ display: "flex", gap: 10 }}>
           <Link
+            prefetch={false}
             href={`/eleve/qcm-classement/${qcm_id}`}
             style={{
               flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 6,

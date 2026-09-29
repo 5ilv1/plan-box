@@ -666,6 +666,7 @@ export default function PageEvaluationFinale() {
                 const mini = minis.find((m) => m.id === exId);
                 return (
                   <Link
+                    prefetch={false}
                     key={exId}
                     href={`/eleve/chapitre/${chapitreId}/exercice/${exId}`}
                     style={{
@@ -714,6 +715,7 @@ export default function PageEvaluationFinale() {
       <div style={{ marginBottom: 20 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <Link
+            prefetch={false}
             href={`/eleve/chapitre/${chapitreId}`}
             style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: 4 }}
           >

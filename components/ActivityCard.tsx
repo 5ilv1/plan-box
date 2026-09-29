@@ -101,6 +101,7 @@ export default function ActivityCard({ bloc, onMarquerFait }: ActivityCardProps)
         <div style={{ flexShrink: 0, display: "flex", alignItems: "center", gap: 8 }}>
           {TYPES_INTERACTIFS.includes(bloc.type) && bloc.contenu ? (
             <Link
+              prefetch={false}
               href={`/eleve/activite/${bloc.id}`}
               className="btn-primary"
               style={{ padding: "6px 14px", fontSize: 13 }}

@@ -163,7 +163,7 @@ export default function PageRevisionEleve() {
 
       {/* Navigation */}
       <div style={{ padding: "16px 0" }}>
-        <Link href={`/eleve/chapitre/${chapitreId}`} style={{
+        <Link prefetch={false} href={`/eleve/chapitre/${chapitreId}`} style={{
           fontSize: 13, color: "var(--pb-on-surface-variant)", textDecoration: "none",
           display: "inline-flex", alignItems: "center", gap: 4,
         }}>

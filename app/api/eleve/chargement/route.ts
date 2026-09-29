@@ -46,8 +46,8 @@ export async function GET(req: NextRequest) {
     lire(problemeDuJour()),
     lire(calculDuJour()),
     lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&debut=${encodeURIComponent(debut)}&fin=${encodeURIComponent(fin)}`))),
-    lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&types=exercice,calcul_mental,eval`))),
-    lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&types=ressource`))),
+    lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&types=exercice,calcul_mental,eval&avecChapitre=1`))),
+    lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&types=ressource&avecQcm=1&limite=4&leger=1`))),
   ]);
 
   return new Response(

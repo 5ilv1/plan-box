@@ -255,6 +255,7 @@ export default function CeinturesPage() {
 
           return (
             <Link
+              prefetch={false}
               key={d.code}
               href={`/eleve/ceintures/${d.slug}`}
               className="pb-card"

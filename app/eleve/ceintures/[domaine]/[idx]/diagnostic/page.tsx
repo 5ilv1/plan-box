@@ -154,7 +154,7 @@ export default function DiagnosticPage() {
     return (
       <div style={{ textAlign: "center", padding: "60px 20px" }}>
         <p>{erreur}</p>
-        <Link href={`/eleve/ceintures/${slug}`}>← Retour</Link>
+        <Link prefetch={false} href={`/eleve/ceintures/${slug}`}>← Retour</Link>
       </div>
     );
   }
@@ -247,6 +247,7 @@ export default function DiagnosticPage() {
       {/* En-tête : quitter, avancement */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
         <Link
+          prefetch={false}
           href={`/eleve/ceintures/${slug}`}
           style={{
             fontSize: 13, color: "var(--pb-on-surface-variant)", textDecoration: "none",

@@ -1958,6 +1958,7 @@ function RessourceEleve({
                   Tu as déjà répondu à ce questionnaire.
                 </div>
                 <Link
+                  prefetch={false}
                   href={`/eleve/qcm-classement/${data.qcm_id}`}
                   style={{
                     display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
@@ -2002,6 +2003,7 @@ function RessourceEleve({
                     Répondre au questionnaire
                   </button>
                   <Link
+                    prefetch={false}
                     href={`/eleve/qcm-classement/${data.qcm_id}`}
                     style={{
                       display: "flex", alignItems: "center", gap: 6,
@@ -2034,6 +2036,7 @@ function RessourceEleve({
             {qcmTermine && (
               <div style={{ display: "flex", gap: 8 }}>
                 <Link
+                  prefetch={false}
                   href={`/eleve/qcm-classement/${data.qcm_id}`}
                   style={{
                     flex: 1, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,

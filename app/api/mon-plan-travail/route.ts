@@ -7,6 +7,7 @@ import { champsTerminaison, champsReprise } from "@/lib/suivi-metriques";
 // GET /api/mon-plan-travail?rb=<id>&debut=YYYY-MM-DD&fin=YYYY-MM-DD → blocs d'une période
 // GET /api/mon-plan-travail?rb=<id>&types=exercice,calcul_mental,eval → blocs par types (progression)
 // GET /api/mon-plan-travail?rb=<id>&types=ressource                  → podcasts uniquement
+//   options : avecChapitre=1, avecQcm=1, limite=N (1 à 500)
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
   const rb = searchParams.get("rb");
@@ -43,25 +44,40 @@ export async function GET(req: NextRequest) {
   }
 
   // Cas 2 : blocs filtrés (dashboard optimisé)
+  // `leger=1` : identifiant, titre, type, date et qcm_id seulement — la carte
+  // podcast du tableau de bord n'en lit pas plus, et un bloc podcast complet
+  // pèse ~28 Ko. Même forme qu'un bloc (`contenu.qcm_id`), le reste en moins.
+  const leger = searchParams.get("leger") === "1";
   let query = admin
     .from("plan_travail")
-    .select("*, chapitres(id, titre, matiere)")
+    .select(leger ? "id, titre, type, statut, date_assignation, qcm_id:contenu->>qcm_id" : "*, chapitres(id, titre, matiere)")
     .eq("repetibox_eleve_id", rbId);
 
   if (debut) query = query.gte("date_assignation", debut);
   if (fin) query = query.lte("date_assignation", fin);
   if (types) query = query.in("type", types.split(","));
 
+  // Filtres faits par la base plutôt que par la page, qui jetait presque tout :
+  // la liste des podcasts (~200 Ko) pour en garder 4, les exercices (~60 Ko)
+  // pour ne garder que ceux qui ont un chapitre — aucun à ce jour.
+  if (searchParams.get("avecChapitre") === "1") query = query.not("chapitre_id", "is", null);
+  if (searchParams.get("avecQcm") === "1") query = query.not("contenu->>qcm_id", "is", null);
+  const limite = Math.min(Math.max(parseInt(searchParams.get("limite") ?? "", 10) || 500, 1), 500);
+
   const { data, error } = await query
     .order("date_assignation", { ascending: false })
-    .limit(500);
+    .limit(limite);
 
   if (error) {
     console.error("[GET /api/mon-plan-travail]", error);
     return NextResponse.json({ erreur: error.message }, { status: 500 });
   }
 
-  let blocs = data ?? [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let blocs: any[] = leger
+    ? ((data ?? []) as unknown as Array<{ qcm_id?: string | null; [k: string]: unknown }>)
+        .map(({ qcm_id, ...b }) => ({ ...b, contenu: { qcm_id } }))
+    : (data ?? []);
 
   // Report : quand on interroge la semaine (debut+fin sans types), inclure
   // les ressources (podcasts, docs…) des semaines précédentes encore non terminées.
