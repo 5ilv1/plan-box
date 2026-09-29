@@ -1,5 +1,6 @@
 "use client";
 
+import { jsonFrais } from "@/lib/cache-eleve";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import type { BigHeadsOptions } from "@/lib/bigheads";
@@ -39,6 +40,19 @@ function ecrireSessionCache(s: EleveSession | null) {
   }
 }
 
+/**
+ * La session est d'abord lue en cache, puis confirmée auprès du serveur, et
+ * parfois une troisième fois au rafraîchissement du jeton. Chaque nouvel objet
+ * relançait TOUS les chargements des pages qui dépendent de `session` — trois
+ * fois chaque appel du tableau de bord, sur un quota Vercel compté. Même
+ * élève, même contenu : on garde l'objet d'avant.
+ */
+function memeSession(a: EleveSession | null, b: EleveSession | null): boolean {
+  if (!a || !b) return a === b;
+  return a.id === b.id && a.source === b.source && a.prenom === b.prenom && a.nom === b.nom
+    && JSON.stringify(a.avatar_bigheads ?? null) === JSON.stringify(b.avatar_bigheads ?? null);
+}
+
 export function useEleveSession() {
   // Hydratation SYNCHRONE depuis le cache au 1er render → pas de loader
   // quand l'élève revient sur une page après avoir navigué ailleurs.
@@ -70,7 +84,7 @@ export function useEleveSession() {
 
         if (e) {
           const s: EleveSession = { id: user.id, prenom: e.prenom as string, nom: e.nom as string, source: "planbox", avatar_bigheads: null };
-          setSession(s);
+          setSession((prev) => memeSession(prev, s) ? prev : s);
           ecrireSessionCache(s);
           setChargement(false);
           return;
@@ -78,11 +92,16 @@ export function useEleveSession() {
 
         // 2. Repetibox migré (@planbox.local)
         if (user.email?.endsWith("@planbox.local")) {
-          const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
-          if (!annule && res.ok) {
-            const json = await res.json();
+          // Gardée en mémoire : ce hook tourne à chaque changement de page, et
+          // l'identité d'un élève ne change pas d'une page à l'autre (effacée
+          // en passant par /eleve/avatar — voir lib/cache-eleve.ts).
+          const json = await jsonFrais<{ id: number; prenom: string; nom: string; avatar_bigheads?: EleveSession["avatar_bigheads"] }>(
+            "avatar", `/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`, undefined, undefined, 12 * 60 * 60 * 1000,
+            (v) => typeof v?.id === "number",
+          );
+          if (!annule && json) {
             const s: EleveSession = { id: String(json.id), prenom: json.prenom as string, nom: json.nom as string, source: "repetibox", avatar_bigheads: json.avatar_bigheads ?? null };
-            setSession(s);
+            setSession((prev) => memeSession(prev, s) ? prev : s);
             ecrireSessionCache(s);
             setChargement(false);
             return;

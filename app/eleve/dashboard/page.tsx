@@ -1,5 +1,6 @@
 "use client";
 
+import { jsonFrais, ecrireFrais, lireFrais, invaliderGroupes } from "@/lib/cache-eleve";
 import { pollingVisible } from "@/lib/polling";
 import { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
@@ -442,9 +443,17 @@ export default function DashboardEleve() {
       try {
         const { data: { user } } = await createClient().auth.getUser();
         if (!user || annule) return;
-        const res = await fetch(`/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`);
+        // Un avatar créé ne disparaît pas : une fois vu, on ne redemande plus
+        // de la journée (un appel par retour au tableau de bord sinon).
+        const urlAvatar = `/api/repetibox-eleve-by-auth?auth_id=${encodeURIComponent(user.id)}`;
+        // Même clé que useEleveSession : la réponse n'est reprise que si elle
+        // montre un avatar — sans avatar, on redemande toujours.
+        const garde = lireFrais<{ avatar_bigheads?: unknown }>("avatar", urlAvatar, 12 * 60 * 60 * 1000);
+        if (garde && typeof garde === "object" && garde.avatar_bigheads) { if (!annule) setAvatarPret(true); return; }
+        const res = await fetch(urlAvatar);
         if (!res.ok || annule) return;
         const json = await res.json();
+        ecrireFrais("avatar", urlAvatar, json);
         if (!json.avatar_bigheads && !annule) {
           router.push("/eleve/avatar");
           return; // redirection en cours : on laisse `avatarPret` à false
@@ -465,10 +474,9 @@ export default function DashboardEleve() {
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
       : `rb_id=${session.id}`;
-    fetch(`/api/bibliotheque/statut?${qs}`, { signal: ctrl.signal })
-      .then((r) => r.json())
+    jsonFrais<{ peut_choisir?: boolean; livre_en_cours?: typeof bibliothequeEnCours }>("bibliotheque", `/api/bibliotheque/statut?${qs}`, { signal: ctrl.signal })
       .then((json) => {
-        if (ctrl.signal.aborted) return;
+        if (ctrl.signal.aborted || !json) return;
         setBibliothequePeutChoisir(json.peut_choisir ?? false);
         setBibliothequeEnCours(json.livre_en_cours ?? null);
       })
@@ -483,10 +491,10 @@ export default function DashboardEleve() {
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
       : `rb_eleve_id=${session.id}`;
-    fetch(`/api/ceintures/choix-semaine?${qs}`, { signal: ctrl.signal })
-      .then((r) => r.json())
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    jsonFrais<any>("ceintures", `/api/ceintures/choix-semaine?${qs}`, { signal: ctrl.signal })
       .then((json) => {
-        if (ctrl.signal.aborted || json?.erreur) return;
+        if (ctrl.signal.aborted || !json || json.erreur) return;
         setChoixSemaine({
           domaines: json.domaines ?? [],
           disponibles: json.disponibles ?? [],
@@ -521,6 +529,8 @@ export default function DashboardEleve() {
         body: JSON.stringify(corps),
       });
       const json = await res.json();
+      // Le choix a changé : la réponse gardée du GET ne vaut plus.
+      invaliderGroupes(["ceintures"]);
       if (res.ok && !json.erreur) {
         setChoixSemaine((prev) => prev ? {
           ...prev,
@@ -553,11 +563,10 @@ export default function DashboardEleve() {
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
       : `rb_eleve_id=${session.id}`;
-    fetch(`/api/ceintures/etat?${qs}`, { signal: ctrl.signal })
-      .then((r) => r.json())
+    jsonFrais<{ domaines?: { termine: boolean; couleurCourante: string }[] }>("ceintures", `/api/ceintures/etat?${qs}`, { signal: ctrl.signal })
       .then((json) => {
-        if (ctrl.signal.aborted) return;
-        const domaines = json.domaines ?? [];
+        if (ctrl.signal.aborted || !json) return;
+        const domaines = (json.domaines ?? []) as any[]; // eslint-disable-line @typescript-eslint/no-explicit-any
         if (!domaines.length) { setCeinturesFrancais(null); return; }
         // La pastille de la tuile : la couleur du premier domaine encore en cours.
         const enCours = domaines.find((d: { termine: boolean }) => !d.termine) ?? domaines[0];
@@ -680,39 +689,20 @@ export default function DashboardEleve() {
 
       // Requêtes secondaires (non-bloquantes) — avec signal
       if (rbId) {
-        fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`, { signal })
-          .then(async (r) => {
-            // 401 = session expirée : on la rafraîchit et on retente une fois,
-            // sinon le bloc révisions disparaîtrait sans rien dire à l'élève.
-            if (r.status === 401) {
-              if (!(await reparerSession())) return null;
-              const retry = await fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`, { signal });
-              return retry.ok ? retry.json() : null;
-            }
-            return r.ok ? r.json() : null;
-          })
+        jsonFrais<{ chapitres?: typeof chapitresRB }>("revisions", `/api/revisions-repetibox-jour?rb_eleve_id=${rbId}&pb_eleve_id=${eleveId}`, { signal }, reparerSession)
           .then((json) => { if (!signal.aborted && json) setChapitresRB(json.chapitres ?? []); })
           .catch(() => {});
       }
 
       const ceintureParam = rbId ? `rb_id=${rbId}` : `eleve_id=${eleveId}`;
-      fetch(`/api/ceinture-active?${ceintureParam}`, { signal })
-        .then(async (r) => {
-          if (r.status === 401) {
-            if (!(await reparerSession())) return null;
-            const retry = await fetch(`/api/ceinture-active?${ceintureParam}`, { signal });
-            return retry.ok ? retry.json() : null;
-          }
-          return r.ok ? r.json() : null;
-        })
+      jsonFrais<{ actif?: boolean }>("ceintures", `/api/ceinture-active?${ceintureParam}`, { signal }, reparerSession)
         .then((d) => {
           if (signal.aborted || !d) return; // erreur/401 → on garde l'état du cache
           setCeintureActive(d.actif === true);
           if (d.actif) {
-            fetch(`/api/ceinture-progression?${ceintureParam}`, { signal })
-              .then((r) => r.json())
+            jsonFrais<{ ceinture_index?: number }>("ceintures", `/api/ceinture-progression?${ceintureParam}`, { signal })
               .then((p) => {
-                if (signal.aborted) return;
+                if (signal.aborted || !p) return;
                 const c = CEINTURES[p.ceinture_index ?? 0];
                 if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
               })
@@ -721,9 +711,8 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
 
-      fetch(`/api/chapitres/mes-chapitres?eleve_id=${eleveId}`, { signal })
-        .then((r) => r.json())
-        .then((json) => { if (!signal.aborted) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
+      jsonFrais<{ chapitres?: typeof chapitresAssignes; serie?: number }>("chapitres", `/api/chapitres/mes-chapitres?eleve_id=${eleveId}`, { signal })
+        .then((json) => { if (!signal.aborted && json) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
         .catch(() => {});
 
       fetch("/api/daily-problem", { signal })
@@ -779,37 +768,18 @@ export default function DashboardEleve() {
       // Elles ne dépendent que de rbId : ainsi, même si le chargement des
       // podcasts est lent ou échoue (élève avec beaucoup de podcasts), rien ne
       // bloque jamais l'affichage des ceintures, du calcul ou du problème.
-      fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal })
-        .then(async (r) => {
-          // 401 = session expirée : on la rafraîchit et on retente une fois,
-          // sinon le bloc révisions disparaîtrait sans rien dire à l'élève.
-          if (r.status === 401) {
-            if (!(await reparerSession())) return null;
-            const retry = await fetch(`/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal });
-            return retry.ok ? retry.json() : null;
-          }
-          return r.ok ? r.json() : null;
-        })
+      jsonFrais<{ chapitres?: typeof chapitresRB }>("revisions", `/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal }, reparerSession)
         .then((json) => { if (!signal.aborted && json) setChapitresRB(json.chapitres ?? []); })
         .catch(() => {});
 
-      fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal })
-        .then(async (r) => {
-          if (r.status === 401) {
-            if (!(await reparerSession())) return null;
-            const retry = await fetch(`/api/ceinture-active?rb_id=${rbId}`, { signal });
-            return retry.ok ? retry.json() : null;
-          }
-          return r.ok ? r.json() : null;
-        })
+      jsonFrais<{ actif?: boolean }>("ceintures", `/api/ceinture-active?rb_id=${rbId}`, { signal }, reparerSession)
         .then((d) => {
           if (signal.aborted || !d) return; // erreur/401 → on garde l'état du cache
           setCeintureActive(d.actif === true);
           if (d.actif) {
-            fetch(`/api/ceinture-progression?rb_id=${rbId}`, { signal })
-              .then((r) => r.json())
+            jsonFrais<{ ceinture_index?: number }>("ceintures", `/api/ceinture-progression?rb_id=${rbId}`, { signal })
               .then((p) => {
-                if (signal.aborted) return;
+                if (signal.aborted || !p) return;
                 const c = CEINTURES[p.ceinture_index ?? 0];
                 if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
               })
@@ -818,9 +788,8 @@ export default function DashboardEleve() {
         })
         .catch(() => {});
 
-      fetch(`/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
-        .then((r) => r.json())
-        .then((json) => { if (!signal.aborted) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
+      jsonFrais<{ chapitres?: typeof chapitresAssignes; serie?: number }>("chapitres", `/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
+        .then((json) => { if (!signal.aborted && json) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
         .catch(() => {});
 
       fetch("/api/daily-problem", { signal })
@@ -1003,6 +972,7 @@ export default function DashboardEleve() {
       const res = await fetch(`/api/revisions-repetibox-jour?${params}`, signal ? { signal } : undefined);
       if (!res.ok || signal?.aborted) return;
       const json = await res.json();
+      ecrireFrais("revisions", `/api/revisions-repetibox-jour?${params}`, json);
       if (!signal?.aborted) setChapitresRB(json.chapitres ?? []);
     } catch { /* silencieux — inclut AbortError */ }
   }, []);
@@ -1156,6 +1126,7 @@ export default function DashboardEleve() {
     // Purger le cache dashboard de l'élève courant avant déconnexion
     if (session) {
       try { sessionStorage.removeItem(cacheKey(session.id)); } catch {}
+      invaliderGroupes("tout");
     }
     await effacerSession();
     // window.location pour forcer un rechargement complet (reset état React + cache Supabase)
