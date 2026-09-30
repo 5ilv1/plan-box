@@ -70,6 +70,7 @@ Les deux coexistent dans les progressions, assignations et résultats.
 | `user_preferences` | Préférences UI (nav_order) |
 | `ceinture_choix_semaine` | Domaines de ceintures choisis par l'élève pour la semaine |
 | `exercice_reprise` | L'exercice en cours d'un élève, pour qu'il le reprenne |
+| `reglage` | Réglages de classe (clé → valeur jsonb), accès serveur seulement : `deblocage_progressif` |
 
 ### Relations FK critiques
 Avant de supprimer un chapitre, nettoyer dans cet ordre :
@@ -173,23 +174,85 @@ ou la droite graduée — voir `docs/ceintures/SPEC-FIGURES.md`.
 
 Les blocs de `plan_travail` sont répartis en **trois paniers** par `repartirBlocs()`
 (`app/eleve/dashboard/page.tsx`), partagé par les trois points de chargement (PlanBox,
-Repetibox, rafraîchissement 30 s) :
+Repetibox, rafraîchissement 60 s) :
 
 | Panier | Contenu |
 |--------|---------|
-| **En retard** | jour passé et `statut != 'fait'` → bandeau rouge, masqué s'il est vide |
-| **Aujourd'hui** | date du jour, ou `periodicite = 'semaine'`, ou ressource reportée |
+| **En retard** | jour passé et `statut != 'fait'` → bandeau rouge, masqué s'il est vide ; un travail `periodicite = 'semaine'` n'y entre qu'une fois **sa semaine passée** (daté d'avant le lundi en cours) |
+| **Aujourd'hui** | date du jour, ou `periodicite = 'semaine'` de la semaine en cours, ou ressource reportée |
 | **Reste de la semaine** | à venir, dans la semaine en cours |
 
 - La fenêtre de chargement remonte **7 jours avant le lundi** : le travail non fait la
   semaine précédente ne disparaît pas au changement de semaine.
+- ⚠️ Jusqu'au 30/09, un travail « de la semaine » n'était **jamais** en retard :
+  l'analyse grammaticale non faite de la semaine d'avant restait dans « Aujourd'hui ».
 - Dictées et mots sont exclus du rattrapage (activités de classe, `filtrerDicteesMotsJourStrict`).
+- Ordre de la colonne du jour : **retards, puis ceintures de la semaine et lecture**, puis
+  le travail du jour — ce qui est dû d'abord.
 - **Problème du jour** : la carte est barrée dès que le problème est *terminé*, pas seulement
   réussi — trois essais épuisés, la correction montrée, il n'y a plus rien à faire
   (`lib/probleme-du-jour.ts`, `problemeTermine()`). La couleur du pied de carte distingue
   « ✓ Résolu » de « ✓ Fait ». Le serveur fait foi (`serverAttempt.termine`) ; le
   `localStorage` de la page du problème ne sert qu'en secours, et seulement s'il porte sur
   le même `problemId`.
+
+### Déblocage progressif
+
+Réglage enseignant **`deblocage_progressif`** (Paramètres, table `reglage`), **désactivé par
+défaut** : désactivé, l'élève voit tout, comme avant.
+
+| Étape | Ce que l'élève voit |
+|---|---|
+| 1 | le travail du jour, avec le problème et le calcul du jour |
+| 2 | la barre du jour pleine : ses **retards** apparaissent |
+| 3 | les retards des 7 derniers jours rattrapés : tout le reste — podcasts, ceintures, lecture, Motus, cartes Repetibox |
+
+- `lib/deblocage-eleve.ts` (**pur**, `etapeDeblocage()`) : **le jour est fini quand la barre
+  « Progression du jour » est pleine** — même `completion()`, mêmes rituels. Deux règles
+  pour le même chiffre, c'est ce que le suivi a été fait pour supprimer.
+- Un **atelier d'écriture de la semaine** ne se finit que le vendredi : il ne bloque pas,
+  mais l'élève doit y avoir **écrit aujourd'hui** (`historique`, une entrée datée par jour de
+  sauvegarde).
+- Les retards de **plus de 7 jours** restent visibles mais ne bloquent pas : un élève à 24
+  retards ne verrait sinon jamais ses podcasts ni ses ceintures. Un travail de la semaine
+  compte depuis son **vendredi** (`dateEcheance()`) : compté depuis son lundi, celui de la
+  semaine dernière aurait déjà 9 jours le mercredi.
+- Avant l'étape 3, Motus, cartes Repetibox, ceintures, lecture et podcasts sont montrés
+  **grisés** (`components/CarteVerrouillee.tsx`) : des vignettes, **sans aucune donnée
+  chargée**. `toutDebloque` n'autorise les chargements de l'étape 3 qu'une fois atteinte,
+  et seulement après le chargement de la visite (`premierChargementFait`) — avant, réglage
+  et blocs ne sont que ceux du cache.
+- Le réglage arrive par `/api/eleve/chargement` (pas d'appel de plus). Élèves Plan Box
+  natifs : toujours l'étape 3.
+- Contrat : `npx tsx docs/tests/test-deblocage-eleve.mjs` (25 cas).
+
+### Chargement : ne rien redemander pour rien
+
+Le tableau de bord est rouvert ~25 fois par élève et par séance (à chaque retour
+d'activité), sur un quota Vercel compté (voir « Quota Vercel gratuit »).
+
+- **`/api/eleve/chargement`** regroupe problème du jour, calcul du jour et les trois
+  lectures du plan de travail en **une** fonction. ⚠️ Aucune logique dupliquée : elle
+  **appelle les routes d'origine** et recopie leurs réponses telles quelles (sans les
+  décoder), chaque morceau avec son statut. Si elle échoue, le tableau de bord **retombe
+  sur les cinq appels séparés**. Elle livre aussi le réglage de déblocage et enregistre la
+  dernière connexion.
+- **`lib/cache-eleve.ts`** : mémoire d'onglet de 15 min (`sessionStorage`) pour ce qui
+  change peu — bibliothèque, ceintures, chapitres, cartes Repetibox, identité de l'élève.
+  Un groupe est **effacé dès que l'élève passe par une page qui le change**
+  (`InvalidationCacheEleve` dans `app/eleve/layout.tsx`, `groupesTouchesPar()`) : une
+  ceinture gagnée se voit au retour. Une valeur gardée n'est reprise que si elle a la
+  forme attendue (`valide`) — une valeur `true` laissée par une version précédente avait
+  donné un élève « undefined ». Plan de travail, problème et calcul du jour : jamais gardés.
+- ⚠️ **`useEleveSession` doit rendre le même objet pour le même élève** (`memeSession()`).
+  Il le recréait à chaque confirmation (cache, serveur, rafraîchissement du jeton), et
+  chaque copie relançait tous les chargements : 34 appels au lieu de 15.
+- `mon-plan-travail` filtre dans la base ce que la page jetait : `avecChapitre`, `avecQcm`,
+  `limite`, `leger` (podcasts 210 Ko → 1 Ko ; exercices 58 Ko → 12 octets, aucun bloc
+  n'ayant de chapitre).
+- La dernière connexion (`eleves_planbox_meta.derniere_connexion`) s'écrit côté serveur :
+  écrite depuis le navigateur, la RLS la refusait, et la colonne était vide pour toute la
+  classe (« connectés aujourd'hui » à 0).
 
 ## Avatar élève
 
@@ -247,6 +310,27 @@ NOTION_DB_SEANCES              # Base « Programmation année en cours »
 ## Déploiement
 - **Vercel** : auto-deploy sur push `main`
 - **URL prod** : https://plan-box-phi.vercel.app
+
+## Quota Vercel gratuit
+
+Plan Box, Repetibox et vue-classe sont sur le plan **Hobby** (gratuit) de l'équipe
+`5ilv1s-projects`, et c'est voulu : pas de passage à Pro. La limite qui compte est le
+**Fluid Active CPU : 4 h sur 30 jours glissants** — pas de remise à zéro à date fixe. À
+100 %, Vercel **met les projets en pause** : Plan Box et Repetibox s'arrêtent en classe.
+
+- Le 29/09 : 75 %, ~14 min de calcul par jour de classe (≈ 4 h 20 projetées). Chaque appel
+  coûte 15–25 ms : **c'est le nombre d'appels qui coûte**, pas leur poids.
+- Le détail par route n'est que dans le tableau de bord Vercel (Observability → Compute) ;
+  les journaux runtime ne gardent que 24 h.
+- Règles pour toute nouvelle fonctionnalité :
+  - un rafraîchissement périodique passe par **`pollingVisible()`** (`lib/polling.ts`) :
+    rien quand l'onglet est caché ;
+  - **`prefetch={false}`** sur tout `<Link>` vers une page élève dynamique
+    (`/eleve/activite/…`, `/chapitre/…`, `/ceintures/<domaine>`, `/qcm-classement/<id>`) :
+    le préchargement faisait rendre par le serveur des dizaines de pages jamais ouvertes à
+    chaque ouverture du tableau de bord (2 300 rendus d'activités en 6 h) ;
+  - regrouper plutôt qu'ajouter un appel au chargement d'une page élève ;
+  - ne pas redemander ce qu'on sait déjà (`lib/cache-eleve.ts`).
 
 ## Ceintures de compétences
 
@@ -1167,6 +1251,19 @@ Repetibox. `badge_eleve.eleve_id` et `ceinture_resultat.repetibox_eleve_id` sont
 7. **Dates en heure locale** : ne JAMAIS appeler `toISOString()` sur une `Date` construite en heure locale (`new Date(a, m, j)`, `setDate()`). En France (UTC+1/+2) le résultat recule d'un jour. Pour les conversions semaine ↔ date, utiliser `lib/semaine-iso.ts` (`lundiDeSemaine()`, `semaineISO()`), qui calcule tout en UTC ; sinon formater à la main avec `getFullYear()/getMonth()/getDate()`
 8. **`debut`/`fin` d'une analyse de phrase sont des index de MOTS**, jamais de caractères, et l'IA se trompe régulièrement d'un mot. Un groupe mal placé n'est pas une petite faute : l'élève clique exactement dessus, la réponse est refusée, et **rien ne le fait avancer** — c'est arrivé en classe sur « Les élèves courent dans la cour de récréation chaque mardi. ». Le texte du groupe (`mots`) fait foi ; `lib/analyse-phrase.ts` (`recalerGroupes`) recalcule les positions et **écarte** un groupe introuvable, à la génération comme à l'affichage. Le composant élève donne en plus la réponse après trois essais : aucune étape ne doit pouvoir enfermer un élève. `scripts/reparer-analyse-phrase.ts` remet en état le contenu déjà en base (idempotent, `--dry-run`).
 9. **`figure` et `droite` se perdent en chemin** : ce sont des clés facultatives d'une *question*, pas des types d'exercice. Toute page qui reconstruit sa propre liste de questions à partir de `contenu` doit les recopier, et son rendu doit appeler `FigureGeo` / `DroiteGraduee` — sinon l'élève lit « Quelle est cette figure ? » sans figure. Deux pages sont tombées dans le piège l'une après l'autre : l'entraînement (`chapitre/[id]/exercice/[exerciceId]`) et le `MiniQCM` de l'évaluation. La banque ne pose de dessin qu'à trois endroits — questions de `qcm` (156), questions d'`exercice` (276) et questions de diagnostic (3) : c'est là qu'il faut vérifier après toute modification d'un de ces rendus. Un QCM de fractions en images passe par les mêmes rendus, **plus l'aperçu enseignant** de `/enseignant/generer` : sans le dessin, on valide une question qu'on n'a pas pu relire.
+
+10. **Mettre en cache une page qui lit `useSearchParams()` la fait planter.** Le 29/09, un
+    `generateStaticParams()` vide ajouté aux pages élève à identifiant (pour qu'elles soient
+    rendues une fois puis servies depuis le cache) a mis **tous les exercices en 500**
+    l'après-midi : `/eleve/activite/[id]` lit `useSearchParams()` sans `<Suspense>`. **Le
+    build passait** — l'erreur n'apparaît qu'à la première visite de chaque page. Toute mise
+    en cache de page se teste sur un build **servi** (`next start` puis une requête sur un
+    chemin non prérendu), jamais sur le seul build.
+11. **Badges Repetibox : un code absent de la table `badge` faisait perdre toute la salve.**
+    9 badges ajoutés au code de Repetibox le 04/04 n'avaient jamais été mis en base ; le lot
+    d'insertion (tout ou rien) était refusé, aucun badge ne s'enregistrait. Réparé en base le
+    29/09, et `lib/enregistrer-badges.ts` (Repetibox) reprend badge par badge si le lot est
+    refusé. Un nouveau badge = une ligne dans `badge` **et** une entrée dans `BADGES_INFO`.
 
 ## Joseph — Agent de test et correction
 
