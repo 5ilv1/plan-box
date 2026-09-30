@@ -463,7 +463,7 @@ function TextesDuJour({
   }
 
   return (
-    <section style={{ marginTop: 32 }}>
+    <section style={{ marginTop: 32, minWidth: 0, maxWidth: "100%" }}>
       <h2 style={{
         fontSize: 16, fontWeight: 800, margin: "0 0 4px",
         fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)",
@@ -509,7 +509,7 @@ function TextesDuJour({
                       </span>
                     </span>
                     {j.sujet && (
-                      <span style={{ display: "block", margin: "2px 0 0", fontSize: 12, color: "var(--pb-on-surface-variant)", lineHeight: 1.45 }}>
+                      <span style={{ display: "block", margin: "2px 0 0", fontSize: 12, color: "var(--pb-on-surface-variant)", lineHeight: 1.45, overflowWrap: "anywhere" }}>
                         {j.sujet.length > 160 ? j.sujet.slice(0, 160) + "…" : j.sujet}
                       </span>
                     )}
@@ -536,9 +536,12 @@ function TextesDuJour({
                           <div style={{ fontSize: 14, fontWeight: 700, color: "var(--pb-on-surface)" }}>
                             {t.prenom} {t.nom}
                           </div>
+                          {/* Le texte passe à la ligne, trois lignes au plus : sur une
+                              seule ligne insécable, un long texte élargissait la page. */}
                           <div style={{
-                            fontSize: 12, color: "var(--pb-on-surface-variant)", marginTop: 2,
-                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                            fontSize: 12, color: "var(--pb-on-surface-variant)", marginTop: 2, lineHeight: 1.45,
+                            overflowWrap: "anywhere", display: "-webkit-box", WebkitLineClamp: 3,
+                            WebkitBoxOrient: "vertical", overflow: "hidden",
                           }}>
                             {t.texte
                               ? <>{mots} mot{mots > 1 ? "s" : ""} · {t.texte}</>
