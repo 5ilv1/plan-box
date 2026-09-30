@@ -60,7 +60,13 @@ export default function AtelierEcriturePage() {
   const [sujet, setSujet] = useState("");
   const [contrainte, setContrainte] = useState("");
   const [semaine, setSemaine] = useState("");
-  const [lundi, setLundi] = useState<string>(lundiCourant());
+  // La semaine peut venir de l'URL : c'est ainsi que le retour depuis la page
+  // de relecture ramène à la semaine qu'on consultait.
+  const [lundi, setLundi] = useState<string>(() => {
+    if (typeof window === "undefined") return lundiCourant();
+    const s = new URLSearchParams(window.location.search).get("semaine");
+    return s && /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : lundiCourant();
+  });
   const [textes, setTextes] = useState<TexteEleve[]>([]);
   const [correctionEnCours, setCorrectionEnCours] = useState(false);
   const [joursDuJour, setJoursDuJour] = useState<JourEcriture[]>([]);
@@ -417,7 +423,7 @@ export default function AtelierEcriturePage() {
         </div>
       )}
 
-      <TextesDuJour jours={joursDuJour} nbMots={nbMots} />
+      <TextesDuJour jours={joursDuJour} nbMots={nbMots} lundi={lundi} />
     </>
   );
 }
@@ -434,7 +440,28 @@ const JOURS_FR = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi",
  * à la bonne date, puis la case du bon élève. Chaque ligne mène à la même
  * page de relecture et d'annotation que l'atelier.
  */
-function TextesDuJour({ jours, nbMots }: { jours: JourEcriture[]; nbMots: (t: string) => number }) {
+function TextesDuJour({
+  jours, nbMots, lundi,
+}: { jours: JourEcriture[]; nbMots: (t: string) => number; lundi: string }) {
+  // Chaque jour se plie. Ouvert d'office : le jour le plus récent qui a des
+  // textes — c'est celui qu'on vient relire. Les autres restent à un clic.
+  const [ouverts, setOuverts] = useState<Set<string>>(new Set());
+  const [initialise, setInitialise] = useState<string | null>(null);
+  const cleSemaine = `${lundi}:${jours.map((j) => j.date).join(",")}`;
+  if (jours.length > 0 && initialise !== cleSemaine) {
+    const recents = [...jours].reverse();
+    const defaut = recents.find((j) => j.textes.some((t) => t.texte)) ?? recents[0];
+    setOuverts(new Set([defaut.date]));
+    setInitialise(cleSemaine);
+  }
+  function basculer(date: string) {
+    setOuverts((prev) => {
+      const n = new Set(prev);
+      if (n.has(date)) n.delete(date); else n.add(date);
+      return n;
+    });
+  }
+
   return (
     <section style={{ marginTop: 32 }}>
       <h2 style={{
@@ -457,30 +484,47 @@ function TextesDuJour({ jours, nbMots }: { jours: JourEcriture[]; nbMots: (t: st
             const d = new Date(`${j.date}T12:00:00`);
             const titre = `${JOURS_FR[d.getDay()]} ${d.getDate()} ${d.toLocaleDateString("fr-FR", { month: "long" })}`;
             const ecrits = j.textes.filter((t) => t.texte).length;
+            const ouvert = ouverts.has(j.date);
             return (
               <div key={j.date}>
-                <div style={{ marginBottom: 8 }}>
-                  <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "var(--pb-on-surface)", textTransform: "capitalize" }}>
-                    {titre}
-                    <span style={{ fontWeight: 500, fontSize: 12, color: "var(--pb-on-surface-variant)", textTransform: "none" }}>
-                      {" "}· {ecrits} texte{ecrits > 1 ? "s" : ""} sur {j.textes.length}
+                <button
+                  type="button"
+                  onClick={() => basculer(j.date)}
+                  aria-expanded={ouvert}
+                  style={{
+                    display: "flex", alignItems: "flex-start", gap: 8, width: "100%",
+                    background: "none", border: "none", padding: 0, marginBottom: ouvert ? 8 : 0,
+                    cursor: "pointer", textAlign: "left", font: "inherit", color: "inherit",
+                  }}
+                >
+                  <span className="ms" style={{
+                    fontSize: 20, color: "var(--pb-on-surface-variant)", marginTop: -1,
+                    transform: ouvert ? "rotate(90deg)" : "none", transition: "transform .15s",
+                  }}>chevron_right</span>
+                  <span style={{ minWidth: 0 }}>
+                    <span style={{ display: "block", fontSize: 14, fontWeight: 700, color: "var(--pb-on-surface)" }}>
+                      <span style={{ textTransform: "capitalize" }}>{titre}</span>
+                      <span style={{ fontWeight: 500, fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                        {" "}· {ecrits} texte{ecrits > 1 ? "s" : ""} sur {j.textes.length}
+                      </span>
                     </span>
-                  </p>
-                  {j.sujet && (
-                    <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--pb-on-surface-variant)", lineHeight: 1.45 }}>
-                      {j.sujet.length > 160 ? j.sujet.slice(0, 160) + "…" : j.sujet}
-                    </p>
-                  )}
-                </div>
+                    {j.sujet && (
+                      <span style={{ display: "block", margin: "2px 0 0", fontSize: 12, color: "var(--pb-on-surface-variant)", lineHeight: 1.45 }}>
+                        {j.sujet.length > 160 ? j.sujet.slice(0, 160) + "…" : j.sujet}
+                      </span>
+                    )}
+                  </span>
+                </button>
 
-                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                {ouvert && (
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, paddingLeft: 28 }}>
                   {j.textes.map((t) => {
                     const mots = nbMots(t.texte);
                     const fait = t.statut === "fait";
                     return (
                       <Link
                         key={t.id}
-                        href={`/enseignant/atelier-ecriture/${t.id}`}
+                        href={`/enseignant/atelier-ecriture/${t.id}?depuis=atelier&semaine=${lundi}`}
                         style={{
                           display: "flex", alignItems: "center", gap: 12,
                           padding: "10px 14px", borderRadius: 12, textDecoration: "none",
@@ -524,6 +568,7 @@ function TextesDuJour({ jours, nbMots }: { jours: JourEcriture[]; nbMots: (t: st
                     );
                   })}
                 </div>
+                )}
               </div>
             );
           })}

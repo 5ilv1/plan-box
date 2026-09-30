@@ -56,10 +56,16 @@ const STATUT_COULEURS: Record<Annotation["statut"], { bg: string; fg: string; la
 
 export default function EnseignantAtelierBloc({
   params,
+  searchParams,
 }: {
   params: Promise<{ blocId: string }>;
+  searchParams: Promise<{ depuis?: string; semaine?: string }>;
 }) {
   const { blocId } = use(params);
+  // D'où vient l'enseignant : la page Atelier (textes du jour) ou la matrice du
+  // suivi. Le mode du texte ne suffit pas à le deviner — un texte du jour
+  // s'ouvre depuis les deux.
+  const { depuis, semaine } = use(searchParams);
 
   const [loading, setLoading] = useState(true);
   const [contenu, setContenu] = useState<Contenu | null>(null);
@@ -501,7 +507,11 @@ export default function EnseignantAtelierBloc({
       {/* Header */}
       <div style={{ marginBottom: 20 }}>
         <Link
-          href={contenu.mode === "jour" ? "/enseignant/suivi" : "/enseignant/atelier-ecriture"}
+          href={
+            depuis === "atelier" || (depuis !== "suivi" && contenu.mode !== "jour")
+              ? `/enseignant/atelier-ecriture${semaine && /^\d{4}-\d{2}-\d{2}$/.test(semaine) ? `?semaine=${semaine}` : ""}`
+              : "/enseignant/suivi"
+          }
           style={{
             display: "inline-flex", alignItems: "center", gap: 6,
             fontSize: 13, color: "var(--pb-on-surface-variant)",
