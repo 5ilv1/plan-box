@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
 import MatieresView from "@/components/dashboard/MatieresView";
 import NouvelleAnneeSection from "@/components/NouvelleAnneeSection";
+import DeblocageProgressifSection from "@/components/DeblocageProgressifSection";
 
 interface JourSansEcole {
   id: string;
@@ -134,6 +135,9 @@ export default function ParametresPage() {
       <h2 className="ens-page-title">Paramètres</h2>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 32, marginTop: 24 }}>
+
+        {/* ── Section : Déblocage progressif (tableau de bord élève) ── */}
+        <DeblocageProgressifSection />
 
         {/* ── Section : Zone scolaire ── */}
         <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--ens-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>

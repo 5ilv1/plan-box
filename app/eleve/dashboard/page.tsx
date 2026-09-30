@@ -1,5 +1,6 @@
 "use client";
 
+import CarteVerrouillee, { MotusVerrouille } from "@/components/CarteVerrouillee";
 import { jsonFrais, ecrireFrais, lireFrais, invaliderGroupes } from "@/lib/cache-eleve";
 import { pollingVisible } from "@/lib/polling";
 import { useEffect, useState, useRef, useCallback } from "react";
@@ -20,6 +21,7 @@ import MotusCarte from "@/components/MotusCarte";
 // `lib/suivi-metriques.ts` — trois pages avaient chacune la leur, et elles ne
 // tombaient pas d'accord.
 import { completion, estComptePourCompletion, dateDuJour } from "@/lib/suivi-metriques";
+import { etapeDeblocage } from "@/lib/deblocage-eleve";
 
 // ─── Types locaux ────────────────────────────────────────────────────────────
 
@@ -168,10 +170,12 @@ function filtrerBlocsConditionnels(blocs: PlanTravail[]): PlanTravail[] {
 function repartirBlocs(blocs: PlanTravail[], aujourd_hui: string, debut: string) {
   const estReporte = (b: PlanTravail) =>
     b.type === "ressource" && b.statut !== "fait" && b.date_assignation < debut;
+  // Un travail « de la semaine » n'est en retard qu'une fois sa semaine
+  // passée : daté d'avant le lundi en cours. Avant, il ne l'était jamais, et
+  // l'analyse de la semaine dernière restait dans « Aujourd'hui ».
   const estEnRetard = (b: PlanTravail) =>
-    b.periodicite !== "semaine" &&
     b.statut !== "fait" &&
-    b.date_assignation < aujourd_hui &&
+    (b.periodicite === "semaine" ? b.date_assignation < debut : b.date_assignation < aujourd_hui) &&
     !estReporte(b);
 
   return {
@@ -245,6 +249,7 @@ interface DashCache {
   chapitresAssignes: ChapitreAssigne[];
   serieParcours: number;
   calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null;
+  deblocageActif?: boolean;
 }
 
 const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 h : au-delà, on considère obsolète
@@ -304,6 +309,16 @@ export default function DashboardEleve() {
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
   const [serieParcours, setSerieParcours]              = useState<number>(0);
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
+  // Déblocage progressif (lib/deblocage-eleve.ts) : réglage livré par /api/eleve/chargement.
+  const [deblocageActif, setDeblocageActif]             = useState(false);
+  // Le chargement de cette visite est-il arrivé ? Avant, on ne sait ni le
+  // réglage ni l'étape : rien de l'étape 3 ne doit partir.
+  const [premierChargementFait, setPremierChargementFait] = useState(false);
+  // Passe à true à l'étape 3 et y reste pendant la visite : c'est lui qui
+  // autorise le chargement des cartes de l'étape 3 (ceintures, lecture…).
+  const [toutDebloque, setToutDebloque]                 = useState(false);
+  // Incrémenté à chaque chargement des podcasts : relance la vérification de leur état « fait ».
+  const [faitsPodcastsAVerifier, setFaitsPodcastsAVerifier] = useState(0);
   const [ceinturesFrancais, setCeinturesFrancais] = useState<{
     couleurCourante: { nom: string; hex: string; hexFond: string } | null;
     domaines: Array<{ code: string; slug?: string; nom: string; icone?: string; commence?: boolean; couleurCourante: { nom?: string; hex: string; hexFond?: string } | null }>;
@@ -401,6 +416,7 @@ export default function DashboardEleve() {
       setChapitresAssignes(cache.chapitresAssignes);
       setSerieParcours(cache.serieParcours ?? 0);
       setCalculJour(cache.calculJour);
+      setDeblocageActif(cache.deblocageActif === true);
       setChargementDonnees(false); // UI visible immédiatement
     }
 
@@ -469,7 +485,7 @@ export default function DashboardEleve() {
 
   // ── Statut bibliothèque (livre en cours / peut choisir) ─────────────────────
   useEffect(() => {
-    if (!session) return;
+    if (!session || !toutDebloque) return;
     const ctrl = new AbortController();
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
@@ -482,11 +498,11 @@ export default function DashboardEleve() {
       })
       .catch(() => {});
     return () => ctrl.abort();
-  }, [session]);
+  }, [session, toutDebloque]);
 
   // ── Choix hebdomadaire des domaines de ceintures ───────────────────────────
   useEffect(() => {
-    if (!session) return;
+    if (!session || !toutDebloque) return;
     const ctrl = new AbortController();
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
@@ -505,7 +521,7 @@ export default function DashboardEleve() {
       })
       .catch(() => {});
     return () => ctrl.abort();
-  }, [session]);
+  }, [session, toutDebloque]);
 
   // Première connexion de la semaine → fenêtre de choix, mais jamais avant que
   // l'onboarding avatar de la rentrée soit réglé (il redirige hors de la page).
@@ -558,7 +574,7 @@ export default function DashboardEleve() {
 
   // ── Ceintures de compétences (français) ────────────────────────────────────
   useEffect(() => {
-    if (!session) return;
+    if (!session || !toutDebloque) return;
     const ctrl = new AbortController();
     const qs = session.source === "planbox"
       ? `eleve_id=${session.id}`
@@ -574,7 +590,32 @@ export default function DashboardEleve() {
       })
       .catch(() => {});
     return () => ctrl.abort();
-  }, [session]);
+  }, [session, toutDebloque]);
+
+  // Cartes de l'étape 3 pour un élève Repetibox.
+  useEffect(() => {
+    if (!toutDebloque || session?.source !== "repetibox") return;
+    const ctrl = new AbortController();
+    chargerExtrasRB(parseInt(session.id, 10), ctrl.signal);
+    return () => ctrl.abort();
+  }, [toutDebloque, session]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // État « fait » des podcasts (élève Repetibox), à l'étape 3 seulement.
+  useEffect(() => {
+    if (!toutDebloque || session?.source !== "repetibox" || faitsPodcastsAVerifier === 0) return;
+    const qcmIds = podcastsSemaine.map((p) => p.qcm_id);
+    if (qcmIds.length === 0) return;
+    const ctrl = new AbortController();
+    fetch(`/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&rb_id=${session.id}`, { signal: ctrl.signal })
+      .then((r) => r.json())
+      .then((json) => {
+        if (ctrl.signal.aborted) return;
+        const faits = new Set<string>(json.faits ?? []);
+        setPodcastsSemaine((liste) => liste.map((p) => ({ ...p, fait: faits.has(p.qcm_id) })));
+      })
+      .catch(() => { /* réseau KO : on garde l'état connu */ });
+    return () => ctrl.abort();
+  }, [toutDebloque, faitsPodcastsAVerifier, session]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // ── Chargement Plan Box ─────────────────────────────────────────────────────
   async function chargerPB(eleveId: string, signal: AbortSignal) {
@@ -753,44 +794,46 @@ export default function DashboardEleve() {
       if (signal.aborted) return;
       console.error("[chargerPB]", err);
     } finally {
-      if (!signal.aborted) setChargementDonnees(false);
+      if (!signal.aborted) { setChargementDonnees(false); setPremierChargementFait(true); }
     }
   }
 
   // ── Chargement Repetibox ────────────────────────────────────────────────────
+  // ── Cartes de l'étape 3 (élève Repetibox) ──────────────────────────────────
+  // Hors du chargement principal : avec le déblocage progressif, un élève qui
+  // n'a pas fini sa journée ne les voit pas, et on ne les demande pas.
+  async function chargerExtrasRB(rbId: number, signal: AbortSignal) {
+    jsonFrais<{ chapitres?: typeof chapitresRB }>("revisions", `/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal }, reparerSession)
+      .then((json) => { if (!signal.aborted && json) setChapitresRB(json.chapitres ?? []); })
+      .catch(() => {});
+
+    jsonFrais<{ actif?: boolean }>("ceintures", `/api/ceinture-active?rb_id=${rbId}`, { signal }, reparerSession)
+      .then((d) => {
+        if (signal.aborted || !d) return; // erreur/401 → on garde l'état du cache
+        setCeintureActive(d.actif === true);
+        if (d.actif) {
+          jsonFrais<{ ceinture_index?: number }>("ceintures", `/api/ceinture-progression?rb_id=${rbId}`, { signal })
+            .then((p) => {
+              if (signal.aborted || !p) return;
+              const c = CEINTURES[p.ceinture_index ?? 0];
+              if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
+            })
+            .catch(() => {});
+        }
+      })
+      .catch(() => {});
+
+    jsonFrais<{ chapitres?: typeof chapitresAssignes; serie?: number }>("chapitres", `/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
+      .then((json) => { if (!signal.aborted && json) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
+      .catch(() => {});
+  }
+
   async function chargerRB(rbId: number, signal: AbortSignal) {
     try {
-      // La dernière connexion est enregistrée par /api/revisions-repetibox-jour,
-      // appelée juste en dessous : écrite d'ici, la RLS la refusait toujours.
-
-      // Requêtes indépendantes (ceinture, calcul, problème, parcours) lancées
-      // TOUT EN HAUT, en parallèle du chargement des plans de travail/podcasts.
-      // Elles ne dépendent que de rbId : ainsi, même si le chargement des
-      // podcasts est lent ou échoue (élève avec beaucoup de podcasts), rien ne
-      // bloque jamais l'affichage des ceintures, du calcul ou du problème.
-      jsonFrais<{ chapitres?: typeof chapitresRB }>("revisions", `/api/revisions-repetibox-jour?rb_eleve_id=${rbId}`, { signal }, reparerSession)
-        .then((json) => { if (!signal.aborted && json) setChapitresRB(json.chapitres ?? []); })
-        .catch(() => {});
-
-      jsonFrais<{ actif?: boolean }>("ceintures", `/api/ceinture-active?rb_id=${rbId}`, { signal }, reparerSession)
-        .then((d) => {
-          if (signal.aborted || !d) return; // erreur/401 → on garde l'état du cache
-          setCeintureActive(d.actif === true);
-          if (d.actif) {
-            jsonFrais<{ ceinture_index?: number }>("ceintures", `/api/ceinture-progression?rb_id=${rbId}`, { signal })
-              .then((p) => {
-                if (signal.aborted || !p) return;
-                const c = CEINTURES[p.ceinture_index ?? 0];
-                if (c) setCeintureInfo({ index: c.index, nom: c.nom, couleur: c.couleur });
-              })
-              .catch(() => {});
-          }
-        })
-        .catch(() => {});
-
-      jsonFrais<{ chapitres?: typeof chapitresAssignes; serie?: number }>("chapitres", `/api/chapitres/mes-chapitres?rb_id=${rbId}`, { signal })
-        .then((json) => { if (!signal.aborted && json) { setChapitresAssignes(json.chapitres ?? []); setSerieParcours(json.serie ?? 0); } })
-        .catch(() => {});
+      // La dernière connexion est enregistrée par /api/eleve/chargement, appelé
+      // juste en dessous : écrite d'ici, la RLS la refusait toujours.
+      // Cartes Repetibox, ceinture de multiplication et chapitres : chargés par
+      // chargerExtrasRB(), à l'étape 3 du déblocage seulement.
 
       const aujourd_hui = new Date().toISOString().split("T")[0];
       const { debut, fin, debutRetard } = getBornesSemaine();
@@ -800,13 +843,15 @@ export default function DashboardEleve() {
       // des routes d'origine. S'il échoue — ou n'existe pas encore pendant un
       // déploiement —, on retombe sur les cinq appels séparés d'avant.
       type Morceau = { status: number; corps: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
-      let groupe: Record<"probleme" | "calcul" | "semaine" | "exos" | "podcasts", Morceau> | null = null;
+      let groupe: (Record<"probleme" | "calcul" | "semaine" | "exos" | "podcasts", Morceau> & { deblocage?: boolean }) | null = null;
       try {
         const r = await fetch(`/api/eleve/chargement?rb=${rbId}&debut=${debutRetard}&fin=${fin}`, { signal });
         if (r.ok) groupe = await r.json();
       } catch { if (signal.aborted) return; }
       if (signal.aborted) return;
-      const corps = (cle: keyof NonNullable<typeof groupe>, url: string) =>
+      // Sans la route regroupée, le réglage est inconnu : désactivé, l'élève voit tout.
+      setDeblocageActif(groupe?.deblocage === true);
+      const corps = (cle: "probleme" | "calcul" | "semaine" | "exos" | "podcasts", url: string) =>
         groupe?.[cle] ? Promise.resolve(groupe[cle].corps) : fetch(url, { signal }).then((r) => r.json());
 
       corps("probleme", "/api/daily-problem")
@@ -870,35 +915,28 @@ export default function DashboardEleve() {
         vusQcm.add(qcmId);
         podcastsBlocs.push({ bloc: b, reporte: b.date_assignation < debut });
       }
-      if (podcastsBlocs.length > 0) {
-        const qcmIds = podcastsBlocs.map((p) => (p.bloc.contenu as any).qcm_id as string);
-        let faits = new Set<string>();
-        try {
-          const resFaits = await fetch(
-            `/api/qcm-reponse/faits?qcm_ids=${encodeURIComponent(qcmIds.join(","))}&rb_id=${rbId}`,
-            { signal },
-          );
-          const jsonFaits = await resFaits.json().catch(() => ({ faits: [] }));
-          faits = new Set<string>(jsonFaits.faits ?? []);
-        } catch { /* réseau KO : on affiche les podcasts sans l'état "fait" */ }
-        if (!signal.aborted) {
-          setPodcastsSemaine(podcastsBlocs.map(({ bloc, reporte }) => ({
+      // L'état « fait » de chaque podcast est demandé par l'effet plus bas, à
+      // l'étape 3 seulement — c'est là que les podcasts s'affichent. En
+      // attendant, on garde celui qu'on connaissait déjà.
+      if (!signal.aborted) {
+        setPodcastsSemaine((avant) => podcastsBlocs.map(({ bloc, reporte }) => {
+          const qcmId = (bloc.contenu as any).qcm_id as string; // eslint-disable-line @typescript-eslint/no-explicit-any
+          return {
             id: bloc.id,
             titre: bloc.titre,
-            qcm_id: (bloc.contenu as any).qcm_id as string,
-            fait: faits.has((bloc.contenu as any).qcm_id),
+            qcm_id: qcmId,
+            fait: avant.find((p) => p.qcm_id === qcmId)?.fait ?? false,
             reporte,
-          })));
-        }
-      } else if (!signal.aborted) {
-        setPodcastsSemaine([]);
+          };
+        }));
+        setFaitsPodcastsAVerifier((n) => n + 1);
       }
 
     } catch (err) {
       if (signal.aborted) return;
       console.error("[chargerRB]", err);
     } finally {
-      if (!signal.aborted) setChargementDonnees(false);
+      if (!signal.aborted) { setChargementDonnees(false); setPremierChargementFait(true); }
     }
   }
 
@@ -1031,12 +1069,14 @@ export default function DashboardEleve() {
       chapitresAssignes,
       serieParcours,
       calculJour,
+      deblocageActif,
     });
   }, [
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
     blocsAujourdhui, blocsSemaine, blocsEnRetard, notifications, chapitresRB, podcastsQcm,
     podcastsSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
     dailyProblemFait, dailyProblemReussi, chapitresAssignes, serieParcours, calculJour,
+    deblocageActif,
   ]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
@@ -1138,33 +1178,10 @@ export default function DashboardEleve() {
     window.location.href = "/eleve";
   }
 
-  // ── Écran de chargement ─────────────────────────────────────────────────────
-  if (chargementSession || chargementDonnees) {
-    return (
-      <div className="eleve-page">
-        <nav className="eleve-nav">
-          <div className="eleve-nav-inner">
-            <span className="eleve-nav-logo">Plan Box</span>
-          </div>
-        </nav>
-        <main className="eleve-main">
-          <div className="skeleton" style={{ height: 200, borderRadius: "2rem", marginBottom: 32 }} />
-          <div className="eleve-bento">
-            <div className="skeleton" style={{ height: 300, borderRadius: "1.75rem" }} />
-            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-              <div className="skeleton" style={{ height: 120, borderRadius: "1.75rem" }} />
-              <div className="skeleton" style={{ height: 120, borderRadius: "1.75rem" }} />
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
-
-  // ── Données calculées ───────────────────────────────────────────────────────
-  const aujourd_hui_label = new Date().toLocaleDateString("fr-FR", {
-    weekday: "long", day: "numeric", month: "long",
-  });
+  // ── Progression du jour et déblocage progressif ────────────────────────────
+  // Calculés avant l'écran de chargement : l'effet qui débloque l'étape 3 doit
+  // être déclaré avant tout `return`. Le jour est fini quand la barre est
+  // pleine — une seule règle pour les deux (lib/deblocage-eleve.ts).
   const hasDailyProblem = dailyProblem !== null;
   const hasCalculJour = calculJour !== null;
   // Compteur de tâches du JOUR uniquement (exclut les blocs hebdomadaires
@@ -1197,6 +1214,52 @@ export default function DashboardEleve() {
     ...rituelsDuJour.map((fait) => ({ statut: fait ? "fait" : "a_faire" })),
   ]);
   const pctJour = pct ?? 0;
+
+  const deblocage = etapeDeblocage({
+    // Les élèves Plan Box natifs n'ont pas la route regroupée : ils voient tout.
+    actif: deblocageActif && session?.source === "repetibox",
+    faitsJour: nbFaitAujourd_hui,
+    totalJour: totalTaches,
+    blocsAujourdhui,
+    retards: blocsEnRetard.filter((b) => estComptePourCompletion(b.type)),
+    aujourdhui: dateAujourdhui,
+    aujourdhuiUtc: new Date().toISOString().slice(0, 10),
+  });
+  const montrerRetards = deblocage.etape >= 2;
+  const montrerTout = deblocage.etape === 3;
+  useEffect(() => {
+    // Seulement une fois le chargement de CETTE visite arrivé : avant, le
+    // réglage et les blocs ne sont que ceux du cache.
+    if (premierChargementFait && montrerTout && !toutDebloque) setToutDebloque(true);
+  }, [premierChargementFait, montrerTout, toutDebloque]);
+
+  // ── Écran de chargement ─────────────────────────────────────────────────────
+  if (chargementSession || chargementDonnees) {
+    return (
+      <div className="eleve-page">
+        <nav className="eleve-nav">
+          <div className="eleve-nav-inner">
+            <span className="eleve-nav-logo">Plan Box</span>
+          </div>
+        </nav>
+        <main className="eleve-main">
+          <div className="skeleton" style={{ height: 200, borderRadius: "2rem", marginBottom: 32 }} />
+          <div className="eleve-bento">
+            <div className="skeleton" style={{ height: 300, borderRadius: "1.75rem" }} />
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div className="skeleton" style={{ height: 120, borderRadius: "1.75rem" }} />
+              <div className="skeleton" style={{ height: 120, borderRadius: "1.75rem" }} />
+            </div>
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  // ── Données calculées ───────────────────────────────────────────────────────
+  const aujourd_hui_label = new Date().toLocaleDateString("fr-FR", {
+    weekday: "long", day: "numeric", month: "long",
+  });
 
   // Ce qui ne compte pas dans la barre existe quand même : sans ça, un jour
   // fait d'un seul podcast afficherait « Rien à faire aujourd'hui » au-dessus
@@ -1382,6 +1445,7 @@ export default function DashboardEleve() {
             </div>
 
             {/* Carte stats hero — masquée sur portrait, visible à partir du paysage iPad */}
+            {montrerTout && (
             <div className="eleve-hero-card eleve-hero-card-stats" style={{ position: "relative", zIndex: 1 }}>
               <div style={{ fontSize: 12, opacity: 0.75, marginBottom: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                 Semaine en cours
@@ -1410,16 +1474,28 @@ export default function DashboardEleve() {
               </div>
             </div>
 
+            )}
+
             {/* Motus du jour — 3e zone du hero, à droite du bonjour.
                 Sur petit écran, c'est la carte du bento qui prend le relais. */}
-            <MotusCarte variant="hero" />
+            {montrerTout ? <MotusCarte variant="hero" /> : <MotusVerrouille variant="hero" />}
           </div>
         </div>
 
         {/* ── Bento grid ── */}
         <div className="eleve-bento">
 
-          {/* ── Colonne gauche ── */}
+          {/* ── Colonne gauche ── étape 3 du déblocage ; avant, grisée (rien n'est chargé) */}
+          {!montrerTout && (
+            <div className="eleve-bento-sidebar" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <MotusVerrouille variant="bento" />
+              {session?.source === "repetibox" && <CarteVerrouillee icone="style" titre="Cartes Repetibox" />}
+              <CarteVerrouillee icone="workspace_premium" titre="Mes ceintures" />
+              <CarteVerrouillee icone="auto_stories" titre="Ma lecture" />
+              <CarteVerrouillee icone="podcasts" titre="Podcasts" />
+            </div>
+          )}
+          {montrerTout && (
           <div className="eleve-bento-sidebar" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
 
             {/* Motus du jour (petits écrans : le hero ne l'affiche pas) */}
@@ -1876,6 +1952,7 @@ export default function DashboardEleve() {
               </div>
             )}
           </div>
+          )}
 
           {/* ── Colonne droite ── */}
           <div className="eleve-bento-main" style={{ display: "flex", flexDirection: "column", gap: 32 }}>
@@ -1893,7 +1970,7 @@ export default function DashboardEleve() {
                 const groupesEnLigne = groupesChapitres
                   .map(([id, info]) => [id, { ...info, blocs: info.blocs.filter((b) => !isPapier(b)) }] as [string, { titre: string; matiere: string | null; blocs: PlanTravail[] }])
                   .filter(([, info]) => info.blocs.length > 0);
-                const totalEnLigne = groupesEnLigne.reduce((s, [, { blocs }]) => s + blocs.length, 0) + blocsEnLigneLibres.length + (chapitresRB.length > 0 && urlRB ? 1 : 0) + chapitresAssignes.length;
+                const totalEnLigne = groupesEnLigne.reduce((s, [, { blocs }]) => s + blocs.length, 0) + blocsEnLigneLibres.length + (montrerTout && chapitresRB.length > 0 && urlRB ? 1 : 0) + (montrerTout ? chapitresAssignes.length : 0);
                 return (
               <>
               {/* ─ Header ─ */}
@@ -1929,141 +2006,38 @@ export default function DashboardEleve() {
                 </div>
               </div>
 
-              {/* ══ Ceintures de la semaine ══ */}
-              {domainesSemaine.length > 0 && (
+              {/* ══ Déblocage progressif : ce qui reste avant la suite ══ */}
+              {deblocage.etape < 3 && (
                 <div
                   className="pb-card"
                   style={{
-                    padding: "20px 22px", marginBottom: 24,
-                    background: "linear-gradient(135deg, rgba(124,179,66,0.10), rgba(124,179,66,0.02))",
-                    border: "1px solid rgba(124,179,66,0.25)",
+                    padding: "16px 20px", marginBottom: 24, display: "flex", alignItems: "center", gap: 14,
+                    background: deblocage.etape === 1 ? "rgba(0,80,212,0.06)" : "rgba(34,197,94,0.08)",
+                    border: `1px solid ${deblocage.etape === 1 ? "rgba(0,80,212,0.18)" : "rgba(34,197,94,0.25)"}`,
                   }}
                 >
-                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
-                    <span className="ms" style={{ fontSize: 22, color: "#7CB342" }}>workspace_premium</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{
-                        fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
-                        textTransform: "uppercase", color: "#5A8C2E",
-                      }}>
-                        🥋 Tes ceintures de la semaine
-                      </div>
-                    </div>
-                    {(choixSemaine?.disponibles.length ?? 0) >= 2 && choixSemaine?.peutChanger && (
-                      <button
-                        type="button"
-                        onClick={() => { setErreurChoix(null); setModalCeintures(true); }}
-                        style={{
-                          background: "none", border: "none", cursor: "pointer",
-                          fontSize: 12, fontWeight: 700, color: "#5A8C2E",
-                          padding: "4px 8px", borderRadius: 8,
-                        }}
-                      >
-                        Changer
-                      </button>
+                  <span className="ms" style={{ fontSize: 26, color: deblocage.etape === 1 ? "var(--pb-primary)" : "#16A34A", flexShrink: 0 }}>
+                    {deblocage.etape === 1 ? "lock" : "lock_open_right"}
+                  </span>
+                  <div style={{ fontSize: 14, lineHeight: 1.45, color: "var(--pb-on-surface)" }}>
+                    {deblocage.etape === 1 ? (
+                      <>
+                        <strong>Termine ton travail du jour</strong> pour débloquer la suite
+                        {" "}— encore {deblocage.resteJour} {deblocage.resteJour > 1 ? "activités" : "activité"}.
+                      </>
+                    ) : (
+                      <>
+                        <strong>Bravo, ta journée est faite !</strong> Rattrape
+                        {" "}{deblocage.resteRetards > 1 ? `tes ${deblocage.resteRetards} exercices` : "ton exercice"} en retard
+                        {" "}pour débloquer les podcasts, les ceintures, ta lecture et Motus.
+                      </>
                     )}
-                  </div>
-
-                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
-                    {domainesSemaine.map((d) => {
-                      const teinte = d.couleurCourante?.hex ?? "#7CB342";
-                      return (
-                        <Link
-                          key={d.code}
-                          prefetch={false}
-                          href={d.slug ? `/eleve/ceintures/${d.slug}` : "/eleve/ceintures"}
-                          style={{
-                            display: "flex", alignItems: "center", gap: 12,
-                            padding: "14px 16px", borderRadius: 14,
-                            background: "white", border: `1.5px solid ${teinte}40`,
-                            textDecoration: "none", color: "inherit",
-                          }}
-                        >
-                          <span className="ms" style={{ fontSize: 24, color: teinte, flexShrink: 0 }}>
-                            {d.icone ?? "workspace_premium"}
-                          </span>
-                          <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{
-                              fontWeight: 800, fontSize: 15,
-                              fontFamily: "'Plus Jakarta Sans', sans-serif",
-                              color: "var(--pb-on-surface)",
-                            }}>
-                              {d.nom}
-                            </div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
-                              <span style={{ width: 9, height: 9, borderRadius: "50%", background: teinte, flexShrink: 0 }} />
-                              <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
-                                {d.couleurCourante?.nom ? `Ceinture ${d.couleurCourante.nom.toLowerCase()}` : "Domaine terminé"}
-                              </span>
-                            </div>
-                          </div>
-                          <span className="ms" style={{ fontSize: 18, color: teinte, flexShrink: 0 }}>chevron_right</span>
-                        </Link>
-                      );
-                    })}
                   </div>
                 </div>
               )}
 
-              {/* ══ Parcours à la une / Transition après le travail du jour ══ */}
-              {parcoursALaUne && (() => {
-                const journeeFinie = totalTaches > 0 && nbFaitAujourd_hui === totalTaches;
-                return (
-                  <Link
-                    prefetch={false}
-                    href={`/eleve/chapitre/${parcoursALaUne.id}`}
-                    className="pb-card"
-                    style={{
-                      display: "block", textDecoration: "none", color: "inherit",
-                      padding: "20px 22px", marginBottom: 24,
-                      background: "linear-gradient(135deg, rgba(124,58,237,0.10), rgba(124,58,237,0.02))",
-                      border: "1px solid rgba(124,58,237,0.20)",
-                      position: "relative", overflow: "hidden",
-                    }}
-                  >
-                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                      <div style={{
-                        width: 52, height: 52, borderRadius: 14, flexShrink: 0,
-                        background: "rgba(124,58,237,0.12)",
-                        display: "flex", alignItems: "center", justifyContent: "center",
-                      }}>
-                        <span className="ms" style={{ fontSize: 28, color: "#7C3AED" }}>
-                          {journeeFinie ? "rocket_launch" : "auto_stories"}
-                        </span>
-                      </div>
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{
-                          fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
-                          textTransform: "uppercase", color: "#7C3AED", marginBottom: 4,
-                        }}>
-                          {journeeFinie ? "🎉 Travail du jour terminé — et maintenant ?" : "⭐ Ton parcours à continuer"}
-                        </div>
-                        <div style={{
-                          fontWeight: 800, fontSize: 16,
-                          fontFamily: "'Plus Jakarta Sans', sans-serif",
-                          color: "var(--pb-on-surface)",
-                        }}>
-                          {parcoursALaUne.titre}
-                        </div>
-                        <div style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginTop: 3 }}>
-                          {parcoursALaUne.prochainExerciceTitre
-                            ? <>Étape {parcoursALaUne.exerciceEnCoursOrdre} : {parcoursALaUne.prochainExerciceTitre}{parcoursALaUne.prochainExerciceMinutes ? ` · ~${parcoursALaUne.prochainExerciceMinutes} min` : ""}</>
-                            : `${parcoursALaUne.nbValides}/${parcoursALaUne.nbExercices} validés`}
-                        </div>
-                      </div>
-                      <span className="pb-btn primary-fill" style={{
-                        fontSize: 14, padding: "10px 22px", borderRadius: 999, flexShrink: 0,
-                        background: "#7C3AED", color: "#fff", whiteSpace: "nowrap",
-                      }}>
-                        {journeeFinie ? "5 min de parcours 💪" : (parcoursALaUne.nbValides > 0 ? "Continuer →" : "Commencer →")}
-                      </span>
-                    </div>
-                  </Link>
-                );
-              })()}
-
-              {/* ══ En retard ══ (uniquement s'il y a du rattrapage) */}
-              {blocsEnRetard.length > 0 && (
+              {/* ══ En retard ══ (uniquement s'il y a du rattrapage, et à partir de l'étape 2) */}
+              {montrerRetards && blocsEnRetard.length > 0 && (
                 <div
                   className="pb-card"
                   style={{
@@ -2145,6 +2119,140 @@ export default function DashboardEleve() {
                   </div>
                 </div>
               )}
+
+              {/* Ceintures et lecture APRÈS les retards : elles viennent quand le travail dû est fait. */}
+              {/* ══ Ceintures de la semaine ══ (étape 3) */}
+              {montrerTout && domainesSemaine.length > 0 && (
+                <div
+                  className="pb-card"
+                  style={{
+                    padding: "20px 22px", marginBottom: 24,
+                    background: "linear-gradient(135deg, rgba(124,179,66,0.10), rgba(124,179,66,0.02))",
+                    border: "1px solid rgba(124,179,66,0.25)",
+                  }}
+                >
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <span className="ms" style={{ fontSize: 22, color: "#7CB342" }}>workspace_premium</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{
+                        fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+                        textTransform: "uppercase", color: "#5A8C2E",
+                      }}>
+                        🥋 Tes ceintures de la semaine
+                      </div>
+                    </div>
+                    {(choixSemaine?.disponibles.length ?? 0) >= 2 && choixSemaine?.peutChanger && (
+                      <button
+                        type="button"
+                        onClick={() => { setErreurChoix(null); setModalCeintures(true); }}
+                        style={{
+                          background: "none", border: "none", cursor: "pointer",
+                          fontSize: 12, fontWeight: 700, color: "#5A8C2E",
+                          padding: "4px 8px", borderRadius: 8,
+                        }}
+                      >
+                        Changer
+                      </button>
+                    )}
+                  </div>
+
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
+                    {domainesSemaine.map((d) => {
+                      const teinte = d.couleurCourante?.hex ?? "#7CB342";
+                      return (
+                        <Link
+                          key={d.code}
+                          prefetch={false}
+                          href={d.slug ? `/eleve/ceintures/${d.slug}` : "/eleve/ceintures"}
+                          style={{
+                            display: "flex", alignItems: "center", gap: 12,
+                            padding: "14px 16px", borderRadius: 14,
+                            background: "white", border: `1.5px solid ${teinte}40`,
+                            textDecoration: "none", color: "inherit",
+                          }}
+                        >
+                          <span className="ms" style={{ fontSize: 24, color: teinte, flexShrink: 0 }}>
+                            {d.icone ?? "workspace_premium"}
+                          </span>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{
+                              fontWeight: 800, fontSize: 15,
+                              fontFamily: "'Plus Jakarta Sans', sans-serif",
+                              color: "var(--pb-on-surface)",
+                            }}>
+                              {d.nom}
+                            </div>
+                            <div style={{ display: "flex", alignItems: "center", gap: 5, marginTop: 2 }}>
+                              <span style={{ width: 9, height: 9, borderRadius: "50%", background: teinte, flexShrink: 0 }} />
+                              <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>
+                                {d.couleurCourante?.nom ? `Ceinture ${d.couleurCourante.nom.toLowerCase()}` : "Domaine terminé"}
+                              </span>
+                            </div>
+                          </div>
+                          <span className="ms" style={{ fontSize: 18, color: teinte, flexShrink: 0 }}>chevron_right</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* ══ Parcours à la une / Transition après le travail du jour ══ */}
+              {montrerTout && parcoursALaUne && (() => {
+                const journeeFinie = totalTaches > 0 && nbFaitAujourd_hui === totalTaches;
+                return (
+                  <Link
+                    prefetch={false}
+                    href={`/eleve/chapitre/${parcoursALaUne.id}`}
+                    className="pb-card"
+                    style={{
+                      display: "block", textDecoration: "none", color: "inherit",
+                      padding: "20px 22px", marginBottom: 24,
+                      background: "linear-gradient(135deg, rgba(124,58,237,0.10), rgba(124,58,237,0.02))",
+                      border: "1px solid rgba(124,58,237,0.20)",
+                      position: "relative", overflow: "hidden",
+                    }}
+                  >
+                    <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                      <div style={{
+                        width: 52, height: 52, borderRadius: 14, flexShrink: 0,
+                        background: "rgba(124,58,237,0.12)",
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                      }}>
+                        <span className="ms" style={{ fontSize: 28, color: "#7C3AED" }}>
+                          {journeeFinie ? "rocket_launch" : "auto_stories"}
+                        </span>
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{
+                          fontSize: 11, fontWeight: 700, letterSpacing: "0.07em",
+                          textTransform: "uppercase", color: "#7C3AED", marginBottom: 4,
+                        }}>
+                          {journeeFinie ? "🎉 Travail du jour terminé — et maintenant ?" : "⭐ Ton parcours à continuer"}
+                        </div>
+                        <div style={{
+                          fontWeight: 800, fontSize: 16,
+                          fontFamily: "'Plus Jakarta Sans', sans-serif",
+                          color: "var(--pb-on-surface)",
+                        }}>
+                          {parcoursALaUne.titre}
+                        </div>
+                        <div style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginTop: 3 }}>
+                          {parcoursALaUne.prochainExerciceTitre
+                            ? <>Étape {parcoursALaUne.exerciceEnCoursOrdre} : {parcoursALaUne.prochainExerciceTitre}{parcoursALaUne.prochainExerciceMinutes ? ` · ~${parcoursALaUne.prochainExerciceMinutes} min` : ""}</>
+                            : `${parcoursALaUne.nbValides}/${parcoursALaUne.nbExercices} validés`}
+                        </div>
+                      </div>
+                      <span className="pb-btn primary-fill" style={{
+                        fontSize: 14, padding: "10px 22px", borderRadius: 999, flexShrink: 0,
+                        background: "#7C3AED", color: "#fff", whiteSpace: "nowrap",
+                      }}>
+                        {journeeFinie ? "5 min de parcours 💪" : (parcoursALaUne.nbValides > 0 ? "Continuer →" : "Commencer →")}
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })()}
 
               {blocsAujourdhui.length === 0 && chapitresRB.length === 0 && blocsEnRetard.length === 0 ? (
                 <div className="pb-card" style={{ textAlign: "center", padding: "48px 24px" }}>
@@ -2243,7 +2351,7 @@ export default function DashboardEleve() {
                   )}
 
                   {/* ══ À faire en ligne ══ */}
-                  {(groupesEnLigne.length > 0 || blocsEnLigneLibres.length > 0 || (chapitresRB.length > 0 && urlRB) || dailyProblem || chapitresAssignes.length > 0) && (
+                  {(groupesEnLigne.length > 0 || blocsEnLigneLibres.length > 0 || (montrerTout && chapitresRB.length > 0 && urlRB) || dailyProblem || (montrerTout && chapitresAssignes.length > 0)) && (
                     <div>
                       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 14 }}>
                         <span className="ms" style={{ fontSize: 18, color: "var(--pb-on-surface-variant)" }}>computer</span>
@@ -2567,7 +2675,7 @@ export default function DashboardEleve() {
                   )}
 
                   {/* ══ Chapitres progressifs (le livre en cours est déjà affiché en haut via le bloc "Ma lecture") ══ */}
-                  {chapitresAssignes
+                  {(montrerTout ? chapitresAssignes : [])
                     .filter((ch) => !bibliothequeEnCours || ch.id !== bibliothequeEnCours.chapitre_id)
                     .filter((ch) => !parcoursALaUne || ch.id !== parcoursALaUne.id)
                     .map((ch) => (
@@ -2693,7 +2801,7 @@ export default function DashboardEleve() {
                   ))}
 
                   {/* Bloc Repetibox (dans en ligne) */}
-                  {chapitresRB.length > 0 && urlRB && (
+                  {montrerTout && chapitresRB.length > 0 && urlRB && (
                     <a
                       href={urlRB}
                       target="_blank"

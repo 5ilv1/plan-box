@@ -1063,6 +1063,10 @@ input[type="number"] {
   gap: 24px;
 }
 
+/* Une colonne de grille ne rétrécit pas sous son plus long contenu : un titre
+   d'exercice en retard élargissait la page à 700 px sur un écran de 414. */
+.eleve-bento > * { min-width: 0; }
+
 /* iPad portrait (820px) : toujours 1 colonne, padding plus généreux */
 @media (min-width: 768px) {
   .eleve-bento { gap: 28px; }
@@ -1084,6 +1088,10 @@ input[type="number"] {
 @media (min-width: 1200px) {
   .eleve-bento { grid-template-columns: 340px 1fr; }
 }
+
+/* Déblocage progressif, étapes 1 et 2 : ce qui n'est pas encore ouvert est
+   montré grisé (components/CarteVerrouillee.tsx). */
+.carte-verrouillee { opacity: 0.55; filter: grayscale(1); cursor: not-allowed; user-select: none; }
 
 /* ── Grille activités responsive ── */
 .pb-activite-grid {
