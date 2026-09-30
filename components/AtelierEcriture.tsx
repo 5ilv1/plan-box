@@ -2,6 +2,7 @@
 
 import { pollingVisible } from "@/lib/polling";
 import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { actionBouton, correctionsRestantes, MAX_CORRECTIONS } from "@/lib/ecriture-bouton";
 import { reporterErreurs } from "@/lib/ecriture-correction";
 
 type ErreurIA = {
@@ -167,6 +168,25 @@ export default function AtelierEcriture({
   const [analyseMessage, setAnalyseMessage] = useState<string>("");
   const [erreursIA, setErreursIA] = useState<ErreurIA[]>([]);
 
+  // Écriture du jour : un seul bouton, « Corriger » puis « J'ai terminé »
+  // (lib/ecriture-bouton.ts). Le compteur vient de la base — un rechargement
+  // ne le remet pas à zéro.
+  const [nbCorrections, setNbCorrections] = useState(0);
+  const [texteSansErreur, setTexteSansErreur] = useState<string | null>(null);
+  useEffect(() => {
+    if (!modeJour || !blocId) return;
+    let vivant = true;
+    fetch(`/api/ecriture/analyser?blocId=${encodeURIComponent(blocId)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!vivant || !d) return;
+        if (typeof d.nbCorrections === "number") setNbCorrections(d.nbCorrections);
+        if (typeof d.texteSansErreur === "string") setTexteSansErreur(d.texteSansErreur);
+      })
+      .catch(() => {});
+    return () => { vivant = false; };
+  }, [modeJour, blocId]);
+
   // Les erreurs suivent le texte pendant que l'élève écrit (`reporterErreurs`) :
   // décalées si la retouche est ailleurs, retirées si elle touche le mot. On ne
   // cherche JAMAIS le mot ailleurs dans le texte — c'était ce qui faisait sauter
@@ -198,8 +218,20 @@ export default function AtelierEcriture({
         // l'analyse, on les reporte sur le texte d'aujourd'hui.
         const erreurs = reporterErreurs<ErreurIA>(texteEnvoye, texteSuiviRef.current, data.erreurs ?? []);
         setErreursIA(erreurs);
+        // Le compteur du serveur fait foi ; sans lui (aperçu enseignant), on compte ici.
+        const nb = typeof data.nbCorrections === "number" ? data.nbCorrections : nbCorrections + 1;
+        setNbCorrections(nb);
+        setTexteSansErreur(erreurs.length === 0 ? texteEnvoye : null);
         if (erreurs.length === 0) {
-          setAnalyseMessage("Bravo ! Je n'ai trouvé aucune erreur dans ton texte.");
+          setAnalyseMessage(
+            modeJour
+              ? "Bravo ! Je n'ai trouvé aucune erreur. Tu peux cliquer sur « J'ai terminé »."
+              : "Bravo ! Je n'ai trouvé aucune erreur dans ton texte."
+          );
+        } else if (modeJour && nb >= MAX_CORRECTIONS) {
+          setAnalyseMessage(
+            `Tu as utilisé tes ${MAX_CORRECTIONS} corrections. Relis une dernière fois, puis clique sur « J'ai terminé ».`
+          );
         } else {
           setAnalyseMessage("");
         }
@@ -208,7 +240,7 @@ export default function AtelierEcriture({
       setAnalyseMessage("Problème réseau, réessaie dans un instant.");
     }
     setAnalyseEnCours(false);
-  }, [texte, sujet]);
+  }, [texte, sujet, blocId, modeJour, nbCorrections]);
 
   // ── Terminer un texte du jour ──
   // On enregistre d'abord — la sauvegarde automatique peut avoir 1,5 s de
@@ -517,7 +549,7 @@ export default function AtelierEcriture({
               {modeJour
                 ? relu
                   ? "Lis ses remarques, reprends ton texte, puis clique sur « J'ai terminé »."
-                  : "Écris ton texte, clique sur « Corriger mon texte », puis sur « J'ai terminé »."
+                  : `Écris ton texte et clique sur « Corriger mon texte ». Quand il n'y a plus d'erreur — ou après ${MAX_CORRECTIONS} corrections — tu pourras cliquer sur « J'ai terminé ».`
                 : finalise
                 ? "Ton texte est définitivement rendu."
                 : envoye
@@ -785,6 +817,61 @@ export default function AtelierEcriture({
 
       {/* ── Boutons d'action ── */}
       <div style={{ display: "flex", gap: 10, justifyContent: "flex-end", flexWrap: "wrap", position: "relative", zIndex: 10 }}>
+        {/* Écriture du jour : UN bouton. Il corrige tant qu'il reste des erreurs
+            (trois fois au plus), puis devient « J'ai terminé ». Plus de « Je veux
+            valider » : il masquait les fautes sans les faire corriger. */}
+        {modeJour && (() => {
+          const action = actionBouton({ nbCorrections, texteSansErreur, texteActuel: texte });
+          const restantes = correctionsRestantes(nbCorrections);
+          if (action === "corriger") {
+            const inactif = analyseEnCours || !texte.trim();
+            return (
+              <button
+                type="button"
+                onClick={analyser}
+                disabled={inactif}
+                style={{
+                  background: "#7C3AED", color: "white", border: "none",
+                  borderRadius: 12, padding: "10px 24px", fontSize: 14, fontWeight: 700,
+                  cursor: inactif ? "not-allowed" : "pointer",
+                  fontFamily: "'Plus Jakarta Sans', sans-serif",
+                  display: "flex", alignItems: "center", gap: 6,
+                  opacity: inactif ? 0.5 : 1,
+                  position: "relative", zIndex: 10, pointerEvents: "auto",
+                }}
+              >
+                <span className="ms" style={{ fontSize: 18 }}>spellcheck</span>
+                {analyseEnCours
+                  ? "Analyse..."
+                  : `Corriger mon texte${restantes < MAX_CORRECTIONS ? ` (${restantes} restante${restantes > 1 ? "s" : ""})` : ""}`}
+              </button>
+            );
+          }
+          const inactif = apercu || terminaisonEnCours || !texte.trim();
+          return (
+            <button
+              onClick={terminerJour}
+              // Visible dans l'aperçu enseignant, pour qu'il montre ce que voit
+              // l'élève — mais inerte : un aperçu ne termine rien.
+              disabled={inactif}
+              style={{
+                background: "#059669", color: "white", border: "none",
+                borderRadius: 12, padding: "10px 24px", fontSize: 14,
+                fontWeight: 700, cursor: inactif ? "not-allowed" : "pointer",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+                opacity: (terminaisonEnCours || !texte.trim()) ? 0.5 : 1,
+                display: "flex", alignItems: "center", gap: 6,
+              }}
+            >
+              <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
+              {terminaisonEnCours ? "Enregistrement..." : "J'ai terminé"}
+            </button>
+          );
+        })()}
+
+        {/* Atelier de la semaine : inchangé. */}
+        {!modeJour && (
+          <>
         <button
           type="button"
           onClick={analyser}
@@ -821,25 +908,7 @@ export default function AtelierEcriture({
             Je veux valider
           </button>
         )}
-
-        {modeJour && (
-          <button
-            onClick={terminerJour}
-            // Visible dans l'aperçu enseignant, pour qu'il montre ce que voit
-            // l'élève — mais inerte : un aperçu ne termine rien.
-            disabled={apercu || terminaisonEnCours || !texte.trim()}
-            style={{
-              background: "#059669", color: "white", border: "none",
-              borderRadius: 12, padding: "10px 24px", fontSize: 14,
-              fontWeight: 700, cursor: (terminaisonEnCours || !texte.trim()) ? "not-allowed" : "pointer",
-              fontFamily: "'Plus Jakarta Sans', sans-serif",
-              opacity: (terminaisonEnCours || !texte.trim()) ? 0.5 : 1,
-              display: "flex", alignItems: "center", gap: 6,
-            }}
-          >
-            <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
-            {terminaisonEnCours ? "Enregistrement..." : "J'ai terminé"}
-          </button>
+          </>
         )}
 
         {!modeJour && !finalise && !envoye && (

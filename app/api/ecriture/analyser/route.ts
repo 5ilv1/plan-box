@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { niveauEleveDepuisBloc } from "@/lib/ecriture-niveau-eleve";
-import { getServerUser } from "@/lib/server-auth";
+import { getServerUser, requireProprietaireOuEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { analyserTexte } from "@/lib/ecriture-analyse";
 
@@ -70,11 +70,61 @@ export async function POST(req: NextRequest) {
   // le mot attendu. Seulement quand c'est l'ÉLÈVE qui corrige son propre bloc —
   // l'aperçu enseignant analyse aussi, et ne doit pas écrire dans son bilan.
   // Une trace qui ne s'écrit pas ne prive jamais l'élève de sa correction.
-  if (blocId) {
-    await enregistrerAnalyse(user.id, blocId, texte, resultat.completes);
+  // Le compteur de corrections vient de la base : il survit au rechargement de
+  // la page, et l'élève ne peut pas le remettre à zéro. `null` hors du cas
+  // élève-propriétaire (aperçu enseignant) : le composant compte alors seul.
+  let nbCorrections: number | null = null;
+  if (blocId && (await enregistrerAnalyse(user.id, blocId, texte, resultat.completes))) {
+    nbCorrections = await compterCorrections(blocId);
   }
 
-  return NextResponse.json({ erreurs: resultat.erreurs, niveau: resultat.niveau });
+  return NextResponse.json({ erreurs: resultat.erreurs, niveau: resultat.niveau, nbCorrections });
+}
+
+/**
+ * GET /api/ecriture/analyser?blocId=…
+ *
+ * Où en est l'élève de ses corrections, pour le bouton unique de l'écriture du
+ * jour : combien il en a fait, et le texte de la dernière si elle n'a rien
+ * trouvé. Réservé à l'élève du bloc et à l'enseignant.
+ */
+export async function GET(req: NextRequest) {
+  const blocId = req.nextUrl.searchParams.get("blocId");
+  if (!blocId) return NextResponse.json({ erreur: "blocId requis" }, { status: 400 });
+
+  const admin = createAdminClient();
+  const { data: bloc } = await admin
+    .from("plan_travail")
+    .select("eleve_id, repetibox_eleve_id")
+    .eq("id", blocId)
+    .maybeSingle();
+  if (!bloc) return NextResponse.json({ erreur: "Bloc introuvable" }, { status: 404 });
+
+  // Le propriétaire est lu dans le bloc, jamais dans la requête.
+  const auth = await requireProprietaireOuEnseignant(bloc.eleve_id, bloc.repetibox_eleve_id);
+  if (auth.error) return auth.error;
+
+  const { data: derniere } = await admin
+    .from("ecriture_analyse")
+    .select("texte, erreurs")
+    .eq("bloc_id", blocId)
+    .order("cree_le", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  return NextResponse.json({
+    nbCorrections: await compterCorrections(blocId),
+    texteSansErreur:
+      derniere && Array.isArray(derniere.erreurs) && derniere.erreurs.length === 0 ? derniere.texte : null,
+  });
+}
+
+async function compterCorrections(blocId: string): Promise<number | null> {
+  const { count, error } = await createAdminClient()
+    .from("ecriture_analyse")
+    .select("*", { count: "exact", head: true })
+    .eq("bloc_id", blocId);
+  return error ? null : count ?? 0;
 }
 
 async function enregistrerAnalyse(
@@ -82,7 +132,7 @@ async function enregistrerAnalyse(
   blocId: string,
   texte: string,
   erreurs: Array<{ mot: string; position: number; type: string; attendu?: string }>,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const admin = createAdminClient();
     const { data: bloc } = await admin
@@ -90,7 +140,7 @@ async function enregistrerAnalyse(
       .select("eleve_id, repetibox_eleve_id")
       .eq("id", blocId)
       .maybeSingle();
-    if (!bloc) return;
+    if (!bloc) return false;
 
     let proprietaire = bloc.eleve_id === userId;
     if (!proprietaire && bloc.repetibox_eleve_id != null) {
@@ -101,7 +151,7 @@ async function enregistrerAnalyse(
         .maybeSingle();
       proprietaire = eleve?.auth_id === userId;
     }
-    if (!proprietaire) return;
+    if (!proprietaire) return false;
 
     const { error } = await admin.from("ecriture_analyse").insert({
       bloc_id: blocId,
@@ -109,7 +159,9 @@ async function enregistrerAnalyse(
       erreurs: erreurs.map(({ mot, position, type, attendu }) => ({ mot, position, type, attendu })),
     });
     if (error) throw error;
+    return true;
   } catch (err) {
     console.error("[ecriture/analyser] trace enseignant", err);
+    return false;
   }
 }

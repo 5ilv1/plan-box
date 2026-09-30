@@ -478,6 +478,26 @@ Chaque ligne mène à la même page de relecture et d'annotation
 l'atelier de la semaine : un texte du jour ne se retrouvait qu'en ouvrant la
 matrice du suivi à la bonne date, puis la case du bon élève.
 
+### Un seul bouton pour l'écriture du jour
+
+Le mode `jour` avait trois boutons : « Corriger mon texte », « Je veux valider » (qui
+**masquait** les erreurs sans les faire corriger) et « J'ai terminé ». Un élève pouvait
+rendre un texte jamais corrigé. Il n'y en a plus qu'**un** (`lib/ecriture-bouton.ts`,
+`actionBouton()`) :
+
+- « Corriger mon texte (N restantes) » tant qu'il reste des erreurs ;
+- « J'ai terminé » quand la dernière correction **n'a rien trouvé** — sur ce texte-là :
+  le modifier ensuite demande une nouvelle vérification (les espaces ne comptent pas) ;
+- « J'ai terminé » aussi après **3 corrections** (`MAX_CORRECTIONS`), erreurs ou pas :
+  un élève ne doit jamais rester bloqué devant une faute qu'il ne sait pas réparer.
+
+⚠️ **Le compteur vient de la base** (`ecriture_analyse`, une ligne par correction de
+l'élève) : `POST /api/ecriture/analyser` renvoie `nbCorrections`, `GET ?blocId=` le donne
+au chargement avec le texte de la dernière correction sans faute. Compté dans le
+navigateur, un rechargement l'aurait remis à zéro. Une correction en panne (502) n'est
+pas enregistrée, donc pas comptée. L'atelier de la semaine garde ses boutons.
+Contrat : `npx tsx docs/tests/test-ecriture-bouton.mjs` (13 cas).
+
 ### Le thème d'écriture du jour : deux chemins, dont un filet
 
 - **Automatique** : `/api/cron/theme-ecriture-jour` (`vercel.json`, lun, mar, jeu, ven à
