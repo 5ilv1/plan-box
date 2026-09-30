@@ -379,6 +379,21 @@ bouton « J'ai terminé ». Les 100 blocs d'écriture en base étaient tous en m
 l'atelier n'avait jamais servi. Et le tableau de bord rangeait l'écriture parmi les
 activités « papier », dont la carte ne mène nulle part.
 
+### Où l'enseignant lit les textes
+
+La page **« Atelier écriture »** (`/enseignant/atelier-ecriture`) montre, pour la
+semaine choisie :
+
+- l'**atelier de la semaine** (`/api/ecriture/textes-finaux`, mode `semaine`) ;
+- les **textes du jour**, jour par jour et élève par élève
+  (`/api/ecriture/textes-du-jour`, tout ce qui n'est pas en mode `semaine`), avec
+  le nombre de corrections demandées et d'annotations.
+
+Chaque ligne mène à la même page de relecture et d'annotation
+(`/enseignant/atelier-ecriture/[blocId]`). ⚠️ Jusqu'au 30/09, la page ne lisait que
+l'atelier de la semaine : un texte du jour ne se retrouvait qu'en ouvrant la
+matrice du suivi à la bonne date, puis la case du bon élève.
+
 ### Le thème d'écriture du jour : deux chemins, dont un filet
 
 - **Automatique** : `/api/cron/theme-ecriture-jour` (`vercel.json`, lun, mar, jeu, ven à
@@ -1057,8 +1072,17 @@ le sous-domaine recalcule les suggestions.
 
 ### Reprendre un exercice à l'unité
 
-Après la génération, le bouton **« Modifier »** d'une ligne ouvre **le formulaire
-de la page « Nouvel exercice »**, pré-rempli pour la séance : type d'activité au
+Après la génération, le bouton **« Modifier »** d'une ligne ouvre **l'écran de
+relecture de « Nouvel exercice »** (`FenetreModification`) : mêmes composants
+que la page — `ExercicePreview` pour un exercice ou une évaluation,
+`QCMEditeur` pour un QCM, l'aperçu générique du panneau pour les autres types.
+On y corrige une question et on la **supprime** (corbeille, la dernière reste).
+C'est la forme du contenu, pas le type de la ligne, qui choisit l'éditeur.
+Rien n'est enregistré avant « Valider ». Une ligne **en échec**, sans contenu à
+relire, ouvre directement le formulaire.
+
+Depuis cet écran, **« Régénérer avec le formulaire »** ouvre le formulaire
+de la page « Nouvel exercice », pré-rempli pour la séance : type d'activité au
 choix, consigne, sous-matière, niveau, groupe, date. Le résultat remplace le
 contenu de la ligne ; le jour et le groupe restent ceux de la séance.
 

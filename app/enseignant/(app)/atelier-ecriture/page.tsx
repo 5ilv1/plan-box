@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase";
+import { lundiDeSemaine, semaineISO } from "@/lib/semaine-iso";
 
 interface HistoriqueEntry {
   date: string;
@@ -24,13 +25,26 @@ interface TexteEleve {
   nbAnnotationsNouvelles: number;
 }
 
+interface TexteDuJour {
+  id: string;
+  prenom: string;
+  nom: string;
+  statut: string;
+  texte: string;
+  nbCorrections: number;
+  nbAnnotations: number;
+}
+
+interface JourEcriture {
+  date: string;
+  sujet: string;
+  textes: TexteDuJour[];
+}
+
+// `toISOString()` sur une date locale reculait d'un jour le lundi peu après
+// minuit (piège nº 7) : la semaine se calcule en UTC.
 function lundiCourant(): string {
-  const now = new Date();
-  const day = now.getDay();
-  const diffToMonday = day === 0 ? -6 : 1 - day;
-  const monday = new Date(now);
-  monday.setDate(now.getDate() + diffToMonday);
-  return monday.toISOString().split("T")[0];
+  return lundiDeSemaine(semaineISO());
 }
 
 function decalerLundi(lundi: string, deltaSemaines: number): string {
@@ -49,6 +63,7 @@ export default function AtelierEcriturePage() {
   const [lundi, setLundi] = useState<string>(lundiCourant());
   const [textes, setTextes] = useState<TexteEleve[]>([]);
   const [correctionEnCours, setCorrectionEnCours] = useState(false);
+  const [joursDuJour, setJoursDuJour] = useState<JourEcriture[]>([]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -69,6 +84,12 @@ export default function AtelierEcriturePage() {
         })
         .catch(() => {})
         .finally(() => setLoading(false));
+      // Les textes du jour, lus à part : leur liste ne doit pas retarder
+      // celle de l'atelier de la semaine.
+      fetch(`/api/ecriture/textes-du-jour?semaine=${lundi}`)
+        .then((r) => r.json())
+        .then((data) => setJoursDuJour(data.jours ?? []))
+        .catch(() => setJoursDuJour([]));
     });
   }, [router, supabase, lundi]);
 
@@ -395,6 +416,119 @@ export default function AtelierEcriturePage() {
           })}
         </div>
       )}
+
+      <TextesDuJour jours={joursDuJour} nbMots={nbMots} />
     </>
+  );
+}
+
+/* ── Les textes du jour ───────────────────────────────────────────────────── */
+
+const JOURS_FR = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+
+/**
+ * Les textes écrits en mode « jour », jour par jour.
+ *
+ * Ils n'avaient pas leur place ici : la page ne lisait que l'atelier de la
+ * semaine. Un texte du jour ne se retrouvait qu'en ouvrant la matrice du suivi
+ * à la bonne date, puis la case du bon élève. Chaque ligne mène à la même
+ * page de relecture et d'annotation que l'atelier.
+ */
+function TextesDuJour({ jours, nbMots }: { jours: JourEcriture[]; nbMots: (t: string) => number }) {
+  return (
+    <section style={{ marginTop: 32 }}>
+      <h2 style={{
+        fontSize: 16, fontWeight: 800, margin: "0 0 4px",
+        fontFamily: "'Plus Jakarta Sans', sans-serif", color: "var(--pb-on-surface)",
+      }}>
+        Textes du jour
+      </h2>
+      <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", margin: "0 0 14px" }}>
+        Les textes écrits en une journée, hors atelier de la semaine.
+      </p>
+
+      {jours.length === 0 ? (
+        <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", padding: "12px 0" }}>
+          Aucun texte du jour cette semaine.
+        </p>
+      ) : (
+        <div style={{ display: "flex", flexDirection: "column", gap: 22 }}>
+          {jours.map((j) => {
+            const d = new Date(`${j.date}T12:00:00`);
+            const titre = `${JOURS_FR[d.getDay()]} ${d.getDate()} ${d.toLocaleDateString("fr-FR", { month: "long" })}`;
+            const ecrits = j.textes.filter((t) => t.texte).length;
+            return (
+              <div key={j.date}>
+                <div style={{ marginBottom: 8 }}>
+                  <p style={{ margin: 0, fontSize: 14, fontWeight: 700, color: "var(--pb-on-surface)", textTransform: "capitalize" }}>
+                    {titre}
+                    <span style={{ fontWeight: 500, fontSize: 12, color: "var(--pb-on-surface-variant)", textTransform: "none" }}>
+                      {" "}· {ecrits} texte{ecrits > 1 ? "s" : ""} sur {j.textes.length}
+                    </span>
+                  </p>
+                  {j.sujet && (
+                    <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--pb-on-surface-variant)", lineHeight: 1.45 }}>
+                      {j.sujet.length > 160 ? j.sujet.slice(0, 160) + "…" : j.sujet}
+                    </p>
+                  )}
+                </div>
+
+                <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+                  {j.textes.map((t) => {
+                    const mots = nbMots(t.texte);
+                    const fait = t.statut === "fait";
+                    return (
+                      <Link
+                        key={t.id}
+                        href={`/enseignant/atelier-ecriture/${t.id}`}
+                        style={{
+                          display: "flex", alignItems: "center", gap: 12,
+                          padding: "10px 14px", borderRadius: 12, textDecoration: "none",
+                          border: "1px solid var(--pb-outline-variant, #e5e7eb)",
+                          background: "var(--pb-surface-lowest, #fff)", color: "inherit",
+                        }}
+                      >
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: 14, fontWeight: 700, color: "var(--pb-on-surface)" }}>
+                            {t.prenom} {t.nom}
+                          </div>
+                          <div style={{
+                            fontSize: 12, color: "var(--pb-on-surface-variant)", marginTop: 2,
+                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                          }}>
+                            {t.texte
+                              ? <>{mots} mot{mots > 1 ? "s" : ""} · {t.texte}</>
+                              : <em>Pas encore écrit</em>}
+                          </div>
+                          {(t.nbCorrections > 0 || t.nbAnnotations > 0) && (
+                            <div style={{ fontSize: 11, color: "var(--pb-on-surface-variant)", marginTop: 3 }}>
+                              {t.nbCorrections > 0 && <>Correction demandée {t.nbCorrections} fois</>}
+                              {t.nbCorrections > 0 && t.nbAnnotations > 0 && " · "}
+                              {t.nbAnnotations > 0 && (
+                                <span style={{ color: "#4338CA", fontWeight: 600 }}>
+                                  {t.nbAnnotations} annotation{t.nbAnnotations > 1 ? "s" : ""}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                        <span style={{
+                          fontSize: 11, fontWeight: 600, padding: "3px 10px", borderRadius: 999, flexShrink: 0,
+                          background: fait ? "#DCFCE7" : "#F3F4F6",
+                          color: fait ? "#166534" : "#6B7280",
+                        }}>
+                          {fait ? "Terminé" : t.statut === "en_cours" ? "En cours" : "À faire"}
+                        </span>
+                        <span className="ms" style={{ fontSize: 18, color: "var(--pb-on-surface-variant)" }}>chevron_right</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
   );
 }

@@ -32,8 +32,8 @@ import GenererRangementForm from "@/components/GenererRangementForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
 import GenererQCMForm from "@/components/GenererQCMForm";
 import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
-import FigureGeo, { type Figure } from "@/components/FigureGeo";
 import ExercicePreview from "@/components/ExercicePreview";
+import QCMEditeur, { type QCMData } from "@/components/QCMEditeur";
 import DicteePreview from "@/components/DicteePreview";
 import BanqueExercices from "@/components/BanqueExercices";
 import RepetiboxLink from "@/components/RepetiboxLink";
@@ -79,20 +79,6 @@ interface LectureData {
   titre: string;
   texte: string;
   questions: { id: number; question: string; choix: string[]; reponse: number }[];
-}
-
-interface QCMData {
-  titre?: string;
-  questions: {
-    question: string;
-    options: string[];
-    reponse_correcte: number;
-    explication?: string;
-    /** Dessin sous l'énoncé — fraction en images. Voir SPEC-FIGURES.md. */
-    figure?: Figure;
-    /** Sens inverse : une fraction dans l'énoncé, un dessin par option. */
-    options_figures?: Figure[];
-  }[];
 }
 
 interface ProblemeMathsData {
@@ -1656,169 +1642,21 @@ function PageGenererInner() {
             )}
 
             {/* Aperçu QCM (éditable inline) */}
-            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "qcm" && contenu?.type === "qcm" && (() => {
-              const qcm = contenu as { type: "qcm"; data: QCMData };
-              const enEdition = etape === "apercu";
-
-              function updateTitre(newTitre: string) {
-                setContenu({ ...qcm, data: { ...qcm.data, titre: newTitre } });
-              }
-              function updateQuestionField(idx: number, field: "question" | "explication", value: string) {
-                const newQuestions = qcm.data.questions.map((q, i) =>
-                  i === idx ? { ...q, [field]: value } : q
-                );
-                setContenu({ ...qcm, data: { ...qcm.data, questions: newQuestions } });
-              }
-              function updateOption(qIdx: number, optIdx: number, value: string) {
-                const newQuestions = qcm.data.questions.map((q, i) => {
-                  if (i !== qIdx) return q;
-                  return { ...q, options: q.options.map((o, j) => (j === optIdx ? value : o)) };
-                });
-                setContenu({ ...qcm, data: { ...qcm.data, questions: newQuestions } });
-              }
-              function setReponseCorrecte(qIdx: number, optIdx: number) {
-                const newQuestions = qcm.data.questions.map((q, i) =>
-                  i === qIdx ? { ...q, reponse_correcte: optIdx } : q
-                );
-                setContenu({ ...qcm, data: { ...qcm.data, questions: newQuestions } });
-              }
-
-              const inputBase: React.CSSProperties = {
-                border: "1px solid transparent",
-                borderRadius: 6,
-                padding: "4px 6px",
-                background: enEdition ? "#FAFAFA" : "transparent",
-                fontFamily: "inherit",
-                outline: "none",
-                width: "100%",
-              };
-
-              return (
-                <div style={{ padding: 24 }}>
-                  <input
-                    value={qcm.data.titre ?? ""}
-                    onChange={(e) => updateTitre(e.target.value)}
-                    disabled={!enEdition}
-                    placeholder="Titre du QCM"
-                    style={{
-                      ...inputBase,
-                      fontWeight: 700,
-                      fontSize: "1.125rem",
-                      marginBottom: 8,
-                    }}
-                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
-                    onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
-                  />
-                  <p style={{ fontSize: "0.8125rem", fontWeight: 700, color: "var(--text-secondary)", marginBottom: 12 }}>
-                    {qcm.data.questions.length} question{qcm.data.questions.length > 1 ? "s" : ""}
-                    {enEdition && <span style={{ marginLeft: 8, fontWeight: 500, fontStyle: "italic" }}>· clique sur le rond vert pour changer la bonne réponse</span>}
-                  </p>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                    {qcm.data.questions.map((q, i) => (
-                      <div key={i} style={{ padding: "10px 14px", background: "white", borderRadius: 10, border: "1px solid var(--border)", fontSize: "0.8125rem" }}>
-                        <div style={{ display: "flex", alignItems: "flex-start", gap: 6, marginBottom: 8 }}>
-                          <span style={{ color: "#92400E", fontWeight: 700, flexShrink: 0, paddingTop: 4 }}>Q{i + 1}.</span>
-                          <textarea
-                            value={q.question}
-                            onChange={(e) => updateQuestionField(i, "question", e.target.value)}
-                            disabled={!enEdition}
-                            rows={2}
-                            style={{
-                              ...inputBase,
-                              fontWeight: 700,
-                              fontSize: "0.8125rem",
-                              resize: "vertical",
-                              minHeight: 36,
-                            }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
-                          />
-                        </div>
-                        {/* Le dessin dont parle l'énoncé : sans lui, on valide
-                            une question qu'on n'a pas pu relire. */}
-                        {q.figure && (
-                          <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
-                            <FigureGeo figure={q.figure} />
-                          </div>
-                        )}
-                        <ul style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4, listStyle: "none" }}>
-                          {q.options.map((opt, j) => {
-                            const correct = j === q.reponse_correcte;
-                            return (
-                              <li key={j} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                                <button
-                                  type="button"
-                                  onClick={() => enEdition && setReponseCorrecte(i, j)}
-                                  disabled={!enEdition}
-                                  title={correct ? "Bonne réponse" : "Marquer comme bonne réponse"}
-                                  style={{
-                                    width: 20, height: 20, borderRadius: "50%",
-                                    border: correct ? "2px solid #16A34A" : "1.5px solid var(--border)",
-                                    background: correct ? "#16A34A" : "white",
-                                    color: "white",
-                                    cursor: enEdition ? "pointer" : "default",
-                                    display: "flex", alignItems: "center", justifyContent: "center",
-                                    fontSize: 12, fontWeight: 700, flexShrink: 0, padding: 0,
-                                    lineHeight: 1,
-                                  }}
-                                >
-                                  {correct ? "✓" : ""}
-                                </button>
-                                <span style={{ color: correct ? "#16A34A" : "var(--text-secondary)", fontWeight: 700, fontSize: "0.75rem", flexShrink: 0, width: 18 }}>
-                                  {String.fromCharCode(65 + j)}.
-                                </span>
-                                {q.options_figures?.[j] ? (
-                                  // L'option EST le dessin : son libellé n'est
-                                  // qu'une étiquette de position, rien à corriger.
-                                  <FigureGeo figure={q.options_figures[j]} compact />
-                                ) : (
-                                  <input
-                                    value={opt}
-                                    onChange={(e) => updateOption(i, j, e.target.value)}
-                                    disabled={!enEdition}
-                                    style={{
-                                      ...inputBase,
-                                      fontSize: "0.8125rem",
-                                      color: correct ? "#16A34A" : "var(--text)",
-                                      fontWeight: correct ? 700 : 400,
-                                    }}
-                                    onFocus={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
-                                    onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
-                                  />
-                                )}
-                              </li>
-                            );
-                          })}
-                        </ul>
-                        <div style={{ marginTop: 8, display: "flex", alignItems: "flex-start", gap: 4 }}>
-                          <span style={{ fontSize: "0.75rem", flexShrink: 0, lineHeight: 1.8 }}>💡</span>
-                          <input
-                            value={q.explication ?? ""}
-                            onChange={(e) => updateQuestionField(i, "explication", e.target.value)}
-                            disabled={!enEdition}
-                            placeholder="Explication (optionnelle)"
-                            style={{
-                              ...inputBase,
-                              fontSize: "0.75rem",
-                              color: "var(--text-secondary)",
-                              fontStyle: "italic",
-                            }}
-                            onFocus={(e) => { e.currentTarget.style.borderColor = "var(--border)"; }}
-                            onBlur={(e) => { e.currentTarget.style.borderColor = "transparent"; }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
-                    <button className="btn-ghost" onClick={() => setEtape("formulaire")}>Annuler</button>
-                    <button className="btn-primary" onClick={() => contenu && valider(contenu)} disabled={etape === "sauvegarde" || !contenu} style={{ flex: 1 }}>
-                      {etape === "sauvegarde" ? "Enregistrement..." : "Valider et affecter"}
-                    </button>
-                  </div>
+            {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "qcm" && contenu?.type === "qcm" && (
+              <div style={{ padding: 24 }}>
+                <QCMEditeur
+                  data={contenu.data}
+                  onChange={(data) => setContenu({ type: "qcm", data })}
+                  enEdition={etape === "apercu"}
+                />
+                <div style={{ display: "flex", gap: 12, marginTop: 24 }}>
+                  <button className="btn-ghost" onClick={() => setEtape("formulaire")}>Annuler</button>
+                  <button className="btn-primary" onClick={() => contenu && valider(contenu)} disabled={etape === "sauvegarde" || !contenu} style={{ flex: 1 }}>
+                    {etape === "sauvegarde" ? "Enregistrement..." : "Valider et affecter"}
+                  </button>
                 </div>
-              );
-            })()}
+              </div>
+            )}
 
             {/* Aperçu dictée — navigation si plusieurs */}
             {(etape === "apercu" || etape === "sauvegarde") && typeBloc === "dictee" && dicteeResultats.length > 0 && (

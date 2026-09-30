@@ -16,6 +16,9 @@ import GenererRangementForm from "@/components/GenererRangementForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
 import GenererQCMForm from "@/components/GenererQCMForm";
 import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
+import ExercicePreview from "@/components/ExercicePreview";
+import QCMEditeur, { BoutonSupprimer, type QCMData } from "@/components/QCMEditeur";
+import type { ExerciceIA } from "@/types";
 import { effacerBrouillon, fusionnerBrouillon, lireBrouillon, sauverBrouillon } from "@/lib/brouillon-seances";
 
 /**
@@ -74,6 +77,8 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
   const [avancement, setAvancement] = useState({ fait: 0, total: 0 });
   /** La ligne reprise dans le formulaire complet, s'il y en a une. */
   const [aReprendre, setAReprendre] = useState<string | null>(null);
+  /** La ligne ouverte dans l'écran de relecture, s'il y en a une. */
+  const [aModifier, setAModifier] = useState<string | null>(null);
   /** Exercices retrouvés dans le brouillon après une fermeture inattendue. */
   const [retrouves, setRetrouves] = useState(0);
 
@@ -204,6 +209,14 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
     }
   }, [lignes, majLigne]);
 
+  /** Un exercice engendré s'ouvre en relecture ; un échec, sans contenu à
+   *  relire, directement dans le formulaire. */
+  const ouvrirModification = useCallback((cle: string) => {
+    const l = lignes.find((x) => x.cle === cle);
+    if (l?.statut === "ok" && l.contenu) setAModifier(cle);
+    else setAReprendre(cle);
+  }, [lignes]);
+
   /* ── Pose sur la grille ───────────────────────────────────────────────── */
 
   const [pose, setPose] = useState(false);
@@ -268,6 +281,24 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
 
   return (
     <div style={fondModale} onClick={onFermer}>
+      {aModifier && (() => {
+        const l = lignes.find((x) => x.cle === aModifier);
+        if (!l?.contenu) return null;
+        return (
+          <FenetreModification
+            ligne={l}
+            onFerme={() => setAModifier(null)}
+            onEnregistrer={(contenu) => {
+              majLigne(l.cle, { contenu });
+              setAModifier(null);
+            }}
+            onFormulaire={() => {
+              setAModifier(null);
+              setAReprendre(l.cle);
+            }}
+          />
+        );
+      })()}
       {aReprendre && (() => {
         const l = lignes.find((x) => x.cle === aReprendre);
         if (!l) return null;
@@ -359,7 +390,7 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
                   </button>
                 </div>
               )}
-              <ListeLignes lignes={lignes} etape={etape} onMaj={majLigne} onRegenerer={regenerer} onReprendre={setAReprendre} />
+              <ListeLignes lignes={lignes} etape={etape} onMaj={majLigne} onRegenerer={regenerer} onReprendre={ouvrirModification} />
             </>
           )}
         </div>
@@ -610,8 +641,8 @@ function Etat({
         <button onClick={onRegenerer} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
           Régénérer
         </button>
-        {/* Le formulaire complet de « Nouvel exercice », pré-rempli pour la
-            notion : changer de type, préciser la consigne, fixer des catégories. */}
+        {/* L'écran de relecture de « Nouvel exercice » : modifier ou supprimer
+            une question. Le formulaire complet reste accessible depuis là. */}
         <button onClick={onReprendre} className="btn-ghost" style={{ padding: "4px 10px", fontSize: 12 }}>
           Modifier
         </button>
@@ -656,6 +687,13 @@ function ApercuContenu({
     maj(cle, copie);
   };
 
+  // Retirer un élément ne touche aucun index calculé : un trou retiré redevient
+  // un mot du texte, une phrase retirée emporte ses propres groupes.
+  const supprimerItem = (i: number) => {
+    if (!cle) return;
+    maj(cle, items.filter((_, k) => k !== i));
+  };
+
   // Les index calculés ne se retouchent pas à la main.
   const figé = cle === "trous" || cle === "phrases";
 
@@ -681,13 +719,21 @@ function ApercuContenu({
         <>
           <p style={etiquetteChamp}>
             {items.length} élément{items.length > 1 ? "s" : ""}
-            {figé && " — lecture seule"}
+            {figé && " — texte en lecture seule, suppression possible"}
           </p>
           <ol style={{ margin: 0, paddingLeft: 20, display: "flex", flexDirection: "column", gap: 8 }}>
             {items.map((o, i) => (
               <li key={i}>
-                <ItemEditable item={o} figé={figé}
-                  onChange={(champ, v) => majItem(i, champ, v)} />
+                <div style={{ display: "flex", alignItems: "flex-start", gap: 6 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <ItemEditable item={o} figé={figé}
+                      onChange={(champ, v) => majItem(i, champ, v)} />
+                  </div>
+                  {/* Un exercice vide ne se pose pas : le dernier élément reste. */}
+                  {items.length > 1 && (
+                    <BoutonSupprimer onClick={() => supprimerItem(i)} titre="Supprimer cet élément" />
+                  )}
+                </div>
               </li>
             ))}
           </ol>
@@ -851,6 +897,104 @@ const encartRetrouve: React.CSSProperties = {
   border: "1px solid var(--pb-outline-variant)", background: "var(--pb-surface-container)",
   color: "var(--pb-on-surface)",
 };
+
+/* ── Modifier un exercice engendré ────────────────────────────────────────── */
+
+/**
+ * L'écran de relecture de « Nouvel exercice », ouvert sur un exercice de la
+ * semaine : modifier une question, en supprimer une qui ne convient pas.
+ *
+ * Mêmes composants que la page (`ExercicePreview`, `QCMEditeur`) : un seul
+ * écran de relecture pour les deux chemins. Les types qui n'en ont pas
+ * d'éditable là-bas passent par l'aperçu générique du panneau.
+ *
+ * Les modifications restent dans la fenêtre jusqu'à « Valider » : « Annuler »
+ * rend l'exercice tel qu'il était.
+ */
+function FenetreModification({
+  ligne, onFerme, onEnregistrer, onFormulaire,
+}: {
+  ligne: Ligne;
+  onFerme: () => void;
+  onEnregistrer: (contenu: Record<string, unknown>) => void;
+  onFormulaire: () => void;
+}) {
+  const [contenu, setContenu] = useState<Record<string, unknown>>(ligne.contenu ?? {});
+  const questions = Array.isArray(contenu.questions) ? (contenu.questions as Record<string, unknown>[]) : null;
+
+  // Le type de la ligne ne suffit pas : c'est la forme du contenu qui dit
+  // quel éditeur sait le lire (une évaluation a la forme d'un exercice).
+  const formeExercice = questions?.every((q) => typeof q.enonce === "string") ?? false;
+  const formeQCM = questions?.every((q) => Array.isArray(q.options) && typeof q.reponse_correcte === "number") ?? false;
+
+  const boutons = (
+    <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 20 }}>
+      <button className="btn-primary" onClick={() => onEnregistrer(contenu)} style={{ minWidth: 130 }}>
+        ✅ Valider
+      </button>
+      <button className="btn-secondary" onClick={onFormulaire}>
+        🔄 Régénérer avec le formulaire
+      </button>
+      <button
+        className="btn-ghost"
+        onClick={onFerme}
+        style={{ marginLeft: "auto", color: "var(--error)", borderColor: "var(--error)" }}
+      >
+        ❌ Annuler
+      </button>
+    </div>
+  );
+
+  return (
+    <div
+      style={{ ...fondModale, zIndex: 1100 }}
+      onClick={(e) => { e.stopPropagation(); onFerme(); }}
+    >
+      <div
+        style={{ ...cadreModale, maxWidth: 760 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <header style={enTete}>
+          <div>
+            <h3 style={{ margin: 0, fontSize: 17, fontWeight: 800, color: "var(--pb-on-surface)" }}>
+              Modifier l&apos;exercice
+            </h3>
+            <p style={{ margin: "3px 0 0", fontSize: 13, color: "var(--pb-on-surface-variant)" }}>
+              {titreDuBloc(ligne)} · {ligne.niveau}
+            </p>
+          </div>
+          <button onClick={onFerme} className="btn-ghost" style={{ padding: "6px 12px" }}>Fermer</button>
+        </header>
+
+        <div style={{ flex: 1, overflowY: "auto", padding: "16px 20px" }}>
+          {formeExercice ? (
+            <ExercicePreview
+              contenu={{ type: "exercice", data: contenu as unknown as ExerciceIA }}
+              editionInitiale
+              onValider={(c) => onEnregistrer({ ...contenu, ...(c.data as unknown as Record<string, unknown>) })}
+              onRegenerer={onFormulaire}
+              libelleRegenerer="🔄 Régénérer avec le formulaire"
+              onAnnuler={onFerme}
+            />
+          ) : formeQCM ? (
+            <>
+              <QCMEditeur
+                data={contenu as unknown as QCMData}
+                onChange={(d) => setContenu({ ...contenu, ...(d as unknown as Record<string, unknown>) })}
+              />
+              {boutons}
+            </>
+          ) : (
+            <>
+              <ApercuContenu contenu={contenu} onChange={setContenu} />
+              {boutons}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 /* ── Reprendre un exercice dans le formulaire complet ─────────────────────── */
 

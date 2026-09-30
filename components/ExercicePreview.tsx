@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ExerciceIA, CalcMentalIA, RessourceIA, TacheRessource } from "@/types";
 import { TemplateCalcul } from "@/lib/calcul";
 import CalcMentalStack from "./CalcMentalStack";
+import { BoutonSupprimer } from "./QCMEditeur";
 
 type ContenuPreview =
   | { type: "exercice"; data: ExerciceIA }
@@ -16,6 +17,10 @@ interface ExercicePreviewProps {
   onRegenerer: () => void;
   onAnnuler: () => void;
   chargement?: boolean;
+  /** Ouvrir directement en modification — quand on arrive par « Modifier ». */
+  editionInitiale?: boolean;
+  /** Libellé du bouton de régénération, quand il ne relance pas la même génération. */
+  libelleRegenerer?: string;
 }
 
 export default function ExercicePreview({
@@ -24,8 +29,10 @@ export default function ExercicePreview({
   onRegenerer,
   onAnnuler,
   chargement = false,
+  editionInitiale = false,
+  libelleRegenerer = "🔄 Régénérer",
 }: ExercicePreviewProps) {
-  const [modeEdition, setModeEdition] = useState(false);
+  const [modeEdition, setModeEdition] = useState(editionInitiale);
   const [contenuEdite, setContenuEdite] = useState(contenu);
 
   function handleValider() {
@@ -96,7 +103,7 @@ export default function ExercicePreview({
             onClick={onRegenerer}
             disabled={chargement}
           >
-            🔄 Régénérer
+            {libelleRegenerer}
           </button>
         )}
 
@@ -288,6 +295,10 @@ function ExerciceEditView({
     onChange({ ...data, questions: qs });
   }
 
+  function supprimerQuestion(i: number) {
+    onChange({ ...data, questions: data.questions.filter((_, k) => k !== i) });
+  }
+
   return (
     <div>
       {/* Titre + consigne */}
@@ -380,6 +391,10 @@ function ExerciceEditView({
                 />
               ) : (
                 <span style={{ fontSize: 14, flex: 1 }}>{q.enonce}</span>
+              )}
+              {/* Un exercice sans question ne se pose pas : la dernière reste. */}
+              {editable && data.questions.length > 1 && (
+                <BoutonSupprimer onClick={() => supprimerQuestion(i)} />
               )}
             </div>
 
