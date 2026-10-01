@@ -248,7 +248,7 @@ interface DashCache {
   dailyProblemReussi: boolean;
   chapitresAssignes: ChapitreAssigne[];
   serieParcours: number;
-  calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null;
+  calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean; tentatives_restantes?: number } | null;
   deblocageActif?: boolean;
 }
 
@@ -308,7 +308,7 @@ export default function DashboardEleve() {
   const [dailyProblemReussi, setDailyProblemReussi]    = useState(false);
   const [chapitresAssignes, setChapitresAssignes]      = useState<ChapitreAssigne[]>([]);
   const [serieParcours, setSerieParcours]              = useState<number>(0);
-  const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean } | null>(null);
+  const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean; tentatives_restantes?: number } | null>(null);
   // Déblocage progressif (lib/deblocage-eleve.ts) : réglage livré par /api/eleve/chargement.
   const [deblocageActif, setDeblocageActif]             = useState(false);
   // Le chargement de cette visite est-il arrivé ? Avant, on ne sait ni le
@@ -1184,6 +1184,11 @@ export default function DashboardEleve() {
   // pleine — une seule règle pour les deux (lib/deblocage-eleve.ts).
   const hasDailyProblem = dailyProblem !== null;
   const hasCalculJour = calculJour !== null;
+  // Terminé, pas seulement réussi — comme le problème du jour : les deux essais
+  // épuisés, la correction montrée, il n'y a plus rien à faire. Compté sur la
+  // seule réussite, un calcul raté restait « à faire » pour toujours : la barre
+  // du jour ne se remplissait jamais, et le déblocage restait à l'étape 1.
+  const calculTermine = calculJour?.deja_fait === true || calculJour?.tentatives_restantes === 0;
   // Compteur de tâches du JOUR uniquement (exclut les blocs hebdomadaires
   // et les podcasts reportés qui ne sont pas spécifiquement à faire
   // aujourd'hui).
@@ -1205,7 +1210,7 @@ export default function DashboardEleve() {
   const rituelsDuJour: boolean[] = blocsComptes.length > 0
     ? [
         ...(hasDailyProblem ? [dailyProblemFait] : []),
-        ...(hasCalculJour ? [calculJour?.deja_fait === true] : []),
+        ...(hasCalculJour ? [calculTermine] : []),
       ]
     : [];
 
@@ -2622,9 +2627,9 @@ export default function DashboardEleve() {
                       style={{
                         display: "flex", flexDirection: "column",
                         padding: "20px 22px",
-                        borderLeft: `4px solid ${calculJour.deja_fait ? "#22C55E" : "#2563EB"}`,
+                        borderLeft: `4px solid ${calculTermine ? "#22C55E" : "#2563EB"}`,
                         textDecoration: "none", color: "inherit",
-                        opacity: calculJour.deja_fait ? 0.65 : 1,
+                        opacity: calculTermine ? 0.65 : 1,
                         minHeight: 130, position: "relative", overflow: "hidden",
                       }}
                     >
@@ -2648,7 +2653,7 @@ export default function DashboardEleve() {
                           <div style={{
                             fontSize: 22, fontWeight: 800, fontFamily: "'Courier New', monospace",
                             color: "var(--pb-on-surface)", marginBottom: 8,
-                            textDecoration: calculJour.deja_fait ? "line-through" : "none",
+                            textDecoration: calculTermine ? "line-through" : "none",
                           }}>
                             {String(calculJour.nombre1).replace(".", ",")} {calculJour.operation === "addition" ? "+" : calculJour.operation === "soustraction" ? "−" : calculJour.operation === "multiplication" ? "×" : "÷"} {String(calculJour.nombre2).replace(".", ",")}
                           </div>
@@ -2657,7 +2662,7 @@ export default function DashboardEleve() {
                           function
                         </span>
                       </div>
-                      {!calculJour.deja_fait ? (
+                      {!calculTermine ? (
                         <div style={{ marginTop: "auto", paddingTop: 16 }}>
                           <span
                             className="pb-btn primary"
@@ -2667,8 +2672,8 @@ export default function DashboardEleve() {
                           </span>
                         </div>
                       ) : (
-                        <div style={{ marginTop: "auto", paddingTop: 16, fontSize: 14, fontWeight: 700, color: "#16A34A" }}>
-                          ✓ Résolu
+                        <div style={{ marginTop: "auto", paddingTop: 16, fontSize: 14, fontWeight: 700, color: calculJour.deja_fait ? "#16A34A" : "#64748B" }}>
+                          {calculJour.deja_fait ? "✓ Résolu" : "✓ Fait — tu as vu la correction"}
                         </div>
                       )}
                     </Link>

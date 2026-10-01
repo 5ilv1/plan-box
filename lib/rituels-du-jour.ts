@@ -15,6 +15,9 @@ import { uidDuBloc } from "./suivi-metriques";
 import { NIVEAUX_IDS } from "./calcul-jour";
 import { MAX_TENTATIVES } from "./probleme-du-jour";
 
+/** Essais du calcul du jour (`app/api/calcul-du-jour/submit` : « Max 2 tentatives »). */
+export const ESSAIS_CALCUL_DU_JOUR = 2;
+
 export const TYPE_PROBLEME_DU_JOUR = "probleme_du_jour";
 export const TYPE_CALCUL_DU_JOUR = "calcul_du_jour";
 
@@ -215,12 +218,13 @@ export async function chargerRituels(
     .filter((f) => f.uid !== "");
 
   const idsCalcul = lignesCalcul.map((c) => c.id);
-  const resultats: Array<{ calcul_id: string; eleve_id: string | null; rb_eleve_id: number | null }> = [];
+  type ResultatCalcul = { calcul_id: string; eleve_id: string | null; rb_eleve_id: number | null; correct: boolean | null };
+  const resultats: ResultatCalcul[] = [];
   for (let i = 0; i < idsCalcul.length; i += 200) {
     const tranche = idsCalcul.slice(i, i + 200);
-    const lot = await lireTout<{ calcul_id: string; eleve_id: string | null; rb_eleve_id: number | null }>(
+    const lot = await lireTout<ResultatCalcul>(
       (d, f) => admin.from("calcul_jour_resultat")
-        .select("calcul_id, eleve_id, rb_eleve_id")
+        .select("calcul_id, eleve_id, rb_eleve_id, correct")
         .in("calcul_id", tranche)
         .order("id", { ascending: true })
         .range(d, f),
@@ -229,12 +233,23 @@ export async function chargerRituels(
     resultats.push(...lot);
   }
 
-  const calculsFaits: RituelFait[] = resultats
-    .map((r) => ({
-      uid: r.eleve_id ? `pb_${r.eleve_id}` : r.rb_eleve_id !== null ? `rb_${r.rb_eleve_id}` : "",
-      date: dateParCalcul.get(r.calcul_id) ?? "",
-    }))
-    .filter((f) => f.uid !== "" && f.date !== "");
+  // Terminé, pas seulement tenté : réussi, ou les deux essais épuisés — la
+  // règle de l'élève (barre du jour, déblocage). Avant, un seul essai faux
+  // suffisait ici, alors que l'élève voyait encore « Calculer → ».
+  const parEleveEtCalcul = new Map<string, { uid: string; date: string; essais: number; reussi: boolean }>();
+  for (const r of resultats) {
+    const uid = r.eleve_id ? `pb_${r.eleve_id}` : r.rb_eleve_id !== null ? `rb_${r.rb_eleve_id}` : "";
+    const date = dateParCalcul.get(r.calcul_id) ?? "";
+    if (!uid || !date) continue;
+    const cle = `${uid}|${r.calcul_id}`;
+    const e = parEleveEtCalcul.get(cle) ?? { uid, date, essais: 0, reussi: false };
+    e.essais += 1;
+    if (r.correct) e.reussi = true;
+    parEleveEtCalcul.set(cle, e);
+  }
+  const calculsFaits: RituelFait[] = [...parEleveEtCalcul.values()]
+    .filter((e) => e.reussi || e.essais >= ESSAIS_CALCUL_DU_JOUR)
+    .map(({ uid, date }) => ({ uid, date }));
 
   return construireRituels({
     eleves: args.eleves,
