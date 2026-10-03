@@ -70,7 +70,7 @@ Les deux coexistent dans les progressions, assignations et résultats.
 | `user_preferences` | Préférences UI (nav_order) |
 | `ceinture_choix_semaine` | Domaines de ceintures choisis par l'élève pour la semaine |
 | `exercice_reprise` | L'exercice en cours d'un élève, pour qu'il le reprenne |
-| `reglage` | Réglages de classe (clé → valeur jsonb), accès serveur seulement : `deblocage_progressif` |
+| `reglage` | Réglages de classe (clé → valeur jsonb), accès serveur seulement : `deblocage_progressif`, `activites_tablette` |
 
 ### Relations FK critiques
 Avant de supprimer un chapitre, nettoyer dans cet ordre :
@@ -225,6 +225,31 @@ défaut** : désactivé, l'élève voit tout, comme avant.
 - Le réglage arrive par `/api/eleve/chargement` (pas d'appel de plus). Élèves Plan Box
   natifs : toujours l'étape 3.
 - Contrat : `npx tsx docs/tests/test-deblocage-eleve.mjs` (25 cas).
+
+### Activités sur tablette, par niveau
+
+Certains élèves préfèrent le cahier. **Paramètres → « Activités sur tablette, par
+niveau »** : une grille CE2/CM1/CM2 × problème du jour, écriture, calcul du jour.
+Éteinte, l'activité disparaît du tableau de bord de ce niveau, de sa barre du jour
+et du suivi.
+
+- `lib/activites-niveau.ts` (**pur**) : `reglage.activites_tablette` ne garde que ce
+  qui est **éteint** (`{ ecriture: { CM2: false } }`). Absent, abîmé ou niveau
+  inconnu ⇒ **allumé** : un réglage illisible ne prive personne de son travail.
+- ⚠️ **Le calcul du jour n'est PAS dans ce réglage** : sa colonne pilote
+  `calcul_jour_config.actif`, l'interrupteur qui existait déjà sur la page du calcul
+  du jour. Deux réglages pour la même chose auraient fait deux vérités. La route
+  `GET /api/calcul-du-jour` le vérifie **avant** de lire le calcul du jour — le cron
+  l'a posé dès le matin, l'éteindre doit valoir tout de suite.
+- Problème du jour : `GET /api/daily-problem` répond `noSchool` pour un niveau éteint,
+  sans créer de ligne `daily_problems`.
+- Écriture : `affecterTheme()` saute les élèves du niveau éteint (niveau lu sur
+  **tous** leurs groupes). Les blocs **déjà affectés** restent. Tout éteint ⇒ le
+  cron s'arrête (`ignore`, pas `echec`) et ne génère rien ; le thème n'est pas
+  marqué affecté.
+- Suivi (`chargerRituels()`) : un rituel posé ce matin puis éteint ne compte pas
+  **aujourd'hui** ; les jours passés restent tels qu'ils ont été vécus.
+- Contrat : `npx tsx docs/tests/test-activites-niveau.mjs` (21 cas).
 
 ### Chargement : ne rien redemander pour rien
 
@@ -519,7 +544,7 @@ Contrat : `npx tsx docs/tests/test-ecriture-bouton.mjs` (13 cas).
     (`lib/cron-journal.ts`). Pour savoir ce qui s'est passé un matin :
     `select * from cron_journal order by id desc limit 10;`
   - l'orchestration reçoit ses dépendances (`lib/cron-theme-ecriture.ts`) : contrat
-    `npx tsx docs/tests/test-cron-theme-ecriture.mjs` (15 cas, un par panne).
+    `npx tsx docs/tests/test-cron-theme-ecriture.mjs` (17 cas, un par panne).
   - ⚠️ Le `CRON_SECRET` de `.env.local` n'est pas celui de la production : pour agir sur
     la base depuis un poste, appeler les routes du serveur local, qui écrit dans la même
     base.

@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase";
 import MatieresView from "@/components/dashboard/MatieresView";
 import NouvelleAnneeSection from "@/components/NouvelleAnneeSection";
 import DeblocageProgressifSection from "@/components/DeblocageProgressifSection";
+import ActivitesTabletteSection from "@/components/ActivitesTabletteSection";
 
 interface JourSansEcole {
   id: string;
@@ -112,18 +113,18 @@ export default function ParametresPage() {
   const inputStyle: React.CSSProperties = {
     padding: "9px 14px",
     borderRadius: "0.75rem",
-    border: "1.5px solid var(--ens-outline-variant)",
+    border: "1.5px solid var(--pb-outline-variant)",
     fontSize: 13,
     fontFamily: "inherit",
     background: "white",
-    color: "var(--ens-on-surface)",
+    color: "var(--pb-on-surface)",
     outline: "none",
   };
 
   const labelStyle: React.CSSProperties = {
     fontSize: 12,
     fontWeight: 700,
-    color: "var(--ens-on-surface-variant)",
+    color: "var(--pb-on-surface-variant)",
     marginBottom: 6,
     display: "block",
     textTransform: "uppercase",
@@ -139,13 +140,16 @@ export default function ParametresPage() {
         {/* ── Section : Déblocage progressif (tableau de bord élève) ── */}
         <DeblocageProgressifSection />
 
+        {/* ── Section : Activités sur tablette, par niveau ── */}
+        <ActivitesTabletteSection />
+
         {/* ── Section : Zone scolaire ── */}
-        <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--ens-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>
+        <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--pb-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>
           <h3 className="ens-section-title" style={{ marginBottom: 6 }}>
             <span className="ms" style={{ fontSize: 20, verticalAlign: "middle", marginRight: 8 }}>school</span>
             Zone scolaire
           </h3>
-          <p style={{ fontSize: 13, color: "var(--ens-on-surface-variant)", marginBottom: 20 }}>
+          <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 20 }}>
             Utilisée pour calculer les vacances scolaires lors de la réaffectation automatique des exercices échoués.
           </p>
 
@@ -157,9 +161,9 @@ export default function ParametresPage() {
                 style={{
                   padding: "10px 28px",
                   borderRadius: "0.75rem",
-                  border: `2px solid ${zone === z ? "var(--ens-primary)" : "var(--ens-outline-variant)"}`,
-                  background: zone === z ? "var(--ens-primary)" : "white",
-                  color: zone === z ? "white" : "var(--ens-on-surface-variant)",
+                  border: `2px solid ${zone === z ? "var(--pb-primary)" : "var(--pb-outline-variant)"}`,
+                  background: zone === z ? "var(--pb-primary)" : "white",
+                  color: zone === z ? "white" : "var(--pb-on-surface-variant)",
                   fontWeight: 700,
                   fontSize: 16,
                   cursor: "pointer",
@@ -188,12 +192,12 @@ export default function ParametresPage() {
         </section>
 
         {/* ── Section : Jours sans école ── */}
-        <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--ens-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>
+        <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--pb-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>
           <h3 className="ens-section-title" style={{ marginBottom: 6 }}>
             <span className="ms" style={{ fontSize: 20, verticalAlign: "middle", marginRight: 8 }}>event_busy</span>
             Jours sans école
           </h3>
-          <p style={{ fontSize: 13, color: "var(--ens-on-surface-variant)", marginBottom: 20 }}>
+          <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 20 }}>
             Ajoutez des périodes spécifiques (journées pédagogiques, sorties de classe, etc.)
             qui seront exclues lors du calcul du prochain jour d'école.
           </p>
@@ -250,9 +254,9 @@ export default function ParametresPage() {
 
           {/* Liste */}
           {chargement ? (
-            <p style={{ color: "var(--ens-on-surface-variant)", fontSize: 13 }}>Chargement…</p>
+            <p style={{ color: "var(--pb-on-surface-variant)", fontSize: 13 }}>Chargement…</p>
           ) : jours.length === 0 ? (
-            <p style={{ color: "var(--ens-on-surface-variant)", fontSize: 13 }}>Aucune exception définie.</p>
+            <p style={{ color: "var(--pb-on-surface-variant)", fontSize: 13 }}>Aucune exception définie.</p>
           ) : (
             <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
               {jours.map(j => (
@@ -261,13 +265,13 @@ export default function ParametresPage() {
                   style={{
                     display: "flex", alignItems: "center", justifyContent: "space-between",
                     padding: "12px 16px", borderRadius: "0.75rem",
-                    background: "var(--ens-surface-container-low)",
-                    border: "1px solid var(--ens-outline-variant)",
+                    background: "var(--pb-surface-low)",
+                    border: "1px solid var(--pb-outline-variant)",
                   }}
                 >
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--ens-on-surface)" }}>{j.label}</div>
-                    <div style={{ fontSize: 12, color: "var(--ens-on-surface-variant)", marginTop: 2 }}>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: "var(--pb-on-surface)" }}>{j.label}</div>
+                    <div style={{ fontSize: 12, color: "var(--pb-on-surface-variant)", marginTop: 2 }}>
                       {new Date(j.date_debut + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                       {j.date_debut !== j.date_fin && (
                         <> → {new Date(j.date_fin + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}</>
@@ -291,7 +295,7 @@ export default function ParametresPage() {
         </section>
 
         {/* ── Section : Matières ── */}
-        <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--ens-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>
+        <section style={{ background: "white", borderRadius: "1.25rem", padding: "24px 28px", border: "1px solid var(--pb-outline-variant)", boxShadow: "0 1px 4px rgba(0,0,48,0.05)" }}>
           <h3 className="ens-section-title" style={{ marginBottom: 16 }}>
             <span className="ms" style={{ fontSize: 20, verticalAlign: "middle", marginRight: 8 }}>palette</span>
             Matières

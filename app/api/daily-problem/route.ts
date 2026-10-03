@@ -3,6 +3,8 @@ import { getServerUser } from "@/lib/server-auth";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getCurrentSchoolWeek } from "@/lib/schoolWeek";
 import { problemeTermine } from "@/lib/probleme-du-jour";
+import { activiteAllumee } from "@/lib/activites-niveau";
+import { chargerReglageActivites } from "@/lib/activites-niveau-serveur";
 
 export async function GET() {
   const user = await getServerUser();
@@ -90,6 +92,13 @@ export async function GET() {
         }
       }
     }
+  }
+
+  // Éteint pour ce niveau (Paramètres → activités sur tablette) : les élèves
+  // le font sur leur cahier. Aucune ligne de `daily_problems` n'est créée, donc
+  // le suivi ne le compte pas non plus.
+  if (!activiteAllumee(await chargerReglageActivites(admin), "probleme_du_jour", niveau)) {
+    return NextResponse.json({ noSchool: true, desactive: true });
   }
 
   // Vérifier si c'est un jour scolaire

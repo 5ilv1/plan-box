@@ -138,5 +138,19 @@ function deps(surcharge = {}) {
     [r.statut, r.nbBlocs], ["ok", 20]);
 }
 
+/* ── 6. Écriture éteinte pour tous les niveaux ───────────────────────────── */
+
+{
+  const { d, appels } = deps({ ecritureEteintePartout: async () => true });
+  const r = await executerThemeDuJour(d);
+  verifier("écriture éteinte partout : ignoré, sans génération ni échec",
+    [r.statut, appels.generer, appels.affecter], ["ignore", 0, 0]);
+}
+{
+  const { d } = deps({ ecritureEteintePartout: async () => false });
+  const r = await executerThemeDuJour(d);
+  verifier("écriture allumée pour un niveau au moins : le cron tourne", r.statut, "ok");
+}
+
 console.log(echecs === 0 ? `✓ ${total} cas passent` : `\n${echecs} échec(s) sur ${total}`);
 process.exit(echecs === 0 ? 0 : 1);

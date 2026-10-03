@@ -10,6 +10,8 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt, CONSIGNES_ECRITURE } from "./ecriture-types";
+import { activiteAllumee, niveauDesGroupes } from "./activites-niveau";
+import { chargerReglageActivites } from "./activites-niveau-serveur";
 
 export interface ThemeEcriture {
   id: string | null;
@@ -254,6 +256,18 @@ export async function affecterTheme(supabase: SupabaseClient, theme_id: string):
     (groupes ?? []).map((g: { id: string; nom: string }) => [g.id, g.nom])
   );
 
+  // 3c. Niveaux où l'écriture est éteinte (Paramètres → activités sur
+  // tablette) : ces élèves écrivent sur leur cahier, ils ne reçoivent pas de
+  // bloc. Le niveau d'un élève se lit sur TOUS ses groupes.
+  const reglage = await chargerReglageActivites(supabase);
+  const groupesParEleve = new Map<string, string[]>();
+  for (const l of liaisons as { planbox_eleve_id: string | null; repetibox_eleve_id: number | null; groupe_id: string }[]) {
+    const cle = l.repetibox_eleve_id ? `rb_${l.repetibox_eleve_id}` : `pb_${l.planbox_eleve_id}`;
+    groupesParEleve.set(cle, [...(groupesParEleve.get(cle) ?? []), nomGroupe.get(l.groupe_id) ?? ""]);
+  }
+  const ecritureEteinte = (cle: string) =>
+    !activiteAllumee(reglage, "ecriture", niveauDesGroupes(groupesParEleve.get(cle) ?? []));
+
   // 4. Construire les blocs — dédoublonner par élève
   const vusRB = new Set<number>();
   const vusPB = new Set<string>();
@@ -297,6 +311,8 @@ export async function affecterTheme(supabase: SupabaseClient, theme_id: string):
       periodicite: themeMode === "semaine" ? "semaine" : "jour",
     };
 
+    if (ecritureEteinte(liaison.repetibox_eleve_id ? `rb_${liaison.repetibox_eleve_id}` : `pb_${liaison.planbox_eleve_id}`)) continue;
+
     if (liaison.repetibox_eleve_id && !vusRB.has(liaison.repetibox_eleve_id)) {
       vusRB.add(liaison.repetibox_eleve_id);
       blocsAPlanTravail.push({ ...blocBase, eleve_id: null, repetibox_eleve_id: liaison.repetibox_eleve_id });
@@ -304,6 +320,12 @@ export async function affecterTheme(supabase: SupabaseClient, theme_id: string):
       vusPB.add(liaison.planbox_eleve_id);
       blocsAPlanTravail.push({ ...blocBase, eleve_id: liaison.planbox_eleve_id, repetibox_eleve_id: null });
     }
+  }
+
+  // Tous les niveaux éteints : rien à poser. Le thème n'est PAS marqué
+  // affecté, il reste disponible si l'enseignant rallume un niveau.
+  if (blocsAPlanTravail.length === 0) {
+    return { ok: true, nb_eleves: 0 };
   }
 
   // 5. Insérer dans plan_travail

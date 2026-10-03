@@ -25,6 +25,11 @@ export interface DepsThemeDuJour {
   affecter: (themeId: string) => Promise<{ nb_eleves: number; deja_planifie?: boolean; deja_affecte?: boolean }>;
   /** Combien de blocs d'écriture pour aujourd'hui, une fois fait. */
   blocsDuJour: () => Promise<number>;
+  /**
+   * L'écriture est-elle éteinte pour TOUS les niveaux (Paramètres → activités
+   * sur tablette) ? Alors rien à poser : ni génération, ni échec.
+   */
+  ecritureEteintePartout?: () => Promise<boolean>;
   /** Attente entre deux essais — injectée pour que les tests ne dorment pas. */
   attendre?: (ms: number) => Promise<void>;
 }
@@ -72,6 +77,10 @@ export async function executerThemeDuJour(deps: DepsThemeDuJour): Promise<Result
   }
 
   try {
+    if (await deps.ecritureEteintePartout?.()) {
+      return { statut: "ignore", raison: "Écriture éteinte pour tous les niveaux", tentatives: 0 };
+    }
+
     const mode = await deps.dernierMode();
     if (mode === "semaine" && deps.jourSemaine !== 1) {
       return { statut: "ignore", raison: "Mode semaine — génération uniquement le lundi", tentatives: 0 };

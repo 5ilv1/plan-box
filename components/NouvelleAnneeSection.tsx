@@ -85,14 +85,14 @@ export default function NouvelleAnneeSection() {
   return (
     <section style={{
       background: "white", borderRadius: "1.25rem", padding: "24px 28px",
-      border: `1px solid ${ouvert ? "#FECACA" : "var(--ens-outline-variant)"}`,
+      border: `1px solid ${ouvert ? "#FECACA" : "var(--pb-outline-variant)"}`,
       boxShadow: "0 1px 4px rgba(0,0,48,0.05)",
     }}>
       <h3 className="ens-section-title" style={{ marginBottom: 6 }}>
         <span className="ms" style={{ fontSize: 20, verticalAlign: "middle", marginRight: 8 }}>restart_alt</span>
         Changer d'année
       </h3>
-      <p style={{ fontSize: 13, color: "var(--ens-on-surface-variant)", marginBottom: 20 }}>
+      <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 20 }}>
         Efface tout le travail des élèves de l'année écoulée — blocs assignés, résultats,
         progressions, podcasts et lectures en cours — pour que le tableau de bord élève
         reparte vide. Les contenus que vous avez créés (chapitres, exercices, livres,
@@ -101,7 +101,7 @@ export default function NouvelleAnneeSection() {
       </p>
 
       {chargement ? (
-        <p style={{ color: "var(--ens-on-surface-variant)", fontSize: 13 }}>Chargement…</p>
+        <p style={{ color: "var(--pb-on-surface-variant)", fontSize: 13 }}>Chargement…</p>
       ) : !apercu ? (
         <p style={{ color: ROUGE, fontSize: 13 }}>Aperçu indisponible.</p>
       ) : apercu.total === 0 && !ouvert ? (
@@ -114,18 +114,18 @@ export default function NouvelleAnneeSection() {
           <div style={{
             display: "flex", flexDirection: "column", gap: 6, marginBottom: 20,
             padding: "14px 16px", borderRadius: "0.75rem",
-            background: "var(--ens-surface-container-low)",
-            border: "1px solid var(--ens-outline-variant)",
+            background: "var(--pb-surface-low)",
+            border: "1px solid var(--pb-outline-variant)",
           }}>
             {apercu.travail.filter((l) => l.nb > 0).map((l) => (
               <div key={l.table} style={{ display: "flex", justifyContent: "space-between", fontSize: 13 }}>
-                <span style={{ color: "var(--ens-on-surface-variant)" }}>{l.label}</span>
-                <span style={{ fontWeight: 700, color: "var(--ens-on-surface)" }}>{l.nb}</span>
+                <span style={{ color: "var(--pb-on-surface-variant)" }}>{l.label}</span>
+                <span style={{ fontWeight: 700, color: "var(--pb-on-surface)" }}>{l.nb}</span>
               </div>
             ))}
             <div style={{
               display: "flex", justifyContent: "space-between", fontSize: 13,
-              borderTop: "1px solid var(--ens-outline-variant)", paddingTop: 6, marginTop: 2,
+              borderTop: "1px solid var(--pb-outline-variant)", paddingTop: 6, marginTop: 2,
             }}>
               <span style={{ fontWeight: 700 }}>Total</span>
               <span style={{ fontWeight: 700, color: ROUGE }}>{apercu.total}</span>
@@ -154,7 +154,7 @@ export default function NouvelleAnneeSection() {
                 Cette action est définitive et ne peut pas être annulée.
               </p>
 
-              <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--ens-on-surface-variant)", marginBottom: 8 }}>
+              <p style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--pb-on-surface-variant)", marginBottom: 8 }}>
                 Supprimer aussi ces contenus (facultatif)
               </p>
               <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
@@ -168,7 +168,7 @@ export default function NouvelleAnneeSection() {
                     />
                     <span>
                       <strong>{o.label}</strong>{" "}
-                      <span style={{ color: "var(--ens-on-surface-variant)" }}>
+                      <span style={{ color: "var(--pb-on-surface-variant)" }}>
                         ({apercu.contenus[o.cle]}) — {o.description}
                       </span>
                     </span>
@@ -176,7 +176,7 @@ export default function NouvelleAnneeSection() {
                 ))}
               </div>
 
-              <label style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--ens-on-surface-variant)", display: "block", marginBottom: 6 }}>
+              <label style={{ fontSize: 12, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.05em", color: "var(--pb-on-surface-variant)", display: "block", marginBottom: 6 }}>
                 Saisissez « {CONFIRMATION_ATTENDUE} » pour confirmer
               </label>
               <input
@@ -188,7 +188,7 @@ export default function NouvelleAnneeSection() {
                   padding: "9px 14px", borderRadius: "0.75rem",
                   border: `1.5px solid ${confirmationOk ? "#16A34A" : "#FECACA"}`,
                   fontSize: 13, fontFamily: "inherit", background: "white",
-                  color: "var(--ens-on-surface)", outline: "none", width: 260,
+                  color: "var(--pb-on-surface)", outline: "none", width: 260,
                   marginBottom: 16, display: "block",
                 }}
               />
@@ -211,8 +211,8 @@ export default function NouvelleAnneeSection() {
                   disabled={enCours}
                   style={{
                     padding: "10px 20px", borderRadius: "0.75rem",
-                    border: "1.5px solid var(--ens-outline-variant)", background: "white",
-                    color: "var(--ens-on-surface-variant)", fontWeight: 600, fontSize: 14,
+                    border: "1.5px solid var(--pb-outline-variant)", background: "white",
+                    color: "var(--pb-on-surface-variant)", fontWeight: 600, fontSize: 14,
                     cursor: "pointer",
                   }}
                 >

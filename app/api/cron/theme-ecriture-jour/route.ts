@@ -3,6 +3,8 @@ import { createAdminClient } from "@/lib/supabase-admin";
 import { genererOuRecupererTheme, affecterTheme } from "@/lib/theme-ecriture";
 import { executerThemeDuJour } from "@/lib/cron-theme-ecriture";
 import { ouvrirJournal, clore } from "@/lib/cron-journal";
+import { NIVEAUX_ACTIVITES, activiteAllumee } from "@/lib/activites-niveau";
+import { chargerReglageActivites } from "@/lib/activites-niveau-serveur";
 
 /**
  * Le thème d'écriture du jour, posé chaque matin de classe (`vercel.json` :
@@ -64,6 +66,11 @@ export async function GET(req: Request) {
 
     generer: (mode) => genererOuRecupererTheme(admin, anthropic, true, mode),
     affecter: (themeId) => affecterTheme(admin, themeId),
+
+    ecritureEteintePartout: async () => {
+      const reglage = await chargerReglageActivites(admin);
+      return NIVEAUX_ACTIVITES.every((n) => !activiteAllumee(reglage, "ecriture", n));
+    },
 
     blocsDuJour: async () => {
       const { count, error } = await admin

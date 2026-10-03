@@ -89,6 +89,19 @@ export async function GET() {
 
   const today = new Date().toISOString().split("T")[0];
 
+  // Éteint pour ce niveau (`calcul_jour_config.actif`, page du calcul du jour
+  // ou Paramètres → activités sur tablette). Vérifié AVANT de lire le calcul
+  // du jour : le cron l'a peut-être déjà posé ce matin, et l'éteindre doit
+  // valoir dès maintenant.
+  const { data: configNiveau } = await admin
+    .from("calcul_jour_config")
+    .select("actif")
+    .eq("niveau_id", niveauId)
+    .maybeSingle();
+  if (configNiveau && configNiveau.actif === false) {
+    return NextResponse.json({ inactif: true, message: "Le calcul du jour n'est pas activé pour ce niveau." });
+  }
+
   // Vérifier si l'élève a déjà un résultat correct aujourd'hui
   const { data: existingCalcul } = await admin
     .from("calcul_jour")

@@ -14,6 +14,8 @@ import type { BlocSuivi } from "./suivi-metriques";
 import { uidDuBloc } from "./suivi-metriques";
 import { NIVEAUX_IDS } from "./calcul-jour";
 import { MAX_TENTATIVES } from "./probleme-du-jour";
+import { activiteAllumee } from "./activites-niveau";
+import { chargerReglageActivites } from "./activites-niveau-serveur";
 
 /** Essais du calcul du jour (`app/api/calcul-du-jour/submit` : « Max 2 tentatives »). */
 export const ESSAIS_CALCUL_DU_JOUR = 2;
@@ -183,13 +185,30 @@ export async function chargerRituels(
     admin.from("eleve").select("id, auth_id"),
   ]);
 
+  // Un rituel éteint pour un niveau (Paramètres → activités sur tablette)
+  // n'est plus servi à ses élèves, même si sa ligne a été posée ce matin
+  // avant qu'on l'éteigne : aujourd'hui, il ne compte pas. Les jours passés
+  // restent tels qu'ils ont été vécus.
+  const aujourdhui = new Date().toISOString().slice(0, 10);
+  const [reglage, configsCalcul] = await Promise.all([
+    chargerReglageActivites(admin),
+    admin.from("calcul_jour_config").select("niveau_id, actif"),
+  ]);
+  const calculEteint = new Set(
+    ((configsCalcul.data ?? []) as Array<{ niveau_id: string; actif: boolean | null }>)
+      .filter((c) => c.actif === false)
+      .map((c) => NIVEAU_PAR_ID.get(c.niveau_id) ?? ""),
+  );
+
   const problemesPoses: RituelPose[] = ((problemes.data ?? []) as Array<{ date: string; niveau: string }>)
-    .map((p) => ({ date: p.date, niveau: p.niveau }));
+    .map((p) => ({ date: p.date, niveau: p.niveau }))
+    .filter((p) => p.date < aujourdhui || activiteAllumee(reglage, "probleme_du_jour", p.niveau));
 
   const lignesCalcul = (calculs.data ?? []) as Array<{ id: string; date: string; niveau_id: string }>;
   const calculsPoses: RituelPose[] = lignesCalcul
     .map((c) => ({ date: c.date, niveau: NIVEAU_PAR_ID.get(c.niveau_id) ?? "" }))
-    .filter((c) => c.niveau !== "");
+    .filter((c) => c.niveau !== "")
+    .filter((c) => c.date < aujourdhui || !calculEteint.has(c.niveau));
   const dateParCalcul = new Map(lignesCalcul.map((c) => [c.id, c.date]));
 
   // uuid d'auth → uid du suivi. Un élève PlanBox est déjà son propre uuid.
