@@ -84,6 +84,12 @@ export interface SeanceTraduite {
    * séance : ils cadrent la génération, qui doit en produire de nouveaux.
    */
   calculsModeles?: string[];
+  /**
+   * La date de la séance dont vient la notion, quand ce n'est pas celle du
+   * jour : l'exercice de maths d'un jour porte sur la notion du jour d'école
+   * précédent (voir `traduireSemaine()`).
+   */
+  notionDu?: string;
 }
 
 export type Difficulte = "facile" | "moyen" | "difficile";
@@ -518,6 +524,87 @@ export function traduireSeance(s: SeanceNotion, lundi: string): SeanceTraduite[]
   }
 
   return lignes;
+}
+
+/**
+ * Toute une semaine, avec la règle des maths : **l'exercice de maths d'un jour
+ * porte sur la notion du jour d'école précédent.** L'élève fait son plan de
+ * travail avant ou pendant la séance — la notion du jour, il ne l'a pas encore
+ * vue. Celle de la veille, si.
+ *
+ * - Le « jour d'école précédent » est le dernier jour, avant celui-ci, qui a
+ *   une séance de maths **pour ce niveau** : le vendredi pour le lundi, le
+ *   mardi pour le jeudi, le dernier jour avant les vacances pour la rentrée.
+ *   D'où `avant`, les séances de maths des semaines précédentes.
+ * - Une séance d'**évaluation** est sautée : la veille d'un lendemain de bilan
+ *   est l'avant-veille. La même notion peut alors servir deux jours (le jour
+ *   de l'évaluation et le lendemain) — d'où la date dans `cleLigne()`.
+ * - Le jour garde son **calcul mental** : ce sont les cinq minutes du début de
+ *   séance, sur une procédure travaillée toute la semaine.
+ * - Un jour sans jour d'école précédent connu (rentrée de septembre) n'a pas
+ *   d'exercice de notion : mieux vaut un trou visible qu'un exercice sur une
+ *   notion que l'élève n'a pas encore vue.
+ * - Le français ne bouge pas : son corpus est celui de la semaine.
+ */
+export function traduireSemaine(
+  semaine: SeanceNotion[],
+  avant: SeanceNotion[],
+  lundi: string,
+): SeanceTraduite[] {
+  const estMaths = (s: SeanceNotion) => matiereDeLaSeance(s.matieresNotion) === MATHS;
+  const lignes: SeanceTraduite[] = [];
+
+  // Le français tel quel ; des maths, seulement le calcul mental du jour.
+  for (const s of semaine) {
+    const t = traduireSeance(s, lundi);
+    lignes.push(...(estMaths(s) ? t.filter((l) => l.calculsModeles) : t));
+  }
+
+  // Une séance n'est retenue qu'une fois : `avant` et `semaine` peuvent se
+  // recouper si l'appelant élargit sa fenêtre.
+  const maths = new Map<string, SeanceNotion>();
+  for (const s of [...avant, ...semaine]) if (estMaths(s) && s.date) maths.set(s.id, s);
+  const toutes = [...maths.values()];
+
+  // Les jours de la semaine qui ont des maths, niveau par niveau.
+  const joursParNiveau = new Map<string, Set<string>>();
+  for (const s of semaine.filter(estMaths)) {
+    if (jourDepuisLundi(s.date, lundi) < 0) continue;
+    for (const n of niveauxReels(s.niveaux)) {
+      if (!joursParNiveau.has(n)) joursParNiveau.set(n, new Set());
+      joursParNiveau.get(n)!.add(s.date);
+    }
+  }
+
+  for (const [niveau, jours] of joursParNiveau) {
+    // Une évaluation n'apprend rien de neuf : on remonte à la séance d'avant,
+    // la dernière qui a vraiment introduit une notion.
+    const duNiveau = toutes.filter((s) => niveauxReels(s.niveaux).includes(niveau) && !estEvaluation(s.titre));
+    for (const date of jours) {
+      const veille = duNiveau.map((s) => s.date).filter((d) => d < date).sort().pop();
+      if (!veille) continue;
+      for (const source of duNiveau.filter((s) => s.date === veille)) {
+        // La séance source, transportée au jour de l'exercice : ses volets,
+        // pour ce niveau, sans son propre calcul mental.
+        const t = traduireSeance({ ...source, date, calculMental: null }, lundi)
+          .filter((l) => l.niveau === niveau)
+          .map((l) => ({ ...l, notionDu: veille }));
+        lignes.push(...t);
+      }
+    }
+  }
+
+  return lignes;
+}
+
+/**
+ * L'identité d'une ligne à l'écran et dans le brouillon : séance × volet ×
+ * niveau. Une notion décalée peut servir deux jours quand une évaluation est
+ * sautée : sa clé porte alors aussi le jour de l'exercice.
+ */
+export function cleLigne(s: Pick<SeanceTraduite, "seanceId" | "volet" | "niveau" | "date" | "notionDu">): string {
+  const base = `${s.seanceId}_${s.volet}_${s.niveau}`;
+  return s.notionDu ? `${base}_${s.date}` : base;
 }
 
 /** Garde-fou : le sous-domaine proposé existe-t-il dans le référentiel ? */

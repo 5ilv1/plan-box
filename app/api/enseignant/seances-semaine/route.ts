@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireEnseignant } from "@/lib/server-auth";
-import { chargerSeancesSemaine, ErreurNotion, messageErreurNotion } from "@/lib/seances-notion";
-import { traduireSeance, type SeanceTraduite } from "@/lib/seances-traduction";
+import { chargerSeancesMathsAvant, chargerSeancesSemaine, ErreurNotion, messageErreurNotion } from "@/lib/seances-notion";
+import { traduireSemaine, type SeanceTraduite } from "@/lib/seances-traduction";
 
 /**
  * GET /api/enseignant/seances-semaine?lundi=YYYY-MM-DD
@@ -9,6 +9,9 @@ import { traduireSeance, type SeanceTraduite } from "@/lib/seances-traduction";
  * Les séances de maths et de français de la semaine, traduites dans le
  * vocabulaire de PlanBox et **éclatées par niveau** : une séance de français
  * taguée CE2 + CM en donne trois, avec des difficultés différentes.
+ *
+ * L'exercice de maths d'un jour porte sur la notion du jour d'école précédent
+ * (`traduireSemaine()`) : d'où la lecture des séances de maths d'avant le lundi.
  *
  * L'écran s'en sert pour proposer une génération ; il ne l'impose jamais.
  */
@@ -22,8 +25,16 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const brutes = await chargerSeancesSemaine(lundi);
-    const lignes: SeanceTraduite[] = brutes.flatMap((s) => traduireSeance(s, lundi));
+    const [brutes, avant] = await Promise.all([
+      chargerSeancesSemaine(lundi),
+      // Sans elles, le lundi n'aurait pas d'exercice de maths : ne pas
+      // emporter toute la semaine si cette lecture-là échoue.
+      chargerSeancesMathsAvant(lundi).catch((e) => {
+        console.warn("[seances-semaine] séances précédentes illisibles :", e);
+        return [];
+      }),
+    ]);
+    const lignes: SeanceTraduite[] = traduireSemaine(brutes, avant, lundi);
 
     // Du lundi au vendredi, et dans chaque journée du CE2 au CM2 : l'ordre de
     // lecture de l'enseignant.

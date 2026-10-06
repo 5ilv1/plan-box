@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { TYPE_BLOC_CONFIG, type TypeBloc } from "@/types";
 import { MATIERES_CANONIQUES } from "@/lib/matieres-referentiel";
-import { typesSuggeres, type SeanceTraduite } from "@/lib/seances-traduction";
+import { cleLigne, typesSuggeres, type SeanceTraduite } from "@/lib/seances-traduction";
 import { appelPourSeance, empechement, titreDuBloc, valeursFormulaire, TYPES_FORMULAIRE } from "@/lib/seances-generation";
 import { executerGeneration, type ContenuGenere } from "@/lib/generation-contenu";
 import GenererExerciceForm from "@/components/GenererExerciceForm";
@@ -37,6 +37,13 @@ import { effacerBrouillon, fusionnerBrouillon, lireBrouillon, sauverBrouillon } 
  */
 
 const JOURS = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"];
+
+/** « 2026-10-02 » → « vendredi 02/10 », sans passer par l'UTC. */
+function dateCourte(iso: string): string {
+  const [a, m, j] = iso.split("-").map(Number);
+  const nom = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"][new Date(a, m - 1, j).getDay()];
+  return `${nom} ${String(j).padStart(2, "0")}/${String(m).padStart(2, "0")}`;
+}
 
 interface Groupe { id: string; nom: string }
 
@@ -103,7 +110,7 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
         if (!vivant) return;
         const fraiches: Ligne[] = (j.lignes as SeanceTraduite[]).map((s) => ({
           ...s,
-          cle: `${s.seanceId}_${s.volet}_${s.niveau}`,
+          cle: cleLigne(s),
           // Une séance de bilan n'est pas un devoir du soir : décochée d'office.
           choisie: !s.estEvaluation,
           type: s.typesSuggeres[0] ?? "exercice",
@@ -529,6 +536,9 @@ function LigneSeance({
           <p style={{ margin: "3px 0 0", fontSize: 11, color: "var(--pb-on-surface-variant)" }}>
             {l.niveau} · {l.difficulte}
             {l.corpus && " · corpus disponible"}
+            {/* L'exercice de maths porte sur la notion de la veille : le dire,
+                sinon on croirait l'exercice rangé au mauvais jour. */}
+            {l.notionDu && ` · notion du ${dateCourte(l.notionDu)}`}
           </p>
           {l.objectifs && (
             <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--pb-on-surface-variant)", lineHeight: 1.35 }}>

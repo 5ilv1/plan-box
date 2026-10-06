@@ -20,6 +20,8 @@ import {
   typesSuggeres,
   jourDepuisLundi,
   traduireSeance,
+  traduireSemaine,
+  cleLigne,
   decouperVolets,
   sousDomaineConnu,
 } from "../../lib/seances-traduction.ts";
@@ -270,6 +272,72 @@ verifier("traduction : hors périmètre → vide",
   traduireSeance({ ...seanceMaths, matieresNotion: ["Géographie"] }, "2026-09-14"), []);
 verifier("traduction : hors semaine → vide",
   traduireSeance({ ...seanceMaths, date: "2026-09-26" }, "2026-09-14"), []);
+
+/* ── 8 bis. L'exercice de maths porte sur la notion de la veille ──────────── */
+
+// Semaine du 05/10 : CM2 a des maths lundi, mardi, jeudi ; CE2 lundi et jeudi.
+// Vendredi 02/10, avant la semaine : la dernière notion CM2 et CE2.
+const sm = (id, date, titre, niveaux, calculMental = null) => ({
+  id, date, titre, objectifs: titre + ".", matieresNotion: ["Maths CM"], disciplines: [],
+  niveaux, corpus: null, differenciationBrute: null, calculMental,
+});
+const CMx = { procedure: "Ajouter 9", intitule: "Ajouter 9", modeles: ["27 + 9"], conseil: null };
+const avantSem = [
+  sm("v2", "2026-10-02", "Maths CM2 - Comparer des fractions (N5 · fiche 20)", ["CM2"]),
+  sm("v1", "2026-09-29", "Maths CM2 - Lire des fractions (N4 · fiche 19)", ["CM2"]),
+  sm("c0", "2026-10-02", "Maths CE2 - Les nombres jusqu'à 999", ["CE2"]),
+];
+const semaineMa = [
+  sm("l2", "2026-10-05", "Maths CM2 - Placer des fractions (N6 · fiche 21)", ["CM2"], CMx),
+  sm("m2", "2026-10-06", "Maths CM2 - Poser une addition (C1 · fiche 30)", ["CM2"]),
+  sm("j2", "2026-10-08", "Maths CM2 - Tracer un carré (G2 · fiche 92)", ["CM2"]),
+  sm("l0", "2026-10-05", "Maths CE2 - Les centaines", ["CE2"]),
+  sm("j0", "2026-10-08", "Maths CE2 - Comparer des nombres", ["CE2"]),
+  { ...seanceFr, date: "2026-10-06" },
+];
+const ts = traduireSemaine(semaineMa, avantSem, "2026-10-05");
+const notion = (niveau, jour) => ts.filter((l) => l.matiere === "Mathématiques" && !l.calculsModeles
+  && l.niveau === niveau && l.jour === jour).map((l) => l.titre);
+
+verifier("veille : lundi CM2 ← vendredi d'avant", notion("CM2", 0), ["Maths CM2 - Comparer des fractions (N5 · fiche 20)"]);
+verifier("veille : mardi CM2 ← lundi", notion("CM2", 1), ["Maths CM2 - Placer des fractions (N6 · fiche 21)"]);
+verifier("veille : jeudi CM2 ← mardi (mercredi sans maths)", notion("CM2", 3), ["Maths CM2 - Poser une addition (C1 · fiche 30)"]);
+verifier("veille : jeudi CE2 ← lundi, par niveau", notion("CE2", 3), ["Maths CE2 - Les centaines"]);
+verifier("veille : la notion de jeudi attend la semaine suivante",
+  ts.some((l) => l.titre.includes("Tracer un carré")), false);
+verifier("veille : un jour sans maths n'en reçoit pas", notion("CM2", 2), []);
+const lundiCM2 = ts.find((l) => l.niveau === "CM2" && l.jour === 0 && !l.calculsModeles);
+verifier("veille : date et jour de l'exercice", [lundiCM2.date, lundiCM2.jour], ["2026-10-05", 0]);
+verifier("veille : date de la notion affichable", lundiCM2.notionDu, "2026-10-02");
+verifier("veille : sous-domaine de la notion source", lundiCM2.sousMatiere, "Numération");
+verifier("veille : le calcul mental reste celui du jour",
+  ts.filter((l) => l.calculsModeles).map((l) => [l.niveau, l.jour, l.titre]),
+  [["CM2", 0, "Calcul mental — Ajouter 9"]]);
+verifier("veille : le français ne bouge pas", ts.filter((l) => l.matiere === "Français").map((l) => l.jour), [1, 1, 1]);
+verifier("veille : clés uniques", new Set(ts.map(cleLigne)).size, ts.length);
+// Mardi CM2 en évaluation : jeudi remonte à la notion de lundi, qui sert
+// alors deux jours (mardi et jeudi).
+const avecEval = semaineMa.map((x) => x.id === "m2"
+  ? { ...x, titre: "Maths CM2 - ÉVALUATION C1 : additions" } : x);
+const te = traduireSemaine(avecEval, avantSem, "2026-10-05");
+const notionE = (niveau, jour) => te.filter((l) => l.matiere === "Mathématiques" && !l.calculsModeles
+  && l.niveau === niveau && l.jour === jour).map((l) => l.titre);
+verifier("évaluation sautée : jeudi CM2 ← lundi", notionE("CM2", 3), ["Maths CM2 - Placer des fractions (N6 · fiche 21)"]);
+verifier("évaluation sautée : mardi CM2 ← lundi, inchangé", notionE("CM2", 1), ["Maths CM2 - Placer des fractions (N6 · fiche 21)"]);
+verifier("évaluation sautée : l'évaluation n'est jamais une notion",
+  te.some((l) => l.titre.includes("ÉVALUATION")), false);
+verifier("évaluation sautée : clés uniques malgré la notion répétée", new Set(te.map(cleLigne)).size, te.length);
+verifier("évaluation sautée : avant les vacances aussi",
+  traduireSemaine(semaineMa, [{ ...avantSem[0], titre: "ÉVALUATION N5" }, ...avantSem.slice(1)], "2026-10-05")
+    .filter((l) => l.niveau === "CM2" && l.jour === 0 && !l.calculsModeles).map((l) => l.titre),
+  ["Maths CM2 - Lire des fractions (N4 · fiche 19)"]);
+verifier("clé : ligne du jour inchangée (brouillons existants)",
+  cleLigne({ seanceId: "abc", volet: 0, niveau: "CM2", date: "2026-10-05" }), "abc_0_CM2");
+
+verifier("veille : rentrée sans séance antérieure → pas d'exercice de notion",
+  traduireSemaine(semaineMa, [], "2026-10-05").filter((l) => l.niveau === "CM2" && l.jour === 0 && !l.calculsModeles).length, 0);
+verifier("veille : séance présente des deux côtés comptée une fois",
+  traduireSemaine(semaineMa, [...avantSem, semaineMa[0]], "2026-10-05").length, ts.length);
 
 /* ── 9. De la séance à l'appel de génération ────────────────────────────── */
 

@@ -1158,6 +1158,34 @@ Deux formes, une par niveau — `extraireCalculMental()` lit les deux :
   par semaine, **par paquets de trois**, le rythme toléré. Ouverture du panneau :
   4 à 6 s au lieu de 1 à 2.
 
+### L'exercice de maths porte sur la notion de la veille
+
+L'élève fait son plan de travail avant ou pendant la séance : la notion du jour,
+il ne l'a pas encore vue. **L'exercice de maths d'un jour porte donc sur la
+notion du jour d'école précédent** (`traduireSemaine()`, `lib/seances-traduction.ts`).
+
+- « Précédent » = le dernier jour, avant celui-ci, qui a une séance de maths
+  **pour ce niveau** : vendredi → lundi, mardi → jeudi (pas de maths le
+  mercredi), dernier jour avant les vacances → rentrée. Le lundi a besoin des
+  semaines d'avant : `chargerSeancesMathsAvant()` lit les maths des **21 jours**
+  précédents, en un appel et **sans les corps de page** (deux semaines de
+  vacances couvertes). Son échec n'emporte pas la semaine : le lundi n'a alors
+  pas d'exercice de notion.
+- Le **calcul mental reste celui du jour** : ce sont les cinq minutes du début
+  de séance, sur une procédure travaillée toute la semaine.
+- La notion du dernier jour de la semaine passe à la semaine suivante. Un jour
+  sans séance antérieure connue (rentrée de septembre) n'a pas d'exercice de
+  notion — un trou visible plutôt qu'une notion pas encore vue.
+- La ligne garde l'id de la séance **source** (clé unique : une séance n'est la
+  veille que d'un seul jour) et affiche « notion du vendredi 02/10 »
+  (`notionDu`).
+- Une séance d'**évaluation** n'est jamais une notion : on remonte à
+  l'avant-veille. La notion de l'avant-veille sert alors deux jours (le jour du
+  bilan et le lendemain) : la clé d'une ligne décalée porte aussi sa date
+  (`cleLigne()`). Les lignes non décalées gardent l'ancienne clé, celle des
+  brouillons déjà enregistrés.
+- Le français ne bouge pas : son corpus est celui de la semaine.
+
 ### L'incertitude qui reste, signalée à l'écran
 
 ⚠️ `sousMatiereIncertaine` marque ce qui est **déduit**, pour que l'enseignant
@@ -1260,7 +1288,7 @@ La génération est **séquentielle** : `generer-exercice` limite à 20 appels p
 minute, une semaine en demande une douzaine, et un échec isolé ne doit pas
 emporter le lot. Compter ~15 s par exercice.
 
-Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (182 cas) —
+Contrat vérifié par `npx tsx docs/tests/test-seances-traduction.mjs` (202 cas) —
 à relancer après toute modification de ces modules.
 
 ## Changer d'année (remise à zéro)

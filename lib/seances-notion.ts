@@ -325,11 +325,14 @@ function decalerJours(date: string, n: number): string {
  * série pour ne pas s'en approcher.
  */
 /** Une ligne de la base → une séance, corps de page compris quand il sert. */
-async function lireSeance(ligne: { id: string; properties: Record<string, unknown> }): Promise<SeanceNotion> {
+async function lireSeance(
+  ligne: { id: string; properties: Record<string, unknown> },
+  avecCorps = true,
+): Promise<SeanceNotion> {
   const p = ligne.properties as Props;
   const matieresNotion = lireMulti(p["Matière"]);
-  const estFrancais = matieresNotion.some((m) => /^(edl|lecture)/i.test(m.trim()));
-  const estMaths = matieresNotion.some((m) => /^(maths|probl)/i.test(m.trim()));
+  const estFrancais = avecCorps && matieresNotion.some((m) => /^(edl|lecture)/i.test(m.trim()));
+  const estMaths = avecCorps && matieresNotion.some((m) => /^(maths|probl)/i.test(m.trim()));
 
   let corpus: string | null = null;
   let differenciationBrute: string | null = null;
@@ -401,9 +404,43 @@ export async function chargerSeancesSemaine(lundi: string): Promise<SeanceNotion
   // maths sont lues aussi — une à une, l'ouverture du panneau traînait.
   const seances: SeanceNotion[] = [];
   for (let i = 0; i < lignes.length; i += 3) {
-    const paquet = await Promise.all(lignes.slice(i, i + 3).map(lireSeance));
+    const paquet = await Promise.all(lignes.slice(i, i + 3).map((l) => lireSeance(l)));
     seances.push(...paquet);
   }
 
   return seances;
+}
+
+/** Les matières de maths de la base, celles dont la notion se décale d'un jour. */
+const MATIERES_MATHS = ["Maths", "Maths CM", "Problème"];
+
+/**
+ * Les séances de maths des `jours` jours avant le lundi, **sans leur corps** :
+ * seule la notion sert (titre, objectifs, niveau), pour l'exercice du premier
+ * jour de maths de la semaine. Un seul appel à Notion.
+ *
+ * 21 jours couvrent deux semaines de vacances : la rentrée de la Toussaint
+ * retrouve la notion du dernier vendredi avant les congés.
+ */
+export async function chargerSeancesMathsAvant(lundi: string, jours = 21): Promise<SeanceNotion[]> {
+  const { db } = config();
+  const data = await notionFetch(`/databases/${db}/query`, {
+    method: "POST",
+    body: JSON.stringify({
+      page_size: 100,
+      filter: {
+        and: [
+          { property: "Date", date: { on_or_after: decalerJours(lundi, -jours) } },
+          { property: "Date", date: { before: lundi } },
+          { or: MATIERES_MATHS.map((m) => ({
+              property: "Matière",
+              multi_select: { contains: m },
+            })) },
+        ],
+      },
+      sorts: [{ property: "Date", direction: "descending" }],
+    }),
+  });
+  const lignes = (data.results ?? []) as Array<{ id: string; properties: Props }>;
+  return Promise.all(lignes.map((l) => lireSeance(l, false)));
 }
