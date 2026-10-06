@@ -76,7 +76,20 @@ export default function PageQRCodes() {
             }
 
             const url = `${SITE_URL}/eleve/qr/${genJson.token}`;
-            const qrDataUrl = await QRCode.toDataURL(url, { width: 320, margin: 1 });
+            // En vectoriel, noir pur : une image de 320 px réduite à 92 px
+            // grisait les bords de chaque module, et le QR code sortait trop
+            // clair à l'impression. Un SVG reste net à toute taille.
+            const svg = await QRCode.toString(url, {
+              type: "svg",
+              // Correction « L » : moins de modules pour la même adresse, donc
+              // des carrés plus gros sur le papier — c'est la taille qui
+              // manquait (0,6 mm par module à 92 px). Marge de 2 modules : le
+              // lecteur a besoin d'un blanc autour du code pour le trouver.
+              margin: 2,
+              errorCorrectionLevel: "L",
+              color: { dark: "#000000", light: "#ffffff" },
+            });
+            const qrDataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
 
             return { eleve, token: genJson.token, qrDataUrl };
           } catch {
@@ -168,10 +181,10 @@ export default function PageQRCodes() {
                       className="qr-img"
                       src={qrDataUrl}
                       alt={`QR code de ${eleve.prenom} ${eleve.nom}`}
-                      style={{ width: 100, height: 100, display: "block", borderRadius: 6 }}
+                      style={{ width: 120, height: 120, display: "block" }}
                     />
                   ) : (
-                    <div className="qr-img" style={{ width: 100, height: 100, display: "flex", alignItems: "center", justifyContent: "center", background: "#FEE2E2", borderRadius: 6, fontSize: 10, color: "#DC2626", textAlign: "center", padding: 8 }}>
+                    <div className="qr-img" style={{ width: 120, height: 120, display: "flex", alignItems: "center", justifyContent: "center", background: "#FEE2E2", borderRadius: 6, fontSize: 10, color: "#DC2626", textAlign: "center", padding: 8 }}>
                       {erreur ?? "Erreur"}
                     </div>
                   )}
@@ -277,8 +290,17 @@ export default function PageQRCodes() {
           }
           .carte-eleve:nth-child(odd) { margin-right: 10px; }
           .carte-infos { padding: 14px !important; }
-          .carte-illustration { width: 100px; }
-          .qr-img { width: 92px !important; height: 92px !important; }
+          /* L'illustration cède de la place au QR code : 120 px ≈ 3,2 cm,
+             près d’un millimètre par module (0,6 mm à 92 px). */
+          .carte-illustration { width: 64px; }
+          .qr-img {
+            width: 120px !important;
+            height: 120px !important;
+            border-radius: 0 !important;
+            /* Sans ça, Chrome peut « économiser l'encre » sur les images. */
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
         }
       `}</style>
     </div>
