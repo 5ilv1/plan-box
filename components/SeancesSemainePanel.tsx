@@ -19,7 +19,7 @@ import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
 import ExercicePreview from "@/components/ExercicePreview";
 import QCMEditeur, { BoutonSupprimer, type QCMData } from "@/components/QCMEditeur";
 import type { ExerciceIA } from "@/types";
-import { effacerBrouillon, fusionnerBrouillon, lireBrouillon, sauverBrouillon } from "@/lib/brouillon-seances";
+import { fusionnerBrouillon, lireBrouillon, sauverBrouillon } from "@/lib/brouillon-seances";
 
 /**
  * « Depuis ma programmation » — engendrer la semaine à partir des séances Notion.
@@ -276,11 +276,13 @@ export default function SeancesSemainePanel({ lundi, groupes, onFermer, onBlocsP
     }
 
     onBlocsPrets(blocs);
-    // Les blocs sont sur la grille : le brouillon n'a plus d'objet, et le
-    // garder ferait réapparaître des exercices déjà posés.
-    brouillonActif.current = false;
+    // ⚠️ Le brouillon n'est PAS effacé ici : sur la grille, les blocs ne sont
+    // encore qu'en mémoire, et un onglet fermé avant « Planifier la semaine »
+    // les perdait sans retour (07/10, dix-neuf exercices relus). C'est la page
+    // qui l'efface, une fois la semaine enregistrée en base.
     if (minuterieBrouillon.current) clearTimeout(minuterieBrouillon.current);
-    effacerBrouillon(lundi);
+    sauverBrouillon(lundi, lignes);
+    brouillonActif.current = false;
     onFermer();
   }
 

@@ -12,6 +12,7 @@ import GenererClassementForm from "@/components/GenererClassementForm";
 import GenererAnalysePhraseForm from "@/components/GenererAnalysePhraseForm";
 import GenererLectureForm from "@/components/GenererLectureForm";
 import SeancesSemainePanel from "@/components/SeancesSemainePanel";
+import { effacerBrouillon } from "@/lib/brouillon-seances";
 import { CONSIGNES_ECRITURE } from "@/lib/ecriture-types";
 
 // ── Types ──
@@ -918,6 +919,9 @@ export default function NouvelleSemainePage() {
       });
 
       if (res.ok) {
+        // La semaine est en base : le brouillon du panneau « Depuis ma
+        // programmation » n'a plus d'objet.
+        effacerBrouillon(lundiProchain);
         setEtape("confirmation");
       } else {
         const data = await res.json();
@@ -1310,8 +1314,18 @@ export default function NouvelleSemainePage() {
                 padding: "16px 0", display: "flex", alignItems: "center", justifyContent: "space-between",
               }}>
                 <div style={{ fontSize: 14, color: "var(--pb-on-surface-variant)" }}>
-                  <strong style={{ color: "var(--pb-on-surface)" }}>{blocs.length}</strong> blocs planifiés sur{" "}
-                  <strong style={{ color: "var(--pb-on-surface)" }}>{new Set(blocs.map((b) => b.jour)).size}</strong> jours
+                  {nonPlanifies > 0 ? (
+                    <>
+                      <strong style={{ color: "var(--pb-error, #b3261e)" }}>{nonPlanifies}</strong> bloc{nonPlanifies > 1 ? "s" : ""}{" "}
+                      <strong style={{ color: "var(--pb-error, #b3261e)" }}>pas encore enregistré{nonPlanifies > 1 ? "s" : ""}</strong>
+                      {" "}— les élèves ne les verront qu'après « Planifier la semaine »
+                    </>
+                  ) : (
+                    <>
+                      <strong style={{ color: "var(--pb-on-surface)" }}>{blocs.length}</strong> blocs planifiés sur{" "}
+                      <strong style={{ color: "var(--pb-on-surface)" }}>{new Set(blocs.map((b) => b.jour)).size}</strong> jours
+                    </>
+                  )}
                 </div>
                 <div style={{ display: "flex", gap: 10 }}>
                   <button onClick={() => setEtape("resume")} className="pb-btn">

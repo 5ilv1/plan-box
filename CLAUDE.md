@@ -1306,6 +1306,14 @@ génération n'écrivent rien.
   restants » la reprend. Effacé à la pose, périmé au bout de 7 jours.
 - Pendant la génération, et sur la grille tant que des blocs ne sont pas
   planifiés, le navigateur **demande confirmation** avant de quitter la page.
+- ⚠️ **« Poser sur la semaine » n'enregistre rien** : il place les blocs sur la
+  grille, et seul « Planifier la semaine » les écrit dans `plan_travail`. Le
+  07/10, dix-neuf exercices relus ont été perdus à la fermeture de l'onglet entre
+  les deux — la barre affichait « 19 blocs planifiés », et le brouillon avait été
+  effacé dès « Poser ». Depuis, la barre dit « pas encore enregistrés », et le
+  brouillon n'est effacé qu'une fois la semaine planifiée. Récupérés ce jour-là
+  depuis `banque_exercices` (où « Poser » copie chaque contenu, avec
+  `genere_depuis_seance`) : séance + ordre d'insertion redonnent jour et niveau.
 - Contrat vérifié par `npx tsx docs/tests/test-brouillon-seances.mjs` (28 cas).
 
 La génération est **séquentielle** : `generer-exercice` limite à 20 appels par
