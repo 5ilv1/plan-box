@@ -94,24 +94,30 @@ export default function PodcastsEnseignant() {
   const [editUploadProgress, setEditUploadProgress] = useState<"idle" | "uploading" | "done" | "erreur">("idle");
   const [enSauvegarde, setEnSauvegarde] = useState(false);
 
+  /**
+   * Dépose un MP3 dans Cloudflare R2 par une URL signée et rend son adresse
+   * publique, ou null en cas d'échec. Les podcasts ne vont plus dans
+   * Supabase Storage, dont ils avaient épuisé le quota (lib/r2.ts).
+   */
+  async function envoyerMp3(file: File): Promise<string | null> {
+    const presignRes = await fetch("/api/upload-podcast", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ nom: file.name, contentType: file.type || "audio/mpeg" }),
+    });
+    if (!presignRes.ok) return null;
+    const { uploadUrl, headers, publicUrl } = await presignRes.json();
+    const envoi = await fetch(uploadUrl, { method: "PUT", headers, body: file });
+    return envoi.ok ? publicUrl : null;
+  }
+
   // Upload MP3 dans la modale d'édition (écrase l'URL existante)
   async function uploadMp3Edit(file: File) {
     setEditUploadProgress("uploading");
     try {
-      const presignRes = await fetch("/api/upload-podcast", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: file.name, contentType: file.type }),
-      });
-      const presignJson = await presignRes.json();
-      if (!presignRes.ok) { setEditUploadProgress("erreur"); return; }
-      const { error: uploadError } = await supabase.storage
-        .from("podcasts")
-        .uploadToSignedUrl(presignJson.path, presignJson.token, file, {
-          contentType: file.type || "audio/mpeg",
-        });
-      if (uploadError) { setEditUploadProgress("erreur"); return; }
-      setEditUrl(presignJson.publicUrl);
+      const publicUrl = await envoyerMp3(file);
+      if (!publicUrl) { setEditUploadProgress("erreur"); return; }
+      setEditUrl(publicUrl);
       setEditFichierNom(file.name);
       setEditUploadProgress("done");
     } catch {
@@ -200,22 +206,10 @@ export default function PodcastsEnseignant() {
   async function uploadMp3(file: File) {
     setNewUploadProgress("uploading");
     try {
-      const presignRes = await fetch("/api/upload-podcast", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nom: file.name, contentType: file.type }),
-      });
-      const presignJson = await presignRes.json();
-      if (!presignRes.ok) { setNewUploadProgress("erreur"); return; }
+      const publicUrl = await envoyerMp3(file);
+      if (!publicUrl) { setNewUploadProgress("erreur"); return; }
 
-      const { error: uploadError } = await supabase.storage
-        .from("podcasts")
-        .uploadToSignedUrl(presignJson.path, presignJson.token, file, {
-          contentType: file.type || "audio/mpeg",
-        });
-      if (uploadError) { setNewUploadProgress("erreur"); return; }
-
-      setNewUrl(presignJson.publicUrl);
+      setNewUrl(publicUrl);
       setNewFichierNom(file.name);
       setNewUploadProgress("done");
     } catch {
@@ -279,12 +273,6 @@ export default function PodcastsEnseignant() {
     setEditUploadProgress("idle");
   }
 
-  /** Extrait le path Supabase Storage à partir d'une publicUrl du bucket podcasts. */
-  function extrairePathPodcast(url: string): string | null {
-    const m = url.match(/\/storage\/v1\/object\/public\/podcasts\/(.+)$/);
-    return m ? m[1] : null;
-  }
-
   async function sauvegarderEdition() {
     if (!editPodcast) return;
     setEnSauvegarde(true);
@@ -330,12 +318,13 @@ export default function PodcastsEnseignant() {
         });
       }
 
-      // Si l'URL a changé ET l'ancienne pointait sur le bucket podcasts, supprime l'ancien fichier
+      // Si l'URL a changé, supprime l'ancien fichier (la route ignore une adresse externe)
       if (editUrlInitiale && editUrlInitiale !== editUrl) {
-        const ancienPath = extrairePathPodcast(editUrlInitiale);
-        if (ancienPath) {
-          await supabase.storage.from("podcasts").remove([ancienPath]).catch(() => {});
-        }
+        await fetch("/api/upload-podcast", {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url: editUrlInitiale }),
+        }).catch(() => {});
       }
 
       showMsg("Podcast mis à jour");

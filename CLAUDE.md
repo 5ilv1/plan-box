@@ -336,6 +336,30 @@ NOTION_DB_SEANCES              # Base « Programmation année en cours »
 - **Vercel** : auto-deploy sur push `main`
 - **URL prod** : https://plan-box-phi.vercel.app
 
+## Podcasts sur Cloudflare R2 (pas Supabase Storage)
+
+Le 06/10/2026, l'organisation Supabase (plan gratuit, **partagée avec Repetibox**) a
+dépassé son quota de bande passante des fichiers (« cached egress », 5,5 Go par cycle) :
+toutes les requêtes ont répondu `402`, **les deux applications coupées**. Cause : 8 MP3
+de ~28 Mo — une écoute en téléchargeait 25 à 50, chaque saut dans la piste relançant le
+reste. Supabase est passé en Pro pour le mois ; les podcasts sont partis sur R2, qui ne
+facture pas la bande passante sortante.
+
+- `lib/r2.ts` (serveur) : URL d'envoi signée, suppression, adresses publiques. Variables
+  `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`
+  (`planbox-podcast`), `R2_PUBLIC_URL` (adresse `r2.dev`), en local et sur Vercel.
+- `POST /api/upload-podcast` rend `{ uploadUrl, headers, publicUrl }` : le navigateur
+  dépose le MP3 par `PUT` en renvoyant **exactement** ces en-têtes (ils sont signés).
+  Le CORS du bucket autorise `plan-box-phi.vercel.app` et `localhost:3000`.
+- Fichiers servis avec `Cache-Control: immutable` (un an) : chaque envoi crée une clé
+  nouvelle, une réécoute sur la même tablette ne coûte rien.
+- Les adresses vivent dans `plan_travail.contenu` (type `ressource`) et
+  `banque_ressources.contenu` (`podcast`). `scripts/migrer-podcasts-r2.ts` a fait le
+  déménagement (idempotent, `--dry-run`).
+- ⚠️ **Tout fichier lourd servi aux élèves depuis Supabase Storage pèse sur le quota
+  qui coupe les deux applications.** Restent dans Supabase : les PDF de `lecons`
+  (406 Mo), les audios de dictées, les couvertures.
+
 ## Quota Vercel gratuit
 
 Plan Box, Repetibox et vue-classe sont sur le plan **Hobby** (gratuit) de l'équipe
