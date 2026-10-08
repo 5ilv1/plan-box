@@ -358,9 +358,10 @@ facture pas la bande passante sortante.
   déménagement (idempotent, `--dry-run`).
 - ⚠️ **Le filtre du réseau de l'école bloque `*.r2.dev`** (08/10, proxy squid :
   redirection HTTP, connexion HTTPS coupée). Les élèves lisent donc les podcasts
-  par **Plan Box** : `/media/<clé>`, réécrit vers R2 par `vercel.json`, avec
-  `x-vercel-enable-rewrite-caching` — servi depuis le cache Vercel, aucune
-  fonction appelée. Les adresses en base sont **relatives** (`/media/podcasts/…`,
+  par **Plan Box** : `/media/<clé>`, réécrit vers R2 par `vercel.json` — aucune
+  fonction appelée. ⚠️ **Cache Vercel désactivé** (`x-vercel-enable-rewrite-caching: 0`) :
+  activé, il gardait le premier morceau demandé par le lecteur (`Range: bytes=0-1`)
+  et le renvoyait pour **toute** autre plage — testé le 08/10. Les adresses en base sont **relatives** (`/media/podcasts/…`,
   `urlPubliqueR2()`). En local, `next.config.ts` porte la même règle.
 - Cette bande passante compte dans le quota gratuit de Vercel : les MP3 sont
   **réduits** en mono 48 kbit/s (~28 Mo → ~5 Mo, `scripts/compresser-podcasts.ts`,

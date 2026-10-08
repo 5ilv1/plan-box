@@ -21,7 +21,7 @@
       "headers": [
         {
           "key": "x-vercel-enable-rewrite-caching",
-          "value": "1"
+          "value": "0"
         }
       ]
     }

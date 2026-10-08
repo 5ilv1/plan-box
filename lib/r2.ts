@@ -13,9 +13,12 @@ import { AwsClient } from "aws4fetch";
  *
  * ⚠️ Les élèves ne lisent PAS l'adresse r2.dev : le filtre du réseau de
  * l'école bloque `*.r2.dev` (08/10, proxy squid). Les fichiers sont servis par
- * Plan Box sous `/media/…`, une réécriture de `vercel.json` vers R2, mise en
- * cache par Vercel — aucune fonction appelée, mais la bande passante compte
- * dans le quota gratuit : d'où des MP3 réduits (`scripts/compresser-podcasts.ts`).
+ * Plan Box sous `/media/…`, une réécriture de `vercel.json` vers R2 — aucune
+ * fonction appelée, mais la bande passante compte dans le quota gratuit : d'où
+ * des MP3 réduits (`scripts/compresser-podcasts.ts`).
+ * ⚠️ PAS de cache Vercel sur cette réécriture : il gardait le premier morceau
+ * demandé (`Range`) et le renvoyait pour tous les autres — la piste ne pouvait
+ * plus avancer. La tablette, elle, garde le fichier (cache immuable).
  */
 
 /** Chemin, dans Plan Box, de la réécriture vers le bucket (voir vercel.json). */
