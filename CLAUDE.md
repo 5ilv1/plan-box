@@ -365,9 +365,11 @@ facture pas la bande passante sortante.
   `urlPubliqueR2()`). En local, `next.config.ts` porte la même règle.
 - Cette bande passante compte dans le quota gratuit de Vercel : les MP3 sont
   **réduits** en mono 48 kbit/s (~28 Mo → ~5 Mo, `scripts/compresser-podcasts.ts`,
-  idempotent, `--dry-run`, clé `-voix.mp3`, originaux gardés dans R2). ⚠️ Un
-  podcast envoyé depuis la page Podcasts ne l'est **pas** : relancer le script
-  après chaque envoi.
+  idempotent, `--dry-run`, clé `-voix.mp3`, originaux gardés dans R2). Un
+  podcast envoyé depuis la page Podcasts est réduit **dans le navigateur** avant
+  l'envoi (`lib/reduire-mp3.ts`, lamejs : 29 Mo → 5,8 Mo en ~15 s, au-dessus de
+  8 Mo seulement). Si la réduction échoue, le fichier d'origine part quand même
+  et la page le signale : passer alors le script.
 - ⚠️ **Tout fichier lourd servi aux élèves depuis Supabase Storage pèse sur le quota
   qui coupe les deux applications.** Restent dans Supabase : les PDF de `lecons`
   (406 Mo), les audios de dictées, les couvertures.

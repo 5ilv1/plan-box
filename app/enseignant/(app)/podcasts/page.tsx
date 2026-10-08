@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase";
+import { reduireMp3 } from "@/lib/reduire-mp3";
 import { QCMQuestion } from "@/types";
 
 interface LigneGlobale {
@@ -99,7 +100,18 @@ export default function PodcastsEnseignant() {
    * publique, ou null en cas d'échec. Les podcasts ne vont plus dans
    * Supabase Storage, dont ils avaient épuisé le quota (lib/r2.ts).
    */
-  async function envoyerMp3(file: File): Promise<string | null> {
+  //
+  // Le fichier est d'abord RÉDUIT dans le navigateur (lib/reduire-mp3.ts) :
+  // les élèves le reçoivent par Plan Box, dont la bande passante est comptée.
+  const [etapeEnvoi, setEtapeEnvoi] = useState("");
+  const [noteEnvoi, setNoteEnvoi] = useState("");
+  async function envoyerMp3(original: File): Promise<string | null> {
+    setNoteEnvoi("");
+    setEtapeEnvoi("Réduction du fichier…");
+    const { fichier: file, reduit } = await reduireMp3(original, (f) =>
+      setEtapeEnvoi(`Réduction du fichier… ${Math.round(f * 100)} %`));
+    const mo = (o: number) => (o / 1048576).toFixed(1).replace(".", ",");
+    setEtapeEnvoi(`Envoi (${mo(file.size)} Mo)…`);
     const presignRes = await fetch("/api/upload-podcast", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -108,7 +120,13 @@ export default function PodcastsEnseignant() {
     if (!presignRes.ok) return null;
     const { uploadUrl, headers, publicUrl } = await presignRes.json();
     const envoi = await fetch(uploadUrl, { method: "PUT", headers, body: file });
-    return envoi.ok ? publicUrl : null;
+    if (!envoi.ok) return null;
+    setNoteEnvoi(
+      reduit ? `réduit de ${mo(original.size)} à ${mo(file.size)} Mo`
+      : file.size > 8 * 1048576 ? `⚠️ non réduit (${mo(file.size)} Mo) : préviens Claude pour le réduire`
+      : "",
+    );
+    return publicUrl;
   }
 
   // Upload MP3 dans la modale d'édition (écrase l'URL existante)
@@ -761,7 +779,7 @@ export default function PodcastsEnseignant() {
                   {newUploadProgress === "uploading" && (
                     <div style={{ display: "flex", alignItems: "center", gap: 10, padding: "12px 16px", borderRadius: 10, background: "#EFF6FF", border: "1px solid #BFDBFE", fontSize: 13, fontWeight: 600, color: "#1D4ED8" }}>
                       <span className="ms" style={{ fontSize: 20, animation: "spin 1s linear infinite" }}>sync</span>
-                      Upload en cours…
+                      {etapeEnvoi || "Upload en cours…"}
                     </div>
                   )}
                   {newUploadProgress === "done" && (
@@ -769,6 +787,7 @@ export default function PodcastsEnseignant() {
                       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                         <span className="ms" style={{ fontSize: 18 }}>check_circle</span>
                         {newFichierNom}
+                        {noteEnvoi && <span style={{ fontWeight: 400, color: "var(--pb-on-surface-variant)" }}>· {noteEnvoi}</span>}
                       </div>
                       <button type="button" onClick={() => { setNewUrl(""); setNewFichierNom(""); setNewUploadProgress("idle"); }} style={{ background: "none", border: "none", cursor: "pointer", color: "#15803D", fontSize: 12, fontWeight: 700 }}>
                         Changer
@@ -854,11 +873,11 @@ export default function PodcastsEnseignant() {
                   />
                 </label>
                 {editUploadProgress === "uploading" && (
-                  <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>Upload en cours…</span>
+                  <span style={{ fontSize: 12, color: "var(--pb-on-surface-variant)" }}>{etapeEnvoi || "Upload en cours…"}</span>
                 )}
                 {editUploadProgress === "done" && editFichierNom && (
                   <span style={{ fontSize: 12, color: "#16A34A", fontWeight: 600 }}>
-                    ✓ {editFichierNom} — l&apos;ancien fichier sera remplacé après enregistrement
+                    ✓ {editFichierNom}{noteEnvoi && ` (${noteEnvoi})`} — l&apos;ancien fichier sera remplacé après enregistrement
                   </span>
                 )}
                 {editUploadProgress === "erreur" && (
