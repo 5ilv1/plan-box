@@ -10,7 +10,16 @@ import { AwsClient } from "aws4fetch";
  *
  * Variables : R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
  * R2_BUCKET, R2_PUBLIC_URL (adresse publique r2.dev du bucket).
+ *
+ * ⚠️ Les élèves ne lisent PAS l'adresse r2.dev : le filtre du réseau de
+ * l'école bloque `*.r2.dev` (08/10, proxy squid). Les fichiers sont servis par
+ * Plan Box sous `/media/…`, une réécriture de `vercel.json` vers R2, mise en
+ * cache par Vercel — aucune fonction appelée, mais la bande passante compte
+ * dans le quota gratuit : d'où des MP3 réduits (`scripts/compresser-podcasts.ts`).
  */
+
+/** Chemin, dans Plan Box, de la réécriture vers le bucket (voir vercel.json). */
+export const CHEMIN_MEDIA = "/media";
 
 function config() {
   const { R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET, R2_PUBLIC_URL } = process.env;
@@ -29,15 +38,20 @@ function config() {
   };
 }
 
-/** Adresse publique d'un objet, celle que lisent les élèves. */
+/** Adresse d'un objet, celle que lisent les élèves : relative, servie par Plan Box. */
 export function urlPubliqueR2(cle: string): string {
-  return `${config().publique}/${cle}`;
+  return `${CHEMIN_MEDIA}/${cle}`;
 }
 
-/** Clé d'un objet à partir de son adresse publique ; null si l'adresse n'est pas dans le bucket. */
+/**
+ * Clé d'un objet à partir de son adresse ; null si l'adresse n'est pas dans le
+ * bucket. Accepte aussi l'ancienne adresse r2.dev, écrite du 07 au 08/10.
+ */
 export function cleDepuisUrlR2(url: string): string | null {
-  const prefixe = `${config().publique}/`;
-  return url.startsWith(prefixe) ? url.slice(prefixe.length) : null;
+  for (const prefixe of [`${CHEMIN_MEDIA}/`, `${config().publique}/`]) {
+    if (url.startsWith(prefixe)) return url.slice(prefixe.length);
+  }
+  return null;
 }
 
 /**
@@ -78,4 +92,24 @@ export async function supprimerR2(cle: string): Promise<void> {
   const { client, base } = config();
   const r = await client.fetch(`${base}/${cle}`, { method: "DELETE" });
   if (!r.ok && r.status !== 404) throw new Error(`R2 DELETE ${cle} : ${r.status}`);
+}
+
+/** Lit un objet (scripts). */
+export async function telechargerR2(cle: string): Promise<ArrayBuffer> {
+  const { client, base } = config();
+  const r = await client.fetch(`${base}/${cle}`);
+  if (!r.ok) throw new Error(`R2 GET ${cle} : ${r.status}`);
+  return r.arrayBuffer();
+}
+
+/** Les clés et tailles des objets sous un préfixe (scripts ; 1000 au plus). */
+export async function listerR2(prefixe: string): Promise<{ cle: string; taille: number }[]> {
+  const { client, base } = config();
+  const r = await client.fetch(`${base}?list-type=2&prefix=${encodeURIComponent(prefixe)}`);
+  if (!r.ok) throw new Error(`R2 LIST ${prefixe} : ${r.status}`);
+  const xml = await r.text();
+  return [...xml.matchAll(/<Contents>([\s\S]*?)<\/Contents>/g)].map((m) => ({
+    cle: m[1].match(/<Key>(.*?)<\/Key>/)![1],
+    taille: Number(m[1].match(/<Size>(\d+)<\/Size>/)![1]),
+  }));
 }

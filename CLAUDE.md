@@ -356,6 +356,17 @@ facture pas la bande passante sortante.
 - Les adresses vivent dans `plan_travail.contenu` (type `ressource`) et
   `banque_ressources.contenu` (`podcast`). `scripts/migrer-podcasts-r2.ts` a fait le
   déménagement (idempotent, `--dry-run`).
+- ⚠️ **Le filtre du réseau de l'école bloque `*.r2.dev`** (08/10, proxy squid :
+  redirection HTTP, connexion HTTPS coupée). Les élèves lisent donc les podcasts
+  par **Plan Box** : `/media/<clé>`, réécrit vers R2 par `vercel.json`, avec
+  `x-vercel-enable-rewrite-caching` — servi depuis le cache Vercel, aucune
+  fonction appelée. Les adresses en base sont **relatives** (`/media/podcasts/…`,
+  `urlPubliqueR2()`). En local, `next.config.ts` porte la même règle.
+- Cette bande passante compte dans le quota gratuit de Vercel : les MP3 sont
+  **réduits** en mono 48 kbit/s (~28 Mo → ~5 Mo, `scripts/compresser-podcasts.ts`,
+  idempotent, `--dry-run`, clé `-voix.mp3`, originaux gardés dans R2). ⚠️ Un
+  podcast envoyé depuis la page Podcasts ne l'est **pas** : relancer le script
+  après chaque envoi.
 - ⚠️ **Tout fichier lourd servi aux élèves depuis Supabase Storage pèse sur le quota
   qui coupe les deux applications.** Restent dans Supabase : les PDF de `lecons`
   (406 Mo), les audios de dictées, les couvertures.

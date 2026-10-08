@@ -8,5 +8,22 @@
       "path": "/api/cron/calcul-du-jour",
       "schedule": "10 6 * * 1,2,4,5"
     }
+  ],
+  "rewrites": [
+    {
+      "source": "/media/:path*",
+      "destination": "https://pub-5a2d1111dd0548b0a1c6f84ec5656948.r2.dev/:path*"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/media/:path*",
+      "headers": [
+        {
+          "key": "x-vercel-enable-rewrite-caching",
+          "value": "1"
+        }
+      ]
+    }
   ]
 }
