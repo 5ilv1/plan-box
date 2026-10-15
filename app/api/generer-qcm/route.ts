@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { REGLE_NOMBRES_EN_LETTRES } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
 import { requireEnseignant } from "@/lib/server-auth";
+import { couperQcm, relireQcm } from "@/lib/relire-qcm";
 
 export const maxDuration = 120; // 2 min max (Vercel Pro)
 
@@ -23,7 +24,7 @@ export async function POST(req: NextRequest) {
   }
 
   const prompt = `Tu es un enseignant de primaire français expert en création d'évaluations.
-À partir de la transcription suivante${titre ? ` du podcast "${titre}"` : ""}, crée exactement ${nbQuestions} questions à choix multiple pour vérifier la compréhension des élèves de CM1/CM2.
+À partir de la transcription suivante${titre ? ` du podcast "${titre}"` : ""}, crée exactement ${Number(nbQuestions) + 2} questions à choix multiple pour vérifier la compréhension des élèves de CM1/CM2.
 
 TRANSCRIPTION :
 ${transcript.trim()}
@@ -52,7 +53,7 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans texte avant o
   try {
     const message = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: REGLE_NOMBRES_EN_LETTRES,
       messages: [{ role: "user", content: prompt }],
     });
@@ -80,8 +81,15 @@ Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans texte avant o
       return { ...q, options: newOptions, reponse_correcte: newOptions.indexOf(bonneReponse) };
     });
 
+    // Deux questions de marge (voir le prompt) : la relecture écarte celles
+    // qui n'ont pas exactement une bonne option (lib/relire-qcm.ts).
+    const relu = await relireQcm(questions, anthropic, { niveau: "CM1/CM2", contexte: transcript });
+    if (relu.questions.length === 0) {
+      return NextResponse.json({ erreur: "Aucune question fiable n'a été générée. Relance la génération." }, { status: 500 });
+    }
+
     const qcm_id = crypto.randomUUID();
-    return NextResponse.json({ questions, qcm_id });
+    return NextResponse.json({ questions: couperQcm(relu.questions, Number(nbQuestions)), qcm_id });
   } catch (err) {
     console.error("[generer-qcm] Erreur :", err);
     return NextResponse.json(

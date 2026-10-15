@@ -166,6 +166,19 @@ ou la droite graduée — voir `docs/ceintures/SPEC-FIGURES.md`.
   `enonce` reformulé avec la réponse. Mesuré le 29/09 : remplacer « deux » par « un » ne
   suffisait pas (« Cite un verbe du 1er groupe »), d'où la question « un élève pourrait-il
   donner une AUTRE réponse juste ? » dans son prompt.
+- **`relireQcm()`** (`lib/relire-qcm.ts`) : un QCM généré (`generer-qcm-theme`,
+  `generer-qcm`) est relu avant d'être rendu. Le 13/10, un QCM de CM1 proposait
+  « es / êtes / sommes / suis » pour « Ma sœur … courageuse » (attendu : « es »),
+  et une autre question avait deux bonnes options. Le relecteur **ne voit pas**
+  la réponse attendue, **répond d'abord lui-même** (`ta_reponse` — sans cela,
+  dans un QCM de dix questions, il acceptait « es » faute de mieux), puis
+  **recopie** les options justes. Aucune, plusieurs, ou une autre que celle du
+  générateur ⇒ question **écartée** ; les routes demandent 2 questions de marge.
+  Questions dessinées (`figure`, `options_figures`) jamais relues : il ne voit
+  pas le dessin. Mesuré le 15/10 : les 2 fautives écartées 3 fois sur 3, 0
+  fausse alerte sur 76 questions saines. Contrat :
+  `npx tsx docs/tests/test-relire-qcm.mjs` (21 cas). ⚠️ Les questions des
+  types `lecture` (`choix`/`reponse`) ne passent pas encore par là.
 - **`extraireJSON()`** : isole le premier objet JSON d'une réponse en suivant l'imbrication
   des accolades. Les modèles ajoutent souvent une phrase après l'objet, ce qui fait échouer
   un `JSON.parse` sur la réponse brute.

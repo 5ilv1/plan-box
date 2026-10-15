@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireEnseignant } from "@/lib/server-auth";
+import { couperQcm, relireQcm } from "@/lib/relire-qcm";
 
 export const maxDuration = 120;
 
@@ -30,7 +31,10 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const nbQ = Math.min(Math.max(parseInt(String(nbQuestions), 10) || 10, 3), 20);
+    const nbVoulu = Math.min(Math.max(parseInt(String(nbQuestions), 10) || 10, 3), 20);
+    // Deux questions de marge : la relecture écarte celles qui n'ont pas
+    // exactement une bonne option (lib/relire-qcm.ts).
+    const nbQ = nbVoulu + 2;
 
     const systemPrompt = `Tu es un enseignant de primaire (CE2/CM1/CM2) expert en création de QCM pédagogiques.
 
@@ -107,9 +111,14 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown, sans texte autour) :
       };
     });
 
+    const relu = await relireQcm(questions, anthropic, { niveau });
+    if (relu.questions.length === 0) {
+      return NextResponse.json({ erreur: "Aucune question fiable n'a été générée. Relance la génération." }, { status: 500 });
+    }
+
     const resultat = {
       titre: parsed.titre || titre || "QCM",
-      questions,
+      questions: couperQcm(relu.questions, nbVoulu),
     };
 
     return NextResponse.json({ resultat });
