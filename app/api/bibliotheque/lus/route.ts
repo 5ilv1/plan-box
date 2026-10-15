@@ -3,8 +3,9 @@ import { createAdminClient } from "@/lib/supabase-admin";
 
 /**
  * GET /api/bibliotheque/lus?eleve_id=UUID ou ?rb_id=NUMBER
- * Retourne les livres terminés par l'élève (éval finale réussie), enrichis
- * avec la couverture, l'auteur, la date de validation et le score.
+ * Retourne les livres terminés par l'élève (évaluation finale passée, réussie
+ * ou non — lib/livre-termine.ts), enrichis avec la couverture, l'auteur, la
+ * date et le score. Une évaluation repassée ne compte qu'une fois : la dernière.
  */
 export async function GET(req: NextRequest) {
   const eleveId = req.nextUrl.searchParams.get("eleve_id");
@@ -19,7 +20,6 @@ export async function GET(req: NextRequest) {
   let evalQuery = admin
     .from("evaluation_resultat")
     .select("chapitre_id, reussi, score, total, created_at")
-    .eq("reussi", true)
     .order("created_at", { ascending: false });
   if (eleveId) evalQuery = evalQuery.eq("eleve_id", eleveId);
   else evalQuery = evalQuery.eq("rb_eleve_id", parseInt(rbId!, 10));
@@ -38,8 +38,11 @@ export async function GET(req: NextRequest) {
 
   const chapMap = new Map((chapitres ?? []).map((c) => [c.id, c]));
 
+  const vus = new Set<string>();
   const livres = evals
     .filter((e) => chapMap.has(e.chapitre_id))
+    // Triées de la plus récente à la plus ancienne : la première fait foi.
+    .filter((e) => !vus.has(e.chapitre_id) && vus.add(e.chapitre_id))
     .map((e) => {
       const ch = chapMap.get(e.chapitre_id)!;
       return {

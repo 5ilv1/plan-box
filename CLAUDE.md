@@ -279,6 +279,24 @@ d'activité), sur un quota Vercel compté (voir « Quota Vercel gratuit »).
   écrite depuis le navigateur, la RLS la refusait, et la colonne était vide pour toute la
   classe (« connectés aujourd'hui » à 0).
 
+## Bibliothèque : un livre se clôt à l'évaluation finale
+
+Un élève choisit un livre (`eleve_bibliotheque_choix`), le lit chapitre par
+chapitre, puis passe l'**évaluation finale** (exercice `est_evaluation_finale`).
+⚠️ **Elle clôt le livre quel que soit le score** (depuis le 15/10) : c'est un
+bilan de lecture, pas une porte. Avant, il fallait 90 % — Liam a repassé la
+même évaluation 15 fois, et un élève qui échouait restait enfermé dans un
+livre fini, sans pouvoir en choisir un autre. Le score reste en base
+(`evaluation_resultat.reussi`) pour l'enseignant.
+
+- Règle unique : `lib/livre-termine.ts` (pur), lue par `/api/bibliotheque`,
+  `/statut`, `/choisir` et `/lus`. Contrat :
+  `npx tsx docs/tests/test-livre-termine.mjs` (14 cas).
+- L'écran de fin de l'évaluation dit « Livre terminé ! » et mène à la
+  bibliothèque, sans bouton « Réessayer ».
+- Passer par `/eleve/chapitre/…` efface aussi le groupe `bibliotheque` du cache
+  élève : sans cela le tableau de bord montrait le livre fini un quart d'heure.
+
 ## Avatar élève
 
 Le customiseur vit **dans Plan Box** depuis la rentrée (`/eleve/avatar`), plus par SSO vers

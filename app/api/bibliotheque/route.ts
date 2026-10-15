@@ -93,15 +93,14 @@ export async function GET(req: NextRequest) {
   const { data: choix } = await choixQuery;
   const choisIds = new Set((choix ?? []).map((c) => c.chapitre_id));
 
-  // Livres terminés (éval finale validée) : on les exclut de la liste à choisir.
+  // Livres terminés (évaluation finale passée, réussie ou non — voir
+  // lib/livre-termine.ts) : on les exclut de la liste à choisir.
   // Ils apparaîtront séparément dans la section "Mes livres lus".
-  let evalQuery = admin.from("evaluation_resultat").select("chapitre_id, reussi");
+  let evalQuery = admin.from("evaluation_resultat").select("chapitre_id");
   if (eleveId) evalQuery = evalQuery.eq("eleve_id", eleveId);
   else evalQuery = evalQuery.eq("rb_eleve_id", parseInt(rbId!, 10));
   const { data: evals } = await evalQuery;
-  const termines = new Set(
-    (evals ?? []).filter((e) => e.reussi).map((e) => e.chapitre_id)
-  );
+  const termines = new Set((evals ?? []).map((e) => e.chapitre_id));
 
   const livres = chapitresFiltres
     .filter((ch) => !termines.has(ch.id))

@@ -92,6 +92,10 @@ export default function PageExerciceEleve() {
   // Résultat final
   const [score, setScore] = useState(0);
   const [valide, setValide] = useState(false);
+  // Évaluation finale d'un livre : elle clôt le livre quel que soit le score
+  // (lib/livre-termine.ts). Pas de « Réessaie » : l'élève choisit un autre livre.
+  // Le nombre de questions de l'évaluation ; null hors évaluation finale.
+  const [livreFini, setLivreFini] = useState<number | null>(null);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
   const [seuilExo, setSeuilExo] = useState(0.9);
   const abortRef = useRef<AbortController | null>(null);
@@ -700,6 +704,7 @@ export default function PageExerciceEleve() {
 
             setScore(bon);
             setValide(total > 0 && (bon / total) >= seuilExo);
+            setLivreFini(estEvalFinale ? total : null);
             setEtat("resultat");
           }}
         />
@@ -911,6 +916,55 @@ export default function PageExerciceEleve() {
                 </p>
               </div>
             )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (etat === "resultat" && livreFini !== null) {
+    return (
+      <div style={{ maxWidth: 560, margin: "40px auto", padding: "0 20px", textAlign: "center" }}>
+        <div style={{
+          padding: "40px 30px", borderRadius: 24,
+          background: "linear-gradient(135deg, #F3E8FF, #FAF5FF)",
+          border: "2px solid rgba(124,58,237,0.35)",
+        }}>
+          <div style={{ fontSize: 56, marginBottom: 16 }}>📚</div>
+          <h2 style={{
+            fontSize: 22, fontWeight: 800, marginBottom: 8, color: "#5B21B6",
+            fontFamily: "'Plus Jakarta Sans', sans-serif",
+          }}>
+            Livre terminé !
+          </h2>
+          <p style={{ fontSize: 16, color: "var(--pb-on-surface-variant)", marginBottom: 4 }}>
+            {score}/{livreFini} bonnes réponses
+          </p>
+          <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 24 }}>
+            {valide ? "Bravo, tu as très bien compris ton livre !" : "Tu as lu ton livre jusqu'au bout, bravo !"}
+            {" "}Tu peux maintenant en choisir un nouveau.
+          </p>
+          <div style={{ display: "flex", gap: 10, justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={() => router.push("/eleve/bibliotheque")}
+              style={{
+                padding: "12px 24px", borderRadius: 12, fontSize: 15, fontWeight: 700,
+                background: "#7C3AED", color: "white", border: "none", cursor: "pointer",
+                fontFamily: "'Plus Jakarta Sans', sans-serif",
+              }}
+            >
+              📚 Choisir un nouveau livre
+            </button>
+            <button
+              onClick={() => router.push("/eleve/dashboard")}
+              style={{
+                padding: "12px 24px", borderRadius: 12, fontSize: 15, fontWeight: 700,
+                background: "var(--pb-surface-container, #f0f0f0)", color: "var(--pb-on-surface)",
+                border: "none", cursor: "pointer", fontFamily: "'Plus Jakarta Sans', sans-serif",
+              }}
+            >
+              Tableau de bord
+            </button>
           </div>
         </div>
       </div>

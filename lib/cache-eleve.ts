@@ -57,7 +57,10 @@ export function groupesTouchesPar(chemin: string): GroupeCache[] {
   const g: GroupeCache[] = [];
   if (chemin.startsWith("/eleve/ceintures") || chemin === "/eleve/activite/ceinture") g.push("ceintures", "chapitres");
   // Une ceinture est un chapitre : son évaluation passe par /eleve/chapitre.
-  if (chemin.startsWith("/eleve/chapitre")) g.push("chapitres", "ceintures");
+  // Un livre aussi : sa lecture avance le pourcentage, son évaluation finale le
+  // clôt — sans « bibliotheque », le tableau de bord montrait encore le livre
+  // fini pendant un quart d'heure.
+  if (chemin.startsWith("/eleve/chapitre")) g.push("chapitres", "ceintures", "bibliotheque");
   if (chemin.startsWith("/eleve/bibliotheque")) g.push("bibliotheque");
   if (chemin.startsWith("/eleve/avatar")) g.push("avatar");
   return g;
