@@ -860,6 +860,33 @@ le navigateur : la reprise suit l'élève d'une tablette à l'autre.
   de reprise reste le mini-exercice.
 - Pas d'`upsert` : index d'unicité partiels (`eleve_id` / `rb_eleve_id`).
 
+### Reprendre seulement les questions ratées
+
+Un exercice repris — bloc rouvert « en cours » sous le seuil, bloc réaffecté
+au jour d'école suivant (sa copie emporte `reponses_eleve`), ou « Réessayer »
+de l'entraînement d'un chapitre — ne repose que les questions **ratées**. Les
+bonnes réponses restent acquises, et le score enregistré est celui de
+l'exercice **entier** (justes d'avant + justes de la reprise, sur le total) ;
+le statut se calcule dessus. `premier_score` n'est pas touché.
+
+- `lib/reprise-erreurs.ts` (**pur**) : `clesARevoir()` choisit, `fusionnerReprise()`
+  recompose. Contrat : `npx tsx docs/tests/test-reprise-erreurs.mjs` (21 cas).
+- **Dans le doute, tout est reposé**, comme avant : pas de réponses, réponses
+  illisibles, ou qui citent une question que l'exercice n'a plus. « Refaire »
+  de l'enseignant efface `reponses_eleve` : tout est reposé.
+- Couverts : exercice et évaluation, calcul mental, QCM, lecture, problèmes,
+  analyse de phrase. ⚠️ Deux numérotations à rétablir avant de fusionner :
+  le **QCM** repère ses réponses par leur **rang** dans le QCM entier, et
+  l'**analyse de phrase** par `phrase × 10 + étape + 1` — c'est la **phrase**
+  qui est reprise dès qu'une étape est ratée, comptée **après recalage**
+  (`recalerPhrases()`), comme dans le composant.
+- Non concernés : texte à trous, classement, comparaison, rangement — ils ne
+  se terminent qu'une fois tout juste.
+- QCM, lecture et problèmes transmettent désormais `nbTentatives` : sans lui,
+  `premier_score` était réécrit à chaque passage.
+- Entraînement d'un chapitre : `exercice_resultat` ne garde que le score, donc
+  la reprise ciblée ne vaut que pour « Réessayer », dans la même visite.
+
 ### Les activités à validation unique
 
 `ExerciceStack` avance question par question : son état tient dans un index. Cinq

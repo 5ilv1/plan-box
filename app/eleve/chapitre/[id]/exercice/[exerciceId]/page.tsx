@@ -98,6 +98,17 @@ export default function PageExerciceEleve() {
   const [livreFini, setLivreFini] = useState<number | null>(null);
   const [enSauvegarde, setEnSauvegarde] = useState(false);
   const [seuilExo, setSeuilExo] = useState(0.9);
+  // « Réessayer » ne repose que les questions ratées : les bonnes réponses des
+  // essais précédents restent acquises (`acquis`), et le score se compte sur
+  // l'exercice entier (`totalExo`). Même règle que le plan de travail
+  // (lib/reprise-erreurs.ts). `totalExo` non nul = on est dans une reprise.
+  const [acquis, setAcquis] = useState(0);
+  const [totalExo, setTotalExo] = useState<number | null>(null);
+  const [totalDernier, setTotalDernier] = useState<number | null>(null);
+  // Lecture et problèmes ne passent pas par la pile : leurs questions ratées
+  // sont repérées par leur id.
+  const [ratesDernier, setRatesDernier] = useState<number[]>([]);
+  const [aRevoirIds, setARevoirIds] = useState<number[] | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   // Reprise : l'élève coupé au milieu retrouve sa place. La clé ne vaut que
@@ -295,9 +306,11 @@ export default function PageExerciceEleve() {
     setQcmChoisi(null);
 
     if (indexCourant + 1 >= questions.length) {
-      // Fin de l'exercice — calculer le score et sauvegarder
-      const bonnes = resultats.filter(Boolean).length;
-      const total = questions.length;
+      // Fin de l'exercice — calculer le score et sauvegarder. Après un
+      // « Réessayer », les justes des essais précédents comptent aussi.
+      const bonnes = acquis + resultats.filter(Boolean).length;
+      const total = totalExo ?? questions.length;
+      setTotalDernier(total);
       const estValide = total > 0 && (bonnes / total) >= seuilExo;
 
       setScore(bonnes);
@@ -324,7 +337,9 @@ export default function PageExerciceEleve() {
     } else {
       // Reprise : ce qui vient d'être répondu part avant la question suivante.
       // `ordre` en fait partie — sans lui, un index ne désigne aucune question.
-      if (empreinteExo) {
+      // Pas pendant un « Réessayer » : `ordre` décrit l'exercice entier, les
+      // résultats ne porteraient que sur les questions reprises.
+      if (empreinteExo && totalExo === null) {
         sauver({ empreinte: empreinteExo, ordre, resultats, indexCourant: indexCourant + 1 });
       }
       setIndexCourant((prev) => prev + 1);
@@ -490,10 +505,12 @@ export default function PageExerciceEleve() {
           titre={exercice.titre}
           theme={String(contenu.theme ?? "")}
           consigne={String(contenu.consigne ?? "Calcule, puis réponds par une phrase complète.")}
-          problemes={problemes}
-          onTermine={async (scoreResult) => {
-            const total = scoreResult.total || problemes.length;
-            const bon = scoreResult.bon;
+          problemes={aRevoirIds ? problemes.filter((p) => aRevoirIds.includes(p.id)) : problemes}
+          onTermine={async (scoreResult, rep) => {
+            const total = totalExo ?? (scoreResult.total || problemes.length);
+            const bon = acquis + scoreResult.bon;
+            setTotalDernier(total);
+            setRatesDernier(rep.filter((r) => r.correcte !== true).map((r) => r.id));
 
             await fetch("/api/chapitres/exercices/resultat", {
               method: "POST",
@@ -668,12 +685,14 @@ export default function PageExerciceEleve() {
         <LectureEleve
           titre={titre}
           texte={texte}
-          questions={questionsLec}
+          questions={aRevoirIds ? questionsLec.filter((q) => aRevoirIds.includes(q.id)) : questionsLec}
           skipLecture={estEvalFinale}
           exerciceId={exerciceId}
-          onTermine={async (scoreResult) => {
-            const total = scoreResult.total;
-            const bon = scoreResult.bon;
+          onTermine={async (scoreResult, log) => {
+            const total = totalExo ?? scoreResult.total;
+            const bon = acquis + scoreResult.bon;
+            setTotalDernier(total);
+            setRatesDernier(log.filter((r) => !r.correcte).map((r) => r.id));
 
             // Pour l'éval finale, enregistrer aussi dans evaluation_resultat
             if (estEvalFinale) {
@@ -992,7 +1011,7 @@ export default function PageExerciceEleve() {
             {valide ? "Exercice validé !" : "Pas encore…"}
           </h2>
           <p style={{ fontSize: 16, color: "var(--pb-on-surface-variant)", marginBottom: 4 }}>
-            {score}/{questions.length || exercice?.nb_questions || "?"} bonnes réponses
+            {score}/{totalDernier ?? (questions.length || exercice?.nb_questions || "?")} bonnes réponses
           </p>
           <p style={{ fontSize: 13, color: "var(--pb-on-surface-variant)", marginBottom: 24 }}>
             {valide
@@ -1004,14 +1023,27 @@ export default function PageExerciceEleve() {
             {!valide && (
               <button
                 onClick={() => {
-                  // Reset et recommencer
+                  // Seules les questions ratées sont reposées ; les justes
+                  // restent acquises et comptent dans le score final.
+                  const fausses = questions.filter((_, i) => resultats[i] === false);
+                  const cible = questions.length > 0 ? fausses.length : ratesDernier.length;
+                  if (cible > 0) {
+                    setAcquis(score);
+                    setTotalExo(totalDernier ?? questions.length);
+                  } else {
+                    // Rien à cibler : on recommence tout, comme avant.
+                    setAcquis(0);
+                    setTotalExo(null);
+                  }
+                  setARevoirIds(questions.length === 0 && cible > 0 ? ratesDernier : null);
+
                   setIndexCourant(0);
                   setResultats([]);
                   setReponseEleve("");
                   setQcmChoisi(null);
                   setAfficherCorrection(false);
                   // Re-mélanger
-                  const qs = [...questions];
+                  const qs = [...(fausses.length > 0 ? fausses : questions)];
                   for (let i = qs.length - 1; i > 0; i--) {
                     const j = Math.floor(Math.random() * (i + 1));
                     [qs[i], qs[j]] = [qs[j], qs[i]];
@@ -1081,6 +1113,12 @@ export default function PageExerciceEleve() {
             {indexCourant + 1}/{questions.length}
           </span>
         </div>
+
+        {totalExo !== null && (
+          <p style={{ fontSize: 13, fontWeight: 600, color: "#9A3412", margin: "0 0 8px" }}>
+            Tu reprends seulement les questions ratées : tes bonnes réponses sont gardées.
+          </p>
+        )}
 
         {/* Barre progression */}
         <div style={{ height: 6, background: "var(--pb-surface-container, #f0f0f0)", borderRadius: 100, overflow: "hidden" }}>

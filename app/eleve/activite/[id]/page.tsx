@@ -23,6 +23,8 @@ import { useDureeActivite } from "@/hooks/useDureeActivite";
 import { cleActivite, empreinteContenu } from "@/lib/reprise";
 import type { ScoreActivite } from "@/lib/score-activite";
 import { champsTerminaison } from "@/lib/suivi-metriques";
+import { clesARevoir, fusionnerReprise, type ReponseEleve } from "@/lib/reprise-erreurs";
+import { recalerPhrases } from "@/lib/analyse-phrase";
 import ClassementEleve from "@/components/ClassementEleve";
 import ComparaisonEleve from "@/components/ComparaisonEleve";
 import RangementEleve from "@/components/RangementEleve";
@@ -527,6 +529,56 @@ export default function PageActivite() {
   // les reconstruire champ par champ perdrait la figure (piège n°9).
   const qcmData = bloc.type === "qcm" ? (bloc.contenu as unknown as { titre?: string; questions: { question: string; options: string[]; reponse_correcte: number; explication?: string; figure?: Figure; options_figures?: Figure[] }[] }) : null;
   const problemeMaths = bloc.type === "probleme_maths" ? (bloc.contenu as unknown as { titre: string; theme: string; consigne: string; problemes: { id: number; enonce: string; resultat_attendu: string; phrase_reponse_attendue: string; mots_cles: string[]; indice: string }[] }) : null;
+  // ── Reprise des seules erreurs (lib/reprise-erreurs.ts) ──
+  //
+  // Un bloc rouvert sous le seuil, ou réaffecté au jour d'école suivant, ne
+  // repose que les questions ratées la dernière fois. Le score enregistré reste
+  // celui de l'exercice ENTIER : les justes d'avant + celles de la reprise.
+  const contenuBloc = (bloc.contenu ?? {}) as Record<string, unknown>;
+  const aRevoir = (cles: number[], cleDe?: (id: number) => number) =>
+    clesARevoir(bloc.statut, contenuBloc, cles, cleDe);
+  /** Score et réponses de l'exercice entier, une fois la reprise faite. */
+  const completer = (
+    nouvelles: ReponseEleve[],
+    reprises: number[] | null,
+    score: { bon: number; total: number },
+    cleDe?: (id: number) => number,
+  ) => reprises
+    ? fusionnerReprise(contenuBloc.reponses_eleve, nouvelles, reprises, cleDe)
+    : { reponses: nouvelles, ...score };
+
+  const exoRevoir = exercice ? aRevoir(exercice.questions.map((q) => q.id)) : null;
+  const questionsExo = exercice && exoRevoir
+    ? exercice.questions.filter((q) => exoRevoir.includes(q.id))
+    : exercice?.questions ?? [];
+  const calcRevoir = calcMental?.calculs?.length ? aRevoir(calcMental.calculs.map((c) => c.id)) : null;
+  const calculsAFaire = calcMental?.calculs && calcRevoir
+    ? calcMental.calculs.filter((c) => calcRevoir.includes(c.id))
+    : calcMental?.calculs;
+  // Les réponses d'un QCM sont repérées par leur rang dans le QCM entier.
+  const qcmRevoir = qcmData ? aRevoir(qcmData.questions.map((_, i) => i)) : null;
+  const questionsQcm = qcmData && qcmRevoir ? qcmRevoir.map((i) => qcmData.questions[i]) : qcmData?.questions ?? [];
+  const lectureRevoir = lectureData ? aRevoir(lectureData.questions.map((q) => q.id)) : null;
+  const questionsLecture = lectureData && lectureRevoir
+    ? lectureData.questions.filter((q) => lectureRevoir.includes(q.id))
+    : lectureData?.questions ?? [];
+  const problemeRevoir = problemeMaths ? aRevoir(problemeMaths.problemes.map((p) => p.id)) : null;
+  const problemesAFaire = problemeMaths && problemeRevoir
+    ? problemeMaths.problemes.filter((p) => problemeRevoir.includes(p.id))
+    : problemeMaths?.problemes ?? [];
+  // Analyse de phrase : une réponse par ÉTAPE (id = phrase × 10 + étape + 1),
+  // mais c'est la PHRASE qui est reprise dès qu'une de ses étapes est ratée.
+  // Les phrases se comptent après recalage, comme dans le composant.
+  const phrasesSaines = analysePhrase ? recalerPhrases(analysePhrase.phrases) : [];
+  const parPhrase = (idEtape: number) => Math.floor((idEtape - 1) / 10);
+  const analyseRevoir = analysePhrase ? aRevoir(phrasesSaines.map((_, i) => i), parPhrase) : null;
+  const phrasesAFaire = analysePhrase && analyseRevoir
+    ? analyseRevoir.map((i) => phrasesSaines[i] as (typeof analysePhrase.phrases)[number])
+    : analysePhrase?.phrases ?? [];
+  const nbARevoir = exoRevoir?.length ?? calcRevoir?.length ?? qcmRevoir?.length
+    ?? lectureRevoir?.length ?? problemeRevoir?.length ?? analyseRevoir?.length ?? 0;
+  const motARevoir = analyseRevoir ? "phrase" : "question";
+
   const ressource  = bloc.type === "ressource" ? (bloc.contenu as unknown as RessourceIA) : null;
   const dictee     = bloc.type === "dictee" ? (bloc.contenu as unknown as DicteeContenu) : null;
   const correctionDictee = bloc.type === "correction_dictee"
@@ -965,11 +1017,29 @@ export default function PageActivite() {
             )}
 
             {/* ── Calcul mental ── */}
+            {nbARevoir > 0 && (etat as string) === "en_cours" && (
+              <div style={{
+                display: "flex", alignItems: "center", gap: 10, marginBottom: 14,
+                padding: "12px 16px", borderRadius: 14,
+                background: "#FFF7ED", border: "1px solid #FDBA74", color: "#9A3412",
+                fontSize: 14, fontWeight: 600,
+              }}>
+                <span className="ms" style={{ fontSize: 22 }}>replay</span>
+                <span>
+                  Tu reprends seulement {nbARevoir > 1 ? `les ${nbARevoir} ${motARevoir}s` : `la ${motARevoir}`} que
+                  tu avais {nbARevoir > 1 ? "ratées" : "ratée"}. Tes bonnes réponses sont gardées.
+                </span>
+              </div>
+            )}
+
             {calcMental && (
               <div className="pb-card">
                 <CalcMentalStack
-                  calculs={calcMental.calculs}
-                  onComplete={onCalcMentalComplete}
+                  calculs={calculsAFaire}
+                  onComplete={(bon, total, rep) => {
+                    const f = completer(rep ?? [], calcRevoir, { bon, total });
+                    onCalcMentalComplete(f.bon, f.total, f.reponses);
+                  }}
                 />
               </div>
             )}
@@ -980,21 +1050,22 @@ export default function PageActivite() {
             {exercice && !soumis && reprise.pret && (
               <ExerciceStack
                 consigne={exercice.consigne}
-                questions={exercice.questions}
+                questions={questionsExo}
                 etatInitial={(reprise.etatRepris as unknown as EtatExerciceStack) ?? null}
                 onProgres={(etatStack) => {
                   if (empreinteBloc) reprise.sauver({ ...etatStack, empreinte: empreinteBloc });
                 }}
                 onComplete={(reponsesStack, scoreStack, totalStack) => {
                   void reprise.effacer();
-                  setReponses(reponsesStack);
+                  const f = completer(reponsesStack, exoRevoir, { bon: scoreStack, total: totalStack });
+                  setReponses(f.reponses);
                   setSoumis(true);
-                  const pct = totalStack > 0 ? Math.round((scoreStack / totalStack) * 100) : 0;
+                  const pct = f.total > 0 ? Math.round((f.bon / f.total) * 100) : 0;
                   const statut: StatutBloc = pct >= 80 ? "fait" : "en_cours";
                   // `nbTentatives` doit être transmis, sinon le compteur retombe à 1
                   // et `premier_score` est réécrit à chaque passage — ce qui rendait
                   // la note du premier essai indiscernable de la note finale.
-                  marquerFait({ bon: scoreStack, total: totalStack }, statut, reponsesStack, nbTentatives);
+                  marquerFait({ bon: f.bon, total: f.total }, statut, f.reponses, nbTentatives);
                   setNbTentatives(nbTentatives + 1);
                 }}
               />
@@ -1044,12 +1115,21 @@ export default function PageActivite() {
                 <AnalysePhraseEleve
                   titre={analysePhrase.titre}
                   consigne={analysePhrase.consigne}
-                  phrases={analysePhrase.phrases}
+                  phrases={phrasesAFaire}
                   fonctionsActives={analysePhrase.fonctionsActives ?? ["Sujet", "Verbe", "COD", "COI", "CC Lieu", "CC Temps", "CC Manière"]}
                   etatInitial={reprise.etatRepris}
                   onProgres={sauverProgres}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.7 ? "fait" : "en_cours", repEleve, nbTentatives);
+                    // Le composant numérote les phrases qu'il a reçues : on revient
+                    // aux numéros de l'exercice entier avant de fusionner.
+                    const rep = analyseRevoir
+                      ? repEleve.map((r) => {
+                          const pi = parPhrase(r.id);
+                          return { ...r, id: analyseRevoir[pi] * 10 + (r.id - pi * 10) };
+                        })
+                      : repEleve;
+                    const f = completer(rep, analyseRevoir, score, parPhrase);
+                    marquerFait({ bon: f.bon, total: f.total }, f.bon / f.total >= 0.7 ? "fait" : "en_cours", f.reponses, nbTentatives);
                     setNbTentatives(nbTentatives + 1);
                     void reprise.effacer();
                   }}
@@ -1151,9 +1231,11 @@ export default function PageActivite() {
                 <LectureEleve
                   titre={lectureData.titre}
                   texte={lectureData.texte}
-                  questions={lectureData.questions}
+                  questions={questionsLecture}
                   onTermine={(score, repEleve) => {
-                    marquerFait(score, score.bon / score.total >= 0.8 ? "fait" : "en_cours", repEleve);
+                    const f = completer(repEleve, lectureRevoir, score);
+                    marquerFait({ bon: f.bon, total: f.total }, f.bon / f.total >= 0.8 ? "fait" : "en_cours", f.reponses, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
                   }}
                 />
               </div>
@@ -1172,13 +1254,19 @@ export default function PageActivite() {
               <div className="pb-card" style={{ padding: "1.25rem 1.5rem" }}>
                 <QCMEleve
                   titre={qcmData.titre}
-                  questions={qcmData.questions}
+                  questions={questionsQcm}
                   onTermine={(score, rep) => {
+                    // QCMEleve numérote les questions qu'il a reçues : on revient
+                    // aux rangs du QCM entier avant de fusionner.
+                    const repQcm = qcmRevoir ? rep.map((r) => ({ ...r, id: qcmRevoir[r.id] })) : rep;
+                    const f = completer(repQcm, qcmRevoir, score);
                     marquerFait(
-                      score,
-                      score.bon / score.total >= 0.8 ? "fait" : "en_cours",
-                      rep,
+                      { bon: f.bon, total: f.total },
+                      f.bon / f.total >= 0.8 ? "fait" : "en_cours",
+                      f.reponses,
+                      nbTentatives,
                     );
+                    setNbTentatives(nbTentatives + 1);
                   }}
                 />
               </div>
@@ -1199,9 +1287,11 @@ export default function PageActivite() {
                   titre={problemeMaths.titre}
                   theme={problemeMaths.theme}
                   consigne={problemeMaths.consigne}
-                  problemes={problemeMaths.problemes}
+                  problemes={problemesAFaire}
                   onTermine={(score, rep) => {
-                    marquerFait(score, score.bon / score.total >= 0.7 ? "fait" : "en_cours", rep);
+                    const f = completer(rep, problemeRevoir, score);
+                    marquerFait({ bon: f.bon, total: f.total }, f.bon / f.total >= 0.7 ? "fait" : "en_cours", f.reponses, nbTentatives);
+                    setNbTentatives(nbTentatives + 1);
                   }}
                 />
               </div>
