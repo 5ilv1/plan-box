@@ -4,6 +4,7 @@ import { GET as calculDuJour } from "@/app/api/calcul-du-jour/route";
 import { GET as monPlanTravail } from "@/app/api/mon-plan-travail/route";
 import { createAdminClient } from "@/lib/supabase-admin";
 import { getServerUser } from "@/lib/server-auth";
+import { rallyeActif } from "@/lib/rallye-reglage";
 
 // GET /api/eleve/chargement?rb=<id>&debut=YYYY-MM-DD&fin=YYYY-MM-DD
 //
@@ -74,18 +75,22 @@ export async function GET(req: NextRequest) {
   };
 
   const rbQ = encodeURIComponent(rb);
-  const [probleme, calcul, semaine, exos, podcasts, deblocage] = await Promise.all([
+  // Rallye Bestioles : quand il est ouvert, il prend la place des podcasts.
+  const lireRallye = () => rallyeActif(createAdminClient());
+
+  const [probleme, calcul, semaine, exos, podcasts, deblocage, rallye] = await Promise.all([
     lire(problemeDuJour()),
     lire(calculDuJour()),
     lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&debut=${encodeURIComponent(debut)}&fin=${encodeURIComponent(fin)}`))),
     lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&types=exercice,calcul_mental,eval&avecChapitre=1`))),
     lire(monPlanTravail(sousRequete(`/api/mon-plan-travail?rb=${rbQ}&types=ressource&avecQcm=1&limite=4&leger=1`))),
     lireDeblocage(),
+    lireRallye(),
     noterConnexion(),
   ]);
 
   return new Response(
-    `{"probleme":${probleme},"calcul":${calcul},"semaine":${semaine},"exos":${exos},"podcasts":${podcasts},"deblocage":${deblocage}}`,
+    `{"probleme":${probleme},"calcul":${calcul},"semaine":${semaine},"exos":${exos},"podcasts":${podcasts},"deblocage":${deblocage},"rallye":${rallye}}`,
     { headers: { "Content-Type": "application/json" } },
   );
 }

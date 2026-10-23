@@ -16,6 +16,7 @@ import ActivityCard from "@/components/ActivityCard";
 import NotifCard from "@/components/NotifCard";
 import Avatar from "@/components/Avatar";
 import MotusCarte from "@/components/MotusCarte";
+import RallyeCarte from "@/components/RallyeCarte";
 // La barre du haut compte EXACTEMENT ce que compte le panneau enseignant : même
 // module, pas une seconde définition. C'est la raison d'être de
 // `lib/suivi-metriques.ts` — trois pages avaient chacune la leur, et elles ne
@@ -250,6 +251,7 @@ interface DashCache {
   serieParcours: number;
   calculJour: { id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean; tentatives_restantes?: number } | null;
   deblocageActif?: boolean;
+  rallyeActif?: boolean;
 }
 
 const CACHE_TTL_MS = 2 * 60 * 60 * 1000; // 2 h : au-delà, on considère obsolète
@@ -311,6 +313,9 @@ export default function DashboardEleve() {
   const [calculJour, setCalculJour]                     = useState<{ id: string; operation: string; nombre1: number; nombre2: number; deja_fait?: boolean; tentatives_restantes?: number } | null>(null);
   // Déblocage progressif (lib/deblocage-eleve.ts) : réglage livré par /api/eleve/chargement.
   const [deblocageActif, setDeblocageActif]             = useState(false);
+  // Rallye Bestioles : quand le réglage est vrai, il prend la place des podcasts.
+  const [rallyeActif, setRallyeActif]                   = useState(false);
+  const rallyeLuPB = useRef(false);
   // Le chargement de cette visite est-il arrivé ? Avant, on ne sait ni le
   // réglage ni l'étape : rien de l'étape 3 ne doit partir.
   const [premierChargementFait, setPremierChargementFait] = useState(false);
@@ -417,6 +422,7 @@ export default function DashboardEleve() {
       setSerieParcours(cache.serieParcours ?? 0);
       setCalculJour(cache.calculJour);
       setDeblocageActif(cache.deblocageActif === true);
+      setRallyeActif(cache.rallyeActif === true);
       setChargementDonnees(false); // UI visible immédiatement
     }
 
@@ -620,6 +626,15 @@ export default function DashboardEleve() {
   // ── Chargement Plan Box ─────────────────────────────────────────────────────
   async function chargerPB(eleveId: string, signal: AbortSignal) {
     try {
+      // Réglage du rallye : les élèves Repetibox le reçoivent par /api/eleve/chargement,
+      // un élève Plan Box natif le demande une fois par visite.
+      if (!rallyeLuPB.current) {
+        rallyeLuPB.current = true;
+        fetch("/api/rallye?actif=1", { signal })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => setRallyeActif(j?.actif === true))
+          .catch(() => { rallyeLuPB.current = false; });
+      }
       const aujourd_hui = new Date().toISOString().split("T")[0];
       const { debut, fin, debutRetard } = getBornesSemaine();
 
@@ -843,7 +858,7 @@ export default function DashboardEleve() {
       // des routes d'origine. S'il échoue — ou n'existe pas encore pendant un
       // déploiement —, on retombe sur les cinq appels séparés d'avant.
       type Morceau = { status: number; corps: any }; // eslint-disable-line @typescript-eslint/no-explicit-any
-      let groupe: (Record<"probleme" | "calcul" | "semaine" | "exos" | "podcasts", Morceau> & { deblocage?: boolean }) | null = null;
+      let groupe: (Record<"probleme" | "calcul" | "semaine" | "exos" | "podcasts", Morceau> & { deblocage?: boolean; rallye?: boolean }) | null = null;
       try {
         const r = await fetch(`/api/eleve/chargement?rb=${rbId}&debut=${debutRetard}&fin=${fin}`, { signal });
         if (r.ok) groupe = await r.json();
@@ -851,6 +866,7 @@ export default function DashboardEleve() {
       if (signal.aborted) return;
       // Sans la route regroupée, le réglage est inconnu : désactivé, l'élève voit tout.
       setDeblocageActif(groupe?.deblocage === true);
+      setRallyeActif(groupe?.rallye === true);
       const corps = (cle: "probleme" | "calcul" | "semaine" | "exos" | "podcasts", url: string) =>
         groupe?.[cle] ? Promise.resolve(groupe[cle].corps) : fetch(url, { signal }).then((r) => r.json());
 
@@ -1070,13 +1086,14 @@ export default function DashboardEleve() {
       serieParcours,
       calculJour,
       deblocageActif,
+      rallyeActif,
     });
   }, [
     chargementDonnees, session, niveauNom, progressionsPB, progressionExos,
     blocsAujourdhui, blocsSemaine, blocsEnRetard, notifications, chapitresRB, podcastsQcm,
     podcastsSemaine, rbEleveId, ceintureActive, ceintureInfo, dailyProblem,
     dailyProblemFait, dailyProblemReussi, chapitresAssignes, serieParcours, calculJour,
-    deblocageActif,
+    deblocageActif, rallyeActif,
   ]);
 
   // ── Actions ─────────────────────────────────────────────────────────────────
@@ -1497,7 +1514,9 @@ export default function DashboardEleve() {
               {session?.source === "repetibox" && <CarteVerrouillee icone="style" titre="Cartes Repetibox" />}
               <CarteVerrouillee icone="workspace_premium" titre="Mes ceintures" />
               <CarteVerrouillee icone="auto_stories" titre="Ma lecture" />
-              <CarteVerrouillee icone="podcasts" titre="Podcasts" />
+              {rallyeActif
+                ? <CarteVerrouillee icone="pets" titre="Rallye Bestioles" />
+                : <CarteVerrouillee icone="podcasts" titre="Podcasts" />}
             </div>
           )}
           {montrerTout && (
@@ -1768,9 +1787,12 @@ export default function DashboardEleve() {
               </Link>
             )}
 
+            {/* Rallye Bestioles : prend la place des podcasts tant qu'il est ouvert. */}
+            {rallyeActif && <RallyeCarte />}
+
             {/* Podcasts à écouter (semaine en cours + reportés non terminés).
                 Une fois que l'élève a répondu au QCM, le bloc est masqué. */}
-            {podcastsSemaine.filter((p) => !p.fait).map((p) => (
+            {!rallyeActif && podcastsSemaine.filter((p) => !p.fait).map((p) => (
               <div key={p.id} className="pb-card" style={{
                 background: p.fait
                   ? "linear-gradient(135deg, #F0FDF4, #DCFCE7)"
@@ -1831,8 +1853,8 @@ export default function DashboardEleve() {
               </div>
             ))}
 
-            {/* 🏆 Classement Podcasts — toujours visible */}
-            <Link
+            {/* 🏆 Classement Podcasts — toujours visible (hors rallye) */}
+            {!rallyeActif && <Link
               href="/eleve/qcm-classement/global"
               className="pb-card"
               style={{
@@ -1861,7 +1883,7 @@ export default function DashboardEleve() {
                 </div>
               </div>
               <span style={{ fontSize: 22, opacity: 0.5 }}>›</span>
-            </Link>
+            </Link>}
 
             {/* Mes chapitres (Plan Box) */}
             {progressionsSorted.length > 0 && (

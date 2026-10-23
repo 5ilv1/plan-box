@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase";
 import MatieresView from "@/components/dashboard/MatieresView";
 import NouvelleAnneeSection from "@/components/NouvelleAnneeSection";
 import DeblocageProgressifSection from "@/components/DeblocageProgressifSection";
+import RallyeBestiolesSection from "@/components/RallyeBestiolesSection";
 import ActivitesTabletteSection from "@/components/ActivitesTabletteSection";
 
 interface JourSansEcole {
@@ -139,6 +140,9 @@ export default function ParametresPage() {
 
         {/* ── Section : Déblocage progressif (tableau de bord élève) ── */}
         <DeblocageProgressifSection />
+
+        {/* ── Section : Rallye Bestioles (à la place des podcasts) ── */}
+        <RallyeBestiolesSection />
 
         {/* ── Section : Activités sur tablette, par niveau ── */}
         <ActivitesTabletteSection />
