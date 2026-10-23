@@ -11,7 +11,7 @@ import {
 // Réglages de classe (table `reglage`, une ligne par clé). Liste fermée :
 // une clé inconnue est refusée, pour qu'une faute de frappe ne crée pas un
 // réglage que personne ne lit.
-const CLES = { deblocage_progressif: "boolean" } as const;
+const CLES = { deblocage_progressif: "boolean", rallye_bestioles: "boolean" } as const;
 type Cle = keyof typeof CLES;
 
 type Grille = Record<ActiviteTablette, Record<NiveauActivite, boolean | null>>;
@@ -35,14 +35,14 @@ async function lireGrille(admin: ReturnType<typeof createAdminClient>, valeurReg
   return grille;
 }
 
-// GET /api/enseignant/reglages → { deblocage_progressif: boolean, activites_tablette: Grille }
+// GET /api/enseignant/reglages → { deblocage_progressif: boolean, rallye_bestioles: boolean, activites_tablette: Grille }
 export async function GET() {
   const auth = await requireEnseignant();
   if (auth.error) return auth.error;
   const admin = createAdminClient();
   const { data, error } = await admin.from("reglage").select("cle, valeur");
   if (error) return NextResponse.json({ erreur: error.message }, { status: 500 });
-  const reglages: Record<string, unknown> = { deblocage_progressif: false };
+  const reglages: Record<string, unknown> = { deblocage_progressif: false, rallye_bestioles: false };
   for (const r of data ?? []) if (r.cle in CLES) reglages[r.cle] = r.valeur;
   reglages.activites_tablette = await lireGrille(admin, data?.find((r) => r.cle === CLE_REGLAGE_ACTIVITES)?.valeur);
   return NextResponse.json(reglages);

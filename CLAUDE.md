@@ -70,7 +70,7 @@ Les deux coexistent dans les progressions, assignations et résultats.
 | `user_preferences` | Préférences UI (nav_order) |
 | `ceinture_choix_semaine` | Domaines de ceintures choisis par l'élève pour la semaine |
 | `exercice_reprise` | L'exercice en cours d'un élève, pour qu'il le reprenne |
-| `reglage` | Réglages de classe (clé → valeur jsonb), accès serveur seulement : `deblocage_progressif`, `activites_tablette` |
+| `reglage` | Réglages de classe (clé → valeur jsonb), accès serveur seulement : `deblocage_progressif`, `activites_tablette`, `rallye_bestioles` |
 
 ### Relations FK critiques
 Avant de supprimer un chapitre, nettoyer dans cet ordre :
@@ -291,6 +291,36 @@ d'activité), sur un quota Vercel compté (voir « Quota Vercel gratuit »).
 - La dernière connexion (`eleves_planbox_meta.derniere_connexion`) s'écrit côté serveur :
   écrite depuis le navigateur, la RLS la refusait, et la colonne était vide pour toute la
   classe (« connectés aujourd'hui » à 0).
+
+## Rallye Bestioles
+
+Les podcasts **Bestioles** de France Inter, avec les fiches de questions d'un rallye
+(PDF de l'enseignant). Tant que le réglage **`rallye_bestioles`** est vrai (Paramètres),
+la carte du rallye **remplace les podcasts** sur le tableau de bord élève.
+
+- L'élève choisit un podcast parmi **3 tirés au hasard**, l'écoute, répond à 5 questions
+  (1 point par bonne réponse), voit son score, son score du jour et global, le podium et
+  le classement de la classe — puis peut en choisir un autre : **pas de limite par jour**.
+- **Un podcast choisi est joué** : il ne revient jamais, même quitté en route (la partie
+  se reprend). Table `rallye_partie`, une ligne par (élève, fiche), index partiels.
+- **L'audio est lu chez Radio France** (`media.radiofrance-podcast.net`), jamais copié.
+  ⚠️ Vérifier que le filtre du réseau de l'école laisse passer ce domaine. En cas
+  d'erreur du lecteur, la page renvoie vers radiofrance.fr et débloque les questions.
+- Le QCM ne se débloque qu'après **90 % d'écoute réelle** (secondes jouées, pas la
+  position : sauter à la fin ne compte pas).
+- **Les bonnes réponses ne quittent le serveur qu'une fois la question répondue** :
+  `lib/rallye-bestioles.json` n'est lu que par `lib/rallye-bestioles-serveur.ts`.
+  ⚠️ Ne jamais l'importer depuis un composant ou `lib/rallye-bestioles.ts` (pur, importé
+  par la page élève) : les réponses partiraient dans le JavaScript du navigateur.
+- Tirage **déterminé** par (élève, nombre de podcasts joués, date) : recharger ne rebat
+  pas les cartes, finir un podcast en donne trois nouveaux.
+- Fiches : 137 sur 140 (104 sans corrigé ; 89 et 90 absentes du PDF). 9 réponses
+  manifestement fausses du corrigé ont été corrigées (tique Q1/Q5, okapi Q3, dragon volant
+  Q4, rhinocéros Q2/Q4, renard polaire Q1, fennec Q5, cigogne Q3).
+- Le réglage arrive par `/api/eleve/chargement` (`rallye`), sans appel de plus ; la carte
+  du tableau de bord (`components/RallyeCarte.tsx`) ne charge aucune donnée.
+- Contrat : `npx tsx docs/tests/test-rallye-bestioles.mjs` (1803 vérifications, dont
+  chaque fiche).
 
 ## Bibliothèque : un livre se clôt à l'évaluation finale
 
