@@ -48,10 +48,10 @@ export async function ecrireSujet(
   supabase: SupabaseClient,
   anthropic: Anthropic,
   mode: "jour" | "semaine",
-): Promise<{ sujet: string; contrainte: string; type_ecriture: string }> {
+): Promise<{ sujet: string; contrainte: string; type_ecriture: string; univers: string; famille_contrainte: string }> {
   const { data: derniers } = await supabase
     .from("themes_ecriture")
-    .select("sujet, contrainte, type_ecriture, mode")
+    .select("sujet, contrainte, type_ecriture, mode, univers, famille_contrainte")
     .order("date", { ascending: false })
     .limit(50);
   const historique = (derniers ?? []) as ThemePasse[];
@@ -76,7 +76,13 @@ export async function ecrireSujet(
   const texte = message.content[0].type === "text" ? message.content[0].text : "";
   const parsed = extraireJSON(texte) as { sujet?: string; contrainte?: string } | null;
   if (!parsed?.sujet) throw new Error("Sujet d'écriture illisible");
-  return { sujet: parsed.sujet, contrainte: parsed.contrainte ?? "", type_ecriture: axes.type };
+  return {
+    sujet: parsed.sujet,
+    contrainte: parsed.contrainte ?? "",
+    type_ecriture: axes.type,
+    univers: axes.univers,
+    famille_contrainte: axes.famille.cle,
+  };
 }
 
 export async function genererOuRecupererTheme(
@@ -164,7 +170,7 @@ export async function genererOuRecupererTheme(
   }
 
   const mode = modeForce ?? "jour";
-  const { sujet, contrainte, type_ecriture } = await ecrireSujet(supabase, anthropic, mode);
+  const { sujet, contrainte, type_ecriture, univers, famille_contrainte } = await ecrireSujet(supabase, anthropic, mode);
 
   const { data: inserted, error } = await supabase
     .from("themes_ecriture")
@@ -173,6 +179,8 @@ export async function genererOuRecupererTheme(
       sujet,
       contrainte,
       type_ecriture,
+      univers,
+      famille_contrainte,
       afficher_contrainte: true,
       affecte: false,
       mode,

@@ -118,6 +118,22 @@ for (let i = 0; i < 20; i++) {
   if (ax.famille.cle === "adjectifs") verifier(`réel (${i}) : pas encore les adjectifs`, ax.famille.cle, "autre chose");
   if (ax.univers === "l'école et la classe") verifier(`réel (${i}) : pas encore l'école`, ax.univers, "un autre univers");
 }
+// ── Les axes notés font foi (essai du 28/10 : « lieu-temps » 4 fois sur 5) ──
+verifier("« à quel moment et à quel endroit » est reconnu",
+  familleDeContrainte("Dans ton texte, précise à quel moment de la journée et à quel endroit chaque étape se fait."), "lieu-temps");
+{
+  // Un thème noté « lieu-temps » sans aucun mot reconnaissable : la famille ne revient pas.
+  const noteSansMot = [{ sujet: "Un billet plié en quatre.", contrainte: "Raconte ça bien.", famille_contrainte: "lieu-temps",
+    univers: "une pointe d'imaginaire dans la vie de tous les jours", type_ecriture: TYPES_JOUR[0], mode: "jour" }];
+  let revient = 0, univRevient = 0;
+  for (let g = 1; g <= 40; g++) {
+    const ax = choisirAxes("jour", TYPES_JOUR, noteSansMot, graine(g));
+    if (ax.famille.cle === "lieu-temps") revient++;
+    if (ax.univers === "une pointe d'imaginaire dans la vie de tous les jours") univRevient++;
+  }
+  verifier("famille notée : ne ressort pas juste après", revient, 0);
+  verifier("univers noté : ne ressort pas juste après", univRevient, 0);
+}
 // Pour vérifier une boucle d'un coup : un seul cas compté.
 total++;
 console.log(echecs === 0 ? `✓ ${total} cas passent` : `\n${echecs} échec(s) sur ${total}`);

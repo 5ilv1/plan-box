@@ -59,7 +59,11 @@ export function buildSystemPrompt(
 - Langue française irréprochable : pas de fautes d'orthographe, de conjugaison ni de syntaxe.
 
 RÈGLES STRICTES SUR LA FORME :
-- INTERDIT de commencer le sujet par : ${DEBUTS_USES.map((d) => `"${d}"`).join(", ")}
+- INTERDIT de commencer le sujet par : ${DEBUTS_USES
+    // « Si j'étais… » commence forcément par « Si tu étais » : on ne l'interdit pas à ce type-là.
+    .filter((d) => !(d === "Si tu" && /si j'étais/i.test(axes.type)))
+    .map((d) => `"${d}"`)
+    .join(", ")}
 - Varier les structures : impératif ("Raconte...", "Décris...", "Invente..."), question ("Quel est le meilleur moment..."), situation directe ("Un matin, le facteur apporte un colis énorme..."), parole rapportée ("Ton voisin te dit que...")
 - Ne recopie pas la tournure d'un sujet déjà utilisé, même pour un autre thème : les élèves reconnaissent le moule.
 - Un personnage ou un lieu peut porter un nom inventé et amusant (« M. Lapin-Poisson », « le village de Brioches-et-Loups ») : c'est plus vivant que « un personnage », « un village ».`;

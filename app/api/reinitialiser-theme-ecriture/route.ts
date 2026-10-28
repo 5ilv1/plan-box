@@ -68,7 +68,7 @@ export async function POST(req: Request) {
       .eq("date", today);
 
     // ── 3. Générer un nouveau thème ──────────────────────────────────────
-    const { sujet, contrainte, type_ecriture } = await ecrireSujet(supabase, anthropic, mode);
+    const { sujet, contrainte, type_ecriture, univers, famille_contrainte } = await ecrireSujet(supabase, anthropic, mode);
 
     const { data: theme, error: errInsert } = await supabase
       .from("themes_ecriture")
@@ -77,6 +77,8 @@ export async function POST(req: Request) {
         sujet,
         contrainte,
         type_ecriture,
+        univers,
+        famille_contrainte,
         afficher_contrainte: true,
         affecte: false,
         mode,

@@ -83,7 +83,7 @@ export const FAMILLES_CONTRAINTE: FamilleContrainte[] = [
   { cle: "debut-fin", modes: ["jour", "semaine"], consigne: "commencer ou finir le texte par une phrase imposée, que tu écris dans la contrainte", motif: /commence (ton texte|par la phrase)|termine (ton texte |)par la phrase|phrase imposée|première phrase|dernière phrase/i },
   { cle: "negation", modes: ["jour"], consigne: "écrire au moins deux phrases à la forme négative (ne… pas, ne… jamais, ne… plus)", motif: /négati|ne\s*…\s*(pas|jamais|plus)/i },
   { cle: "expansion", modes: ["jour", "semaine"], consigne: "enrichir les noms avec un complément du nom ou une proposition relative (« un chat aux yeux verts », « la maison qui… »)", motif: /complément du nom|relative|expansion|groupe nominal enrichi/i },
-  { cle: "lieu-temps", modes: ["jour", "semaine"], consigne: "dire où et quand se passe chaque moment (compléments de lieu et de temps)", motif: /compléments? (de lieu|de temps|circonstanciel)|où et quand/i },
+  { cle: "lieu-temps", modes: ["jour", "semaine"], consigne: "dire où et quand se passe chaque moment (compléments de lieu et de temps)", motif: /compléments? (de lieu|de temps|circonstanciel)|où et quand|à quel moment|quel endroit/i },
   { cle: "rebondissement", modes: ["semaine"], consigne: "placer un rebondissement ou un retournement de situation", motif: /rebondissement|retournement|inattendu/i },
   { cle: "emotions", modes: ["semaine"], consigne: "montrer ce que ressent le personnage sans le dire directement (gestes, visage, voix)", motif: /ressen|émotion/i },
   { cle: "portrait", modes: ["semaine"], consigne: "faire le portrait physique et moral d'un personnage", motif: /portrait|physique.*moral/i },
@@ -102,6 +102,9 @@ export interface ThemePasse {
   contrainte?: string | null;
   type_ecriture?: string | null;
   mode?: string | null;
+  /** Les axes choisis, notés depuis le 29/10 (avant : relus dans le texte, voir plus bas). */
+  univers?: string | null;
+  famille_contrainte?: string | null;
 }
 
 export interface Axes {
@@ -157,7 +160,7 @@ export const INDICES_UNIVERS: Record<string, RegExp> = {
   "les métiers et les gens qui travaillent": /métier|travail|facteur|pompier|médecin|cuisinier|boulanger/i,
   "les objets et les inventions": /objet|invention|machine|robot|tu es (le|la|l')/i,
   "les souvenirs et les émotions": /souvenir|émotion|fier|peur|joie|triste|admire/i,
-  "une pointe d'imaginaire dans la vie de tous les jours": /magique|imaginaire|superpouvoir|potion|parle soudain/i,
+  "une pointe d'imaginaire dans la vie de tous les jours": /magique|imaginaire|superpouvoir|potion|parle soudain|mystérieu|étrange|invisible|apprivois/i,
   "l'école et la classe": /école|classe|maîtresse|maître|récré|cantine|cartable|trousse|camarade/i,
   // semaine
   "la mer, les îles et les bateaux": /mer|océan|île|bateau|pirate|navire/i,
@@ -177,9 +180,17 @@ export const INDICES_UNIVERS: Record<string, RegExp> = {
   "un super-pouvoir tout petit et pas très utile": /pouvoir|super-héros|héros/i,
 };
 
+// L'univers et la famille NOTÉS à la génération font foi. Relus dans le texte, ils
+// échappaient aux motifs : le modèle écrivait « précise à quel moment et à quel
+// endroit », la famille « lieu-temps » passait pour jamais servie et revenait 4 fois
+// sur 5 (essai du 28/10) ; même chose pour l'univers « imaginaire » sans « magique ».
+// Les motifs ne servent plus qu'aux thèmes d'avant le 29/10.
 function rangUnivers(historique: ThemePasse[], univers: string): number {
   const indice = INDICES_UNIVERS[univers];
-  return rangDansHistorique(historique, (t) => indice.test(t.sujet));
+  return rangDansHistorique(historique, (t) => (t.univers ? t.univers === univers : indice.test(t.sujet)));
+}
+function familleDe(t: ThemePasse): string | null {
+  return t.famille_contrainte ?? familleDeContrainte(t.contrainte);
 }
 
 /** Choisit type, univers et famille de contrainte d'après l'historique. */
@@ -197,7 +208,7 @@ export function choisirAxes(
   const familles = FAMILLES_CONTRAINTE.filter((f) => f.modes.includes(mode));
   const famille = moinsRecent(
     familles,
-    (f) => rangDansHistorique(historique, (t) => familleDeContrainte(t.contrainte) === f.cle),
+    (f) => rangDansHistorique(historique, (t) => familleDe(t) === f.cle),
     alea,
   );
   return { type, univers, famille };
