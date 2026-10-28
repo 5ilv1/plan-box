@@ -13,6 +13,12 @@
 // pas la même forme. Le code choisit donc trois axes — type, univers, famille de
 // contrainte —, chacun parmi les moins récemment servis, et le modèle n'écrit
 // que le sujet. Module pur : aucun accès base.
+//
+// La base Notion « Thèmes production d'écrit » de l'enseignant dit la même
+// chose : générés sans axes imposés, 42 sujets sur 199 y sont « Un jour dans la
+// vie d'un explorateur des nuages » et 41 un « jardin magique ». On lui a pris
+// ce qui marchait — des questions-guides, des personnages et des lieux nommés,
+// le ciel et les jouets comme univers —, pas sa liberté.
 
 export type ModeEcriture = "jour" | "semaine";
 
@@ -46,6 +52,9 @@ export const UNIVERS_SEMAINE = [
   "le quotidien qui bascule dans l'étrange",
   "le froid, les pôles, la neige",
   "le désert, la chaleur, une expédition",
+  "le ciel, les nuages et les machines volantes",
+  "les jouets et les objets qui prennent vie",
+  "un super-pouvoir tout petit et pas très utile",
 ];
 
 /**
@@ -163,6 +172,9 @@ export const INDICES_UNIVERS: Record<string, RegExp> = {
   "le quotidien qui bascule dans l'étrange": /étrange|bizarre|surgi|lueur|murmur/i,
   "le froid, les pôles, la neige": /pôle|banquise|neige|glace|hiver/i,
   "le désert, la chaleur, une expédition": /désert|sable|expédition|explorat/i,
+  "le ciel, les nuages et les machines volantes": /\bciel\b|nuage|ballon|montgolfière|voler\b|vole\b/i,
+  "les jouets et les objets qui prennent vie": /jouet|peluche|doudou|prennent vie|s'anime/i,
+  "un super-pouvoir tout petit et pas très utile": /pouvoir|super-héros|héros/i,
 };
 
 function rangUnivers(historique: ThemePasse[], univers: string): number {

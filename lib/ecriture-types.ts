@@ -39,6 +39,8 @@ export const TYPES_SEMAINE = [
   "récit à rebondissements",
   "journal intime d'un personnage",
   "récit historique imaginé",
+  "« Le jour où… » : une journée où tout bascule",
+  "une journée dans la vie d'un personnage insolite",
 ];
 
 /** Prompt système adapté au mode. Type, univers et contrainte sont choisis par
@@ -59,7 +61,8 @@ export function buildSystemPrompt(
 RÈGLES STRICTES SUR LA FORME :
 - INTERDIT de commencer le sujet par : ${DEBUTS_USES.map((d) => `"${d}"`).join(", ")}
 - Varier les structures : impératif ("Raconte...", "Décris...", "Invente..."), question ("Quel est le meilleur moment..."), situation directe ("Un matin, le facteur apporte un colis énorme..."), parole rapportée ("Ton voisin te dit que...")
-- Ne recopie pas la tournure d'un sujet déjà utilisé, même pour un autre thème : les élèves reconnaissent le moule.`;
+- Ne recopie pas la tournure d'un sujet déjà utilisé, même pour un autre thème : les élèves reconnaissent le moule.
+- Un personnage ou un lieu peut porter un nom inventé et amusant (« M. Lapin-Poisson », « le village de Brioches-et-Loups ») : c'est plus vivant que « un personnage », « un village ».`;
 
   const axesImposes = `▶ TYPE D'ÉCRITURE IMPOSÉ : « ${axes.type} »
 Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.
@@ -91,7 +94,7 @@ RÈGLES STRICTES SUR LE FOND (mode JOUR) :
 - Le sujet doit appeler une réponse COURTE et directe
 
 Génère UN sujet d'écriture courte avec :
-- Un sujet : 1 ou 2 phrases courtes. Simple, direct, concret, qui donne envie d'écrire.
+- Un sujet : une phrase qui pose la situation, puis 2 ou 3 questions TRÈS courtes qui aident l'élève à trouver quoi écrire (« Qui frappe ? Que veut-il ? Que lui réponds-tu ? »). 40 mots au plus : le sujet s'affiche en grand titre sur la tablette.
 - La contrainte imposée ci-dessus, en une phrase.
 
 Réponds UNIQUEMENT en JSON sans backticks :
@@ -114,7 +117,7 @@ RÈGLES STRICTES SUR LE FOND (mode SEMAINE) :
 - ÉVITER les sujets trop simples ou fermés qui se traitent en 3 lignes
 
 Génère UN sujet d'écriture avec :
-- Un sujet : 1 ou 2 phrases maximum. Plante un décor évocateur et une situation de départ intrigante, puis termine par une invitation à écrire la suite ou à raconter l'histoire.
+- Un sujet : 1 ou 2 phrases. Plante un décor évocateur et une situation de départ intrigante, puis termine par 2 ou 3 questions courtes qui ouvrent l'histoire (qui, quel obstacle, comment ça finit). 60 mots au plus : le sujet s'affiche en grand titre sur la tablette.
 - La contrainte imposée ci-dessus, en une phrase, ambitieuse et adaptée à un récit développé.
 
 Réponds UNIQUEMENT en JSON sans backticks :

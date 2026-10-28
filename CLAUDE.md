@@ -673,7 +673,13 @@ derniers sujets au modèle n'y suffisait pas : il évite le même sujet, pas le 
 - **Un seul chemin de génération** : `ecrireSujet()` (`lib/theme-ecriture.ts`), appelé
   par le widget/cron, `reinitialiser-theme-ecriture` et `generer-theme-ecriture-libre`
   (« Nouvelle semaine »). Chacun recopiait sa rotation.
-- Contrat : `npx tsx docs/tests/test-theme-ecriture-variete.mjs` (69 cas).
+- La base Notion « Thèmes production d'écrit » de l'enseignant montre le même travers,
+  en pire : 42 sujets sur 199 sont « Un jour dans la vie d'un explorateur des nuages ».
+  On lui a pris des questions-guides en fin de sujet, des noms inventés pour les
+  personnages et les lieux, et trois univers de l'atelier (ciel, jouets, super-pouvoir).
+- ⚠️ Le sujet s'affiche en **grand titre** (`h2`, 22 px) sur la tablette : le prompt le
+  borne à 40 mots au jour, 60 à la semaine.
+- Contrat : `npx tsx docs/tests/test-theme-ecriture-variete.mjs` (72 cas).
 
 ### La correction ne croit pas le modèle
 
