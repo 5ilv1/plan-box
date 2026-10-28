@@ -10,6 +10,8 @@
 import type Anthropic from "@anthropic-ai/sdk";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt, CONSIGNES_ECRITURE } from "./ecriture-types";
+import { choisirAxes, type ThemePasse } from "./theme-ecriture-variete";
+import { extraireJSON } from "./prompts-communs";
 import { activiteAllumee, niveauDesGroupes } from "./activites-niveau";
 import { chargerReglageActivites } from "./activites-niveau-serveur";
 
@@ -35,6 +37,46 @@ export class ErreurTheme extends Error {
   constructor(message: string, public status: number) {
     super(message);
   }
+}
+
+/**
+ * Écrit un nouveau sujet, sans rien enregistrer. Seul chemin de génération : le
+ * widget, la réinitialisation et la page « Nouvelle semaine » le recopiaient
+ * chacun, avec chacun sa rotation.
+ */
+export async function ecrireSujet(
+  supabase: SupabaseClient,
+  anthropic: Anthropic,
+  mode: "jour" | "semaine",
+): Promise<{ sujet: string; contrainte: string; type_ecriture: string }> {
+  const { data: derniers } = await supabase
+    .from("themes_ecriture")
+    .select("sujet, contrainte, type_ecriture, mode")
+    .order("date", { ascending: false })
+    .limit(50);
+  const historique = (derniers ?? []) as ThemePasse[];
+
+  const axes = choisirAxes(mode, mode === "semaine" ? TYPES_SEMAINE : TYPES_JOUR, historique);
+  const memeMode = historique.filter((t) => (t.mode ?? "jour") === mode);
+  const listeSujets = memeMode.map((t) => `- ${t.sujet}`).join("\n");
+  const listeContraintes = memeMode
+    .slice(0, 10)
+    .map((t) => t.contrainte)
+    .filter(Boolean)
+    .map((c) => `- ${c}`)
+    .join("\n");
+
+  const message = await anthropic.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 400,
+    messages: [{ role: "user", content: "Génère un nouveau sujet d'écriture." }],
+    system: buildSystemPrompt(mode, axes, listeSujets, listeContraintes),
+  });
+
+  const texte = message.content[0].type === "text" ? message.content[0].text : "";
+  const parsed = extraireJSON(texte) as { sujet?: string; contrainte?: string } | null;
+  if (!parsed?.sujet) throw new Error("Sujet d'écriture illisible");
+  return { sujet: parsed.sujet, contrainte: parsed.contrainte ?? "", type_ecriture: axes.type };
 }
 
 export async function genererOuRecupererTheme(
@@ -121,55 +163,16 @@ export async function genererOuRecupererTheme(
     await supabase.from("themes_ecriture").delete().eq("date", today);
   }
 
-  // Déterminer le mode à utiliser
   const mode = modeForce ?? "jour";
-  const typesListe = mode === "semaine" ? TYPES_SEMAINE : TYPES_JOUR;
-
-  // Compter le total + récupérer les 50 derniers (sujet + type)
-  const [{ count }, { data: derniers }] = await Promise.all([
-    supabase.from("themes_ecriture").select("*", { count: "exact", head: true }),
-    supabase
-      .from("themes_ecriture")
-      .select("sujet, type_ecriture")
-      .order("date", { ascending: false })
-      .limit(50),
-  ]);
-
-  // Type imposé par rotation déterministe sur la liste du mode
-  const total = count ?? 0;
-  const typeImpose = typesListe[total % typesListe.length];
-
-  // Types utilisés récemment (pour contexte)
-  const derniersTypes = (derniers ?? [])
-    .slice(0, 6)
-    .map((t: { type_ecriture: string | null }) => t.type_ecriture)
-    .filter(Boolean)
-    .join(", ");
-
-  const listeSujets = (derniers ?? [])
-    .map((t: { sujet: string }) => `- ${t.sujet}`)
-    .join("\n");
-
-  const systemPrompt = buildSystemPrompt(mode, typeImpose, derniersTypes, listeSujets);
-
-  const message = await anthropic.messages.create({
-    model: "claude-sonnet-4-6",
-    max_tokens: 300,
-    messages: [{ role: "user", content: "Génère un nouveau sujet d'écriture." }],
-    system: systemPrompt,
-  });
-
-  const texte = message.content[0].type === "text" ? message.content[0].text : "";
-  const texteNettoye = texte.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-  const parsed = JSON.parse(texteNettoye) as { sujet: string; contrainte: string };
+  const { sujet, contrainte, type_ecriture } = await ecrireSujet(supabase, anthropic, mode);
 
   const { data: inserted, error } = await supabase
     .from("themes_ecriture")
     .insert({
       date: today,
-      sujet: parsed.sujet,
-      contrainte: parsed.contrainte,
-      type_ecriture: typeImpose,
+      sujet,
+      contrainte,
+      type_ecriture,
       afficher_contrainte: true,
       affecte: false,
       mode,
