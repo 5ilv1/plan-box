@@ -5,6 +5,8 @@
  * MODE SEMAINE → projet d'imagination, récit développé sur 4 jours
  */
 
+import { DEBUTS_USES, type Axes } from "./theme-ecriture-variete";
+
 export const TYPES_JOUR = [
   "description courte",
   "portrait en quelques lignes",
@@ -16,6 +18,14 @@ export const TYPES_JOUR = [
   "devinette ou énigme à écrire",
   "recette imaginaire",
   "message ou annonce",
+  "souvenir raconté",
+  "petite histoire en cinq phrases",
+  "interview imaginaire",
+  "mode d'emploi ou règle du jeu",
+  "lettre à un personnage",
+  "début d'histoire à continuer",
+  "texte « Si j'étais… »",
+  "fin heureuse ou fin surprise d'une situation donnée",
 ];
 
 export const TYPES_SEMAINE = [
@@ -29,10 +39,19 @@ export const TYPES_SEMAINE = [
   "récit à rebondissements",
   "journal intime d'un personnage",
   "récit historique imaginé",
+  "« Le jour où… » : une journée où tout bascule",
+  "une journée dans la vie d'un personnage insolite",
 ];
 
-/** Prompt système adapté au mode */
-export function buildSystemPrompt(mode: "jour" | "semaine", typeImpose: string, derniersTypes: string, listeSujets: string): string {
+/** Prompt système adapté au mode. Type, univers et contrainte sont choisis par
+ *  le code (`choisirAxes()`, lib/theme-ecriture-variete.ts) : laissés au modèle,
+ *  ils revenaient toujours aux mêmes. */
+export function buildSystemPrompt(
+  mode: "jour" | "semaine",
+  axes: Axes,
+  listeSujets: string,
+  listeContraintes: string,
+): string {
   const niveaux = "CE2/CM1/CM2 (7-11 ans)";
 
   const reglesCommunes = `RÈGLES STRICTES SUR LA LANGUE :
@@ -40,32 +59,43 @@ export function buildSystemPrompt(mode: "jour" | "semaine", typeImpose: string, 
 - Langue française irréprochable : pas de fautes d'orthographe, de conjugaison ni de syntaxe.
 
 RÈGLES STRICTES SUR LA FORME :
-- INTERDIT de commencer par "Tu découvres", "Tu te réveilles", "Tu trouves", "Imagine que", "Si tu"
-- Varier les structures : impératif ("Raconte...", "Décris...", "Écris..."), question ("Quel est le meilleur moment..."), situation directe ("Un matin, le facteur apporte un colis énorme..."), dialogue ("Ton meilleur ami te dit que...")`;
+- INTERDIT de commencer le sujet par : ${DEBUTS_USES.map((d) => `"${d}"`).join(", ")}
+- Varier les structures : impératif ("Raconte...", "Décris...", "Invente..."), question ("Quel est le meilleur moment..."), situation directe ("Un matin, le facteur apporte un colis énorme..."), parole rapportée ("Ton voisin te dit que...")
+- Ne recopie pas la tournure d'un sujet déjà utilisé, même pour un autre thème : les élèves reconnaissent le moule.
+- Un personnage ou un lieu peut porter un nom inventé et amusant (« M. Lapin-Poisson », « le village de Brioches-et-Loups ») : c'est plus vivant que « un personnage », « un village ».`;
+
+  const axesImposes = `▶ TYPE D'ÉCRITURE IMPOSÉ : « ${axes.type} »
+Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.
+
+▶ UNIVERS IMPOSÉ : « ${axes.univers} »
+Le sujet se passe dans cet univers. Choisis-y une situation précise et inattendue, pas la plus évidente.
+
+▶ CONTRAINTE IMPOSÉE : ${axes.famille.consigne}
+Rédige la contrainte en UNE phrase, adaptée au sujet et au type. N'écris pas une autre sorte de contrainte.
+
+Sujets déjà utilisés — NE PAS reproduire ces thèmes, ces situations ni ces tournures :
+${listeSujets || "(aucun)"}
+
+Contraintes déjà utilisées récemment — ne pas les reformuler à l'identique :
+${listeContraintes || "(aucune)"}`;
 
   if (mode === "jour") {
     return `Tu génères des sujets d'écriture COURTE pour des élèves de ${niveaux} dans une école primaire française.
 
 ⚠️ IMPORTANT : il s'agit d'un ÉCRIT DU JOUR — un texte COURT de quelques lignes (3 à 8 lignes maximum selon le niveau). L'élève doit pouvoir le rédiger en 10-15 minutes.
 
-▶ TYPE D'ÉCRITURE IMPOSÉ : « ${typeImpose} »
-Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.
-${derniersTypes ? `Types utilisés récemment (déjà vus, ne pas répéter) : ${derniersTypes}` : ""}
-
-Sujets déjà utilisés — NE PAS reproduire ces thèmes ni des thèmes similaires :
-${listeSujets || "(aucun)"}
+${axesImposes}
 
 ${reglesCommunes}
 
 RÈGLES STRICTES SUR LE FOND (mode JOUR) :
-- Thèmes ancrés dans le QUOTIDIEN : école, récréation, famille, repas, trajet, météo, sport, animaux de compagnie, moments de la journée, petites observations
-- Favoriser des situations CONCRÈTES et SIMPLES : décrire ce qu'on voit par la fenêtre, raconter un moment de la récréation, écrire un petit mot à quelqu'un…
-- ÉVITER les grandes aventures, les mondes imaginaires, les récits complexes — ce n'est PAS le lieu pour ça
+- Une situation CONCRÈTE, que l'élève peut se représenter tout de suite et sur laquelle il a quelque chose à dire
+- Un peu d'imaginaire est bienvenu (un objet qui parle, un animal qui écrit une lettre), mais pas de grande aventure : elles sont réservées à l'atelier de la semaine
 - Le sujet doit appeler une réponse COURTE et directe
 
 Génère UN sujet d'écriture courte avec :
-- Un sujet : 1 phrase maximum. Simple, direct, concret. Termine par une question courte ou une invitation à écrire en quelques lignes.
-- Une contrainte stylistique légère et adaptée à un écrit court (ex : "Utilise au moins 2 adjectifs", "Commence chaque phrase par un mot différent", "Utilise une comparaison")
+- Un sujet : une phrase qui pose la situation, puis 2 ou 3 questions TRÈS courtes qui aident l'élève à trouver quoi écrire (« Qui frappe ? Que veut-il ? Que lui réponds-tu ? »). 40 mots au plus : le sujet s'affiche en grand titre sur la tablette.
+- La contrainte imposée ci-dessus, en une phrase.
 
 Réponds UNIQUEMENT en JSON sans backticks :
 {"sujet": "...", "contrainte": "..."}`;
@@ -76,12 +106,7 @@ Réponds UNIQUEMENT en JSON sans backticks :
 
 ⚠️ IMPORTANT : il s'agit d'un ATELIER D'ÉCRITURE SUR LA SEMAINE — un vrai projet de rédaction. L'élève écrit un premier jet lundi, retravaille son texte chaque jour (correction, enrichissement) et l'envoie le vendredi. Le sujet doit être assez RICHE et OUVERT pour soutenir un texte développé (10-20 lignes).
 
-▶ TYPE D'ÉCRITURE IMPOSÉ : « ${typeImpose} »
-Tu DOIS générer un sujet de CE type exact. Aucun autre type n'est accepté.
-${derniersTypes ? `Types utilisés récemment (déjà vus, ne pas répéter) : ${derniersTypes}` : ""}
-
-Sujets déjà utilisés — NE PAS reproduire ces thèmes ni des thèmes similaires :
-${listeSujets || "(aucun)"}
+${axesImposes}
 
 ${reglesCommunes}
 
@@ -90,11 +115,10 @@ RÈGLES STRICTES SUR LE FOND (mode SEMAINE) :
 - Le sujet doit donner envie de RACONTER UNE HISTOIRE avec un début, un milieu et une fin
 - Situations riches qui permettent de développer des personnages, des péripéties, des descriptions
 - ÉVITER les sujets trop simples ou fermés qui se traitent en 3 lignes
-- Le cadre peut être fantastique, futuriste, historique ou réaliste-décalé
 
 Génère UN sujet d'écriture avec :
-- Un sujet : 1 ou 2 phrases maximum. Plante un décor évocateur et une situation de départ intrigante, puis termine par une invitation à écrire la suite ou à raconter l'histoire.
-- Une contrainte narrative ambitieuse adaptée à un récit développé (ex : "Inclus un dialogue entre deux personnages", "Décris un lieu en utilisant les 5 sens", "Ton récit doit contenir un retournement de situation")
+- Un sujet : 1 ou 2 phrases. Plante un décor évocateur et une situation de départ intrigante, puis termine par 2 ou 3 questions courtes qui ouvrent l'histoire (qui, quel obstacle, comment ça finit). 60 mots au plus : le sujet s'affiche en grand titre sur la tablette.
+- La contrainte imposée ci-dessus, en une phrase, ambitieuse et adaptée à un récit développé.
 
 Réponds UNIQUEMENT en JSON sans backticks :
 {"sujet": "...", "contrainte": "..."}`;

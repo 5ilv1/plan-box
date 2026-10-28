@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { createAdminClient } from "@/lib/supabase-admin";
-import { TYPES_JOUR, TYPES_SEMAINE, buildSystemPrompt, CONSIGNES_ECRITURE } from "@/lib/ecriture-types";
+import { CONSIGNES_ECRITURE } from "@/lib/ecriture-types";
+import { ecrireSujet } from "@/lib/theme-ecriture";
 import { requireEnseignant } from "@/lib/server-auth";
 
 const anthropic = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
@@ -66,52 +67,16 @@ export async function POST(req: Request) {
       .delete()
       .eq("date", today);
 
-    // ── 3. Compter le total + récupérer les 50 derniers ─────────────────
-    const typesListe = mode === "semaine" ? TYPES_SEMAINE : TYPES_JOUR;
-
-    const [{ count }, { data: derniers }] = await Promise.all([
-      supabase.from("themes_ecriture").select("*", { count: "exact", head: true }),
-      supabase
-        .from("themes_ecriture")
-        .select("sujet, type_ecriture")
-        .order("date", { ascending: false })
-        .limit(50),
-    ]);
-
-    const total = count ?? 0;
-    const typeImpose = typesListe[total % typesListe.length];
-
-    const derniersTypes = (derniers ?? [])
-      .slice(0, 6)
-      .map((t: { type_ecriture: string | null }) => t.type_ecriture)
-      .filter(Boolean)
-      .join(", ");
-
-    const listeSujets = (derniers ?? [])
-      .map((t: { sujet: string }) => `- ${t.sujet}`)
-      .join("\n");
-
-    // ── 4. Générer un nouveau thème ──────────────────────────────────────
-    const systemPrompt = buildSystemPrompt(mode, typeImpose, derniersTypes, listeSujets);
-
-    const message = await anthropic.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 300,
-      system: systemPrompt,
-      messages: [{ role: "user", content: "Génère un nouveau sujet d'écriture." }],
-    });
-
-    const texte = message.content[0].type === "text" ? message.content[0].text : "";
-    const texteNettoye = texte.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "").trim();
-    const parsed = JSON.parse(texteNettoye) as { sujet: string; contrainte: string };
+    // ── 3. Générer un nouveau thème ──────────────────────────────────────
+    const { sujet, contrainte, type_ecriture } = await ecrireSujet(supabase, anthropic, mode);
 
     const { data: theme, error: errInsert } = await supabase
       .from("themes_ecriture")
       .insert({
         date: today,
-        sujet: parsed.sujet,
-        contrainte: parsed.contrainte,
-        type_ecriture: typeImpose,
+        sujet,
+        contrainte,
+        type_ecriture,
         afficher_contrainte: true,
         affecte: false,
         mode,

@@ -653,6 +653,34 @@ Contrat : `npx tsx docs/tests/test-ecriture-bouton.mjs` (13 cas).
   « Affecter » masqués, aucun thème généré. Il ne retient plus qu'un bloc daté
   d'aujourd'hui ou un atelier de la semaine.
 
+### Des sujets qui ne se ressemblent pas
+
+⚠️ Jusqu'au 28/10, les élèves trouvaient les sujets « tous pareils », et c'était vrai :
+les 10 types tournaient dans un **ordre fixe** (`total % 10`), 24 contraintes sur 36
+étaient « au moins deux adjectifs », et le prompt ancrait tout à l'école (« La
+maîtresse annonce… », « Pense à… », quatre « potions magiques »). Montrer les 50
+derniers sujets au modèle n'y suffisait pas : il évite le même sujet, pas le même moule.
+
+- Le **code** choisit trois axes, le modèle n'écrit que le sujet
+  (`lib/theme-ecriture-variete.ts`, pur, `choisirAxes()`) : **type** (18 au jour),
+  **univers** (13 au jour, l'école n'en est qu'un), **famille de contrainte** (13 au
+  jour). Chacun est tiré parmi les 3 servis le moins récemment : rien ne revient
+  trop tôt, et « Autre » / « Régénérer » donnent quand même autre chose.
+- Aucune colonne de plus : univers et famille se **relisent** dans le sujet et la
+  contrainte en base (`INDICES_UNIVERS`, `familleDeContrainte()`) — les thèmes
+  d'avant comptent aussi. ⚠️ Un univers ou une famille sans motif qui le reconnaît
+  passerait pour « jamais servi » et sortirait tous les jours : le contrat le vérifie.
+- **Un seul chemin de génération** : `ecrireSujet()` (`lib/theme-ecriture.ts`), appelé
+  par le widget/cron, `reinitialiser-theme-ecriture` et `generer-theme-ecriture-libre`
+  (« Nouvelle semaine »). Chacun recopiait sa rotation.
+- La base Notion « Thèmes production d'écrit » de l'enseignant montre le même travers,
+  en pire : 42 sujets sur 199 sont « Un jour dans la vie d'un explorateur des nuages ».
+  On lui a pris des questions-guides en fin de sujet, des noms inventés pour les
+  personnages et les lieux, et trois univers de l'atelier (ciel, jouets, super-pouvoir).
+- ⚠️ Le sujet s'affiche en **grand titre** (`h2`, 22 px) sur la tablette : le prompt le
+  borne à 40 mots au jour, 60 à la semaine.
+- Contrat : `npx tsx docs/tests/test-theme-ecriture-variete.mjs` (72 cas).
+
 ### La correction ne croit pas le modèle
 
 `lib/ecriture-correction.ts` (`verifierErreurs()`) filtre ce que renvoie le modèle.
