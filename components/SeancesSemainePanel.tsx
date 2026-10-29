@@ -491,7 +491,10 @@ function ListeLignes({
           <p style={titreJour}>{JOURS[jour] ?? `Jour ${jour + 1}`}</p>
           <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
             {duJour.map((l) => (
-              <LigneSeance key={l.cle} ligne={l} etape={etape} onMaj={onMaj} onRegenerer={onRegenerer} onReprendre={onReprendre} />
+              <LigneSeance
+                key={l.cle} ligne={l} etape={etape} modeles={modelesDe(l, lignes)}
+                onMaj={onMaj} onRegenerer={onRegenerer} onReprendre={onReprendre}
+              />
             ))}
           </div>
         </section>
@@ -500,11 +503,29 @@ function ListeLignes({
   );
 }
 
+/**
+ * Les lignes de la même séance, pour un autre niveau, déjà engendrées : leur
+ * exercice peut servir tel quel à celle-ci. Une génération en échec pour les
+ * CM2 se rattrape ainsi avec l'exercice des CM1, sur le même texte.
+ */
+function modelesDe(l: Ligne, lignes: Ligne[]): Ligne[] {
+  return lignes.filter((x) =>
+    x.cle !== l.cle &&
+    x.seanceId === l.seanceId &&
+    x.volet === l.volet &&
+    x.date === l.date &&
+    x.niveau !== l.niveau &&
+    x.statut === "ok" &&
+    !!x.contenu,
+  );
+}
+
 function LigneSeance({
-  ligne: l, etape, onMaj, onRegenerer, onReprendre,
+  ligne: l, etape, modeles, onMaj, onRegenerer, onReprendre,
 }: {
   ligne: Ligne;
   etape: Etape;
+  modeles: Ligne[];
   onMaj: (cle: string, champs: Partial<Ligne>) => void;
   onRegenerer: (cle: string) => void;
   onReprendre: (cle: string) => void;
@@ -618,6 +639,34 @@ function LigneSeance({
 
       {l.statut === "echec" && (
         <p style={{ margin: "6px 0 0", fontSize: 11, color: "var(--error)" }}>{l.erreur}</p>
+      )}
+
+      {etape !== "choix" && l.statut !== "encours" && modeles.length > 0 && (
+        <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+          {modeles.map((m) => (
+            <button
+              key={m.cle}
+              className="btn-ghost"
+              style={{ padding: "4px 10px", fontSize: 12 }}
+              onClick={() => {
+                if (l.statut === "ok" && !confirm(`Remplacer l'exercice des ${l.niveau} par celui des ${m.niveau} ?`)) return;
+                // Une copie, pas un partage : retoucher l'un ne doit pas
+                // retoucher l'autre. Le groupe reste celui de cette ligne.
+                onMaj(l.cle, {
+                  type: m.type,
+                  contenu: structuredClone(m.contenu),
+                  matiere: m.matiere,
+                  sousMatiere: m.sousMatiere,
+                  choisie: true,
+                  statut: "ok",
+                  erreur: undefined,
+                });
+              }}
+            >
+              Reprendre l&apos;exercice des {m.niveau}
+            </button>
+          ))}
+        </div>
       )}
 
       {deplie && l.contenu && (
