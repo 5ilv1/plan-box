@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
 import { requireEnseignant } from "@/lib/server-auth";
 import { couperQcm, relireQcm } from "@/lib/relire-qcm";
+import { figuresPossibles, consigneFigures, filtrerFigures, premierNombre, nbOptionsJustes, nbOptionsJustesDroite } from "@/lib/figures-generation";
 
 export const maxDuration = 120;
 
@@ -35,6 +36,9 @@ export async function POST(req: NextRequest) {
     // Deux questions de marge : la relecture écarte celles qui n'ont pas
     // exactement une bonne option (lib/relire-qcm.ts).
     const nbQ = nbVoulu + 2;
+    // Géométrie, grandeurs et mesures : une question peut porter une figure.
+    // Le relecteur ne voit pas le dessin : c'est filtrerFigures() qui vérifie.
+    const figures = figuresPossibles(matiere, sous_matiere, theme, consigne, titre);
 
     const systemPrompt = `Tu es un enseignant de primaire (CE2/CM1/CM2) expert en création de QCM pédagogiques.
 
@@ -66,11 +70,11 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown, sans texte autour) :
       "explication": "Courte explication."
     }
   ]
-}`;
+}${figures ? `\n\n${consigneFigures("qcm")}` : ""}`;
 
     const response = await anthropic.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 4096,
+      max_tokens: 6000,
       system: systemPrompt,
       messages: [
         {
@@ -90,8 +94,38 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown, sans texte autour) :
       return NextResponse.json({ erreur: "Aucune question générée." }, { status: 500 });
     }
 
+    let brutes = parsed.questions as any[];
+    if (figures) {
+      const f = filtrerFigures(brutes, (q: any) => ({
+        enonce: String(q.question ?? ""),
+        reponse: Array.isArray(q.options) ? String(q.options[q.reponse_correcte] ?? "") : "",
+      }),
+      // Aire mal comptée : la bonne option est celle qui vaut le dessin, s'il
+      // y en a exactement une. L'explication citait le mauvais compte.
+      (q: any, valeur: number) => {
+        const justes = (Array.isArray(q.options) ? q.options : [])
+          .map((o: unknown, i: number) => (premierNombre(String(o)) === valeur ? i : -1))
+          .filter((i: number) => i >= 0);
+        if (justes.length !== 1) return null;
+        const { explication: _e, ...reste } = q;
+        return { ...reste, reponse_correcte: justes[0] };
+      });
+      for (const e of f.ecartees) console.log(`[generer-qcm-theme] figure écartée (${e.raison}) : ${e.enonce}`);
+      // Une seule option juste au regard du dessin.
+      brutes = f.questions.filter((q: any) => {
+        const options = Array.isArray(q.options) ? q.options.map(String) : null;
+        const enonce = String(q.question ?? "");
+        const n = !options ? null
+          : q.figure ? nbOptionsJustes(enonce, options, q.figure)
+          : q.droite ? nbOptionsJustesDroite(enonce, options, q.droite)
+          : null;
+        if (n !== null && n !== 1) console.log(`[generer-qcm-theme] ${n} option(s) juste(s) au dessin : ${q.question}`);
+        return n === null || n === 1;
+      });
+    }
+
     // Validation + mélange des positions
-    const questions = parsed.questions.map((q: any) => {
+    const questions = brutes.map((q: any) => {
       const options: string[] = Array.isArray(q.options) ? q.options.slice(0, 4) : [];
       while (options.length < 4) options.push("—");
       let idx = typeof q.reponse_correcte === "number" ? q.reponse_correcte : 0;
@@ -108,6 +142,8 @@ Réponds UNIQUEMENT avec un JSON valide (sans markdown, sans texte autour) :
         options: newOptions,
         reponse_correcte: newOptions.indexOf(bonne),
         explication: q.explication ? String(q.explication) : undefined,
+        ...(q.figure ? { figure: q.figure } : {}),
+        ...(q.droite ? { droite: q.droite } : {}),
       };
     });
 

@@ -17,6 +17,8 @@ import GenererLectureForm from "@/components/GenererLectureForm";
 import GenererQCMForm from "@/components/GenererQCMForm";
 import GenererProblemeMathsForm from "@/components/GenererProblemeMathsForm";
 import ExercicePreview from "@/components/ExercicePreview";
+import FigureGeo, { type Figure } from "@/components/FigureGeo";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 import QCMEditeur, { BoutonSupprimer, type QCMData } from "@/components/QCMEditeur";
 import type { ExerciceIA } from "@/types";
 import { fusionnerBrouillon, lireBrouillon, sauverBrouillon } from "@/lib/brouillon-seances";
@@ -788,6 +790,14 @@ function ItemEditable({
           rows={1}
           style={{ ...champTexte, background: figé ? "transparent" : "var(--pb-surface-lowest)" }}
         />
+      )}
+
+      {/* La figure d'une question de géométrie ou de mesure : la relire aussi */}
+      {item.figure != null && typeof item.figure === "object" && (
+        <FigureGeo figure={item.figure as Figure} />
+      )}
+      {item.droite != null && typeof item.droite === "object" && (
+        <DroiteGraduee droite={item.droite as Droite} />
       )}
 
       {options ? (

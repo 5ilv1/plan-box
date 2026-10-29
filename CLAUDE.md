@@ -124,6 +124,54 @@ ou la droite graduée — voir `docs/ceintures/SPEC-FIGURES.md`.
   à relancer après toute modification du module. Rendu à l'œil sur
   `/enseignant/admin/figures`.
 
+### Figures dans les exercices de maths engendrés
+
+En géométrie et en grandeurs et mesures, `generer-exercice` et `generer-qcm-theme`
+laissent le modèle joindre une `figure` à une question (horloge, angle, polygone
+sur quadrillage ou avec ses longueurs) — `lib/figures-generation.ts`.
+
+- **Seulement si la question est impossible sans elle** : lire l'heure,
+  reconnaître un angle, compter des carreaux, lire un codage. « Un rectangle de
+  7 cm sur 4 cm » se dit en mots ; il peut être **illustré de temps en temps**
+  (une ou deux questions au plus), jamais systématiquement.
+- Activé par le sous-domaine (`Géométrie`, `Grandeurs et mesures`) **ou** par le
+  thème (aire, angle, horloge…) : les maths CE2 ont un sous-domaine de repli.
+- ⚠️ **Le prompt ne fait pas foi.** Figure abîmée (hors cadre, polygone qui se
+  croise, sommet répété) ⇒ question écartée. Réponse recalculée sur le dessin :
+  heure du cadran, nature de l'angle (un angle entre 76° et 104° autre que 90°
+  est écarté : indiscernable à l'œil), aire et périmètre comptés sur le
+  quadrillage ou tirés des longueurs. Mesuré le 23/10 : le modèle comptait mal
+  3 figures en L ou en T sur 10 — **l'aire est corrigée** d'après le dessin
+  (exercice) ou la bonne option retrouvée (QCM), jamais servie fausse. Une aire
+  à côtés en biais (pente autre que 45°) est écartée : elle ne se compte pas.
+- QCM : le relecteur ne voit pas les dessins ; `nbOptionsJustes()` refuse deux
+  options justes au regard du dessin (« 3 h 25 » et « 15 h 25 »).
+- **Droite graduée** aussi, activée par le thème (`gradu…` : « demi-droite
+  graduée », « graduation ») — sans cela, une séance de Numération sur la
+  droite graduée engendrait du texte seul. Le modèle l'écrit en
+  `figure: { type: "droite" }`, `filtrerFigures()` la range dans la clé
+  **`droite`** de la question, celle que lisent les pages élève
+  (`DroiteGraduee`). ⚠️ Mesuré le 29/10 : le modèle se trompe **en
+  dessinant**, pas en répondant — un point à 140 sur une droite de 100 en 100
+  sans petits traits, une étiquette après la fin (8 droites de QCM sur 8
+  refusées). Le dessin est donc **ajusté** à sa valeur : petits traits
+  (2, 4, 5, 10), intervalles en plus, et un seul grand intervalle découpé
+  devient N petits — sauf si l'énoncé parle des intervalles ou des traits.
+  Après ajustement : 16/16 questions d'exercice et 20/20 de QCM servies.
+  Encore écartée : point irréparable, moins de deux valeurs écrites, **point
+  posé sur une valeur écrite** (la réponse serait affichée), plus de 50
+  petits traits. La lecture d'un point (« quel nombre est repéré
+  par le point A ? ») est recalculée sur le dessin ; une réponse qui n'est
+  pas un nombre seul (« 7 dizaines ») n'est pas réécrite mais écartée.
+- Deux questions de marge sont demandées, puis l'exercice est coupé.
+- Aperçus enseignant : `ExercicePreview` et le panneau de la programmation
+  dessinent la figure — on ne valide pas une question qu'on n'a pas vue.
+- ⚠️ `comparerReponse()` compare désormais les **heures** heure ET minutes :
+  avant, « 7 h 45 » valait « 7 h 30 » (premier nombre seulement).
+- Contrats : `npx tsx docs/tests/test-figures-generation.mjs` (139 cas) et
+  `npx tsx docs/ceintures/test-comparer-reponse.mjs` (qui teste désormais la
+  vraie fonction, plus une copie).
+
 ### Vérification des types numériques
 `comparaison` et `rangement` ne font **jamais** confiance à l'IA sur le résultat :
 - Le signe et l'ordre sont recalculés côté serveur (`lib/comparaison-nombres.ts`, `lib/rangement.ts`).
@@ -1330,6 +1378,9 @@ notion du jour d'école précédent** (`traduireSemaine()`, `lib/seances-traduct
 - La notion du dernier jour de la semaine passe à la semaine suivante. Un jour
   sans séance antérieure connue (rentrée de septembre) n'a pas d'exercice de
   notion — un trou visible plutôt qu'une notion pas encore vue.
+- La consigne envoyée au modèle le dit : « notion travaillée en classe le
+  vendredi 02/10, l'élève l'a déjà vue — un entraînement, pas une découverte »
+  (`consigneDepuisSeance()`).
 - La ligne garde l'id de la séance **source** (clé unique : une séance n'est la
   veille que d'un seul jour) et affiche « notion du vendredi 02/10 »
   (`notionDu`).

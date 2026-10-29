@@ -24,6 +24,16 @@ export type Empechement = string | null;
 
 const NB_QUESTIONS = 8;
 
+const JOURS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+
+/** « 2026-10-02 » → « vendredi 02/10 », calculé en UTC (piège nº 7). */
+function dateLisible(iso: string): string {
+  const [a, m, j] = iso.split("-").map(Number);
+  if (!a || !m || !j) return iso;
+  const jour = JOURS[new Date(Date.UTC(a, m - 1, j)).getUTCDay()];
+  return `${jour} ${String(j).padStart(2, "0")}/${String(m).padStart(2, "0")}`;
+}
+
 /**
  * Ce que le modèle doit savoir de la séance, en une consigne.
  *
@@ -35,6 +45,14 @@ export function consigneDepuisSeance(s: SeanceTraduite): string {
   const morceaux = [`Séance : ${s.titre}`];
   if (s.objectifs && s.objectifs.trim() !== s.titre.trim()) {
     morceaux.push(`Objectifs travaillés en classe : ${s.objectifs}`);
+  }
+  // La notion de la veille (ou de l'avant-veille après une évaluation) : le
+  // modèle doit savoir que l'élève l'a déjà vue — un entraînement, pas une
+  // découverte.
+  if (s.notionDu) {
+    morceaux.push(
+      `Cette notion a été travaillée en classe le ${dateLisible(s.notionDu)} : l'élève l'a déjà vue. L'exercice est un entraînement pour la réinvestir, pas une découverte.`
+    );
   }
   morceaux.push(
     `L'exercice doit porter exactement sur ces objectifs, en ${s.matiere.toLowerCase()} · ${s.sousMatiere.toLowerCase()}.`

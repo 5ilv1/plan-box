@@ -87,6 +87,7 @@ Un polygone :
 | `angles_droits` | indices des sommets à marquer du petit carré — `[0, 1]` |
 | `cotes_egaux` | `[[indice_du_côté, nb_de_traits], …]` — le côté `i` va du sommet `i` au suivant ; `[[0,1],[2,1],[1,2],[3,2]]` code un rectangle |
 | `plein` | `false` pour ne pas remplir (figures superposées, figure complexe à décomposer) |
+| `longueurs` | `[[indice_du_côté, "7 cm"], …]` — la mesure écrite au milieu du côté, à l'extérieur. Ajoutée pour les exercices engendrés (aire et périmètre à partir des mesures) : papier uni, pas de quadrillage |
 
 Règles de dessin :
 
