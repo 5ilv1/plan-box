@@ -130,6 +130,7 @@ function getRegles(type: ExerciceType): string {
     case "analyse_phrase":
       return `${base}
 - Phrases simples et claires
+- Varier la place des groupes : au plus la moitié des phrases commence par le sujet, les autres par un complément circonstanciel en tête ("Chaque matin, les enfants…"), et au moins une a un sujet inversé après le verbe ("Dans la forêt vivait un vieux loup.") — jamais d'inversion par trait d'union ("dit-il", "vas-tu") ni de question. Ces phrases illustrent des structures : n'en recopie aucune
 - "debut" et "fin" sont les index des MOTS (pas des caractères), obtenus par texte.split(" ") et comptés à partir de 0
 - "mots" doit être le copier-coller exact des mots de la phrase entre ces deux index
 - Les groupes ne se chevauchent pas

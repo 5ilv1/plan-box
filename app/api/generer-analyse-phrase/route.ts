@@ -33,6 +33,15 @@ RÈGLES :
 - Vérifier que les index correspondent exactement aux mots
 ${description ? `- Consigne supplémentaire : ${description}` : ""}
 
+PLACE DES GROUPES — l'élève doit chercher le sujet, pas le trouver toujours au même endroit :
+- Au plus la MOITIÉ des phrases commence par le sujet.
+- Les autres commencent par un complément circonstanciel déplacé en tête : "Chaque matin, les enfants promènent le chien." / "Dans la cour, Léa et Tom jouent aux billes."
+- Si la fonction Sujet est demandée, au moins UNE phrase (deux à partir de 6 phrases) a un SUJET INVERSÉ, placé après le verbe : "Dans la forêt vivait un vieux loup." / "Au fond du jardin poussent des fleurs rouges." / "Sur la branche chantait un merle."
+- Varier aussi la longueur du sujet : un pronom, un prénom, un groupe nominal long ("Le chien de ma voisine aboie."), un sujet éloigné du verbe.
+- INTERDIT pour l'inversion : les questions et les pronoms collés au verbe par un trait d'union ("vas-tu", "dit-il") — le sujet et le verbe y forment un seul mot, l'élève ne peut pas les séparer. L'inversion se fait avec un groupe nominal sujet, après un complément de lieu ou de temps.
+- Au CE2, phrases courtes même quand le sujet est inversé ("Dans la mare nagent des canards.").
+- ⚠️ Les phrases citées dans ce message (y compris celles du format JSON) montrent des STRUCTURES : n'en reprends AUCUNE, ni même son début ou ses noms (pas de loup dans la forêt, de merle sur la branche, de chien de la voisine, de "Chaque matin"). Invente tes propres phrases, lieux, personnages et compléments.
+
 RÈGLES GRAMMATICALES STRICTES :
 - COD (complément d'objet direct) : se construit SANS préposition. On le trouve avec "verbe + qui/quoi ?". Ex : "Il mange une pomme" → "une pomme" = COD.
 - COI (complément d'objet indirect) : se construit AVEC une préposition (à, de, en, sur...). On le trouve avec "verbe + à qui/à quoi/de qui/de quoi ?". Ex : "Il joue au football" → "au football" = COI. "Elle parle à son ami" → "à son ami" = COI.
@@ -57,6 +66,14 @@ Réponds UNIQUEMENT en JSON valide, sans backticks :
         { "mots": "mange", "fonction": "Verbe", "debut": 3, "fin": 3 },
         { "mots": "une souris", "fonction": "COD", "debut": 4, "fin": 5 },
         { "mots": "dans le jardin", "fonction": "CC Lieu", "debut": 6, "fin": 8 }
+      ]
+    },
+    {
+      "texte": "Dans la forêt vivait un vieux loup.",
+      "groupes": [
+        { "mots": "Dans la forêt", "fonction": "CC Lieu", "debut": 0, "fin": 2 },
+        { "mots": "vivait", "fonction": "Verbe", "debut": 3, "fin": 3 },
+        { "mots": "un vieux loup", "fonction": "Sujet", "debut": 4, "fin": 6 }
       ]
     }
   ]
