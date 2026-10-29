@@ -124,6 +124,31 @@ const CAS: { titre: string; note: string; figure: Figure }[] = [
       segments: [{ de: [2.5, 0], a: [2.5, 6], pointille: true, nom: "a" }],
     },
   },
+  {
+    titre: "Rectangle avec ses longueurs",
+    note: "papier uni, les mesures écrites à l'extérieur, au milieu des côtés — figures des exercices engendrés",
+    figure: {
+      type: "polygone",
+      polygones: [{
+        sommets: [[1, 1], [8, 1], [8, 5], [1, 5]],
+        nom: "ABCD",
+        angles_droits: [0, 1, 2, 3],
+        longueurs: [[0, "7 cm"], [1, "4 cm"]],
+      }],
+    },
+  },
+  {
+    titre: "Triangle rectangle avec ses longueurs",
+    note: "l'hypoténuse étiquetée vers l'extérieur",
+    figure: {
+      type: "polygone",
+      polygones: [{
+        sommets: [[1, 1], [7, 1], [1, 5]],
+        angles_droits: [0],
+        longueurs: [[0, "6 cm"], [1, "7,2 cm"], [2, "4 cm"]],
+      }],
+    },
+  },
   // ── Fractions par des aires ───────────────────────────────────────────
   {
     titre: "Disque, 3 huitièmes",

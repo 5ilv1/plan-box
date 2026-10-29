@@ -25,6 +25,23 @@ function normaliser(s: string): string {
 
 const FRACTION = /^-?\d+\/\d+$/;
 
+const HEURE = /\b(\d{1,2})\s*(?:h(?:eures?)?|:)\s*(?:(\d{1,2})\s*(?:min(?:utes?)?)?)?(?![\p{L}\d])/iu;
+
+/**
+ * L'heure lue dans un texte : « 3 h 25 », « 15h25 », « 3:25 », « 8 h »,
+ * « 7 heures 30 », « 1 h 30 min ». Avec `seule`, le texte ne doit contenir
+ * que l'heure (à un article ou un point près).
+ */
+export function lireHeure(t: string, seule = false): { h: number; m: number; minutesEcrites: boolean } | null {
+  const texte = (t ?? "").trim();
+  const x = texte.match(HEURE);
+  if (!x) return null;
+  if (seule && texte.replace(x[0], "").replace(/^(il est|à|a)\s+/i, "").replace(/[\s.]/g, "") !== "") return null;
+  const h = parseInt(x[1], 10), m = x[2] ? parseInt(x[2], 10) : 0;
+  if (h > 23 || m > 59) return null;
+  return { h, m, minutesEcrites: !!x[2] };
+}
+
 /**
  * `true` si la réponse de l'élève vaut la réponse attendue.
  *
@@ -41,6 +58,18 @@ export function comparerReponse(attendue: string, donnee: string): boolean {
   const d = normaliser(donnee ?? "");
 
   if (a === d) return true;
+
+  // Heures : « 7 h 30 » ne vaut pas « 7 h 45 ». Comparées en nombres, les
+  // deux valaient 7 — un élève qui lit mal l'horloge était compté juste.
+  // Les heures de l'après-midi valent leur lecture sur le cadran (15 h 30 =
+  // 3 h 30) : une horloge à aiguilles ne dit pas le matin du soir.
+  const ha = lireHeure(a, true);
+  if (ha) {
+    const hd = lireHeure(d, true);
+    if (hd) return ha.h % 12 === hd.h % 12 && ha.m === hd.m;
+    // « 8 » pour « 8 h » reste accepté ; « 7 » pour « 7 h 30 », non.
+    if (ha.minutesEcrites && ha.m !== 0) return false;
+  }
 
   // Fractions : comparées terme à terme, jamais par leur valeur décimale.
   if (FRACTION.test(a)) {

@@ -48,6 +48,8 @@ export interface PolygoneFigure {
   angles_droits?: number[];
   /** `[[indice_du_côté, nb_de_traits], …]` — le côté `i` va du sommet `i` au suivant. */
   cotes_egaux?: [number, number][];
+  /** `[[indice_du_côté, "5 cm"], …]` — la mesure écrite à l'extérieur, au milieu du côté. */
+  longueurs?: [number, string][];
   plein?: boolean;
 }
 
@@ -356,6 +358,32 @@ function Polygone({ figure }: { figure: FigurePolygone }) {
                   />
                 );
               });
+            })}
+
+            {/* Longueurs : au milieu du côté, du côté extérieur. Le texte part
+                dans le sens de la normale — centré, il chevauchait les côtés
+                verticaux et obliques. */}
+            {(p.longueurs ?? []).map(([i, texte], k) => {
+              if (!S[i]) return null;
+              const [ax, ay] = S[i];
+              const [bx, by] = S[(i + 1) % S.length];
+              const mx = (ax + bx) / 2, my = (ay + by) / 2;
+              const l = Math.hypot(bx - ax, by - ay) || 1;
+              // Normale au côté, tournée à l'opposé du centre de la figure.
+              let nx = -(by - ay) / l, ny = (bx - ax) / l;
+              if (nx * (mx - centre[0]) + ny * (my - centre[1]) < 0) { nx = -nx; ny = -ny; }
+              const ancre = nx > 0.3 ? "start" : nx < -0.3 ? "end" : "middle";
+              const dy = ny < -0.3 ? 14 : ny > 0.3 ? -4 : 5;
+              return (
+                <text
+                  key={`lg${k}`}
+                  x={X(mx) + nx * 8}
+                  y={Y(my) - ny * 8 + dy}
+                  textAnchor={ancre} fontSize="14" fill="currentColor"
+                >
+                  {texte}
+                </text>
+              );
             })}
 
             {/* Noms des sommets, poussés vers l'extérieur de la figure */}

@@ -9,6 +9,10 @@ export interface QuestionExercice {
   enonce: string;
   reponse_attendue: string;
   indice?: string;
+  /** Figure dessinée sous l'énoncé (géométrie, mesures). Voir SPEC-FIGURES.md. */
+  figure?: import("@/components/FigureGeo").Figure;
+  /** Droite graduée dessinée avec l'énoncé. Voir SPEC-DROITE-GRADUEE.md. */
+  droite?: import("@/components/DroiteGraduee").Droite;
 }
 
 export interface ExerciceIA {

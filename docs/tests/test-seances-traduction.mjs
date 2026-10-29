@@ -382,6 +382,10 @@ verifier("consigne : cite les objectifs",
   consigneDepuisSeance(ligneMa).includes("Reproduire une figure sur quadrillage"), true);
 verifier("consigne : objectif tautologique non répété",
   consigneDepuisSeance({ ...ligneMa, objectifs: ligneMa.titre }).includes("Objectifs travaillés"), false);
+verifier("consigne : la notion de la veille est dite déjà vue",
+  consigneDepuisSeance({ ...ligneMa, notionDu: "2026-10-02" }).includes("travaillée en classe le vendredi 02/10"), true);
+verifier("consigne : sans décalage, rien n'est dit",
+  consigneDepuisSeance(ligneMa).includes("déjà vue"), false);
 
 // Le titre du bloc est celui que verra l'élève : sans repère d'emploi du temps.
 verifier("titre : sans code ni jour",

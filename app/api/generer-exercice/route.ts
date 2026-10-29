@@ -6,15 +6,28 @@ import { requireEnseignant } from "@/lib/server-auth";
 import { rateLimit } from "@/lib/rate-limit";
 import { REGLE_NOMBRES_EN_LETTRES, REGLE_REPONSE_UNIQUE, blocCorpus } from "@/lib/prompts-communs";
 import { normaliserNombresEnLettres } from "@/lib/nombres-en-lettres";
+import { figuresPossibles, consigneFigures, filtrerFigures, remplacerNombre, MARGE_FIGURES } from "@/lib/figures-generation";
 
 const client = new Anthropic({ apiKey: process.env.PB_ANTHROPIC_KEY });
 
-function promptExercice(p: Extract<ParamsGeneration, { type: "exercice" }>): string {
+type ParamsExercice = Extract<ParamsGeneration, { type: "exercice" }>;
+
+/**
+ * Géométrie, grandeurs et mesures : une question peut porter une figure
+ * (lib/figures-generation.ts). Le thème compte aussi — les maths CE2 n'ont
+ * pas de sous-domaine fiable.
+ */
+function avecFigures(p: ParamsExercice): boolean {
+  return figuresPossibles(p.matiere, p.sousMatiere ?? "", p.chapitreTitre, p.contexte, (p as any).consigneDetaillee);
+}
+
+function promptExercice(p: ParamsExercice): string {
+  const figures = avecFigures(p);
   return `Tu es un assistant pédagogique pour une école primaire française.
 Tu génères des exercices adaptés au niveau ${p.niveauNom} (${p.matiere}).
 Chapitre : ${p.chapitreTitre}.
 Difficulté : ${p.difficulte}.
-Nombre de questions : ${p.nbQuestions}.
+Nombre de questions : ${figures ? p.nbQuestions + MARGE_FIGURES : p.nbQuestions}.
 ${p.contexte ? `Thème souhaité : ${p.contexte}` : ""}
 ${(p as any).consigneDetaillee ? `\nConsigne de l'enseignant (à suivre impérativement) :\n${(p as any).consigneDetaillee}` : ""}
 ${p.modele ? `Génère dans le style de cet exercice modèle :\n${p.modele}` : ""}${blocCorpus((p as any).corpus)}
@@ -38,7 +51,7 @@ Règles :
 - Langage simple, adapté à des enfants de 8-11 ans
 - Pas de violence, pas de sujets sensibles
 - Questions progressives en difficulté
-- Réponses courtes et vérifiables`;
+- Réponses courtes et vérifiables${figures ? `\n\n${consigneFigures("exercice")}` : ""}`;
 }
 
 function promptCalcMental(p: Extract<ParamsGeneration, { type: "calcul_mental" }>): string {
@@ -105,7 +118,7 @@ export async function POST(req: NextRequest) {
 
     const message = await client.messages.create({
       model: "claude-sonnet-4-6",
-      max_tokens: 2048,
+      max_tokens: 4096,
       system: `${REGLE_NOMBRES_EN_LETTRES}\n\n${REGLE_REPONSE_UNIQUE}`,
       messages: [{ role: "user", content: contentParts }],
     });
@@ -121,6 +134,28 @@ export async function POST(req: NextRequest) {
       .trim();
 
     let resultat = normaliserNombresEnLettres(JSON.parse(json));
+
+    // Une figure abîmée, ou contredite par la réponse, emporte sa question ;
+    // les questions de marge comblent, puis on coupe au nombre demandé.
+    if (params.type === "exercice" && avecFigures(params) && Array.isArray(resultat.questions)) {
+      const { questions, ecartees, corrigees } = filtrerFigures(
+        resultat.questions as { enonce: string; reponse_attendue: string; indice?: string; figure?: unknown }[],
+        (q) => ({ enonce: String(q.enonce ?? ""), reponse: String(q.reponse_attendue ?? "") }),
+        // Une aire mal comptée se recalcule sur le dessin ; l'indice, qui
+        // citait souvent le mauvais compte, part avec elle.
+        (q, valeur) => {
+          const { indice: _i, ...reste } = q;
+          return { ...reste, reponse_attendue: remplacerNombre(String(q.reponse_attendue ?? ""), valeur) };
+        },
+      );
+      if (corrigees) console.log(`[generer-exercice] ${corrigees} mesure(s) recalculée(s) sur le dessin`);
+      for (const e of ecartees) console.log(`[generer-exercice] figure écartée (${e.raison}) : ${e.enonce}`);
+      if (questions.length === 0) {
+        return NextResponse.json({ erreur: "Aucune question fiable n'a été générée. Relance la génération." }, { status: 500 });
+      }
+      resultat.questions = questions.slice(0, params.nbQuestions).map((q, i) => ({ ...q, id: i + 1 }));
+    }
+
     resultat = await validerReponsesExercice(resultat, params.type, client);
     return NextResponse.json({ resultat });
   } catch (err) {

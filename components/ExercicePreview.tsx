@@ -5,6 +5,8 @@ import { ExerciceIA, CalcMentalIA, RessourceIA, TacheRessource } from "@/types";
 import { TemplateCalcul } from "@/lib/calcul";
 import CalcMentalStack from "./CalcMentalStack";
 import { BoutonSupprimer } from "./QCMEditeur";
+import FigureGeo from "./FigureGeo";
+import DroiteGraduee from "./DroiteGraduee";
 
 type ContenuPreview =
   | { type: "exercice"; data: ExerciceIA }
@@ -397,6 +399,18 @@ function ExerciceEditView({
                 <BoutonSupprimer onClick={() => supprimerQuestion(i)} />
               )}
             </div>
+
+            {/* La figure : sans elle, on validerait une question qu'on n'a pas pu relire */}
+            {q.figure && (
+              <div style={{ marginLeft: 34 }}>
+                <FigureGeo figure={q.figure} />
+              </div>
+            )}
+            {q.droite && (
+              <div style={{ marginLeft: 34 }}>
+                <DroiteGraduee droite={q.droite} />
+              </div>
+            )}
 
             {/* Réponse attendue */}
             <div

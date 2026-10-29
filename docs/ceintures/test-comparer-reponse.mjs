@@ -1,33 +1,13 @@
-#!/usr/bin/env node
+#!/usr/bin/env npx tsx
 /**
  * Test de la comparaison des réponses chiffrées.
- *   node docs/ceintures/test-comparer-reponse.mjs
+ *   npx tsx docs/ceintures/test-comparer-reponse.mjs
  *
- * Rejoue ici la fonction attendue dans lib/comparer-reponse.ts. Si tu modifies
- * la fonction de l'application, reporte la modification ici — ce fichier est le
- * contrat, pas une copie décorative.
+ * Teste la fonction de l'application (lib/comparer-reponse.ts) — jusqu'au
+ * 23/10, ce fichier en rejouait une copie, qui ne prouvait rien sur
+ * l'original.
  */
-const ESP = "[\\s\\u00A0\\u202F\\u2007\\u2009\\u200B\\u3000]";
-const normaliser = (s) => String(s).trim().toLowerCase()
-  .replace(new RegExp(`(\\d)${ESP}+(?=\\d)`, "g"), "$1")
-  .replace(new RegExp(`(\\d)${ESP}*/${ESP}*(\\d)`, "g"), "$1/$2")
-  .replace(new RegExp(`${ESP}+`, "g"), " ")
-  .replace(/,/g, ".");
-const FRACTION = /^-?\d+\/\d+$/;
-
-export function comparerReponse(attendue, donnee) {
-  const a = normaliser(attendue), d = normaliser(donnee);
-  if (a === d) return true;
-  if (FRACTION.test(a)) {
-    if (!FRACTION.test(d)) return false;
-    const [an, ad] = a.split("/").map(Number);
-    const [dn, dd] = d.split("/").map(Number);
-    return an === dn && ad === dd;
-  }
-  if (FRACTION.test(d)) return false;
-  const na = parseFloat(a), nd = parseFloat(d);
-  return !isNaN(na) && !isNaN(nd) && Math.abs(na - nd) < 1e-9;
-}
+import { comparerReponse } from "../../lib/comparer-reponse.ts";
 
 const CAS = [
   ["3 000", "3000", true,  "espace des milliers côté attendu"],
@@ -54,6 +34,20 @@ const CAS = [
   ["les enfants", "lesenfants", false, "l'espace ne se retire QUE entre deux chiffres"],
   ["les enfants", "Les  enfants", true, "espaces multiples et casse, réponse en mots"],
   ["mon oncle", "mon oncle ", true, "espace final"],
+  // Heures : lues sur une horloge, comparées heure ET minutes.
+  ["7 h 30", "7 h 45", false, "heure : les minutes comptent (avant : 7 = 7)"],
+  ["7 h 30", "7h30", true, "heure : espaces"],
+  ["7 heures 30", "7 h 30", true, "heure : « heures » écrit en entier"],
+  ["7 h 30", "19 h 30", true, "heure : l'horloge ne dit pas le matin du soir"],
+  ["7 h 30", "7:30", true, "heure : deux-points"],
+  ["7 h 30", "Il est 7 h 30.", true, "heure : dans une phrase courte"],
+  ["7 h 30", "7", false, "heure : il manque les minutes"],
+  ["8 h", "8", true, "heure pleine : le nombre seul reste accepté"],
+  ["8 h", "8 h 00", true, "heure pleine : minutes nulles écrites"],
+  ["8 h", "8 h 30", false, "heure pleine : autres minutes refusées"],
+  ["1 h 30 min", "1 h 30", true, "durée : « min » facultatif"],
+  ["90 min", "90", true, "durée en minutes : inchangée"],
+  ["5 hm", "5", true, "hectomètre : pas une heure"],
 ];
 
 let echecs = 0;

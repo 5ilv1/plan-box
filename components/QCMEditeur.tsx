@@ -1,6 +1,7 @@
 "use client";
 
 import FigureGeo, { type Figure } from "@/components/FigureGeo";
+import DroiteGraduee, { type Droite } from "@/components/DroiteGraduee";
 
 export interface QCMData {
   titre?: string;
@@ -11,6 +12,7 @@ export interface QCMData {
     explication?: string;
     /** Dessin sous l'énoncé — fraction en images. Voir SPEC-FIGURES.md. */
     figure?: Figure;
+    droite?: Droite;
     /** Sens inverse : une fraction dans l'énoncé, un dessin par option. */
     options_figures?: Figure[];
   }[];
@@ -105,6 +107,11 @@ export default function QCMEditeur({
             {q.figure && (
               <div style={{ display: "flex", justifyContent: "center", marginBottom: 8 }}>
                 <FigureGeo figure={q.figure} />
+              </div>
+            )}
+            {q.droite && (
+              <div style={{ marginBottom: 8 }}>
+                <DroiteGraduee droite={q.droite} />
               </div>
             )}
             <ul style={{ margin: 0, padding: 0, display: "flex", flexDirection: "column", gap: 4, listStyle: "none" }}>
